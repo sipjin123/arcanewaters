@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3564884166319691053}
   - component: {fileID: 2405665678153359920}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 2634567558379703915}
   - component: {fileID: 7229528483941549060}
   - component: {fileID: 7105107861911183516}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Warp - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 1423422168909318490}
   - component: {fileID: 7361975916081756466}
   - component: {fileID: 6206580436281514647}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +349,7 @@ GameObject:
   - component: {fileID: 5208823878366398306}
   - component: {fileID: 6562869215552226059}
   - component: {fileID: 8779210483634801265}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Data Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -548,7 +548,7 @@ GameObject:
   m_Component:
   - component: {fileID: 569179125998679151}
   - component: {fileID: 2748850984666831938}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -628,7 +628,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3655550861237314096}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -669,7 +669,7 @@ GameObject:
   - component: {fileID: 9053770261911534599}
   - component: {fileID: 5410473832369834623}
   - component: {fileID: 6685464794990159937}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds Text Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -743,7 +743,7 @@ GameObject:
   - component: {fileID: 3545345833789442131}
   - component: {fileID: 5965796927966304325}
   - component: {fileID: 8250328854888742465}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Letter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -820,7 +820,7 @@ GameObject:
   - component: {fileID: 6294070097052798264}
   - component: {fileID: 1935743037041590345}
   - component: {fileID: 780978295676615141}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 4093776628321914000}
   - component: {fileID: 2808486676988192980}
   - component: {fileID: 6657078232116271140}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}

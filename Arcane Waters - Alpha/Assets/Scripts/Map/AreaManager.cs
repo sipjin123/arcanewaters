@@ -90,6 +90,16 @@ public class AreaManager : MonoBehaviour
       }
    }
 
+   public bool isInteriorArea (string areaKey) {
+      if (hasArea(areaKey)) {
+         return getArea(areaKey).isInterior;
+      } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.editorType == EditorType.Interior;
+      } else {
+         return false;
+      }
+   }
+
    public EditorType? getAreaEditorType (string areaKey) {
       if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
          return map.editorType;
@@ -106,6 +116,10 @@ public class AreaManager : MonoBehaviour
 
    public bool hasArea (string areaKey) {
       return _areas.ContainsKey(areaKey);
+   }
+
+   public bool doesAreaExists (string areaKey) {
+      return _areaKeyToMapInfo.ContainsKey(areaKey);
    }
 
    public List<Area> getAreas () {

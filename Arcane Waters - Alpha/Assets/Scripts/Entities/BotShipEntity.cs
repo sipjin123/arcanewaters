@@ -6,10 +6,6 @@ using Mirror;
 using MapCreationTool.Serialization;
 using AStar;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
    #region Public Variables
@@ -20,6 +16,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // Determines if this ship is spawned at debug mode
    public bool isDebug = false;
 
+   // The radius of which we'll pick new points to patrol to
+   public float patrolingWaypointsRadius = 1.0f;
+
+   // The radius of which we'll pick new points to attack from
+   public float attackingWaypointsRadius = 1.0f;
+
    // The seconds to patrol the current TreasureSite before choosing another one
    public float secondsPatrolingUntilChoosingNewTreasureSite;
 
@@ -28,6 +30,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // The seconds spent idling between finding attack routes
    public float secondsBetweenFindingAttackRoutes;
+
+   // How big the aggro cone is in degrees
+   public float aggroConeDegrees;
+
+   // How far the cone extends ahead of the ship
+   public float aggroConeRadius;
 
    #endregion
 
@@ -50,16 +58,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          }
          _pathfindingReference.gridReference = _gridReference;
 
-         // Add some move targets
-         _moveTargetOffsets.Add(new Vector2(-1.0f, 0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(1.0f, 0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(0f, -1.0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(0f, 1.0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(-1.0f, -1.0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(-1.0f, 1.0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(1.0f, -1.0f).ToVector3());
-         _moveTargetOffsets.Add(new Vector2(1.0f, 1.0f).ToVector3());
-
          _treasureSitesInArea = new List<TreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<TreasureSite>());
 
          _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
@@ -67,6 +65,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       // Check if we can shoot at any of our attackers
       InvokeRepeating("checkForAttackers", 1f, .5f);
+
+      if (Application.isEditor) {
+         editorGenerateAggroCone();
+      }
    }
 
    protected override void Update () {
@@ -89,10 +91,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          return;
       }
 
-      bool attacking = _attackers != null && _attackers.Count > 0;
+      _attackingCurrentFrame = _attackers != null && _attackers.Count > 0;
 
       List<ANode> currentPath;
-      if (attacking) {
+      if (_attackingCurrentFrame) {
          currentPath = _currentAttackingPath;
       } else {
          currentPath = _currentPatrolPath;
@@ -114,7 +116,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             currentPath.RemoveAt(0);
          }
       } else {
-         if (attacking) {
+         if (_attackingCurrentFrame) {
             generateNewAttackWaypoints();
          } else {
             generateNewPatrolWaypoints();
@@ -150,7 +152,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    private void generateNewPatrolWaypoints () {
       switch (_patrolingWaypointState) {
          case WaypointState.FINDING_PATH:
-            _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius);
             if (_currentPatrolPath != null && _currentPatrolPath.Count > 0) {
                _patrolingWaypointState = WaypointState.MOVING_TO;
             }
@@ -175,7 +177,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             } else if (_secondsBetweenPatrolRoutes >= secondsBetweenFindingPatrolRoutes) {
                _secondsBetweenPatrolRoutes = 0.0f;
 
-               _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+               _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius);
             }
             break;
       }
@@ -189,7 +191,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       switch (_attackingWaypointState) {
          case WaypointState.FINDING_PATH:
-            _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+            _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius);
             if (_currentAttackingPath != null && _currentAttackingPath.Count > 0) {
                _attackingWaypointState = WaypointState.MOVING_TO;
             }
@@ -210,7 +212,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
                _secondsBetweenAttackRoutes = 0.0f;
 
                _attackingWaypointState = WaypointState.FINDING_PATH;
-               _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + _moveTargetOffsets.ChooseRandom().ToVector3());
+               _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius);
             }
             break;
       }
@@ -224,6 +226,39 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       // If we haven't reloaded, we can't attack
       if (!hasReloaded()) {
          return;
+      }
+
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      if (instance != null) {
+         float degreesToDot = aggroConeDegrees / 90.0f;
+         foreach (NetworkBehaviour iEntity in instance.getEntities()) {
+            SeaEntity entity = iEntity.GetComponent<SeaEntity>();
+
+            // If the attacker has already been added, early out
+            bool earlyOut = false;
+            foreach (SeaEntity attacker in _attackers.Keys) {
+               if (attacker == entity) {
+                  earlyOut = true;
+               }
+            }
+            if (earlyOut) {
+               continue;
+            }
+
+            if (entity != null && entity.faction != faction) {
+               // If enemy isn't within radius, early out
+               if ((transform.position - entity.transform.position).magnitude > aggroConeRadius)
+                  continue;
+
+               // If enemy isn't within cone aggro range, early out
+               if (Vector2.Dot(Util.getDirectionFromFacing(facing), (entity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
+                  continue;
+               }
+
+               // We can see the enemy, attack it
+               _attackers[entity] = TimeManager.self.getSyncedTime();
+            }
+         }
       }
 
       // Check if any of our attackers are within range
@@ -269,9 +304,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             ShipData shipData = ShipDataManager.self.getShipData((Ship.Type) type);
             shipType = shipData.shipType;
             if (shipData != null) {
-               string spritePath = shipData.spritePath;
-               if (spritePath != "") {
-                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
+               if (shipData.spritePath != "") {
+                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(shipData.spritePath);
                }
             }
             Area area = GetComponentInParent<Area>();
@@ -281,30 +315,68 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             speed = Ship.getBaseSpeed(shipType);
             attackRangeModifier = Ship.getBaseAttackRange(shipType);
 
-            // extract Route
+            // Assign ripple sprites
+            _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
+            _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
+            if (shipData.rippleSpritePath != "") {
+               ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+            }
          }
       }
    }
 
-#if UNITY_EDITOR
-   private void OnDrawGizmosSelected () {
-      // Only force draw the grid Gizmos when the NPC is selected and not the Grid itself
-      // (or they will double draw as is the parent/child relationship in terms of gizmos)
-      if (!Selection.Contains(_gridReference.gameObject)) {
-         if (_attackers != null && _attackers.Count > 0) {
-            _gridReference.pathToDraw = _currentAttackingPath;
-         } else {
-            _gridReference.pathToDraw = _currentPatrolPath;
-         }
-         _gridReference.OnDrawGizmosSelected();
+   private void editorGenerateAggroCone () {
+      float coneRadians = aggroConeDegrees * Mathf.Deg2Rad;
+      float singleDegreeInRadian = 1 * Mathf.Deg2Rad;
+
+      _editorConeAggroGizmoMesh = new Mesh();
+      List<Vector3> positions = new List<Vector3>();
+      List<Vector3> normals = new List<Vector3>();
+
+      // Center of the cone fan
+      positions.Add(Vector3.zero);
+      normals.Add(Vector3.back);
+
+      for (float iPoint = -coneRadians; iPoint < coneRadians; iPoint += singleDegreeInRadian) {
+         positions.Add(new Vector3(Mathf.Cos(iPoint), Mathf.Sin(iPoint), 0.0f) * aggroConeRadius);
+
+         // Point normals towards the camera
+         normals.Add(Vector3.back);
       }
+
+      List<int> triangles = new List<int>(positions.Count * 3);
+      for (int iVertex = 2; iVertex < positions.Count; iVertex += 1) {
+         triangles.Add(0);
+         triangles.Add(iVertex);
+         triangles.Add(iVertex - 1);
+      }
+
+      _editorConeAggroGizmoMesh.SetVertices(positions);
+      _editorConeAggroGizmoMesh.SetNormals(normals);
+      _editorConeAggroGizmoMesh.SetIndices(triangles, MeshTopology.Triangles, 0);
    }
-#endif
+
+   private void OnDrawGizmosSelected () {
+      List<ANode> pathToDraw;
+      if (_attackingCurrentFrame) {
+         pathToDraw = _currentAttackingPath;
+      } else {
+         pathToDraw = _currentPatrolPath;
+      }
+
+      if (Application.isPlaying) {
+         foreach (ANode node in pathToDraw) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(node.vPosition, 0.1f);
+         }
+      }
+
+      Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
+      Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
+      Gizmos.color = Color.white;
+   }
 
    #region Private Variables
-
-   // The available positions to move to
-   protected List<Vector2> _moveTargetOffsets = new List<Vector2>();
 
    // The AStarGrid Reference fetched from the Main Scene
    protected AStarGrid _gridReference;
@@ -346,8 +418,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // The current path when attacking something
    private List<ANode> _currentAttackingPath;
 
-   // The last attecker to have damaged our vessel
+   // The last attacker to have damaged our vessel
    private SeaEntity _lastAttacker;
+
+   // The generated mesh for showing the cone of aggro in the Editor
+   private Mesh _editorConeAggroGizmoMesh;
+
+   // Are we attacking in the current frame?
+   private bool _attackingCurrentFrame;
 
    #endregion
 }

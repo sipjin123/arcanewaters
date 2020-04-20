@@ -20,7 +20,9 @@ namespace MapCreationTool
 
       public MinimapGeneration.MinimapGeneratorPreset[] areaPresets;
       public MinimapGeneration.MinimapGeneratorPreset[] seaPresets;
-      public MinimapGeneration.MinimapGeneratorPreset[] interiorPresets;
+      public MinimapGeneration.MinimapGeneratorPreset interiorPreset;
+
+      public Color[] rugLookup;
 
       public string[] areaLayerNames
       {
@@ -96,7 +98,6 @@ namespace MapCreationTool
          int biomeCount = Biome.getAllTypes().Count;
          Assert.IsTrue(areaPresets.Length == biomeCount, "Please provide area presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
          Assert.IsTrue(seaPresets.Length == biomeCount, "Please provide sea presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
-         Assert.IsTrue(interiorPresets.Length == biomeCount, "Please provide interior presets for all biomes. Missing " + (biomeCount - areaPresets.Length).ToString() + " biome presets");
       }
 
       private void testEmptyPresets () {
@@ -107,9 +108,7 @@ namespace MapCreationTool
          for (int i = 0; i < seaPresets.Length; i++) {
             Assert.IsTrue(seaPresets[i], "Sea preset #" + i.ToString() + " is empty. Please provide correct preset");
          }
-         for (int i = 0; i < interiorPresets.Length; i++) {
-            Assert.IsNotNull(interiorPresets[i], "Interior preset #" + i.ToString() + " is empty. Please provide correct preset");
-         }
+         Assert.IsNotNull(interiorPreset, "Interior preset is empty. Please provide correct preset");
       }
 
       private void testDuplicatePresets () {
@@ -124,17 +123,17 @@ namespace MapCreationTool
                Assert.IsFalse(seaPresets[i] == seaPresets[j], "Sea preset #" + i.ToString() + " is same as sea preset #" + j.ToString() + ". Please provide unique presets");
             }
          }
-         for (int i = 0; i < interiorPresets.Length; i++) {
-            for (int j = i + 1; j < interiorPresets.Length; j++) {
-               Assert.IsFalse(interiorPresets[i] == interiorPresets[j], "Interior preset #" + i.ToString() + " is same as interior preset #" + j.ToString() + ". Please provide unique presets");
-            }
-         }
       }
 
       private void testMissingLayersInPresets () {
          testMissingLayersInPresets(areaPresets, areaLayerIndexes);
          testMissingLayersInPresets(seaPresets, seaLayerIndexes);
-         testMissingLayersInPresets(interiorPresets, interiorLayerIndexes);
+         testMissingLayersInPresets(interiorPreset, interiorLayerIndexes);
+      }
+
+      private void testMissingLayersInPresets (MinimapGeneration.MinimapGeneratorPreset preset, LayerConfig[] layerIndexes) {
+         MinimapGeneration.MinimapGeneratorPreset[] presets = { preset };
+         testMissingLayersInPresets(presets, layerIndexes);
       }
 
       private void testMissingLayersInPresets (MinimapGeneration.MinimapGeneratorPreset[] presets, LayerConfig[] layerIndexes) {

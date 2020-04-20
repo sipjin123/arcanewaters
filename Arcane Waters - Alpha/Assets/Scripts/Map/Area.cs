@@ -22,7 +22,7 @@ public class Area : MonoBehaviour
    public string areaKey;
 
    // When the area is a shop, keep also at hand the town's name
-   public string townAreaKey;
+   public string townAreaKey = null;
 
    // The area biome
    public Biome.Type biome;
@@ -67,7 +67,7 @@ public class Area : MonoBehaviour
    public List<ExportedPrefab001> secretsEntranceDataFields = new List<ExportedPrefab001>();
 
    // Networked entity parents
-   public Transform npcParent, enemyParent, oreNodeParent, secretsParent;
+   public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent;
 
    #endregion
 
@@ -114,21 +114,17 @@ public class Area : MonoBehaviour
          }
       }
 
-      // If the area is a town, lists all the areas that can be accessed from it
-      if (isTown(areaKey)) {
+      // If the area is interior, find the town where it is located
+      if (isInterior) {
          foreach (Warp warp in GetComponentsInChildren<Warp>()) {
-
-            // Finds the destination area for each warp
-            Spawn spawn = SpawnManager.self.getSpawn(warp.areaTarget, warp.spawnTarget);
-            Area destinationArea = spawn.GetComponentInParent<Area>();
-
-            // If the destination area is a shop, set its town as this area
-            if (destinationArea != null && isShop(areaKey)) {
-               destinationArea.townAreaKey = areaKey;
+            if (!string.IsNullOrEmpty(warp.areaTarget) && !AreaManager.self.isInteriorArea(warp.areaTarget)) {
+               townAreaKey = warp.areaTarget;
+               break;
             }
          }
-      } else {
-         // Otherwise, the town area is the area itself
+      }
+
+      if (string.IsNullOrEmpty(townAreaKey)) {
          townAreaKey = areaKey;
       }
 

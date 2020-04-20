@@ -257,6 +257,42 @@ TextureImporter:
   - first:
       213: -7625620929259714597
     second: forest_interior_84
+  - first:
+      213: -4642571794650819058
+    second: forest_interior_85
+  - first:
+      213: -6941764750338251097
+    second: forest_interior_86
+  - first:
+      213: 7936270642318863391
+    second: forest_interior_87
+  - first:
+      213: -9095501022525595787
+    second: forest_interior_88
+  - first:
+      213: -2947431166043561442
+    second: forest_interior_89
+  - first:
+      213: -4968257879248809687
+    second: forest_interior_90
+  - first:
+      213: 1205140792623264450
+    second: forest_interior_91
+  - first:
+      213: 6610845227425191509
+    second: forest_interior_92
+  - first:
+      213: -6566147167062978967
+    second: forest_interior_93
+  - first:
+      213: 5106924779691166886
+    second: forest_interior_94
+  - first:
+      213: -8826193268216724724
+    second: forest_interior_95
+  - first:
+      213: -3391126369562039290
+    second: forest_interior_96
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -2138,7 +2174,7 @@ TextureImporter:
         width: 32
         height: 48
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -2146,6 +2182,258 @@ TextureImporter:
       bones: []
       spriteID: 3065c074d8dbfef41825fb41cb756198
       internalID: -7625620929259714597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_85
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 496
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e061797dc85429fb0800000000000000
+      internalID: -4642571794650819058
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_86
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 480
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a6a2c51db5e9af90800000000000000
+      internalID: -6941764750338251097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_87
+      rect:
+        serializedVersion: 2
+        x: 24
+        y: 464
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f1ce6ccd91c432e60800000000000000
+      internalID: 7936270642318863391
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_88
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 464
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57fd822920a46c180800000000000000
+      internalID: -9095501022525595787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_89
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 480
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e12ee0c78fe9817d0800000000000000
+      internalID: -2947431166043561442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_90
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 496
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 921d6d228c33d0bb0800000000000000
+      internalID: -4968257879248809687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_91
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 496
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c274a07a2589b010800000000000000
+      internalID: 1205140792623264450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_92
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 480
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 556d3c565b07ebb50800000000000000
+      internalID: 6610845227425191509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_93
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 464
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e0644c0fb50e4a0800000000000000
+      internalID: -6566147167062978967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_94
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 496
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6acc12c87017fd640800000000000000
+      internalID: 5106924779691166886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_95
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 480
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c038ff85cff038580800000000000000
+      internalID: -8826193268216724724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: forest_interior_96
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 464
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60c6bc9a88c40f0d0800000000000000
+      internalID: -3391126369562039290
       vertices: []
       indices: 
       edges: []

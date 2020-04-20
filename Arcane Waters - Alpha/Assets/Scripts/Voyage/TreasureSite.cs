@@ -210,7 +210,7 @@ public class TreasureSite : NetworkBehaviour
 
       // Set the site as a child of the area
       Area area = AreaManager.self.getArea(areaKey);
-      this.transform.SetParent(area.transform, false);
+      this.transform.SetParent(area.treasureSiteParent, false);
 
       if (isServer) {
          // Get all the nearby colliders

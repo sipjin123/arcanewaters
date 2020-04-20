@@ -11,6 +11,8 @@ namespace MapCreationTool
 {
    public class Overlord : MonoBehaviour
    {
+      public const int TILE_PIXEL_WIDTH = 16;
+
       public static Overlord instance { get; private set; }
 
       [Header("Accounts")]
@@ -139,13 +141,22 @@ namespace MapCreationTool
          remoteMaps.load();
       }
 
+      public static bool allRemoteDataLoaded
+      {
+         get
+         {
+            return ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded && remoteMaps.loaded && remoteSpawns.loaded;
+         }
+      }
+
       private void onRemoteDataLoaded () {
          // Check if all managers are loaded
-         if (ShopManager.instance.loaded && NPCManager.instance.loaded && MonsterManager.instance.loaded && remoteMaps.loaded && remoteSpawns.loaded) {
+         if (allRemoteDataLoaded) {
             Destroy(loadCover);
             palette.populatePalette(currentPaletteData[Tools.biome], Tools.biome);
          }
       }
+
 
       private void Update () {
          if (Input.GetKeyDown(KeyCode.Z) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))) {

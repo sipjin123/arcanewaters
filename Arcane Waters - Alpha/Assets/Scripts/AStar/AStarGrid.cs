@@ -196,19 +196,8 @@ namespace AStar
                }
                gizmoColor.a = 0.5f;
                Gizmos.color = gizmoColor;
-
-               // If the final path is not empty
-               if (pathToDraw != null) {
-                  // If the current node is in the final path
-                  if (pathToDraw.Contains(n)) {
-                     Gizmos.color = Color.red;
-                     float sizex = .1f;
-                     Gizmos.DrawWireSphere(n.vPosition, sizex);
-                  }
-               }
-
                float size = 0.1f;
-               Gizmos.DrawCube(n.vPosition, new Vector3(size, size, size));
+               Gizmos.DrawCube(n.vPosition, new Vector3(size, size, 0.01f));
             }
          }
       }

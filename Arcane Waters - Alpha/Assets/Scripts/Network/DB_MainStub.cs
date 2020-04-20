@@ -6,8 +6,7 @@ using System.Linq;
 using System.Text;
 using MapCreationTool.Serialization;
 
-public class DB_MainStub : MonoBehaviour
-{
+public class DB_MainStub : MonoBehaviour {
    #region Public Variables
 
    #endregion
@@ -209,6 +208,26 @@ public class DB_MainStub : MonoBehaviour
 
    public static List<DiscoveryData> getDiscoveriesList () {
       return new List<DiscoveryData>();
+   }
+
+   public static List<NewTutorialData> getNewTutorialList () {
+      return new List<NewTutorialData>();
+   }
+
+   public static void upsertNewTutorial (NewTutorialData data) {
+   }
+
+   public static void deleteNewTutorialById (int tutorialId) {
+   }
+
+   public static void deleteTutorialStepById (int stepId) {
+   }
+
+   public static void upsertTutorialStep (TutorialStepData data) {
+   }
+
+   public static List<string> getAreaKeysForTutorial () {
+      return new List<string>();
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {
@@ -470,6 +489,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void setNewLocalPosition (int userId, Vector2 localPosition, Direction facingDirection, string areaKey) {
+
+   }
+
+   public static void setNewLocalPositionWhenInArea (List<int> userIds, List<string> areaKeys, Vector2 localPosition, Direction facingDirection, string areaKey) {
 
    }
 
@@ -883,6 +906,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static List<int> getAllVoyageGroupMembersForDevice (string deviceName) {
+      return null;
+   }
+
    public static void addMemberToVoyageGroup (int groupId, int userId) {
 
    }
@@ -891,15 +918,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void deleteAllVoyageGroupsForDevice (string deviceName) {
+
+   }
+
    public static void setServerFromConfig () {
-
-   }
-
-   public static void createXmlTemplatesTable () {
-
-   }
-
-   public static void saveXmlTemplate (string xmlName, string xmlContent) {
 
    }
 

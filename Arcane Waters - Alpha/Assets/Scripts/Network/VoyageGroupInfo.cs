@@ -22,6 +22,9 @@ public class VoyageGroupInfo
    // The date at which the group was created
    public long creationDate;
 
+   // The name of the device that created the group
+   public string deviceName;
+
    // Gets set to true when the group is waiting for more quickmatch members
    public bool isQuickmatchEnabled;
 
@@ -41,6 +44,7 @@ public class VoyageGroupInfo
       this.groupId = DataUtil.getInt(dataReader, "groupId");
       this.voyageId = DataUtil.getInt(dataReader, "voyageId");
       this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
+      this.deviceName = DataUtil.getString(dataReader, "deviceName");
       this.isQuickmatchEnabled = DataUtil.getBoolean(dataReader, "isQuickMatchEnabled");
       this.isPrivate = DataUtil.getBoolean(dataReader, "isPrivate");
       this.memberCount = DataUtil.getInt(dataReader, "memberCount");
@@ -48,11 +52,12 @@ public class VoyageGroupInfo
 
 #endif
 
-   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled,
-      bool isPrivate, int memberCount) {
+   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, string deviceName, 
+      bool isQuickmatchEnabled, bool isPrivate, int memberCount) {
       this.groupId = groupId;
       this.voyageId = voyageId;
       this.creationDate = creationDate.ToBinary();
+      this.deviceName = deviceName;
       this.isQuickmatchEnabled = isQuickmatchEnabled;
       this.isPrivate = isPrivate;
       this.memberCount = memberCount;

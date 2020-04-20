@@ -211,15 +211,15 @@ public class NetEntity : NetworkBehaviour {
          // The fast login is completed
          Global.isFastLogin = false;
 
-         // Set the music according to our Area
-         SoundManager.setBackgroundMusic(this.areaKey);
-
-         // Show the Area name
-         LocationBanner.self.setText(Area.getName(this.areaKey));
-
          // Routinely compare our Time to the Server's time
          if (!isServer) {
             InvokeRepeating("requestServerTime", 0f, 1f);
+         }
+
+         // Check if the character has completed the tutorial
+         if (PlayerPrefs.GetInt(this.entityName, 0) == 0) {
+            PanelManager.self.noticeScreen.show("Welcome to Arcane Waters!\nIf you ever need assistance, just press F12 to bring up the Help menu.\nSafe travels!");
+            PlayerPrefs.SetInt(this.entityName, 1);
          }
       }
 
@@ -233,7 +233,7 @@ public class NetEntity : NetworkBehaviour {
          _nameText.text = this.entityName;
       }
 
-      if (!interactingAnimation) {
+      if (!interactingAnimation && !Util.isBatch()) {
          bool moving = isMoving();
          bool battling = isInBattle();
 
@@ -315,6 +315,11 @@ public class NetEntity : NetworkBehaviour {
    }
 
    protected virtual void OnDestroy () {
+      // Remove the entity from the manager
+      if (this is PlayerBodyEntity || this is PlayerShipEntity) {
+         EntityManager.self.removeEntity(userId);
+      }
+
       Vector3 localPos = this.transform.localPosition;
 
       if (isLocalPlayer && !TitleScreen.self.isShowing()) {
@@ -979,6 +984,19 @@ public class NetEntity : NetworkBehaviour {
       Area area = AreaManager.self.getArea(this.areaKey);
       bool worldPositionStays = area.cameraBounds.bounds.Contains(initialPosition);
       this.transform.SetParent(area.transform, worldPositionStays);
+
+      if (isLocalPlayer) {
+         // Set the music according to our Area
+         SoundManager.setBackgroundMusic(this.areaKey);
+
+         // Show the Area name
+         LocationBanner.self.setText(Area.getName(this.areaKey));
+
+         // Now that the area is fully loaded client-side, verify if the voyage (if any) exists
+         if (VoyageManager.isInVoyage(this)) {
+            rpc.Cmd_VerifyVoyageConsistencyAtSpawn();
+         }
+      }
    }
 
    protected virtual void onStartMoving () { }

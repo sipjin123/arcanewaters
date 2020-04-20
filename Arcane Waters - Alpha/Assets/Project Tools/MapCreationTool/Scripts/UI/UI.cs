@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using MapCreationTool.Serialization;
 using UnityEngine.EventSystems;
+using System.IO;
 
 namespace MapCreationTool
 {
@@ -265,6 +266,42 @@ namespace MapCreationTool
 
       public void redoButton_Click () {
          Undo.doRedo();
+      }
+
+      public void recordAndSaveGif () {
+         ScreenRecorder.recordGif(saveGif);
+      }
+
+      private void saveGif (byte[] bytes) {
+         saveScreenShot(bytes, "gif");
+      }
+
+      public void recordAndSavePng () {
+         saveScreenShot(ScreenRecorder.recordPng(), "png");
+      }
+
+      private void saveScreenShot (byte[] bytes, string extension) {
+         try {
+            string mapName = DrawBoard.loadedVersion == null ? "Unsaved Map" : DrawBoard.loadedVersion.map.name;
+            string path = getNewScreenShotPath(mapName, extension);
+
+            File.WriteAllBytes(path, bytes);
+            errorDialog.displayInfoMessage("Image saved", "Path:\n" + path);
+         } catch (Exception ex) {
+            errorDialog.display("There was an error writing the image to your pictures folder. Exception:\n" + ex);
+         }
+      }
+
+      private string getNewScreenShotPath (string mapName, string extension) {
+         string pathName = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\" + mapName;
+
+         for (int i = 0; i < 1000; i++) {
+            if (!File.Exists(pathName + " " + i + ".gif") && !File.Exists(pathName + " " + i + ".png")) {
+               return pathName + " " + i + "." + extension;
+            }
+         }
+
+         throw new Exception($"Too many saved screenshot for map { mapName }");
       }
 
       public void newButton_Click () {

@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -147,10 +148,7 @@ MonoBehaviour:
   customDataFields:
   - name: ship data
     toolTip: Ship from the Database that is spawned here
-    type: 9
-  - name: npc data
-    toolTip: NPC from the Database that will be piloting the Ship
-    type: 1
+    type: 12
 --- !u!114 &1767334834277260193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -240,6 +238,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

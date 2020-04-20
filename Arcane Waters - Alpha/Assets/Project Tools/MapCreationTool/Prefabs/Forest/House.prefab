@@ -763,7 +763,7 @@ GameObject:
   - component: {fileID: 2036353935076169982}
   - component: {fileID: 5696473691983227195}
   - component: {fileID: 5469118426031013713}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -872,7 +872,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7148399327616010241}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.35, z: -0.01}
+  m_LocalPosition: {x: 0, y: -0.87, z: -0.01}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3686038577515692119}
@@ -917,7 +917,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -9068868433721822131, guid: 83fee2ffd65887d4db773e704e700242,
+  m_Sprite: {fileID: 2516951533569710653, guid: 0ed179a4e0ed34f43bfa2675bc218aa3,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -963,7 +963,7 @@ GameObject:
   - component: {fileID: 9013142324397545412}
   - component: {fileID: 124445384517689023}
   - component: {fileID: 3437478317076790612}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

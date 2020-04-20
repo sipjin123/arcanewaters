@@ -132,6 +132,7 @@ namespace MapCreationTool
                   marker.center = new Vector2(chunk.position.x * 0.16f, chunk.position.y * 0.16f);
                   marker.size = new Vector2(chunk.size.x * 0.16f, chunk.size.y * 0.16f);
                   rug.transform.localPosition = marker.center;
+                  marker.processData();
                   break;
             }
          }

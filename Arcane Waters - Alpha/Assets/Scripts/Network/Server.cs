@@ -70,6 +70,10 @@ public class Server : MonoBehaviour {
       ServerNetwork.self.removeServer(this);
    }
 
+   public bool isMainServer () {
+      return port == 7777;
+   }
+
    [PunRPC]
    void ServerMessage (string message) {
       D.log("Server message: " + message);

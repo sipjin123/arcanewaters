@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4628377874012845412}
   - component: {fileID: 6695788265964967555}
   - component: {fileID: 7852279688882655742}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5642508692147820180}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: DetailHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9222748774468401015}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sprite Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -151,7 +151,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4069334761122928845}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sort Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -183,7 +183,7 @@ GameObject:
   - component: {fileID: 2588137117803522493}
   - component: {fileID: 6555434282480058339}
   - component: {fileID: 3161041596896773698}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: IconHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,6 +219,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -287,7 +288,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3805938798502964944}
   - component: {fileID: 8813060565448078498}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -322,6 +323,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -368,7 +370,7 @@ GameObject:
   - component: {fileID: 6189380531799011175}
   - component: {fileID: 752045783594468493}
   - component: {fileID: 7928038050226102524}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -441,7 +443,7 @@ GameObject:
   - component: {fileID: 4479621168996943446}
   - component: {fileID: 536291839191224278}
   - component: {fileID: 4067476868004934033}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -519,7 +521,7 @@ GameObject:
   - component: {fileID: -1495895879080354060}
   - component: {fileID: 2420870635193838953}
   - component: {fileID: -7273226190927383350}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Tutorial Arrow - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,6 +558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 616006694646390878}
 --- !u!58 &1991410013624899264
@@ -600,9 +603,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: TutorialArrow
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields:
   - name: step id
     defaultValue: 0
+    toolTip: 
     type: 0
   selectDataFields: []
   customDataFields: []
@@ -650,7 +656,7 @@ GameObject:
   - component: {fileID: 3583395042461223185}
   - component: {fileID: 3054138261829233285}
   - component: {fileID: 7741798316421602019}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -686,6 +692,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -756,7 +763,7 @@ GameObject:
   - component: {fileID: 2512035728486044850}
   - component: {fileID: 3848906901065154988}
   - component: {fileID: 3416107397647942553}
-  m_Layer: 5
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,7 +861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6650315473132337348}
   - component: {fileID: 5574258332613823544}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -889,6 +896,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -935,7 +943,7 @@ GameObject:
   - component: {fileID: 4004802239710467914}
   - component: {fileID: 960538630873878347}
   - component: {fileID: 3642464009522420795}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: TextHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -971,6 +979,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -1040,7 +1049,7 @@ GameObject:
   - component: {fileID: 4354998944389178983}
   - component: {fileID: 8257166592398999738}
   - component: {fileID: 9207288850224581948}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sprite (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1075,6 +1084,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -1143,7 +1153,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3699963053485542161}
   - component: {fileID: 755432869754789069}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Shadow Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1178,6 +1188,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

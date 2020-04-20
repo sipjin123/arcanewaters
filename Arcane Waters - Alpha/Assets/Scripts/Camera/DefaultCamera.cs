@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using Cinemachine;
 
 public class DefaultCamera : BaseCamera {
    #region Public Variables
@@ -12,4 +13,18 @@ public class DefaultCamera : BaseCamera {
    #region Private Variables
       
    #endregion
+
+   void Start() {
+      if (Util.isBatch()) {
+         var cinemachineBrain = GetComponent<CinemachineBrain>();
+         if (cinemachineBrain) {
+            cinemachineBrain.enabled = false;
+         }
+
+         var cam = GetComponent<Camera>();
+         if (cam) {
+            cam.enabled = false;
+         }
+      }
+   }
 }

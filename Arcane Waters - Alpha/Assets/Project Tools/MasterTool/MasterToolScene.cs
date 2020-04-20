@@ -33,6 +33,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string booksToolScene = "Books Tool";
    public const string cropsDataScene = "CropsDataTool";
    public const string discoveriesToolScene = "Discoveries Tool";
+   public const string newTutorialToolScene = "New Tutorial Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -47,12 +48,12 @@ public class MasterToolScene : MonoBehaviour {
    public static string UNDEFINED = "Undefined";
 
    // Button triggers to open scene
-   public Button clickAbilityScene, 
-      clickMonsterScene, 
-      clickSeaMonsterScene, 
-      clickNPCScene, 
-      clickCraftingScene, 
-      clickMapScene, 
+   public Button clickAbilityScene,
+      clickMonsterScene,
+      clickSeaMonsterScene,
+      clickNPCScene,
+      clickCraftingScene,
+      clickMapScene,
       clickShipScene,
       clickEquipmentScene,
       clickUsableItemScene,
@@ -69,6 +70,7 @@ public class MasterToolScene : MonoBehaviour {
       clickBooksToolScene,
       clickCropsDataScene,
       clickDiscoveriesToolScene,
+      clickNewTutorialToolScene,
       exitButton;
 
    #endregion
@@ -144,6 +146,9 @@ public class MasterToolScene : MonoBehaviour {
       clickDiscoveriesToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(discoveriesToolScene);
       });
+      clickNewTutorialToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(newTutorialToolScene);
+      });
 
       if (MasterToolAccountManager.self == null) {
          // Login panel will be created only once, if the scene resets and the login panel is already active it will no longer instantiate
@@ -152,7 +157,7 @@ public class MasterToolScene : MonoBehaviour {
          // Image manager will be injected to the login panel
          imageManagerReference.transform.SetParent(loginPanel.transform);
          imageManagerReference.gameObject.SetActive(true);
-      } 
+      }
    }
 
    #region Private Variables

@@ -370,7 +370,7 @@ public class ServerWebRequests : MonoBehaviour
 
             if (!hasInitiatedVoyage) {
                // Regularly check that there are enough voyage instances open and create more
-               VoyageManager.self.regenerateVoyageInstances();
+               VoyageManager.self.startVoyageManagement();
                hasInitiatedVoyage = true;
             }
          } else {

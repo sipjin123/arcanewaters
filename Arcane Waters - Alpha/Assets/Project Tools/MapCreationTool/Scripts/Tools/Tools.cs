@@ -190,7 +190,7 @@ namespace MapCreationTool
          ToolType oldTool = toolType;
          if (tileGroup != null && toolType == ToolType.Eraser) {
             toolType = ToolType.Brush;
-            ToolChanged.Invoke(oldTool, toolType);
+            ToolChanged?.Invoke(oldTool, toolType);
          }
 
          AnythingChanged?.Invoke();

@@ -14,8 +14,7 @@ using SimpleJSON;
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
 
-public class DB_Main : DB_MainStub
-{
+public class DB_Main : DB_MainStub {
    #region Public Variables
 
    public static string RemoteServer
@@ -944,8 +943,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crops_xml_v1 ("+ xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type, lastUserUpdate) " +
-            "VALUES("+ xmlIdValue + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type, NOW()) " +
+            "INSERT INTO crops_xml_v1 (" + xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type, lastUserUpdate) " +
+            "VALUES(" + xmlIdValue + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, crops_type = @crops_type, is_enabled = @is_enabled, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
             conn.Open();
@@ -1023,7 +1022,7 @@ public class DB_Main : DB_MainStub
          xml_id_key = "";
          xml_id_value = "";
       }
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -2197,6 +2196,177 @@ public class DB_Main : DB_MainStub
       return book;
    }
 
+   public static new List<NewTutorialData> getNewTutorialList () {
+      List<NewTutorialData> result = new List<NewTutorialData>();
+      NewTutorialData lastTutorialData = null;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.tutorial_v2 " +
+            "LEFT JOIN arcane.tutorial_step USING (tutorialId)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  // If the id has changed, create new tutorial data
+                  if (lastTutorialData == null || dataReader.GetInt32("tutorialId") != lastTutorialData.tutorialId) {
+                     lastTutorialData = new NewTutorialData(dataReader);
+                     result.Add(lastTutorialData);
+                  }
+
+                  // Add the steps to the tutorial
+                  if (!dataReader.IsDBNull(dataReader.GetOrdinal("stepId"))) {
+                     lastTutorialData.tutorialStepList.Add(new TutorialStepData(dataReader));
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return result;
+   }
+
+   public static new void upsertNewTutorial (NewTutorialData data) {
+      try {
+         int insertedNewTutorialId;
+
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.tutorial_v2 (tutorialId, tutorialName, tutorialDescription, tutorialImageUrl, tutorialAreaKey, tutorialIsActive) " +
+            "VALUES (NULLIF(@tutorialId, 0), @tutorialName, @tutorialDescription, @tutorialImageUrl, @tutorialAreaKey, @tutorialIsActive) " +
+            "ON DUPLICATE KEY UPDATE tutorialName = @tutorialName, tutorialDescription = @tutorialDescription, tutorialImageUrl = @tutorialImageUrl, tutorialAreaKey = @tutorialAreaKey, tutorialIsActive = @tutorialIsActive", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@tutorialId", data.tutorialId);
+            cmd.Parameters.AddWithValue("@tutorialName", data.tutorialName);
+            cmd.Parameters.AddWithValue("@tutorialDescription", data.tutorialDescription);
+            cmd.Parameters.AddWithValue("@tutorialImageUrl", data.tutorialImageUrl);
+            cmd.Parameters.AddWithValue("@tutorialAreaKey", data.tutorialAreaKey);
+            cmd.Parameters.AddWithValue("@tutorialIsActive", data.tutorialIsActive);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+
+            insertedNewTutorialId = (int) cmd.LastInsertedId;
+         }
+
+         if (data.tutorialStepList.Any()) {
+            StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription) VALUES ");
+            int i = 0;
+
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand(cmdText.ToString(), conn)) {
+               int newTutorialId = data.tutorialId == 0 ? insertedNewTutorialId : data.tutorialId;
+               List<int> stepsToPreserve = new List<int>();
+
+               foreach (TutorialStepData step in data.tutorialStepList) {
+                  cmdText.Append($"(NULLIF(@stepId{i}, 0), @tutorialId{i}, @stepName{i}, @stepDescription{i})");
+                  cmd.Parameters.AddWithValue($"@stepId{i}", step.stepId);
+                  cmd.Parameters.AddWithValue($"@tutorialId{i}", newTutorialId);
+                  cmd.Parameters.AddWithValue($"@stepName{i}", step.stepName);
+                  cmd.Parameters.AddWithValue($"@stepDescription{i}", step.stepDescription);
+                  i++;
+
+                  if (step.stepId != 0) {
+                     stepsToPreserve.Add(step.stepId);
+                  }
+
+                  if (i != data.tutorialStepList.Count()) {
+                     cmdText.Append(", ");
+                  }
+               }
+
+               cmdText.Append(" ON DUPLICATE KEY UPDATE stepName = VALUES(stepName), stepDescription = VALUES(stepDescription); ");
+
+               if (data.tutorialStepList.Any(step => step.stepId != 0)) {
+                  cmdText.Append("DELETE FROM arcane.tutorial_step WHERE tutorialId = @tutorialId AND FIND_IN_SET(stepId, @stepIdList) = 0 AND stepId < LAST_INSERT_ID()");
+                  cmd.Parameters.AddWithValue("@tutorialId", newTutorialId);
+                  cmd.Parameters.AddWithValue("@stepIdList", string.Join(",", stepsToPreserve));
+               }
+
+               conn.Open();
+               cmd.CommandText = cmdText.ToString();
+               cmd.CommandType = System.Data.CommandType.Text;
+               cmd.Prepare();
+               cmd.ExecuteNonQuery();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteNewTutorialById (int tutorialId) {
+      // This will cause the tutorial and its steps to be deleted (cascade is active)
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.tutorial_v2 WHERE tutorialId = @tutorialId", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@tutorialId", tutorialId);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error($"MySQL Error: {e.ToString()}");
+      }
+   }
+
+   public static new void deleteTutorialStepById (int stepId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.tutorial_step WHERE stepId = @stepId", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@stepId", stepId);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error($"MySQL Error: {e.ToString()}");
+      }
+   }
+
+   public static new void upsertTutorialStep (TutorialStepData data) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription) " +
+            "VALUES (NULLIF(@stepId, 0), @tutorialId, @stepName, @stepDescription) " +
+            "ON DUPLICATE KEY UPDATE stepName = @stepName, stepDescription = @stepDescription")) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@stepId", data.stepId);
+            cmd.Parameters.AddWithValue("@tutorialId", data.tutorialId);
+            cmd.Parameters.AddWithValue("@stepName", data.stepName);
+            cmd.Parameters.AddWithValue("@stepDescription", data.stepDescription);
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error($"MySQL Exception: {e}");
+      }
+   }
+
+   public static new List<string> getAreaKeysForTutorial () {
+      List<string> result = new List<string>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT name FROM arcane.maps_v2", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result.Add(reader.GetString("name"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+
+      return result;
+   }
+
    public static new void deleteBookByID (int bookId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -2661,7 +2831,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
-            cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0); 
+            cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
 
             // Execute the command
@@ -2752,7 +2922,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
             "UPDATE companions SET companionExp = companionExp + @companionExp WHERE companionId=@companionId and userId=@userId", conn)) {
-            
+
             conn.Open();
             cmd.Prepare();
 
@@ -2804,8 +2974,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO companions ("+ xmlKey + "userId, companionName, companionLevel, companionType, equippedSlot, iconPath, companionExp) " +
-            "VALUES("+ xmlValue + "@userId, @companionName, @companionLevel, @companionType, @equippedSlot, @iconPath, @companionExp) " +
+            "INSERT INTO companions (" + xmlKey + "userId, companionName, companionLevel, companionType, equippedSlot, iconPath, companionExp) " +
+            "VALUES(" + xmlValue + "@userId, @companionName, @companionLevel, @companionType, @equippedSlot, @iconPath, @companionExp) " +
             "ON DUPLICATE KEY UPDATE companionLevel = @companionLevel, equippedSlot = @equippedSlot", conn)) {
 
             conn.Open();
@@ -2955,7 +3125,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(
             "INSERT INTO crops (usrId, crpType, cropNumber, creationTime, lastWaterTimestamp, waterInterval) " +
             "VALUES (@usrId, @crpType, @cropNumber, " + unixString + ", UNIX_TIMESTAMP(), @waterInterval);", conn)) {
-         
+
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", cropInfo.userId);
@@ -3260,6 +3430,61 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@localX", localPosition.x);
+            cmd.Parameters.AddWithValue("@localY", localPosition.y);
+            cmd.Parameters.AddWithValue("@usrFacing", (int) facingDirection);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setNewLocalPositionWhenInArea (List<int> userIds, List<string> areaKeys, Vector2 localPosition, Direction facingDirection, string areaKey) {
+      if (userIds.Count <= 0) {
+         return;
+      }
+
+      // Build the query
+      StringBuilder query = new StringBuilder();
+      query.Append("UPDATE users SET localX=@localX, localY=@localY, usrFacing=@usrFacing, areaKey=@areaKey ");
+      query.Append("WHERE ");
+
+      // Add the userId filter
+      query.Append("usrId IN (");
+      for (int i = 0; i < userIds.Count; i++) {
+         query.Append("@usrId" + i + ", ");
+      }
+
+      // Delete the last ", "
+      query.Length = query.Length - 2;
+      query.Append(") ");
+
+      // Add the areaKey filter
+      query.Append("AND areaKey IN (");
+      for (int i = 0; i < areaKeys.Count; i++) {
+         query.Append("@areaKey" + i + ", ");
+      }
+
+      // Delete the last ", "
+      query.Length = query.Length - 2;
+      query.Append(") ");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
+            conn.Open();
+            cmd.Prepare();
+            for (int i = 0; i < userIds.Count; i++) {
+               cmd.Parameters.AddWithValue("@usrId" + i, userIds[i]);
+            }
+            for (int i = 0; i < areaKeys.Count; i++) {
+               cmd.Parameters.AddWithValue("@areaKey" + i, areaKeys[i]);
+            }
+
             cmd.Parameters.AddWithValue("@localX", localPosition.x);
             cmd.Parameters.AddWithValue("@localY", localPosition.y);
             cmd.Parameters.AddWithValue("@usrFacing", (int) facingDirection);
@@ -6000,13 +6225,14 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO voyage_groups (voyageId, creationDate, isQuickmatchEnabled, isPrivate) VALUES " +
-            "(@voyageId, @creationDate, @isQuickmatchEnabled, @isPrivate)", conn)) {
+            "INSERT INTO voyage_groups (voyageId, creationDate, deviceName, isQuickmatchEnabled, isPrivate) VALUES " +
+            "(@voyageId, @creationDate, @deviceName, @isQuickmatchEnabled, @isPrivate)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@voyageId", groupInfo.voyageId);
             cmd.Parameters.AddWithValue("@creationDate", DateTime.FromBinary(groupInfo.creationDate));
+            cmd.Parameters.AddWithValue("@deviceName", groupInfo.deviceName);
             cmd.Parameters.AddWithValue("@isQuickmatchEnabled", groupInfo.isQuickmatchEnabled);
             cmd.Parameters.AddWithValue("@isPrivate", groupInfo.isPrivate);
 
@@ -6226,6 +6452,38 @@ public class DB_Main : DB_MainStub
       return members;
    }
 
+   public static new List<int> getAllVoyageGroupMembersForDevice (string deviceName) {
+      List<int> members = new List<int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM voyage_group_members " +
+            "JOIN voyage_groups ON voyage_groups.groupId = voyage_group_members.groupId " +
+            "WHERE voyage_groups.deviceName = @deviceName", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@deviceName", deviceName);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int userId = DataUtil.getInt(dataReader, "usrId");
+                  members.Add(userId);
+               }
+            }
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return members;
+   }
+
    public static new void addMemberToVoyageGroup (int groupId, int userId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6256,6 +6514,26 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteAllVoyageGroupsForDevice (string deviceName) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE voyage_groups, voyage_group_members FROM voyage_group_members " +
+            "JOIN voyage_groups ON voyage_groups.groupId = voyage_group_members.groupId " +
+            "WHERE voyage_groups.deviceName = @deviceName", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@deviceName", deviceName);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6366,40 +6644,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new void createXmlTemplatesTable () {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "DROP TABLE IF EXISTS xml_templates", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void saveXmlTemplate (string xmlName, string xmlContent) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO xml_templates (xml_name,xml_content) VALUES " +
-            "(@xml_name, @xml_content)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_name", xmlName);
-            cmd.Parameters.AddWithValue("@xml_content", xmlContent);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
    public static new void createJsonEnumsTable () {
       try {
          using (MySqlConnection conn = getConnection())
@@ -6473,7 +6717,7 @@ public class DB_Main : DB_MainStub
    */
    public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -6496,7 +6740,7 @@ public class DB_Main : DB_MainStub
 
       return accountId;
    }
-   
+
    public static new void updateAccountMode (int accoundId, bool isSinglePlayer) {
       try {
          using (MySqlConnection conn = getConnection())

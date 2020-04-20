@@ -6,11 +6,17 @@ namespace MapCreationTool
    public class ErrorDialog : UIPanel
    {
       [SerializeField]
+      private Color errorColor = new Color();
+      [SerializeField]
+      private Color infoColor = new Color();
+
+      [SerializeField]
       private Text titleText = null;
       [SerializeField]
       private Text contentText = null;
 
       public void display (string title, string content) {
+         contentText.color = errorColor;
          titleText.text = title;
          contentText.text = content;
 
@@ -25,11 +31,16 @@ namespace MapCreationTool
          display("Unauthorized", content);
       }
 
-      public void display (string content) {
-         titleText.text = "Error";
+      public void displayInfoMessage (string title, string content) {
+         contentText.color = infoColor;
+         titleText.text = title;
          contentText.text = content;
 
          show();
+      }
+
+      public void display (string content) {
+         display("Error", content);
       }
 
       public void closeButton_click () {

@@ -2,7 +2,7 @@
 using System.Text;
 using System;
 using System.IO;
-using System.Diagnostics;
+using System.Collections;
 using System.Collections.Generic;
 
 public class LeaderBoardsManager : MonoBehaviour
@@ -21,7 +21,7 @@ public class LeaderBoardsManager : MonoBehaviour
       updateLeaderBoardsCache(Period.Day);
       updateLeaderBoardsCache(Period.Week);
       updateLeaderBoardsCache(Period.Month);
-      InvokeRepeating("tryRecalculateLeaderBoards", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+      StartCoroutine(CO_ScheduleLeaderBoardsRecalculation());
    }
 
    public void pruneJobHistory () {
@@ -208,6 +208,26 @@ public class LeaderBoardsManager : MonoBehaviour
             });
          }
       });
+   }
+
+   private IEnumerator CO_ScheduleLeaderBoardsRecalculation () {
+      // Wait until our server is defined
+      while (ServerNetwork.self.server == null) {
+         yield return null;
+      }
+
+      // Wait until our server port is initialized
+      while (ServerNetwork.self.server.port == 0) {
+         yield return null;
+      }
+
+      // Get our server
+      Server server = ServerNetwork.self.server;
+
+      // Check that our server is the main server
+      if (server.isMainServer()) {
+         InvokeRepeating("tryRecalculateLeaderBoards", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+      }
    }
 
    #region Private Variables

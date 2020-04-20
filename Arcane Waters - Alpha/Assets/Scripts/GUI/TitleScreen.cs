@@ -39,6 +39,10 @@ public class TitleScreen : MonoBehaviour {
    }
 
    private void Update () {
+      if (Util.isBatch()) {
+         return;
+      }
+
       // Make the canvas disabled while the client is running
       bool disabled = NetworkClient.active || NetworkServer.active || Global.isRedirecting || CharacterScreen.self.isShowing();
       _canvasGroup.interactable = !disabled;

@@ -454,9 +454,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       return false;
    }
 
-   public Type getTypeFromSprite () {
-      string spriteName = GetComponent<SpriteRenderer>().sprite.name;
-
+   public Type getTypeFromSprite (string spriteName) {
       // If we have a sprite swapper, we want to check that instead
       SpriteSwap swapper = GetComponent<SpriteSwap>();
       if (swapper != null) {
@@ -538,7 +536,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             areaKey = area.areaKey;
 
             // Figure out our Type from our sprite
-            npcType = getTypeFromSprite();
+            npcType = getTypeFromSprite(npcData.spritePath);
 
             NPCManager.self.storeNPC(this);
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {

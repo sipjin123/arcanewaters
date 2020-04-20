@@ -275,6 +275,11 @@ public class ClientMessageManager : MonoBehaviour {
       Global.lastAccountEmail = msg.accountEmail;
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
 
+      // Do a circle fader when the user first logs in
+      if (!Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
+         CircleFader.self.doCircleFade(CharacterScreen.self.virtualCam.transform.position);
+      }
+
       // Send the account name and password to the server
       /*StringMessage msg = new StringMessage(
          Global.lastUsedAccountName + ":" + Global.lastUserAccountPassword + ":" +

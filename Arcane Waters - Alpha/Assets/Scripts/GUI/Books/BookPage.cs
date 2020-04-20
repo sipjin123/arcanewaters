@@ -7,58 +7,27 @@ public class BookPage : MonoBehaviour
 {
    #region Public Variables
 
+   // Set to true if this is the left page
+   public bool isLeftPage;
+
    // The page text
-   public TextMeshProUGUI text;
+   public TextMeshProUGUI contentText;
 
    // The page number text
-   public TextMeshProUGUI pageNumber;
+   public TextMeshProUGUI pageNumberText;
 
-   // The page image
-   public Image image;
+   // The firstVisibleCharacter of the left page before this
+   public int previousFirstVisibleCharacter;
 
-   // The image container layout element
-   public LayoutElement imageContainer;
-   
-   // The rect transform
-   public RectTransform rectTransform;
-      
    #endregion
 
-   private void Awake () {
-      image.preserveAspect = true;
-   }
-
-   public void setUpPage (PageContent content) {
-      text.SetText(content.content);
-
-      if (content.hasImage) {
-         setImageWithHeight(content.image.sprite, content.image.height);
-      } 
-
-      imageContainer.gameObject.SetActive(content.hasImage);
-      pageNumber.SetText(content.pageNumber.ToString());
-   }
-
-   public RectTransform getRectTransform () {
-      if (rectTransform == null) {
-         rectTransform = transform as RectTransform;
-      }
-
-      return rectTransform;
+   public void setPageNumber (int pageNumber) {
+      pageNumberText.SetText(pageNumber.ToString());
    }
 
    public void clearPage () {
-      pageNumber.SetText("");
-      imageContainer.gameObject.SetActive(false);
-      text.SetText("");
-   }
-
-   public void setImageWithHeight (Sprite sprite, int height) {
-      imageContainer.minHeight = height;
-      imageContainer.flexibleHeight = 0;
-      imageContainer.preferredHeight = height;
-      image.sprite = sprite;
-      imageContainer.gameObject.SetActive(true);
+      pageNumberText.SetText("");
+      contentText.SetText("");
    }
 
    #region Private Variables

@@ -9,6 +9,8 @@ namespace MapCreationTool
 {
    public class MapListPanel : UIPanel
    {
+      private enum OrderingType { None = 0, NameAsc = 1, NameDesc = 2, DateAsc = 3, DateDesc = 4, CreatorAsc = 5, CreatorDesc = 6 }
+
       [SerializeField]
       private MapListEntry entryPref = null;
       [SerializeField]
@@ -16,12 +18,20 @@ namespace MapCreationTool
       [SerializeField]
       private Toggle showMyMapsToggle = null;
 
+      [SerializeField, Space(5)]
+      private Text nameLabel = null;
+      [SerializeField]
+      private Text dateLabel = null;
+      [SerializeField]
+      private Text creatorLabel = null;
+
       private List<MapListEntry> entries = new List<MapListEntry>();
 
       private bool showOnlyMyMaps = true;
 
       private List<Map> loadedMaps;
       private HashSet<int> expandedMaps = new HashSet<int>();
+      private OrderingType orderingType = OrderingType.None;
 
       private void clearEverything () {
          foreach (MapListEntry entry in entries) {
@@ -69,6 +79,8 @@ namespace MapCreationTool
             ? loadedMaps.Where(m => m.creatorID == MasterToolAccountManager.self.currentAccountID)
             : loadedMaps;
 
+         maps = order(maps);
+
          IEnumerable<Map> groupRoots = maps.Where(m => !(!maps.Any(other => other.sourceMapId == m.id) && maps.Any(other => other.id == m.sourceMapId)));
 
          var groups = groupRoots.Select(gr => new KeyValuePair<Map, IEnumerable<Map>>(gr,
@@ -93,6 +105,8 @@ namespace MapCreationTool
                cEntry.gameObject.SetActive(expanded);
             }
          }
+
+         updateColumnLabels();
       }
 
       public void openLatestVersion (Map map) {
@@ -101,6 +115,51 @@ namespace MapCreationTool
             $"Are you sure you want to open map { map.name }?\nAll unsaved progress will be permanently lost.",
              () => openLatestVersionConfirm(map),
              null);
+      }
+
+      private IEnumerable<Map> order (IEnumerable<Map> input) {
+         switch (orderingType) {
+            case OrderingType.NameAsc:
+               return input.OrderBy(m => m.name);
+            case OrderingType.NameDesc:
+               return input.OrderByDescending(m => m.name);
+            case OrderingType.DateAsc:
+               return input.OrderBy(m => m.createdAt);
+            case OrderingType.DateDesc:
+               return input.OrderByDescending(m => m.createdAt);
+            case OrderingType.CreatorAsc:
+               return input.OrderBy(m => m.creatorName);
+            case OrderingType.CreatorDesc:
+               return input.OrderByDescending(m => m.creatorName);
+            default:
+               return input;
+         }
+      }
+
+      private void updateColumnLabels () {
+         if (orderingType == OrderingType.NameAsc) {
+            nameLabel.text = "Name↑";
+         } else if (orderingType == OrderingType.NameDesc) {
+            nameLabel.text = "Name↓";
+         } else {
+            nameLabel.text = "Name";
+         }
+
+         if (orderingType == OrderingType.DateAsc) {
+            dateLabel.text = "Created At↑";
+         } else if (orderingType == OrderingType.DateDesc) {
+            dateLabel.text = "Created At↓";
+         } else {
+            dateLabel.text = "Created At";
+         }
+
+         if (orderingType == OrderingType.CreatorAsc) {
+            creatorLabel.text = "Creator↑";
+         } else if (orderingType == OrderingType.CreatorDesc) {
+            creatorLabel.text = "Creator↓";
+         } else {
+            creatorLabel.text = "Creator";
+         }
       }
 
       public void openLatestVersionConfirm (Map map) {
@@ -195,6 +254,42 @@ namespace MapCreationTool
                entry.gameObject.SetActive(expand);
             }
          }
+      }
+
+      public void orderByName () {
+         if (orderingType == OrderingType.NameAsc) {
+            orderingType = OrderingType.None;
+         } else if (orderingType == OrderingType.NameDesc) {
+            orderingType = OrderingType.NameAsc;
+         } else {
+            orderingType = OrderingType.NameDesc;
+         }
+
+         updateShowedMaps();
+      }
+
+      public void orderByDate () {
+         if (orderingType == OrderingType.DateAsc) {
+            orderingType = OrderingType.None;
+         } else if (orderingType == OrderingType.DateDesc) {
+            orderingType = OrderingType.DateAsc;
+         } else {
+            orderingType = OrderingType.DateDesc;
+         }
+
+         updateShowedMaps();
+      }
+
+      public void orderByCreator () {
+         if (orderingType == OrderingType.CreatorAsc) {
+            orderingType = OrderingType.None;
+         } else if (orderingType == OrderingType.CreatorDesc) {
+            orderingType = OrderingType.CreatorAsc;
+         } else {
+            orderingType = OrderingType.CreatorDesc;
+         }
+
+         updateShowedMaps();
       }
 
       public void showMyMapsChanged () {

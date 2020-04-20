@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4398167692879404220}
   - component: {fileID: 3247879576942373793}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 2283729218720940235}
   - component: {fileID: 7663599770161901731}
   - component: {fileID: 6508362757467378438}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 2954273705870936058}
   - component: {fileID: 7504154413035736469}
   - component: {fileID: 8381524534144027629}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Generic Action Trigger - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,6 +198,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Action Trigger
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields:
   - name: width
     defaultValue: 4
@@ -235,6 +237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!58 &3208334165346499421
@@ -267,6 +270,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -346,6 +350,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: -3
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!1 &2737551222462659397
@@ -360,7 +365,7 @@ GameObject:
   - component: {fileID: 4915987734546435827}
   - component: {fileID: 6297039103252564634}
   - component: {fileID: 8477577833193620448}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Data Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -454,7 +459,7 @@ GameObject:
   - component: {fileID: 8202490203838887318}
   - component: {fileID: 5144711925224440814}
   - component: {fileID: 5816372236223766992}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds Text Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,7 +531,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4524795289972190113}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -566,7 +571,7 @@ GameObject:
   m_Component:
   - component: {fileID: 834938422878322174}
   - component: {fileID: 3050498375503304147}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -601,6 +606,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -647,7 +653,7 @@ GameObject:
   - component: {fileID: 4414640565516566978}
   - component: {fileID: 6825954855514214868}
   - component: {fileID: 9083587917582383056}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Letter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -724,7 +730,7 @@ GameObject:
   - component: {fileID: 3792146693372757249}
   - component: {fileID: 3065212694488883525}
   - component: {fileID: 5769916057666834869}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -797,7 +803,7 @@ GameObject:
   - component: {fileID: 6568898164763837609}
   - component: {fileID: 1634043042787199448}
   - component: {fileID: 479346299352871028}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

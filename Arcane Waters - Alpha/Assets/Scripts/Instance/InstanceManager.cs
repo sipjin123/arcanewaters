@@ -24,7 +24,7 @@ public class InstanceManager : MonoBehaviour {
       Instance instance = null;
 
       // If the player is warping to a voyage instance, search for it
-      if (voyageId != -1) {
+      if (voyageId != -1 && VoyageManager.self.isVoyageArea(areaKey)) {
          instance = getVoyageInstance(voyageId);
          if (instance == null) {
             D.error("Could not find the voyage instance for voyage id " + voyageId);

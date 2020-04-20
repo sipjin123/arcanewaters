@@ -38,6 +38,21 @@ namespace MapCreationTool.PaletteTilesData
          return result;
       }
 
+      public Dictionary<TileBase, TileData> formTileDataDictionary () {
+         Dictionary<TileBase, TileData> result = new Dictionary<TileBase, TileData>();
+
+         for (int i = 0; i < tileGroups.GetLength(0); i++) {
+            for (int j = 0; j < tileGroups.GetLength(1); j++) {
+               TileData tileData = getTile(i, j);
+               if (tileData != null && tileData.tile != null && !result.ContainsKey(tileData.tile)) {
+                  result.Add(tileData.tile, tileData);
+               }
+            }
+         }
+
+         return result;
+      }
+
       public Vector2Int indexOf (TileBase tile) {
          for (int i = 0; i < tileGroups.GetLength(0); i++) {
             for (int j = 0; j < tileGroups.GetLength(1); j++) {

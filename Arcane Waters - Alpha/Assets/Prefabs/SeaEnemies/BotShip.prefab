@@ -320,6 +320,9 @@ MonoBehaviour:
   isDebug: 0
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   secondsBetweenFindingPatrolRoutes: 5
+  secondsBetweenFindingAttackRoutes: 2
+  aggroConeDegrees: 35
+  aggroConeRadius: 1.5
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -519,7 +522,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridReference: {fileID: 0}
-  currentPath: []
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0

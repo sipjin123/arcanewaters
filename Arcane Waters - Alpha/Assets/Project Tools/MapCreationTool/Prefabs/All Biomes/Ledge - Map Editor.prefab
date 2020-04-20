@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4591306236359299025}
   - component: {fileID: 3435190711882037452}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 2094060693003998118}
   - component: {fileID: 7558278121151374286}
   - component: {fileID: 6407689837074169963}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 3044792667652265111}
   - component: {fileID: 7681709584791805688}
   - component: {fileID: 8570313450393573504}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Ledge - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -197,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Ledge
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields:
   - name: width
     defaultValue: 3
@@ -221,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!58 &3330619080035821616
@@ -253,6 +256,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -332,6 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: -3
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!1 &3564781390550253686
@@ -345,7 +350,7 @@ GameObject:
   - component: {fileID: 8317004905120687867}
   - component: {fileID: 5033694765060608131}
   - component: {fileID: 5911274950598701757}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds Text Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -417,7 +422,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4356594730162813132}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 659982501056016019}
   - component: {fileID: 2948585177893406398}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -491,6 +496,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -537,7 +543,7 @@ GameObject:
   - component: {fileID: 4610844551441240751}
   - component: {fileID: 6630529290118185657}
   - component: {fileID: 8985127183262508221}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Letter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -614,7 +620,7 @@ GameObject:
   - component: {fileID: 3899730075787040364}
   - component: {fileID: 2897824675785699880}
   - component: {fileID: 5957183211050861272}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -687,7 +693,7 @@ GameObject:
   - component: {fileID: 6455800763781257156}
   - component: {fileID: 1446710983707974325}
   - component: {fileID: 294999448701182745}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

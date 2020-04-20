@@ -61,7 +61,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprite == null) {
-         Debug.LogWarning("Returning a blank sprite");
+         Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
          return self.blankSprite;
       }
       return fetchedSprite;
@@ -74,7 +74,7 @@ public class ImageManager : ClientMonoBehaviour {
       if (fetchedTexture == null) {
          if (warnOnNull) {
             if (!Util.isBatch()) { 
-               Debug.LogWarning("Returning a blank texture");
+               Debug.LogWarning("Could not find Texture at path(" + path + "). Returning a blank texture");
             }
          }
          return self.blankTexture;
@@ -87,7 +87,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         Debug.LogWarning("Returning a blank sprite array");
+         Debug.LogWarning("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
@@ -104,7 +104,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         Debug.LogWarning("Returning a blank sprite array");
+         Debug.LogWarning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
@@ -115,7 +115,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns blank sprite if the data fetch is null
       if (imageData.sprite == null) {
-         Debug.LogWarning("Returning a blank sprite");
+         Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
          return self.blankSprite;
       }
       return imageData.sprite;

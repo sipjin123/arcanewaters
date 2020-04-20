@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class BookListImageTemplate : MonoBehaviour {
    #region Public Variables
@@ -11,13 +12,13 @@ public class BookListImageTemplate : MonoBehaviour {
    public Text imageNameText;
 
    // The image showing a preview
-   public Image imageSprite;
+   public TextMeshProUGUI imageSprite;
    
    #endregion
 
-   public void initialize (string name, Sprite sprite) {
+   public void initialize (string name, uint spriteIndex) {
       imageNameText.text = name;
-      imageSprite.sprite = sprite;
+      imageSprite.SetText($"<sprite={spriteIndex}>");
    }
 
    #region Private Variables

@@ -53,7 +53,7 @@ public class BooksToolDataPanel : MonoBehaviour
          readerPanel.show(getBookData());
       });
 
-      imageSelector.initialize();
+      imageSelector.initialize(_spriteAsset);
    }
 
    public void loadData (BookData bookData) {
@@ -84,6 +84,10 @@ public class BooksToolDataPanel : MonoBehaviour
    // Content of the book
    [SerializeField]
    private TMP_InputField _bookContent;
+
+   // The TMP sprite asset that contains the images
+   [SerializeField]
+   private TMP_SpriteAsset _spriteAsset;
 
    // The current book ID
    private string _currentBookId;

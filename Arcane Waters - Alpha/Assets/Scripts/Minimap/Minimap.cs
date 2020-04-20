@@ -88,12 +88,7 @@ public class Minimap : ClientMonoBehaviour {
 
    // Minimap generator presets (scriptable objects) for interior maps
    [Header("Interior map prefabs")]
-   public MinimapGeneratorPreset interiorDesertPreset;
-   public MinimapGeneratorPreset interiorPinePreset;
-   public MinimapGeneratorPreset interiorSnowPreset;
-   public MinimapGeneratorPreset interiorLavaPreset;
-   public MinimapGeneratorPreset interiorForestPreset;
-   public MinimapGeneratorPreset interiorMushroomPreset;
+   public MinimapGeneratorPreset interiorPreset;
 
    // Self
    public static Minimap self;
@@ -347,6 +342,26 @@ public class Minimap : ClientMonoBehaviour {
       }
    }
 
+   private void createRugs (RugMarker[] rugs, int layerSizeX, int layerSizeY, List<Texture2D> textureList) {
+      foreach (RugMarker rug in rugs) {
+         Texture2D map = new Texture2D(layerSizeX, layerSizeY);
+         MakeTextureTransparent(map);
+
+         Color[] pixels = new Color[rug.getPixelCount()];
+         for (int i = 0; i < pixels.Length; i++) {
+            pixels[i] = rug.getRugColor();
+         }
+
+         int xSetPixel = rug.getMinBounds().x + layerSizeX / 2;
+         int ySetPixel = rug.getMinBounds().y + layerSizeY / 2;
+
+         map.SetPixels(xSetPixel, ySetPixel, rug.getWidth(), rug.getHeight(), pixels);
+
+         map.Apply();
+         textureList.Add(map);
+      }
+   }
+
    Texture2D MergeTexturesMinimap (List<Texture2D> list) {
       Texture2D tex = new Texture2D(64, 64);
       for (int x = 0; x < 64; x++) {
@@ -373,22 +388,7 @@ public class Minimap : ClientMonoBehaviour {
       if (area.isSea) {
          return lookUpSeaPreset(biomeType);
       } else if (area.isInterior) {
-         switch (biomeType) {
-            case Biome.Type.Forest:
-               return interiorForestPreset;
-            case Biome.Type.Desert:
-               return interiorDesertPreset;
-            case Biome.Type.Pine:
-               return interiorPinePreset;
-            case Biome.Type.Snow:
-               return interiorSnowPreset;
-            case Biome.Type.Lava:
-               return interiorLavaPreset;
-            case Biome.Type.Mushroom:
-               return interiorMushroomPreset;
-         }
-         D.error("Couldn't match biome type to given interior map area!");
-         return interiorForestPreset;
+         return interiorPreset;
       } else {
          switch (biomeType) {
             case Biome.Type.Forest:
@@ -543,9 +543,11 @@ public class Minimap : ClientMonoBehaviour {
          HashSet<string> createdPrefabIconsPerGrid = new HashSet<string>();
          Dictionary<string, List<Vector2Int>> createdPrefabIcons = new Dictionary<string, List<Vector2Int>>();
          Transform[] prefabs = area.gameObject.transform.Find("Prefabs") ? area.gameObject.transform.Find("Prefabs").GetComponentsInChildren<Transform>() : new Transform[0];
+         RugMarker[] rugs = area.gameObject.GetComponentsInChildren<RugMarker>();
          AreaEffector2D[] areaEffectors2D = area.GetComponentsInChildren<AreaEffector2D>();
          Collider2D[] colliders2D = area.GetComponentsInChildren<Collider2D>();
          MinimapGeneratorPreset preset = chooseBaseMapPreset(area);
+
          if (preset) {
             _tileLayer = preset._tileLayer;
             _tileIconLayers = preset._tileIconLayers;
@@ -554,6 +556,11 @@ public class Minimap : ClientMonoBehaviour {
 
             // Iterate over preset first to allow layers reordering
             foreach (var layer in _tileLayer) {
+               // Handle special layer case
+               if (layer.Name == MapCreationTool.Layer.RUG_KEY) {
+                  createRugs(rugs, layerSizeX, layerSizeY, textureList);
+                  continue;
+               }
                // Locate the tilemaps within the area
                foreach (TilemapLayer tilemapLayer in area.getTilemapLayers()) {
                   Tilemap tilemap = tilemapLayer.tilemap;

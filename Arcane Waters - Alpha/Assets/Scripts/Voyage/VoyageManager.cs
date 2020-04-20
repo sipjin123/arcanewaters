@@ -24,11 +24,14 @@ public class VoyageManager : MonoBehaviour {
       InvokeRepeating("updateVoyageGroupMembers", 0f, 2f);
    }
 
-   public void regenerateVoyageInstances () {
+   public void startVoyageManagement () {
       // At server startup, for dev builds, make all the sea maps accessible by creating one voyage for each
 #if !CLOUD_BUILD
       StartCoroutine(CO_CreateInitialVoyages());
 #endif
+
+      // At server startup, delete all voyage groups
+      StartCoroutine(CO_ClearVoyageGroups());
 
       // Regularly check that there are enough voyage instances open and create more
       InvokeRepeating("createVoyageInstanceIfNeeded", 20f, 10f);
@@ -36,7 +39,7 @@ public class VoyageManager : MonoBehaviour {
 
    public void createVoyageInstance () {
       // Get the list of sea maps area keys
-      List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
+      List<string> seaMaps = getVoyageAreaKeys();
 
       // If there are no available areas, do nothing
       if (seaMaps.Count == 0) {
@@ -94,8 +97,16 @@ public class VoyageManager : MonoBehaviour {
       return voyages;
    }
 
+   public bool doesVoyageExists(int voyageId) {
+      return getVoyage(voyageId) != null;
+   }
+
    public bool isVoyageArea (string areaKey) {
-      return AreaManager.self.getSeaAreaKeys().Contains(areaKey);
+      return getVoyageAreaKeys().Contains(areaKey);
+   }
+
+   public List<string> getVoyageAreaKeys () {
+      return AreaManager.self.getSeaAreaKeys();
    }
 
    public static bool isInVoyage (NetEntity entity) {
@@ -268,7 +279,7 @@ public class VoyageManager : MonoBehaviour {
       Server server = ServerNetwork.self.server;
 
       // Check that our server is the main server
-      if (server == null || server.port != 7777) {
+      if (server == null || !server.isMainServer()) {
          return;
       }
 
@@ -338,9 +349,9 @@ public class VoyageManager : MonoBehaviour {
       List<PendingVoyageCreation> pendingVoyageList = new List<PendingVoyageCreation>();
 
       // Check that our server is the main server
-      if (server.port == 7777) {
+      if (server.isMainServer()) {
          // Get the list of sea maps area keys
-         List<string> seaMaps = AreaManager.self.getSeaAreaKeys();
+         List<string> seaMaps = getVoyageAreaKeys();
 
          // Create a voyage instance for each available sea map
          foreach (string areaKey in seaMaps) {
@@ -363,6 +374,38 @@ public class VoyageManager : MonoBehaviour {
          }
          ServerWebRequests.self.requestCreateVoyage(pendingVoyageList);
       }
+   }
+
+   private IEnumerator CO_ClearVoyageGroups () {
+      // Wait until our server is defined
+      while (ServerNetwork.self.server == null) {
+         yield return null;
+      }
+
+      // Get our server
+      Server server = ServerNetwork.self.server;
+
+      // Get the voyage area keys
+      List<string> voyageAreas = getVoyageAreaKeys();
+
+      // Get the location of the starting spawn
+      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+      Vector2 startingSpawnLocalPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+
+      // Get the name of this computer
+      string deviceName = SystemInfo.deviceName;
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get all users, members of groups created by this computer
+         List<int> groupMembers = DB_Main.getAllVoyageGroupMembersForDevice(deviceName);
+
+         // If the users are in a voyage area, move them to the starting town
+         DB_Main.setNewLocalPositionWhenInArea(groupMembers, voyageAreas, startingSpawnLocalPos, Direction.South, Area.STARTING_TOWN);
+
+         // Delete the groups and group members created by this computer
+         DB_Main.deleteAllVoyageGroupsForDevice(deviceName);
+      });
    }
 
    #region Private Variables

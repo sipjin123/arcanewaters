@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2953802140946715495}
   - component: {fileID: 2634118062098182508}
   - component: {fileID: 283907491138649769}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8887011121153790590}
   - component: {fileID: 7424180360073734212}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -166,7 +166,7 @@ GameObject:
   - component: {fileID: 7753525932266648148}
   - component: {fileID: 6273816324223378032}
   - component: {fileID: 3673125168370704926}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Discovery Spawn - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -357,7 +357,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2293047267117096058}
   - component: {fileID: 589248078502426093}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}

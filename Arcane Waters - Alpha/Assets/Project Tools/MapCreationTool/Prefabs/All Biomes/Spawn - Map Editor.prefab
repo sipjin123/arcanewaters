@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3932156576571960309}
   - component: {fileID: 1680427175875101656}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -89,7 +90,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 273825498341195178}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -130,7 +131,7 @@ GameObject:
   - component: {fileID: 5535635194968875933}
   - component: {fileID: 8818663505743648229}
   - component: {fileID: 7903949544033548251}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Bounds Text Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +206,7 @@ GameObject:
   - component: {fileID: 8736569090566805752}
   - component: {fileID: 7666265880034548881}
   - component: {fileID: 5233736505394877931}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Data Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -304,7 +305,7 @@ GameObject:
   - component: {fileID: 1583067808089231857}
   - component: {fileID: 6134891354550557598}
   - component: {fileID: 3555666129349307592}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Spawn - Map Editor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,6 +355,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Spawn
+  canInheritPosition: 0
+  canControlPosition: 0
   dataFields:
   - name: name
     defaultValue: 
@@ -382,6 +385,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!58 &1261524030558514518
@@ -414,6 +418,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -493,6 +498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: -3
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!1 &3403248111852199630
@@ -506,7 +512,7 @@ GameObject:
   - component: {fileID: 2501450659761477312}
   - component: {fileID: 6295202027298809512}
   - component: {fileID: 7446076298239968525}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Outline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -578,7 +584,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4206414056131255}
   - component: {fileID: 1158927881813917098}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -638,7 +644,7 @@ GameObject:
   - component: {fileID: 7363092452762440354}
   - component: {fileID: 3146563674642227155}
   - component: {fileID: 4296827032582907519}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -715,7 +721,7 @@ GameObject:
   - component: {fileID: 695796056529752842}
   - component: {fileID: 1697378996828911438}
   - component: {fileID: 7860263033119492030}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -788,7 +794,7 @@ GameObject:
   - component: {fileID: 19258721898076105}
   - component: {fileID: 7186960255919720415}
   - component: {fileID: 4830388318488371675}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Letter
   m_TagString: Untagged
   m_Icon: {fileID: 0}

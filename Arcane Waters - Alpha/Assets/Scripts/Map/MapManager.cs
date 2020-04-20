@@ -54,6 +54,12 @@ public class MapManager : MonoBehaviour
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
 
+      // Show the loading screen on clients or host mode
+      if (!Util.isServerNonHost()) {
+         PanelManager.self.loadingScreen.setPercentage(0);
+         PanelManager.self.loadingScreen.show();
+      }
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read the map data
@@ -74,6 +80,8 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition) {
+      PanelManager.self.loadingScreen.setPercentage(0.1f);
+
       MapImporter.ensureSerializationMapsLoaded();
 
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
@@ -87,10 +95,22 @@ public class MapManager : MonoBehaviour
       // Create the area
       Area area = result.area;
 
+      // Set area properties
+      area.areaKey = areaKey;
+      area.version = mapInfo.version;
+      area.biome = exportedProject.biome;
+
+      if (exportedProject.editorType == EditorType.Sea) {
+         area.isSea = true;
+      } else if (exportedProject.editorType == EditorType.Interior) {
+         area.isInterior = true;
+      }
+
       // Calculate the map bounds
       Bounds bounds = MapImporter.calculateBounds(exportedProject);
+      PanelManager.self.loadingScreen.setPercentage(0.2f);
       yield return null;
-
+      
       List<TilemapLayer> tilemaps = new List<TilemapLayer>();
       int unrecognizedTiles = 0;
 
@@ -98,6 +118,7 @@ public class MapManager : MonoBehaviour
       foreach (ExportedLayer001 layer in exportedProject.layers) {
          MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
             result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
+         PanelManager.self.loadingScreen.setPercentage(0.2f + (0.3f / exportedProject.layers.Length) * tilemaps.Count);
          yield return null;
       }
 
@@ -105,8 +126,11 @@ public class MapManager : MonoBehaviour
          Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
       }
 
-      // Prepate the list of tilemap colliders
+      // Prepare the list of tilemap colliders
       List<MapChunk> mapColliderChunks = new List<MapChunk>();
+
+      // Calculate the number of chunks
+      int chunkCount = (int)((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
 
       // Create the tilemap colliders in chunks
       for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
@@ -120,6 +144,7 @@ public class MapManager : MonoBehaviour
             mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
                exportedProject.biome, rect));
 
+            PanelManager.self.loadingScreen.setPercentage(0.5f + (0.35f / chunkCount) * mapColliderChunks.Count);
             yield return null;
          }
       }
@@ -128,6 +153,7 @@ public class MapManager : MonoBehaviour
       result.area.setColliderChunks(mapColliderChunks);
 
       MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
+      PanelManager.self.loadingScreen.setPercentage(0.9f);
       yield return null;
 
       if (exportedProject.specialTileChunks != null) {
@@ -137,23 +163,16 @@ public class MapManager : MonoBehaviour
 
       MapImporter.setCameraBounds(result, bounds);
       MapImporter.addEdgeColliders(result, bounds);
+      PanelManager.self.loadingScreen.setPercentage(0.95f);
       yield return null;
 
       // Destroy the template component
       Destroy(result);
 
       // Initialize the area
-      area.areaKey = areaKey;
-      area.version = mapInfo.version;
-      area.biome = exportedProject.biome;
-
-      if (exportedProject.editorType == EditorType.Sea) {
-         area.isSea = true;
-      } else if (exportedProject.editorType == EditorType.Interior) {
-         area.isInterior = true;
-      }
-
       area.initialize();
+
+      PanelManager.self.loadingScreen.setPercentage(1f);
 
       onAreaCreationIsFinished(area);
    }
@@ -178,6 +197,8 @@ public class MapManager : MonoBehaviour
       if (Global.player != null) {
          Global.player.updatePlayerCamera();
       }
+
+      PanelManager.self.loadingScreen.hide();
    }
 
    public Vector3 getNextMapPosition () {

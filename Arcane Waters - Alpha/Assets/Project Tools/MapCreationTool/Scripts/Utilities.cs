@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
@@ -22,6 +23,26 @@ namespace MapCreationTool
          } catch {
             Debug.LogWarning(message);
          }
+      }
+
+      public static UnityThreading.Task doBackgroundTask (Action backgroundAction, Action onSuccessAction, Action<Exception> onErrorAction) {
+         Exception error = null;
+
+         return UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            try {
+               backgroundAction();
+            } catch (Exception ex) {
+               error = ex;
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (error != null) {
+                  onErrorAction?.Invoke(error);
+               } else {
+                  onSuccessAction?.Invoke();
+               }
+            });
+         });
       }
    }
 }

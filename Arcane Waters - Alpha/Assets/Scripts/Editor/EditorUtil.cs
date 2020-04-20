@@ -9,6 +9,9 @@ using System.Text;
 public class EditorUtil : EditorWindow {
    #region Public Variables
 
+   // The path to the Image Manager prefab
+   public const string IMAGE_MANAGER_PATH = "Assets/Prefabs/Managers/Image Manager.prefab";
+
    #endregion
 
    [MenuItem("Util/Set As Local Server")]
@@ -58,14 +61,18 @@ public class EditorUtil : EditorWindow {
 
    [MenuItem("Util/Update Image Manager (Ctrl+L) %l")]
    public static void updateImagerManager () {
-      // Find the Image Manager and clear out the stored paths
-      ImageManager imageManager = FindObjectOfType<ImageManager>();
+      // Load the Image Manager prefab
+      GameObject loadedPrefab = PrefabUtility.LoadPrefabContents(IMAGE_MANAGER_PATH);
+
+      // Get Image Manager component of the prefab
+      ImageManager imageManager = loadedPrefab?.GetComponent<ImageManager>();
 
       if (imageManager == null) {
-         Debug.Log("Couldn't find the Image Manager in the scene, so not updating it.");
+         Debug.Log("Couldn't find the Image Manager prefab, so not updating it.");
          return;
       }
 
+      // Clear out the stored paths
       imageManager.imageDataList.Clear();
 
       // Look through all of our stuff in the Assets folder
@@ -111,11 +118,11 @@ public class EditorUtil : EditorWindow {
       // Sort by image name
       imageManager.imageDataList = imageManager.imageDataList.OrderBy(o => o.imageName).ToList();
 
-      // Save the changes in the scene
-      EditorUtility.SetDirty(imageManager);
-      PrefabUtility.ApplyPrefabInstance(imageManager.gameObject, InteractionMode.UserAction);
-      AssetDatabase.SaveAssets();
-      AssetDatabase.Refresh();
+      // Save the changes to the prefab asset
+      PrefabUtility.SaveAsPrefabAsset(loadedPrefab, IMAGE_MANAGER_PATH);
+
+      // Unload prefab from memory
+      PrefabUtility.UnloadPrefabContents(loadedPrefab);
    }
 
 

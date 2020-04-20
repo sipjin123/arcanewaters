@@ -37,11 +37,15 @@ public class CircleFader : ClientMonoBehaviour {
    }
 
    public void doCircleFade () {
-      _startTime = Time.time;
-      _startLocation = Global.player.transform.position;
-      _startingCamera = getActiveCamera();
+      doCircleFade(Global.player.transform.position);
+   }
 
-      if (CameraManager.self != null) {
+   public void doCircleFade (Vector2 startLocation) {
+      if (CameraManager.self != null && !spotEffect.enabled) {
+         _startTime = Time.time;
+         _startLocation = startLocation;
+         _startingCamera = getActiveCamera();
+
          StartCoroutine(CO_doCircleFade());
       }
    }

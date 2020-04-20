@@ -62,6 +62,10 @@ public class DiscoveryManager : MonoBehaviour {
       return discovery;
    }
 
+   public Discovery getSpawnedDiscoveryById (int id) {
+      return _discoveries[id];
+   }
+
    #region Private Variables
 
    // Stores the spawned discoveries

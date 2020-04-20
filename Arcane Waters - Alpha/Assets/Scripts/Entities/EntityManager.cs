@@ -22,6 +22,12 @@ public class EntityManager : MonoBehaviour
       _entities[entity.userId] = entity;
    }
 
+   public void removeEntity (int userId) {
+      if (_entities.ContainsKey(userId)) {
+         _entities.Remove(userId);
+      }
+   }
+
    public NetEntity getEntity (int userId) {
       if (_entities.ContainsKey(userId)) {
          return _entities[userId];

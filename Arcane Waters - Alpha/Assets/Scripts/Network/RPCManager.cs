@@ -359,7 +359,7 @@ public class RPCManager : NetworkBehaviour {
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => GuildManager.self.acceptInviteOnClient(invite));
-      
+
       // Show a confirmation panel with the user name
       string message = "The player " + invite.senderName + " has invited you to join the guild " + invite.guildName + "!";
       PanelManager.self.confirmScreen.show(message);
@@ -2488,6 +2488,9 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      // Get the name of this computer
+      string deviceName = SystemInfo.deviceName;
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Verify that the user is not already in a group
@@ -2513,7 +2516,8 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Create a new group
-            voyageGroup = new VoyageGroupInfo(-1, voyage.voyageId, DateTime.UtcNow, true, false, 0);
+            voyageGroup = new VoyageGroupInfo(-1, voyage.voyageId, DateTime.UtcNow, deviceName,
+               true, false, 0);
             voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
          }
 
@@ -2557,6 +2561,9 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      // Get the name of this computer
+      string deviceName = SystemInfo.deviceName;
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
@@ -2577,7 +2584,8 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Create a new private group
-         VoyageGroupInfo voyageGroup = new VoyageGroupInfo(-1, voyageId, DateTime.UtcNow, false, true, 0);
+         VoyageGroupInfo voyageGroup = new VoyageGroupInfo(-1, voyageId, DateTime.UtcNow, deviceName,
+            false, true, 0);
          voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
 
          // Add the user to the group
@@ -2770,13 +2778,10 @@ public class RPCManager : NetworkBehaviour {
                // Add the user to the group
                DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
 
-               // Update its voyage group in the net entity
-               _player.voyageGroupId = voyageGroup.groupId;
-
-               // Back to the Unity thread to send the results back to the client
+               // Back to the Unity thread
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  // Warp to the voyage area
-                  _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+                  // Update its voyage group in the net entity
+                  _player.voyageGroupId = voyageGroup.groupId;
 
                   // Mark the voyage invite as Accepted in the database
                   ServerWebRequests.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
@@ -2785,7 +2790,6 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
-
 
    [Command]
    public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
@@ -2817,9 +2821,6 @@ public class RPCManager : NetworkBehaviour {
          // Remove the player from its group
          DB_Main.deleteMemberFromVoyageGroup(_player.voyageGroupId, _player.userId);
 
-         // Update the player voyage group id in the net entity
-         _player.voyageGroupId = -1;
-
          // Update the group member count
          voyageGroup.memberCount--;
 
@@ -2830,6 +2831,9 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Update the player voyage group id in the net entity
+            _player.voyageGroupId = -1;
+
             // If the player is in a voyage area, warp him to the starting town
             if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
                SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
@@ -2862,6 +2866,46 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the data to the client
             Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembers.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_VerifyVoyageConsistencyAtSpawn () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // If the user is not in a voyage or not in a voyage area, do nothing
+      if (!VoyageManager.isInVoyage(_player) || !VoyageManager.self.isVoyageArea(_player.areaKey)) {
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieve the group info
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Voyage voyage = null;
+
+            // If the group doesn't exists, clear it from the netentity
+            if (voyageGroup == null) {
+               _player.voyageGroupId = -1;
+            } else {
+               // Get the voyage
+               voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
+            }
+
+            // Check if both the voyage group and voyage exist
+            if (voyageGroup == null || voyage == null) {
+               // Redirect the user to the starting town
+               SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+               Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+               _player.spawnInNewMap(Area.STARTING_TOWN, localPos, Direction.South);
+            }
          });
       });
    }
@@ -3871,6 +3915,34 @@ public class RPCManager : NetworkBehaviour {
             Target_ShowBook(netIdentity.connectionToClient, book.title, book.content);
          });
       });
+   }
+
+   [Command]
+   public void Cmd_FoundDiscovery (int discoveryId) {
+      Discovery discovery = DiscoveryManager.self.getSpawnedDiscoveryById(discoveryId);
+
+      if (isDiscoveryFindingValid(discovery) && _player.instanceId == discovery.instanceId) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            int gainedXP = discovery.getXPValue();
+
+            // Add the experience to the player
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, _player.faction, gainedXP);
+
+            Jobs newJobXP = DB_Main.getJobXP(_player.userId);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.Target_GainedXP(netIdentity.connectionToClient, gainedXP, newJobXP, Jobs.Type.Explorer, 0, true);
+               discovery.Target_RevealDiscovery(netIdentity.connectionToClient);
+            });
+         });
+      } else {
+         D.log($"Player {_player.nameText.text} reported an invalid discovery.");
+      }
+   }
+
+   [Server]
+   private bool isDiscoveryFindingValid (Discovery discovery) {
+      return Vector2.Distance(discovery.transform.position, _player.transform.position) < Discovery.MAX_VALID_DISTANCE;
    }
 
    #region Private Variables

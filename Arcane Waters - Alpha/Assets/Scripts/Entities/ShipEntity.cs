@@ -289,8 +289,8 @@ public class ShipEntity : SeaEntity
    #region Private Variables
 
    // Ship Ripple SpriteSheets
-   private Texture2D _ripplesStillSprites;
-   private Texture2D _ripplesMovingSprites;
+   protected Texture2D _ripplesStillSprites;
+   protected Texture2D _ripplesMovingSprites;
 
    #endregion
 }
