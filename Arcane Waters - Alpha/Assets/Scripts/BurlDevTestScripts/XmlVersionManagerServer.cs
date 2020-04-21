@@ -75,6 +75,9 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public int targetProgress;
    public int currentProgress;
 
+   // Forces the editor to zip the updated xml content
+   public bool forceZipNewData;
+
    // Logs the progress of the file setup
    public bool includeProgressInEditorLog;
 
@@ -169,6 +172,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
             } catch {
                D.editorLog("Failed to parse version: " + rawData, Color.red);
             }
+         }
+
+         if (forceZipNewData) {
+            shouldZipNewFiles = true;
          }
 
          string serverMessage = "";

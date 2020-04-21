@@ -39,10 +39,17 @@ public class CharacterStack : MonoBehaviour {
       }
       updateArmor(info.gender, armorData.armorType, armorData.color1, armorData.color2);
 
+      D.editorLog("Tryng to translate weapon: " + userObjects.weapon, Color.green);
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
       if (userObjects.weapon.data != "") {
-         weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
+         try {
+            weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
+         } catch {
+            D.editorLog("Failed to translate xml data!", Color.red);
+            D.editorLog(userObjects.weapon.data, Color.red);
+         }
       }
+      D.editorLog("The weapon data is: " + weaponData.equipmentID + " - Armor: " + armorData.equipmentID, Color.green);
       updateWeapon(info.gender, weaponData.weaponType, weaponData.color1, weaponData.color2);
    }
 

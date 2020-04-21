@@ -135,7 +135,12 @@ public class EquipmentToolPanel : MonoBehaviour {
                _weaponSpriteImage.sprite = sprites[spriteIndex];
             }
          } else {
-            _armorSpriteImage.sprite = sprites[spriteIndex];
+            try {
+               _armorSpriteImage.sprite = sprites[spriteIndex];
+            } catch {
+               D.editorLog("Index does not exceed: " + spriteIndex, Color.red);
+               _armorSpriteImage.sprite = sprites[0];
+            }
          }
       });
 
@@ -336,7 +341,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       _itemName.text = equipmentData.equipmentName;
       _itemDescription.text = equipmentData.equipmentDescription;
-      _itemID.text = equipmentData.equipmentID.ToString();
+      _itemID.text = currentXmlId.ToString();
       _itemPrice.text = equipmentData.equipmentPrice.ToString();
       _canBeTrashed.isOn = equipmentData.canBeTrashed;
       _iconPath.text = equipmentData.equipmentIconPath;
@@ -560,7 +565,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // Id of the item
    [SerializeField]
-   private InputField _itemID;
+   private Text _itemID;
 
    // Price of the item in the shop
    [SerializeField]

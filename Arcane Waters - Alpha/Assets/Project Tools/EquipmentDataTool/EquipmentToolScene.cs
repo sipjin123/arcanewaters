@@ -71,7 +71,7 @@ public class EquipmentToolScene : MonoBehaviour {
       weaponData.weaponClass = Weapon.Class.Any;
 
       EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-      template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, -1);
+      template.setData(weaponData.equipmentName, EquipmentType.Weapon, -1);
 
       template.editButton.onClick.AddListener(() => {
          equipmentDataPanel.loadWeaponData(weaponData, template.xmlId, false);
@@ -103,7 +103,7 @@ public class EquipmentToolScene : MonoBehaviour {
       armorData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-      template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, -1);
+      template.setData(armorData.equipmentName, EquipmentType.Armor, -1);
 
       template.editButton.onClick.AddListener(() => {
          equipmentDataPanel.loadArmorData(armorData, template.xmlId, false);
@@ -135,7 +135,7 @@ public class EquipmentToolScene : MonoBehaviour {
       helmData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-      template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, -1);
+      template.setData(helmData.equipmentName, EquipmentType.Helm, -1);
 
       template.editButton.onClick.AddListener(() => {
          equipmentDataPanel.loadHelmData(helmData, template.xmlId, false);
@@ -169,7 +169,7 @@ public class EquipmentToolScene : MonoBehaviour {
       foreach (HelmXMLContent xmlData in helmStats) {
          HelmStatData helmData = xmlData.helmStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-         template.setData(helmData.equipmentName, helmData.equipmentID, EquipmentType.Helm, xmlData.xml_id);
+         template.setData(helmData.equipmentName, EquipmentType.Helm, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
          template.spriteID.text = ((int)helmData.helmType).ToString();
 
@@ -211,7 +211,7 @@ public class EquipmentToolScene : MonoBehaviour {
       foreach (ArmorXMLContent xmlData in armorStats) {
          ArmorStatData armorData = xmlData.armorStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(armorTemplatePrefab.gameObject, equipmentToolManager, armorTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-         template.setData(armorData.equipmentName, armorData.equipmentID, EquipmentType.Armor, xmlData.xml_id);
+         template.setData(armorData.equipmentName, EquipmentType.Armor, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
          template.spriteID.text = armorData.armorType.ToString();
 
@@ -253,7 +253,7 @@ public class EquipmentToolScene : MonoBehaviour {
       foreach (WeaponXMLContent xmlData in weaponStats) {
          WeaponStatData weaponData = xmlData.weaponStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(weaponTemplatePrefab.gameObject, equipmentToolManager, weaponTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-         template.setData(weaponData.equipmentName, weaponData.equipmentID, EquipmentType.Weapon, xmlData.xml_id);
+         template.setData(weaponData.equipmentName, EquipmentType.Weapon, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
          template.spriteID.text = weaponData.weaponType.ToString();
 

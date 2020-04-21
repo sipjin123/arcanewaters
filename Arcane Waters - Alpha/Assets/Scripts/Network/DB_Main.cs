@@ -2794,7 +2794,7 @@ public class DB_Main : DB_MainStub {
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled, int equipmentTypeID) {
+   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
       string tableName = "";
       string xmlKey = "xml_id, ";
       string xmlValue = "@xml_id, ";
@@ -2819,15 +2819,14 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, equipmentTypeID, lastUserUpdate) " +
-            "VALUES(" + xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled, @equipmentTypeID, NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled, equipmentTypeID = @equipmentTypeID, lastUserUpdate = NOW()", conn)) {
+            "INSERT INTO " + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, lastUserUpdate) " +
+            "VALUES(" + xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled, lastUserUpdate = NOW()", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xml_id", xmlID);
-            cmd.Parameters.AddWithValue("@equipmentTypeID", equipmentTypeID);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@equipment_name", equipmentName);
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());

@@ -22,12 +22,12 @@ public class EquipmentDataTemplate : GenericEntryTemplate {
 
    #endregion
 
-   public void setData (string dataName, int dataID, EquipmentType dataType, int templateID) {
+   public void setData (string dataName, EquipmentType dataType, int xmlId) {
       equipmentType = dataType;
       nameText.text = dataName;
-      xmlId = templateID;
-      indexText.text = dataID.ToString();
-      setEquipmentRestriction(templateID);
+      this.xmlId = xmlId;
+      indexText.text = xmlId.ToString();
+      setEquipmentRestriction(xmlId);
    }
 
    protected void setEquipmentRestriction (int template_id) {

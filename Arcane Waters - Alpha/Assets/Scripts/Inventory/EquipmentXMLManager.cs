@@ -90,11 +90,11 @@ public class EquipmentXMLManager : MonoBehaviour {
          if (xmlPair.isEnabled) {
             TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
             WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-            int uniqueID = rawData.equipmentID;
+            rawData.equipmentID = xmlPair.xmlId;
 
             // Save the data in the memory cache
-            if (!_weaponStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-               _weaponStatList.Add(uniqueID, rawData);
+            if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+               _weaponStatList.Add(xmlPair.xmlId, rawData);
                weaponStatData.Add(rawData);
             }
          }
@@ -105,11 +105,11 @@ public class EquipmentXMLManager : MonoBehaviour {
          if (xmlPair.isEnabled) {
             TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
             ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-            int uniqueID = rawData.equipmentID;
+            rawData.equipmentID = xmlPair.xmlId;
 
             // Save the data in the memory cache
-            if (!_armorStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-               _armorStatList.Add(uniqueID, rawData);
+            if (!_armorStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+               _armorStatList.Add(xmlPair.xmlId, rawData);
                armorStatData.Add(rawData);
             }
          }

@@ -69,6 +69,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    #region Save 
 
    public void saveWeapon (WeaponStatData data, int xml_id, bool isEnabled) {
+      data.equipmentID = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -77,7 +78,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName, isEnabled, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Weapon, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -86,6 +87,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    }
 
    public void saveArmor (ArmorStatData data, int xml_id, bool isEnabled) {
+      data.equipmentID = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -94,7 +96,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName, isEnabled, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Armor, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -103,6 +105,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    }
 
    public void saveHelm (HelmStatData data, int xml_id, bool isEnabled) {
+      data.equipmentID = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -111,7 +114,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -168,7 +171,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName, false, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Weapon, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -187,7 +190,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName, false, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Armor, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -206,7 +209,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false, data.equipmentID);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -238,6 +241,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
+               rawData.equipmentID = xmlPair.xmlId;
 
                // Save the data in the memory cache
                if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
@@ -266,6 +270,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
+               rawData.equipmentID = xmlPair.xmlId;
 
                // Save the data in the memory cache
                if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {

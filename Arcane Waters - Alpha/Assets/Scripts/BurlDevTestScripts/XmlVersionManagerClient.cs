@@ -17,7 +17,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    public static string XML_VERSION = "xml_version";
 
    // The server directory
-   public static string WEB_DIRECTORY = "http://arcanewaters.com/";//"http://localhost/";
+   public static string WEB_DIRECTORY = "http://localhost/";//"http://arcanewaters.com/";//
 
    public static string XML_VERSION_GET = "getXmlVersion.php";
    public static string XML_ZIP_GET = "downloadZip.php?id=";
