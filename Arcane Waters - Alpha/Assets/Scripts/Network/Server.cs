@@ -81,20 +81,10 @@ public class Server : MonoBehaviour {
    public void SendGlobalChat (string message, int senderUserId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.storeChatLog(senderUserId, message, System.DateTime.UtcNow, ChatInfo.Type.Global);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Server Sent a message globally", Color.green);
-         });
       });
-      /*
-      foreach (NetEntity entity in MyNetworkManager.getPlayers().Values) {
-         if (entity != null && entity.connectionToClient != null) {
-            entity.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId);
-         }
-      }*/
    }
 
    public void handleVoyageGroupInvite (int voyageGroupId, string inviterName, int inviteeUserId) {
-      D.editorLog("Handle voyage invites here", Color.green);
       // Find the NetEntity of the invitee
       NetEntity inviteeEntity = EntityManager.self.getEntity(inviteeUserId);
       
@@ -108,7 +98,6 @@ public class Server : MonoBehaviour {
    }
 
    public void CreateVoyageInstance (string areaKey) {
-      D.editorLog("Creating new voyage: " + areaKey, Color.green);
       VoyageManager.self.createVoyageInstance(areaKey);
    }
 

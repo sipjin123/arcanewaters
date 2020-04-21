@@ -312,10 +312,8 @@ public class VoyageManager : MonoBehaviour {
             if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
                // Find the server with the least people
                Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-               D.editorLog("Best server must create voyage intance: " + bestServer.deviceName, Color.yellow);
+
                // Create a new voyage instance on the chosen server
-               //bestServer.photonView.RPC("CreateVoyageInstance", bestServer.view.owner);
-               //ServerWebRequests.self.requestCreateVoyage(bestServer.deviceName, bestServer.ipAddress, bestServer.port);
                List<PendingVoyageCreation> voyageList = new List<PendingVoyageCreation>();
                PendingVoyageCreation newVoyage = new PendingVoyageCreation {
                   serverName = bestServer.deviceName,
@@ -327,7 +325,7 @@ public class VoyageManager : MonoBehaviour {
                   areaKey = ""
                };
                voyageList.Add(newVoyage);
-               ServerWebRequests.self.requestCreateVoyage(voyageList);
+               ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
             }
          });
       });
@@ -372,7 +370,7 @@ public class VoyageManager : MonoBehaviour {
                D.editorLog("Could not find best server!", Color.red);
             }
          }
-         ServerWebRequests.self.requestCreateVoyage(pendingVoyageList);
+         ServerCommunicationHandler.self.requestCreateVoyage(pendingVoyageList);
       }
    }
 

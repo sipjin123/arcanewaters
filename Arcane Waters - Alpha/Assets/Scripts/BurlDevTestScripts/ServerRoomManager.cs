@@ -18,7 +18,7 @@ public class ServerRoomManager : MonoBehaviour {
 
    public void initializeServer () {
       Debug.Log("Connected to Master!");
-      ServerWebRequests.self.initializeServers();
+      ServerCommunicationHandler.self.initializeServers();
    }
 
    protected string getServerRoomName () {

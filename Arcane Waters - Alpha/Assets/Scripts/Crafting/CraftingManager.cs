@@ -53,9 +53,7 @@ public class CraftingManager : MonoBehaviour {
                if (!_craftingData.ContainsKey(keyName)) {
                   _craftingData.Add(keyName, craftingData);
                   craftingDataList.Add(craftingData);
-               } else {
-                  D.editorLog("Key already exists: " + keyName, Color.red);
-               }
+               } 
             }
          });
       });

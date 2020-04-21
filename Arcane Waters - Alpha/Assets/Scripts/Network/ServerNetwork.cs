@@ -36,7 +36,6 @@ public class ServerNetwork : MonoBehaviour {
    public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
       bool isSinglePlayer, int voyageId) {
       if (overrideBestServerConnection) {
-         D.editorLog("Overwrite index is: " + overrideConnectServerIndex + " : " + servers.ToList().Count, Color.green);
          return servers.ToList()[overrideConnectServerIndex];
       }
 
@@ -75,7 +74,6 @@ public class ServerNetwork : MonoBehaviour {
       // If this player is claimed by a server, we have to return to that server
       foreach (Server server in servers) {
          if (server.claimedUserIds.Contains(userId)) {
-            D.editorLog("Server has claimed this player: "+userId, Color.green);
             bestServer = server;
             break;
          }
@@ -110,26 +108,19 @@ public class ServerNetwork : MonoBehaviour {
    }
 
    public void sendGlobalMessage (ChatInfo chatInfo) {
-      D.editorLog("Server must send global message", Color.green);
-      //server.photonView.RPC("SendGlobalChat", PhotonTargets.All, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
+      server.SendGlobalChat(chatInfo.text, chatInfo.senderId);
    }
 
    public void addPlayer (int userId, Server server) {
-      ServerWebRequests.self.addPlayer(userId, server);
+      ServerCommunicationHandler.self.addPlayer(userId, server);
    }
 
    public void claimPlayer (int userId) {
-      ServerWebRequests.self.claimPlayer(userId);
-      /*
-      server.claimedUserIds.Add(userId);*/
+      ServerCommunicationHandler.self.claimPlayer(userId);
    }
 
    public void releaseClaim (int userId) {
-      ServerWebRequests.self.releasePlayerClaim(userId);
-      /*
-      if (server.claimedUserIds.Contains(userId)) {
-         server.claimedUserIds.Remove(userId);
-      }*/
+      ServerCommunicationHandler.self.releasePlayerClaim(userId);
    }
 
    public Server getServer (string ipAddress, int port) {

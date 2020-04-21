@@ -204,7 +204,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                direction = Util.getDirectionFromFacing(facing);
             }
          } catch {
-            D.editorLog("Something went wrong with the path finding", Color.red);
             direction = Util.getDirectionFromFacing(facing);
          }
          // Figure out the direction we want to face
@@ -248,7 +247,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       if (_currentPath == null) {
          _currentPath = new List<ANode>();
-         D.editorLog("Path is null here, something went wrong", Color.red);
       }
       if (_currentPath.Count > 0) {
          // Move towards our current waypoint
@@ -560,7 +558,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       if (panelName != "None") {
-         D.editorLog("This npc is a shop npc: " + id + " - " + shopName, Color.cyan);
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
          this.shopName = shopName;
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);

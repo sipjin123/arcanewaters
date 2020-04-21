@@ -28,7 +28,6 @@ namespace AStar
          ANode targetNode = gridReference.nodeFromWorldPoint(a_TargetPos);
 
          if (startNode == null || targetNode == null) {
-            D.editorLog("Returning null because start or target node is missing", Color.cyan);
             return null;
          }
 

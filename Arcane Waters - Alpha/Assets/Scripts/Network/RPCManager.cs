@@ -2716,8 +2716,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Send the invitation
-            D.editorLog("Invitee server must handle group invite voyage", Color.green);
-            ServerWebRequests.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
+            ServerCommunicationHandler.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
@@ -2784,7 +2783,7 @@ public class RPCManager : NetworkBehaviour {
                   _player.voyageGroupId = voyageGroup.groupId;
 
                   // Mark the voyage invite as Accepted in the database
-                  ServerWebRequests.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
+                  ServerCommunicationHandler.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
                });
             });
          });
@@ -2794,7 +2793,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
       // Mark the voyage invite as Declined in the database
-      ServerWebRequests.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
+      ServerCommunicationHandler.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
    }
 
    [Command]
@@ -3742,11 +3741,14 @@ public class RPCManager : NetworkBehaviour {
             shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
          }
 
-         string greetingText = shopData.shopGreetingText;
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText);
-         });
+         if (shopData == null) {
+            D.editorLog("Shop data is missing for: " + shopName + " - " + _player.areaKey, Color.red);
+         } else {
+            string greetingText = shopData.shopGreetingText;
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, Util.serialize(list), greetingText);
+            });
+         }
       });
    }
 

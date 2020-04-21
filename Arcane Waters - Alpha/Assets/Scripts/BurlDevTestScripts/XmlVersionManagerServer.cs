@@ -119,12 +119,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
             if (newGroup.Length == 2) {
                string xmlTableName = newGroup[0];
                if (PlayerPrefs.GetString(xmlTableName, "") == "") {
-                  D.editorLog("There are no saved files, create new ones", Color.cyan);
                   shouldZipNewFiles = true;
 
                   try {
                      DateTime dateTime = Convert.ToDateTime(newGroup[1]);
-                     D.editorLog(xmlTableName + "-" + dateTime, Color.blue);
                   } catch {
                      D.editorLog("Fail: " + newGroup[1], Color.red);
                   }

@@ -91,7 +91,6 @@ public class SecretEntrance : NetworkBehaviour {
       warp.spawnTarget = spawnTarget;
       warp.newFacingDirection = newFacingDirection;
       warp.warpEvent.AddListener(player => {
-         D.editorLog("Warped player: " + player.userId, Color.green);
          userIds.Add(player.userId);
 
          // Keep track of the user's location while in the secrets room
@@ -164,11 +163,7 @@ public class SecretEntrance : NetworkBehaviour {
          if (entity.isServer && entity.connectionToClient != null) {
             if (!userIds.Contains(entity.userId)) {
                completeInteraction(entity);
-            } else {
-               if (userIds.Contains(entity.userId)) {
-                  D.editorLog("Already interacted", Color.red);
-               }
-            }
+            } 
          }
       }
    }
@@ -177,10 +172,6 @@ public class SecretEntrance : NetworkBehaviour {
       if (Global.player != null) {
          if (!userIds.Contains(Global.player.userId)) {
             completeInteraction((PlayerBodyEntity) Global.player);
-         } else {
-            if (userIds.Contains(Global.player.userId)) {
-               D.editorLog("Already interacted", Color.red);
-            }
          }
       }
    }

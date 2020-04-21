@@ -22,12 +22,9 @@ public class SecretsManager : MonoBehaviour {
 
    public void enterUserToSecret (int userId, string areaName, int instanceId, SecretEntrance secretArea) {
       if (secretsDataList.Exists(_=>_.instanceId == instanceId && _.areaName == areaName)) {
-         D.editorLog("This secret area exists, adding player: " + userId, Color.green);
-         
          SecretsData existingData = secretsDataList.Find(_ => _.instanceId == instanceId && _.areaName == areaName);
          existingData.userIdList.Add(userId);
       } else {
-         D.editorLog("This secret does not exists, creating new and adding player player: " + userId, Color.green);
          SecretsData newData = new SecretsData {
             instanceId = instanceId,
             areaName = areaName,
@@ -48,15 +45,11 @@ public class SecretsManager : MonoBehaviour {
          // Checks all secret areas if the user is existing in any
          foreach (SecretsData secretArea in allSecretAreas) {
             if (secretArea.userIdList.Exists(_=>_ == userId)) {
-               D.editorLog("The user exists in the area: " + secretArea.areaName + " - " + userId, Color.green);
-
                // Remove the user from the secret area registry so they can enter the area again
                secretArea.secretArea.userIds.Remove(userId);
                secretArea.userIdList.Remove(userId);
             }
          }
-      } else {
-         D.editorLog("The user: " + userId + " is not in any secret area", Color.green);
       }
    }
 

@@ -56,7 +56,6 @@ public class OreManager : MonoBehaviour
 
       if (_oreNodes.ContainsKey(oreNode.id)) {
          _oreNodes.Remove(oreNode.id);
-         D.editorLog("Ore node id has been integrated already: " + oreNode.id, Color.red);
       }
 
       // Keep track of the ore nodes that we've created

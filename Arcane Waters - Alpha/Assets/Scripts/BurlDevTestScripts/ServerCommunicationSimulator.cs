@@ -11,17 +11,20 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    #region Public Variables
 
    // Reference to the web request script
-   public ServerWebRequests serverWebRequest;
+   public ServerCommunicationHandler serverWebRequest;
 
    // Simulator flags
    public bool toggleGUI;
+
+   // Enables the simulator GUI
+   public bool enableGUI;
 
    #endregion
 
    #region Simulator Updates and UI
 
    private void OnGUI () {
-      if (!Util.isServerBuild()) {
+      if (!Util.isServerBuild() || !enableGUI) {
          return;
       }
 
@@ -208,9 +211,6 @@ public class ServerCommunicationSimulator : MonoBehaviour {
          VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, voyageId, InviteStatus.Created, DateTime.UtcNow);
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             DB_Main.createVoyageInvite(newVoyageInvite);
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               D.editorLog("Server Created the invite", Color.green);
-            });
          });
          break;
       }
@@ -226,13 +226,9 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    }
 
    private void createRandomServer () {
-      D.editorLog("Creating a random server", Color.green);
       ServerSqlData sqlData = createRandomData();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setServerContent(sqlData);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Server was set: " + sqlData.deviceName, Color.blue);
-         });
       });
    }
 
@@ -275,7 +271,6 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    private void createLocalPlayers () {
       int newUserId = Random.Range(1, 1000);
       if (ServerNetwork.self != null) {
-         D.editorLog("Creater local user at: Local Server");
          serverWebRequest.addPlayer(newUserId, ServerNetwork.self.server);
       }
       serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, false, true);

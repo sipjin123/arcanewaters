@@ -20,7 +20,6 @@ public class PhotonManager : Photon.PunBehaviour {
    }
 
    public override void OnConnectedToMaster () {
-      D.editorLog("OnConnectedToMaster", Color.magenta);
       /*
       Debug.Log("Connected to Master!"); 
 
@@ -32,7 +31,6 @@ public class PhotonManager : Photon.PunBehaviour {
    }
 
    public void createServerRoom () {
-      D.editorLog("createServerRoom", Color.magenta);
       /*
       RoomOptions newRoomOptions = new RoomOptions();
       newRoomOptions.IsVisible = true;
@@ -49,7 +47,6 @@ public class PhotonManager : Photon.PunBehaviour {
    }
 
    public override void OnJoinedRoom () {
-      D.editorLog("OnJoinedRoom", Color.magenta);
       /*
       D.debug("Joined room: " + PhotonNetwork.room);
 

@@ -138,7 +138,6 @@ public class EquipmentToolPanel : MonoBehaviour {
             try {
                _armorSpriteImage.sprite = sprites[spriteIndex];
             } catch {
-               D.editorLog("Index does not exceed: " + spriteIndex, Color.red);
                _armorSpriteImage.sprite = sprites[0];
             }
          }

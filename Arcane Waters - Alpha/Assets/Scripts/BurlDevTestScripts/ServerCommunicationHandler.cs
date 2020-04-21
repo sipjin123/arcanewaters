@@ -11,12 +11,12 @@ using System.Xml;
 using Random = UnityEngine.Random;
 using System.Linq;
 
-public class ServerWebRequests : MonoBehaviour
+public class ServerCommunicationHandler : MonoBehaviour
 {
    #region Public Variables
 
    // Self
-   public static ServerWebRequests self;
+   public static ServerCommunicationHandler self;
 
    // The device name of our server
    public string ourDeviceName;
@@ -147,10 +147,8 @@ public class ServerWebRequests : MonoBehaviour
             chatInfoList = sortedChatList;
 
             if (latestChatinfo.chatTime >= ourServerData.latestUpdate) {
-               D.editorLog("Send message, this is a new entry: "+latestChatinfo.chatId +" -> "+latestChatinfo.chatTime, Color.green);
                foreach (int userId in ourServerData.connectedUserIds) {
                   NetEntity targetEntity = EntityManager.self.getEntity(userId);
-                  D.editorLog(latestChatinfo.chatId + " -- (" + latestChatinfo.chatTime + " - " + ourServerData.lastPingTime + ")" + ": Server Sent chat to: " + userId, Color.yellow);
                   targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
                }
             }
@@ -160,7 +158,6 @@ public class ServerWebRequests : MonoBehaviour
 
    public void addPlayer (int userId, Server server) {
       if (ourServerData.connectedUserIds.Contains(userId)) {
-         D.editorLog("User has already been added: " + userId, Color.green);
          return;
       }
       ourServerData.connectedUserIds.Add(userId);
@@ -170,7 +167,6 @@ public class ServerWebRequests : MonoBehaviour
 
    public void claimPlayer (int userId) {
       if (ourServerData.claimedUserIds.Contains(userId)) {
-         D.editorLog("User has already been claimed: " + userId, Color.green);
          return;
       }
 
@@ -237,13 +233,9 @@ public class ServerWebRequests : MonoBehaviour
       }
       serverData.latestUpdate = DateTime.UtcNow;
       serverData.lastPingTime = serverData.latestUpdate;
-      D.editorLog("Updating any random server data: " + serverData.deviceName + " - " + serverData.port, Color.green);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setServerContent(serverData);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Server was updated: " + serverData.deviceName + " -- " + serverData.port, Color.blue);
-         });
       });
    }
 
@@ -284,7 +276,6 @@ public class ServerWebRequests : MonoBehaviour
                      // Update our data to make sure we are in sync with the database
                      TimeSpan updateSpan = (existingSqlData.latestUpdate - newSqlData.latestUpdate);
                      if (updateSpan.TotalSeconds > 1) {
-                        D.editorLog("Server is not sync! Resent Server data: " + existingSqlData.latestUpdate + " - " + newSqlData.latestUpdate, Color.green);
                         updateSpecificServer(ourServerData, false, true);
                      } 
                   } 
@@ -339,11 +330,6 @@ public class ServerWebRequests : MonoBehaviour
                   existingData.voyageList = newSqlData.voyageList;
                   existingData.connectedUserIds = newSqlData.connectedUserIds;
                   existingData.openAreas = newSqlData.openAreas;
-
-                  if (existingData.latestUpdate != newSqlData.latestUpdate) {
-                     D.editorLog("Overwriting dates from: " + existingData.latestUpdate, Color.yellow);
-                     D.editorLog("Overwriting dates to: " + newSqlData.latestUpdate, Color.yellow);
-                  }
                   existingData.latestUpdate = newSqlData.latestUpdate;
                   overwriteServerData(newSqlData);
 
@@ -371,7 +357,6 @@ public class ServerWebRequests : MonoBehaviour
             existingServer.voyages = newSqlData.voyageList;
             existingServer.connectedUserIds = new HashSet<int>(newSqlData.connectedUserIds);
             existingServer.claimedUserIds = new HashSet<int>(newSqlData.claimedUserIds);
-            D.editorLog("Successful Update! " + newSqlData.deviceName, Color.green);
 
             if (!hasInitiatedVoyage) {
                // Regularly check that there are enough voyage instances open and create more
@@ -391,7 +376,6 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    public void createInvite (Server server, int groupId, int inviterId, string inviterName, int inviteeId) {
-      D.editorLog("The server who owns this user is: " + server.deviceName + " - " + server.port, Color.green);
       VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, groupId, InviteStatus.Created, DateTime.UtcNow);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -409,9 +393,7 @@ public class ServerWebRequests : MonoBehaviour
             ServerSqlData serverData = serverDataList.Find(_ => _.deviceName == voyageEntry.serverName && _.ip == voyageEntry.serverIp && _.port == voyageEntry.serverPort);
             if (serverData != null) {
                DB_Main.setServerVoyageCreation(voyageEntry, voyageEntry.updateTime, voyageEntry.id);
-            } else {
-               D.editorLog("Non existing!", Color.yellow);
-            }
+            } 
          });
       }
    }
@@ -447,7 +429,6 @@ public class ServerWebRequests : MonoBehaviour
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.removeServerVoyageCreation(voyageCreations.id);
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     D.editorLog("Server should create voyage instance: " + voyageCreations.areaKey, Color.green);
                      ServerNetwork.self.server.CreateVoyageInstance(voyageCreations.areaKey);
                   });
                });
