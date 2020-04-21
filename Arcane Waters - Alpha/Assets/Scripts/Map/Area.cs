@@ -79,6 +79,10 @@ public class Area : MonoBehaviour
       this.treasureSiteDataFields = treasureSiteDataFields;
       this.shipDataFields = shipDataFields;
       this.secretsEntranceDataFields = secretsEntranceDataFields;
+
+      if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
+         this.npcDatafields.Clear();
+      }
    }
 
    public void initialize () {

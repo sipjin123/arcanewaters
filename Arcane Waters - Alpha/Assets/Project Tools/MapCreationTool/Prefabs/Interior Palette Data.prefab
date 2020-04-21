@@ -6420,15 +6420,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -6544,11 +6544,11 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -6660,15 +6660,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -6784,11 +6784,11 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -6904,11 +6904,11 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -7020,15 +7020,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -7140,15 +7140,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -7260,15 +7260,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -7380,15 +7380,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 0
       cluster: 0
@@ -7500,15 +7500,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 1
       cluster: 0
@@ -7620,15 +7620,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: wall
       sublayer: 1
       cluster: 0
@@ -7740,15 +7740,15 @@ MonoBehaviour:
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: rug
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: trinket
       sublayer: 0
       cluster: 0
@@ -7988,6 +7988,30 @@ MonoBehaviour:
     - layer: door-frame
       sublayer: 1
       cluster: 0
+      collisionType: 1
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
+      collisionType: 1
+    - layer: mat
+      sublayer: 0
+      cluster: 3
+      collisionType: 1
+    - layer: mat
+      sublayer: 0
+      cluster: 3
+      collisionType: 1
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -7995,6 +8019,102 @@ MonoBehaviour:
       collisionType: 0
     - layer: furniture
       sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: mat
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 1
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 1
       cluster: 0
       collisionType: 0
     - layer: door-frame
@@ -8043,15 +8163,7 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
+      cluster: 3
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -8060,6 +8172,14 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -8105,258 +8225,138 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: mat
+    - layer: furniture
       sublayer: 0
-      cluster: 3
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
       collisionType: 1
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: mat
       sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: wall
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: furniture
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
+      collisionType: 0
+    - layer: door-frame
+      sublayer: 1
+      cluster: 0
       collisionType: 1
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: mat
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 1
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: mat
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: wall
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 2
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 3
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 4
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: 
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: furniture
-      sublayer: 0
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
-    - layer: door-frame
-      sublayer: 1
-      cluster: 0
-      collisionType: 0
     - layer: door-frame
       sublayer: 1
       cluster: 0

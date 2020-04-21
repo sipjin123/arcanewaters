@@ -34,6 +34,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for creating treasure chest icon
    public MM_Icon treasureChestIconPrefab;
 
+   // The prefab we use for creating a discovery icon
+   public MM_Icon discoveryIconPrefab;
+
    // The prefab we use for showing player ship entity (enemy, friendly, neutral)
    public MM_ShipEntityIcon enemyShipIconPrefab;
    public MM_ShipEntityIcon friendlyShipIconPrefab;
@@ -236,6 +239,12 @@ public class Minimap : ClientMonoBehaviour {
       } else {
          Debug.LogError("Treasure Chest Icon is NULL!");
       }
+   }
+   
+   public void addDiscoveryIcon (Discovery discovery) {
+      MM_Icon icon = Instantiate(discoveryIconPrefab, this.iconContainer.transform);
+      icon.target = discovery.gameObject;
+      _discoveryIcons.Add(icon);
    }
 
    public void addTreasureChestIcon (GameObject chestObject) {
@@ -1414,6 +1423,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // Current list of chest icons
    private List<MM_Icon> _treasureChestIcons = new List<MM_Icon>();
+
+   // Current list of discovery icons
+   private List<MM_Icon> _discoveryIcons = new List<MM_Icon>();
 
    [SerializeField] TileLayer[] _tileLayer = new TileLayer[0];
    [SerializeField] TileIcon[] _tileIconLayers = new TileIcon[0];

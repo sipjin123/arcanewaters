@@ -39,6 +39,14 @@ public class DiscoveryData
 
 #endif
 
+   public DiscoveryData (string name, string description, int discoveryId, string spriteUrl, Rarity.Type rarity) {
+      this.name = name;
+      this.description = description;
+      this.discoveryId = discoveryId;
+      this.spriteUrl = spriteUrl;
+      this.rarity = rarity;
+   }
+
    public DiscoveryData () { }
 
    #region Private Variables

@@ -13,18 +13,15 @@ public class Discovery : NetworkBehaviour
    // The max valid distance between the player and a discovery
    public const float MAX_VALID_DISTANCE = 1.0f;
 
-   // The chances of spawning this discovery
-   [HideInInspector]
+   // The chances of spawning this discovery   
    public float spawnChance;
 
    // The discovery data
    [SyncVar]
-   [HideInInspector]
    public DiscoveryData data;
 
    // A unique ID for this discovery in the game
    [SyncVar]
-   [HideInInspector]
    public int id;
 
    // The instance ID of the area this discovery belongs to
@@ -36,12 +33,12 @@ public class Discovery : NetworkBehaviour
    private void Awake () {
       if (Util.isBatchServer()) {
          enabled = false;
-         return;
       }
    }
 
    private void Start () {
       initializeDiscovery();
+      Minimap.self.addDiscoveryIcon(this);
    }
 
    private void Update () {
@@ -61,7 +58,7 @@ public class Discovery : NetworkBehaviour
 
       // Show the outline if the player is in the trigger area or the mouse is over
       _outline.setVisibility(_isLocalPlayerInside || isMouseOver);
-      
+
       if (_isLocalPlayerInside || isMouseOver) {
          if (InputManager.isActionKeyPressed() || (Input.GetMouseButtonUp(0) && isMouseOver)) {
             openDiscoveryPanel();
@@ -77,13 +74,15 @@ public class Discovery : NetworkBehaviour
       }
 
       DiscoveryPanel panel = PanelManager.self.get(Panel.Type.Discovery) as DiscoveryPanel;
-      
+
       if (!panel.isShowing()) {
          panel.showDiscovery(data);
       }
    }
 
    private void initializeDiscovery () {
+      transform.position = _discoveryPosition;
+
       _spriteAnimation = GetComponent<SpriteAnimation>();
       _spriteRenderer = GetComponent<SpriteRenderer>();
       _outline = GetComponent<SpriteOutline>();
@@ -116,7 +115,7 @@ public class Discovery : NetworkBehaviour
       if (_isLocalPlayerInside && Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
          _isLocalPlayerInside = false;
          _progressBarSlider.gameObject.SetActive(false);
-      } 
+      }
    }
 
    [TargetRpc]
@@ -126,19 +125,9 @@ public class Discovery : NetworkBehaviour
    }
 
    [Server]
-   private void fetchDiscovery (int id) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         data = DB_Main.getDiscoveryById(id);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            initializeDiscovery();
-         });
-      });
-   }
-
-   [Server]
-   public void assignDiscoveryId (int id) {
-      fetchDiscovery(id);
+   public void assignDiscoveryAndPosition (DiscoveryData fetchedData, Vector3 position) {
+      data = new DiscoveryData(fetchedData.name, fetchedData.description, fetchedData.discoveryId, fetchedData.spriteUrl, fetchedData.rarity);
+      _discoveryPosition = position;
    }
 
    public int getXPValue () {
@@ -187,6 +176,10 @@ public class Discovery : NetworkBehaviour
 
    // True when we're waiting for the server to reply to our reveal request
    private bool _isWaitingForRequestResponse = false;
+
+   // The position of this discovery
+   [SyncVar]
+   private Vector3 _discoveryPosition;
 
    // How much time (in seconds) it takes to explore a discovery
    private const float EXPLORE_DISCOVERY_TIME = 3.0f;

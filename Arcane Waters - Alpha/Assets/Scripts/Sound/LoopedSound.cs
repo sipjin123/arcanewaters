@@ -12,8 +12,11 @@ public class LoopedSound : MonoBehaviour {
    #endregion
 
    void Start () {
-      // Play when we're created
-      startPlaying();
+      // Don't play sounds on the server
+      if (!Util.isBatchServer()) {
+         // Play when we're created
+         startPlaying();
+      }
    }
 
    public void startPlaying () {
