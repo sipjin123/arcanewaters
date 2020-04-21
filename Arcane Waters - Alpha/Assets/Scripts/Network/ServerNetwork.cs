@@ -17,7 +17,6 @@ public class ServerNetwork : MonoBehaviour {
 
    // The Servers we know about
    public HashSet<Server> servers = new HashSet<Server>();
-   public List<Server> serverList = new List<Server>();
 
    // Self
    public static ServerNetwork self;
@@ -107,7 +106,6 @@ public class ServerNetwork : MonoBehaviour {
       if (servers.Contains(server)) {
          D.debug("Removing server: " + server.port);
          servers.Remove(server);
-         serverList.Remove(server);
       }
    }
 
@@ -127,7 +125,7 @@ public class ServerNetwork : MonoBehaviour {
    }
 
    public void releaseClaim (int userId) {
-      ServerWebRequests.self.releasePlayer(userId);
+      ServerWebRequests.self.releasePlayerClaim(userId);
       /*
       if (server.claimedUserIds.Contains(userId)) {
          server.claimedUserIds.Remove(userId);

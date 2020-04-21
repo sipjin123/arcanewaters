@@ -113,10 +113,7 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    private void initializeLocalServer () {
-      if (!serverSimulator.overrideDeviceName) {
-         ourDeviceName = SystemInfo.deviceName;
-      }
-
+      ourDeviceName = SystemInfo.deviceName;
       ServerSqlData newSqlData = new ServerSqlData {
          ip = ourIp,
          port = ourPort,
@@ -152,9 +149,9 @@ public class ServerWebRequests : MonoBehaviour
             if (latestChatinfo.chatTime >= ourServerData.latestUpdate) {
                D.editorLog("Send message, this is a new entry: "+latestChatinfo.chatId +" -> "+latestChatinfo.chatTime, Color.green);
                foreach (int userId in ourServerData.connectedUserIds) {
-                  NetEntity inviteeEntity = EntityManager.self.getEntity(userId);
+                  NetEntity targetEntity = EntityManager.self.getEntity(userId);
                   D.editorLog(latestChatinfo.chatId + " -- (" + latestChatinfo.chatTime + " - " + ourServerData.lastPingTime + ")" + ": Server Sent chat to: " + userId, Color.yellow);
-                  inviteeEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
+                  targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
                }
             }
          });
@@ -162,18 +159,27 @@ public class ServerWebRequests : MonoBehaviour
    }
 
    public void addPlayer (int userId, Server server) {
+      if (ourServerData.connectedUserIds.Contains(userId)) {
+         D.editorLog("User has already been added: " + userId, Color.green);
+         return;
+      }
       ourServerData.connectedUserIds.Add(userId);
       server.connectedUserIds.Add(userId);
       updateSpecificServer(ourServerData, false, true);
    }
 
    public void claimPlayer (int userId) {
+      if (ourServerData.claimedUserIds.Contains(userId)) {
+         D.editorLog("User has already been claimed: " + userId, Color.green);
+         return;
+      }
+
       ourServerData.claimedUserIds.Add(userId);
       ServerNetwork.self.server.claimedUserIds.Add(userId);
       updateSpecificServer(ourServerData, false, true);
    }
 
-   public void releasePlayer (int userId) {
+   public void releasePlayerClaim (int userId) {
       if (ourServerData.claimedUserIds.Contains(userId)) {
          ourServerData.claimedUserIds.Remove(userId);
          ServerNetwork.self.server.claimedUserIds.Remove(userId);
@@ -212,7 +218,6 @@ public class ServerWebRequests : MonoBehaviour
             ServerNetwork.self.server = server;
             ServerNetwork.self.server.setAsLocalServer();
          } else {
-            ServerNetwork.self.serverList.Add(server);
             ServerNetwork.self.servers.Add(server);
          }
       }
@@ -391,9 +396,6 @@ public class ServerWebRequests : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.createVoyageInvite(newVoyageInvite);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
-         });
       });
    }
 
@@ -414,7 +416,7 @@ public class ServerWebRequests : MonoBehaviour
       }
    }
 
-   public void confirmVoyageCreation (PendingVoyageCreation voyageEntry) {
+   public void clearVoyageCreation (PendingVoyageCreation voyageEntry) {
       voyageEntry.isPending = false;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.removeServerVoyageCreation(voyageEntry.id);
@@ -426,7 +428,7 @@ public class ServerWebRequests : MonoBehaviour
          if (voyageInvite.inviteStatus == InviteStatus.Created) {
             Server selectedServer = ServerNetwork.self.getServerContainingUser(voyageInvite.inviteeId);
             if (selectedServer != null) {
-               selectedServer.HandleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
+               selectedServer.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
                voyageInvite.inviteStatus = InviteStatus.Pending;
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.modifyServerVoyageInvite(voyageInvite.voyageXmlId, voyageInvite.inviteStatus);

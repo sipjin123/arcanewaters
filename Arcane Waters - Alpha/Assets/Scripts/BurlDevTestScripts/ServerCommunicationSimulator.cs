@@ -14,7 +14,6 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    public ServerWebRequests serverWebRequest;
 
    // Simulator flags
-   public bool overrideDeviceName;
    public bool toggleGUI;
 
    #endregion
@@ -22,150 +21,171 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    #region Simulator Updates and UI
 
    private void OnGUI () {
-      if (GUI.Button(new Rect(Screen.width - 100, 0, 100, 30), "OpenGUI")) {
+      if (!Util.isServerBuild()) {
+         return;
+      }
+
+      if (GUI.Button(new Rect(Screen.width - 70, 0, 70, 30), "Server\nDebug")) {
          toggleGUI = !toggleGUI;
       }
-
-      if (GUI.Button(new Rect(Screen.width - 400, 0, 200, 30), "Override Best Server: " + ServerNetwork.self.overrideBestServerConnection)) {
-         ServerNetwork.self.overrideBestServerConnection = !ServerNetwork.self.overrideBestServerConnection;
-      }
-      if (ServerNetwork.self.overrideBestServerConnection) {
-         string svName = "None";
-         try {
-            svName = ServerNetwork.self.servers.ToList()[ServerNetwork.self.overrideConnectServerIndex].port.ToString();
-         } catch {
-
-         }
-         if (GUI.Button(new Rect(Screen.width - 400, 30, 200, 30), ServerNetwork.self.overrideConnectServerIndex + ": Set sv to 0: " + svName)) {
-            ServerNetwork.self.overrideConnectServerIndex = 0;
-         }
-         if (GUI.Button(new Rect(Screen.width - 400, 60, 200, 30), ServerNetwork.self.overrideConnectServerIndex + ": Set sv to 1: " + svName)) {
-            ServerNetwork.self.overrideConnectServerIndex = 1;
-         }
-      }
-
-      GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + serverWebRequest.ourPort);
-      GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + serverWebRequest.ourDeviceName);
-      if (GUI.Button(new Rect(Screen.width - 250, 90, 250, 30), "Override Name: " + serverWebRequest.ourDeviceName + " : " + overrideDeviceName)) {
-         overrideDeviceName = !overrideDeviceName;
-      }
-      if (GUI.Button(new Rect(Screen.width - 200, 120, 200, 30), "Send Glboal Msg")) {
-         ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0);
-      }
-      _globalMessage = GUI.TextField(new Rect(Screen.width - 400, 120, 200, 60), _globalMessage);
-
       if (!toggleGUI) {
          return;
       }
 
+      GUI.Box(new Rect(0, 0, Screen.width, Screen.height), "");
+      guiServerSetup();
+
       GUILayout.BeginHorizontal();
       {
-         _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Width(600), GUILayout.Height(400));
-         GUILayout.BeginHorizontal();
-         {
-            foreach (ServerSqlData server in serverWebRequest.serverDataList) {
-               GUILayout.BeginVertical();
-               if (GUILayout.Button("Update Server: " + server.port)) {
-                  serverWebRequest.updateSpecificServer(server, true);
-               }
-
-               GUILayout.Space(20);
-               foreach (int ids in server.connectedUserIds) {
-                  GUILayout.Box("User: " + ids);
-               }
-               GUILayout.Space(20);
-               foreach (Voyage voyages in server.voyageList) {
-                  GUILayout.Box("Voyages: " + voyages.voyageId);
-               }
-               GUILayout.EndVertical();
-            }
-         }
-         GUILayout.EndHorizontal();
-         GUILayout.EndScrollView();
+         guiIndividualServerInfo();
       }
       GUILayout.EndHorizontal();
 
       GUILayout.BeginHorizontal();
       {
-         GUILayout.BeginVertical();
-         {
-            if (GUILayout.Button("Update local server")) {
-               D.editorLog("Updating current server data", Color.green);
-               serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, true);
+         guiButtonTests();
+         forceClientServerConnection();
+         guiInviteInfo();
+      }
+      GUILayout.EndHorizontal();
+   }
+
+   private void forceClientServerConnection () {
+      GUILayout.BeginVertical();
+      GUILayout.Box("NOTE: This will force the clients\nto connect to a specific server");
+      if (GUILayout.Button("Override Best Server: " + ServerNetwork.self.overrideBestServerConnection)) {
+         ServerNetwork.self.overrideBestServerConnection = !ServerNetwork.self.overrideBestServerConnection;
+      }
+      string svName = "None";
+      try {
+         svName = ServerNetwork.self.servers.ToList()[ServerNetwork.self.overrideConnectServerIndex].port.ToString();
+      } catch {
+      }
+
+      if (ServerNetwork.self.overrideBestServerConnection) {
+         GUILayout.Box("The selected Server is: " + svName + "\nTotal Servers: " + ServerNetwork.self.servers.Count);
+         GUILayout.Space(15);
+         int index = 0;
+         foreach (Server server in ServerNetwork.self.servers) {
+            if (GUILayout.Button("Connect to this server:\n" + server.deviceName + " : " + server.port)) {
+               ServerNetwork.self.overrideConnectServerIndex = index;
             }
-            if (GUILayout.Button("Create a voyage")) {
-               createLocalVoyage();
+            index++;
+         }
+      }
+      GUILayout.EndVertical();
+   }
+
+   private void guiServerSetup () {
+      GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + serverWebRequest.ourPort);
+      GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + serverWebRequest.ourDeviceName);
+      if (GUI.Button(new Rect(Screen.width - 400, 0, 200, 30), "Send Glboal Msg")) {
+         ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0);
+      }
+      _globalMessage = GUI.TextField(new Rect(Screen.width - 400, 30, 200, 60), _globalMessage);
+   }
+
+   private void guiIndividualServerInfo () {
+      GUI.Box(new Rect(0, 0, serverLogWidth, serverLogHeight), "");
+      _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Width(serverLogWidth), GUILayout.Height(serverLogHeight));
+      GUILayout.BeginHorizontal();
+      {
+         foreach (ServerSqlData server in serverWebRequest.serverDataList) {
+            GUILayout.BeginVertical();
+            if (GUILayout.Button("Randomly Update Server:\n" + server.port +" : "+ (server == serverWebRequest.ourServerData ? "(LocalServer)" : "(RemoteServer)"))) {
+               serverWebRequest.updateSpecificServer(server, true);
             }
-            if (GUILayout.Button("Create a user")) {
-               createLocalPlayers();
-            }
-            if (GUILayout.Button("Create an area")) {
-               createOpenArea();
+
+            GUILayout.Space(10);
+            GUILayout.Box("Connected Users: " + server.connectedUserIds.Count);
+            foreach (int ids in server.connectedUserIds) {
+               GUILayout.Box("User: " + ids);
             }
             GUILayout.Space(10);
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("InviterId: ");
-            _inviterId = GUILayout.TextField(_inviterId);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("InviteeId: ");
-            _inviteeId = GUILayout.TextField(_inviteeId);
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Voyage: ");
-            _voyageGroupId = GUILayout.TextField(_voyageGroupId);
-            GUILayout.EndHorizontal();
-
-            if (GUILayout.Button("Create an invite")) {
-               simulateVoyageInvite();
+            GUILayout.Box("Existing Voyages:" + server.voyageList.Count);
+            foreach (Voyage voyages in server.voyageList) {
+               GUILayout.Box("Voyages: " + voyages.voyageId);
             }
+            GUILayout.EndVertical();
          }
-         GUILayout.EndVertical();
-         GUILayout.BeginVertical();
-         {
-            if (GUILayout.Button("Manual Check Updates")) {
-               serverWebRequest.checkServerUpdates();
-            }
-            if (GUILayout.Button("Get server Contents for all")) {
-               serverWebRequest.getServerContent(serverWebRequest.serverDataList);
-            }
-            if (GUILayout.Button("Generate a new random server")) {
-               createRandomServer();
-            }
-            if (GUILayout.Button("Update a Random Server")) {
-               updateAnyRandomServer();
-            }
-            if (GUILayout.Button("Clear Server Data")) {
-               serverWebRequest.serverDataList.Clear();
-            }
-         }
-         GUILayout.EndVertical();
-
-         GUILayout.BeginVertical();
-         {
-            GUILayout.Box("Pending Invites are: ");
-            GUILayout.Space(5);
-            foreach (VoyageInviteData pendingVoyage in serverWebRequest.pendingVoyageInvites) {
-               GUILayout.Box("Confirm pending voyage : " + pendingVoyage.inviterId + " -> " + pendingVoyage.inviteeId + " {} " + pendingVoyage.voyageGroupId);
-            }
-         }
-         GUILayout.EndVertical();
-         GUILayout.BeginVertical();
-         {
-            GUILayout.Box("Pending Creations are: ");
-            GUILayout.Space(5);
-            foreach (PendingVoyageCreation pendingVoyage in serverWebRequest.pendingVoyageCreations) {
-               if (GUILayout.Button("Confirm pending voyage : " + pendingVoyage.id + " - " + pendingVoyage.areaKey)) {
-                  serverWebRequest.confirmVoyageCreation(pendingVoyage);
-               }
-            }
-         }
-         GUILayout.EndVertical();
       }
       GUILayout.EndHorizontal();
+      GUILayout.EndScrollView();
+   }
+
+   private void guiButtonTests () {
+      GUILayout.BeginVertical();
+      {
+         if (GUILayout.Button("Create a test voyage")) {
+            createLocalVoyage();
+         }
+         if (GUILayout.Button("Create a test user")) {
+            createLocalPlayers();
+         }
+         if (GUILayout.Button("Create a test area")) {
+            createOpenArea();
+         }
+         GUILayout.Space(10);
+
+         GUILayout.BeginHorizontal();
+         GUILayout.Label("InviterId: ");
+         _inviterId = GUILayout.TextField(_inviterId);
+         GUILayout.EndHorizontal();
+
+         GUILayout.BeginHorizontal();
+         GUILayout.Label("InviteeId: ");
+         _inviteeId = GUILayout.TextField(_inviteeId);
+         GUILayout.EndHorizontal();
+
+         GUILayout.BeginHorizontal();
+         GUILayout.Label("Voyage: ");
+         _voyageGroupId = GUILayout.TextField(_voyageGroupId);
+         GUILayout.EndHorizontal();
+
+         if (GUILayout.Button("Create an invite")) {
+            simulateVoyageInvite();
+         }
+      }
+      GUILayout.EndVertical();
+
+      GUILayout.BeginVertical();
+      {
+         if (GUILayout.Button("Generate a \nnew random server")) {
+            createRandomServer();
+         }
+         if (GUILayout.Button("Update and \nRandomize any Server")) {
+            updateAnyRandomServer();
+         }
+         if (GUILayout.Button("Clear Server Data")) {
+            serverWebRequest.serverDataList.Clear();
+         }
+      }
+      GUILayout.EndVertical();
+   }
+
+   private void guiInviteInfo () {
+      GUILayout.BeginVertical();
+      {
+         GUILayout.Box("Pending Invites are: ");
+         GUILayout.Space(5);
+         int index = 0;
+         foreach (VoyageInviteData pendingVoyage in serverWebRequest.pendingVoyageInvites) {
+            GUILayout.Box("Invite: " + index + ": Inviter:{" + pendingVoyage.inviterId + "} Invitee:{" + pendingVoyage.inviteeId + "}\nStatus:{" + pendingVoyage.inviteStatus + "} GrpID:{" + pendingVoyage.voyageGroupId + "}");
+            index++;
+         }
+      }
+      GUILayout.EndVertical();
+      GUILayout.BeginVertical();
+      {
+         GUILayout.Box("Pending Creations are: ");
+         GUILayout.Space(5);
+         foreach (PendingVoyageCreation pendingVoyage in serverWebRequest.pendingVoyageCreations) {
+            if (GUILayout.Button("Clear pending voyage\nCreation: ID:{" + pendingVoyage.id + "} - Area:{" + pendingVoyage.areaKey + "}")) {
+               serverWebRequest.clearVoyageCreation(pendingVoyage);
+            }
+         }
+      }
+      GUILayout.EndVertical();
    }
 
    #endregion
@@ -254,11 +274,9 @@ public class ServerCommunicationSimulator : MonoBehaviour {
 
    private void createLocalPlayers () {
       int newUserId = Random.Range(1, 1000);
-      serverWebRequest.ourServerData.connectedUserIds.Add(newUserId);
       if (ServerNetwork.self != null) {
          D.editorLog("Creater local user at: Local Server");
-         serverWebRequest.ourServerData.connectedUserIds.Add(newUserId);
-         ServerNetwork.self.server.connectedUserIds.Add(newUserId);
+         serverWebRequest.addPlayer(newUserId, ServerNetwork.self.server);
       }
       serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, false, true);
    }
@@ -343,6 +361,10 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    private string _inviterId;
    private string _inviteeId;
    private string _voyageGroupId;
+
+   // Log Sizes
+   private float serverLogWidth = 600;
+   private float serverLogHeight = 400;
 
    #endregion
 }

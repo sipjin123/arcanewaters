@@ -50,7 +50,12 @@ public class RugMarker : MonoBehaviour
    }
 
    public Color getRugColor () {
-      return Minimap.self.mapEditorConfig.rugLookup[type];
+      try {
+         return Minimap.self.mapEditorConfig.rugLookup[type];
+      } catch {
+         D.editorLog("Error in Rug Lookup for Type: " + type, Color.red);
+         return Color.black;
+      }
    }
 
    #region Private Variables

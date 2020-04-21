@@ -387,19 +387,21 @@ public class ShopManager : MonoBehaviour {
    public List<ShipInfo> getShipsByShopName (string shopName) {
       List<ShipInfo> list = new List<ShipInfo>();
 
-      foreach (int shipId in _shipsByShopName[shopName]) {
-         ShipInfo ship = (ShipInfo) _ships[shipId];
+      if (_shipsByShopName.ContainsKey(shopName)) {
+         foreach (int shipId in _shipsByShopName[shopName]) {
+            ShipInfo ship = (ShipInfo) _ships[shipId];
 
-         XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
-         var sb = new StringBuilder();
-         using (var writer = XmlWriter.Create(sb)) {
-            ser.Serialize(writer, ship.shipAbilities);
+            XmlSerializer ser = new XmlSerializer(ship.shipAbilities.GetType());
+            var sb = new StringBuilder();
+            using (var writer = XmlWriter.Create(sb)) {
+               ser.Serialize(writer, ship.shipAbilities);
+            }
+
+            string longString = sb.ToString();
+            ship.shipAbilityXML = longString;
+            list.Add(ship);
          }
-
-         string longString = sb.ToString();
-         ship.shipAbilityXML = longString;
-         list.Add(ship);
-      }
+      } 
 
       return list;
    }

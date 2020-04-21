@@ -37,6 +37,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The speed that we move at
    public float moveSpeed = 3f;
 
+   // Shop Name (if any)
+   [SyncVar]
+   public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+
+   // The type of shop panel this npc will generate if this is a shop npc
+   [SyncVar]
+   public Panel.Type shopPanelType;
+
    [SyncVar]
    // The unique id assigned to this npc
    public int npcId;
@@ -47,6 +55,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Determines if this npc is spawned at debug mode
    public bool isDebug = false;
 
+   [SyncVar]
    // Determines if this npc is a shop npc
    public bool isShopNpc;
 
@@ -59,7 +68,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Look up components
       _startPosition = transform.position;
       _graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
-      _shopTrigger = GetComponent<ShopTrigger>();
 
       if (this.gameObject.HasComponent<Animator>()) {
          _animators.Add(GetComponent<Animator>());
@@ -108,7 +116,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             facing = Direction.South;
          }
       } else {
-         setupClientSideSprites();
+         setupClientSideValues();
       }
 
       // Get faction from type
@@ -131,7 +139,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
    }
 
-   private void setupClientSideSprites () {
+   private void setupClientSideValues () {
       string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + this.npcType + "/";
       List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
       if (newSprites.Count > 0) {
@@ -144,6 +152,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             swapper.newTexture = newTexture;
          }
       }
+
+      _shopTrigger = gameObject.AddComponent<ShopTrigger>();
+      _shopTrigger.panelType = shopPanelType;
    }
 
    public void initData () {
@@ -269,15 +280,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          switch (_shopTrigger.panelType) {
             case Panel.Type.Adventure:
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
-               adventurePanel.shopName = _shopName;
+               adventurePanel.shopName = shopName;
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
-               shipyardPanel.shopName = _shopName;
+               shipyardPanel.shopName = shopName;
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
-               merchantPanel.shopName = _shopName;
+               merchantPanel.shopName = shopName;
                break;
          } 
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
@@ -551,9 +562,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       if (panelName != "None") {
          D.editorLog("This npc is a shop npc: " + id + " - " + shopName, Color.cyan);
          _shopTrigger = gameObject.AddComponent<ShopTrigger>();
-         _shopName = shopName;
+         this.shopName = shopName;
          _shopTrigger.panelType = (Panel.Type) Enum.Parse(typeof(Panel.Type), panelName);
          isShopNpc = true;
+         shopPanelType = _shopTrigger.panelType;
       }
    }
 
@@ -594,9 +606,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // The default name, when not defined in the data file
    protected string _npcName = "NPC";
-
-   // Shop Name (if any)
-   protected string _shopName = ShopManager.DEFAULT_SHOP_NAME;
 
    // The AStarGrid Reference fetched from the Main Scene
    protected AStarGrid _gridReference;

@@ -230,7 +230,7 @@ public class Instance : NetworkBehaviour
                   NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent);
                   npc.areaKey = area.areaKey;
                   npc.npcId = npcId;
-
+                  
                   // Make sure npc has correct data
                   IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
                   if (receiver != null && dataField.d != null) {

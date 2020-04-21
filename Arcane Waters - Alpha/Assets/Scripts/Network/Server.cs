@@ -50,7 +50,6 @@ public class Server : MonoBehaviour {
       isLocalServer = true;
       ServerNetwork.self.server = this;
       ServerNetwork.self.servers.Add(this);
-      ServerNetwork.self.serverList.Add(this);
       D.editorLog("Local Server is: " + deviceName + " - " + port, Color.red);
 
       // In Editor host mode, the instance is created before this Server object exists
@@ -94,7 +93,7 @@ public class Server : MonoBehaviour {
       }*/
    }
 
-   public void HandleVoyageGroupInvite (int voyageGroupId, string inviterName, int inviteeUserId) {
+   public void handleVoyageGroupInvite (int voyageGroupId, string inviterName, int inviteeUserId) {
       D.editorLog("Handle voyage invites here", Color.green);
       // Find the NetEntity of the invitee
       NetEntity inviteeEntity = EntityManager.self.getEntity(inviteeUserId);
