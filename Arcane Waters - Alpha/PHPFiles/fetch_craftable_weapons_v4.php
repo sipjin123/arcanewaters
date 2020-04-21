@@ -10,8 +10,8 @@
 	}
 	
 	$query = "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent as craftingXML, equipment_weapon_xml_v3.xmlContent as equipmentXML FROM items 
-		right join crafting_xml_v2 on (itmType = crafting_xml_v2.equipmentTypeID and itmData like '%blueprintType=weapon%' and crafting_xml_v2.equipmentCategory = 1) 
-		right join equipment_weapon_xml_v3 on (itmType = equipment_weapon_xml_v3.equipmentTypeID and itmData like '%blueprintType=weapon%' ) 
+		right join crafting_xml_v2 on (itmType = crafting_xml_v2.xml_id and itmData like '%blueprintType=weapon%' and crafting_xml_v2.equipmentCategory = 1) 
+		right join equipment_weapon_xml_v3 on (itmType = equipment_weapon_xml_v3.xml_id and itmData like '%blueprintType=weapon%' ) 
 		where (itmCategory = 7) and items.usrId = ?";
 	
 	if ($stmt = $mysqli->prepare($query)) {

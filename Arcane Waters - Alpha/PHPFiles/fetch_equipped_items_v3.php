@@ -15,8 +15,8 @@
 			WHEN itmCategory = 2 THEN arcane.equipment_armor_xml_v3.xmlContent
 		END AS equipmentXML
 		FROM arcane.items 
-		left join arcane.equipment_weapon_xml_v3 on (itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.equipmentTypeID)
-		left join arcane.equipment_armor_xml_v3 on (itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.equipmentTypeID)
+		left join arcane.equipment_weapon_xml_v3 on (itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.xml_id)
+		left join arcane.equipment_armor_xml_v3 on (itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.xml_id)
 		left join arcane.users on armId = itmId or wpnId = itmId
 		where (armId = itmId or wpnId = itmId) and items.usrId = ?";
 	

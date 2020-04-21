@@ -9,7 +9,7 @@
 		exit();
 	}
 	
-	$query = "SELECT xmlContent, itmId FROM items left join equipment_weapon_xml_v3 on itmType = equipmentTypeID where itmCategory = 1 and usrId = ?";
+	$query = "SELECT xmlContent, itmId FROM items left join equipment_weapon_xml_v3 on itmType = xml_id where itmCategory = 1 and usrId = ?";
 	
 	if ($stmt = $mysqli->prepare($query)) {
 		$stmt->bind_param("s", $usrId);
