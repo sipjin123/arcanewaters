@@ -165,6 +165,14 @@ public class ServerCommunicationHandler : MonoBehaviour
       updateSpecificServer(ourServerData, false, true);
    }
 
+   public void removePlayer (int userId, Server server) {
+      if (ourServerData.connectedUserIds.Contains(userId)) {
+         ourServerData.connectedUserIds.Remove(userId);
+         server.connectedUserIds.Remove(userId);
+         updateSpecificServer(ourServerData, false, true);
+      }
+   }
+
    public void claimPlayer (int userId) {
       if (ourServerData.claimedUserIds.Contains(userId)) {
          return;

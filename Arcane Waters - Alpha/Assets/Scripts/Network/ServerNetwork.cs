@@ -8,10 +8,6 @@ using System.Linq;
 public class ServerNetwork : MonoBehaviour {
    #region Public Variables
 
-   // TODO: Confirm Claim Functionality Replacement
-   // String constants to store details about this specific server in our Photon custom properties
-   //public static string PLAYER_CLAIM = "player_claim-";
-
    // The Server object we have control of
    public Server server;
 
@@ -113,6 +109,10 @@ public class ServerNetwork : MonoBehaviour {
 
    public void addPlayer (int userId, Server server) {
       ServerCommunicationHandler.self.addPlayer(userId, server);
+   }
+
+   public void removePlayer (int userId) {
+      ServerCommunicationHandler.self.removePlayer(userId, server);
    }
 
    public void claimPlayer (int userId) {

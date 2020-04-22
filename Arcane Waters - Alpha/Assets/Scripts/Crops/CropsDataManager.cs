@@ -58,9 +58,7 @@ public class CropsDataManager : MonoBehaviour {
          if (!_cropDataCollection.ContainsKey(cropType)) {
             _cropDataCollection.Add(cropType, cropData);
             cropDataList.Add(cropData);
-         } else {
-            D.warning("Key already exists: " + cropType);
-         }
+         } 
       }
    }
 

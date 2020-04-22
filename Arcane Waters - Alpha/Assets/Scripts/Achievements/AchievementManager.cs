@@ -16,6 +16,9 @@ public class AchievementManager : MonoBehaviour {
 
    // List of achievement data for editor review
    public List<AchievementData> achievmentDataList;
+   
+   // Logs the achievements upon trigger
+   public bool logAchievements;
 
    public class AchievementGroupData {
       // The xml id of the achievement
@@ -106,7 +109,10 @@ public class AchievementManager : MonoBehaviour {
 
    public void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
       #if IS_SERVER_BUILD
-      D.debug("Register Achievement: " + actionType);
+      if (logAchievements) { 
+         D.debug("Register Achievement: " + actionType);
+      }
+
       List<AchievementData> castedData = AchievementManager.castData(actionType, dependencyItem);
       if (castedData == null) {
          Debug.LogWarning("Warning!: The XML does not exist yet, please create the data using the Achievement Tool Editor : (" + actionType + ")");

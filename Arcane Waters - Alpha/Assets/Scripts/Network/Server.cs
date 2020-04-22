@@ -18,9 +18,6 @@ public class Server : MonoBehaviour {
    // The number of players on this server
    public int playerCount;
 
-   // Our Photon view
-   //public PhotonView view;
-
    // The device name
    public string deviceName;
     
@@ -71,11 +68,6 @@ public class Server : MonoBehaviour {
 
    public bool isMainServer () {
       return port == 7777;
-   }
-
-   [PunRPC]
-   void ServerMessage (string message) {
-      D.log("Server message: " + message);
    }
 
    public void SendGlobalChat (string message, int senderUserId) {

@@ -33,12 +33,6 @@ public class MyNetworkManager : NetworkManager {
    // A reference to the Message Manager
    public MessageManager messageManager;
 
-   // The IP address we want to use for Photon (can be overridden on the command line)
-   public string photonAddress = "127.0.0.1";
-
-   // The port we want to use for Photon (can be overriden on the command line)
-   public int photonPort = 4530;
-
    // Our Telepathy Transport component
    public TelepathyTransport telepathy;
 
@@ -71,10 +65,14 @@ public class MyNetworkManager : NetworkManager {
             telepathy.port = ushort.Parse(split[1]);
          } else if (arg.Contains("photonAddress=")) {
             string[] split = arg.Split('=');
-            this.photonAddress = split[1];
+            // TODO: Confirm features wont break here
+            D.editorLog("Photon address was set here", Color.red);
+            //this.photonAddress = split[1];
          } else if (arg.Contains("photonPort=")) {
             string[] split = arg.Split('=');
-            this.photonPort = int.Parse(split[1]);
+            //this.photonPort = int.Parse(split[1]);
+            // TODO: Confirm features wont break here
+            D.editorLog("Photon port was set here", Color.red);
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
@@ -188,7 +186,6 @@ public class MyNetworkManager : NetworkManager {
 
    public override void OnStopServer () {
       _players.Clear();
-      PhotonNetwork.Disconnect();
    }
 
    [ServerOnly]
@@ -392,17 +389,7 @@ public class MyNetworkManager : NetworkManager {
    }
 
    public void connectToPhotonMaster () {
-      // Start up Photon so the servers can talk to each other
-      if (this.networkAddress == "127.0.0.1" || this.networkAddress == "localhost" || CommandCodes.get(CommandCodes.Type.PHOTON_CLOUD)) {
-         // During testing, we can use Photon Cloud to simplify things, and allow testing on Mac (where Photon Control can't run)
-         PhotonNetwork.ConnectUsingSettings("v1");
-         D.debug("Connecting to Photon cloud, because of network address: " + this.networkAddress);
-
-      } else {
-         // In actual deployments, we use self-hosted Photon for reliability and 0 latency between servers
-         PhotonNetwork.ConnectToMaster(this.photonAddress, this.photonPort, "192d4dcc-4d63-458d-ab68-69838b16f638", "v1");
-         D.debug("Connecting to Photon self-hosted at; " + this.photonAddress + ", port: " + this.photonPort);
-      }
+      D.editorLog("Replaced photon connection here", Color.red);
    }
 
    #region Private Variables
