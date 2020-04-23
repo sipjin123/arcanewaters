@@ -317,7 +317,6 @@ public class NetEntity : NetworkBehaviour {
    protected virtual void OnDestroy () {
       // Remove the entity from the manager
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
-         ServerNetwork.self.removePlayer(userId);
          EntityManager.self.removeEntity(userId);
       }
 

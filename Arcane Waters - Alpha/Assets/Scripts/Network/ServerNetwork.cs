@@ -17,12 +17,6 @@ public class ServerNetwork : MonoBehaviour {
    // Self
    public static ServerNetwork self;
 
-   // Determines if the best server selection should be overridden for simulation purposes
-   public bool overrideBestServerConnection = false;
-
-   // The server index to connect to for simulation purposes
-   public int overrideConnectServerIndex = 0;
-
    #endregion
 
    void Awake () {
@@ -31,10 +25,6 @@ public class ServerNetwork : MonoBehaviour {
 
    public Server findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
       bool isSinglePlayer, int voyageId) {
-      if (overrideBestServerConnection) {
-         return servers.ToList()[overrideConnectServerIndex];
-      }
-
       // Always return the current server if single player
       if (isSinglePlayer) {
          return server;
@@ -105,22 +95,6 @@ public class ServerNetwork : MonoBehaviour {
 
    public void sendGlobalMessage (ChatInfo chatInfo) {
       server.SendGlobalChat(chatInfo.text, chatInfo.senderId);
-   }
-
-   public void addPlayer (int userId, Server server) {
-      ServerCommunicationHandler.self.addPlayer(userId, server);
-   }
-
-   public void removePlayer (int userId) {
-      ServerCommunicationHandler.self.removePlayer(userId, server);
-   }
-
-   public void claimPlayer (int userId) {
-      ServerCommunicationHandler.self.claimPlayer(userId);
-   }
-
-   public void releaseClaim (int userId) {
-      ServerCommunicationHandler.self.releasePlayerClaim(userId);
    }
 
    public Server getServer (string ipAddress, int port) {

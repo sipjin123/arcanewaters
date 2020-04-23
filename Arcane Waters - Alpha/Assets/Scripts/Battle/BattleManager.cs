@@ -153,7 +153,7 @@ public class BattleManager : MonoBehaviour {
       _activeBattles[player.userId] = battle;
 
       // The Player needs to return to this specific server if they reconnect
-      ServerNetwork.self.claimPlayer(player.userId);
+      ServerCommunicationHandler.self.claimPlayer(player.userId);
 
       // Create a Battler for this Player
       Battler battler = createBattlerForPlayer(battle, player, teamType);
@@ -209,7 +209,7 @@ public class BattleManager : MonoBehaviour {
 
          // If this was a Player, we can release the server claim now, so they can relog into any server
          if (battler.userId > 0) {
-            ServerNetwork.self.releaseClaim(battler.userId);
+            ServerCommunicationHandler.self.releasePlayerClaim(battler.userId);
          }
 
          // Warp any losing players back to the starting town, or show the death animation for Enemies

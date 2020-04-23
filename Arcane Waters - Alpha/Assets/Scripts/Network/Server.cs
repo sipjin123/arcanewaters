@@ -54,7 +54,6 @@ public class Server : MonoBehaviour {
    }
 
    private void Update () {
-      //if (view != null && view.isMine) {
       if (isLocalServer) { 
          this.ipAddress = MyNetworkManager.self.networkAddress;
          this.port = MyNetworkManager.self.telepathy.port;

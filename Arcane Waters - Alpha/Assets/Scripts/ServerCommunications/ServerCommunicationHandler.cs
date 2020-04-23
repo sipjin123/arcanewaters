@@ -48,9 +48,6 @@ public class ServerCommunicationHandler : MonoBehaviour
    // The latest chat info
    public ChatInfo latestChatinfo = new ChatInfo();
 
-   // Simulator script
-   public ServerCommunicationSimulator serverSimulator;
-
    // Determines if the voyages have been initialized
    public bool hasInitiatedVoyage;
 
@@ -66,6 +63,7 @@ public class ServerCommunicationHandler : MonoBehaviour
 
    private void Awake () {
       self = this;
+      ourIp = MyNetworkManager.self.networkAddress;
    }
 
    public void initializeServers () {
@@ -121,7 +119,7 @@ public class ServerCommunicationHandler : MonoBehaviour
       };
 
       // If server is ours and just initialized, clear data
-      updateSpecificServer(newSqlData, false);
+      updateServerDatabase(newSqlData, false);
 
       // Keep reference to self
       ourServerData = newSqlData;
@@ -156,38 +154,51 @@ public class ServerCommunicationHandler : MonoBehaviour
       });
    }
 
-   public void addPlayer (int userId, Server server) {
-      if (ourServerData.connectedUserIds.Contains(userId)) {
-         return;
+   public void addPlayer (int userId) {
+      if (!ourServerData.connectedUserIds.Contains(userId)) {
+         ourServerData.connectedUserIds.Add(userId);
+
+         // Sync server data and servers
+         overwriteServerData(ourServerData, true);
+
+         // Send updated values to the database
+         updateServerDatabase(ourServerData, true);
       }
-      ourServerData.connectedUserIds.Add(userId);
-      server.connectedUserIds.Add(userId);
-      updateSpecificServer(ourServerData, false, true);
    }
 
-   public void removePlayer (int userId, Server server) {
+   public void removePlayer (int userId) {
       if (ourServerData.connectedUserIds.Contains(userId)) {
          ourServerData.connectedUserIds.Remove(userId);
-         server.connectedUserIds.Remove(userId);
-         updateSpecificServer(ourServerData, false, true);
+
+         // Sync server data and servers
+         overwriteServerData(ourServerData, true);
+
+         // Send updated values to the database
+         updateServerDatabase(ourServerData, true);
       }
    }
 
    public void claimPlayer (int userId) {
-      if (ourServerData.claimedUserIds.Contains(userId)) {
-         return;
-      }
+      if (!ourServerData.claimedUserIds.Contains(userId)) {
+         ourServerData.claimedUserIds.Add(userId);
 
-      ourServerData.claimedUserIds.Add(userId);
-      ServerNetwork.self.server.claimedUserIds.Add(userId);
-      updateSpecificServer(ourServerData, false, true);
+         // Sync server data and servers
+         overwriteServerData(ourServerData, true);
+
+         // Send updated values to the database
+         updateServerDatabase(ourServerData, true);
+      }
    }
 
    public void releasePlayerClaim (int userId) {
       if (ourServerData.claimedUserIds.Contains(userId)) {
          ourServerData.claimedUserIds.Remove(userId);
-         ServerNetwork.self.server.claimedUserIds.Remove(userId);
-         updateSpecificServer(ourServerData, false, true);
+
+         // Sync server data and servers
+         overwriteServerData(ourServerData, true);
+
+         // Send updated values to the database
+         updateServerDatabase(ourServerData, true);
       }
    }
 
@@ -227,17 +238,11 @@ public class ServerCommunicationHandler : MonoBehaviour
       }
    }
 
-   public void updateSpecificServer (ServerSqlData serverData, bool generateRandomData, bool retainData = false) {
+   public void updateServerDatabase (ServerSqlData serverData, bool retainData = false) {
       if (!retainData) {
-         if (generateRandomData) {
-            serverData.voyageList = serverSimulator.generateRandomVoyage();
-            serverData.connectedUserIds = serverSimulator.generateRandomUserIds();
-            serverData.openAreas = serverSimulator.generateRandomArea();
-         } else {
-            serverData.voyageList = new List<Voyage>();
-            serverData.connectedUserIds = new List<int>();
-            serverData.openAreas = new List<string>();
-         }
+         serverData.voyageList = new List<Voyage>();
+         serverData.connectedUserIds = new List<int>();
+         serverData.openAreas = new List<string>();  
       }
       serverData.latestUpdate = DateTime.UtcNow;
       serverData.lastPingTime = serverData.latestUpdate;
@@ -284,7 +289,7 @@ public class ServerCommunicationHandler : MonoBehaviour
                      // Update our data to make sure we are in sync with the database
                      TimeSpan updateSpan = (existingSqlData.latestUpdate - newSqlData.latestUpdate);
                      if (updateSpan.TotalSeconds > 1) {
-                        updateSpecificServer(ourServerData, false, true);
+                        updateServerDatabase(ourServerData, true);
                      } 
                   } 
                } else {
@@ -357,7 +362,7 @@ public class ServerCommunicationHandler : MonoBehaviour
       });
    }
 
-   private void overwriteServerData (ServerSqlData newSqlData) {
+   private void overwriteServerData (ServerSqlData newSqlData, bool localServer = false) {
       if (ServerNetwork.self != null) {
          Server existingServer = ServerNetwork.self.servers.ToList().Find(_ => _.deviceName == newSqlData.deviceName && _.ipAddress == newSqlData.ip && _.port == newSqlData.port);
          if (existingServer != null) {
@@ -365,6 +370,13 @@ public class ServerCommunicationHandler : MonoBehaviour
             existingServer.voyages = newSqlData.voyageList;
             existingServer.connectedUserIds = new HashSet<int>(newSqlData.connectedUserIds);
             existingServer.claimedUserIds = new HashSet<int>(newSqlData.claimedUserIds);
+
+            if (localServer) {
+               ServerNetwork.self.server.openAreas = newSqlData.openAreas.ToArray();
+               ServerNetwork.self.server.voyages = newSqlData.voyageList;
+               ServerNetwork.self.server.connectedUserIds = new HashSet<int>(newSqlData.connectedUserIds);
+               ServerNetwork.self.server.claimedUserIds = new HashSet<int>(newSqlData.claimedUserIds);
+            }
 
             if (!hasInitiatedVoyage) {
                // Regularly check that there are enough voyage instances open and create more

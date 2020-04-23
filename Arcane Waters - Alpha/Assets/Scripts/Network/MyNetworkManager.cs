@@ -63,16 +63,6 @@ public class MyNetworkManager : NetworkManager {
          if (arg.Contains("port=")) {
             string[] split = arg.Split('=');
             telepathy.port = ushort.Parse(split[1]);
-         } else if (arg.Contains("photonAddress=")) {
-            string[] split = arg.Split('=');
-            // TODO: Confirm features wont break here
-            D.editorLog("Photon address was set here", Color.red);
-            //this.photonAddress = split[1];
-         } else if (arg.Contains("photonPort=")) {
-            string[] split = arg.Split('=');
-            //this.photonPort = int.Parse(split[1]);
-            // TODO: Confirm features wont break here
-            D.editorLog("Photon port was set here", Color.red);
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
@@ -138,9 +128,6 @@ public class MyNetworkManager : NetworkManager {
       // Look up and store all of the area keys and spawn positions from the database
       AreaManager.self.storeAreaInfo();
       SpawnManager.self.storeSpawnPositions();
-
-      // Start up Photon so the servers can talk to each other
-      connectToPhotonMaster();
 
       // Initialize all xml managers to fetch from database
       initializeXmlData();
@@ -265,7 +252,7 @@ public class MyNetworkManager : NetworkManager {
             player.voyageGroupId = voyageGroupId;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
-            ServerNetwork.self.addPlayer(player.userId, bestServer);
+            ServerCommunicationHandler.self.addPlayer(player.userId);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, shipInfo);
 
@@ -346,6 +333,9 @@ public class MyNetworkManager : NetworkManager {
       if (_players.ContainsKey(conn.connectionId)) {
          NetEntity player = _players[conn.connectionId];
 
+         // Remove this player from the user list of the server
+         ServerCommunicationHandler.self.removePlayer(player.userId);
+
          // Remove the player from the instance
          InstanceManager.self.removeEntityFromInstance(player);
 
@@ -386,10 +376,6 @@ public class MyNetworkManager : NetworkManager {
 
    public static Dictionary<int, NetEntity> getPlayers () {
       return _players;
-   }
-
-   public void connectToPhotonMaster () {
-      D.editorLog("Replaced photon connection here", Color.red);
    }
 
    #region Private Variables

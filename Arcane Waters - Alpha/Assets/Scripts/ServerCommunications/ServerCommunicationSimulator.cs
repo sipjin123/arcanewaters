@@ -19,6 +19,12 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    // Enables the simulator GUI
    public bool enableGUI;
 
+   // Determines if the best server selection should be overridden for simulation purposes
+   public bool overrideBestServerConnection = false;
+
+   // The server index to connect to for simulation purposes
+   public int overrideConnectServerIndex = 0;
+
    #endregion
 
    #region Simulator Updates and UI
@@ -56,22 +62,22 @@ public class ServerCommunicationSimulator : MonoBehaviour {
    private void forceClientServerConnection () {
       GUILayout.BeginVertical();
       GUILayout.Box("NOTE: This will force the clients\nto connect to a specific server");
-      if (GUILayout.Button("Override Best Server: " + ServerNetwork.self.overrideBestServerConnection)) {
-         ServerNetwork.self.overrideBestServerConnection = !ServerNetwork.self.overrideBestServerConnection;
+      if (GUILayout.Button("Override Best Server: " + overrideBestServerConnection)) {
+         overrideBestServerConnection = !overrideBestServerConnection;
       }
       string svName = "None";
       try {
-         svName = ServerNetwork.self.servers.ToList()[ServerNetwork.self.overrideConnectServerIndex].port.ToString();
+         svName = ServerNetwork.self.servers.ToList()[overrideConnectServerIndex].port.ToString();
       } catch {
       }
 
-      if (ServerNetwork.self.overrideBestServerConnection) {
+      if (overrideBestServerConnection) {
          GUILayout.Box("The selected Server is: " + svName + "\nTotal Servers: " + ServerNetwork.self.servers.Count);
          GUILayout.Space(15);
          int index = 0;
          foreach (Server server in ServerNetwork.self.servers) {
             if (GUILayout.Button("Connect to this server:\n" + server.deviceName + " : " + server.port)) {
-               ServerNetwork.self.overrideConnectServerIndex = index;
+               overrideConnectServerIndex = index;
             }
             index++;
          }
@@ -96,7 +102,7 @@ public class ServerCommunicationSimulator : MonoBehaviour {
          foreach (ServerSqlData server in serverWebRequest.serverDataList) {
             GUILayout.BeginVertical();
             if (GUILayout.Button("Randomly Update Server:\n" + server.port +" : "+ (server == serverWebRequest.ourServerData ? "(LocalServer)" : "(RemoteServer)"))) {
-               serverWebRequest.updateSpecificServer(server, true);
+               serverWebRequest.updateServerDatabase(server, true);
             }
 
             GUILayout.Space(10);
@@ -222,7 +228,7 @@ public class ServerCommunicationSimulator : MonoBehaviour {
       newestList.Remove(ourServerContent);
 
       ServerSqlData randomServer = newestList[Random.Range(0, newestList.Count)];
-      serverWebRequest.updateSpecificServer(randomServer, true);
+      serverWebRequest.updateServerDatabase(randomServer, true);
    }
 
    private void createRandomServer () {
@@ -265,15 +271,15 @@ public class ServerCommunicationSimulator : MonoBehaviour {
       if (ServerNetwork.self != null) {
          ServerNetwork.self.server.voyages = serverWebRequest.ourServerData.voyageList;
       }
-      serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, false, true);
+      serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
    }
 
    private void createLocalPlayers () {
       int newUserId = Random.Range(1, 1000);
       if (ServerNetwork.self != null) {
-         serverWebRequest.addPlayer(newUserId, ServerNetwork.self.server);
+         serverWebRequest.addPlayer(newUserId);
       }
-      serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, false, true);
+      serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
    }
 
    private void createOpenArea () {
@@ -282,7 +288,7 @@ public class ServerCommunicationSimulator : MonoBehaviour {
       if (ServerNetwork.self != null) {
          ServerNetwork.self.server.openAreas = serverWebRequest.ourServerData.openAreas.ToArray();
       }
-      serverWebRequest.updateSpecificServer(serverWebRequest.ourServerData, false, true);
+      serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
    }
 
    public List<VoyageInviteData> generateVoyageInviteForServer (ServerSqlData serverSelected) {
