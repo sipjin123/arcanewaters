@@ -32,9 +32,13 @@ public class QuickLaunchPanel : MonoBehaviour {
    // Our Game is in single player mode
    public Toggle singlePlayerToggle;
 
+   // Launch the game using username and steamid instead of username and password
+   public Toggle steamLoginToggle;
+
    // Some keys we use to store login credentials
    public static string ACCOUNT_KEY = "quick_launch_account";
    public static string PASSWORD_KEY = "quick_launch_password";
+   public static string STEAM_ID_KEY = "quick_launch_steam_id";
 
    // Self
    public static QuickLaunchPanel self;
@@ -74,6 +78,12 @@ public class QuickLaunchPanel : MonoBehaviour {
       // Store the values we've specified
       PlayerPrefs.SetString(ACCOUNT_KEY, this.accountInputField.text);
       PlayerPrefs.SetString(PASSWORD_KEY, this.passwordInputField.text);
+      if (SteamManager.Initialized && steamLoginToggle.isOn) {
+         Steamworks.CSteamID steamId = Steamworks.SteamUser.GetSteamID();
+         Global.isSteamLogin = true;
+         Global.lastSteamId = steamId.ToString();
+         PlayerPrefs.SetString(STEAM_ID_KEY, steamId.ToString());
+      }
 
       // Fill in the fields in the actual login panel
       TitleScreen.self.accountInputField.text = this.accountInputField.text;

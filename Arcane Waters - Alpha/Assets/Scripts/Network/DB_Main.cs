@@ -3207,6 +3207,31 @@ public class DB_Main : DB_MainStub {
       return accountId;
    }
 
+   public static new int getAccountIdUsingSteam (string accountName, string steamId) {
+      int accountId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM accounts WHERE accName=@accName AND steamId=@steamId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accName", accountName);
+            cmd.Parameters.AddWithValue("@steamId", steamId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountId = dataReader.GetInt32("accId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountId;
+   }
+
    public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       List<UserInfo> userList = new List<UserInfo>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";

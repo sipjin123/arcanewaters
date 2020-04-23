@@ -448,6 +448,10 @@ public class DB_MainStub : MonoBehaviour {
       return -1;
    }
 
+   public static int getAccountIdUsingSteam (string accountName, string steamId) {
+      return -1;
+   }
+
    public static int getAccountPermissionLevel (int accountId) {
       return 0;
    }

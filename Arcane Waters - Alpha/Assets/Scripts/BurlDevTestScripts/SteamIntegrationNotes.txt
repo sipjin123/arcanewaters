@@ -1,0 +1,20 @@
+Part 1 Integration (Steam API)
+	- Plugins/Steam
+	
+Part 2 Integration (Steamworks.NET)
+	- Editor/Steamworks.NET
+	- Plugins/steam_api.bundle
+	- Plugins/Steamworks.NET
+	- Plugins/x86
+	- Plugins/x86_64
+	
+Part 3 Integration
+	- Downloaded SteamManager.cs which is the main script handler that goes along with the (Steamworks.NET)
+
+Notes:
+	- Make sure Root folder steam_appid.txt contains the appropriate steam id (Editor script {has already/will} generate this)
+	- The main scene is required to have an instance of SteamManager.cs
+
+Source:
+	- SteamWorks.NET
+		- http://steamworks.github.io/installation/

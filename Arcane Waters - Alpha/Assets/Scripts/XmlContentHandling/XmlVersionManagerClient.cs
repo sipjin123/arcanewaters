@@ -61,7 +61,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
    private IEnumerator CO_ProcessClientData () {
       int clientXmlVersion = PlayerPrefs.GetInt(XML_VERSION, 0);
-      D.log("Client version is: " + clientXmlVersion);
 
       UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + XML_VERSION_GET);
       yield return www.SendWebRequest();
@@ -79,7 +78,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             D.log(clientMessage);
             StartCoroutine(CO_DownloadClientData(serverVersion));
          } else {
-            clientMessage = "Client is up to date";
+            clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
             D.log(clientMessage);
             processClientXml();
          }

@@ -96,6 +96,10 @@ public class MyNetworkManager : NetworkManager {
       // Keep track of the values in our Title Screen text fields
       Global.lastUsedAccountName = TitleScreen.self.accountInputField.text;
       Global.lastUserAccountPassword = TitleScreen.self.passwordInputField.text;
+      if (SteamManager.Initialized) {
+         Steamworks.CSteamID steamId = Steamworks.SteamUser.GetSteamID();
+         Global.lastSteamId = steamId.ToString();
+      }
 
       // Get the client version number from the cloud build manifest
       Global.clientGameVersion = Util.getGameVersion();

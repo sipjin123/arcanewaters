@@ -78,7 +78,7 @@ public class ClientManager : MonoBehaviour {
 
    public static void sendAccountNameAndUserId () {
       LogInUserMessage msg = new LogInUserMessage(Global.netId,
-         Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+         Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.lastSteamId, Global.isSteamLogin, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
 
       // Send a message to the Server letting them know which of our Users we want to log in to
       NetworkClient.Send(msg);

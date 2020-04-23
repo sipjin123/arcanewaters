@@ -47,6 +47,10 @@ public class Global {
    // Keeps track of the last account email, for Paymentwall
    public static string lastAccountEmail;
 
+   // Keeps track of the steam settings and info
+   public static bool isSteamLogin;
+   public static string lastSteamId;
+
    // Keeps track of the last account creation time, for Paymentwall
    public static System.DateTime lastAccountCreationTime;
 

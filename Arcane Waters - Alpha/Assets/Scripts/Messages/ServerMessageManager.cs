@@ -40,7 +40,14 @@ public class ServerMessageManager : MonoBehaviour {
          // Look up the account ID corresponding to the provided account name and password
          string salt = Util.createSalt("arcane");
          string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
-         int accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+         int accountId = 0;
+         if (logInUserMessage.isSteamLogin && logInUserMessage.steamId.Length > 1) {
+            D.editorLog("Loging in using steam: " + logInUserMessage.steamId, Color.green);
+            accountId = DB_Main.getAccountIdUsingSteam(logInUserMessage.accountName, logInUserMessage.steamId);
+         } else {
+            D.editorLog("Loging in using password: " + logInUserMessage.accountPassword, Color.green);
+            accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
+         }
 
          // Get the user objects for the selected user ID
          UserObjects userObjects = null;
