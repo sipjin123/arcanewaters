@@ -257,7 +257,7 @@ public class ServerCommunicationHandler : MonoBehaviour
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch all server update info
-         List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime();
+         List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime(ourDeviceName);
          pendingVoyageCreations = DB_Main.getPendingVoyageCreations();
          ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
          pendingVoyageInvites = DB_Main.getAllVoyageInvites();
@@ -319,13 +319,12 @@ public class ServerCommunicationHandler : MonoBehaviour
             // Will acknowledge server is active if the database entry was updated in less than 10 seconds
             if (timeSpan.TotalSeconds < SERVER_ACTIVE_TIME) {
                // Add server data if not yet existing in server data list
-               D.editorLog("This server is New, Caching now: " + newSqlData.port + "_" + newSqlData.deviceName, Color.green);
                serversToUpdate.Add(newSqlData);
-               addNewServer(newSqlData, false);
-            } else {
-               // Handle response Error for server inactivity
-               //D.editorLog("Will not add this server (" + newSqlData.deviceName + ") it seems to be NOT active : Total Seconds gap is: " + ((int) timeSpan.TotalSeconds) + " Minutes is: " + ((int) timeSpan.TotalMinutes), Color.red);
-            }
+               if (!serverDataList.Exists(_ => _.deviceName == newSqlData.deviceName && _.port == newSqlData.port && _.ip == newSqlData.ip)) {
+                  D.editorLog("This server is New, Caching now: " + newSqlData.port + "_" + newSqlData.deviceName, Color.green);
+                  addNewServer(newSqlData, false);
+               }
+            } 
          });
       });
    }

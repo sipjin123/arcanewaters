@@ -144,16 +144,17 @@ public class DB_Main : DB_MainStub {
       return newServerEntry;
    }
 
-   public static new List<ServerSqlData> getServerUpdateTime () {
+   public static new List<ServerSqlData> getServerUpdateTime (string localDeviceName) {
       List<ServerSqlData> rawDataList = new List<ServerSqlData>();
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT svrPort, srvAddress, svrDeviceName, updateTime FROM arcane.server_status", conn)) {
+            "SELECT svrPort, srvAddress, svrDeviceName, updateTime FROM arcane.server_status where svrDeviceName = @svrDeviceName", conn)) {
 
             conn.Open();
-            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@svrDeviceName", localDeviceName);
+            cmd.Prepare(); 
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {

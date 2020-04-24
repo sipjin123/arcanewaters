@@ -30,7 +30,7 @@ public class DB_MainStub : MonoBehaviour {
       return new ServerSqlData();
    }
 
-   public static List<ServerSqlData> getServerUpdateTime () {
+   public static List<ServerSqlData> getServerUpdateTime (string localDeviceName) {
       return new List<ServerSqlData>();
    }
 
