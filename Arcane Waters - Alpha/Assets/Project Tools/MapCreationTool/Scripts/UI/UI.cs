@@ -379,18 +379,6 @@ namespace MapCreationTool
 
       public void openMapList () {
          mapList.open();
-         try {
-            recText(200);
-         } catch(Exception ex) {
-            UI.messagePanel.displayError(ex.ToString());
-         }
-         
-      }
-
-      private void recText(int x) {
-         if (x > 0)
-            recText(x - 1);
-         int z = 0 / x;
       }
 
       public void openSettings () {

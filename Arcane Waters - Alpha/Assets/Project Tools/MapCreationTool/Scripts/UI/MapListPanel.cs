@@ -208,7 +208,7 @@ namespace MapCreationTool
 
          UI.yesNoDialog.display(
             "Deleting a map",
-            $"Are you sure you want to delete map {map.name} <b>completely</b>? All versions will be <b>permanently</b> lost.",
+            $"Are you sure you want to delete map {map.name} completely? All versions will be permanently lost.",
             () => deleteMapConfirm(map), null);
       }
 

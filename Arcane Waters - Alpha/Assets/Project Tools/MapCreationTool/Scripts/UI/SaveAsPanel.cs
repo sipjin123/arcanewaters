@@ -12,14 +12,11 @@ namespace MapCreationTool
       [SerializeField]
       private InputField inputField = null;
       [SerializeField]
-      private Text errorText = null;
-      [SerializeField]
       private Button saveButton = null;
       [SerializeField]
       private Text saveButtonText = null;
 
       public void open () {
-         errorText.text = "";
          saveButtonText.text = "Save";
          saveButton.interactable = true;
          inputField.text = "";
@@ -37,7 +34,6 @@ namespace MapCreationTool
       public IEnumerator saveRoutine () {
          saveButton.interactable = false;
          saveButtonText.text = "Saving...";
-         errorText.text = "";
 
          // Wait for a few frames so the UI can update
          yield return new WaitForEndOfFrame();
@@ -83,7 +79,7 @@ namespace MapCreationTool
                   saveButtonText.text = "Save";
 
                   if (dbError != null) {
-                     errorText.text = dbError;
+                     UI.messagePanel.displayError(dbError);
                   } else {
                      DrawBoard.changeLoadedVersion(mapVersion);
                      Overlord.loadAllRemoteData();
@@ -92,7 +88,7 @@ namespace MapCreationTool
                });
             });
          } catch (Exception ex) {
-            errorText.text = ex.Message;
+            UI.messagePanel.displayError(ex.Message);
             saveButton.interactable = true;
             saveButtonText.text = "Save";
          }

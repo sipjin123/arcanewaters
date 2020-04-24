@@ -15,10 +15,6 @@ namespace MapCreationTool
       private Transform entryParent = null;
       [SerializeField]
       private Text secondTitleText = null;
-      [SerializeField]
-      private Text loadingText = null;
-      [SerializeField]
-      private Text errorText = null;
 
       private List<VersionListEntry> entries = new List<VersionListEntry>();
 
@@ -29,23 +25,19 @@ namespace MapCreationTool
          entries.Clear();
 
          secondTitleText.text = "";
-         loadingText.text = "";
-         errorText.text = "";
       }
 
       public void open (Map map) {
          clearEverything();
-         setLoadingText();
          show();
          loadList(map);
       }
 
       public void loadList (Map map) {
          clearEverything();
-         setLoadingText();
          show();
 
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             List<MapVersion> mapVersions = null;
             string error = "";
             try {
@@ -55,9 +47,8 @@ namespace MapCreationTool
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               loadingText.text = "";
                if (mapVersions == null) {
-                  errorText.text = error;
+                  UI.messagePanel.displayError(error);
                } else {
                   secondTitleText.text = map.name;
                   foreach (MapVersion mapVersion in mapVersions) {
@@ -72,6 +63,8 @@ namespace MapCreationTool
                }
             });
          });
+
+         UI.loadingPanel.display("Loading map versions", task);
       }
 
       public void openMapVersion (MapVersion mapVersion) {
@@ -84,8 +77,7 @@ namespace MapCreationTool
 
       public void openMapConfirm (MapVersion mapVersion) {
          clearEverything();
-         setLoadingText();
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string dbError = null;
             string editorData = null;
             try {
@@ -96,11 +88,9 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (dbError != null) {
-                  loadingText.text = "";
-                  errorText.text = dbError;
+                  UI.messagePanel.displayError(dbError);
                } else if (editorData == null) {
-                  loadingText.text = "";
-                  errorText.text = $"Could not find map {name} in the database";
+                  UI.messagePanel.displayError($"Could not find map {name} in the database");
                } else {
                   try {
                      mapVersion.editorData = editorData;
@@ -109,12 +99,13 @@ namespace MapCreationTool
                      hide();
                      UI.mapList.close();
                   } catch (Exception ex) {
-                     loadingText.text = "";
-                     errorText.text = ex.Message;
+                     UI.messagePanel.displayError(ex.Message);
                   }
                }
             });
          });
+
+         UI.loadingPanel.display("Loading map", task);
       }
 
       public void publishVersion (MapVersion mapVersion) {
@@ -128,15 +119,14 @@ namespace MapCreationTool
          }
          UI.yesNoDialog.display(
             "Publishing a map",
-            $"Are you sure you want to publish version {mapVersion.version} of map {mapVersion.map.name}?\nA published version will <b>immediately</b> become available for the users.",
+            $"Are you sure you want to publish version {mapVersion.version} of map {mapVersion.map.name}?\nA published version will immediately become available for the users.",
              () => publishVersionConfirm(mapVersion),
              null);
       }
 
       public void publishVersionConfirm (MapVersion mapVersion) {
          clearEverything();
-         setLoadingText();
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string error = null;
             try {
                DB_Main.setLiveMapVersion(mapVersion);
@@ -146,14 +136,15 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (error != null) {
-                  loadingText.text = "";
-                  errorText.text = error;
+                  UI.messagePanel.displayError(error);
                } else {
                   UI.mapList.open();
                   hide();
                }
             });
          });
+
+         UI.loadingPanel.display("Publishing a map", task);
       }
 
       public void deleteMapVersion (MapVersion version) {
@@ -175,11 +166,11 @@ namespace MapCreationTool
 
       public void deleteMapVersionConfirm (MapVersion version) {
          clearEverything();
-         setLoadingText();
          if (DrawBoard.loadedVersion != null && DrawBoard.loadedVersion.CompareTo(version) == 0) {
             DrawBoard.changeLoadedVersion(null);
          }
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         var task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             string error = null;
             try {
                DB_Main.deleteMapVersion(version);
@@ -189,22 +180,19 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (error != null) {
-                  loadingText.text = "";
-                  errorText.text = error;
+                  UI.messagePanel.displayError(error);
                } else {
                   UI.mapList.open();
                   open(version.map);
                }
             });
          });
+
+         UI.loadingPanel.display("Deleting map version", task);
       }
 
       public void close () {
          hide();
-      }
-
-      private void setLoadingText () {
-         loadingText.text = "Loading...";
       }
    }
 }

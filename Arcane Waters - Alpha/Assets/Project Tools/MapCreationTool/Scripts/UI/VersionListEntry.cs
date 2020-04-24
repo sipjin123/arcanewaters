@@ -30,7 +30,7 @@ namespace MapCreationTool
          bool live = mapVersion.map.publishedVersion != null && mapVersion.map.publishedVersion == mapVersion.version;
 
          publishButton.interactable = !live;
-         publishButton.GetComponentInChildren<Text>().text = live ? "<b>LIVE!</b>" : "PUBLISH";
+         publishButton.GetComponentInChildren<Text>().text = live ? "LIVE!" : "PUBLISH";
 
          publishButton.onClick.RemoveAllListeners();
          publishButton.onClick.AddListener(() => onPublishClick());
