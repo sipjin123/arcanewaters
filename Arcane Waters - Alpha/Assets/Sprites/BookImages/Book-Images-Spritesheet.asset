@@ -132,6 +132,30 @@ MonoBehaviour:
     m_Scale: 1
     m_Name: Tropics
     m_HashCode: -799777888
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 10
+    m_Scale: 1
+    m_Name: Origin Of Sailing (Page 3)
+    m_HashCode: -833227573
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 11
+    m_Scale: 1
+    m_Name: Pirates vs Privateers
+    m_HashCode: -1679808892
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 12
+    m_Scale: 1
+    m_Name: Privateer Captain
+    m_HashCode: -1850888998
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 13
+    m_Scale: 1
+    m_Name: Terrible Captain
+    m_HashCode: 855651635
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -291,5 +315,68 @@ MonoBehaviour:
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: 630768475038213008, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+  - m_Index: 10
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 2720
+      m_Y: 0
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -4897904742699538711, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 11
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 2992
+      m_Y: 0
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -8596748011561582631, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 12
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 3264
+      m_Y: 0
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+  - m_Index: 13
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 3536
+      m_Y: 0
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -2634445103299172339, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

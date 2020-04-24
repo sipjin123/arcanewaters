@@ -43,7 +43,7 @@ namespace MapCreationTool
 
       public static void recordGif (Action<byte[]> callback) {
          if (Tools.boardSize.x > 128) {
-            UI.errorDialog.display("Recording GIFS of large maps is not supported");
+            UI.messagePanel.displayWarning("Recording GIFS of large maps is not supported");
          } else {
             instance.StartCoroutine(instance.recordGifRoutine(callback));
          }
@@ -71,7 +71,7 @@ namespace MapCreationTool
          }
 
          if (progress.Exception != null) {
-            UI.errorDialog.display("Error encoding image data. Exception:\n" + progress.Exception);
+            UI.messagePanel.displayError("Error encoding image data. Exception:\n" + progress.Exception);
             yield break;
          } else {
             callback(progress.Bytes);

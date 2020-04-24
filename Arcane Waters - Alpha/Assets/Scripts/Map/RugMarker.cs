@@ -20,7 +20,11 @@ public class RugMarker : MonoBehaviour
          D.warning("Not enough rug colors specified");
          return;
       }
-      gameObject.name = _rugColorLookup[type];
+      if (Minimap.self.mapEditorConfig.rugLookup.Length <= type) {
+         gameObject.name = "Incorrect rug type";
+      } else {
+         gameObject.name = _rugColorLookup[type];
+      }
 
       Vector2 minBoundsFloat = (center * 6.25f - size * 6.25f * 0.5f);
       Vector2 maxBoundsFloat = (center * 6.25f + size * 6.25f * 0.5f);
@@ -50,12 +54,11 @@ public class RugMarker : MonoBehaviour
    }
 
    public Color getRugColor () {
-      try {
-         return Minimap.self.mapEditorConfig.rugLookup[type];
-      } catch {
-         D.editorLog("Error in Rug Lookup for Type: " + type, Color.red);
-         return Color.black;
+      if (Minimap.self.mapEditorConfig.rugLookup.Length <= type) {
+         D.warning("Existing rug type is not existing");
+         return Color.magenta;
       }
+      return Minimap.self.mapEditorConfig.rugLookup[type];
    }
 
    #region Private Variables

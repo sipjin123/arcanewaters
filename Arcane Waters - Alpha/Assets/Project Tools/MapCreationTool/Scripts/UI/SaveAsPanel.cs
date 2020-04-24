@@ -28,7 +28,7 @@ namespace MapCreationTool
 
       public void save () {
          if (!MasterToolAccountManager.canAlterData()) {
-            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            UI.messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
          StartCoroutine(saveRoutine());

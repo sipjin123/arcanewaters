@@ -60,7 +60,7 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (loadedMaps == null) {
-                  UI.errorDialog.display(error);
+                  UI.messagePanel.displayError(error);
                } else {
                   updateShowedMaps();
                }
@@ -176,9 +176,9 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (dbError != null) {
-                  UI.errorDialog.display(dbError);
+                  UI.messagePanel.displayError(dbError);
                } else if (version == null) {
-                  UI.errorDialog.display($"Could not find map { name } in the database");
+                  UI.messagePanel.displayError($"Could not find map { name } in the database");
                } else {
                   try {
                      Overlord.instance.applyData(version);
@@ -186,7 +186,7 @@ namespace MapCreationTool
                      hide();
                      UI.mapList.close();
                   } catch (Exception ex) {
-                     UI.errorDialog.display(ex.ToString());
+                     UI.messagePanel.displayError(ex.ToString());
                   }
                }
             });
@@ -197,12 +197,12 @@ namespace MapCreationTool
 
       public void deleteMap (Map map) {
          if (!MasterToolAccountManager.canAlterData()) {
-            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            UI.messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
 
          if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && map.creatorID != MasterToolAccountManager.self.currentAccountID) {
-            UI.errorDialog.displayUnauthorized("You are not the creator of this map");
+            UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }
 
@@ -228,7 +228,7 @@ namespace MapCreationTool
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (error != null) {
-                  UI.errorDialog.display(error);
+                  UI.messagePanel.displayError(error);
                } else {
                   open();
                }

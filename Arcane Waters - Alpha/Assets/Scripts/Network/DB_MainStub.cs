@@ -951,6 +951,22 @@ public class DB_MainStub : MonoBehaviour {
       return false;
    }
 
+   public static void updatePaletteXML (string rawData, string name, int xmlId) {
+
+   }
+
+   public static void deletePaletteXML (string name) {
+
+   }
+
+   public static void deletePaletteXML (int id) {
+
+   }
+
+   public static List<XMLPair> getPaletteXML () {
+      return new List<XMLPair>();
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

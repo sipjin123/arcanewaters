@@ -22,13 +22,13 @@ namespace MapCreationTool
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (dbEx != null) {
                   Utilities.warning($"Failed to fetch data of { GetType().Name } from the database. Exception:\n" + dbEx);
-                  UI.errorDialog.display($"Failed to fetch data of { GetType().Name } from the database. Exception:\n" + dbEx);
+                  UI.messagePanel.displayError($"Failed to fetch data of { GetType().Name } from the database. Exception:\n" + dbEx);
                } else {
                   try {
                      setData(data);
                   } catch (Exception ex) {
                      Utilities.warning($"Failed to apply retrieved data of { GetType().Name }. Exception:\n" + ex);
-                     UI.errorDialog.display($"Failed to apply retrieved data of { GetType().Name }. Exception:\n" + ex);
+                     UI.messagePanel.displayError($"Failed to apply retrieved data of { GetType().Name }. Exception:\n" + ex);
                   }
                }
             });

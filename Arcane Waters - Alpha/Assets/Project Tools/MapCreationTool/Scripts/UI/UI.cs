@@ -59,7 +59,7 @@ namespace MapCreationTool
       public static YesNoDialog yesNoDialog { get; private set; }
       public static MapListPanel mapList { get; private set; }
       public static SaveAsPanel saveAsPanel { get; private set; }
-      public static ErrorDialog errorDialog { get; private set; }
+      public static MessagePanel messagePanel { get; private set; }
       public static LoadingPanel loadingPanel { get; private set; }
       public static VersionListPanel versionListPanel { get; private set; }
       public static SettingsPanel settingsPanel { get; private set; }
@@ -132,7 +132,7 @@ namespace MapCreationTool
          yesNoDialog = GetComponentInChildren<YesNoDialog>();
          mapList = GetComponentInChildren<MapListPanel>();
          saveAsPanel = GetComponentInChildren<SaveAsPanel>();
-         errorDialog = GetComponentInChildren<ErrorDialog>();
+         messagePanel = GetComponentInChildren<MessagePanel>();
          loadingPanel = GetComponentInChildren<LoadingPanel>();
          versionListPanel = GetComponentInChildren<VersionListPanel>();
          settingsPanel = GetComponentInChildren<SettingsPanel>();
@@ -150,7 +150,7 @@ namespace MapCreationTool
       }
 
       private void Update () {
-         toolTipText.text = ToolTipManager.currentMessage;
+         toolTipText.text = string.IsNullOrEmpty(ToolTipManager.currentMessage) ? "MAP TOOL" : ToolTipManager.currentMessage;
       }
 
       private void changeLoadedMapUI (MapVersion mapVersion) {
@@ -286,9 +286,9 @@ namespace MapCreationTool
             string path = getNewScreenShotPath(mapName, extension);
 
             File.WriteAllBytes(path, bytes);
-            errorDialog.displayInfoMessage("Image saved", "Path:\n" + path);
+            messagePanel.displayInfo("Image saved", "Path:\n" + path);
          } catch (Exception ex) {
-            errorDialog.display("There was an error writing the image to your pictures folder. Exception:\n" + ex);
+            messagePanel.displayError("There was an error writing the image to your pictures folder. Exception:\n" + ex);
          }
       }
 
@@ -314,7 +314,7 @@ namespace MapCreationTool
 
       public void saveButton_Click () {
          if (!MasterToolAccountManager.canAlterData()) {
-            errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
 
@@ -323,7 +323,7 @@ namespace MapCreationTool
          } else {
             if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
                DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
-               errorDialog.displayUnauthorized("You are not the creator of this map");
+               messagePanel.displayUnauthorized("You are not the creator of this map");
                return;
             }
             saveButton.interactable = false;
@@ -357,7 +357,7 @@ namespace MapCreationTool
 
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      if (dbError != null) {
-                        errorDialog.display(dbError);
+                        messagePanel.displayError(dbError);
                      } else {
                         DrawBoard.changeLoadedVersion(mapVersion);
                         Overlord.loadAllRemoteData();
@@ -368,7 +368,7 @@ namespace MapCreationTool
                loadingPanel.display("Saving map version", dbTask);
             } catch (Exception ex) {
                saveButton.interactable = true;
-               errorDialog.display(ex.Message);
+               messagePanel.displayError(ex.Message);
             }
          }
       }
@@ -379,6 +379,18 @@ namespace MapCreationTool
 
       public void openMapList () {
          mapList.open();
+         try {
+            recText(200);
+         } catch(Exception ex) {
+            UI.messagePanel.displayError(ex.ToString());
+         }
+         
+      }
+
+      private void recText(int x) {
+         if (x > 0)
+            recText(x - 1);
+         int z = 0 / x;
       }
 
       public void openSettings () {
@@ -391,13 +403,13 @@ namespace MapCreationTool
          }
 
          if (!MasterToolAccountManager.canAlterData()) {
-            errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
 
          if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
                DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
-            errorDialog.displayUnauthorized("You are not the creator of this map");
+            messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }
 
@@ -429,7 +441,7 @@ namespace MapCreationTool
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   if (dbError != null) {
-                     errorDialog.display(dbError);
+                     messagePanel.displayError(dbError);
                   } else {
                      DrawBoard.changeLoadedVersion(createdVersion);
                      Overlord.loadAllRemoteData();
@@ -438,7 +450,7 @@ namespace MapCreationTool
             });
             loadingPanel.display("Saving map version", dbTask);
          } catch (Exception ex) {
-            errorDialog.display(ex.Message);
+            messagePanel.displayError(ex.Message);
          }
       }
 

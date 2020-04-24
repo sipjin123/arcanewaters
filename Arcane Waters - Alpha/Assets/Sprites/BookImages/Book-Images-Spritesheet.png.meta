@@ -32,6 +32,48 @@ TextureImporter:
   - first:
       213: 630768475038213008
     second: Tropics
+  - first:
+      213: -4897904742699538711
+    second: Origin Of Sailing (Page 3)
+  - first:
+      213: -8596748011561582631
+    second: Pirates vs Privateers
+  - first:
+      213: 373538379674318949
+    second: Privateer Captain
+  - first:
+      213: -2634445103299172339
+    second: Terrible Captain
+  - first:
+      213: 1721623004347349377
+    second: Book-Images-Spritesheet_4
+  - first:
+      213: -2061607768087564823
+    second: Book-Images-Spritesheet_5
+  - first:
+      213: 4235067048679347026
+    second: Book-Images-Spritesheet_6
+  - first:
+      213: 752899332120568913
+    second: Book-Images-Spritesheet_7
+  - first:
+      213: 7668651126283048510
+    second: Book-Images-Spritesheet_8
+  - first:
+      213: 6881099103547005729
+    second: Book-Images-Spritesheet_9
+  - first:
+      213: -6708834595854665298
+    second: Book-Images-Spritesheet_10
+  - first:
+      213: -5894425961036811378
+    second: Book-Images-Spritesheet_11
+  - first:
+      213: -2564405830465889342
+    second: Book-Images-Spritesheet_12
+  - first:
+      213: -6956481233850781577
+    second: Book-Images-Spritesheet_13
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -322,6 +364,90 @@ TextureImporter:
       bones: []
       spriteID: 093ea2a0690f0c800800000000000000
       internalID: 630768475038213008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Origin Of Sailing (Page 3)
+      rect:
+        serializedVersion: 2
+        x: 2720
+        y: 0
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e661b33695270cb0800000000000000
+      internalID: -4897904742699538711
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pirates vs Privateers
+      rect:
+        serializedVersion: 2
+        x: 2992
+        y: 0
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9df73532b3732b880800000000000000
+      internalID: -8596748011561582631
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Privateer Captain
+      rect:
+        serializedVersion: 2
+        x: 3264
+        y: 0
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 568767e5d231f2500800000000000000
+      internalID: 373538379674318949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Terrible Captain
+      rect:
+        serializedVersion: 2
+        x: 3536
+        y: 0
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d08e59de222907bd0800000000000000
+      internalID: -2634445103299172339
       vertices: []
       indices: 
       edges: []

@@ -23,7 +23,7 @@ namespace MapCreationTool
 
       public void open (Map map) {
          if (!MasterToolAccountManager.canAlterResource(map.creatorID, out string errorMessage)) {
-            UI.errorDialog.displayUnauthorized(errorMessage);
+            UI.messagePanel.displayUnauthorized(errorMessage);
             return;
          }
 
@@ -70,7 +70,7 @@ namespace MapCreationTool
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   if (dbError != null) {
-                     UI.errorDialog.display(dbError.ToString());
+                     UI.messagePanel.displayError(dbError.ToString());
                   } else {
                      if (DrawBoard.loadedVersion != null && DrawBoard.loadedVersion.mapId == targetMap.id) {
                         MapVersion version = DrawBoard.loadedVersion;
@@ -89,7 +89,7 @@ namespace MapCreationTool
 
             UI.loadingPanel.display("Updating map details", task);
          } catch (Exception ex) {
-            UI.errorDialog.display(ex.ToString());
+            UI.messagePanel.displayError(ex.ToString());
          }
       }
 

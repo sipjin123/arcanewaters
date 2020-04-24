@@ -33,6 +33,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string booksToolScene = "Books Tool";
    public const string cropsDataScene = "CropsDataTool";
    public const string discoveriesToolScene = "Discoveries Tool";
+   public const string paletteToolScene = "Palette Tool";
    public const string newTutorialToolScene = "New Tutorial Tool";
 
    // Loading delay before fetching XML Data
@@ -70,6 +71,7 @@ public class MasterToolScene : MonoBehaviour {
       clickBooksToolScene,
       clickCropsDataScene,
       clickDiscoveriesToolScene,
+      clickPaletteToolScene,
       clickNewTutorialToolScene,
       exitButton;
 
@@ -145,6 +147,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickDiscoveriesToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(discoveriesToolScene);
+      });
+      clickPaletteToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(paletteToolScene);
       });
       clickNewTutorialToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(newTutorialToolScene);

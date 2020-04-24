@@ -44,6 +44,104 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageDataList:
+  - imageName: 1. Blunderbuss
+    imagePath: Assets/Sprites/BookImages/Individual/1. Blunderbuss.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/1. Blunderbuss
+    texture2D: {fileID: 2800000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
+    sprite: {fileID: 21300000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
+  - imageName: 10. Tropics
+    imagePath: Assets/Sprites/BookImages/Individual/10. Tropics.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/10. Tropics
+    texture2D: {fileID: 2800000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
+    sprite: {fileID: 21300000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
+  - imageName: 11. Origin-Of-Sailing-Page-3
+    imagePath: Assets/Sprites/BookImages/Individual/11. Origin-Of-Sailing-Page-3.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/11. Origin-Of-Sailing-Page-3
+    texture2D: {fileID: 2800000, guid: a9c7cd795ad083a408258ef285edb698, type: 3}
+    sprite: {fileID: 21300000, guid: a9c7cd795ad083a408258ef285edb698, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a9c7cd795ad083a408258ef285edb698, type: 3}
+  - imageName: 12. Pirates-Vs-Privateers
+    imagePath: Assets/Sprites/BookImages/Individual/12. Pirates-Vs-Privateers.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/12. Pirates-Vs-Privateers
+    texture2D: {fileID: 2800000, guid: 8606c55d3c6512d478949586ec840843, type: 3}
+    sprite: {fileID: 21300000, guid: 8606c55d3c6512d478949586ec840843, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 8606c55d3c6512d478949586ec840843, type: 3}
+  - imageName: 13. Privateer-Captain
+    imagePath: Assets/Sprites/BookImages/Individual/13. Privateer-Captain.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/13. Privateer-Captain
+    texture2D: {fileID: 2800000, guid: 5cb9129b470a035499fd8046e0c9eb77, type: 3}
+    sprite: {fileID: 21300000, guid: 5cb9129b470a035499fd8046e0c9eb77, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5cb9129b470a035499fd8046e0c9eb77, type: 3}
+  - imageName: 14. Terrible-Captain
+    imagePath: Assets/Sprites/BookImages/Individual/14. Terrible-Captain.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/14. Terrible-Captain
+    texture2D: {fileID: 2800000, guid: f3a7b1564efccce44bf57ab0f217f9c7, type: 3}
+    sprite: {fileID: 21300000, guid: f3a7b1564efccce44bf57ab0f217f9c7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f3a7b1564efccce44bf57ab0f217f9c7, type: 3}
+  - imageName: 2. Caravel
+    imagePath: Assets/Sprites/BookImages/Individual/2. Caravel.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/2. Caravel
+    texture2D: {fileID: 2800000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
+    sprite: {fileID: 21300000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
+  - imageName: 3. Deep-Sea-Horror
+    imagePath: Assets/Sprites/BookImages/Individual/3. Deep-Sea-Horror.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/3. Deep-Sea-Horror
+    texture2D: {fileID: 2800000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
+    sprite: {fileID: 21300000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
+  - imageName: 4. Dread-Pirate
+    imagePath: Assets/Sprites/BookImages/Individual/4. Dread-Pirate.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/4. Dread-Pirate
+    texture2D: {fileID: 2800000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
+    sprite: {fileID: 21300000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
+  - imageName: 5. Lizard-Men
+    imagePath: Assets/Sprites/BookImages/Individual/5. Lizard-Men.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/5. Lizard-Men
+    texture2D: {fileID: 2800000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
+    sprite: {fileID: 21300000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
+  - imageName: 6. Mage-Staff
+    imagePath: Assets/Sprites/BookImages/Individual/6. Mage-Staff.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/6. Mage-Staff
+    texture2D: {fileID: 2800000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
+    sprite: {fileID: 21300000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
+  - imageName: 7. Mushroom Biome
+    imagePath: Assets/Sprites/BookImages/Individual/7. Mushroom Biome.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/7. Mushroom Biome
+    texture2D: {fileID: 2800000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
+    sprite: {fileID: 21300000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
+  - imageName: 8. Mushroom-Man
+    imagePath: Assets/Sprites/BookImages/Individual/8. Mushroom-Man.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/8. Mushroom-Man
+    texture2D: {fileID: 2800000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
+    sprite: {fileID: 21300000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
+  - imageName: 9. Origin-Of-Sailing-1
+    imagePath: Assets/Sprites/BookImages/Individual/9. Origin-Of-Sailing-1.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/9. Origin-Of-Sailing-1
+    texture2D: {fileID: 2800000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
+    sprite: {fileID: 21300000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
   - imageName: ability_air_blowback
     imagePath: Assets/Sprites/Icons/Abilities/ability_air_blowback.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Abilities/ability_air_blowback
@@ -1131,13 +1229,6 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 2bd83516db5e0c942b91499ad6478357, type: 3}
     - {fileID: 21300002, guid: 2bd83516db5e0c942b91499ad6478357, type: 3}
     - {fileID: 21300004, guid: 2bd83516db5e0c942b91499ad6478357, type: 3}
-  - imageName: Blunderbuss
-    imagePath: Assets/Sprites/BookImages/Individual/Blunderbuss.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Blunderbuss
-    texture2D: {fileID: 2800000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
-    sprite: {fileID: 21300000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 2d02108650de2384baa4a1bcbba431d0, type: 3}
   - imageName: blunt_physical
     imagePath: Assets/Sprites/Effects/blunt_physical.png
     imagePathWithoutExtension: Assets/Sprites/Effects/blunt_physical
@@ -1184,6 +1275,10 @@ MonoBehaviour:
     - {fileID: -2690409963767841539, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 3657272984899651282, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 630768475038213008, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -4897904742699538711, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -8596748011561582631, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2634445103299172339, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
   - imageName: Border Design v1
     imagePath: Assets/Sprites/Battle Boards/Border Design v1.png
     imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v1
@@ -2174,13 +2269,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 27dafc128ccf4274aaeba91c392e621d, type: 3}
     sprites:
     - {fileID: 21300000, guid: 27dafc128ccf4274aaeba91c392e621d, type: 3}
-  - imageName: Caravel
-    imagePath: Assets/Sprites/BookImages/Individual/Caravel.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Caravel
-    texture2D: {fileID: 2800000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
-    sprite: {fileID: 21300000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c498636fb14c84043af2a91b02721e43, type: 3}
   - imageName: cargo_box
     imagePath: Assets/Sprites/GUI/cargo_box.png
     imagePathWithoutExtension: Assets/Sprites/GUI/cargo_box
@@ -3752,13 +3840,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 34d346d420e878a4087a657764053f20, type: 3}
     sprites:
     - {fileID: 21300000, guid: 34d346d420e878a4087a657764053f20, type: 3}
-  - imageName: Deep-Sea-Horror
-    imagePath: Assets/Sprites/BookImages/Individual/Deep-Sea-Horror.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Deep-Sea-Horror
-    texture2D: {fileID: 2800000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
-    sprite: {fileID: 21300000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c76fcdd22d32540409e58f98720babe1, type: 3}
   - imageName: delete_text
     imagePath: Assets/Sprites/GUI/delete_text.png
     imagePathWithoutExtension: Assets/Sprites/GUI/delete_text
@@ -4464,13 +4545,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 0dda3d1f410071d4581cd4ffa7116d90, type: 3}
     sprites:
     - {fileID: 21300000, guid: 0dda3d1f410071d4581cd4ffa7116d90, type: 3}
-  - imageName: Dread-Pirate
-    imagePath: Assets/Sprites/BookImages/Individual/Dread-Pirate.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Dread-Pirate
-    texture2D: {fileID: 2800000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
-    sprite: {fileID: 21300000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 5fb4051815e4fc64d800d051172c5fb8, type: 3}
   - imageName: dresser
     imagePath: Assets/Sprites/Furniture/dresser.png
     imagePathWithoutExtension: Assets/Sprites/Furniture/dresser
@@ -9911,8 +9985,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
@@ -13268,13 +13342,6 @@ MonoBehaviour:
     - {fileID: 338536299490742652, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
     - {fileID: -6604573014406887901, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
     - {fileID: -573433619950637807, guid: 744510dd9ef2b9343a4b360d4d6b0e88, type: 3}
-  - imageName: Lizard-Men
-    imagePath: Assets/Sprites/BookImages/Individual/Lizard-Men.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Lizard-Men
-    texture2D: {fileID: 2800000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
-    sprite: {fileID: 21300000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: ab6fa785e8d8a6347b7b9537ee35161f, type: 3}
   - imageName: loading_bar
     imagePath: Assets/Sprites/GUI/Loading/loading_bar.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Loading/loading_bar
@@ -13420,13 +13487,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: ef0beb41924ffb84ba39149408b41195, type: 3}
     sprites:
     - {fileID: 21300000, guid: ef0beb41924ffb84ba39149408b41195, type: 3}
-  - imageName: Mage-Staff
-    imagePath: Assets/Sprites/BookImages/Individual/Mage-Staff.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Mage-Staff
-    texture2D: {fileID: 2800000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
-    sprite: {fileID: 21300000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: c42bea80c9430f0418e03aad20f7e2e7, type: 3}
   - imageName: male_armor_1
     imagePath: Assets/Sprites/Armor/Male/male_armor_1.png
     imagePathWithoutExtension: Assets/Sprites/Armor/Male/male_armor_1
@@ -16489,13 +16549,6 @@ MonoBehaviour:
     - {fileID: 21300002, guid: cd356aca6223c9a4c911d5b2e057c9da, type: 3}
     - {fileID: 21300004, guid: cd356aca6223c9a4c911d5b2e057c9da, type: 3}
     - {fileID: 21300006, guid: cd356aca6223c9a4c911d5b2e057c9da, type: 3}
-  - imageName: Mushroom Biome
-    imagePath: Assets/Sprites/BookImages/Individual/Mushroom Biome.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Mushroom Biome
-    texture2D: {fileID: 2800000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
-    sprite: {fileID: 21300000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7b62dd44c9ad74d4ab3c40ee3c654a34, type: 3}
   - imageName: Mushroom_Background_1
     imagePath: Assets/Sprites/BackgroundEntities/Mushroom Elements/BackgroundElements/Mushroom_Background_1.png
     imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Mushroom Elements/BackgroundElements/Mushroom_Background_1
@@ -17008,13 +17061,6 @@ MonoBehaviour:
     - {fileID: -6219587717386652964, guid: 19fa54a821d196b40ad9dcdff371059b, type: 3}
     - {fileID: -7021466770206865467, guid: 19fa54a821d196b40ad9dcdff371059b, type: 3}
     - {fileID: 2815570215644982214, guid: 19fa54a821d196b40ad9dcdff371059b, type: 3}
-  - imageName: Mushroom-Man
-    imagePath: Assets/Sprites/BookImages/Individual/Mushroom-Man.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Mushroom-Man
-    texture2D: {fileID: 2800000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
-    sprite: {fileID: 21300000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 89c25cea9f1eb254c912bda4cfd98429, type: 3}
   - imageName: nail
     imagePath: Assets/Sprites/GUI/nail.png
     imagePathWithoutExtension: Assets/Sprites/GUI/nail
@@ -17277,13 +17323,6 @@ MonoBehaviour:
     - {fileID: -2399776592437656126, guid: 9017e0b2ff47a524b8333b9b1e82b3e3, type: 3}
     - {fileID: -1683510080023334992, guid: 9017e0b2ff47a524b8333b9b1e82b3e3, type: 3}
     - {fileID: -4321224024286107072, guid: 9017e0b2ff47a524b8333b9b1e82b3e3, type: 3}
-  - imageName: Origin-Of-Sailing-1
-    imagePath: Assets/Sprites/BookImages/Individual/Origin-Of-Sailing-1.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Origin-Of-Sailing-1
-    texture2D: {fileID: 2800000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
-    sprite: {fileID: 21300000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: f7285526029d92f41ba67b036d000c9b, type: 3}
   - imageName: overworld_river
     imagePath: Assets/Sprites/Map/overworld_river.png
     imagePathWithoutExtension: Assets/Sprites/Map/overworld_river
@@ -23079,13 +23118,6 @@ MonoBehaviour:
     - {fileID: 21300002, guid: e2e05051d90d50047870f63fa9cdf750, type: 3}
     - {fileID: 21300004, guid: e2e05051d90d50047870f63fa9cdf750, type: 3}
     - {fileID: 21300006, guid: e2e05051d90d50047870f63fa9cdf750, type: 3}
-  - imageName: Tropics
-    imagePath: Assets/Sprites/BookImages/Individual/Tropics.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/Tropics
-    texture2D: {fileID: 2800000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
-    sprite: {fileID: 21300000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: e1de59fbbb9e3bb428f30264b42f3042, type: 3}
   - imageName: tunic
     imagePath: Assets/Sprites/Icons/Armor/tunic.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Armor/tunic

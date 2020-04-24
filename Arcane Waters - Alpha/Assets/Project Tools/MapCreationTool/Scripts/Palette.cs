@@ -151,8 +151,8 @@ namespace MapCreationTool
       }
 
       private void recalculateCamBounds () {
-         Vector2 extendedSize = paletteSize + new Vector2(1f, 8f);
-         Vector2 tilemapOrigin = new Vector2(-0.5f, -4f);
+         Vector2 extendedSize = paletteSize + new Vector2(2f, 10f);
+         Vector2 tilemapOrigin = new Vector2(-1f, -4f);
 
          float aspect = (float) paletteCamera.pixelHeight / paletteCamera.pixelWidth;
 

@@ -43,7 +43,7 @@ namespace MapCreationTool
 
       public SelectOption[] formSelectionOptions () {
          return ships.Select(ship => new SelectOption(
-            ((int)ship.shipType).ToString(),
+            ((int) ship.shipType).ToString(),
             ship.shipName)
          ).ToArray();
       }
@@ -79,7 +79,7 @@ namespace MapCreationTool
             ships = idToShipData.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
          } catch (Exception ex) {
             Utilities.warning("Failed to load ship manager. Exception:\n" + ex);
-            UI.errorDialog.display("Failed to load ship manager. Exception:\n" + ex);
+            UI.messagePanel.displayError("Failed to load ship manager. Exception:\n" + ex);
          }
 
          loaded = true;

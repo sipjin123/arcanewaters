@@ -17,7 +17,6 @@ namespace MapCreationTool
       private DrawBoard drawBoard = null;
 
       private CanvasGroup cGroup;
-      private Image bg;
 
       private Dictionary<string, Field> fields = new Dictionary<string, Field>();
 
@@ -27,7 +26,6 @@ namespace MapCreationTool
 
       private void Awake () {
          cGroup = GetComponent<CanvasGroup>();
-         bg = transform.parent.GetComponent<Image>();
 
          hide();
       }
@@ -173,14 +171,12 @@ namespace MapCreationTool
          cGroup.alpha = 1;
          cGroup.blocksRaycasts = true;
          cGroup.interactable = true;
-         bg.enabled = true;
       }
 
       public void hide () {
          cGroup.alpha = 0;
          cGroup.blocksRaycasts = false;
          cGroup.interactable = false;
-         bg.enabled = false;
       }
    }
 }

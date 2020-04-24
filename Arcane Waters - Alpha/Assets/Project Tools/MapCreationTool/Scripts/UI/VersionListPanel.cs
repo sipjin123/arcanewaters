@@ -119,11 +119,11 @@ namespace MapCreationTool
 
       public void publishVersion (MapVersion mapVersion) {
          if (!MasterToolAccountManager.canAlterData()) {
-            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            UI.messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
          if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && mapVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
-            UI.errorDialog.displayUnauthorized("You are not the creator of this map");
+            UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }
          UI.yesNoDialog.display(
@@ -158,12 +158,12 @@ namespace MapCreationTool
 
       public void deleteMapVersion (MapVersion version) {
          if (!MasterToolAccountManager.canAlterData()) {
-            UI.errorDialog.displayUnauthorized("Your account type has no permissions to alter data");
+            UI.messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
 
          if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && version.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
-            UI.errorDialog.displayUnauthorized("You are not the creator of this map");
+            UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }
 

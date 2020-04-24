@@ -25,7 +25,7 @@ namespace MapCreationTool
       }
 
       private void Awake () {
-         fieldName = GetComponentInChildren<Text>();
+         fieldName = transform.Find("name").GetComponent<Text>();
          valueInput = GetComponentInChildren<InputField>();
          valueDropdown = GetComponentInChildren<Dropdown>();
 

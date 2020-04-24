@@ -33,7 +33,7 @@ namespace MapCreationTool.IssueResolving
 
       public static void run (bool alterData, bool saveMaps) {
          if (running) {
-            UI.errorDialog.display("Issue resolver is already running.");
+            UI.messagePanel.displayError("Issue resolver is already running.");
             return;
          }
 
@@ -337,7 +337,7 @@ namespace MapCreationTool.IssueResolving
 
          UI.loadingPanel.close();
          if (running) {
-            UI.errorDialog.displayInfoMessage("Resolving Issues Ended", "Resolving Issue process has successfully ended.\nSummary is saved in:\n" + rootReportFolder);
+            UI.messagePanel.displayInfo("Resolving Issues Ended", "Resolving Issue process has successfully ended.\nSummary is saved in:\n" + rootReportFolder);
             running = false;
          }
       }
@@ -372,7 +372,7 @@ namespace MapCreationTool.IssueResolving
          {
             return (ex) => {
                UI.loadingPanel.close();
-               UI.errorDialog.display("Encountered an error while resolving issues:\n" + ex.ToString());
+               UI.messagePanel.displayError("Encountered an error while resolving issues:\n" + ex.ToString());
                foreach (Task task in runningTasks) {
                   if (!task.HasEnded) {
                      task.Abort();

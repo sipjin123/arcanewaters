@@ -2506,6 +2506,104 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Palette XML Data
+
+   public static new void updatePaletteXML (string rawData, string name, int xmlId) {
+      string xml_id_key = "paletteId, ";
+      string xml_id_value = "@paletteId, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (xmlId < 0) {
+         xml_id_key = "";
+         xml_id_value = "";
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate) " +
+            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW()) " +
+            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@paletteId", xmlId);
+            cmd.Parameters.AddWithValue("@palette_name", name);
+            cmd.Parameters.AddWithValue("@xml_content", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self ? MasterToolAccountManager.self.currentAccountID : 0);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deletePaletteXML (string name) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM palette WHERE palette_name=@palette_name", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@palette_name", name);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deletePaletteXML (int id) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM palette WHERE paletteId=@paletteId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@paletteId", id);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getPaletteXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.palette", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newXML = new XMLPair {
+                     isEnabled = true,
+                     rawXmlData = dataReader.GetString("xml_content"),
+                     xmlId = dataReader.GetInt32("paletteId"),
+                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                  };
+                  rawDataList.Add(newXML);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+   #endregion
+
    #region Player Class XML Data
 
    public static new void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {

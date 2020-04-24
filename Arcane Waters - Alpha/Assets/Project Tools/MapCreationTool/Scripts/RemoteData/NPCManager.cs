@@ -80,7 +80,7 @@ namespace MapCreationTool
             npcs = idToNpc.OrderBy(n => n.Key).Select(n => n.Value).ToArray();
          } catch (Exception ex) {
             Utilities.warning("Failed to load NPC manager. Exception:\n" + ex);
-            UI.errorDialog.display("Failed to load NPC manager. Exception:\n" + ex);
+            UI.messagePanel.displayError("Failed to load NPC manager. Exception:\n" + ex);
          }
 
          loaded = true;
