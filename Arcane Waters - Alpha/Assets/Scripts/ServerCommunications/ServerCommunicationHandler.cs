@@ -42,6 +42,9 @@ public class ServerCommunicationHandler : MonoBehaviour
    // List of voyages to be created
    public List<PendingVoyageCreation> pendingVoyageCreations = new List<PendingVoyageCreation>();
 
+   // Make sure to never re-spawn instantiated instances
+   public List<int> createdVoyageID = new List<int>();
+
    // List of voyage invitations
    public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
 
@@ -63,7 +66,6 @@ public class ServerCommunicationHandler : MonoBehaviour
 
    private void Awake () {
       self = this;
-      ourIp = MyNetworkManager.self.networkAddress;
    }
 
    public void initializeServers () {
@@ -252,19 +254,40 @@ public class ServerCommunicationHandler : MonoBehaviour
       });
    }
 
+   public List<PendingVoyageCreation> newCopyOfVoyageCreations (List<PendingVoyageCreation> fetchedVoyageCreation) {
+      List<PendingVoyageCreation> newCopy = new List<PendingVoyageCreation>();
+      List<PendingVoyageCreation> sortedList = fetchedVoyageCreation.FindAll(_ => (_.updateTime - ourServerData.latestUpdate).TotalSeconds < 2);
+      foreach (PendingVoyageCreation voyageEntry in sortedList) {
+         newCopy.Add(new PendingVoyageCreation { 
+            areaKey = voyageEntry.areaKey,
+            id = voyageEntry.id,
+            isPending = voyageEntry.isPending,
+            serverIp = voyageEntry.serverIp,
+            serverName = voyageEntry.serverName,
+            serverPort = voyageEntry.serverPort,
+            updateTime = DateTime.UtcNow
+         });
+      }
+
+      return newCopy;
+   }
+
    public void checkServerUpdates () {
       serversToUpdate = new List<ServerSqlData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Fetch all server update info
          List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime(ourDeviceName);
-         pendingVoyageCreations = DB_Main.getPendingVoyageCreations();
+         List<PendingVoyageCreation> fetchedVoyageCreation = DB_Main.getPendingVoyageCreations(ourDeviceName);
          ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
          pendingVoyageInvites = DB_Main.getAllVoyageInvites();
-
+         
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Make sure not to fetch old data
+            pendingVoyageCreations = newCopyOfVoyageCreations(fetchedVoyageCreation);
+            
             // Handle new voyage creation data
-            handleVoyageCreation();
+            handleVoyageCreation(pendingVoyageCreations);
 
             // Handle new voyage invite data
             handleVoyageInvites();
@@ -407,20 +430,13 @@ public class ServerCommunicationHandler : MonoBehaviour
    #region Voyage Features
 
    public void requestCreateVoyage (List<PendingVoyageCreation> voyageList) {
-      foreach (PendingVoyageCreation voyageEntry in voyageList) {
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (PendingVoyageCreation voyageEntry in voyageList) {
             ServerSqlData serverData = serverDataList.Find(_ => _.deviceName == voyageEntry.serverName && _.ip == voyageEntry.serverIp && _.port == voyageEntry.serverPort);
             if (serverData != null) {
                DB_Main.setServerVoyageCreation(voyageEntry, voyageEntry.updateTime, voyageEntry.id);
-            } 
-         });
-      }
-   }
-
-   public void clearVoyageCreation (PendingVoyageCreation voyageEntry) {
-      voyageEntry.isPending = false;
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.removeServerVoyageCreation(voyageEntry.id);
+            }
+         }
       });
    }
 
@@ -441,19 +457,37 @@ public class ServerCommunicationHandler : MonoBehaviour
       }
    }
 
-   private void handleVoyageCreation () {
-      foreach (PendingVoyageCreation voyageCreations in pendingVoyageCreations) {
-         if (ServerNetwork.self != null) {
-            if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.removeServerVoyageCreation(voyageCreations.id);
-                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     ServerNetwork.self.server.CreateVoyageInstance(voyageCreations.areaKey);
-                  });
-               });
+   private void handleVoyageCreation (List<PendingVoyageCreation> newVoyageCreations) {
+      Dictionary<int, string> areasToSpawn = new Dictionary<int, string>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
+            if (ServerNetwork.self != null) {
+               if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
+                  if (!createdVoyageID.Contains(voyageCreations.id)) {
+                     voyageCreations.isPending = false;
+                     string areaKey = voyageCreations.areaKey;
+                     int idToRemove = voyageCreations.id;
+
+                     if (idToRemove > 0) {
+                        areasToSpawn.Add(idToRemove, areaKey);
+                        createdVoyageID.Add(idToRemove);
+                        DB_Main.setServerVoyageCreation(voyageCreations, DateTime.UtcNow, idToRemove);
+                     }
+                  }
+               }
             }
          }
-      }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (KeyValuePair<int, string> areaKey in areasToSpawn) {
+               if (areaKey.Value == "") {
+                  ServerNetwork.self.server.CreateVoyageInstance();
+               } else {
+                  ServerNetwork.self.server.CreateVoyageInstance(areaKey.Value);
+               }
+            }
+         });
+      });
    }
 
    public void respondVoyageInvite (int groupId, string inviterName, int inviteeId, InviteStatus status) {

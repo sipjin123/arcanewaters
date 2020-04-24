@@ -233,14 +233,15 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<PendingVoyageCreation> getPendingVoyageCreations () {
+   public static new List<PendingVoyageCreation> getPendingVoyageCreations (string ourDeviceName) {
       List<PendingVoyageCreation> newVoyageList = new List<PendingVoyageCreation>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.pending_voyage_creation where isPending = 1", conn)) {
+            "SELECT * FROM arcane.pending_voyage_creation where isPending = 1 and svrDeviceName = @svrDeviceName", conn)) {
 
             conn.Open();
+            cmd.Parameters.AddWithValue("@svrDeviceName", ourDeviceName);
             cmd.Prepare();
 
             // Create a data reader and Execute the command

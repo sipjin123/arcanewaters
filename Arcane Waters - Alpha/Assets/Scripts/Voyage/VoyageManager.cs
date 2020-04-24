@@ -325,7 +325,8 @@ public class VoyageManager : MonoBehaviour {
                   areaKey = ""
                };
                voyageList.Add(newVoyage);
-               ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
+               //D.editorLog("Requesting a blank voyage: " + newVoyage.areaKey, Color.green);
+               //ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
             }
          });
       });
@@ -370,7 +371,10 @@ public class VoyageManager : MonoBehaviour {
                D.editorLog("Could not find best server!", Color.red);
             }
          }
-         ServerCommunicationHandler.self.requestCreateVoyage(pendingVoyageList);
+
+         if (pendingVoyageList.Count > 0) {
+            ServerCommunicationHandler.self.requestCreateVoyage(pendingVoyageList);
+         }
       }
    }
 

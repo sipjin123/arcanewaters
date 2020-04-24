@@ -186,11 +186,11 @@ public class ServerCommunicationSimulator : MonoBehaviour {
       GUILayout.EndVertical();
       GUILayout.BeginVertical();
       {
-         GUILayout.Box("Pending Creations are: ");
+         GUILayout.Box("Pending Creations are: " + serverWebRequest.pendingVoyageCreations.Count);
          GUILayout.Space(5);
          foreach (PendingVoyageCreation pendingVoyage in serverWebRequest.pendingVoyageCreations) {
             if (GUILayout.Button("Clear pending voyage\nCreation: ID:{" + pendingVoyage.id + "} - Area:{" + pendingVoyage.areaKey + "}")) {
-               serverWebRequest.clearVoyageCreation(pendingVoyage);
+               //serverWebRequest.clearVoyageCreation(pendingVoyage);
             }
          }
       }

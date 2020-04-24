@@ -42,7 +42,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<PendingVoyageCreation> getPendingVoyageCreations () {
+   public static List<PendingVoyageCreation> getPendingVoyageCreations (string ourDeviceName) {
       return new List<PendingVoyageCreation>();
    }
 

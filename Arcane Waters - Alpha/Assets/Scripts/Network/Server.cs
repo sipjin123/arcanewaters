@@ -44,6 +44,10 @@ public class Server : MonoBehaviour {
    }
 
    public void setAsLocalServer () {
+      this.ipAddress = ServerCommunicationHandler.self.ourIp;//MyNetworkManager.self.networkAddress;
+      this.port = MyNetworkManager.self.telepathy.port;
+      this.playerCount = MyNetworkManager.self.numPlayers;
+
       isLocalServer = true;
       ServerNetwork.self.server = this;
       ServerNetwork.self.servers.Add(this);
@@ -51,14 +55,6 @@ public class Server : MonoBehaviour {
 
       // In Editor host mode, the instance is created before this Server object exists
       InstanceManager.self.recalculateOpenAreas();
-   }
-
-   private void Update () {
-      if (isLocalServer) { 
-         this.ipAddress = MyNetworkManager.self.networkAddress;
-         this.port = MyNetworkManager.self.telepathy.port;
-         this.playerCount = MyNetworkManager.self.numPlayers;
-      }
    }
 
    void OnDestroy () {

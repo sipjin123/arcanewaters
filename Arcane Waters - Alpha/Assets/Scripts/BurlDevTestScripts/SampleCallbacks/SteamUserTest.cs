@@ -75,56 +75,6 @@ public class SteamUserTest : MonoBehaviour
          GUILayout.Label("GetUserDataFolder(out Buffer, 260) : " + ret + " -- " + Buffer);
       }
 
-      if (GUILayout.Button("StartVoiceRecording()")) {
-         SteamUser.StartVoiceRecording();
-         print("SteamUser.StartVoiceRecording()");
-      }
-
-      if (GUILayout.Button("StopVoiceRecording()")) {
-         SteamUser.StopVoiceRecording();
-         print("SteamUser.StopVoiceRecording()");
-      }
-
-      {
-         uint Compressed;
-         EVoiceResult ret = SteamUser.GetAvailableVoice(out Compressed);
-         GUILayout.Label("GetAvailableVoice(out Compressed) : " + ret + " -- " + Compressed);
-
-         if (ret == EVoiceResult.k_EVoiceResultOK && Compressed > 0) {
-            byte[] DestBuffer = new byte[1024];
-            uint BytesWritten;
-            ret = SteamUser.GetVoice(true, DestBuffer, 1024, out BytesWritten);
-            //print("SteamUser.GetVoice(true, DestBuffer, 1024, out BytesWritten) : " + ret + " -- " + BytesWritten);
-
-            if (ret == EVoiceResult.k_EVoiceResultOK && BytesWritten > 0) {
-               byte[] DestBuffer2 = new byte[11025 * 2];
-               uint BytesWritten2;
-               ret = SteamUser.DecompressVoice(DestBuffer, BytesWritten, DestBuffer2, (uint) DestBuffer2.Length, out BytesWritten2, 11025);
-               //print("SteamUser.DecompressVoice(DestBuffer, BytesWritten, DestBuffer2, (uint)DestBuffer2.Length, out BytesWritten2, 11025) - " + ret + " -- " + BytesWritten2);
-
-               if (ret == EVoiceResult.k_EVoiceResultOK && BytesWritten2 > 0) {
-                  AudioSource source;
-                  if (!m_VoiceLoopback) {
-                     m_VoiceLoopback = new GameObject("Voice Loopback");
-                     source = m_VoiceLoopback.AddComponent<AudioSource>();
-                     source.clip = AudioClip.Create("Testing!", 11025, 1, 11025, false);
-                  } else {
-                     source = m_VoiceLoopback.GetComponent<AudioSource>();
-                  }
-
-                  float[] test = new float[11025];
-                  for (int i = 0; i < test.Length; ++i) {
-                     test[i] = (short) (DestBuffer2[i * 2] | DestBuffer2[i * 2 + 1] << 8) / 32768.0f;
-                  }
-                  source.clip.SetData(test, 0);
-                  source.Play();
-               }
-            }
-         }
-      }
-
-      GUILayout.Label("GetVoiceOptimalSampleRate() : " + SteamUser.GetVoiceOptimalSampleRate());
-
       {
          if (GUILayout.Button("GetAuthSessionTicket(Ticket, 1024, out pcbTicket)")) {
             m_Ticket = new byte[1024];
@@ -155,12 +105,6 @@ public class SteamUserTest : MonoBehaviour
       GUILayout.Label("UserHasLicenseForApp(SteamUser.GetSteamID(), SteamUtils.GetAppID()) : " + SteamUser.UserHasLicenseForApp(SteamUser.GetSteamID(), SteamUtils.GetAppID()));
 
       GUILayout.Label("BIsBehindNAT() : " + SteamUser.BIsBehindNAT());
-
-      if (GUILayout.Button("AdvertiseGame(CSteamID.NonSteamGS, TestConstants.k_IpAddress127_0_0_1_uint, TestConstants.k_Port27015)")) {
-         D.editorLog("Disabled feature", Color.red);
-         //SteamUser.AdvertiseGame(CSteamID.NonSteamGS, TestConstants.k_IpAddress127_0_0_1_uint, TestConstants.k_Port27015);
-         //print("SteamUser.AdvertiseGame(" + CSteamID.NonSteamGS + ", " + TestConstants.k_IpAddress127_0_0_1_uint + ", " + TestConstants.k_Port27015 + ")");
-      }
 
       if (GUILayout.Button("Part 1 RequestEncryptedAppTicket(k_unSecretData, sizeof(uint))")) {
          byte[] k_unSecretData = System.BitConverter.GetBytes(0x5444);
@@ -216,6 +160,10 @@ public class SteamUserTest : MonoBehaviour
             m_Ticket = new byte[1024];
             m_HAuthTicket = SteamUser.GetAuthSessionTicket(m_Ticket, 1024, out m_pcbTicket);
          }
+      }
+
+      if (GUILayout.Button("Coroutine test")) {
+         StartCoroutine(coroutineTest());
       }
 
       GUILayout.EndScrollView();
@@ -320,11 +268,22 @@ public class SteamUserTest : MonoBehaviour
 
    IEnumerator coroutineTest () {
       yield return new WaitForSeconds(1);
-      string site = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1";
+      string site = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/";
+
+      System.Array.Resize(ref m_Ticket, (int) m_pcbTicket);
+
+      //format as Hex 
+      System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+      foreach (byte b in m_Ticket) {
+         sb.AppendFormat("{0:x2}", b);
+      }
+
+      D.editorLog("Hex encoded ticket: " + sb.ToString(), Color.blue);
 
       WWWForm form = new WWWForm();
       form.AddField("steamid", "76561198005628784");
-      form.AddField("sessionkey", "test");
+      form.AddField("sessionkey", sb.ToString());
       form.AddField("encrypted_loginkey", "teste");
 
       using (UnityWebRequest www = UnityWebRequest.Post(site, form)) {

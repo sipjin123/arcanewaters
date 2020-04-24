@@ -44,12 +44,14 @@ public class NPCManager : MonoBehaviour {
                NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
 
                // Save the NPC data in the memory cache
-               _npcData.Add(npcData.npcId, npcData);
-               npcList.Add(npcData);
+               if (!_npcData.ContainsKey(npcData.npcId)) {
+                  _npcData.Add(npcData.npcId, npcData);
+                  npcList.Add(npcData);
 
-               // Initializes info of the npc
-               if (_npcs.ContainsKey(npcData.npcId)) {
-                  _npcs[npcData.npcId].initData();
+                  // Initializes info of the npc
+                  if (_npcs.ContainsKey(npcData.npcId)) {
+                     _npcs[npcData.npcId].initData();
+                  }
                }
             }
             serverInitialized = true;
