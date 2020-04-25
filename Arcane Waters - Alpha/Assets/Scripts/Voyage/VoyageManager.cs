@@ -325,8 +325,7 @@ public class VoyageManager : MonoBehaviour {
                   areaKey = ""
                };
                voyageList.Add(newVoyage);
-               //D.editorLog("Requesting a blank voyage: " + newVoyage.areaKey, Color.green);
-               //ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
+               ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
             }
          });
       });

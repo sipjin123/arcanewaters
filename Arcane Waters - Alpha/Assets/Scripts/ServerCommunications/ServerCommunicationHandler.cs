@@ -45,6 +45,9 @@ public class ServerCommunicationHandler : MonoBehaviour
    // Make sure to never re-spawn instantiated instances
    public List<int> createdVoyageID = new List<int>();
 
+   // Caches the voyages that have been marked as not pending in the database
+   public List<int> disposedVoyageID = new List<int>();
+
    // List of voyage invitations
    public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
 
@@ -60,6 +63,9 @@ public class ServerCommunicationHandler : MonoBehaviour
    // The valid time interval to determine if server is active
    public static int SERVER_ACTIVE_TIME = 10;
 
+   // Determines if is using the local database
+   public bool isLocalDatabase = false;
+
    #endregion
 
    #region Initialization
@@ -70,7 +76,12 @@ public class ServerCommunicationHandler : MonoBehaviour
 
    public void initializeServers () {
       initializeLocalServer();
-      InvokeRepeating("checkServerUpdates", 2, .1f);
+
+      float checkUpdateInterval = .1f;
+      if (!isLocalDatabase) {
+         checkUpdateInterval = .5f;
+      }
+      InvokeRepeating("checkServerUpdates", 2, checkUpdateInterval);
    }
 
    private void confirmServerActivity () {
@@ -458,35 +469,36 @@ public class ServerCommunicationHandler : MonoBehaviour
    }
 
    private void handleVoyageCreation (List<PendingVoyageCreation> newVoyageCreations) {
-      Dictionary<int, string> areasToSpawn = new Dictionary<int, string>();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
-            if (ServerNetwork.self != null) {
-               if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
-                  if (!createdVoyageID.Contains(voyageCreations.id)) {
-                     voyageCreations.isPending = false;
-                     string areaKey = voyageCreations.areaKey;
-                     int idToRemove = voyageCreations.id;
+      // Create instances of the voyages
+      foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
+         if (ServerNetwork.self != null) {
+            if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
+               if (!createdVoyageID.Contains(voyageCreations.id)) {
+                  voyageCreations.isPending = false;
+                  string areaKey = voyageCreations.areaKey;
+                  int idToRemove = voyageCreations.id;
 
-                     if (idToRemove > 0) {
-                        areasToSpawn.Add(idToRemove, areaKey);
-                        createdVoyageID.Add(idToRemove);
-                        DB_Main.setServerVoyageCreation(voyageCreations, DateTime.UtcNow, idToRemove);
+                  if (idToRemove > 0) {
+                     createdVoyageID.Add(idToRemove);
+                     if (areaKey == "") {
+                        ServerNetwork.self.server.CreateVoyageInstance();
+                     } else {
+                        ServerNetwork.self.server.CreateVoyageInstance(areaKey);
                      }
                   }
                }
             }
          }
+      }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (KeyValuePair<int, string> areaKey in areasToSpawn) {
-               if (areaKey.Value == "") {
-                  ServerNetwork.self.server.CreateVoyageInstance();
-               } else {
-                  ServerNetwork.self.server.CreateVoyageInstance(areaKey.Value);
-               }
+      // Marks all the pending create voyage as NOT pending
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
+            if (!disposedVoyageID.Contains(voyageCreations.id)) {
+               disposedVoyageID.Add(voyageCreations.id);
+               DB_Main.setServerVoyageCreation(voyageCreations, DateTime.UtcNow, voyageCreations.id);
             }
-         });
+         }
       });
    }
 
@@ -497,6 +509,16 @@ public class ServerCommunicationHandler : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.modifyServerVoyageInvite(selectedVoyageInvite.voyageXmlId, selectedVoyageInvite.inviteStatus);
       });
+   }
+
+   public void createVoyageInstance (Voyage voyageInstance) {
+      ourServerData.voyageList.Add(voyageInstance);
+
+      // Sync server data and servers
+      overwriteServerData(ourServerData, true);
+
+      // Send updated values to the database
+      updateServerDatabase(ourServerData, true);
    }
 
    #endregion

@@ -120,14 +120,17 @@ public class QuickLaunchPanel : MonoBehaviour {
       switch (dbServerDropDown.value) {
          case 0:
             DB_Main.setServer(DB_Main.RemoteServer);
+            ServerCommunicationHandler.self.isLocalDatabase = false;
             break;
 
          case 1:
             DB_Main.setServer("127.0.0.1");
+            ServerCommunicationHandler.self.isLocalDatabase = true;
             break;
 
          case 2:
             DB_Main.setServerFromConfig();
+            ServerCommunicationHandler.self.isLocalDatabase = false;
             break;
       }
       #endif
