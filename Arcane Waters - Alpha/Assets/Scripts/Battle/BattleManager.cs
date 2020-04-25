@@ -225,7 +225,6 @@ public class BattleManager : MonoBehaviour {
 
    public void registerBattler (BattlerData battler) {
       if(_allBattlersData.Exists(_=>_.enemyType == battler.enemyType)) {
-         Debug.LogWarning("Duplicated Type: " + battler.enemyType);
          return;
       }
       _allBattlersData.Add(battler);
