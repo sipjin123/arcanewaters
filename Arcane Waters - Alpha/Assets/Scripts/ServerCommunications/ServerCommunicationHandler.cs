@@ -43,10 +43,10 @@ public class ServerCommunicationHandler : MonoBehaviour
    public List<PendingVoyageCreation> pendingVoyageCreations = new List<PendingVoyageCreation>();
 
    // Make sure to never re-spawn instantiated instances
-   public List<int> createdVoyageID = new List<int>();
+   public List<int> createdVoyageIds = new List<int>();
 
    // Caches the voyages that have been marked as not pending in the database
-   public List<int> disposedVoyageID = new List<int>();
+   public List<int> disposedVoyageIds = new List<int>();
 
    // List of voyage invitations
    public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
@@ -473,13 +473,13 @@ public class ServerCommunicationHandler : MonoBehaviour
       foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
          if (ServerNetwork.self != null) {
             if (voyageCreations.serverName == ourDeviceName && voyageCreations.serverPort == ourPort && voyageCreations.serverIp == ourIp) {
-               if (!createdVoyageID.Contains(voyageCreations.id)) {
+               if (!createdVoyageIds.Contains(voyageCreations.id)) {
                   voyageCreations.isPending = false;
                   string areaKey = voyageCreations.areaKey;
                   int idToRemove = voyageCreations.id;
 
                   if (idToRemove > 0) {
-                     createdVoyageID.Add(idToRemove);
+                     createdVoyageIds.Add(idToRemove);
                      if (areaKey == "") {
                         ServerNetwork.self.server.CreateVoyageInstance();
                      } else {
@@ -494,8 +494,8 @@ public class ServerCommunicationHandler : MonoBehaviour
       // Marks all the pending create voyage as NOT pending
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
-            if (!disposedVoyageID.Contains(voyageCreations.id)) {
-               disposedVoyageID.Add(voyageCreations.id);
+            if (!disposedVoyageIds.Contains(voyageCreations.id)) {
+               disposedVoyageIds.Add(voyageCreations.id);
                DB_Main.setServerVoyageCreation(voyageCreations, DateTime.UtcNow, voyageCreations.id);
             }
          }
