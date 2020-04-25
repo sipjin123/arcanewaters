@@ -14,6 +14,7 @@ namespace MapCreationTool
          DrawBoardEvents.PointerExit += pointerExit;
          DrawBoardEvents.DragCell += dragCell;
          DrawBoardEvents.EndDrag += endDrag;
+         DrawBoardEvents.CancelAction += cancelAction;
       }
 
       protected override void unregisterUIEvents () {
@@ -22,6 +23,7 @@ namespace MapCreationTool
          DrawBoardEvents.PointerExit -= pointerExit;
          DrawBoardEvents.DragCell -= dragCell;
          DrawBoardEvents.EndDrag -= endDrag;
+         DrawBoardEvents.CancelAction -= cancelAction;
       }
 
       private void pointerDown (Vector3 position) {

@@ -13,25 +13,28 @@ using System.Text;
 public class SteamTester : MonoBehaviour {
    #region Public Variables
 
-   #endregion
+   #pragma warning disable 0649
 
+   Int32 k_unSecretData = 0x5444;
    private byte[] m_Ticket;
    private uint m_pcbTicket;
    private HAuthTicket m_HAuthTicket;
    private Callback<GetAuthSessionTicketResponse_t> m_GetAuthSessionTicketResponse;
-   private Callback<SteamNetAuthenticationStatus_t> m_GetAuthSessionstatus;
+   //private Callback<SteamNetAuthenticationStatus_t> m_GetAuthSessionstatus;
    private CallResult<EncryptedAppTicketResponse_t> OnEncryptedAppTicketResponseCallResult;
    public Text testLong;
-
    public List<string> wordList = new List<string>();
+
+   #pragma warning restore 0649
+
+   #endregion
+
    private void Awake () {
       m_GetAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(OnAuthSessionTickerResponse);
-      m_GetAuthSessionstatus = Callback<SteamNetAuthenticationStatus_t>.Create(OnSteamNetAuthenticationStatus); 
+      //m_GetAuthSessionstatus = Callback<SteamNetAuthenticationStatus_t>.Create(OnSteamNetAuthenticationStatus); 
       OnEncryptedAppTicketResponseCallResult = CallResult<EncryptedAppTicketResponse_t>.Create(OnEncryptedAppTicketResponse);
    }
    
-   Int32 k_unSecretData = 0x5444;
-
    private void OnGUI () {
       if (GUILayout.Button("Check my Friends")) {
          int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
@@ -125,11 +128,11 @@ public class SteamTester : MonoBehaviour {
       D.editorLog(pCallback.m_hAuthTicket.ToString());
       D.editorLog(m_pcbTicket.ToString()); 
    }
-
+   /*
    private void OnSteamNetAuthenticationStatus (SteamNetAuthenticationStatus_t pCallback) {
       D.editorLog(pCallback.m_debugMsg.ToString());
       D.editorLog(pCallback.m_eAvail.ToString());
-   }
+   }*/
 
    void OnEncryptedAppTicketResponse (EncryptedAppTicketResponse_t pCallback, bool bIOFailure) {
       D.editorLog("[" + EncryptedAppTicketResponse_t.k_iCallback + " - EncryptedAppTicketResponse] - " + pCallback.m_eResult, Color.red);

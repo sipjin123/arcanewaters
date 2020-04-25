@@ -21,6 +21,7 @@ namespace MapCreationTool
          DrawBoardEvents.DragCell += dragCell;
          DrawBoardEvents.EndDrag += endDrag;
          DrawBoardEvents.PointerExit += pointerExit;
+         DrawBoardEvents.CancelAction += cancelAction;
          Undo.UndoPerformed += setSelectedTiles;
          Undo.RedoPerformed += setSelectedTiles;
 
@@ -33,6 +34,7 @@ namespace MapCreationTool
          DrawBoardEvents.DragCell -= dragCell;
          DrawBoardEvents.EndDrag -= endDrag;
          DrawBoardEvents.PointerExit -= pointerExit;
+         DrawBoardEvents.CancelAction -= cancelAction;
          Undo.UndoPerformed -= setSelectedTiles;
          Undo.RedoPerformed -= setSelectedTiles;
       }

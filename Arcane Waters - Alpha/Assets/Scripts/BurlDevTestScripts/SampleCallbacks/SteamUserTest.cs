@@ -42,7 +42,6 @@ public class SteamUserTest : MonoBehaviour
       OnEncryptedAppTicketResponseCallResult = CallResult<EncryptedAppTicketResponse_t>.Create(OnEncryptedAppTicketResponse);
       OnStoreAuthURLResponseCallResult = CallResult<StoreAuthURLResponse_t>.Create(OnStoreAuthURLResponse);
       OnMarketEligibilityResponseCallResult = CallResult<MarketEligibilityResponse_t>.Create(OnMarketEligibilityResponse);
-      OnDurationControlCallResult = CallResult<DurationControl_t>.Create(OnDurationControl);
    }
 
    public void OnGUI () {
@@ -307,9 +306,5 @@ public class SteamUserTest : MonoBehaviour
 
    void OnMarketEligibilityResponse (MarketEligibilityResponse_t pCallback, bool bIOFailure) {
       Debug.Log("[" + MarketEligibilityResponse_t.k_iCallback + " - MarketEligibilityResponse] - " + pCallback.m_bAllowed + " -- " + pCallback.m_eNotAllowedReason + " -- " + pCallback.m_rtAllowedAtTime + " -- " + pCallback.m_cdaySteamGuardRequiredDays + " -- " + pCallback.m_cdayNewDeviceCooldown);
-   }
-
-   void OnDurationControl (DurationControl_t pCallback, bool bIOFailure) {
-      Debug.Log("[" + DurationControl_t.k_iCallback + " - DurationControl] - " + pCallback.m_eResult + " -- " + pCallback.m_appid + " -- " + pCallback.m_bApplicable + " -- " + pCallback.m_csecsLast5h + " -- " + pCallback.m_progress + " -- " + pCallback.m_notification + " -- " + pCallback.m_csecsToday + " -- " + pCallback.m_csecsRemaining);
    }
 }

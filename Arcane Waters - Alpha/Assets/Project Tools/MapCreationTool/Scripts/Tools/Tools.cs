@@ -90,7 +90,7 @@ namespace MapCreationTool
          toolType = tool;
 
          TileGroup oldGroup = tileGroup;
-         if (oldTool != toolType && (toolType == ToolType.Eraser || toolType == ToolType.Fill)) {
+         if (oldTool != toolType && toolType == ToolType.Fill) {
             tileGroup = null;
          }
 
@@ -188,7 +188,7 @@ namespace MapCreationTool
          TileGroupChanged?.Invoke(oldgroup, tileGroup);
 
          ToolType oldTool = toolType;
-         if (tileGroup != null && toolType == ToolType.Eraser) {
+         if (tileGroup != null && toolType != ToolType.Fill) {
             toolType = ToolType.Brush;
             ToolChanged?.Invoke(oldTool, toolType);
          }

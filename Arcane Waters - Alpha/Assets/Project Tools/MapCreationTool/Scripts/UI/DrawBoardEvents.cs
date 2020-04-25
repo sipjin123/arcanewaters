@@ -25,6 +25,7 @@ namespace MapCreationTool
       public static event Action<Vector3Int> PointerHoverMoveCell;
       public static event Action<Vector3> PointerHoverMove;
       public static event Action<Vector3, float> PointerScroll;
+      public static Action CancelAction;
 
       public static Vector3? draggingFrom { get; private set; }
       private static Vector3Int? draggingFromCell = null;

@@ -21,6 +21,7 @@ namespace MapCreationTool
          DrawBoardEvents.PointerHoverMoveCell += moveCell;
          DrawBoardEvents.PointerHoverMove += move;
          DrawBoardEvents.Drag += drag;
+         DrawBoardEvents.CancelAction += cancelAction;
       }
 
       protected override void unregisterUIEvents () {
@@ -32,6 +33,7 @@ namespace MapCreationTool
          DrawBoardEvents.PointerHoverMoveCell -= moveCell;
          DrawBoardEvents.PointerHoverMove -= move;
          DrawBoardEvents.Drag -= drag;
+         DrawBoardEvents.CancelAction -= cancelAction;
       }
 
       private void pointerDown (Vector3 position) {

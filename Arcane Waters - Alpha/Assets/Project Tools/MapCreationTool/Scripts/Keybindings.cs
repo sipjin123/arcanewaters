@@ -124,7 +124,8 @@ namespace MapCreationTool
          SelectTool = 9,
          MoveTool = 10,
          SelectionAdd = 11,
-         SelectionRemove = 12
+         SelectionRemove = 12,
+         CancelAction = 13
       }
 
       [System.Serializable]

@@ -7,6 +7,8 @@ namespace MapCreationTool
    {
       protected override ToolType toolType => ToolType.Selection;
 
+      public static bool cancelled { get; private set; }
+
       protected override void registerUIEvents () {
          DrawBoardEvents.PointerClick += pointerClick;
          DrawBoardEvents.PointerExit += pointerExit;
@@ -14,6 +16,8 @@ namespace MapCreationTool
          DrawBoardEvents.EndDrag += endDrag;
          DrawBoardEvents.PointerHoverMove += move;
          DrawBoardEvents.Drag += drag;
+         DrawBoardEvents.BeginDrag += beginDrag;
+         DrawBoardEvents.CancelAction += cancelAction;
       }
 
       protected override void unregisterUIEvents () {
@@ -23,6 +27,8 @@ namespace MapCreationTool
          DrawBoardEvents.EndDrag -= endDrag;
          DrawBoardEvents.PointerHoverMove -= move;
          DrawBoardEvents.Drag -= drag;
+         DrawBoardEvents.BeginDrag -= beginDrag;
+         DrawBoardEvents.CancelAction -= cancelAction;
       }
 
       private void pointerClick (Vector3 pos) {
@@ -58,7 +64,12 @@ namespace MapCreationTool
          }
       }
 
+      private void beginDrag (Vector3 from) {
+         cancelled = false;
+      }
+
       private void dragCell (Vector3Int from, Vector3Int to) {
+         if (cancelled) return;
          if (Tools.selectionTarget != SelectionTarget.Both && Tools.selectionTarget != SelectionTarget.Tiles) return;
 
          bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
@@ -68,6 +79,7 @@ namespace MapCreationTool
       }
 
       private void drag (Vector3 from, Vector3 to) {
+         if (cancelled) return;
          if (Tools.selectionTarget != SelectionTarget.Both && Tools.selectionTarget != SelectionTarget.Prefabs) return;
 
          bool add = Settings.keybindings.getAction(Keybindings.Command.SelectionAdd);
@@ -77,6 +89,7 @@ namespace MapCreationTool
       }
 
       private void endDrag (Vector3 from, Vector3 to) {
+         if (cancelled) return;
          bool selectTiles = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Tiles;
          bool selectPrefabs = Tools.selectionTarget == SelectionTarget.Both || Tools.selectionTarget == SelectionTarget.Prefabs;
 
@@ -102,6 +115,7 @@ namespace MapCreationTool
       }
 
       protected override void cancelAction () {
+         cancelled = true;
          DrawBoard.instance.setTilesModifyPreview(null);
          DrawBoard.instance.setTilesModifyPreview(null);
       }

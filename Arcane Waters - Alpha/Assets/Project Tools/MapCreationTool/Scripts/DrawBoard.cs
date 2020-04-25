@@ -63,7 +63,6 @@ namespace MapCreationTool
          setUpLayers(Tools.editorType);
          setBoardSize(Tools.boardSize);
          changeLoadedVersion(null);
-         updateBrushOutline();
       }
 
       private void OnEnable () {
@@ -525,6 +524,7 @@ namespace MapCreationTool
       private void updateBrushOutline () {
          brushOutline.enabled = false;
          if (Tools.toolType == ToolType.Eraser) {
+            placedPrefabs.ForEach(p => p.setHighlight(false, false, false));
             PlacedPrefab hoveredPrefab = getHoveredPrefab();
             if (hoveredPrefab != null) {
                hoveredPrefab.setHighlight(false, false, true);
@@ -535,7 +535,7 @@ namespace MapCreationTool
                brushOutline.color = Color.red;
             }
          } else if (Tools.toolType == ToolType.Selection) {
-            brushOutline.enabled = DrawBoardEvents.isDragging;
+            brushOutline.enabled = DrawBoardEvents.isDragging && !SelectionTool.cancelled;
 
             if (!brushOutline.enabled)
                return;

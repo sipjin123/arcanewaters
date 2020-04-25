@@ -209,6 +209,9 @@ namespace MapCreationTool
                   Tools.changeTool(ToolType.Move);
                }
             }
+            if (Settings.keybindings.getAction(Keybindings.Command.CancelAction)) {
+               DrawBoardEvents.CancelAction?.Invoke();
+            }
          }
       }
 
