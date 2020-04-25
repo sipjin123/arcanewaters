@@ -221,6 +221,7 @@ public class ServerCommunicationHandler : MonoBehaviour
       serverDataList.Add(serverData);
       Server server = Instantiate(serverPrefab, Vector3.zero, Quaternion.identity);
       server.gameObject.name = "Server_" + serverData.deviceName;
+      DontDestroyOnLoad(server.gameObject);
 
       server.deviceName = serverData.deviceName;
       server.ipAddress = serverData.ip;

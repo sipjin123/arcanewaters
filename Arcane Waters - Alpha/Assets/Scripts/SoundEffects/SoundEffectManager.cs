@@ -30,11 +30,12 @@ public class SoundEffectManager : MonoBehaviour
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (SoundEffect effect in fetchedSoundEffects) {
-               findAndAssignAudioClip(effect);
-               _soundEffects.Add(effect.id, effect);
-
-               _hasInitialized = true;
+               if (!_soundEffects.ContainsKey(effect.id)) {
+                  findAndAssignAudioClip(effect);
+                  _soundEffects.Add(effect.id, effect);
+               }
             }
+            _hasInitialized = true;
          });
       });
    }

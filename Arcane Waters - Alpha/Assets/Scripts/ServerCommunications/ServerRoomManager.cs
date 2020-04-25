@@ -10,6 +10,9 @@ public class ServerRoomManager : MonoBehaviour {
    // Self
    public static ServerRoomManager self;
 
+   // If the servers have initialized
+   public bool hasInitialized = false;
+
    #endregion
 
    private void Awake () {
@@ -18,7 +21,10 @@ public class ServerRoomManager : MonoBehaviour {
 
    public void initializeServer () {
       Debug.Log("Connected to Master!");
-      ServerCommunicationHandler.self.initializeServers();
+      if (!hasInitialized) {
+         hasInitialized = true;
+         ServerCommunicationHandler.self.initializeServers();
+      }
    }
 
    protected string getServerRoomName () {
