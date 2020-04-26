@@ -13,7 +13,7 @@ public class SeaEntity : NetEntity
    // The amount of damage we do
    [SyncVar]
    public int damage = 25;
-
+   
    // How long we have to wait to reload
    [SyncVar]
    public float reloadDelay = 1f;
@@ -539,7 +539,7 @@ public class SeaEntity : NetEntity
          if (hit != null) {
             SeaEntity targetEntity = hit.GetComponent<SeaEntity>();
 
-            if (!enemyHitList.Contains(targetEntity)) {
+            if (targetEntity != null && !enemyHitList.Contains(targetEntity)) {
                if (targetPlayersOnly && hit.GetComponent<ShipEntity>() == null) {
                   continue;
                }
@@ -549,8 +549,13 @@ public class SeaEntity : NetEntity
                   continue;
                }
 
+               // Check if the attacker and the target are allies
+               if (attacker.isAllyOf(targetEntity)) {
+                  continue;
+               }
+
                // Make sure the target is in our same instance
-               if (targetEntity != null && targetEntity.instanceId == this.instanceId) {
+               if (targetEntity.instanceId == this.instanceId) {
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;

@@ -50,6 +50,9 @@ public class VoyagePanel : Panel
       // Clear out any old info
       mapCellsContainer.DestroyChildren();
 
+      // Sort the list by creation date
+      voyageList = voyageList.OrderByDescending(v => v.creationDate).ToList();
+
       // Instantiate the cells
       foreach (Voyage voyage in voyageList) {
          VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellsContainer.transform, false);

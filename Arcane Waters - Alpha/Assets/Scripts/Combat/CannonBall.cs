@@ -44,14 +44,22 @@ public class CannonBall : GenericSeaProjectile {
             foreach (Collider2D hit in SeaEntity.getHitColliders(this.transform.position)) {
                if (hit != null) {
                   NetEntity entity = hit.GetComponent<NetEntity>();
+                  if (entity == null) {
+                     continue;
+                  }
 
                   // Make sure we don't hit the creator of the cannon ball
                   if (entity == _creator) {
                      continue;
                   }
 
+                  // Check if the creator and the target are allies
+                  if (_creator.isAllyOf(entity)) {
+                     continue;
+                  }
+
                   // Make sure the target is in our same instance
-                  if (entity != null && entity.instanceId == Global.player.instanceId) {
+                  if (entity.instanceId == Global.player.instanceId) {
                      hitEnemy = true;
 
                      // If we hit a ship, show some flying particles

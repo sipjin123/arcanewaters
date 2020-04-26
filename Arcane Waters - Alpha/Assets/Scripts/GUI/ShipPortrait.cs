@@ -43,7 +43,7 @@ public class ShipPortrait : MonoBehaviour
 
    void Update () {
       // Only show the user portrait when the mouse is over
-      if (!_entity.isDead() && _entity.isMouseOver()) {
+      if (!_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver())) {
          show();
          portrait.updateBackground(_entity);
       } else {

@@ -23,12 +23,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The exit button
    public Button xButton;
 
-   // The countdown container
-   public GameObject countdownBox;
-
-   // The countdown text when leaving the group
-   public Text leavingCountdownText;
-
    // Self
    public static VoyageGroupPanel self;
 
@@ -42,9 +36,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    public void Start () {
       // Hide the panel by default
       hide();
-
-      // Hide the leaving countdown
-      countdownBox.SetActive(false);
 
       // Hide the x button
       xButton.gameObject.SetActive(false);
@@ -76,35 +67,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       } else {
          xButton.interactable = true;
       }
-
-      // Check if the leave group countdown is running
-      if (countdownBox.activeSelf) {
-         // Check if the player is in combat
-         if (Global.player.hasAttackers()) {
-            // Stop the countdown
-            countdownBox.SetActive(false);
-         } else {
-            // Decrease the countdown
-            _countdown -= Time.deltaTime;
-
-            // Update the countdown text
-            leavingCountdownText.text = Mathf.CeilToInt(_countdown).ToString();
-
-            // Check if we reached the end of the countdown
-            if (_countdown <= 0) {
-               // Hide the countdown
-               countdownBox.SetActive(false);
-
-               // Request the server to remove the user from the group
-               Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
-            }
-         }
-      }
    }
 
    public void updatePanelWithGroupMembers (List<int> groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
       if (!VoyageManager.isInVoyage(Global.player) || groupMembers.Count <= 0) {
+         // Clear out any old info
+         memberContainer.DestroyChildren();
+
+         // Hide the panel
          hide();
          return;
       }
@@ -124,7 +95,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void OnLeaveGroupButtonClickedOn () {
       // Check if the player is already leaving the group or if it is in combat
-      if (countdownBox.activeSelf || Global.player.hasAttackers()) {
+      if (PanelManager.self.countdownScreen.isShowing() || Global.player.hasAttackers()) {
          return;
       }
 
@@ -140,16 +111,24 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // Hide the confirm panel
       PanelManager.self.confirmScreen.hide();
 
-      // Set the countdown start value
-      _countdown = LEAVING_COUNTDOWN_SECONDS;
+      // Initialize the countdown screen
+      PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
+      PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+      PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
+      PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
+      PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
 
       // Start the countdown
-      countdownBox.SetActive(true);
+      PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
+      PanelManager.self.countdownScreen.show();
    }
 
-   public void OnCancelLeaveGroupButtonClickedOn () {
+   public void onLeaveCountdownEnd () {
       // Hide the countdown
-      countdownBox.SetActive(false);
+      PanelManager.self.countdownScreen.hide();
+
+      // Request the server to remove the user from the group
+      Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
    }
 
    public void show () {

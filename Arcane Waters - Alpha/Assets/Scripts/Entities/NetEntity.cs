@@ -425,18 +425,27 @@ public class NetEntity : NetworkBehaviour {
    }
 
    public virtual void handleSpriteOutline () {
-      if (_outline == null) {
+      if (_outline == null || Global.player == null) {
          return;
       }
 
-      // Draw the outline
-      if (AttackManager.self.isHoveringOver(this) && Global.player != this) {
+      if (Global.player == this) {
+         _outline.setNewColor(Color.white);
+         _outline.setVisibility((isMouseOver() || isAttackCursorOver()) && !isDead());
+         return;
+      }
+
+      if (isAttackCursorOver()) {
          // If the attack cursor is over us, draw a yellow outline
          _outline.setNewColor(Color.yellow);
          _outline.setVisibility(true);
       } else if (isEnemyOf(Global.player)) {
-         // Draw a red outline around enemies of the Player   
+         // Draw a red outline around enemies of the Player
          _outline.setNewColor(Color.red);
+         _outline.setVisibility(true);
+      } else if (isAllyOf(Global.player)) {
+         // Draw a green outline around allies of the Player
+         _outline.setNewColor(Color.green);
          _outline.setVisibility(true);
       } else if (hasAttackers()) {
          // If we've been attacked by someone, we get an orange outline
@@ -532,6 +541,10 @@ public class NetEntity : NetworkBehaviour {
       return MouseManager.self.isHoveringOver(_clickableBox);
    }
 
+   public bool isAttackCursorOver () {
+      return AttackManager.self.isHoveringOver(this);
+   }
+
    public bool hasAttackers () {
       return _attackers.Count > 0;
    }
@@ -557,8 +570,32 @@ public class NetEntity : NetworkBehaviour {
          return false;
       }
 
+      if (VoyageManager.isInVoyage(this) && VoyageManager.isInVoyage(otherEntity)) {
+         if (this.voyageGroupId == otherEntity.voyageGroupId) {
+            return false;
+         } else {
+            return true;
+         }
+      }
+
       if (hasBeenAttackedBy(otherEntity) || otherEntity.hasBeenAttackedBy(this)) {
          return true;
+      }
+
+      return false;
+   }
+
+   public bool isAllyOf (NetEntity otherEntity) {
+      if (otherEntity == null || otherEntity.isDead()) {
+         return false;
+      }
+
+      if (VoyageManager.isInVoyage(this) && VoyageManager.isInVoyage(otherEntity)) {
+         if (this.voyageGroupId == otherEntity.voyageGroupId) {
+            return true;
+         } else {
+            return false;
+         }
       }
 
       return false;

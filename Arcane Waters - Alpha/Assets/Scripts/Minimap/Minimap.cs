@@ -277,8 +277,12 @@ public class Minimap : ClientMonoBehaviour {
          return;
       }
 
-      MM_ShipEntityIcon[] shipIcons = this.playerShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
       Area area = AreaManager.self.getArea(Global.player.areaKey);
+      if (area == null) {
+         return;
+      }
+
+      MM_ShipEntityIcon[] shipIcons = this.playerShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
       PlayerShipEntity[] shipsArray = GameObject.FindObjectsOfType<PlayerShipEntity>();
       foreach (PlayerShipEntity ship in shipsArray) {
          bool stopLoop = false;
@@ -318,8 +322,12 @@ public class Minimap : ClientMonoBehaviour {
          return;
       }
 
-      MM_ShipEntityIcon[] shipIcons = this.botShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
       Area area = AreaManager.self.getArea(Global.player.areaKey);
+      if (area == null) {
+         return;
+      }
+
+      MM_ShipEntityIcon[] shipIcons = this.botShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
       BotShipEntity[] shipsArray = GameObject.FindObjectsOfType<BotShipEntity>();
       foreach (BotShipEntity ship in shipsArray) {
          bool stopLoop = false;

@@ -903,6 +903,15 @@ public class Util : MonoBehaviour {
       return gameVersion;
    }
 
+   public static bool isSameIpAddress (string addressA, string addressB) {
+      if ((addressA == "localhost" || addressA == "127.0.0.1") &&
+          (addressB == "localhost" || addressB == "127.0.0.1")) {
+         return true;
+      } else {
+         return addressA == addressB;
+      }
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 }

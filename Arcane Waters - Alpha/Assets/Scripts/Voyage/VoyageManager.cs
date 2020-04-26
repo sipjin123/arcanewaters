@@ -17,6 +17,9 @@ public class VoyageManager : MonoBehaviour {
 
    void Awake () {
       self = this;
+
+      // Randomize the starting value of the PvP parameter
+      _isNewVoyagePvP = UnityEngine.Random.Range(0, 2) == 0;
    }
 
    public void Start () {
@@ -35,6 +38,9 @@ public class VoyageManager : MonoBehaviour {
 
       // Regularly check that there are enough voyage instances open and create more
       InvokeRepeating("createVoyageInstanceIfNeeded", 20f, 10f);
+
+      // Regularly update the list of voyage instances hosted by this server
+      InvokeRepeating("updateVoyageInstancesList", 5.5f, 5f);
    }
 
    public void createVoyageInstance () {
@@ -63,10 +69,9 @@ public class VoyageManager : MonoBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Randomize the voyage parameters
             Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
-            bool isPvP = UnityEngine.Random.Range(0, 2) == 0;
 
             // Create the area instance
-            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty);
+            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, UnityEngine.Random.Range(0, 2) == 0, difficulty);
          });
       });
    }
@@ -274,6 +279,19 @@ public class VoyageManager : MonoBehaviour {
       _visibleGroupMembers = visibleGroupMembers;
    }
 
+   private void updateVoyageInstancesList () {
+      // Rebuilds the list of voyage instances and their status held in this server
+      List<Voyage> allVoyages = new List<Voyage>();
+
+      foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
+         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, instance.difficulty, instance.isPvP,
+            instance.creationDate, instance.getTreasureSitesCount(), instance.getCapturedTreasureSitesCount());
+         allVoyages.Add(voyage);
+      }
+
+      ServerCommunicationHandler.self.refreshVoyageInstances(allVoyages);
+   }
+
    protected void createVoyageInstanceIfNeeded () {
       // Get our server
       Server server = ServerNetwork.self.server;
@@ -313,6 +331,9 @@ public class VoyageManager : MonoBehaviour {
                // Find the server with the least people
                Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
 
+               // Toggle the PvP variable
+               _isNewVoyagePvP = !_isNewVoyagePvP;
+
                // Create a new voyage instance on the chosen server
                List<PendingVoyageCreation> voyageList = new List<PendingVoyageCreation>();
                PendingVoyageCreation newVoyage = new PendingVoyageCreation {
@@ -322,7 +343,7 @@ public class VoyageManager : MonoBehaviour {
                   isPending = true,
                   serverPort = bestServer.port,
                   updateTime = DateTime.UtcNow,
-                  areaKey = ""
+                  areaKey = "",
                };
                voyageList.Add(newVoyage);
                ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
@@ -355,6 +376,10 @@ public class VoyageManager : MonoBehaviour {
          foreach (string areaKey in seaMaps) {
             // Find the server with the least people
             Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
+
+            // Toggle the PvP variable
+            _isNewVoyagePvP = !_isNewVoyagePvP;
+
             if (bestServer != null) {
                // Create a new voyage instance on the chosen server
                pendingVoyageList.Add(new PendingVoyageCreation {
@@ -419,6 +444,9 @@ public class VoyageManager : MonoBehaviour {
 
    // The name of the voyage inviter
    private string _inviterName;
-   
+
+   // Gets toggled every time a new voyage is created, to ensure an equal number of PvP and PvE instances
+   private bool _isNewVoyagePvP = false;
+
    #endregion
 }

@@ -122,10 +122,6 @@ public class InstanceManager : MonoBehaviour {
       // Note the open Areas on this server
       recalculateOpenAreas();
 
-      // Keep server data updated with our new voyage instance
-      Voyage newVoyage = new Voyage(instance.voyageId, instance.areaKey, instance.difficulty, instance.isPvP, instance.creationDate, instance.getTreasureSitesCount(), instance.getCapturedTreasureSitesCount());
-      ServerCommunicationHandler.self.createVoyageInstance(newVoyage);
-
       // Spawn the network object on the Clients
       NetworkServer.Spawn(instance.gameObject);
       return instance;

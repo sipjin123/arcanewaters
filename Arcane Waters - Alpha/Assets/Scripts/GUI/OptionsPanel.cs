@@ -133,14 +133,43 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       SoundManager.effectsVolume = effectsSlider.value;
    }
 
-   public void logOut () {
-      // Close this panel
-      PanelManager.self.popPanel();
+   public void onLogOutButtonPress () {
+      if (Global.player == null) {
+         return;
+      }
 
       // Hide the voyage group invite panel, if opened
       // TODO: Confirm this functionality
       D.editorLog("Confirm voyage decline functionality for logout", Color.red);
       VoyageManager.self.refuseVoyageInvitation(-1, "", 0);
+
+      // Check if the user is at sea
+      if (Global.player is ShipEntity) {
+         // Initialize the countdown screen
+         PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
+         PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+         PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
+         PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => logOut());
+         PanelManager.self.countdownScreen.customText.text = "Logging out in";
+
+         // Start the countdown
+         PanelManager.self.countdownScreen.seconds = DisconnectionManager.SECONDS_UNTIL_PLAYERS_DESTROYED;
+         PanelManager.self.countdownScreen.show();
+
+         // Close this panel
+         PanelManager.self.popPanel();
+      } else {
+         logOut();
+      }
+   }
+
+   public void logOut () {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Tell the server that the player logged out safely
+      Global.player.rpc.Cmd_OnPlayerLogOutSafely();
 
       // Stop any client or server that may have been running
       MyNetworkManager.self.StopHost();
@@ -152,6 +181,11 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       Global.lastUsedAccountName = "";
       Global.lastUserAccountPassword = "";
       Global.currentlySelectedUserId = 0;
+
+      // Close this panel
+      if (isShowing()) {
+         PanelManager.self.popPanel();
+      }
    }
 
    public void enableAdminButtons (bool isEnabled) {

@@ -142,8 +142,12 @@ public class D : MonoBehaviour {
    }
 
    public static void editorLog (string text, Color color = new Color()) {
-      if (Util.isBatch()) {
-         return;
+      try {
+         if (Util.isBatch()) {
+            return;
+         }
+      } catch {
+         UnityEngine.Debug.LogWarning("Not Main Thread");
       }
 
       #if UNITY_EDITOR

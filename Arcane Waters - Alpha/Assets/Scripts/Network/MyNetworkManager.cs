@@ -177,6 +177,7 @@ public class MyNetworkManager : NetworkManager {
 
    public override void OnStopServer () {
       _players.Clear();
+      DisconnectionManager.self.clearDisconnectedUsers();
    }
 
    [ServerOnly]
@@ -224,10 +225,13 @@ public class MyNetworkManager : NetworkManager {
                return;
             }
 
-            // Verify if the area exists and get its position
+            // Check if the player disconnected a few seconds ago and its object is still in the server
+            DisconnectionManager.self.reconnectDisconnectedUser(userInfo, shipInfo);
+
+            // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
             if (AreaManager.self.hasArea(previousAreaKey)) {
-               // If the area already exists
+               // If the area is already instantiated
                mapPosition = AreaManager.self.getArea(previousAreaKey).transform.position;
             } else if (MapManager.self.isAreaUnderCreation(previousAreaKey)) {
                // If the area is under creation
@@ -337,17 +341,43 @@ public class MyNetworkManager : NetworkManager {
       if (_players.ContainsKey(conn.connectionId)) {
          NetEntity player = _players[conn.connectionId];
 
-         // Remove this player from the user list of the server
-         ServerCommunicationHandler.self.removePlayer(player.userId);
-
-         // Remove the player from the instance
-         InstanceManager.self.removeEntityFromInstance(player);
-
          // Remove the player from our internal list
          _players.Remove(conn.connectionId);
 
-         NetworkServer.DestroyPlayerForConnection(conn);
+         // Remove this player from the user list of the server
+         ServerCommunicationHandler.self.removePlayer(player.userId);
+
+         if (player is ShipEntity) {
+            // If the player is a ship, keep it in the server for a few seconds
+            DisconnectionManager.self.addToDisconnectedUsers(player);
+         } else {
+            destroyPlayer(player);
+         }
       }
+   }
+
+   public void destroyPlayer (NetEntity player) {
+      if (player == null) {
+         return;
+      }
+
+      // Get the connection
+      NetworkConnection conn = player.netIdent.connectionToClient;
+
+      // Remove this player from the user list of the server
+      ServerCommunicationHandler.self.removePlayer(player.userId);
+
+      // Remove the player from the instance
+      InstanceManager.self.removeEntityFromInstance(player);
+
+      // Remove the player from our internal list
+      _players.Remove(conn.connectionId);
+
+      // Remove the player from the list of disconnected players
+      DisconnectionManager.self.removeFromDisconnectedUsers(player);
+
+      // Destroy the player object
+      NetworkServer.DestroyPlayerForConnection(conn);
    }
 
    #endregion

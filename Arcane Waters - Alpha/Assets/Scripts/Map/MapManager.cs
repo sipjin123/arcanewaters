@@ -50,7 +50,16 @@ public class MapManager : MonoBehaviour
       if (isAreaUnderCreation(areaKey)) {
          return;
       }
-      
+
+      // On clients, check if another area is currently being created
+      if (!Mirror.NetworkServer.active && _areasUnderCreation.Count > 0) {
+         // Only one area can be created at a time, so schedule this one for when the other finishes
+         _nextAreaKey = areaKey;
+         _nextMapInfo = mapInfo;
+         _nextMapPosition = mapPosition;
+         return;
+      }
+
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
 
@@ -199,6 +208,12 @@ public class MapManager : MonoBehaviour
       }
 
       PanelManager.self.loadingScreen.hide();
+
+      // On clients, if an area is scheduled to be created next, start the process now
+      if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
+         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition);
+         _nextAreaKey = null;
+      }
    }
 
    public Vector3 getNextMapPosition () {
@@ -245,6 +260,11 @@ public class MapManager : MonoBehaviour
 
    // The the last visited Map by the Client
    private Area _lastMap;
+
+   // The parameters of the next area to be created (only used on clients)
+   private string _nextAreaKey = null;
+   private MapInfo _nextMapInfo;
+   private Vector3 _nextMapPosition;
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();

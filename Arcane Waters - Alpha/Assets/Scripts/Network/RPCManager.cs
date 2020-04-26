@@ -770,6 +770,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_OnPlayerLogOutSafely () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Destroy the player object right away
+      MyNetworkManager.self.destroyPlayer(_player);
+   }
+
+   [Command]
    public void Cmd_RequestTradeHistoryInfoFromServer (int pageIndex, int itemsPerPage) {
       if (_player == null) {
          D.warning("No player object found.");

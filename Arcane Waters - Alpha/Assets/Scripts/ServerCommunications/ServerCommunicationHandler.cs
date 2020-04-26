@@ -512,8 +512,8 @@ public class ServerCommunicationHandler : MonoBehaviour
       });
    }
 
-   public void createVoyageInstance (Voyage voyageInstance) {
-      ourServerData.voyageList.Add(voyageInstance);
+   public void refreshVoyageInstances (List<Voyage> voyageList) {
+      ourServerData.voyageList = voyageList;
 
       // Sync server data and servers
       overwriteServerData(ourServerData, true);

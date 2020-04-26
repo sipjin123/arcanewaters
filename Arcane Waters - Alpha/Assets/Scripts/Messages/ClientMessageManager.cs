@@ -14,7 +14,7 @@ public class ClientMessageManager : MonoBehaviour {
       D.debug("Received redirect message to " + msg.newIpAddress + ":" + msg.newPort);
 
       // If the address and port are the same, we just send another login request
-      if (msg.newIpAddress == NetworkManager.singleton.networkAddress && msg.newPort == MyNetworkManager.self.telepathy.port) {
+      if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {
          ClientManager.sendAccountNameAndUserId();
       } else {
          NetworkManager.singleton.StartCoroutine(CO_Reconnect(msg));

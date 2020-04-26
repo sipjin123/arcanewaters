@@ -116,7 +116,7 @@ public class AttackManager : ClientMonoBehaviour {
 
    public int getPredictedDamage (SeaEntity enemy) {
       if (Global.player == null || !(Global.player is SeaEntity) || SeaManager.selectedAttackType == Attack.Type.Air 
-         || Global.player == enemy || !isHoveringOver(enemy)) {
+         || Global.player == enemy || !enemy.isAttackCursorOver() || Global.player.isAllyOf(enemy)) {
          return 0;
       } else {
          return ((SeaEntity) Global.player).getDamageForShot(SeaManager.selectedAttackType, 

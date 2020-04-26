@@ -55,7 +55,7 @@ public class SeaMonsterBars : MonoBehaviour
       handleStatusIcons();
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this monster
-      barsContainer.SetActive(_entity.hasAnyCombat() || AttackManager.self.isHoveringOver(_entity));
+      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());
 
       if (!isDamageable) {
          return;

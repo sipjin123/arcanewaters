@@ -78,7 +78,7 @@ public class ShipBars : MonoBehaviour {
       factionIcon.enabled = _entity.hasAnyCombat();
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
-      barsContainer.SetActive(_entity.hasAnyCombat() || AttackManager.self.isHoveringOver(_entity));
+      barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());
 
       // Hide and show our status icons accordingly
       handleStatusIcons();
