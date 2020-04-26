@@ -46,6 +46,7 @@ public class NewTutorialToolScene : MonoBehaviour {
 
    private void Start () {
       toolManager.loadNewTutorialList();
+      toolManager.loadTutorialStepActionOptions();
    }
 
    public void loadData (List<NewTutorialData> data) {
@@ -89,6 +90,10 @@ public class NewTutorialToolScene : MonoBehaviour {
 
    public void loadAreaKeys (List<string> areaKeys) {
       tutorialPanel.loadAreaKeysOptions(areaKeys);
+   }
+
+   public void loadStepActionOptions (List<TutorialStepAction> actions) {
+      tutorialPanel.loadTutorialStepActionOptions(actions);
    }
 
    private void createTemplate () {

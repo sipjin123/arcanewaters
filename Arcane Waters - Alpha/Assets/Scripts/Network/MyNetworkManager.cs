@@ -148,6 +148,9 @@ public class MyNetworkManager : NetworkManager {
       // Create the initial map that everyone starts in
       MapManager.self.createLiveMap(Area.STARTING_TOWN);
 
+      // Set up tutorial data
+      NewTutorialManager.self.storeInfoFromDatabase();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }

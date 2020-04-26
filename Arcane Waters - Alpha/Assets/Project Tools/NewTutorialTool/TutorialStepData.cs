@@ -23,15 +23,19 @@ public class TutorialStepData {
    // The step description
    public string stepDescription;
 
+   // The action for this step
+   public TutorialStepAction stepAction;
+
    #endregion
 
    public TutorialStepData () { }
 
-   public TutorialStepData (int stepId, int tutorialId, string stepName, string stepDescription) {
+   public TutorialStepData (int stepId, int tutorialId, string stepName, string stepDescription, TutorialStepAction stepAction) {
       this.tutorialId = tutorialId;
       this.stepId = stepId;
       this.stepName = stepName;
       this.stepDescription = stepDescription;
+      this.stepAction = stepAction;
    }
 
 #if IS_SERVER_BUILD

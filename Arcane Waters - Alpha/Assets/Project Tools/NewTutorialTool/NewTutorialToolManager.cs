@@ -72,10 +72,25 @@ public class NewTutorialToolManager : XmlDataToolManager {
       XmlLoadingPanel.self.startLoading();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         areaKeys = DB_Main.getAreaKeysForTutorial();
+         areaKeys = DB_Main.getAvailableAreaKeysForTutorial();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             scene.loadAreaKeys(areaKeys);
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
+
+   }
+
+   public void loadTutorialStepActionOptions () {
+      List<TutorialStepAction> actions = new List<TutorialStepAction>();
+      XmlLoadingPanel.self.startLoading();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         actions = DB_Main.getTutorialStepActions();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            scene.loadStepActionOptions(actions);
             XmlLoadingPanel.self.finishLoading();
          });
       });

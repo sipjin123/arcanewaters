@@ -36,6 +36,8 @@ public class NewTutorialToolPanel : MonoBehaviour {
          stepTemplate.gameObject.SetActive(true);
          stepTemplate.stepName.text = "(None)";
          stepTemplate.stepDescription.text = "(None)";
+         stepTemplate.stepAction.ClearOptions();
+         stepTemplate.stepAction.AddOptions(_tutorialStepActionOptions);
          stepTemplate.deleteButton.onClick.AddListener(() => {
             GameObject.Destroy(stepTemplate);
          });
@@ -52,6 +54,7 @@ public class NewTutorialToolPanel : MonoBehaviour {
 
 
    public void loadData (NewTutorialData data) {
+      Debug.Log("Loading data");
       _tutorialId = data.tutorialId;
       _tutorialName.text = data.tutorialName;
       _tutorialDescription.text = data.tutorialDescription;
@@ -73,6 +76,11 @@ public class NewTutorialToolPanel : MonoBehaviour {
             stepTemplate.id = step.stepId;
             stepTemplate.stepName.text = step.stepName;
             stepTemplate.stepDescription.text = step.stepDescription;
+            stepTemplate.stepAction.ClearOptions();
+            stepTemplate.stepAction.AddOptions(_tutorialStepActionOptions);
+            IEnumerable<KeyValuePair<int, TutorialStepAction>> actionKeyValuePair = _tutorialStepActionDictionary.Where(x => x.Value.stepActionId == step.stepAction.stepActionId);
+            stepTemplate.stepAction.value = actionKeyValuePair.Any() ? actionKeyValuePair.First().Key : 0;
+
             stepTemplate.deleteButton.onClick.AddListener(() => {
                GameObject.Destroy(stepTemplate.gameObject);
             });
@@ -94,6 +102,16 @@ public class NewTutorialToolPanel : MonoBehaviour {
       _tutorialAreaKey.AddOptions(options);
    }
 
+   public void loadTutorialStepActionOptions (List<TutorialStepAction> actions) {
+      Debug.Log("Loading actions");
+      int index = 0;
+
+      foreach (TutorialStepAction action in actions) {
+         _tutorialStepActionOptions.Add(new TMPro.TMP_Dropdown.OptionData(action.displayName));
+         _tutorialStepActionDictionary.Add(index, action);
+         index++;
+      }
+   }
 
    private NewTutorialData getNewTutorialData () {
       NewTutorialData data = new NewTutorialData();
@@ -107,7 +125,7 @@ public class NewTutorialToolPanel : MonoBehaviour {
       data.tutorialStepList = new List<TutorialStepData>();
       foreach (Transform child in _tutorialStepsParent) {
          NewTutorialStepTemplate stepTemplate = child.GetComponent<NewTutorialStepTemplate>();
-         TutorialStepData step = new TutorialStepData(stepTemplate.id, _tutorialId, stepTemplate.stepName.text, stepTemplate.stepDescription.text);
+         TutorialStepData step = new TutorialStepData(stepTemplate.id, _tutorialId, stepTemplate.stepName.text, stepTemplate.stepDescription.text, _tutorialStepActionDictionary[stepTemplate.stepAction.value]);
 
          data.tutorialStepList.Add(step);
       }
@@ -159,6 +177,12 @@ public class NewTutorialToolPanel : MonoBehaviour {
 
    // A dictionary holding the dropdown values along their area key string 
    private Dictionary<int, string> _tutorialAreaKeyDictionary = new Dictionary<int, string>();
+
+   // A dictionary holding the dropdown values along their TutorialStepAction reference
+   private Dictionary<int, TutorialStepAction> _tutorialStepActionDictionary = new Dictionary<int, TutorialStepAction>();
+
+   // A dropdown template for the selection of TutorialStepAction in steps
+   private List<TMPro.TMP_Dropdown.OptionData> _tutorialStepActionOptions = new List<TMPro.TMP_Dropdown.OptionData>();
 
    // The tutorial id
    private int _tutorialId;

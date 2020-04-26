@@ -226,8 +226,20 @@ public class DB_MainStub : MonoBehaviour {
    public static void upsertTutorialStep (TutorialStepData data) {
    }
 
-   public static List<string> getAreaKeysForTutorial () {
+   public static List<string> getAvailableAreaKeysForTutorial () {
       return new List<string>();
+   }
+
+   public static List<string> getTutorialAreaKeys () {
+      return new List<string>();
+   }
+
+   public static List<TutorialStepAction> getTutorialStepActions () {
+      return new List<TutorialStepAction>();
+   }
+
+   public static List<UserTutorialStep> getUserCompletedSteps (int userId, int tutorialId) {
+      return new List<UserTutorialStep>();
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {

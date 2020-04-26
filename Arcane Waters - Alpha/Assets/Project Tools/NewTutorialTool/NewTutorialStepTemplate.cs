@@ -16,6 +16,9 @@ public class NewTutorialStepTemplate : MonoBehaviour {
    // The step description
    public InputField stepDescription;
 
+   // The action selection dropdown
+   public TMPro.TMP_Dropdown stepAction;
+
    // Delete button
    public Button deleteButton;
 

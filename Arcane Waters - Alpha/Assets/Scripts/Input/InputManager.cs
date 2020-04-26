@@ -6,7 +6,7 @@ using Mirror;
 
 public class InputManager : MonoBehaviour {
    #region Public Variables
-      
+
    #endregion
 
    public static bool isActionKeyPressed () {
@@ -24,7 +24,14 @@ public class InputManager : MonoBehaviour {
       return Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E);
    }
 
+   private void Update () {
+      // Show tutorial
+      if (Input.GetKeyDown(KeyCode.F12)) {
+         NewTutorialManager.self.showTutorialPanel();
+      }
+   }
+
    #region Private Variables
-      
+
    #endregion
 }

@@ -2198,6 +2198,26 @@ public class DB_Main : DB_MainStub {
       return book;
    }
 
+   public static new void deleteBookByID (int bookId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM books WHERE bookId=@bookId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@bookId", bookId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region New Tutorial Data
+
    public static new List<NewTutorialData> getNewTutorialList () {
       List<NewTutorialData> result = new List<NewTutorialData>();
       NewTutorialData lastTutorialData = null;
@@ -2205,7 +2225,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM arcane.tutorial_v2 " +
-            "LEFT JOIN arcane.tutorial_step USING (tutorialId)", conn)) {
+            "LEFT JOIN arcane.tutorial_step USING (tutorialId) " +
+            "LEFT JOIN arcane.tutorial_step_action USING (stepActionId)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2221,7 +2242,12 @@ public class DB_Main : DB_MainStub {
 
                   // Add the steps to the tutorial
                   if (!dataReader.IsDBNull(dataReader.GetOrdinal("stepId"))) {
-                     lastTutorialData.tutorialStepList.Add(new TutorialStepData(dataReader));
+                     TutorialStepData step = new TutorialStepData(dataReader);
+                     if (!dataReader.IsDBNull(dataReader.GetOrdinal("stepActionId"))) {
+                        step.stepAction = new TutorialStepAction(dataReader);
+                     }
+
+                     lastTutorialData.tutorialStepList.Add(step);
                   }
                }
             }
@@ -2255,7 +2281,7 @@ public class DB_Main : DB_MainStub {
          }
 
          if (data.tutorialStepList.Any()) {
-            StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription) VALUES ");
+            StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription, stepActionId) VALUES ");
             int i = 0;
 
             using (MySqlConnection conn = getConnection())
@@ -2264,11 +2290,12 @@ public class DB_Main : DB_MainStub {
                List<int> stepsToPreserve = new List<int>();
 
                foreach (TutorialStepData step in data.tutorialStepList) {
-                  cmdText.Append($"(NULLIF(@stepId{i}, 0), @tutorialId{i}, @stepName{i}, @stepDescription{i})");
+                  cmdText.Append($"(NULLIF(@stepId{i}, 0), @tutorialId{i}, @stepName{i}, @stepDescription{i}, NULLIF(@stepActionId{i}, 0))");
                   cmd.Parameters.AddWithValue($"@stepId{i}", step.stepId);
                   cmd.Parameters.AddWithValue($"@tutorialId{i}", newTutorialId);
                   cmd.Parameters.AddWithValue($"@stepName{i}", step.stepName);
                   cmd.Parameters.AddWithValue($"@stepDescription{i}", step.stepDescription);
+                  cmd.Parameters.AddWithValue($"@stepActionId{i}", step.stepAction.stepActionId);
                   i++;
 
                   if (step.stepId != 0) {
@@ -2280,7 +2307,7 @@ public class DB_Main : DB_MainStub {
                   }
                }
 
-               cmdText.Append(" ON DUPLICATE KEY UPDATE stepName = VALUES(stepName), stepDescription = VALUES(stepDescription); ");
+               cmdText.Append(" ON DUPLICATE KEY UPDATE stepName = VALUES(stepName), stepDescription = VALUES(stepDescription), stepActionId = VALUES(stepActionId); ");
 
                if (data.tutorialStepList.Any(step => step.stepId != 0)) {
                   cmdText.Append("DELETE FROM arcane.tutorial_step WHERE tutorialId = @tutorialId AND FIND_IN_SET(stepId, @stepIdList) = 0 AND stepId < LAST_INSERT_ID()");
@@ -2332,14 +2359,15 @@ public class DB_Main : DB_MainStub {
    public static new void upsertTutorialStep (TutorialStepData data) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription) " +
-            "VALUES (NULLIF(@stepId, 0), @tutorialId, @stepName, @stepDescription) " +
-            "ON DUPLICATE KEY UPDATE stepName = @stepName, stepDescription = @stepDescription")) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.tutorial_step (stepId, tutorialId, stepName, stepDescription, stepActionId) " +
+            "VALUES (NULLIF(@stepId, 0), @tutorialId, @stepName, @stepDescription, NULLIF(@stepActionId, 0)) " +
+            "ON DUPLICATE KEY UPDATE stepName = @stepName, stepDescription = @stepDescription, stepActionId = @stepActionId")) {
             conn.Open();
             cmd.Parameters.AddWithValue("@stepId", data.stepId);
             cmd.Parameters.AddWithValue("@tutorialId", data.tutorialId);
             cmd.Parameters.AddWithValue("@stepName", data.stepName);
             cmd.Parameters.AddWithValue("@stepDescription", data.stepDescription);
+            cmd.Parameters.AddWithValue("@stepActionId", data.stepAction.stepActionId);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
          }
@@ -2348,11 +2376,13 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<string> getAreaKeysForTutorial () {
+   public static new List<string> getAvailableAreaKeysForTutorial () {
       List<string> result = new List<string>();
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT name FROM arcane.maps_v2", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT name FROM arcane.maps_v2" +
+            " LEFT JOIN arcane.tutorial_v2 ON name = tutorialAreaKey" +
+            " WHERE tutorialId IS NULL", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -2369,23 +2399,75 @@ public class DB_Main : DB_MainStub {
       return result;
    }
 
-   public static new void deleteBookByID (int bookId) {
+   public static new List<string> getTutorialAreaKeys () {
+      List<string> result = new List<string>();
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM books WHERE bookId=@bookId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT name FROM arcane.maps_v2" +
+            " INNER JOIN arcane.tutorial_v2 ON name = tutorialAreaKey", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@bookId", bookId);
 
-            // Execute the command
-            cmd.ExecuteNonQuery();
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result.Add(reader.GetString("name"));
+               }
+            }
          }
       } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
+         D.error("MySQL Exception: " + e.ToString());
       }
+
+      return result;
+   }
+   public static new List<TutorialStepAction> getTutorialStepActions () {
+      List<TutorialStepAction> result = new List<TutorialStepAction>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.tutorial_step_action", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result.Add(new TutorialStepAction(reader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+
+      return result;
+   }
+
+   public static new List<UserTutorialStep> getUserCompletedSteps (int userId, int tutorialId) {
+      List<UserTutorialStep> result = new List<UserTutorialStep>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT arcane.user_tutorial_step.* FROM arcane.user_tutorial_step " +
+            "INNER JOIN arcane.tutorial_step USING (stepId) " +
+            "WHERE tutorialId = @tutorialId AND userId = @userId", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@tutorialId", tutorialId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Prepare();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result.Add(new UserTutorialStep(reader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+
+      return result;
    }
 
    #endregion
+
 
    #region Discoveries Data
 
