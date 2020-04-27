@@ -1258,6 +1258,42 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4cab297f7bf6c5a438fbe4c888859162, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4cab297f7bf6c5a438fbe4c888859162, type: 3}
+  - imageName: bookcase_strip_48x43
+    imagePath: Assets/Sprites/Secrets/bookcase_strip_48x43.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/bookcase_strip_48x43
+    texture2D: {fileID: 2800000, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    sprite: {fileID: 1352404092653170784, guid: d3c355e7ec3feea41ad5993f3eaa3c0a,
+      type: 3}
+    sprites:
+    - {fileID: 1352404092653170784, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 5812872406958743164, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -2878263481935201982, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -750356655477004914, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -3765594012022048813, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -611903945238535955, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 4489820416949561371, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -3236681180545229239, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -4509747375109725114, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -338465169130004120, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 8019134445133859204, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -8396239420058634307, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 7897769570574428840, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -6995288105567806066, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 6847508277221563691, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -7229372753141031243, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -4147116013506983807, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -763090705428112064, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -117565167477034942, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: -4992297240224101844, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 7333507829102864238, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+    - {fileID: 3803385180652467644, guid: d3c355e7ec3feea41ad5993f3eaa3c0a, type: 3}
+  - imageName: bookcase-tracks
+    imagePath: Assets/Sprites/Secrets/bookcase-tracks.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/bookcase-tracks
+    texture2D: {fileID: 2800000, guid: 583fa5a0ddc86c54995347a5f760120a, type: 3}
+    sprite: {fileID: 21300000, guid: 583fa5a0ddc86c54995347a5f760120a, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 583fa5a0ddc86c54995347a5f760120a, type: 3}
   - imageName: Book-Images-Spritesheet
     imagePath: Assets/Sprites/BookImages/Book-Images-Spritesheet.png
     imagePathWithoutExtension: Assets/Sprites/BookImages/Book-Images-Spritesheet
@@ -20630,6 +20666,25 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: ef29325fb469a5d45854f2286a0cc479, type: 3}
     sprites:
     - {fileID: 21300000, guid: ef29325fb469a5d45854f2286a0cc479, type: 3}
+  - imageName: signs
+    imagePath: Assets/Sprites/Map/signs.png
+    imagePathWithoutExtension: Assets/Sprites/Map/signs
+    texture2D: {fileID: 2800000, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    sprite: {fileID: 1014312589259936113, guid: 2a73d0044156e054d8799d0ce07b638f,
+      type: 3}
+    sprites:
+    - {fileID: 1014312589259936113, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: 7774597396905839976, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: 7143536599680955399, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -6303612653606922692, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -3183823387430515487, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -520509936069157319, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: 570369605437288408, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -7118366140832251292, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -6177745668595045113, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -4015053110850514199, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -3541654970036748001, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
+    - {fileID: -2937953654953323102, guid: 2a73d0044156e054d8799d0ce07b638f, type: 3}
   - imageName: silver
     imagePath: Assets/Sprites/Mining/silver.png
     imagePathWithoutExtension: Assets/Sprites/Mining/silver
@@ -22896,6 +22951,21 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 02f3a4d179aa046479d783bff3ce1a0a, type: 3}
     sprites:
     - {fileID: 21300000, guid: 02f3a4d179aa046479d783bff3ce1a0a, type: 3}
+  - imageName: trapdoor_strip_16x20
+    imagePath: Assets/Sprites/Secrets/trapdoor_strip_16x20.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/trapdoor_strip_16x20
+    texture2D: {fileID: 2800000, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    sprite: {fileID: -5820493326298071227, guid: a246d78b8c72c294f8e3ffb2ab7270ab,
+      type: 3}
+    sprites:
+    - {fileID: -5820493326298071227, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -1614703297130222569, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -7245028597071306257, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -9008257544846882486, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -1501800749298821515, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -1513469384981191379, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: 1419276412857290964, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
+    - {fileID: -95507080262989581, guid: a246d78b8c72c294f8e3ffb2ab7270ab, type: 3}
   - imageName: trash_button
     imagePath: Assets/Sprites/GUI/Inventory/trash_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Inventory/trash_button

@@ -12,10 +12,10 @@ public class SecretEntrance : NetworkBehaviour {
    public int secretsId;
 
    // Sprite appropriate for the current state of this node
-   public Sprite initSprite, interactSprite;
+   public Sprite mainSprite, subSprite;
 
    // The current sprite renderer
-   public SpriteRenderer spriteRenderer;
+   public SpriteRenderer spriteRenderer, subSpriteRenderer;
 
    // The instance that this node is in
    [SyncVar]
@@ -51,15 +51,16 @@ public class SecretEntrance : NetworkBehaviour {
    [SyncVar]
    public string initSpritePath, interactSpritePath;
 
-   // The reference to the simple animation
-   public SimpleAnimation simpleAnim;
-
    // Determines if the object is interacted
    [SyncVar]
    public bool isInteracted = false;
 
    // The warp associated with this secret entrance
    public Warp warp;
+
+   // The sprite to be animated
+   public SecretObjectSpriteData mainSpriteComponent = new SecretObjectSpriteData();
+   public SecretObjectSpriteData subSpriteComponent = new SecretObjectSpriteData();
 
    #endregion
 
@@ -74,10 +75,10 @@ public class SecretEntrance : NetworkBehaviour {
          return;
       }
       
-      initSprite = ImageManager.getSprite(initSpritePath);
-      interactSprite = ImageManager.getSprites(interactSpritePath)[0];
+      mainSprite = ImageManager.getSprite(initSpritePath);
+      subSprite = ImageManager.getSprites(interactSpritePath)[0];
       if (!isInteracted) {
-         spriteRenderer.sprite = initSprite;
+         spriteRenderer.sprite = mainSprite;
       } else {
          int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
          spriteRenderer.sprite = ImageManager.getSprites(interactSpritePath)[spriteLength - 1];
@@ -130,12 +131,13 @@ public class SecretEntrance : NetworkBehaviour {
                secretsId = int.Parse(value);
                break;
             case DataField.SECRETS_START_SPRITE:
-               initSprite = ImageManager.getSprite(value);
-               spriteRenderer.sprite = initSprite;
+               mainSprite = ImageManager.getSprite(value);
+               spriteRenderer.sprite = mainSprite;
                initSpritePath = value;
                break;
             case DataField.SECRETS_INTERACT_SPRITE:
-               interactSprite = ImageManager.getSprites(value)[0];
+               subSprite = ImageManager.getSprites(value)[0];
+               subSpriteRenderer.sprite = subSprite;
                interactSpritePath = value;
                break;
             case DataField.WARP_TARGET_MAP_KEY:
@@ -179,19 +181,57 @@ public class SecretEntrance : NetworkBehaviour {
    private void completeInteraction (PlayerBodyEntity player) {
       if (!isInteracted) {
          isInteracted = true;
-         spriteRenderer.sprite = interactSprite;
-         simpleAnim.enabled = true;
-         simpleAnim.resetAnimation();
+
+         setSprites();
+
+         InvokeRepeating("playMainSpriteAnimation", 0, .1f);
+
          Rpc_InteractAnimation();
          StartCoroutine(CO_ProcessInteraction(player));
       }
    }
 
+   private void setSprites () {
+      spriteRenderer.sprite = mainSprite;
+      subSpriteRenderer.sprite = subSprite;
+
+      mainSpriteComponent.sprites = ImageManager.getSprites(mainSprite.texture);
+      mainSpriteComponent.maxIndex = mainSpriteComponent.sprites.Length;
+      mainSpriteComponent.currentIndex = 0;
+
+      subSpriteComponent.sprites = ImageManager.getSprites(subSprite.texture);
+      subSpriteComponent.maxIndex = subSpriteComponent.sprites.Length;
+      subSpriteComponent.currentIndex = 0;
+   }
+
    [ClientRpc]
    public void Rpc_InteractAnimation () {
-      spriteRenderer.sprite = interactSprite;
-      simpleAnim.enabled = true;
-      simpleAnim.resetAnimation();
+      setSprites(); 
+
+      InvokeRepeating("playMainSpriteAnimation", 0, .1f);
+      InvokeRepeating("playSubSpriteAnimation", 1, .1f);
+   }
+
+   private void playMainSpriteAnimation () {
+      if (mainSpriteComponent.currentIndex < mainSpriteComponent.maxIndex / 2) {
+         mainSpriteComponent.currentIndex++;
+         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.currentIndex];
+      }
+   }
+
+   private void playSubSpriteAnimation () {
+      if (subSpriteComponent.currentIndex < subSpriteComponent.maxIndex / 2) {
+         subSpriteComponent.currentIndex++;
+         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.currentIndex];
+      } else {
+         endSprite();
+      }
+   }
+
+   private void endSprite () {
+      spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
+      subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+      CancelInvoke();
    }
 
    private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {
@@ -207,4 +247,13 @@ public class SecretEntrance : NetworkBehaviour {
    protected ClickableBox _clickableBox;
 
    #endregion
+}
+
+public class SecretObjectSpriteData {
+   // The length of the sprite selected for the secret entrance
+   public int currentIndex = 0;
+
+   // The compilation of sprites cached
+   public int maxIndex = 10;
+   public Sprite[] sprites = new Sprite[0];
 }

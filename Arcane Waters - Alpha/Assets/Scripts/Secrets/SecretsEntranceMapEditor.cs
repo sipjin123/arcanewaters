@@ -41,6 +41,12 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
       } else if (field.k.CompareTo(DataField.WARP_TARGET_SPAWN_KEY) == 0) {
          _targetSpawn = field.v;
          updateText();
+      } else if (field.k.CompareTo(DataField.SECRETS_START_SPRITE) == 0) {
+         _secretEntrance.mainSprite = ImageManager.getSprite(field.v);
+         _secretEntrance.spriteRenderer.sprite = _secretEntrance.mainSprite;
+      } else if (field.k.CompareTo(DataField.SECRETS_INTERACT_SPRITE) == 0) {
+         _secretEntrance.subSprite = ImageManager.getSprites(field.v)[0];
+         _secretEntrance.subSpriteRenderer.sprite = _secretEntrance.subSprite;
       }
    }
 
