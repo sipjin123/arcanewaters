@@ -439,6 +439,10 @@ namespace MapCreationTool
          ).ToList();
       }
 
+      public static T[] getPrefabComponents<T> () where T : MonoBehaviour {
+         return instance.prefabLayer.GetComponentsInChildren<T>();
+      }
+
       public void setTilesModifyPreview (BoardChange change) {
          foreach (Layer layer in getLayersEnumerator())
             layer.clearAllPreviewTiles();

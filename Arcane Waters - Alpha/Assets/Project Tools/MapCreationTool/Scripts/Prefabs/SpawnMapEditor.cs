@@ -6,6 +6,9 @@ namespace MapCreationTool
 {
    public class SpawnMapEditor : MapEditorPrefab, IPrefabDataListener
    {
+      // How much space should there be left between warps and spawns
+      public const float SPACING_FROM_WARPS = 1f;
+
       [SerializeField]
       private RectTransform boundsRect = null;
       [SerializeField]
@@ -15,6 +18,11 @@ namespace MapCreationTool
 
       private float width = 1f;
       private float height = 1f;
+
+      public Vector2 size
+      {
+         get { return new Vector2(width, height); }
+      }
 
       public void dataFieldChanged (DataField field) {
          if (field.k.CompareTo(DataField.SPAWN_WIDTH_KEY) == 0) {

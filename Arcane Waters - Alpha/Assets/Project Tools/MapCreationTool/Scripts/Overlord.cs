@@ -131,6 +131,43 @@ namespace MapCreationTool
          return result.ToArray();
       }
 
+      public static bool validateMap (out string errors) {
+         errors = "";
+
+         // Make sure all spawns have unique names
+         List<MapSpawn> mapSpawns = DrawBoard.instance.formSpawnList(null, -1);
+         if (mapSpawns.Count > 0 && mapSpawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
+            errors += "All spawn names in a map must be unique" + Environment.NewLine;
+         }
+
+         // Make sure warps and spawns don't overlap
+         bool anyOverlap = false;
+
+         Bounds[] warpBounds = DrawBoard.getPrefabComponents<WarpMapEditor>()
+            .Select(w => new Bounds(w.transform.position, new Vector3(w.size.x, w.size.y, 1000f))).ToArray();
+         // We add 50 units in the +Z axis to make sure these bounds intersect if one is contained in another
+         Bounds[] spawnBounds = DrawBoard.getPrefabComponents<SpawnMapEditor>()
+            .Select(s => new Bounds(s.transform.position + Vector3.forward * 50f, new Vector3(s.size.x, s.size.y, 1000f))).ToArray();
+
+         for (int i = 0; i < warpBounds.Length; i++) {
+            warpBounds[i].Expand(SpawnMapEditor.SPACING_FROM_WARPS * 2f);
+         }
+
+         foreach (Bounds warp in warpBounds) {
+            foreach (Bounds spawn in spawnBounds) {
+               if (warp.Intersects(spawn)) {
+                  anyOverlap = true;
+               }
+            }
+         }
+
+         if (anyOverlap) {
+            errors += "There must be at least 1 tile of distance between all warps and spawns" + Environment.NewLine;
+         }
+
+         return string.IsNullOrEmpty(errors);
+      }
+
       private void initializeRemoteDatas () {
          remoteMaps = new RemoteMaps { OnLoaded = onRemoteDataLoaded };
          remoteSpawns = new RemoteSpawns { OnLoaded = onRemoteDataLoaded };

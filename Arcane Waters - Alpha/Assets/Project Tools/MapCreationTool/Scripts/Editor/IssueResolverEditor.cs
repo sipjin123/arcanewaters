@@ -23,6 +23,13 @@ namespace MapCreationTool.IssueResolving
                   IssueResolver.run(alterData, saveMaps);
                }
             }
+            if (GUILayout.Button("Validate map")) {
+               if (Overlord.validateMap(out string errors)) {
+                  UI.messagePanel.displayInfo("Map validation", "No errors found");
+               } else {
+                  UI.messagePanel.displayError("Map validation", "Found following errors" + System.Environment.NewLine + errors);
+               }
+            }
          }
       }
    }

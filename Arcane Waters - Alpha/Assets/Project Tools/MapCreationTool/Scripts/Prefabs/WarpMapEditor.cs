@@ -21,6 +21,11 @@ namespace MapCreationTool
 
       private Direction arriveFacing = Direction.North;
 
+      public Vector2 size
+      {
+         get { return new Vector2(width, height); }
+      }
+
       public void dataFieldChanged (DataField field) {
          if (field.k.CompareTo(DataField.WARP_TARGET_MAP_KEY) == 0) {
             if (field.tryGetIntValue(out int mapId)) {

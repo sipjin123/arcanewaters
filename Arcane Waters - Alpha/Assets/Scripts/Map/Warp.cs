@@ -88,14 +88,12 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    /// Updates the arrow color and direction, based on this area type and target area type
    /// </summary>
    public void updateArrow () {
-      string thisArea = transform.GetComponentInParent<Area>()?.areaKey;
-      EditorType? thisType = thisArea == null ? null : AreaManager.self.getAreaEditorType(thisArea);
-
       string dir = newFacingDirection.ToString().ToLower();
       string color = "unrecognized";
 
-      if (thisType != null) {
-         if (thisType == EditorType.Sea) {
+      string thisArea = transform.GetComponentInParent<Area>()?.areaKey;
+      if (thisArea != null) {
+         if (AreaManager.self.isSeaArea(thisArea)) {
             color = "blue";
          } else {
             color = "gold";

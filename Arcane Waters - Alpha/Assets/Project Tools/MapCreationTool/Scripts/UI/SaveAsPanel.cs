@@ -61,9 +61,8 @@ namespace MapCreationTool
                spawns = DrawBoard.instance.formSpawnList(null, 0)
             };
 
-            // Make sure all spawns have unique names
-            if (mapVersion.spawns.Count > 0 && mapVersion.spawns.GroupBy(s => s.name).Max(g => g.Count()) > 1) {
-               throw new Exception("Not all spawn names are unique");
+            if (!Overlord.validateMap(out string errors)) {
+               throw new Exception("Failed validating a map:" + Environment.NewLine + Environment.NewLine + errors);
             }
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
