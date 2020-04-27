@@ -168,9 +168,6 @@ public class VoyageInviteData {
       this.serverName = targetServer.deviceName;
       this.serverPort = targetServer.port;
       this.serverIp = targetServer.ipAddress;
-      if (targetServer.ipAddress == "localhost") {
-         serverIp = "127.0.0.1";
-      }
 
       this.inviterId = inviterId;
       this.inviterName = inviterName;

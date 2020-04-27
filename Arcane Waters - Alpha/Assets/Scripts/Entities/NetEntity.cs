@@ -968,8 +968,11 @@ public class NetEntity : NetworkBehaviour {
             NetworkServer.DestroyPlayerForConnection(connectionToClient);
             NetworkServer.Destroy(entityObject);
 
+            // TODO: Remove log after confirmation
+            D.debug("DEV_LOG_2: Redirect because spawning on a specific Server: " + MyNetworkManager.self.networkAddress +" : "+newServer.port);
+
             // Send a Redirect message to the client
-            RedirectMessage redirectMessage = new RedirectMessage(this.netId, newServer.ipAddress, newServer.port);
+            RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.port);
             this.connectionToClient.Send(redirectMessage);
          });
       });

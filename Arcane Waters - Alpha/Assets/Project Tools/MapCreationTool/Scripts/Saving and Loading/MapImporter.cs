@@ -10,7 +10,12 @@ namespace MapCreationTool
    public class MapImporter
    {
       public static ExportedProject001 deserializeMapData (MapInfo mapInfo) {
-         return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
+         try {
+            return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
+         } catch {
+            D.editorLog("Failed to deserialize Map data for: " + mapInfo, Color.red);
+            return new ExportedProject001();
+         }
       }
 
       public static void instantiateTilemapLayer (List<TilemapLayer> tilemaps, MapInfo mapInfo, ExportedLayer001 layer,

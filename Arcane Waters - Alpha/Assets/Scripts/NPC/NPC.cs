@@ -539,15 +539,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                string spritePath = npcData.spritePath;
                if (spritePath != "") {
                   GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
+
+                  // Figure out our Type from our sprite
+                  npcType = getTypeFromSprite(npcData.spritePath);
                }
+
+               NPCManager.self.storeNPC(this);
             }
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
-
-            // Figure out our Type from our sprite
-            npcType = getTypeFromSprite(npcData.spritePath);
-
-            NPCManager.self.storeNPC(this);
          } else if (field.k.CompareTo(DataField.NPC_SHOP_NAME_KEY) == 0) {
             // Get Shop Name (if any)
             shopName = field.v.Split(':')[0];

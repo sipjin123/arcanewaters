@@ -125,6 +125,7 @@ public class ServerCommunicationHandler : MonoBehaviour
 
    private void initializeLocalServer () {
       ourDeviceName = SystemInfo.deviceName;
+      ourIp = MyNetworkManager.self.networkAddress;
       ServerSqlData newSqlData = new ServerSqlData {
          ip = ourIp,
          port = ourPort,

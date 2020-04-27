@@ -44,7 +44,7 @@ public class Server : MonoBehaviour {
    }
 
    public void setAsLocalServer () {
-      this.ipAddress = ServerCommunicationHandler.self.ourIp;//MyNetworkManager.self.networkAddress;
+      this.ipAddress = MyNetworkManager.self.networkAddress; 
       this.port = MyNetworkManager.self.telepathy.port;
 
       isLocalServer = true;
