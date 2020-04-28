@@ -85,14 +85,6 @@ public class Server : MonoBehaviour {
       }
    }
 
-   public void CreateVoyageInstance () {
-      VoyageManager.self.createVoyageInstance();
-   }
-
-   public void CreateVoyageInstance (string areaKey) {
-      VoyageManager.self.createVoyageInstance(areaKey);
-   }
-
    #region Private Variables
 
    #endregion

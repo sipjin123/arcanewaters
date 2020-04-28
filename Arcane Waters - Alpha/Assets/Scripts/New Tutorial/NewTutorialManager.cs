@@ -35,33 +35,21 @@ public class NewTutorialManager : MonoBehaviour {
       });
    }
 
-   // TODO
-   public void loadUserTutorialInfo (string areaKey, int userId) {
-      int tutorialId = _areaKeyTutorialIdDictionary[areaKey];
-      loadCompletedStepsForUser(tutorialId, userId);
-   }
-
    public void showTutorialPanel () {
       NewTutorialPanel panel = (NewTutorialPanel) PanelManager.self.get(Panel.Type.NewTutorial);
       panel.showNewTutorialPanel(_tutorialViewModelList);
    }
 
-   // TODO
-   private void loadCompletedStepsForUser (int tutorialId, int userId) {
-      List<UserTutorialStep> completedUserSteps = new List<UserTutorialStep>();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         completedUserSteps = DB_Main.getUserCompletedSteps(userId, tutorialId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            loadUserTutorialData(tutorialId, completedUserSteps, userId);
-         });
-      });
+   public int getTutorialIdByAreaKey (string areaKey) {
+      return isTutorialAreaKey(areaKey) ? _areaKeyTutorialIdDictionary[areaKey] : 0;
    }
 
-   // TODO
-   private void loadUserTutorialData (int tutorialId, List<UserTutorialStep> completedUserSteps, int userId) {
-      TutorialViewModel tutorialViewModel = new TutorialViewModel(_tutorialDataByIdDictionary[tutorialId], completedUserSteps);
-      // Send data via RPC
+   public bool isTutorialAreaKey (string areaKey) {
+      return _tutorialAreaKeys.Contains(areaKey);
+   }
+
+   public TutorialViewModel getTutorialViewModelForUser (int tutorialId, List<UserTutorialStep> completedUserSteps, int userId) {
+      return new TutorialViewModel(_tutorialDataByIdDictionary[tutorialId], completedUserSteps);
    }
 
    #region Private Variables

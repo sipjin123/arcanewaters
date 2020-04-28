@@ -156,6 +156,18 @@ MonoBehaviour:
     m_Scale: 1
     m_Name: Terrible Captain
     m_HashCode: 855651635
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 14
+    m_Scale: 1
+    m_Name: Pirate Captain
+    m_HashCode: -2105994917
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 15
+    m_Scale: 1
+    m_Name: Famous Explorer
+    m_HashCode: 557514280
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -166,7 +178,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 0
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -182,7 +194,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 272
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -198,7 +210,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 544
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -213,7 +225,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 816
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -229,7 +241,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1088
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -245,7 +257,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1360
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -261,7 +273,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1632
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -277,7 +289,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1904
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -293,7 +305,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2176
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -309,7 +321,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2448
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -324,7 +336,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2720
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -340,7 +352,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2992
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -356,7 +368,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 3264
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -371,12 +383,44 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 3536
-      m_Y: 0
+      m_Y: 272
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
     sprite: {fileID: -2634445103299172339, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 14
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 3808
+      m_Y: 272
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 15
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 0
+      m_Y: 0
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -6880748857453255580, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

@@ -46,9 +46,9 @@ public class BookReaderPanel : Panel
       // Force disabling the turning page animation game object just in case it got enabled
       turnPageAnimationGameObject.gameObject.SetActive(false);
 
-      showPages();
-
       base.show();
+
+      showPages();
    }
 
    public void show (BookData book) {
@@ -142,6 +142,9 @@ public class BookReaderPanel : Panel
       rightPage.gameObject.SetActive(false);
       leftPage.pageNumberText.SetText("");
       rightPage.pageNumberText.SetText("");
+
+      leftArrow.gameObject.SetActive(false);
+      rightArrow.gameObject.SetActive(false);
    }
 
    #region Private Variables

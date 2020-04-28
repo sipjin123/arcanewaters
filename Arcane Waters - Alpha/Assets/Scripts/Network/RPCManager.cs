@@ -3958,6 +3958,32 @@ public class RPCManager : NetworkBehaviour {
       return Vector2.Distance(discovery.transform.position, _player.transform.position) < Discovery.MAX_VALID_DISTANCE;
    }
 
+   [Command]
+   public void Cmd_ShowTutorialDetail (string tutorialAreaKey) {
+      retrieveTutorialDetailsForUser(NewTutorialManager.self.getTutorialIdByAreaKey(tutorialAreaKey), _player.userId);
+   }
+
+   [TargetRpc]
+   public void Target_ShowTutorialDetail (NetworkConnection conn, TutorialViewModel tutorialViewModel) {
+      PanelManager.self.selectedPanel = Panel.Type.NewTutorialDetails;
+      NewTutorialDetailPanel detailsPanel = (NewTutorialDetailPanel) PanelManager.self.get(Panel.Type.NewTutorialDetails);
+      detailsPanel.showNewTutorialDetailPanel(tutorialViewModel);
+   }
+
+   [Server]
+   private void retrieveTutorialDetailsForUser (int tutorialId, int userId) {
+      List<UserTutorialStep> completedUserSteps = new List<UserTutorialStep>();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         completedUserSteps = DB_Main.getUserCompletedSteps(userId, tutorialId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            TutorialViewModel tutorialViewModel = NewTutorialManager.self.getTutorialViewModelForUser(tutorialId, completedUserSteps, userId);
+            Target_ShowTutorialDetail(netIdentity.connectionToClient, tutorialViewModel);
+         });
+      });
+   }
+
+
    #region Private Variables
 
    // Our associated Player object

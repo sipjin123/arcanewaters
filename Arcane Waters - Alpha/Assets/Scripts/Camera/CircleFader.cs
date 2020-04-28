@@ -41,11 +41,16 @@ public class CircleFader : ClientMonoBehaviour {
    }
 
    public void doCircleFade (Vector2 startLocation) {
-      if (CameraManager.self != null && !spotEffect.enabled) {
+      if (CameraManager.self != null) {
          _startTime = Time.time;
-         _startLocation = startLocation;
-         _startingCamera = getActiveCamera();
 
+         // Initialize the starting camera and location only if the spot effect was not already running
+         if (!spotEffect.enabled) {
+            _startLocation = startLocation;
+            _startingCamera = getActiveCamera();
+         }
+
+         StopAllCoroutines();
          StartCoroutine(CO_doCircleFade());
       }
    }
@@ -134,7 +139,7 @@ public class CircleFader : ClientMonoBehaviour {
    protected static float EFFECT_SPEED = .1f;
 
    // The amount of time we wait for an area change, before giving up
-   protected static float TIMEOUT_DURATION = 5f;
+   protected static float TIMEOUT_DURATION = 20f;
 
    #endregion
 }

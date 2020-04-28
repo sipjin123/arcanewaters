@@ -65,7 +65,6 @@ public class MapManager : MonoBehaviour
 
       // Show the loading screen on clients or host mode
       if (!Util.isServerNonHost()) {
-         PanelManager.self.loadingScreen.setPercentage(0);
          PanelManager.self.loadingScreen.show();
       }
 
@@ -89,8 +88,6 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition) {
-      PanelManager.self.loadingScreen.setPercentage(0.1f);
-
       MapImporter.ensureSerializationMapsLoaded();
 
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
@@ -117,7 +114,6 @@ public class MapManager : MonoBehaviour
 
       // Calculate the map bounds
       Bounds bounds = MapImporter.calculateBounds(exportedProject);
-      PanelManager.self.loadingScreen.setPercentage(0.2f);
       yield return null;
       
       List<TilemapLayer> tilemaps = new List<TilemapLayer>();
@@ -127,7 +123,7 @@ public class MapManager : MonoBehaviour
       foreach (ExportedLayer001 layer in exportedProject.layers) {
          MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
             result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
-         PanelManager.self.loadingScreen.setPercentage(0.2f + (0.3f / exportedProject.layers.Length) * tilemaps.Count);
+         PanelManager.self.loadingScreen.setPercentage(-0.4f + ((0.5f / exportedProject.layers.Length) * tilemaps.Count));
          yield return null;
       }
 
@@ -153,16 +149,17 @@ public class MapManager : MonoBehaviour
             mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
                exportedProject.biome, rect));
 
-            PanelManager.self.loadingScreen.setPercentage(0.5f + (0.35f / chunkCount) * mapColliderChunks.Count);
+            PanelManager.self.loadingScreen.setPercentage(0.1f + (1f / chunkCount) * mapColliderChunks.Count);
             yield return null;
          }
       }
+
+      PanelManager.self.loadingScreen.setPercentage(1f);
 
       result.area.setTilemapLayers(tilemaps);
       result.area.setColliderChunks(mapColliderChunks);
 
       MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
-      PanelManager.self.loadingScreen.setPercentage(0.9f);
       yield return null;
 
       if (exportedProject.specialTileChunks != null) {
@@ -172,7 +169,6 @@ public class MapManager : MonoBehaviour
 
       MapImporter.setCameraBounds(result, bounds);
       MapImporter.addEdgeColliders(result, bounds);
-      PanelManager.self.loadingScreen.setPercentage(0.95f);
       yield return null;
 
       // Destroy the template component
@@ -180,8 +176,6 @@ public class MapManager : MonoBehaviour
 
       // Initialize the area
       area.initialize();
-
-      PanelManager.self.loadingScreen.setPercentage(1f);
 
       onAreaCreationIsFinished(area);
    }

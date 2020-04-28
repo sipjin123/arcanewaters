@@ -206,7 +206,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          }
 
          try {
-            D.log(serverMessage);
+            D.debug(serverMessage);
          } catch {
             D.editorLog(serverMessage, Color.cyan);
          }

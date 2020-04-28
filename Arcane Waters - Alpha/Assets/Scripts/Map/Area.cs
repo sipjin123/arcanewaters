@@ -16,7 +16,7 @@ public class Area : MonoBehaviour
    // Hardcoded area keys
    public static string FARM = "Farm";
    public static string HOUSE = "House";
-   public static string STARTING_TOWN = "Snow Town Lite";
+   public static string STARTING_TOWN = "Shroom Bay";
 
    // The key determining the type of area this is
    public string areaKey;

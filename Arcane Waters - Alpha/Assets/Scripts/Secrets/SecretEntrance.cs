@@ -194,6 +194,7 @@ public class SecretEntrance : NetworkBehaviour {
          setSprites();
 
          InvokeRepeating("playMainSpriteAnimation", 0, .1f);
+         _outline.setVisibility(false);
 
          Rpc_InteractAnimation();
          StartCoroutine(CO_ProcessInteraction(player));
@@ -215,8 +216,9 @@ public class SecretEntrance : NetworkBehaviour {
 
    [ClientRpc]
    public void Rpc_InteractAnimation () {
-      setSprites(); 
+      setSprites();
 
+      _outline.setVisibility(false);
       InvokeRepeating("playMainSpriteAnimation", 0, .1f);
       InvokeRepeating("playSubSpriteAnimation", 1, .1f);
    }
@@ -242,7 +244,6 @@ public class SecretEntrance : NetworkBehaviour {
       subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
       CancelInvoke();
       warpTextUI.SetActive(true);
-      _outline.setVisibility(false);
    }
 
    private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {

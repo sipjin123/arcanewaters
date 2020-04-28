@@ -249,6 +249,7 @@ public class DB_Main : DB_MainStub {
                while (dataReader.Read()) {
                   PendingVoyageCreation voyageData = new PendingVoyageCreation {
                      areaKey = dataReader.GetString("areaKey"),
+                     isPvP = dataReader.GetBoolean("isPvP"),
                      serverIp = dataReader.GetString("srvAddress"),
                      serverName = dataReader.GetString("svrDeviceName"),
                      isPending = dataReader.GetInt32("isPending") == 0 ? false : true,
@@ -276,8 +277,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO pending_voyage_creation ("+ idKey + "svrPort, svrDeviceName, srvAddress, updateTime, areaKey, isPending) " +
-            "VALUES("+ idValue + "@svrPort, @svrDeviceName, @srvAddress, @updateTime, @areaKey, @isPending)" +
+            "INSERT INTO pending_voyage_creation ("+ idKey + "svrPort, svrDeviceName, srvAddress, updateTime, areaKey, isPvP, isPending) " +
+            "VALUES("+ idValue + "@svrPort, @svrDeviceName, @srvAddress, @updateTime, @areaKey, @isPvP, @isPending)" +
             "ON DUPLICATE KEY UPDATE updateTime = @updateTime, isPending = @isPending", conn)) {
 
             conn.Open();
@@ -290,6 +291,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@updateTime", dateTime);
             cmd.Parameters.AddWithValue("@isPending", voyageCreation.isPending == true ? 1 : 0); 
             cmd.Parameters.AddWithValue("@areaKey", voyageCreation.areaKey);
+            cmd.Parameters.AddWithValue("@isPvP", voyageCreation.isPvP);
 
             // Execute the command
             cmd.ExecuteNonQuery();

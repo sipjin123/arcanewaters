@@ -43,23 +43,21 @@ public class VoyageManager : MonoBehaviour {
       InvokeRepeating("updateVoyageInstancesList", 5.5f, 5f);
    }
 
-   public void createVoyageInstance () {
-      // Get the list of sea maps area keys
-      List<string> seaMaps = getVoyageAreaKeys();
+   public void createVoyageInstance (string areaKey, bool isPvP) {
+      // Check if the area is defined
+      if (string.IsNullOrEmpty(areaKey)) {
+         // Get the list of sea maps area keys
+         List<string> seaMaps = getVoyageAreaKeys();
 
-      // If there are no available areas, do nothing
-      if (seaMaps.Count == 0) {
-         return;
+         // If there are no available areas, do nothing
+         if (seaMaps.Count == 0) {
+            return;
+         }
+
+         // Randomly choose an area
+         areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
       }
 
-      // Randomly choose an area
-      string areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
-
-      // Create the instance
-      createVoyageInstance(areaKey);
-   }
-
-   public void createVoyageInstance (string areaKey) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Get a new voyage id
@@ -71,7 +69,7 @@ public class VoyageManager : MonoBehaviour {
             Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
 
             // Create the area instance
-            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, UnityEngine.Random.Range(0, 2) == 0, difficulty);
+            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty);
          });
       });
    }
@@ -196,7 +194,7 @@ public class VoyageManager : MonoBehaviour {
 
       // Associate a new function with the refuse button
       PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation(voyageGroupId, inviterName, Global.player.userId));
+      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation());
 
       // Show the voyage invite screen
       PanelManager.self.voyageInviteScreen.activate(inviterName);
@@ -227,13 +225,13 @@ public class VoyageManager : MonoBehaviour {
       _invitationVoyageGroupId = -1;
    }
 
-   public void refuseVoyageInvitation (int groupId, string inviterName, int inviteeId) {
+   public void refuseVoyageInvitation () {
       if (_invitationVoyageGroupId != -1) {
          // Deactivate the invite panel
          PanelManager.self.voyageInviteScreen.deactivate();
 
          // Send the decline to the server
-         Global.player.rpc.Cmd_DeclineVoyageInvite(groupId, inviterName, inviteeId);
+         Global.player.rpc.Cmd_DeclineVoyageInvite(_invitationVoyageGroupId, _inviterName, Global.player.userId);
 
          // Clear the invitation group id so that we can receive more invitations
          _invitationVoyageGroupId = -1;
@@ -344,6 +342,7 @@ public class VoyageManager : MonoBehaviour {
                   serverPort = bestServer.port,
                   updateTime = DateTime.UtcNow,
                   areaKey = "",
+                  isPvP = _isNewVoyagePvP
                };
                voyageList.Add(newVoyage);
                ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
@@ -385,6 +384,7 @@ public class VoyageManager : MonoBehaviour {
                pendingVoyageList.Add(new PendingVoyageCreation {
                   id = -1,
                   areaKey = areaKey,
+                  isPvP = _isNewVoyagePvP,
                   isPending = true,
                   serverIp = bestServer.ipAddress,
                   serverName = bestServer.deviceName,

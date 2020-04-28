@@ -53,6 +53,9 @@ public class PaletteToolManager : XmlDataToolManager {
    [Header("Color picker")]
    // Object containing "Color Picker" script allowing user to pick color
    public GameObject colorPicker;
+
+   // Script controlling available presets in Color Picker
+   public ColorPresets colorPresets;
    
    // Background button - if user press anything beside Color Picker, it disappears
    public GameObject colorPickerHideButton;
@@ -73,6 +76,13 @@ public class PaletteToolManager : XmlDataToolManager {
    public Button setSize32;
    public Button setSize64;
    public Button setSize128;
+
+   [Header("Choose file dropdown")]
+   // Parent of elements used to choose file from user HDD
+   public GameObject dropdownFileParent;
+
+   // Dropdown element to populate with filenames to choose from
+   public TMPro.TMP_Dropdown dropdownFileChoose;
 
    public class PaletteDataPair
    {
@@ -137,6 +147,9 @@ public class PaletteToolManager : XmlDataToolManager {
       cancelDeletingButton.onClick.AddListener(() => {
          confirmDeletingPaletteScene.gameObject.SetActive(false);
       });
+
+      // Fill dropdown, used for choosing preview sprite, with filenames
+      prepareSpriteChooseDropdown();
    }
 
    public void generateList () {
@@ -192,7 +205,7 @@ public class PaletteToolManager : XmlDataToolManager {
       choosePaletteNameText.GetComponent<InputField>().text = data.paletteName;
    }
 
-   private void changeArraySize(int size) {
+   private void changeArraySize (int size) {
       // Get current colors and pass to function generating new scene
       List<Color> src = new List<Color>();
       List<Color> dst = new List<Color>();
@@ -235,6 +248,11 @@ public class PaletteToolManager : XmlDataToolManager {
    public void loadXMLData () {
       _paletteDataList = new List<PaletteDataPair>();
 
+      if (XmlLoadingPanel.self == null) {
+         Invoke("loadXMLData", 0.1f);
+         return;
+      }
+
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML();
@@ -258,14 +276,14 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   private Color convertHexToRGB(string hex) {
+   public static Color convertHexToRGB(string hex) {
       int red = translateHexLetterToInt(hex[0]) * 16 + translateHexLetterToInt(hex[1]);
       int green = translateHexLetterToInt(hex[2]) * 16 + translateHexLetterToInt(hex[3]);
       int blue = translateHexLetterToInt(hex[4]) * 16 + translateHexLetterToInt(hex[5]);
       return new Color(red / 255.0f, green / 255.0f, blue / 255.0f);
    }
 
-   private int translateHexLetterToInt (char letter) {
+   private static int translateHexLetterToInt (char letter) {
       switch (letter) {
          case 'A': return 10;
          case 'B': return 11;
@@ -278,16 +296,16 @@ public class PaletteToolManager : XmlDataToolManager {
       return int.Parse(s);
    }
 
-   private string convertRGBToHex(Color color) {
+   public static string convertRGBToHex(Color color) {
       return convertIntToHex(color.r) + convertIntToHex(color.g) + convertIntToHex(color.b);
    }
 
-   private string convertIntToHex(float val) {
+   private static string convertIntToHex(float val) {
       int dec = Mathf.RoundToInt(val * 255.0f);
       return translateIntToHexLetter(dec / 16) + translateIntToHexLetter(dec % 16);
    }
 
-   private string translateIntToHexLetter(int val) {
+   private static string translateIntToHexLetter(int val) {
       switch (val) {
          case 10: return "A";
          case 11: return "B";
@@ -412,6 +430,49 @@ public class PaletteToolManager : XmlDataToolManager {
       }
    }
 
+   private void prepareSpriteChooseDropdown () {
+      DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath);
+      dropdownFileChoose.options.Clear();
+
+      List<FileInfo> fileInfo = new List<FileInfo>();
+      fileInfo.AddRange(directoryInfo.GetFiles("*.jpg", SearchOption.AllDirectories));
+      fileInfo.AddRange(directoryInfo.GetFiles("*.png", SearchOption.AllDirectories));
+      fileInfo.AddRange(directoryInfo.GetFiles("*.jpeg", SearchOption.AllDirectories));
+      fileInfo.AddRange(directoryInfo.GetFiles("*.bmp", SearchOption.AllDirectories));
+
+      foreach (FileInfo file in fileInfo) {
+         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(file.Name);
+         dropdownFileChoose.options.Add(optionData);
+         _cachedPathsOfSpriteDropdown.Add(file.FullName);
+      }
+
+      if (_cachedPathsOfSpriteDropdown.Count == 1) {
+         choosePreviewSprite(0);
+         dropdownFileChoose.value = 0;
+      } else {
+         dropdownFileChoose.value = -1;
+         dropdownFileChoose.onValueChanged.AddListener((int index) => {
+            choosePreviewSprite(index);
+         });
+      }
+   }
+
+   private void choosePreviewSprite (int dropdownIndex) {
+      if (_cachedPathsOfSpriteDropdown.Count > dropdownIndex && File.Exists(_cachedPathsOfSpriteDropdown[dropdownIndex])) {
+         byte[] data = File.ReadAllBytes(_cachedPathsOfSpriteDropdown[dropdownIndex]);
+         Texture2D texture = new Texture2D(1, 1);
+         texture.filterMode = FilterMode.Point;
+         texture.wrapMode = TextureWrapMode.Clamp;
+         texture.LoadImage(data);
+
+         // Works only for "single sprite". We do not have enough information for slicing here
+         Sprite sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.zero);
+         previewSprite.sprite = sprite;
+         //colorPicker.GetComponent<ColorPicker>().Setup.DefaultPresetColors = generateMostCommonPixelsInSprite(previewSprite.sprite).ToArray();
+         colorPresets.forceUpdateColors(generateMostCommonPixelsInSprite(previewSprite.sprite));
+      }
+   }
+
    private Texture2D generateTexture2D () {
       if (_srcColors.Count != _dstColors.Count) {
          D.error("Source and destination palette has different element count in canvas. Cannot generate Texture2D");
@@ -512,6 +573,97 @@ public class PaletteToolManager : XmlDataToolManager {
       return copyTex;
    }
 
+   private void generatePaletteFromAllAssets () {
+#if UNITY_EDITOR
+      string[] spritesFolder = { "Assets/Sprites" };
+      string[] allPaths = AssetDatabase.FindAssets("t:texture2D");
+
+      HashSet<Color> uniqueColors = new HashSet<Color>();
+
+      foreach (string path in allPaths) {
+         string assetPath = AssetDatabase.GUIDToAssetPath(path);
+         TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+         if (importer == null) {
+            continue;
+         }
+
+         // Change import settings only if asset is not readable (and save this information)
+         bool readableChanged = false;
+         if (!importer.isReadable) {
+            readableChanged = true;
+            importer.isReadable = true;
+            AssetDatabase.ImportAsset(assetPath);
+         }
+
+         // Enable read/write in texture
+         Texture2D texture = (Texture2D) AssetDatabase.LoadAssetAtPath(assetPath, typeof(Texture2D));
+         if (texture == null || !texture.isReadable) {
+            if (readableChanged) {
+               importer.isReadable = false;
+               AssetDatabase.ImportAsset(assetPath);
+            }
+            continue;
+         }
+
+         // Add unique colors
+         Color[] pixels = texture.GetPixels();
+         foreach (Color color in pixels) {
+            if (color.a > 0) {
+               uniqueColors.Add(new Color(color.r, color.g, color.b, 1));
+            }
+         }
+
+         // Revert to not readable if texture was not set as "read/write enabled"
+         if (readableChanged) {
+            importer.isReadable = false;
+            AssetDatabase.ImportAsset(assetPath);
+         }
+      }
+
+      AssetDatabase.Refresh();
+
+      // Copy results to List; It's easier to work with it
+      List<Color> finalColors = new List<Color>();
+      finalColors.AddRange(uniqueColors);
+
+      // Add elements to fill texture to 1024 width
+      int demandedSize = (1024 * ((finalColors.Count / 1024) + 1));
+      int height = (finalColors.Count / 1024) + 1;
+      while (finalColors.Count < demandedSize) {
+         finalColors.Add(new Color(0, 0, 0, 1));
+      }
+      finalColors.Sort(sortColors);
+
+      // Save texture to png
+      Texture2D tex = new Texture2D(1024, height);
+      tex.SetPixels(finalColors.ToArray());
+      byte[] atlasPng = tex.EncodeToPNG();
+      string path2 = Application.dataPath + "/Project Tools/PaletteTool/" + "allColorsInProject.png";
+      File.WriteAllBytes(path2, atlasPng);
+      AssetDatabase.Refresh();
+#endif
+   }
+
+   private int sortColors (Color a, Color b) {
+      if (a.r < b.r)
+         return 1;
+      else if (a.r > b.r)
+         return -1;
+      else {
+         if (a.g < b.g)
+            return 1;
+         else if (a.g > b.g)
+            return -1;
+         else {
+            if (a.b < b.b)
+               return 1;
+            else if (a.b > b.b)
+               return -1;
+         }
+      }
+      return 0;
+   }
+
    #region Private Variables
 
    // Button representing palette pixel which can be edited
@@ -528,6 +680,9 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Currently edited row of data
    private PaletteButtonRow _currentRow;
+
+   // Contains full path of files which are presented on choosing sprite dropdown
+   private List<string> _cachedPathsOfSpriteDropdown = new List<string>();
 
    #endregion
 }

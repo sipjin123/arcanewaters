@@ -139,9 +139,7 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       }
 
       // Hide the voyage group invite panel, if opened
-      // TODO: Confirm this functionality
-      D.editorLog("Confirm voyage decline functionality for logout", Color.red);
-      VoyageManager.self.refuseVoyageInvitation(-1, "", 0);
+      VoyageManager.self.refuseVoyageInvitation();
 
       // Check if the user is at sea
       if (Global.player is ShipEntity) {

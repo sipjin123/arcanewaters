@@ -205,6 +205,9 @@ public class PendingVoyageCreation {
    // The area key of the voyage
    public string areaKey;
 
+   // When false, the voyage instance is PvE
+   public bool isPvP;
+
    // The name of the server
    public string serverName = "";
 

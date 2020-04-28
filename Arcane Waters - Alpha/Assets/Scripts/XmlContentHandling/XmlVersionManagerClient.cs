@@ -75,11 +75,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          if (serverVersion > clientXmlVersion) {
             clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
-            D.log(clientMessage);
+            D.debug(clientMessage);
             StartCoroutine(CO_DownloadClientData(serverVersion));
          } else {
             clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
-            D.log(clientMessage);
+            D.debug(clientMessage);
             processClientXml();
          }
       }
@@ -99,7 +99,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
          resultMessage = "File successfully downloaded and saved to " + path;
       }
 
-      D.log(resultMessage);
+      D.debug(resultMessage);
       StartCoroutine(CO_ExtractTextFiles());
       PlayerPrefs.SetInt(XML_VERSION, targetVersion);
    }
@@ -121,7 +121,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string filename = TEXT_PATH + "/";
                filename += theEntry.Name;
 
-               D.log("Unzipping: " + theEntry.Name);
+               D.debug("Unzipping: " + theEntry.Name);
                using (FileStream streamWriter = File.Create(filename)) {
                   int size = 2048;
                   byte[] fdata = new byte[2048];
@@ -138,12 +138,12 @@ public class XmlVersionManagerClient : MonoBehaviour {
          }
       }
 
-      D.log("Finished Extracting Zip");
+      D.debug("Finished Extracting Zip");
       processClientXml();
    }
 
    private void processClientXml () {
-      D.log("Initializing Text Extraction");
+      D.debug("Initializing Text Extraction");
       targetProgress = 0;
       currentProgress = 0;
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Crops));
@@ -502,11 +502,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
    private void checkTextExtractionProgress () {
       if (includeProgressInEditorLog) {
-         D.log("Progress is: " + currentProgress + " / " + targetProgress);
+         D.debug("Progress is: " + currentProgress + " / " + targetProgress);
       }
 
       if (currentProgress >= targetProgress) {
-         D.log("Finished assigning Xml Data");
+         D.debug("Finished assigning Xml Data");
          loadBlocker.SetActive(false);
       }
    }

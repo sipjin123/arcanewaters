@@ -9,8 +9,14 @@ public class TutorialStepViewModel {
    // The description of the step
    public string stepDescription;
 
+   // The action required to complete this step
+   public string actionDescription;
+
    // The completed timestamp of this step for a given user
-   public DateTime? completedTimestamp;
+   public DateTime completedTimestamp;
+
+   // Wether the step was completed by user
+   public bool isCompleted;
 
    #endregion
 

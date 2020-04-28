@@ -20,10 +20,17 @@ public class ColorPresets : MonoBehaviour
 
     void Start()
     {
+        updateColors();
+    }
+
+    public void forceUpdateColors(List<Color> colors) {
+      OnColorsUpdate(colors);
+    }
+
+    private void updateColors () {
         _colors = ColorPresetManager.Get(picker.Setup.PresetColorsId);
 
-        if (_colors.Colors.Count < picker.Setup.DefaultPresetColors.Length)
-        {
+        if (_colors.Colors.Count < picker.Setup.DefaultPresetColors.Length) {
             _colors.UpdateList(picker.Setup.DefaultPresetColors);
         }
 

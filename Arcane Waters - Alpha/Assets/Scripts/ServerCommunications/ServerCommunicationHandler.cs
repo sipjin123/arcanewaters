@@ -271,8 +271,9 @@ public class ServerCommunicationHandler : MonoBehaviour
       List<PendingVoyageCreation> newCopy = new List<PendingVoyageCreation>();
       List<PendingVoyageCreation> sortedList = fetchedVoyageCreation.FindAll(_ => (_.updateTime - ourServerData.latestUpdate).TotalSeconds < 2);
       foreach (PendingVoyageCreation voyageEntry in sortedList) {
-         newCopy.Add(new PendingVoyageCreation { 
+         newCopy.Add(new PendingVoyageCreation {
             areaKey = voyageEntry.areaKey,
+            isPvP = voyageEntry.isPvP,
             id = voyageEntry.id,
             isPending = voyageEntry.isPending,
             serverIp = voyageEntry.serverIp,
@@ -478,15 +479,12 @@ public class ServerCommunicationHandler : MonoBehaviour
                if (!createdVoyageIds.Contains(voyageCreations.id)) {
                   voyageCreations.isPending = false;
                   string areaKey = voyageCreations.areaKey;
+                  bool isPvP = voyageCreations.isPvP;
                   int idToRemove = voyageCreations.id;
 
                   if (idToRemove > 0) {
                      createdVoyageIds.Add(idToRemove);
-                     if (areaKey == "") {
-                        ServerNetwork.self.server.CreateVoyageInstance();
-                     } else {
-                        ServerNetwork.self.server.CreateVoyageInstance(areaKey);
-                     }
+                     VoyageManager.self.createVoyageInstance(areaKey, isPvP);
                   }
                }
             }

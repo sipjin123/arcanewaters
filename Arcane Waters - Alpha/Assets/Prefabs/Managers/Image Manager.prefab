@@ -86,6 +86,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f3a7b1564efccce44bf57ab0f217f9c7, type: 3}
     sprites:
     - {fileID: 21300000, guid: f3a7b1564efccce44bf57ab0f217f9c7, type: 3}
+  - imageName: 15. Pirate Captain
+    imagePath: Assets/Sprites/BookImages/Individual/15. Pirate Captain.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/15. Pirate Captain
+    texture2D: {fileID: 2800000, guid: 50b22a5a0c963ab458df9963225c0163, type: 3}
+    sprite: {fileID: 21300000, guid: 50b22a5a0c963ab458df9963225c0163, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 50b22a5a0c963ab458df9963225c0163, type: 3}
+  - imageName: 16. Famous Explorer
+    imagePath: Assets/Sprites/BookImages/Individual/16. Famous Explorer.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/16. Famous Explorer
+    texture2D: {fileID: 2800000, guid: c9e1261a1e233464d8e7ac19e52fbcfe, type: 3}
+    sprite: {fileID: 21300000, guid: c9e1261a1e233464d8e7ac19e52fbcfe, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c9e1261a1e233464d8e7ac19e52fbcfe, type: 3}
   - imageName: 2. Caravel
     imagePath: Assets/Sprites/BookImages/Individual/2. Caravel.png
     imagePathWithoutExtension: Assets/Sprites/BookImages/Individual/2. Caravel
@@ -1315,6 +1329,8 @@ MonoBehaviour:
     - {fileID: -8596748011561582631, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -2634445103299172339, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6880748857453255580, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
   - imageName: Border Design v1
     imagePath: Assets/Sprites/Battle Boards/Border Design v1.png
     imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v1
@@ -4445,6 +4461,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6eda7393cf281894c8f93a255f84c3ea, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6eda7393cf281894c8f93a255f84c3ea, type: 3}
+  - imageName: DiscoveryPanel_Name+Rating
+    imagePath: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_Name+Rating.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_Name+Rating
+    texture2D: {fileID: 2800000, guid: a228c27352621954ab1e3c72470fb300, type: 3}
+    sprite: {fileID: 21300000, guid: a228c27352621954ab1e3c72470fb300, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a228c27352621954ab1e3c72470fb300, type: 3}
+  - imageName: DiscoveryPanel_PictureFrame
+    imagePath: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_PictureFrame.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_PictureFrame
+    texture2D: {fileID: 2800000, guid: 3add5fec8eaf5074d88f40601d506df7, type: 3}
+    sprite: {fileID: 21300000, guid: 3add5fec8eaf5074d88f40601d506df7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3add5fec8eaf5074d88f40601d506df7, type: 3}
   - imageName: dog_1
     imagePath: Assets/Sprites/Faces/dog_1.png
     imagePathWithoutExtension: Assets/Sprites/Faces/dog_1
@@ -10021,8 +10051,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
