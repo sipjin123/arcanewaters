@@ -23,7 +23,46 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    // The sprite of the sign icon
    public SpriteRenderer mapSignIcon;
 
+   // The object containing the direction label
+   public GameObject directionLabelUI;
+
+   // The content of the sign
+   public Text signLabel;
+
+   // If this prefab is in map editor mode
+   public bool isEditorMode = false;
+
    #endregion
+
+   protected override void Awake () {
+      base.Awake();
+
+      // Look up components
+      _outline = GetComponentInChildren<SpriteOutline>();
+      _clickableBox = GetComponentInChildren<ClickableBox>();
+   }
+
+   private void Start () {
+      _outline.Regenerate();
+      _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+   }
+
+   public void Update () {
+      // Figure out whether our outline should be showing
+      handleSpriteOutline();
+   }
+
+   public void handleSpriteOutline () {
+      if (_outline == null || _clickableBox == null || isEditorMode) {
+         return;
+      }
+
+      // Only show our outline when the mouse is over us
+      bool isHovering = MouseManager.self.isHoveringOver(_clickableBox);
+      _outline.setVisibility(isHovering);
+      directionLabelUI.SetActive(isHovering);
+   }
+
    public void receiveData (DataField[] dataFields) {
       Sprite[] mapSignSprites = ImageManager.getSprites(mapSignIcon.sprite.texture);
       foreach (DataField field in dataFields) {
@@ -38,6 +77,9 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
                mapIconIndex = Mathf.Clamp(mapIconIndex, 0, (mapSignSprites.Length - 1) - MapSign.MAP_SIGN_START_INDEX);
                mapSignIcon.sprite = mapSignSprites[MapSign.MAP_SIGN_START_INDEX + mapIconIndex];
                break;
+            case DataField.MAP_SIGN_LABEL:
+               signLabel.text = field.v;
+               break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");
                break;
@@ -46,6 +88,10 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    }
 
    #region Private Variables
+
+   // Our various components
+   protected SpriteOutline _outline;
+   protected ClickableBox _clickableBox;
 
    #endregion
 }

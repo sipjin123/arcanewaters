@@ -9,8 +9,8 @@ using MapCreationTool;
 public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IHighlightable {
    #region Public Variables
 
-   [SerializeField]
-   private SpriteRenderer highlight = null;
+   // The sprite outline for highlighting
+   public SpriteOutline spriteOutline; 
 
    // The text component for the area to warp to
    public Text warpText;
@@ -44,6 +44,8 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
       } else if (field.k.CompareTo(DataField.SECRETS_START_SPRITE) == 0) {
          _secretEntrance.mainSprite = ImageManager.getSprite(field.v);
          _secretEntrance.spriteRenderer.sprite = _secretEntrance.mainSprite;
+         spriteOutline.Regenerate();
+         spriteOutline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
       } else if (field.k.CompareTo(DataField.SECRETS_INTERACT_SPRITE) == 0) {
          _secretEntrance.subSprite = ImageManager.getSprites(field.v)[0];
          _secretEntrance.subSpriteRenderer.sprite = _secretEntrance.subSprite;
@@ -51,7 +53,7 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
    }
 
    public void setHighlight (bool hovered, bool selected, bool deleting) {
-      setSpriteOutline(highlight, hovered, selected, deleting);
+      setOutlineHighlight(spriteOutline, hovered, selected, deleting);
    }
 
    private void updateText () {

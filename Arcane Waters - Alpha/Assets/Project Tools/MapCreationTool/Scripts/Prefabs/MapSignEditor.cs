@@ -18,7 +18,6 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
    #endregion
 
    private void Awake () {
-      mapSign = GetComponent<MapSign>();
       mapSign.transform.localScale = new Vector3(2, 2, 2);
    }
 
@@ -29,6 +28,7 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
             int mapTypeIndex = int.Parse(field.v);
             mapTypeIndex = Mathf.Clamp(mapTypeIndex, 0, MapSign.MAP_SIGN_START_INDEX);
             mapSign.mapSignPost.sprite = mapSignSprites[mapTypeIndex];
+            highlight.sprite = mapSignSprites[mapTypeIndex];
          } catch { }
       }
       if (field.k.CompareTo(DataField.MAP_ICON_KEY) == 0) {
@@ -36,6 +36,11 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
             int mapIconIndex = int.Parse(field.v);
             mapIconIndex = Mathf.Clamp(mapIconIndex, 0, (mapSignSprites.Length - 1) - MapSign.MAP_SIGN_START_INDEX);
             mapSign.mapSignIcon.sprite = mapSignSprites[MapSign.MAP_SIGN_START_INDEX + mapIconIndex];
+         } catch { }
+      }
+      if (field.k.CompareTo(DataField.MAP_SIGN_LABEL) == 0) {
+         try {
+            mapSign.signLabel.text = field.v;
          } catch { }
       }
    }

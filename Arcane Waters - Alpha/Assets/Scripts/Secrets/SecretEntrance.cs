@@ -58,6 +58,12 @@ public class SecretEntrance : NetworkBehaviour {
    // The warp associated with this secret entrance
    public Warp warp;
 
+   // The object containing the UI
+   public GameObject warpTextUI;
+
+   // The text where the warp will lead to
+   public Text warpAreaText;
+
    // The sprite to be animated
    public SecretObjectSpriteData mainSpriteComponent = new SecretObjectSpriteData();
    public SecretObjectSpriteData subSpriteComponent = new SecretObjectSpriteData();
@@ -78,8 +84,10 @@ public class SecretEntrance : NetworkBehaviour {
       mainSprite = ImageManager.getSprite(initSpritePath);
       subSprite = ImageManager.getSprites(interactSpritePath)[0];
       if (!isInteracted) {
+         warpTextUI.SetActive(false);
          spriteRenderer.sprite = mainSprite;
       } else {
+         warpTextUI.SetActive(true);
          int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
          spriteRenderer.sprite = ImageManager.getSprites(interactSpritePath)[spriteLength - 1];
       }
@@ -114,7 +122,7 @@ public class SecretEntrance : NetworkBehaviour {
    }
 
    public void handleSpriteOutline () {
-      if (_outline == null) {
+      if (_outline == null || isInteracted) {
          return;
       }
 
@@ -143,6 +151,7 @@ public class SecretEntrance : NetworkBehaviour {
             case DataField.WARP_TARGET_MAP_KEY:
                string areaName = AreaManager.self.getAreaName(int.Parse(value));
                areaTarget = areaName;
+               warpAreaText.text = areaTarget;
                break;
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = value;
@@ -224,14 +233,16 @@ public class SecretEntrance : NetworkBehaviour {
          subSpriteComponent.currentIndex++;
          subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.currentIndex];
       } else {
-         endSprite();
+         endSpriteAnimation();
       }
    }
 
-   private void endSprite () {
+   private void endSpriteAnimation () {
       spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
       subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
       CancelInvoke();
+      warpTextUI.SetActive(true);
+      _outline.setVisibility(false);
    }
 
    private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {

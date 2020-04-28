@@ -852,6 +852,7 @@ namespace MapCreationTool.Serialization
 
       public const string MAP_SIGN_TYPE_KEY = "map sign type";
       public const string MAP_ICON_KEY = "map sign icon";
+      public const string MAP_SIGN_LABEL = "map sign label";
 
       public const string SECRETS_TYPE_ID = "secret type";
       public const string SECRETS_START_SPRITE = "secret start sprite";
