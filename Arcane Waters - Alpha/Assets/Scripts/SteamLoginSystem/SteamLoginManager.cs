@@ -14,11 +14,12 @@ namespace SteamLoginSystem
    public class SteamLoginManager : MonoBehaviour {
       #region Public Variables
 
+      // Self
+      public static SteamLoginManager self;
+      
       // The WEB API request for ticket authentication
       public const string STEAM_AUTHENTICATE_TICKET = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/?";
-
-      // The WEB API request for confirmation that the user owns this game
-      public const string STEAM_APP_OWNERSHIP = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/v2/?";
+      public const string OWNERSHIP_WEB_REQUEST = "http://localhost/getSteamAppOwnership_v1.php?usrId="; // "http://arcanewaters.com/getSteamAppOwnership_v1.php?usrId=";
 
       // The various parameters used for the web api requests
       public const string PARAM_STEAM_ID = "steamid=";
@@ -29,7 +30,6 @@ namespace SteamLoginSystem
       // TODO: Might want to put this info in the server database for security purposes
       // Steam key parameters for web api request
       public static string STEAM_WEB_USER_API_KEY = "1EB0664926636257A9861504BE93721B";
-      public static string STEAM_WEB_PUBLISHER_API_KEY = "16FBA4602CFF4C139DC40E01D58F8869";
 
       // The arcane waters steam app id
       public const string GAME_APPID = "1266340";
@@ -43,9 +43,13 @@ namespace SteamLoginSystem
       // The test encryption data cache
       public string encryptedData = "";
 
+      // The event that will contain the response of the ownership query
+      public AppOwnershipEvent appOwnershipEvent;
+
       #endregion
 
       private void Awake () {
+         self = this;
          _getAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(onGetAuthSessionTicketResponse);
       }
 
@@ -59,7 +63,7 @@ namespace SteamLoginSystem
          }
 
          if (GUILayout.Button("Get App Ownership")) {
-            StartCoroutine(CO_ProcessAppOwnership());
+            getOwnershipInfo();
          }
 
          if (GUILayout.Button("Encrypt")) {
@@ -80,6 +84,10 @@ namespace SteamLoginSystem
 
       private void onGetAuthSessionTicketResponse (GetAuthSessionTicketResponse_t pCallback) {
          Debug.Log("[" + GetAuthSessionTicketResponse_t.k_iCallback + " - GetAuthSessionTicketResponse] - " + pCallback.m_hAuthTicket + " -- " + pCallback.m_eResult);
+      }
+
+      public void getOwnershipInfo () {
+         StartCoroutine(CO_ProcessAppOwnership());
       }
 
       private IEnumerator CO_ProcessAuthentication () {
@@ -122,7 +130,8 @@ namespace SteamLoginSystem
       private IEnumerator CO_ProcessAppOwnership () {
          yield return new WaitForSeconds(.1f);
 
-         string webRequest = STEAM_APP_OWNERSHIP + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + SteamUser.GetSteamID() + "&" + PARAM_APPID + GAME_APPID;
+         // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
+         string webRequest = OWNERSHIP_WEB_REQUEST + SteamUser.GetSteamID().ToString();
 
          D.editorLog("Requesting: " + webRequest, Color.red);
          UnityWebRequest www = UnityWebRequest.Get(webRequest);
@@ -132,16 +141,18 @@ namespace SteamLoginSystem
             D.warning(www.error);
          } else {
             string rawData = www.downloadHandler.text;
-            AppOwnerShipResponse authCall = JsonUtility.FromJson<AppOwnerShipResponse>(rawData);
+            AppOwnerShipResponse ownershipResponse = JsonUtility.FromJson<AppOwnerShipResponse>(rawData);
 
             D.editorLog("The raw data is: " + rawData, Color.magenta);
-            D.editorLog(authCall.appownership.ownersteamid, Color.cyan);
-            D.editorLog(authCall.appownership.ownsapp.ToString(), Color.cyan);
-            D.editorLog(authCall.appownership.permanent.ToString(), Color.cyan);
-            D.editorLog(authCall.appownership.result, Color.cyan);
-            D.editorLog(authCall.appownership.sitelicense.ToString(), Color.cyan);
-            D.editorLog(authCall.appownership.timestamp.ToString(), Color.cyan);
-            D.editorLog(DateTime.Parse(authCall.appownership.timestamp).ToString(), Color.cyan);
+            D.editorLog(ownershipResponse.appownership.ownersteamid, Color.cyan);
+            D.editorLog(ownershipResponse.appownership.ownsapp.ToString(), Color.cyan);
+            D.editorLog(ownershipResponse.appownership.permanent.ToString(), Color.cyan);
+            D.editorLog(ownershipResponse.appownership.result, Color.cyan);
+            D.editorLog(ownershipResponse.appownership.sitelicense.ToString(), Color.cyan);
+            D.editorLog(ownershipResponse.appownership.timestamp.ToString(), Color.cyan);
+            D.editorLog(DateTime.Parse(ownershipResponse.appownership.timestamp).ToString(), Color.cyan);
+
+            appOwnershipEvent.Invoke(ownershipResponse);
          }
       }
 

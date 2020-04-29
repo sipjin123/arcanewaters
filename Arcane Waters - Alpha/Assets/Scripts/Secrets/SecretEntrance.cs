@@ -58,9 +58,6 @@ public class SecretEntrance : NetworkBehaviour {
    // The warp associated with this secret entrance
    public Warp warp;
 
-   // The object containing the UI
-   public GameObject warpTextUI;
-
    // The text where the warp will lead to
    public Text warpAreaText;
 
@@ -84,10 +81,8 @@ public class SecretEntrance : NetworkBehaviour {
       mainSprite = ImageManager.getSprite(initSpritePath);
       subSprite = ImageManager.getSprites(interactSpritePath)[0];
       if (!isInteracted) {
-         warpTextUI.SetActive(false);
          spriteRenderer.sprite = mainSprite;
       } else {
-         warpTextUI.SetActive(true);
          int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
          spriteRenderer.sprite = ImageManager.getSprites(interactSpritePath)[spriteLength - 1];
       }
@@ -243,7 +238,6 @@ public class SecretEntrance : NetworkBehaviour {
       spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
       subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
       CancelInvoke();
-      warpTextUI.SetActive(true);
    }
 
    private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {

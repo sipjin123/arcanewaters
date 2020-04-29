@@ -14,7 +14,6 @@ public class LogInUserMessage : MessageBase {
    // The credentials
    public string accountName;
    public string accountPassword;
-   public string steamId;
 
    // The client's version of the game
    public int clientGameVersion;
@@ -39,7 +38,7 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, string steamId, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -48,6 +47,5 @@ public class LogInUserMessage : MessageBase {
       this.clientPlatform = clientPlatform;
       this.isSinglePlayer = isSinglePlayer;
       this.isSteamLogin = isSteamLogin;
-      this.steamId = steamId;
    }
 }

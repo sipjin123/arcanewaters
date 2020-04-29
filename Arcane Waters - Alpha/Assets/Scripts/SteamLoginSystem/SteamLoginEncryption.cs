@@ -5,6 +5,8 @@ using System;
 namespace SteamLoginSystem
 {
    public class SteamLoginEncryption {
+      #if IS_SERVER_BUILD
+
       // The encryption key code (Do not Change or else the previous user entries will not work)
       public const string ENCRYPTION_KEY = "arcw-enc8-lxmq19";
 
@@ -31,5 +33,7 @@ namespace SteamLoginSystem
          tripleDES.Clear();
          return UTF8Encoding.UTF8.GetString(resultArray);
       }
+
+      #endif
    }
 }

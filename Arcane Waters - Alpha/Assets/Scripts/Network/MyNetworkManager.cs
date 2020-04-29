@@ -222,9 +222,6 @@ public class MyNetworkManager : NetworkManager {
             if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.ourPort) {
                D.editorLog("Best server is Not the Local Server: (" + bestServer.deviceName + "), now Redirecting", Color.yellow);
 
-               // TODO: Remove log after confirmation
-               D.debug("DEV_LOG_2: Redirect because not Best Server: " + bestServer.ipAddress + " - " + bestServer.port + " - Actual: "+ networkAddress +" - "+getCurrentPort());
-
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);
                conn.Send(redirectMessage);

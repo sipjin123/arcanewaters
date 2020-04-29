@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using Steamworks;
+using SteamLoginSystem;
 
 public class ClientManager : MonoBehaviour {
    #region Public Variables
@@ -77,11 +79,32 @@ public class ClientManager : MonoBehaviour {
    }
 
    public static void sendAccountNameAndUserId () {
-      LogInUserMessage msg = new LogInUserMessage(Global.netId,
-         Global.lastUsedAccountName, Global.lastUserAccountPassword, Global.lastSteamId, Global.isSteamLogin, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+      if (SteamManager.Initialized) {
+         SteamLoginManager.self.appOwnershipEvent.RemoveAllListeners();
+         SteamLoginManager.self.appOwnershipEvent = new AppOwnershipEvent();
 
-      // Send a message to the Server letting them know which of our Users we want to log in to
-      NetworkClient.Send(msg);
+         // Wait for the php request response
+         SteamLoginManager.self.appOwnershipEvent.AddListener(_ => {
+            // Extract the credentials
+            string steamAccountName = SteamUser.GetSteamID().ToString();
+            string steamPassword = _.appownership.ownersteamid + "[space]" + _.appownership.timestamp;
+
+            LogInUserMessage msg = new LogInUserMessage(Global.netId,
+               steamAccountName, steamPassword, true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+
+            // Send a message to the Server letting them know which of our Users we want to log in to
+            NetworkClient.Send(msg);
+         });
+
+         // Trigger the fetching of the ownership info
+         SteamLoginManager.self.getOwnershipInfo();
+      } else {
+         LogInUserMessage msg = new LogInUserMessage(Global.netId,
+             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+
+         // Send a message to the Server letting them know which of our Users we want to log in to
+         NetworkClient.Send(msg);
+      }
    }
 
    protected void unloadUnusedAssets () {

@@ -41,11 +41,13 @@ public class ServerMessageManager : MonoBehaviour {
          string salt = Util.createSalt("arcane");
          string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
          int accountId = 0;
-         if (logInUserMessage.isSteamLogin && logInUserMessage.steamId.Length > 1) {
-            D.editorLog("Loging in using steam: " + logInUserMessage.steamId, Color.green);
-            accountId = DB_Main.getAccountIdUsingSteam(logInUserMessage.accountName, logInUserMessage.steamId);
+
+         if (logInUserMessage.isSteamLogin) {
+            string encryptedPassword = SteamLoginSystem.SteamLoginEncryption.Encrypt(logInUserMessage.accountPassword);
+            D.editorLog("Loging in using steam: " + logInUserMessage.accountName, Color.green);
+            accountId = DB_Main.getAccountId(logInUserMessage.accountName, encryptedPassword);
          } else {
-            D.editorLog("Loging in using password: " + logInUserMessage.accountPassword, Color.green);
+            D.editorLog("Loging in using account" + logInUserMessage.accountName, Color.green);
             accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
          }
 
@@ -62,6 +64,13 @@ public class ServerMessageManager : MonoBehaviour {
             armorList = DB_Main.getArmorForAccount(accountId, selectedUserId);
             weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
             DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
+         } else {
+            // Create an account for this new steam user
+            if (logInUserMessage.isSteamLogin) {
+               string encryptedPassword = SteamLoginSystem.SteamLoginEncryption.Encrypt(logInUserMessage.accountPassword);
+               D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
+               accountId = DB_Main.createAccount(logInUserMessage.accountName, encryptedPassword, "", 0);
+            }
          }
 
          // Back to the Unity thread
