@@ -80,27 +80,23 @@ public class ClientManager : MonoBehaviour {
 
    public static void sendAccountNameAndUserId () {
       if (SteamManager.Initialized) {
-         SteamLoginManager.self.appOwnershipEvent.RemoveAllListeners();
-         SteamLoginManager.self.appOwnershipEvent = new AppOwnershipEvent();
+         SteamLoginManager.self.getAuthTicketEvent.RemoveAllListeners();
+         SteamLoginManager.self.getAuthTicketEvent = new GetAuthTicketEvent();
 
          // Wait for the php request response
-         SteamLoginManager.self.appOwnershipEvent.AddListener(_ => {
+         SteamLoginManager.self.getAuthTicketEvent.AddListener(_ => {
             // Extract the credentials
-            string steamAccountName = SteamUser.GetSteamID().ToString();
-            string steamPassword = _.appownership.ownersteamid + "[space]" + _.appownership.timestamp;
-
-            LogInUserMessage msg = new LogInUserMessage(Global.netId,
-               steamAccountName, steamPassword, true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn, _.m_Ticket, _.m_pcbTicket);
 
             // Send a message to the Server letting them know which of our Users we want to log in to
             NetworkClient.Send(msg);
          });
 
          // Trigger the fetching of the ownership info
-         SteamLoginManager.self.getOwnershipInfo();
+         SteamLoginManager.self.getAuthenticationTicket();
       } else {
          LogInUserMessage msg = new LogInUserMessage(Global.netId,
-             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn);
+             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn, new byte[0], 0);
 
          // Send a message to the Server letting them know which of our Users we want to log in to
          NetworkClient.Send(msg);

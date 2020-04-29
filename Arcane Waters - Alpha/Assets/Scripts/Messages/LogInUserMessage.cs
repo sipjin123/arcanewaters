@@ -30,6 +30,12 @@ public class LogInUserMessage : MessageBase {
    // Determines if the login is using steam id
    public bool isSteamLogin;
 
+   // The login token generated on the client side
+   public byte[] steamAuthTicket;
+
+   // The data size of the ticket
+   public uint steamTicketSize;
+
    #endregion
 
    public LogInUserMessage () { }
@@ -38,7 +44,7 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -47,5 +53,7 @@ public class LogInUserMessage : MessageBase {
       this.clientPlatform = clientPlatform;
       this.isSinglePlayer = isSinglePlayer;
       this.isSteamLogin = isSteamLogin;
+      this.steamAuthTicket = steamAuthTicket;
+      this.steamTicketSize = steamTicketSize;
    }
 }

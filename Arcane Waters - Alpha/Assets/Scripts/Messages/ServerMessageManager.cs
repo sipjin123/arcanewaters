@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using SteamLoginSystem;
 
 public class ServerMessageManager : MonoBehaviour {
    #region Public Variables
@@ -37,17 +38,25 @@ public class ServerMessageManager : MonoBehaviour {
          List<Armor> armorList = new List<Armor>();
          List<Weapon> weaponList = new List<Weapon>();
 
-         // Look up the account ID corresponding to the provided account name and password
-         string salt = Util.createSalt("arcane");
-         string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
          int accountId = 0;
+         bool isUnauthorizedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
 
          if (logInUserMessage.isSteamLogin) {
-            string encryptedPassword = SteamLoginSystem.SteamLoginEncryption.Encrypt(logInUserMessage.accountPassword);
-            D.editorLog("Loging in using steam: " + logInUserMessage.accountName, Color.green);
-            accountId = DB_Main.getAccountId(logInUserMessage.accountName, encryptedPassword);
+            if (!isUnauthorizedSteamUser) {
+               // Steam user has been verified at this point, continue login using credentials
+               D.editorLog("Loging in using steam: " + logInUserMessage.accountName, Color.green);
+               accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
+            } else {
+               D.editorLog("Loging in using steam But needs to be authenticated first", Color.green);
+            }
          } else {
             D.editorLog("Loging in using account" + logInUserMessage.accountName, Color.green);
+
+            // Look up the account ID corresponding to the provided account name and password
+            string salt = Util.createSalt("arcane");
+            string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
+
+            // Manual login system using input user name and password
             accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
          }
 
@@ -65,16 +74,21 @@ public class ServerMessageManager : MonoBehaviour {
             weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
             DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
          } else {
-            // Create an account for this new steam user
-            if (logInUserMessage.isSteamLogin) {
-               string encryptedPassword = SteamLoginSystem.SteamLoginEncryption.Encrypt(logInUserMessage.accountPassword);
+            // Create an account for this new steam user after it is authorized
+            if (logInUserMessage.isSteamLogin && !isUnauthorizedSteamUser) {
                D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
-               accountId = DB_Main.createAccount(logInUserMessage.accountName, encryptedPassword, "", 0);
+               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, "", 0);
             }
          }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (isUnauthorizedSteamUser) {
+               // Steam user has not been authorized yet, start auth process
+               processSteamUserAuth(conn, logInUserMessage);
+               return;
+            }
+
             // If there was a valid account ID and a specified user ID, tell the client we authenticated them
             if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
                // Keep track of the user ID that's been authenticated for this connection
@@ -149,6 +163,49 @@ public class ServerMessageManager : MonoBehaviour {
          });
       });
    }
+
+   [ServerOnly]
+   private static void processSteamUserAuth (NetworkConnection conn, LogInUserMessage loginUserMsg) {
+      SteamLoginManagerServer.self.authenticateTicketEvent = new AuthenticateTicketEvent();
+      SteamLoginManagerServer.self.authenticateTicketEvent.AddListener(_ => {
+         // Fetch steam user id from the event response
+         string steamUserId = _.response.newParams.ownersteamid;
+
+         // Proceed to next process
+         processSteamAppOwnership(conn, loginUserMsg, steamUserId);
+
+         // Clear event listeners
+         SteamLoginManagerServer.self.authenticateTicketEvent.RemoveAllListeners();
+      });
+
+      // Send ticket to be processed and fetch steam user data
+      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize);
+   }
+
+   [ServerOnly]
+   private static void processSteamAppOwnership (NetworkConnection conn, LogInUserMessage loginUserMsg, string steamId) {
+      SteamLoginManagerServer.self.appOwnershipEvent = new AppOwnershipEvent();
+      SteamLoginManagerServer.self.appOwnershipEvent.AddListener(_ => {
+         // Extract user and password
+         string rawPassword = _.appownership.ownersteamid + "[spc]" + _.appownership.timestamp;
+         string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
+         string userName = _.appownership.ownersteamid;
+
+         // Override login message
+         loginUserMsg.accountName = userName;
+         loginUserMsg.accountPassword = encryptedPassword;
+
+         // Call On_LogInUserMessage again, this time with the user name and password
+         On_LogInUserMessage(conn, loginUserMsg);
+
+         // Clear event listeners
+         SteamLoginManagerServer.self.appOwnershipEvent.RemoveAllListeners();
+      });
+
+      // Get ownership info using the fetched steamId
+      SteamLoginManagerServer.self.getOwnershipInfo(steamId);
+   }
+   
 
    public static void sendConfirmation (ConfirmMessage.Type confirmType, NetEntity player, string customMessage = "") {
       ConfirmMessage confirmMessage = new ConfirmMessage(Global.netId, confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
