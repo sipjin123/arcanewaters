@@ -62,6 +62,10 @@ public class BattleManager : MonoBehaviour {
       // We need to make a new one
       Battle battle = Instantiate(battlePrefab);
 
+      if (area.biome == Biome.Type.None) {
+         D.debug("Invalid Area BIOME: Creating a team battle with biome type: NONE");
+      }
+
       // Look up the Battle Board for this Area's tile type
       Biome.Type biomeType = area.biome;
       battleBoard.biomeType = biomeType;

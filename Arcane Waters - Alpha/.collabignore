@@ -70,3 +70,8 @@ Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.yarn-integrity
 
 Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.idea/
 Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/Authenticator/bin
+
+# Streaming assets
+# =====================================
+Assets/StreamingAssets
+Assets/StreamingAssets/*

@@ -40,6 +40,7 @@ namespace SteamLoginSystem
       }
 
       private void OnGUI () {
+         # if UNITY_EDITOR
          if (GUILayout.Button("Get Auth")) {
             getAuthenticationTicket();
          }
@@ -61,6 +62,7 @@ namespace SteamLoginSystem
             string decryptedData = SteamLoginEncryption.Decrypt(encryptedData);
             D.editorLog(decryptedData, Color.red);
          }
+         #endif
       }
 
       public void getAuthenticationTicket () {

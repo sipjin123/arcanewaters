@@ -59,6 +59,18 @@ public class EditorUtil : EditorWindow {
       EditorApplication.isPlaying = true;
    }
 
+   [MenuItem("Util/Launch: Map Tool")]
+   public static void PlayMapToolScene () {
+      if (EditorApplication.isPlaying == true) {
+         EditorApplication.isPlaying = false;
+         return;
+      }
+
+      EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+      EditorSceneManager.OpenScene("Assets/Project Tools/MapCreationTool/Scenes/MapCreationTool.unity");
+      EditorApplication.isPlaying = true;
+   }
+
    [MenuItem("Util/Update Image Manager (Ctrl+L) %l")]
    public static void updateImagerManager () {
       // Load the Image Manager prefab

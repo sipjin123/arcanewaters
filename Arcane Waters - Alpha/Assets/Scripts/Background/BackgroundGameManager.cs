@@ -84,17 +84,24 @@ public class BackgroundGameManager : MonoBehaviour {
 
    public void setSpritesToRandomBoard (BattleBoard board) {
       BackgroundContentData bgContentData = new BackgroundContentData();
-      List<BackgroundContentData> contentDataList = backgroundContentList.FindAll(_ => _.biomeType == board.biomeType);
-      if (contentDataList.Count > 0) {
-         if (contentDataList.Count < 2) {
-            bgContentData = contentDataList[0];
-         } else {
-            int contentLength = contentDataList.Count;
-            int randomIndex = Random.Range(0, 2);
-            bgContentData = contentDataList[randomIndex];
-         }
-      } else {
+
+      // Biome should never be none, if for some reason it becomes none, log and use default biome
+      if (board.biomeType == Biome.Type.None) {
+         D.debug("Error here, tryng to load a biome with type: NONE");
          bgContentData = backgroundContentList[0];
+      } else {
+         List<BackgroundContentData> contentDataList = backgroundContentList.FindAll(_ => _.biomeType == board.biomeType);
+         if (contentDataList.Count > 0) {
+            if (contentDataList.Count < 2) {
+               bgContentData = contentDataList[0];
+            } else {
+               int contentLength = contentDataList.Count;
+               int randomIndex = Random.Range(0, contentLength);
+               bgContentData = contentDataList[randomIndex];
+            }
+         } else {
+            bgContentData = backgroundContentList[0];
+         }
       }
 
       processBoardContent(bgContentData, board);

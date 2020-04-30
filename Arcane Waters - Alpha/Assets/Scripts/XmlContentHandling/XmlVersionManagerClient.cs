@@ -128,7 +128,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string filename = TEXT_PATH + "/";
                filename += theEntry.Name;
 
-               D.debug("Unzipping: " + theEntry.Name);
                using (FileStream streamWriter = File.Create(filename)) {
                   int size = 2048;
                   byte[] fdata = new byte[2048];
