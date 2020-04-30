@@ -33,3 +33,40 @@ ehthumbs.db
 [Bb]uild
 sysinfo.txt
 *.stackdump
+
+# Prod configs
+# =====================================
+Assets/dbConfig.json
+
+# Testing
+# =====================================
+Assets/StressTest
+Assets/StressTest/*
+
+# Ruby on Rails & React Tools
+# =====================================
+# Ignore bundler config.
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.bundle
+
+# Ignore all logfiles and tempfiles.
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/log
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/tmp
+
+# Ignore uploaded files in development.
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/storage
+
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.byebug_history
+
+# Ignore master key for decrypting credentials and more.
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/config/master.key
+
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/public/packs
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/public/packs-test
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/public/assets
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/node_modules
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/yarn-error.log
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/yarn-debug.log*
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.yarn-integrity
+
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/.idea/
+Assets/WebPlayerTemplates/ArcaneTools/arcane-web-tools/Authenticator/bin

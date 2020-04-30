@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using MapCustomization;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class BottomBar : MonoBehaviour {
@@ -7,10 +8,20 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
+   // Button that opens map customization
+   public Button mapCustomizationButton;
+
    #endregion
 
    private void Awake () {
       self = this;
+   }
+
+   private void Update () {
+      mapCustomizationButton.gameObject.SetActive(
+         Global.player != null &&
+         AreaManager.self.isInteriorArea(Global.player.areaKey) &&
+         !MapCustomizationManager.isCustomizing);
    }
 
    public void toggleCharacterInfoPanel () {
@@ -137,6 +148,10 @@ public class BottomBar : MonoBehaviour {
       } else {
          PanelManager.self.togglePanel(Panel.Type.Mail);
       }
+   }
+
+   public void openMapCustomization () {
+      MapCustomizationManager.enterCustomization(Global.player.areaKey);
    }
 
    #region Private Variables

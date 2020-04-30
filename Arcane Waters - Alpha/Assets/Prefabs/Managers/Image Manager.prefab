@@ -1531,6 +1531,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 493a92585359dc74296881311b6aab2f, type: 3}
     sprites:
     - {fileID: 21300000, guid: 493a92585359dc74296881311b6aab2f, type: 3}
+  - imageName: btn_customize_map
+    imagePath: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map
+    texture2D: {fileID: 2800000, guid: a6170c7f493ec7745a3c81c3f3204a73, type: 3}
+    sprite: {fileID: 21300000, guid: a6170c7f493ec7745a3c81c3f3204a73, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a6170c7f493ec7745a3c81c3f3204a73, type: 3}
+  - imageName: btn_customize_map_hover
+    imagePath: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map_hover.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map_hover
+    texture2D: {fileID: 2800000, guid: 9debd87dfcc018247ac7b8ff3218ba32, type: 3}
+    sprite: {fileID: 21300000, guid: 9debd87dfcc018247ac7b8ff3218ba32, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9debd87dfcc018247ac7b8ff3218ba32, type: 3}
+  - imageName: btn_customize_map_press
+    imagePath: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map_press.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/btn_customize_map_press
+    texture2D: {fileID: 2800000, guid: 7ec1fbf70ef7c2d488263fe9d49bb536, type: 3}
+    sprite: {fileID: 21300000, guid: 7ec1fbf70ef7c2d488263fe9d49bb536, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7ec1fbf70ef7c2d488263fe9d49bb536, type: 3}
   - imageName: btn_friends
     imagePath: Assets/Sprites/GUI/Bottom Buttons/btn_friends.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/btn_friends
