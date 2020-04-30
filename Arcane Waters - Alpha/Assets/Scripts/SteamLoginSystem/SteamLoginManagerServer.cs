@@ -12,22 +12,26 @@ namespace SteamLoginSystem
    public class SteamLoginManagerServer : MonoBehaviour {
       #region Public Variables
       
-      #if IS_SERVER_BUILD
-
       // Self
       public static SteamLoginManagerServer self;
-
+      
+      #if IS_SERVER_BUILD
       // Steam key parameters for web api request
       public static string STEAM_WEB_USER_API_KEY = "1EB0664926636257A9861504BE93721B";
       public static string STEAM_WEB_PUBLISHER_API_KEY = "16FBA4602CFF4C139DC40E01D58F8869";
+      #else
+      // Steam key parameters for web api request
+      public static string STEAM_WEB_USER_API_KEY = "";
+      public static string STEAM_WEB_PUBLISHER_API_KEY = "";
+      #endif
 
       // The WEB API request for ticket authentication
       public const string STEAM_AUTHENTICATE_TICKET = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/?";
       public const string OWNERSHIP_WEB_REQUEST = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/v2/?";
 
-      // Unity events containing response data
-      public AuthenticateTicketEvent authenticateTicketEvent;
-      public AppOwnershipEvent appOwnershipEvent;
+      // Unity events lists containing response data
+      public List<AuthenticateTicketEvent> authenticateTicketEventActiveList, authenticateTicketEventDisposedList;
+      public List<AppOwnershipEvent> appOwnershipEventActiveList, appOwnershipEventDisposeList;
 
       // The various parameters used for the web api requests
       public const string PARAM_STEAM_ID = "steamid=";
@@ -41,8 +45,6 @@ namespace SteamLoginSystem
       // Shows the fetched data logs
       public bool isLogActive;
 
-      #endif
-
       #endregion
 
       private void Awake () {
@@ -50,14 +52,15 @@ namespace SteamLoginSystem
       }
 
       [ServerOnly]
-      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket) {
-         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket));
+      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent) {
+         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent));
       }
 
-      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket) {
+      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent) {
+         authenticateTicketEventActiveList.Add(newTicketEvent);
          Array.Resize(ref authTicketData, (int) m_pcbTicket);
 
-         //format as Hex 
+         // Format bytes into hex code
          StringBuilder ticketHexCode = new StringBuilder();
          foreach (byte b in authTicketData) {
             ticketHexCode.AppendFormat("{0:x2}", b);
@@ -88,16 +91,19 @@ namespace SteamLoginSystem
                D.editorLog(authTicketResponse.response.newParams.vacbanned.ToString(), Color.cyan);
                D.editorLog(authTicketResponse.response.newParams.publisherbanned.ToString(), Color.cyan);
             }
-            authenticateTicketEvent.Invoke(authTicketResponse);
+
+            newTicketEvent.Invoke(authTicketResponse);
          }
       }
 
       [ServerOnly]
-      public void getOwnershipInfo (string steamId) {
-         StartCoroutine(CO_ProcessAppOwnership(steamId));
+      public void getOwnershipInfo (string steamId, AppOwnershipEvent newOwnershipEvent) {
+         StartCoroutine(CO_ProcessAppOwnership(steamId, newOwnershipEvent));
       }
 
-      private IEnumerator CO_ProcessAppOwnership (string steamId) {
+      private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent) {
+         appOwnershipEventActiveList.Add(newOwnershipEvent);
+
          // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
          string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + GAME_APPID;
          if (isLogActive) {
@@ -123,8 +129,20 @@ namespace SteamLoginSystem
                D.editorLog(DateTime.Parse(ownershipResponse.appownership.timestamp).ToString(), Color.cyan);
             }
 
-            appOwnershipEvent.Invoke(ownershipResponse);
+            newOwnershipEvent.Invoke(ownershipResponse);
          }
+      }
+
+      public void disposeAuthenticationEvent (AuthenticateTicketEvent authTicketEvent) {
+         authTicketEvent.RemoveAllListeners();
+         authenticateTicketEventActiveList.Remove(authTicketEvent);
+         authenticateTicketEventDisposedList.Add(authTicketEvent);
+      }
+
+      public void disposeOwnershipEvent (AppOwnershipEvent ownershipEvent) {
+         ownershipEvent.RemoveAllListeners();
+         appOwnershipEventActiveList.Remove(ownershipEvent);
+         appOwnershipEventDisposeList.Add(ownershipEvent);
       }
 
       #region Private Variables

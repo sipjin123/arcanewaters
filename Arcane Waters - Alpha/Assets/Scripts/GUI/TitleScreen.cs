@@ -14,7 +14,7 @@ public class TitleScreen : MonoBehaviour {
    public InputField passwordInputField;
 
    // The login button
-   public Button loginButton;
+   public Button loginButton, steamLoginButton;
 
    // The drop down menu to select the database server - debug only
    public Dropdown dbServerDropDown;
@@ -28,6 +28,9 @@ public class TitleScreen : MonoBehaviour {
    // Self
    public static TitleScreen self;
 
+   // The various login panels
+   public GameObject steamLoginPanel, defaultLoginPanel;
+
    #endregion
 
    private void Awake () {
@@ -36,6 +39,9 @@ public class TitleScreen : MonoBehaviour {
 
    void Start () {
       _canvasGroup = GetComponent<CanvasGroup>();
+
+      defaultLoginPanel.SetActive(!SteamManager.Initialized);
+      steamLoginPanel.SetActive(SteamManager.Initialized);
    }
 
    private void Update () {

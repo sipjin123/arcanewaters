@@ -39,10 +39,10 @@ public class ServerMessageManager : MonoBehaviour {
          List<Weapon> weaponList = new List<Weapon>();
 
          int accountId = 0;
-         bool isUnauthorizedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
+         bool isUnauthenticatedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
 
          if (logInUserMessage.isSteamLogin) {
-            if (!isUnauthorizedSteamUser) {
+            if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
                D.editorLog("Loging in using steam: " + logInUserMessage.accountName, Color.green);
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
@@ -75,7 +75,7 @@ public class ServerMessageManager : MonoBehaviour {
             DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
          } else {
             // Create an account for this new steam user after it is authorized
-            if (logInUserMessage.isSteamLogin && !isUnauthorizedSteamUser) {
+            if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
                accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, "", 0);
             }
@@ -83,7 +83,7 @@ public class ServerMessageManager : MonoBehaviour {
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (isUnauthorizedSteamUser) {
+            if (isUnauthenticatedSteamUser) {
                // Steam user has not been authorized yet, start auth process
                processSteamUserAuth(conn, logInUserMessage);
                return;
@@ -166,8 +166,8 @@ public class ServerMessageManager : MonoBehaviour {
 
    [ServerOnly]
    private static void processSteamUserAuth (NetworkConnection conn, LogInUserMessage loginUserMsg) {
-      SteamLoginManagerServer.self.authenticateTicketEvent = new AuthenticateTicketEvent();
-      SteamLoginManagerServer.self.authenticateTicketEvent.AddListener(_ => {
+      AuthenticateTicketEvent newTicketEvent = new AuthenticateTicketEvent();
+      newTicketEvent.AddListener(_ => {
          // Fetch steam user id from the event response
          string steamUserId = _.response.newParams.ownersteamid;
 
@@ -175,17 +175,17 @@ public class ServerMessageManager : MonoBehaviour {
          processSteamAppOwnership(conn, loginUserMsg, steamUserId);
 
          // Clear event listeners
-         SteamLoginManagerServer.self.authenticateTicketEvent.RemoveAllListeners();
+         SteamLoginManagerServer.self.disposeAuthenticationEvent(newTicketEvent);
       });
 
       // Send ticket to be processed and fetch steam user data
-      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize);
+      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize, newTicketEvent);
    }
 
    [ServerOnly]
    private static void processSteamAppOwnership (NetworkConnection conn, LogInUserMessage loginUserMsg, string steamId) {
-      SteamLoginManagerServer.self.appOwnershipEvent = new AppOwnershipEvent();
-      SteamLoginManagerServer.self.appOwnershipEvent.AddListener(_ => {
+      AppOwnershipEvent newAppOwnershipEvent = new AppOwnershipEvent();
+      newAppOwnershipEvent.AddListener(_ => {
          // Extract user and password
          string rawPassword = _.appownership.ownersteamid + "[spc]" + _.appownership.timestamp;
          string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
@@ -199,11 +199,11 @@ public class ServerMessageManager : MonoBehaviour {
          On_LogInUserMessage(conn, loginUserMsg);
 
          // Clear event listeners
-         SteamLoginManagerServer.self.appOwnershipEvent.RemoveAllListeners();
+         SteamLoginManagerServer.self.disposeOwnershipEvent(newAppOwnershipEvent);
       });
 
       // Get ownership info using the fetched steamId
-      SteamLoginManagerServer.self.getOwnershipInfo(steamId);
+      SteamLoginManagerServer.self.getOwnershipInfo(steamId, newAppOwnershipEvent);
    }
    
 
