@@ -189,6 +189,7 @@ namespace MapCreationTool
       public static void instantiatePrefabs (MapInfo mapInfo, ExportedProject001 project, Transform prefabParent, Transform npcParent, Area area) {
          List<ExportedPrefab001> npcData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> enemyData = new List<ExportedPrefab001>();
+         List<ExportedPrefab001> seaMonstersData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> oreData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
@@ -212,6 +213,10 @@ namespace MapCreationTool
             if (original.GetComponent<Enemy>() != null) {
                if (prefab.d != null) {
                   enemyData.Add(prefab);
+               }
+            } else if (original.GetComponent<SeaMonsterEntity>() != null) {
+               if (prefab.d != null) {
+                  seaMonstersData.Add(prefab);
                }
             } else if (original.GetComponent<TreasureSite>() != null) {
                if (prefab.d != null) {
@@ -269,7 +274,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, secretsData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, secretsData, seaMonstersData);
       }
 
       public static void ensureSerializationMapsLoaded () {

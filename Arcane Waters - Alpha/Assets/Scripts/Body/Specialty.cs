@@ -25,6 +25,12 @@ public class Specialty : MonoBehaviour {
    }
 
    public static string getDescription (Type type) {
+      PlayerSpecialtyData specialtyData = SpecialtyManager.self.getSpecialtyData(type);
+      if (specialtyData != null) {
+         return specialtyData.description;
+      }
+
+      // TODO: Confirm if these descriptions will be modified in the tool
       switch (type) {
          case Type.Treasure:
             return "+50 luck";

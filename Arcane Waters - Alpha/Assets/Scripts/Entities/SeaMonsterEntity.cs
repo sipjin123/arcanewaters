@@ -77,6 +77,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // Holds the corpse object
    public GameObject corpseHolder;
 
+   // Determines if this unit is logging info
+   public bool isLoggingData;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -157,6 +160,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    protected override void Start () {
       base.Start();
+
+      _waypointParent.SetParent(null);
 
       // Initializes the data from the scriptable object
       SeaMonsterEntityData monsterData = SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType);
@@ -601,8 +606,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    private void finalizeWaypoint (Vector3 location) {
+      _targetLocation = location;
       _waypointList = new List<Waypoint>();
-      List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, location);
+      List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, location, isLoggingData);
+      
       if (gridPath == null) {
          // Invalid Path, attempt again
          planNextMove();
@@ -611,7 +618,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Register Route
       foreach (ANode node in gridPath) {
-         Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab);
+         Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab, _waypointParent);
          newWaypointPath.transform.position = node.vPosition;
          _waypointList.Add(newWaypointPath);
       }
@@ -641,11 +648,22 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
+   public static int fetchReceivedData (DataField[] dataFields) {
+      foreach (DataField field in dataFields) {
+         if (field.k.CompareTo(DataField.SEA_ENEMY_DATA_KEY) == 0) {
+            // Get ID from seaMonster data field
+            if (field.tryGetIntValue(out int id)) {
+               return id;
+            }
+         }
+      }
+      return 0;
+   }
+
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.SEA_ENEMY_DATA_KEY) == 0) {
-            // Get ID from npc data field
-            // Field arrives in format <npc id>: <npc name>
+            // Get ID from seaMonster data field
             int id = int.Parse(field.v.Split(':')[0]);
          }
       }
@@ -707,6 +725,17 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             Gizmos.color = Color.cyan;
             Gizmos.DrawSphere(targetEntity.transform.position, .5f);
          }
+         if (_waypointList.Count > 0) {
+            // Draws the path this unit is taking
+            foreach (Waypoint waypoint in _waypointList) {
+               Gizmos.color = Color.yellow;
+               Gizmos.DrawSphere(waypoint.transform.position, .15f);
+            }
+         }
+
+         // Marks the entity target position
+         Gizmos.color = Color.black;
+         Gizmos.DrawSphere(_targetLocation, .25f);
 
          // Draws the range of the monster territory
          Gizmos.color = Color.yellow;
@@ -787,10 +816,18 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    protected Vector2 _spawnPos;
 
    // The current waypoint List
+   [SerializeField]
    protected List<Waypoint> _waypointList = new List<Waypoint>();
+
+   // The parent containing all the waypoints
+   [SerializeField]
+   protected Transform _waypointParent;
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _analysisCoroutine = null;
+
+   // The target location of the pathfinding
+   private Vector2 _targetLocation;
 
    #endregion
 }

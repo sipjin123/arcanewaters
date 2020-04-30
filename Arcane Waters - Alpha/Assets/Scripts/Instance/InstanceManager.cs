@@ -80,6 +80,7 @@ public class InstanceManager : MonoBehaviour {
    public void addSeaMonsterToInstance (SeaMonsterEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;
+      instance.seaMonsterCount++;
    }
 
    public void addTreasureSiteToInstance (TreasureSite treasureSite, Instance instance) {

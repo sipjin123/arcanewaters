@@ -34,6 +34,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int enemyCount;
 
+   // For the number of seamonsters in the instance
+   [SyncVar]
+   public int seaMonsterCount;
+
    // For the number of npc in the instance
    [SyncVar]
    public int npcCount;
@@ -197,6 +201,27 @@ public class Instance : NetworkBehaviour
 
       if (NetworkServer.active) {
          if (area != null) {
+            if (area.seaMonsterDataFields.Count > 0 && seaMonsterCount < 1) {
+               foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
+                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+
+                  // Add it to the Instance
+                  SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
+                  seaMonster.monsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
+                  seaMonster.areaKey = area.areaKey;
+
+                  SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonster.monsterType);
+                  if (seaMonsterData != null) {
+                     seaMonster.initData(seaMonsterData);
+                     seaMonster.facing = Direction.South;
+                  }
+
+                  InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
+                  seaMonster.transform.position = this.transform.position + targetLocalPos;
+                  NetworkServer.Spawn(seaMonster.gameObject);
+               }
+            }
+
             if (area.enemyDatafields.Count > 0 && enemyCount < 1) {
                foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;

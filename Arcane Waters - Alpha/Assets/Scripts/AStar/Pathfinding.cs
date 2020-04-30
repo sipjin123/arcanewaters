@@ -13,21 +13,46 @@ namespace AStar
 
       #endregion
 
-      public List<ANode> findPathNowInit (Vector3 pos, Vector3 endPos) {
+      public List<ANode> findPathNowInit (Vector3 pos, Vector3 endPos, bool isLoggingData = false) {
          _startPosition = pos;
          _targetPosition = endPos;
 
-         return findPath(_startPosition, _targetPosition);
+         return findPath(_startPosition, _targetPosition, isLoggingData);
       }
 
-      private List<ANode> findPath (Vector3 a_StartPos, Vector3 a_TargetPos) {
+      private List<ANode> findPath (Vector3 a_StartPos, Vector3 a_TargetPos, bool isLoggingData = false) {
          // Gets the node closest to the starting position
          ANode startNode = gridReference.nodeFromWorldPoint(a_StartPos);
+         if (isLoggingData) {
+            D.editorLog("Start node raw pos is: " + a_StartPos, Color.magenta);
+            try {
+               D.editorLog("Start node pos is: " + startNode.vPosition, Color.magenta);
+            } catch {
+               D.editorLog("THE START NODE DOES NOT EXIST!", Color.magenta);
+            }
+         }
 
          // Gets the node closest to the target position
          ANode targetNode = gridReference.nodeFromWorldPoint(a_TargetPos);
 
+         if (isLoggingData) {
+            GameObject startNodeMarker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            startNodeMarker.name = "StartNode";
+            startNodeMarker.transform.localScale = new Vector3(.25f, .25f, .25f);
+            startNodeMarker.transform.position = startNode.vPosition;
+            Destroy(startNodeMarker, 2);
+
+            GameObject endNodeMarker = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            endNodeMarker.name = "EndNode";
+            endNodeMarker.transform.localScale = new Vector3(.25f, .25f, .25f);
+            endNodeMarker.transform.position = targetNode.vPosition;
+            Destroy(endNodeMarker, 2);
+         }
+
          if (startNode == null || targetNode == null) {
+            if (isLoggingData) {
+               D.editorLog("Returning null because target node is or start node is null", Color.red);
+            }
             return null;
          }
 
@@ -62,7 +87,7 @@ namespace AStar
             // If the current node is the same as the target node
             if (currentNode == targetNode) {
                // Then Calculate the final path
-               return getFinalPath(startNode, targetNode);
+               return getFinalPath(startNode, targetNode, isLoggingData);
             }
 
             // Loop through each neighbor of the current node
@@ -100,7 +125,7 @@ namespace AStar
          return null;
       }
 
-      private List<ANode> getFinalPath (ANode a_StartingNode, ANode a_EndNode) {
+      private List<ANode> getFinalPath (ANode a_StartingNode, ANode a_EndNode, bool isLoggingData = false) {
          // List to hold the path sequentially 
          List<ANode> FinalPath = new List<ANode>();
 
@@ -111,6 +136,14 @@ namespace AStar
          while (CurrentNode != a_StartingNode) {
             // Add that node to the final path
             FinalPath.Add(CurrentNode);
+
+            if (isLoggingData) {
+               GameObject targetNodeMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+               targetNodeMarker.name = "PathNode";
+               targetNodeMarker.transform.localScale = new Vector3(.25f, .25f, .25f);
+               targetNodeMarker.transform.position = CurrentNode.vPosition;
+               Destroy(targetNodeMarker, 2);
+            }
 
             // Move onto its parent node
             CurrentNode = CurrentNode.parentNode;

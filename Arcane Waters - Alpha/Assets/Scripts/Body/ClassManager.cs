@@ -30,10 +30,11 @@ public class ClassManager : MonoBehaviour {
    }
 
    public PlayerClassData getClassData (Class.Type classType) {
-      PlayerClassData returnData = _classData[classType];
-      if (returnData == null) {
+      if (!_classData.ContainsKey(classType)) {
          Debug.LogWarning("The Class Does not Exist yet!: " + classType);
+         return null;
       }
+      PlayerClassData returnData = _classData[classType];
       return returnData;
    }
 

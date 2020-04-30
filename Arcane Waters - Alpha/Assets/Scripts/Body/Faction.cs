@@ -25,6 +25,12 @@ public class Faction : MonoBehaviour {
    }
 
    public static string getDescription (Type type) {
+      PlayerFactionData factionData = FactionManager.self.getFactionData(type);
+      if (factionData != null) {
+         return factionData.description;
+      }
+
+      // TODO: Confirm if these descriptions will be modified in the tool
       switch (type) {
          case Type.Neutral:
             return "Neutral characters are safe from other players but receive no bonuses.";

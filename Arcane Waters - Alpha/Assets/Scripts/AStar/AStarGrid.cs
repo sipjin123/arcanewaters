@@ -32,10 +32,14 @@ namespace AStar
       // The cell size as told by the Grid
       public Vector2 cellSize;
 
+      // Cache the area
+      public Area area;
+
       #endregion
 
       public void displayGrid (Vector3 pos, string areaKey) {
          Area area = AreaManager.self.getArea(areaKey);
+         this.area = area;
          displayGrid(pos, area);
       }
 
@@ -157,8 +161,14 @@ namespace AStar
             return null;
          }
 
+         // TODO: Confirm with other dev that this update does not break their features.
+         // NOTE: The world position needs to be at the center of the grid, not the object.
          // Snaps the position into the local grid
-         a_vWorldPos -= transform.position;
+         try {
+            a_vWorldPos -= area.transform.position;// transform.position;
+         } catch {
+            a_vWorldPos -= transform.position;
+         }
 
          // Now snap the position into a cell
          int cellIndexX = Mathf.FloorToInt(a_vWorldPos.x / cellSize.x);

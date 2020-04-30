@@ -9,6 +9,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
 using static ShopDataToolManager;
+using UnityEngine.Events;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -44,6 +45,12 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
    // Logs the progress of the file setup
    public bool includeProgressInEditorLog;
+
+   // Event that notifies completion of xml loadup
+   public UnityEvent finishedLoadingXmlData = new UnityEvent();
+
+   // Determines if this is initialized
+   public bool isInitialized;
 
    #endregion
 
@@ -506,6 +513,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
 
       if (currentProgress >= targetProgress) {
+         isInitialized = true;
+         finishedLoadingXmlData.Invoke();
          D.debug("Finished assigning Xml Data");
          loadBlocker.SetActive(false);
       }

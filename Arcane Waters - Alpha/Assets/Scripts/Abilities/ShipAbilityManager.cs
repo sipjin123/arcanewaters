@@ -76,7 +76,12 @@ public class ShipAbilityManager : MonoBehaviour {
    }
 
    public ShipAbilityData getAbility (Attack.Type attackType) {
-      return shipAbilityDataList.Find(_ => _.shipAbilityData.selectedAttackType == attackType).shipAbilityData;
+      ShipAbilityPair shipAbility = shipAbilityDataList.Find(_ => _.shipAbilityData.selectedAttackType == attackType);
+      if (shipAbility == null) {
+         D.editorLog("Missing ability: " + attackType, Color.red);
+         return shipAbilityDataList[0].shipAbilityData;
+      }
+      return shipAbility.shipAbilityData;
    }
 
    public static List<int> getRandomAbilities (int abilityCount) {

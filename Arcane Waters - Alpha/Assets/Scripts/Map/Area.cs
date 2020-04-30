@@ -66,19 +66,25 @@ public class Area : MonoBehaviour
    // Secret entrance to be loaded by the server
    public List<ExportedPrefab001> secretsEntranceDataFields = new List<ExportedPrefab001>();
 
+   // Sea Monsters to be loaded by the server
+   public List<ExportedPrefab001> seaMonsterDataFields = new List<ExportedPrefab001>();
+   
    // Networked entity parents
-   public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent;
+   public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent;
 
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
-      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> secretsEntranceDataFields) {
+      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, 
+      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> secretsEntranceDataFields,
+      List<ExportedPrefab001> seaMonsterDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
       this.treasureSiteDataFields = treasureSiteDataFields;
       this.shipDataFields = shipDataFields;
       this.secretsEntranceDataFields = secretsEntranceDataFields;
+      this.seaMonsterDataFields = seaMonsterDataFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();

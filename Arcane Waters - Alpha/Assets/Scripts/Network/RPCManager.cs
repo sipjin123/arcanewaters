@@ -661,6 +661,10 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestShipAbilities (int shipID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          ShipInfo shipInfo = DB_Main.getShipInfo(shipID);
+         if (shipInfo == null) {
+            D.editorLog("Ship info does not exist for ship: " + shipID, Color.red);
+            return;
+         }
          if (shipInfo.shipAbilityXML == null || shipInfo.shipAbilityXML == "") {
             D.error("XML Data does not exist for Ship ID: " + shipID + " Creating new Data with Default Ability: " + ShipAbilityInfo.DEFAULT_ABILITY);
             int[] shipArray = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };

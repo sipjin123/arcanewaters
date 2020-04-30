@@ -373,6 +373,7 @@ Transform:
   - {fileID: 6629125543444801599}
   - {fileID: 6276908446848925016}
   - {fileID: 3905302753718024948}
+  - {fileID: 325350921020266170}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -425,11 +426,13 @@ MonoBehaviour:
   oreDataFields: []
   shipDataFields: []
   secretsEntranceDataFields: []
+  seaMonsterDataFields: []
   npcParent: {fileID: 2242570168550347574}
   enemyParent: {fileID: 3900406199228979487}
   oreNodeParent: {fileID: 6629125543444801599}
   secretsParent: {fileID: 6276908446848925016}
   treasureSiteParent: {fileID: 3905302753718024948}
+  seaMonsterParent: {fileID: 325350921020266170}
 --- !u!114 &-9123268119562274129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,6 +496,36 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!1 &6993704084750074192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 325350921020266170}
+  m_Layer: 0
+  m_Name: SeaMonsterParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &325350921020266170
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6993704084750074192}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9161421361191220153}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1870087027974303312
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -230,6 +231,7 @@ Transform:
   - {fileID: 3489894411560869391}
   - {fileID: 8522768168916917397}
   - {fileID: 2133422396265821908}
+  - {fileID: 7184718283661518774}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -250,8 +252,14 @@ MonoBehaviour:
   accountId: 0
   userId: 0
   instanceId: 0
-  areaType: 0
+  areaKey: 
   gender: 1
+  bodyType: 0
+  eyesType: 0
+  hairType: 0
+  eyesColor1: 0
+  hairColor1: 0
+  hairColor2: 0
   entityName: 
   nationType: 0
   currentHealth: 1000
@@ -267,6 +275,7 @@ MonoBehaviour:
   nameText: {fileID: 5286430780633353662}
   sortPoint: {fileID: 1307228615476472}
   facing: 3
+  isSinglePlayer: 0
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
@@ -275,6 +284,7 @@ MonoBehaviour:
   faction: 0
   guildId: 0
   battleId: 0
+  voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   damage: 10
@@ -309,6 +319,7 @@ MonoBehaviour:
   colliderList:
   - {fileID: 58256050713667648}
   - {fileID: 6938392427603369774}
+  currentImpactMagnitude: 0
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
   monsterBehavior: 0
@@ -356,7 +367,17 @@ MonoBehaviour:
     rippleLocOffset: {x: 0, y: 0, z: 0}
     lootData:
       lootList: []
-      defaultLoot: 0
+      defaultLoot:
+        category: 0
+        id: 0
+        itemTypeId: 0
+        color1: 0
+        color2: 0
+        data: 
+        count: 1
+        itemName: 
+        itemDescription: 
+        iconPath: 
       minQuantity: 0
       maxQuantity: 0
   isAttacking: 0
@@ -366,6 +387,8 @@ MonoBehaviour:
   seaMonsterBars: {fileID: 1576247974216057746}
   isMinionPlanning: 0
   corpseHolder: {fileID: 1428648646478705256}
+  _waypointList: []
+  _waypointParent: {fileID: 7184718283661518774}
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -430,6 +453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 1307228615476472}
 --- !u!114 &114396138232181168
@@ -493,10 +517,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
-  localPlayerAuthority: 0
-  m_AssetId: 0059c0caa2289d44fb0ab483814bf77f
-  m_SceneId: 0
+  m_AssetId: 
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +568,7 @@ MonoBehaviour:
   isSmoothingAuthorityChanges: 0
   whenToUpdateTransform: 1
   sendRate: 30
+  networkChannel: 1
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0
   maxPositionDifferenceForVelocitySyncing: 10
@@ -564,9 +588,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showGizmo: 0
-  iGridSizeY: 0
-  iGridSizeX: 0
-  vGridWorldSize: {x: 0, y: 0}
+  nodeList: []
+  pathToDraw: []
+  gridTiles: {x: 0, y: 0}
+  gridBounds:
+    m_Position: {x: 0, y: 0, z: 0}
+    m_Size: {x: 0, y: 0, z: 0}
+  cellSize: {x: 0, y: 0}
 --- !u!114 &6947083363385833431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,8 +608,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridReference: {fileID: 7004716821006049083}
-  startPosition: {fileID: 5567158127947618040}
-  targetPosition: {fileID: 7544103583339269683}
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,6 +656,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -764,6 +791,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -911,6 +939,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1039,8 +1068,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 359454147669bc941a2916eba4276f1e, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1208,6 +1235,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1339,8 +1367,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 77235554a33c85943bf94429402c289c, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
@@ -1606,8 +1632,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 1108d52a03ed1b94ca6f3e637bbfa2d1, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1688,6 +1712,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6633da4ec98858449cf92d95520d592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &6096960523088756304
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7184718283661518774}
+  m_Layer: 8
+  m_Name: SeaMonsterWaypoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7184718283661518774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6096960523088756304}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4900218821786150}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6176387252047165400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1781,8 +1835,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: dcb9de9cfc9c7b24295eb007d9e4c659, type: 3}
   m_Type: 3
   m_PreserveAspect: 1
@@ -1917,8 +1969,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: f8a0238c1fda2e844b655143485f1ff7, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
@@ -2072,8 +2122,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: fb9e8180052b70a47a757b479970adbf, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -2313,8 +2361,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 212a7a47fc07116499d8e2fe669a5944, type: 3}
     m_FontSize: 10
@@ -2473,8 +2519,6 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: 7c736385e93358f43ab5feaafa47687e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0

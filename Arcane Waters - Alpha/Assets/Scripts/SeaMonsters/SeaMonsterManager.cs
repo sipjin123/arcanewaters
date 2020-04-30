@@ -92,8 +92,13 @@ public class SeaMonsterManager : MonoBehaviour {
       }
    }
    
-   public SeaMonsterEntityData getMonster (SeaMonsterEntity.Type enemyType, int itemType) {
-      return _seaMonsterData[enemyType];
+   public SeaMonsterEntityData getMonster (SeaMonsterEntity.Type enemyType) {
+      if (_seaMonsterData.ContainsKey(enemyType)) {
+         return _seaMonsterData[enemyType];
+      }
+
+      D.editorLog("This sea monster does not exist in the database: " + enemyType, Color.red);
+      return null;
    }
 
    public void receiveListFromZipData (SeaMonsterEntityData[] seamonsterDataList) {

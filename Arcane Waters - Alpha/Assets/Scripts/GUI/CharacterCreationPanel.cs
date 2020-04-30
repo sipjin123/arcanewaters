@@ -69,10 +69,20 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
       this.genderSelected((int) _char.genderType);
 
-      // Update the text for our selections
-      changeClass(0);
-      changeSpecialty(0);
-      changeFaction(0);
+      if (!XmlVersionManagerClient.self.isInitialized) {
+         // Wait for the xml setup to finish
+         XmlVersionManagerClient.self.finishedLoadingXmlData.AddListener(() => {
+            D.editorLog("Finished loading Xml Data, proceed to class setup", Color.cyan);
+            changeClass(0);
+            changeSpecialty(0);
+            changeFaction(0);
+         });
+      } else {
+         // Update the text for our selections
+         changeClass(0);
+         changeSpecialty(0);
+         changeFaction(0);
+      }
    }
 
    public void doneCreatingCharacterButtonWasPressed () {
@@ -198,15 +208,16 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
    }
 
    public void changeClass (int offset) {
-      List<Class.Type> list = new List<Class.Type>();
-      foreach (Class.Type classType in System.Enum.GetValues(typeof(Class.Type))) {
-         if (classType != Class.Type.None) {
-            list.Add(classType);
+      List<PlayerClassData> list = new List<PlayerClassData>();
+      foreach (PlayerClassData classData in ClassManager.self.classDataList) {
+         if (classData.type != Class.Type.None) {
+            list.Add(classData);
          }
       }
 
       // Adjust the index
-      int currentIndex = list.IndexOf(_char.classType);
+      PlayerClassData currentClassData = ClassManager.self.getClassData(_char.classType);
+      int currentIndex = list.IndexOf(currentClassData);
       if (currentIndex == -1) {
          currentIndex = 0;
       }
@@ -214,24 +225,25 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.classType = list[currentIndex];
-      classText.text = _char.classType + "";
-      classDescriptionText.text = Class.getDescription(_char.classType);
+      _char.classType = list[currentIndex].type;
+      classText.text = currentClassData.className;
+      classDescriptionText.text = currentClassData.description;
 
       // Update the icon
-      classIcon.sprite = ImageManager.getSprite("Icons/Classes/class_" + _char.classType);
+      classIcon.sprite = ImageManager.getSprite(currentClassData.itemIconPath);
    }
 
    public void changeSpecialty (int offset) {
-      List<Specialty.Type> list = new List<Specialty.Type>();
-      foreach (Specialty.Type type in System.Enum.GetValues(typeof(Specialty.Type))) {
-         if (type != Specialty.Type.None) {
-            list.Add(type);
+      List<PlayerSpecialtyData> list = new List<PlayerSpecialtyData>();
+      foreach (PlayerSpecialtyData specialtyData in SpecialtyManager.self.specialtyDataList) {
+         if (specialtyData.type != Specialty.Type.None) {
+            list.Add(specialtyData);
          }
       }
 
       // Adjust the index
-      int currentIndex = list.IndexOf(_char.specialty);
+      PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(_char.specialty);
+      int currentIndex = list.IndexOf(currentSpecialtyData);
       if (currentIndex == -1) {
          currentIndex = 0;
       }
@@ -239,24 +251,25 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.specialty = list[currentIndex];
-      specialtyText.text = Specialty.toString(_char.specialty);
-      specialtyDescriptionText.text = Specialty.getDescription(_char.specialty);
+      _char.specialty = list[currentIndex].type;
+      specialtyText.text = currentSpecialtyData.specialtyName;
+      specialtyDescriptionText.text = currentSpecialtyData.description; 
 
       // Update the icon
-      specialtyIcon.sprite = Specialty.getIcon(_char.specialty);
+      specialtyIcon.sprite = ImageManager.getSprite(currentSpecialtyData.specialtyIconPath);
    }
 
    public void changeFaction (int offset) {
-      List<Faction.Type> list = new List<Faction.Type>();
-      foreach (Faction.Type type in System.Enum.GetValues(typeof(Faction.Type))) {
-         if (type != Faction.Type.None) {
-            list.Add(type);
+      List<PlayerFactionData> list = new List<PlayerFactionData>();
+      foreach (PlayerFactionData factionData in FactionManager.self.factionDataList) {
+         if (factionData.type != Faction.Type.None) {
+            list.Add(factionData);
          }
       }
 
       // Adjust the index
-      int currentIndex = list.IndexOf(_char.faction);
+      PlayerFactionData currentFactionData = FactionManager.self.getFactionData(_char.faction);
+      int currentIndex = list.IndexOf(currentFactionData);
       if (currentIndex == -1) {
          currentIndex = 0;
       }
@@ -264,12 +277,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.faction = list[currentIndex];
-      factionText.text = Faction.toString(_char.faction);
-      factionDescriptionText.text = Faction.getDescription(_char.faction);
+      _char.faction = list[currentIndex].type;
+      factionText.text = currentFactionData.factionName;
+      factionDescriptionText.text = currentFactionData.description;
 
       // Update the icon
-      factionIcon.sprite = Faction.getIcon(_char.faction);
+      factionIcon.sprite = ImageManager.getSprite(currentFactionData.factionIconPath);
    }
 
    public void onHairColorChanged () {

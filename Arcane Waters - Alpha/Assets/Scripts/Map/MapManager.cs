@@ -80,7 +80,14 @@ public class MapManager : MonoBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapInfo.version}");
+            int mapVersion = 0;
+            try {
+               mapVersion = mapInfo.version;
+            } catch {
+               D.debug("Map info does not Exist!! Failed to fetch using DBMain: " + mapInfo);
+               return;
+            }
+            D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapVersion}");
 
             StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition));
          });

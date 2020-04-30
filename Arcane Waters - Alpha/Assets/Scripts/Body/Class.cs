@@ -15,6 +15,12 @@ public class Class : MonoBehaviour {
    #endregion
 
    public static string getDescription (Type type) {
+      PlayerClassData classData = ClassManager.self.getClassData(type);
+      if (classData != null) {
+         return classData.description;
+      }
+
+      // TODO: Confirm if these descriptions will be modified in the tool
       switch (type) {
          case Type.Fighter:
             return "Fighters are good with melee weapons such as swords and known for being tough.";
