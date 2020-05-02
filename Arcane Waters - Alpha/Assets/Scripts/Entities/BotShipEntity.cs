@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
-using AStar;
+using Pathfinding;
 
 public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
@@ -47,24 +47,20 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       // Continually pick new move targets
       if (isServer) {
-         _gridReference = AreaManager.self.getArea(areaKey).pathfindingGrid;
-         if (_gridReference == null) {
-            D.error("There has to be an AStarGrid Script attached to the MapTemplate Prefab");
+         _seeker = GetComponent<Seeker>();
+         if (_seeker == null) {
+            D.error("There has to be a Seeker Script attached to the BotShipEntity Prefab");
          }
-
-         _pathfindingReference = GetComponent<Pathfinding>();
-         if (_pathfindingReference == null) {
-            D.error("There has to be a Pathfinding Script attached to the NPC Prefab");
-         }
-         _pathfindingReference.gridReference = _gridReference;
+         _seeker.pathCallback = setPath_Asynchronous;
 
          _treasureSitesInArea = new List<TreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<TreasureSite>());
 
-         _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
-      }
+         if (_treasureSitesInArea.Count > 0) {
+            _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
+         }
 
-      // Check if we can shoot at any of our attackers
-      InvokeRepeating("checkForAttackers", 1f, .5f);
+         _originalPosition = transform.position;
+      }
 
       if (Application.isEditor) {
          editorGenerateAggroCone();
@@ -91,37 +87,37 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          return;
       }
 
-      _attackingCurrentFrame = _attackers != null && _attackers.Count > 0;
+      checkForAttackers();
 
-      List<ANode> currentPath;
-      if (_attackingCurrentFrame) {
-         currentPath = _currentAttackingPath;
+      moveAlongCurrentPath();
+
+      if (_attackers != null && _attackers.Count > 0) {
+         if(!_wasAttackedLastFrame) {
+            _currentSecondsBetweenAttackRoutes = 0.0f;
+            _attackingWaypointState = WaypointState.FINDING_PATH;
+            if(_currentPath != null) {
+               _currentPath.Clear();
+            }
+            findAndSetPath_Asynchronous(findAttackerVicinityPosition(true));
+         }
+
+         // Update attacking state with only Minor updates
+         float tempMajorRef = 0.0f;
+         updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
       } else {
-         currentPath = _currentPatrolPath;
+         if(_wasAttackedLastFrame) {
+            _currentSecondsBetweenPatrolRoutes = 0.0f;
+            _currentSecondsPatroling = 0.0f;
+            _patrolingWaypointState = WaypointState.FINDING_PATH;
+            if (_currentPath != null) {
+               _currentPath.Clear();
+            }
+            findAndSetPath_Asynchronous(findTreasureSiteVicinityPosition(true));
+         }
+         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findTreasureSiteVicinityPosition);
       }
 
-      if (currentPath != null && currentPath.Count > 0) {
-         // Move towards our current waypoint
-         Vector2 waypointDirection = currentPath[0].vPosition - transform.position;
-         // Only change our movement if enough time has passed
-         float moveTime = Time.time - _lastMoveChangeTime;
-         if (moveTime >= MOVE_CHANGE_INTERVAL) {
-            _body.AddForce(waypointDirection.normalized * getMoveSpeed());
-            _lastMoveChangeTime = Time.time;
-         }
-
-         // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(currentPath[0].vPosition, transform.position);
-         if (distanceToWaypoint < .1f) {
-            currentPath.RemoveAt(0);
-         }
-      } else {
-         if (_attackingCurrentFrame) {
-            generateNewAttackWaypoints();
-         } else {
-            generateNewPatrolWaypoints();
-         }
-      }
+      _wasAttackedLastFrame = _attackers != null && _attackers.Count > 0;
 
       // Update our facing direction
       if (_body.velocity.magnitude > 0.0f) {
@@ -149,73 +145,109 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   private void generateNewPatrolWaypoints () {
-      switch (_patrolingWaypointState) {
+   private void updateState (ref WaypointState state, float secondsBetweenMinorSearch, float secondsBetweenMajorSearch, ref float currentSecondsBetweenMinorSearch, ref float currentSecondsBetweenMajorSearch, System.Func<bool, Vector3> targetPositionFunction) {
+      switch (state) {
          case WaypointState.FINDING_PATH:
-            _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius);
-            if (_currentPatrolPath != null && _currentPatrolPath.Count > 0) {
-               _patrolingWaypointState = WaypointState.MOVING_TO;
+            if (_seeker.IsDone() && (_currentPath == null || _currentPath.Count <= 0)) {
+               // Try to find another path as the previous one wasn't valid
+               findAndSetPath_Asynchronous(targetPositionFunction(false));
+            }
+
+            if (_currentPath != null && _currentPath.Count > 0) {
+               // If we have a valid path, start moving to the target
+               state = WaypointState.MOVING_TO;
             }
             break;
 
          case WaypointState.MOVING_TO:
-            if (_currentPatrolPath.Count <= 0) {
-               _patrolingWaypointState = WaypointState.PATROLING;
-               _secondsPatroling = 0.0f;
-               _secondsBetweenPatrolRoutes = 0.0f;
+            // If there's no nodes left in the path, continue into a patroling state
+            if (_currentPathIndex >= _currentPath.Count) {
+               state = WaypointState.PATROLING;
+               currentSecondsBetweenMinorSearch = 0.0f;
+               currentSecondsBetweenMajorSearch = 0.0f;
             }
-
             break;
 
          case WaypointState.PATROLING:
-            _secondsPatroling += Time.fixedDeltaTime;
-            _secondsBetweenPatrolRoutes += Time.fixedDeltaTime;
+            currentSecondsBetweenMajorSearch += Time.fixedDeltaTime;
 
-            if (_secondsPatroling >= secondsPatrolingUntilChoosingNewTreasureSite) {
-               _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
-               _patrolingWaypointState = WaypointState.FINDING_PATH;
-            } else if (_secondsBetweenPatrolRoutes >= secondsBetweenFindingPatrolRoutes) {
-               _secondsBetweenPatrolRoutes = 0.0f;
+            // If we've still got a path to complete, don't try to find a new one
+            if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
+               break;
+            }
 
-               _currentPatrolPath = _pathfindingReference.findPathNowInit(transform.position, _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius);
+            // Find a new Major target
+            if (currentSecondsBetweenMajorSearch >= secondsBetweenMajorSearch) {
+               findAndSetPath_Asynchronous(targetPositionFunction(true));
+               state = WaypointState.FINDING_PATH;
+               break;
+            }
+
+            currentSecondsBetweenMinorSearch += Time.fixedDeltaTime;
+
+            // Find a new Minor target
+            if (currentSecondsBetweenMinorSearch >= secondsBetweenMinorSearch) {
+               _currentSecondsBetweenPatrolRoutes = 0.0f;
+               findAndSetPath_Asynchronous(targetPositionFunction(false));
             }
             break;
       }
    }
 
-   [Server]
-   private void generateNewAttackWaypoints () {
-      if (_lastAttacker == null) {
-         return;
+   private void moveAlongCurrentPath () {
+      if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
+         // Only change our movement if enough time has passed
+         float moveTime = Time.time - _lastMoveChangeTime;
+         if (moveTime >= MOVE_CHANGE_INTERVAL) {
+            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * getMoveSpeed());
+            _lastMoveChangeTime = Time.time;
+         }
+
+         // Advance along the path as the unit comes close enough to the current waypoint
+         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
+         if (distanceToWaypoint < .1f) {
+            ++_currentPathIndex;
+         }
+      }
+   }
+
+   private Vector3 findTreasureSiteVicinityPosition (bool newSite) {
+      // If we should choose a new site, and we have a selection available, pick a unique one randomly, favoring a new target if possible
+      if (newSite && _treasureSitesInArea != null && _treasureSitesInArea.Count > 0) {
+         int foundSiteIndex = Random.Range(0, _treasureSitesInArea.Count);
+         TreasureSite foundSite = _treasureSitesInArea[foundSiteIndex];
+         if (foundSite == _currentSite) {
+            foundSite = _treasureSitesInArea[++foundSiteIndex % _treasureSitesInArea.Count];
+         }
+         _currentSite = foundSite;
       }
 
-      switch (_attackingWaypointState) {
-         case WaypointState.FINDING_PATH:
-            _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius);
-            if (_currentAttackingPath != null && _currentAttackingPath.Count > 0) {
-               _attackingWaypointState = WaypointState.MOVING_TO;
-            }
-            break;
-
-         case WaypointState.MOVING_TO:
-            if (_currentAttackingPath.Count <= 0) {
-               _attackingWaypointState = WaypointState.PATROLING;
-               _secondsBetweenAttackRoutes = 0.0f;
-            }
-
-            break;
-
-         case WaypointState.PATROLING:
-            _secondsBetweenAttackRoutes += Time.fixedDeltaTime;
-
-            if (_secondsBetweenAttackRoutes >= secondsBetweenFindingAttackRoutes) {
-               _secondsBetweenAttackRoutes = 0.0f;
-
-               _attackingWaypointState = WaypointState.FINDING_PATH;
-               _currentAttackingPath = _pathfindingReference.findPathNowInit(transform.position, _lastAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius);
-            }
-            break;
+      if (_currentSite != null) {
+         return _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius;
+      } else {
+         return _originalPosition + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius;
       }
+   }
+
+   private Vector3 findAttackerVicinityPosition (bool newAttacker) {
+      // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
+      if (newAttacker && _attackers != null && _attackers.Count > 0) {
+         _currentAttacker = _attackers.RandomKey() as SeaEntity;
+      }
+      return _currentAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
+   }
+
+   private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
+      if (!_seeker.IsDone()) {
+         _seeker.CancelCurrentPathRequest();
+      }
+      _seeker.StartPath(transform.position, targetPosition);
+   }
+
+   private void setPath_Asynchronous (Path newPath) {
+      _currentPath = newPath.vectorPath;
+      _currentPathIndex = 0;
+      _seeker.CancelCurrentPathRequest(true);
    }
 
    protected void checkForAttackers () {
@@ -266,8 +298,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (attacker == null || attacker.isDead()) {
             continue;
          }
-
-         _lastAttacker = attacker;
 
          // Check where the attacker currently is
          Vector2 spot = attacker.transform.position;
@@ -357,44 +387,30 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    private void OnDrawGizmosSelected () {
-      List<ANode> pathToDraw;
-      if (_attackingCurrentFrame) {
-         pathToDraw = _currentAttackingPath;
-      } else {
-         pathToDraw = _currentPatrolPath;
-      }
-
       if (Application.isPlaying) {
-         foreach (ANode node in pathToDraw) {
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(node.vPosition, 0.1f);
-         }
+         Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
+         Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
+         Gizmos.color = Color.white;
       }
-
-      Gizmos.color = new Color(1.0f, 0.0f, 0.0f, 0.5f);
-      Gizmos.DrawMesh(_editorConeAggroGizmoMesh, 0, transform.position, Quaternion.Euler(0.0f, 0.0f, -Vector2.SignedAngle(Util.getDirectionFromFacing(facing), Vector2.right)), Vector3.one);
-      Gizmos.color = Color.white;
    }
 
    #region Private Variables
 
-   // The AStarGrid Reference fetched from the Main Scene
-   protected AStarGrid _gridReference;
-
-   // The Pathfinding Reference fetched from the Main Scene
-   protected Pathfinding _pathfindingReference;
+   // The Seeker that handles Pathfinding
+   protected Seeker _seeker;
 
    // How many seconds have passed since we've started patrolling the current TreasureSite
-   private float _secondsPatroling;
+   private float _currentSecondsPatroling;
 
    // How many seconds have passed since we last stopped on a patrol route
-   private float _secondsBetweenPatrolRoutes;
+   private float _currentSecondsBetweenPatrolRoutes;
 
    // How many seconds have passed since we last stopped on an attack route
-   private float _secondsBetweenAttackRoutes;
+   private float _currentSecondsBetweenAttackRoutes;
 
    private enum WaypointState
    {
+      NONE = 0,
       FINDING_PATH = 1,
       MOVING_TO = 2,
       PATROLING = 3,
@@ -406,26 +422,29 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // In what state the Attack Waypoint traversing is in
    private WaypointState _attackingWaypointState = WaypointState.FINDING_PATH;
 
+   // Were we attacked last frame?
+   private bool _wasAttackedLastFrame;
+
    // The TreasureSite Objects that are present in the area
    private List<TreasureSite> _treasureSitesInArea;
 
    // The current targeted TreasureSite
    private TreasureSite _currentSite;
 
-   // The current path to the patrol destination
-   private List<ANode> _currentPatrolPath;
+   // The current path to the destination
+   private List<Vector3> _currentPath;
 
-   // The current path when attacking something
-   private List<ANode> _currentAttackingPath;
-
-   // The last attacker to have damaged our vessel
-   private SeaEntity _lastAttacker;
+   // The first and closest attacker that we've aggroed
+   private SeaEntity _currentAttacker;
 
    // The generated mesh for showing the cone of aggro in the Editor
    private Mesh _editorConeAggroGizmoMesh;
 
-   // Are we attacking in the current frame?
-   private bool _attackingCurrentFrame;
+   // In case there's no TreasureSites to pursue, use this to patrol the vicinity
+   private Vector3 _originalPosition;
+
+   // The current Point Index of the path
+   private int _currentPathIndex;
 
    #endregion
 }

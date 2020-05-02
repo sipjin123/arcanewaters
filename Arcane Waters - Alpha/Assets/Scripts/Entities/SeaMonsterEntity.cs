@@ -1,9 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using AStar;
 using MapCreationTool.Serialization;
 using Mirror;
 using UnityEngine;
+using Pathfinding;
 
 public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 {
@@ -22,12 +22,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Determines the current behavior of the monster
    public MonsterBehavior monsterBehavior;
-
-   // Holds the reference to the grid generator of the area
-   public AStarGrid gridReference;
-
-   // Holds the script responsible for generating the route using the grid data
-   public Pathfinding pathFindingReference;
 
    // Determines if this monster is engaging a ship
    public bool isEngaging = false;
@@ -161,35 +155,37 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    protected override void Start () {
       base.Start();
 
-      _waypointParent.SetParent(null);
-
       // Initializes the data from the scriptable object
       SeaMonsterEntityData monsterData = SeaMonsterManager.self.seaMonsterDataList.Find(_ => _.seaMonsterType == monsterType);
 
       if (monsterData == null) {
          D.debug("Sea Monster data is null for: " + monsterType);
-         Destroy(this.gameObject);
+         Destroy(gameObject);
          return;
       }
 
       initData(monsterData);
 
       if (isServer) {
-         gridReference.displayGrid(transform.position, this.areaKey);
+         _seeker = GetComponent<Seeker>();
+         if (_seeker == null) {
+            D.error("There has to be a Seeker Script attached to the SeaMonsterEntity Prefab");
+         }
+         _seeker.pathCallback = setPath_Asynchronous;
+
          planNextMove();
       }
 
       // Note our spawn position
-      _spawnPos = this.transform.position;
+      _spawnPos = transform.position;
 
       _simpleAnim.playAnimation(Anim.Type.Idle_North);
-      gridReference.showGizmo = seaMonsterData.showDebugGizmo;
    }
 
    protected override void Update () {
       base.Update();
 
-      // If we're dead and have finished sinking, remove the ship
+      // If we're dead and have finished sinking, remove us
       if (seaMonsterData.roleType != RoleType.Minion) {
          if (isServer && isDead() && spritesContainer.transform.localPosition.y < -.25f) {
             InstanceManager.self.removeEntityFromInstance(this);
@@ -197,8 +193,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             // Destroy the object
             NetworkServer.Destroy(this.gameObject);
          }
-      } else {
-
       }
 
       // Alters the simple animation data
@@ -244,11 +238,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       } else {
          // Forces minions to look at direction in relation to the parent
          if (distanceFromSpawnPoint.x < 0) {
-            this.facing = Direction.West;
+            facing = Direction.West;
          } else if (distanceFromSpawnPoint.x == 0) {
-            this.facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
+            facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
          } else {
-            this.facing = Direction.East;
+            facing = Direction.East;
          }
       }
 
@@ -260,15 +254,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
          if (seaMonsterParentEntity != null) {
             Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
-            Vector2 waypointDirection = targetLocation - (Vector2) this.transform.position;
-            waypointDirection = waypointDirection.normalized;
+            Vector2 waypointDirection = (targetLocation - (Vector2) transform.position).normalized;
 
             // Teleports the Minions if too far away from Parent
             if (Vector3.Distance(transform.position, seaMonsterParentEntity.transform.position) > 2) {
                transform.position = targetLocation;
             }
 
-            float distanceToWaypoint = Vector2.Distance(targetLocation, this.transform.position);
+            float distanceToWaypoint = Vector2.Distance(targetLocation, transform.position);
             if (distanceToWaypoint > .05f) {
                _body.AddForce(waypointDirection.normalized * (getMoveSpeed() / 1.75f));
             }
@@ -282,20 +275,18 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             stopMoving();
          }
 
-         if (_waypointList.Count > 0) {
+         if (_currentPathIndex < _currentPath.Count) {
             // Move towards our current waypoint
-            Vector2 waypointDirection = _waypointList[0].transform.position - this.transform.position;
-            waypointDirection = waypointDirection.normalized;
+            Vector2 waypointDirection = ((Vector2)_currentPath[_currentPathIndex] - (Vector2)transform.position).normalized;
 
-            _body.AddForce(waypointDirection.normalized * getMoveSpeed());
+            _body.AddForce(waypointDirection * getMoveSpeed());
             _lastMoveChangeTime = Time.time;
 
             // Clears a node as the unit passes by
-            float distanceToWaypoint = Vector2.Distance(_waypointList[0].transform.position, this.transform.position);
+            float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
             if (distanceToWaypoint < .1f) {
                commandMinions();
-               Destroy(_waypointList[0].gameObject);
-               _waypointList.RemoveAt(0);
+               ++_currentPathIndex;
             }
          } else {
             // Path complete, plan the next move
@@ -411,24 +402,24 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    #region Minion / Master Related Functions
 
-   public void moveToParentDestination (Transform newTarget) {
+   public void moveToParentDestination (Vector3 newTarget) {
       if (!isServer) {
          return;
       }
 
       if (seaMonsterParentEntity != null && seaMonsterData != null) {
          if (seaMonsterData.roleType == RoleType.Minion) {
-            setWaypoint(newTarget);
+            findAndSetPath_Asynchronous(newTarget);
          }
       }
    }
 
    private void commandMinions () {
-      if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0 && _waypointList.Count > 0) {
+      if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0 && _currentPathIndex < _currentPath.Count) {
          foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
             if (!childEntity.isDead()) {
                childEntity.stopMoving();
-               childEntity.moveToParentDestination(_waypointList[_waypointList.Count - 1].transform);
+               childEntity.moveToParentDestination(_currentPath[_currentPath.Count - 1]);
             }
          }
       }
@@ -443,10 +434,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Stops current route and plans a new move
       if (monsterBehavior == MonsterBehavior.MoveAround || monsterBehavior == MonsterBehavior.MoveToTarget) {
-         while (_waypointList.Count > 0) {
-            Destroy(_waypointList[0].gameObject);
-            _waypointList.RemoveAt(0);
-         }
+         _currentPath.Clear();
 
          monsterBehavior = MonsterBehavior.Idle;
 
@@ -499,20 +487,24 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
                } else {
                   yield return new WaitForSeconds(seaMonsterData.moveFrequency * .5f);
                   if (targetEntity != null) {
-                     setWaypoint(targetEntity.transform);
+                     findAndSetPath_Asynchronous(targetEntity.transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
+                     monsterBehavior = MonsterBehavior.MoveToTarget;
                   } else {
-                     setWaypoint(null);
+                     findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
+                     monsterBehavior = MonsterBehavior.MoveAround;
                   }
                }
             } else {
                // Enemy is too far, keep moving around
                yield return new WaitForSeconds(seaMonsterData.moveFrequency);
-               setWaypoint(null);
+               findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
+               monsterBehavior = MonsterBehavior.MoveAround;
             }
          } else {
             // No enemy, keep moving around
             yield return new WaitForSeconds(seaMonsterData.moveFrequency);
-            setWaypoint(null);
+            findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
+            monsterBehavior = MonsterBehavior.MoveAround;
          }
       }
    }
@@ -582,45 +574,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             // Update our facing direction
             faceVelocityDirection();
          }
-      }
-   }
-
-   private void setWaypoint (Transform target, float moveDist = .5f) {
-      if (seaMonsterData.roleType != RoleType.Minion) {
-         if (target == null) {
-            monsterBehavior = MonsterBehavior.MoveAround;
-
-            // Pick a new spot around our spawn position
-            Vector2 newTargetPos = _spawnPos + new Vector2(Random.Range(-moveDist, moveDist), Random.Range(-moveDist, moveDist));
-            finalizeWaypoint(newTargetPos);
-         } else {
-            monsterBehavior = MonsterBehavior.MoveToTarget;
-
-            // Pick a new spot around the target opponent
-            Vector2 newTargetPos = targetEntity.transform.position;
-            finalizeWaypoint(newTargetPos);
-         }
-         // If has minions, command them to follow
-         commandMinions();
-      }
-   }
-
-   private void finalizeWaypoint (Vector3 location) {
-      _targetLocation = location;
-      _waypointList = new List<Waypoint>();
-      List<ANode> gridPath = pathFindingReference.findPathNowInit(transform.position, location, isLoggingData);
-      
-      if (gridPath == null) {
-         // Invalid Path, attempt again
-         planNextMove();
-         return;
-      }
-
-      // Register Route
-      foreach (ANode node in gridPath) {
-         Waypoint newWaypointPath = Instantiate(PrefabsManager.self.waypointPrefab, _waypointParent);
-         newWaypointPath.transform.position = node.vPosition;
-         _waypointList.Add(newWaypointPath);
       }
    }
 
@@ -714,6 +667,21 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       planNextMove();
    }
 
+   private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
+      if (!_seeker.IsDone()) {
+         _seeker.CancelCurrentPathRequest();
+      }
+      _seeker.StartPath(transform.position, targetPosition);
+   }
+
+   private void setPath_Asynchronous (Path newPath) {
+      _currentPath = newPath.vectorPath;
+      _currentPathIndex = 0;
+      _seeker.CancelCurrentPathRequest(true);
+
+      commandMinions();
+   }
+
    #region Utilities
 
    private void OnDrawGizmos () {
@@ -725,17 +693,6 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             Gizmos.color = Color.cyan;
             Gizmos.DrawSphere(targetEntity.transform.position, .5f);
          }
-         if (_waypointList.Count > 0) {
-            // Draws the path this unit is taking
-            foreach (Waypoint waypoint in _waypointList) {
-               Gizmos.color = Color.yellow;
-               Gizmos.DrawSphere(waypoint.transform.position, .15f);
-            }
-         }
-
-         // Marks the entity target position
-         Gizmos.color = Color.black;
-         Gizmos.DrawSphere(_targetLocation, .25f);
 
          // Draws the range of the monster territory
          Gizmos.color = Color.yellow;
@@ -806,6 +763,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    #region Private Variables
 
+   // The Seeker that handles Pathfinding
+   protected Seeker _seeker;
+
    // The handling for monster sprite animation
    protected SimpleAnimation _simpleAnim;
 
@@ -816,18 +776,13 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    protected Vector2 _spawnPos;
 
    // The current waypoint List
-   [SerializeField]
-   protected List<Waypoint> _waypointList = new List<Waypoint>();
+   protected List<Vector3> _currentPath = new List<Vector3>();
 
-   // The parent containing all the waypoints
-   [SerializeField]
-   protected Transform _waypointParent;
+   // The current Point Index of the path
+   private int _currentPathIndex;
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _analysisCoroutine = null;
-
-   // The target location of the pathfinding
-   private Vector2 _targetLocation;
 
    #endregion
 }

@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using MapCreationTool.Serialization;
 using System;
 using Random = UnityEngine.Random;
-using AStar;
+using Pathfinding;
 
 public class NPC : NetEntity, IMapEditorDataReceiver
 {
@@ -63,10 +63,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    protected override void Awake () {
       base.Awake();
-      _currentPath = new List<ANode>();
-
       // Look up components
-      _startPosition = transform.position;
       _graphicRaycaster = GetComponentInChildren<GraphicRaycaster>();
 
       if (this.gameObject.HasComponent<Animator>()) {
@@ -91,28 +88,17 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          animator.SetInteger("facing", (int) facing);
       }
 
-      // Add some move targets
-      _moveTargets.Add(_startPosition + new Vector2(.3f, 0f));
-      _moveTargets.Add(_startPosition + new Vector2(-.3f, 0f));
-      _moveTargets.Add(_startPosition + new Vector2(0f, .3f));
-      _moveTargets.Add(_startPosition + new Vector2(0f, -.3f));
-
       // Continually pick new move targets
       if (isServer) {
-         _gridReference = AreaManager.self.getArea(areaKey).pathfindingGrid;
-         if (_gridReference == null) {
-            D.error("There has to be an AStarGrid Script attached to the MapTemplate Prefab");
+         _seeker = GetComponent<Seeker>();
+         if (_seeker == null) {
+            D.error("There has to be a Seeker Script attached to the NPC Prefab");
          }
+         _seeker.pathCallback = setPath_Asynchronous;
 
-         _pathfindingReference = GetComponent<Pathfinding>();
-         if (_pathfindingReference == null) {
-            D.error("There has to be a Pathfinding Script attached to the NPC Prefab");
-         }
-         _pathfindingReference.gridReference = _gridReference;
+         _startPosition = transform.position;
 
-         if (!isShopNpc) {
-            StartCoroutine(generateNewWaypoints(6f + Random.Range(-1f, 1f)));
-         } else {
+         if (isShopNpc) {
             facing = Direction.South;
          }
       } else {
@@ -140,7 +126,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    private void setupClientSideValues () {
-      string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + this.npcType + "/";
+      string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + npcType + "/";
       List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
       if (newSprites.Count > 0) {
          GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
@@ -197,13 +183,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       if (isServer) {
          Vector2 direction;
-         try {
-            if (_currentPath.Count > 0) {
-               direction = (Vector2) _currentPath[0].vPosition - (Vector2) transform.position;
-            } else {
-               direction = Util.getDirectionFromFacing(facing);
-            }
-         } catch {
+         if (_currentPathIndex < _currentPath.Count) {
+            direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
+         } else {
             direction = Util.getDirectionFromFacing(facing);
          }
          // Figure out the direction we want to face
@@ -245,20 +227,24 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (_currentPath == null) {
-         _currentPath = new List<ANode>();
-      }
-      if (_currentPath.Count > 0) {
+      if (_currentPathIndex < _currentPath.Count) {
          // Move towards our current waypoint
-         Vector2 waypointDirection = _currentPath[0].vPosition - transform.position;
-         _body.AddForce(waypointDirection.normalized * moveSpeed);
-         _lastMoveChangeTime = Time.time;
+         // Only change our movement if enough time has passed
+         float moveTime = Time.time - _lastMoveChangeTime;
+         if (moveTime >= MOVE_CHANGE_INTERVAL) {
+            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
+            _lastMoveChangeTime = Time.time;
+         }
 
          // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_currentPath[0].vPosition, transform.position);
+         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
          if (distanceToWaypoint < .1f) {
-            _currentPath.RemoveAt(0);
+            ++_currentPathIndex;
          }
+      } else if (!isShopNpc && _seeker.IsDone() && _moving) {
+         _moving = false;
+         // Generate a new path
+         Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);
       }
    }
 
@@ -288,7 +274,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
                merchantPanel.shopName = shopName;
                break;
-         } 
+         }
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
          // Send a request to the server to get the npc panel info
@@ -309,33 +295,22 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected IEnumerator generateNewWaypoints (float moveAgainDelay) {
-      // Initial delay
-      float waitTime = 1.0f;
-      while (true) {
-         yield return new WaitForSeconds(waitTime);
+   protected void generateNewWaypoints () {
+      findAndSetPath_Asynchronous(_startPosition + Random.insideUnitCircle * MAX_MOVE_DISTANCE);
+   }
 
-         if (_currentPath == null) {
-            _currentPath = new List<ANode>();
-            D.editorLog("Path is null here, something went wrong", Color.red);
-         }
-
-         if (_currentPath.Count > 0) {
-            // There's still points left of the old path, wait 1 second and check again if there's no more waypoints
-            waitTime = 1.0f;
-            continue;
-         }
-
-         _currentPath = _pathfindingReference.findPathNowInit(transform.position, _moveTargets.ChooseRandom());
-         if (_currentPath == null || _currentPath.Count <= 0) {
-            // Invalid Path, attempt again after 1 second
-            waitTime = 1.0f;
-            continue;
-         }
-
-         // We have a new path, set to normal delay
-         waitTime = moveAgainDelay;
+   private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
+      if (!_seeker.IsDone()) {
+         _seeker.CancelCurrentPathRequest();
       }
+      _seeker.StartPath(transform.position, targetPosition);
+   }
+
+   private void setPath_Asynchronous (Path newPath) {
+      _currentPath = newPath.vectorPath;
+      _currentPathIndex = 0;
+      _moving = true;
+      _seeker.CancelCurrentPathRequest(true);
    }
 
    public static void setNameColor (Text nameText, Type npcType) {
@@ -580,11 +555,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    #region Private Variables
 
+   // How long, in seconds, the NPC should pause between finding new paths to walk
+   protected float PAUSE_BETWEEN_PATHS = 6.0f;
+
+   // How far the NPC will be able to move from it's starting position
+   protected float MAX_MOVE_DISTANCE = 0.3f;
+
    // Our start position
    protected Vector2 _startPosition;
-
-   // The available positions to move to
-   protected List<Vector2> _moveTargets = new List<Vector2>();
 
    // Gets set to true while the player is nearby
    protected bool _isNearPlayer = false;
@@ -604,14 +582,20 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The default name, when not defined in the data file
    protected string _npcName = "NPC";
 
-   // The AStarGrid Reference fetched from the Main Scene
-   protected AStarGrid _gridReference;
+   // Shop Name (if any)
+   protected string _shopName = ShopManager.DEFAULT_SHOP_NAME;
 
-   // The Pathfinding Reference fetched from the Main Scene
-   protected Pathfinding _pathfindingReference;
+   // The Seeker that handles Pathfinding
+   protected Seeker _seeker;
 
-   // The current waypoint path
-   protected List<ANode> _currentPath = new List<ANode>();
+   // The current Path
+   protected List<Vector3> _currentPath = new List<Vector3>();
+
+   // The current Point Index of the Path
+   private int _currentPathIndex;
+
+   // Are we currently moving this NPC along a Path?
+   private bool _moving = true;
 
    #endregion
 }
