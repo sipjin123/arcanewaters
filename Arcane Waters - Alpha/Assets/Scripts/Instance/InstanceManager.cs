@@ -124,7 +124,9 @@ public class InstanceManager : MonoBehaviour {
       recalculateOpenAreas();
 
       // Spawn the network object on the Clients
-      NetworkServer.Spawn(instance.gameObject);
+      if (NetworkServer.active) {
+         NetworkServer.Spawn(instance.gameObject);
+      }
       return instance;
    }
 

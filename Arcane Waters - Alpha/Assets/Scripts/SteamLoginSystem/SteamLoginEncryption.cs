@@ -6,7 +6,7 @@ namespace SteamLoginSystem
 {
    public class SteamLoginEncryption { 
       // The encryption key code (Do not Change or else the previous user entries will not work)
-      public const string ENCRYPTION_KEY = "arcw-enc8-lxmq19";
+      public const string ENCRYPTION_KEY = "arcw-enz8-lxmq19";
 
       public static string Encrypt (string input) {
          byte[] inputArray = UTF8Encoding.UTF8.GetBytes(input);

@@ -41,6 +41,7 @@ public class ServerMessageManager : MonoBehaviour {
 
          int accountId = 0;
          bool isUnauthenticatedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
+         bool hasFailedToCreateAccount = false;
 
          if (logInUserMessage.isSteamLogin) {
             if (!isUnauthenticatedSteamUser) {
@@ -78,22 +79,30 @@ public class ServerMessageManager : MonoBehaviour {
             // Create an account for this new steam user after it is authorized
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
-               try {
-                  accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
+
+               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
+               if (accountId != 0) {
                   On_LogInUserMessage(conn, logInUserMessage);
-               } catch {
-                  accountId = 0;
+                  return;
+               } else {
+                  hasFailedToCreateAccount = true;
                   D.debug("Failed to create account for steam id: " + logInUserMessage.accountName);
                }
-               return;
             }
          }
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (isUnauthenticatedSteamUser) {
+            if (isUnauthenticatedSteamUser && !hasFailedToCreateAccount) {
                // Steam user has not been authorized yet, start auth process
                processSteamUserAuth(conn, logInUserMessage);
+               return;
+            }
+
+            // Cancel process if steam user creation fails
+            if (hasFailedToCreateAccount) {
+               D.debug("Failed to create an account for: " + logInUserMessage.accountName);
+               sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
             }
 
@@ -196,7 +205,7 @@ public class ServerMessageManager : MonoBehaviour {
       newAppOwnershipEvent.AddListener(_ => {
          // Extract user and password
          DateTime dateOfPurchase = DateTime.Parse(_.appownership.timestamp);
-         string rawPassword = _.appownership.ownersteamid + "[spc]" + dateOfPurchase.Year + "[spc]" + dateOfPurchase.Month + "[spc]" + dateOfPurchase.Day;
+         string rawPassword = _.appownership.ownersteamid + "_" + dateOfPurchase.Year + "_" + dateOfPurchase.Month + "_" + dateOfPurchase.Day;
          string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
          string userName = _.appownership.ownersteamid;
 

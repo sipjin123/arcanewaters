@@ -218,6 +218,7 @@ public class MyNetworkManager : NetworkManager {
             // Check if we need to redirect to a different server
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
+
             if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.ourPort) {
                D.editorLog("Best server is Not the Local Server: (" + bestServer.port + "), now Redirecting", Color.yellow);
 
