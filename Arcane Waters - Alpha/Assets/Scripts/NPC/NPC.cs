@@ -30,6 +30,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       ShamanGirl = 30, Pyromancer = 31, Mushroomdruid = 32, Lizard_Shaman = 33, Lizard_Armored = 34, Golem = 35,
    }
 
+   // The sprite path of the npc avatar
+   [SyncVar]
+   public string spritePath;
+
    [SyncVar]
    // The Type of NPC this is
    public Type npcType;
@@ -126,7 +130,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    private void setupClientSideValues () {
-      string spriteAddress = "Assets/Sprites/NPCs/Bodies/" + npcType + "/";
+      string spriteAddress = spritePath;
       List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
       if (newSprites.Count > 0) {
          GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
@@ -157,15 +161,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          try {
             GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
          } catch {
-            D.log("Cant get Sprite for NPC: " + this.npcId);
+            D.debug("Cant get Sprite for NPC: " + this.npcId);
             GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
          }
       } else {
-         D.log("Cant get Data for NPC: " + npcId);
+         D.debug("Cant get Data for NPC: " + npcId);
       }
 
       if (GetComponent<SpriteSwap>().newTexture.name.Contains("empty")) {
-         D.log("Invalid NPC Path, please complete details in NPC Editor");
+         D.debug("Invalid NPC Path, please complete details in NPC Editor");
          GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
       }
    }
@@ -227,24 +231,26 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (_currentPathIndex < _currentPath.Count) {
-         // Move towards our current waypoint
-         // Only change our movement if enough time has passed
-         float moveTime = Time.time - _lastMoveChangeTime;
-         if (moveTime >= MOVE_CHANGE_INTERVAL) {
-            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
-            _lastMoveChangeTime = Time.time;
-         }
+      if (isServer && _seeker != null) {
+         if (_currentPathIndex < _currentPath.Count) {
+            // Move towards our current waypoint
+            // Only change our movement if enough time has passed
+            float moveTime = Time.time - _lastMoveChangeTime;
+            if (moveTime >= MOVE_CHANGE_INTERVAL) {
+               _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
+               _lastMoveChangeTime = Time.time;
+            }
 
-         // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
-         if (distanceToWaypoint < .1f) {
-            ++_currentPathIndex;
+            // Clears a node as the unit passes by
+            float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
+            if (distanceToWaypoint < .1f) {
+               ++_currentPathIndex;
+            }
+         } else if (!isShopNpc && _seeker.IsDone() && _moving) {
+            _moving = false;
+            // Generate a new path
+            Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);
          }
-      } else if (!isShopNpc && _seeker.IsDone() && _moving) {
-         _moving = false;
-         // Generate a new path
-         Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);
       }
    }
 
@@ -391,14 +397,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       return specialty;
    }
 
-   protected Specialty.Type getRandomSpecialty () {
-      Area area = GetComponentInParent<Area>();
-      List<Specialty.Type> specialties = getPossibleSpecialties(getFaction());
-      int randomIndex = (Area.getAreaId(areaKey) * 50) + (int) npcType;
-      randomIndex %= specialties.Count;
-      return specialties[randomIndex];
-   }
-
    public static List<Specialty.Type> getPossibleSpecialties (Faction.Type factionType) {
       switch (factionType) {
          case Faction.Type.Builders:
@@ -442,7 +440,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // If we have a sprite swapper, we want to check that instead
       SpriteSwap swapper = GetComponent<SpriteSwap>();
       if (swapper != null) {
-         spriteName = swapper.newTexture.name;
+         if (swapper.newTexture == null) {
+            D.debug("Swappers Texture Can NOT be null!!");
+         } else {
+            spriteName = swapper.newTexture.name;
+         }
       }
 
       string[] split = spriteName.Split('_');
@@ -465,11 +467,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       return name;
-   }
-
-   protected string getRandomName () {
-      Area area = GetComponentInParent<Area>();
-      return NameManager.self.getRandomName(getGender(npcType), area.areaKey, npcType);
    }
 
    protected void updateTradeGossip () {
@@ -513,10 +510,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             if (npcData != null) {
                string spritePath = npcData.spritePath;
                if (spritePath != "") {
-                  GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(spritePath);
-
-                  // Figure out our Type from our sprite
-                  npcType = getTypeFromSprite(npcData.spritePath);
+                  this.spritePath = spritePath;
                }
 
                NPCManager.self.storeNPC(this);

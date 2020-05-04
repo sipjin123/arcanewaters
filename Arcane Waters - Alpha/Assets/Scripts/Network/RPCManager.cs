@@ -3540,7 +3540,7 @@ public class RPCManager : NetworkBehaviour {
                Battler battler = BattleManager.self.getBattler(entity.userId);
                if (equippedAbilityDataList.Count < 1) {
                   // Set server data
-                  battler.setBattlerAbilities(new List<BasicAbilityData> { AbilityManager.getAttackAbility(1) }, BattlerType.PlayerControlled);
+                  battler.setBattlerAbilities(new List<BasicAbilityData> { AbilityManager.getAttackAbility(9) }, BattlerType.PlayerControlled);
                } else {
                   // Sort by equipment slot index
                   equippedAbilityDataList = equippedAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToList();

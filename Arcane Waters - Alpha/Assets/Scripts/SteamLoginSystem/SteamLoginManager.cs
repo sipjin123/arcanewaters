@@ -39,32 +39,6 @@ namespace SteamLoginSystem
          _getAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(onGetAuthSessionTicketResponse);
       }
 
-      private void OnGUI () {
-         # if UNITY_EDITOR
-         if (GUILayout.Button("Get Auth")) {
-            getAuthenticationTicket();
-         }
-
-         if (GUILayout.Button("Authenticate Ticket")) {
-            //authenticateTicket();
-         }
-
-         if (GUILayout.Button("Get App Ownership")) {
-            //getOwnershipInfo();
-         }
-
-         if (GUILayout.Button("Encrypt")) {
-            encryptedData = SteamLoginEncryption.Encrypt("burlCodetesT1152");
-            D.editorLog(encryptedData, Color.green);
-         }
-
-         if (GUILayout.Button("Decrypt")) {
-            string decryptedData = SteamLoginEncryption.Decrypt(encryptedData);
-            D.editorLog(decryptedData, Color.red);
-         }
-         #endif
-      }
-
       public void getAuthenticationTicket () {
          m_Ticket = new byte[1024];
          _hAuthTicket = SteamUser.GetAuthSessionTicket(m_Ticket, 1024, out m_pcbTicket);

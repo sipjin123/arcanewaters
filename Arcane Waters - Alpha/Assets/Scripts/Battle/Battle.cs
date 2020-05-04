@@ -63,7 +63,8 @@ public class Battle : NetworkBehaviour {
 
       foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
          if (battler.transform.parent == null) {
-            battler.transform.SetParent(transform, false);
+            battler.transform.SetParent(transform, true);
+            battler.snapToBattlePosition();
          }
       }
    }

@@ -47,7 +47,7 @@ public class ImageManager : ClientMonoBehaviour {
    protected override void Awake () {
       // The batchmode server doesn't need to waste memory on these images
       if (Util.isBatch()) {
-          imageDataList.Clear();
+          //imageDataList.Clear();
       }
 
       base.Awake();
@@ -128,6 +128,7 @@ public class ImageManager : ClientMonoBehaviour {
          if (!Util.isBatch()) { 
             Debug.LogWarning("Couldn't find texture for path: " + path);
          }
+         return blankTexture;
       }
 
       return imageData.texture2D;
@@ -206,7 +207,9 @@ public class ImageManager : ClientMonoBehaviour {
          }
 
          if (imageData.texture2D == null) {
-            Debug.LogError($"Image texture is null. Image path: {imageData.imagePath}");
+            if (!Util.isBatch()) {
+               Debug.LogError($"Image texture is null. Image path: {imageData.imagePath}");
+            }
             continue;
          }
 

@@ -6,24 +6,19 @@ using Mirror;
 using System;
 using System.Text;
 using UnityEngine.Networking;
+using SteamLoginSystem;
 
 namespace SteamLoginSystem
 {
    public class SteamLoginManagerServer : MonoBehaviour {
       #region Public Variables
-      
+
       // Self
       public static SteamLoginManagerServer self;
-      
-      #if IS_SERVER_BUILD
+
       // Steam key parameters for web api request
       public static string STEAM_WEB_USER_API_KEY = "1EB0664926636257A9861504BE93721B";
       public static string STEAM_WEB_PUBLISHER_API_KEY = "16FBA4602CFF4C139DC40E01D58F8869";
-      #else
-      // Steam key parameters for web api request
-      public static string STEAM_WEB_USER_API_KEY = "";
-      public static string STEAM_WEB_PUBLISHER_API_KEY = "";
-      #endif
 
       // The WEB API request for ticket authentication
       public const string STEAM_AUTHENTICATE_TICKET = "https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/?";
@@ -44,6 +39,9 @@ namespace SteamLoginSystem
 
       // Shows the fetched data logs
       public bool isLogActive;
+
+      // The limit of tracked disposed events
+      public static int DISPOSE_CAP = 10;
 
       #endregion
 
@@ -143,10 +141,11 @@ namespace SteamLoginSystem
          ownershipEvent.RemoveAllListeners();
          appOwnershipEventActiveList.Remove(ownershipEvent);
          appOwnershipEventDisposeList.Add(ownershipEvent);
+
+         // Try to keep track of dispose list for analysis, when reaches cap clear the list
+         if (appOwnershipEventDisposeList.Count > DISPOSE_CAP) {
+            appOwnershipEventDisposeList.Clear();
+         }
       }
-
-      #region Private Variables
-
-      #endregion
    }
 }

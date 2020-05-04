@@ -12,7 +12,7 @@ public class BackgroundGameManager : MonoBehaviour {
    public static BackgroundGameManager self;
 
    // List of background data loaded from the server
-   public List<BackgroundContentData> backgroundContentList;
+   public List<BackgroundContentData> backgroundContentList = new List<BackgroundContentData>();
 
    // Prefab for sprite templates
    public GameObject spriteTemplatePrefab, spriteTemplateAnimatedPrefab;
@@ -79,6 +79,9 @@ public class BackgroundGameManager : MonoBehaviour {
 
    public void setSpritesToClientBoard (int boardXmlID, BattleBoard board) {
       BackgroundContentData bgContent = backgroundContentList.Find(_ => _.xmlId == boardXmlID);
+      if (bgContent == null) {
+         bgContent = backgroundContentList[0];
+      }
       processBoardContent(bgContent, board);
    }
 
@@ -87,7 +90,6 @@ public class BackgroundGameManager : MonoBehaviour {
 
       // Biome should never be none, if for some reason it becomes none, log and use default biome
       if (board.biomeType == Biome.Type.None) {
-         D.debug("Error here, tryng to load a biome with type: NONE");
          bgContentData = backgroundContentList[0];
       } else {
          List<BackgroundContentData> contentDataList = backgroundContentList.FindAll(_ => _.biomeType == board.biomeType);
@@ -122,59 +124,70 @@ public class BackgroundGameManager : MonoBehaviour {
       List<GameObject> leftBattleSpots = new List<GameObject>();
       List<GameObject> rightBattleSpots = new List<GameObject>();
       List<SimpleAnimation> simpleAnimList = new List<SimpleAnimation>();
-      board.centerPoint.gameObject.DestroyChildren();
+      try {
+         board.centerPoint.gameObject.DestroyChildren();
+      } catch {
+         D.debug("Failed to fetch board centerpoint");
+      }
 
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
-         SpriteTemplate spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab, board.centerPoint).GetComponent<SpriteTemplate>();
+         GameObject spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab);
+         spriteTempObj.transform.SetParent(board.centerPoint);
 
-         float zOffset = -(spriteTempData.layerIndex-1) - spriteTempData.zAxisOffset;
-         spriteTempObj.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
-         spriteTempObj.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
-         spriteTempObj.hasActiveClicker = false;
-
-         if (!spriteTempObj.spriteRender.sprite.name.Contains(PLACEHOLDER)) {
-            // Process placeholders
-            if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_LEFT)) {
-               leftBattleSpots.Add(spriteTempObj.gameObject);
+         SpriteTemplate spriteTemp = spriteTempObj.GetComponent<SpriteTemplate>();
+         if (!spriteTempData.spritePath.Contains(PLACEHOLDER)) {
+            float zOffset = -(spriteTempData.layerIndex - 1) - spriteTempData.zAxisOffset;
+            spriteTemp.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
+            if (spriteTempData.spritePath.Contains(BATTLE_POS_KEY_LEFT)) {
+               leftBattleSpots.Add(spriteTemp.gameObject);
             }
-            if (spriteTempObj.spriteRender.sprite.name.Contains(BATTLE_POS_KEY_RIGHT)) {
-               rightBattleSpots.Add(spriteTempObj.gameObject);
+            if (spriteTempData.spritePath.Contains(BATTLE_POS_KEY_RIGHT)) {
+               rightBattleSpots.Add(spriteTemp.gameObject);
             }
+         }
 
-            // Process animated sprites
-            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
-               int spriteCount = ImageManager.getSprites(spriteTempData.spritePath).Length;
-               AnimatedSprite animatedSprite = spriteTempObj.GetComponent<AnimatedSprite>();
-               animatedSprite.setToLoop();
-               animatedSprite.setToInteractable();
-               animatedSprite.setSpriteCount(spriteCount);
+         if (spriteTemp != null && !Util.isBatch()) {
+            float zOffset = -(spriteTempData.layerIndex - 1) - spriteTempData.zAxisOffset;
+            spriteTemp.transform.localPosition = new Vector3(spriteTempData.localPositionData.x, spriteTempData.localPositionData.y, zOffset);
+            spriteTemp.hasActiveClicker = false;
+            spriteTemp.spriteRender.sprite = ImageManager.getSprite(spriteTempData.spritePath);
 
-               BoxCollider2D collider2d = spriteTempObj.gameObject.AddComponent<BoxCollider2D>();
-               collider2d.size = new Vector2(collider2d.size.x/2, collider2d.size.y/2);
-               collider2d.isTrigger = true;
-               simpleAnimList.Add(spriteTempObj.GetComponent<SimpleAnimation>());
-            } else if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating) {
-               AnimatedSprite animatedSprite = spriteTempObj.GetComponent<AnimatedSprite>();
-               animatedSprite.setToLoop();
+            if (!spriteTemp.spriteRender.sprite.name.Contains(PLACEHOLDER)) {
+               // Process animated sprites
+               if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
+                  int spriteCount = ImageManager.getSprites(spriteTempData.spritePath).Length;
+                  AnimatedSprite animatedSprite = spriteTemp.GetComponent<AnimatedSprite>();
+                  animatedSprite.setToLoop();
+                  animatedSprite.setToInteractable();
+                  animatedSprite.setSpriteCount(spriteCount);
+
+                  BoxCollider2D collider2d = spriteTemp.gameObject.AddComponent<BoxCollider2D>();
+                  collider2d.size = new Vector2(collider2d.size.x / 2, collider2d.size.y / 2);
+                  collider2d.isTrigger = true;
+                  simpleAnimList.Add(spriteTemp.GetComponent<SimpleAnimation>());
+               } else if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating) {
+                  AnimatedSprite animatedSprite = spriteTemp.GetComponent<AnimatedSprite>();
+                  animatedSprite.setToLoop();
+               }
+
+               // Add z snap component to interactives to have z axis adjustments with battlers
+               if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
+                  ZSnap zSnap = spriteTemp.gameObject.AddComponent<ZSnap>();
+                  zSnap.isActive = true;
+               }
+
+               spriteTemp.spriteData.contentCategory = spriteTempData.contentCategory;
+               spriteTemp.gameObject.name = spriteTemp.spriteRender.sprite.name;
+
+               if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers || spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders) {
+                  spriteTemp.spriteRender.enabled = false;
+                  spriteTemp.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
+               }
+            } else {
+               spriteTemp.spriteRender.enabled = false;
+               spriteTemp.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
             }
-
-            // Add z snap component to interactives to have z axis adjustments with battlers
-            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive) {
-               ZSnap zSnap = spriteTempObj.gameObject.AddComponent<ZSnap>();
-               zSnap.isActive = true;
-            }
-
-            spriteTempObj.spriteData.contentCategory = spriteTempData.contentCategory;
-            spriteTempObj.gameObject.name = spriteTempObj.spriteRender.sprite.name;
-
-            if (spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Attackers || spriteTempData.contentCategory == ImageLoader.BGContentCategory.SpawnPoints_Defenders) {
-               spriteTempObj.spriteRender.enabled = false;
-               spriteTempObj.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
-            }
-         } else {
-            spriteTempObj.spriteRender.enabled = false;
-            spriteTempObj.gameObject.name = ImageLoader.BGContentCategory.PlaceHolders.ToString();
          }
       }
 
@@ -183,8 +196,11 @@ public class BackgroundGameManager : MonoBehaviour {
          simpleAnim.enabled = true;
       }
 
+      // Finalize battle setup
       if (leftBattleSpots.Count > 0 && rightBattleSpots.Count > 0) {
          board.recalibrateBattleSpots(leftBattleSpots, rightBattleSpots, bgContentData.xmlId);
+      } else {
+         D.debug("Not enough battle spots to initialize battle!");
       }
    }
 

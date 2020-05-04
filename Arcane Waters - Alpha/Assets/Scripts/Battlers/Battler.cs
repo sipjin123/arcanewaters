@@ -277,7 +277,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // The client needs to look up and assign the Battle Spot
       BattleSpot battleSpot = battleBoard.getSpot(teamType, this.boardPosition);
-
       this.battleSpot = battleSpot;
 
       // When our Battle is created, we need to switch to the Battle camera
@@ -313,6 +312,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       this.battleSpot = battleSpot;
    }
 
+   public void snapToBattlePosition () {
+      transform.position = battleSpot.transform.position;
+   }
+
    private void Update () {
       // Handle the drawing or hiding of our outline
       handleSpriteOutline();
@@ -344,21 +347,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          if (battlerType == BattlerType.AIEnemyControlled) {
-            // Change sprite fetched from battler data
-            Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
-            if (fetchSprite != null) {
-               mainSpriteRenderer.sprite = fetchSprite;
-            }
             selectedBattleBar = minionBattleBar;
 
-            // Offset sprite for large monsters
-            if (fetchSprite.rect.height >= LARGE_MONSTER_SIZE) {
-               Vector3 localPos = mainSpriteRenderer.transform.localPosition;
-               mainSpriteRenderer.transform.localPosition = new Vector3(localPos.x, LARGE_MONSTER_OFFSET, localPos.z);
-               selectedBattleBar = bossBattleBar;
+            // Change sprite fetched from battler data
+            if (!Util.isBatch()) {
+               Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
+               if (fetchSprite != null) {
+                  mainSpriteRenderer.sprite = fetchSprite;
+               } 
 
-               // Enlarge the click box of a boss type enemy
-               _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
+               // Offset sprite for large monsters
+               if (fetchSprite.rect.height >= LARGE_MONSTER_SIZE) {
+                  Vector3 localPos = mainSpriteRenderer.transform.localPosition;
+                  mainSpriteRenderer.transform.localPosition = new Vector3(localPos.x, LARGE_MONSTER_OFFSET, localPos.z);
+                  selectedBattleBar = bossBattleBar;
+
+                  // Enlarge the click box of a boss type enemy
+                  _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
+               }
             }
             selectedBattleBar.gameObject.SetActive(true);
 
@@ -527,28 +533,30 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void updateSprites () {
-      // Update the Body, Eyes, and Hair
-      foreach (BodyLayer bodyLayer in GetComponentsInChildren<BodyLayer>()) {
-         bodyLayer.setType(bodyType);
+      if (!Util.isBatch()) {
+         // Update the Body, Eyes, and Hair
+         foreach (BodyLayer bodyLayer in GetComponentsInChildren<BodyLayer>()) {
+            bodyLayer.setType(bodyType);
 
-         // We only call recolor on the body because we want the material to be instanced like all the others
-         bodyLayer.recolor(ColorType.None, ColorType.None);
-      }
-      foreach (EyesLayer eyesLayer in GetComponentsInChildren<EyesLayer>()) {
-         eyesLayer.setType(eyesType);
-         eyesLayer.recolor(eyesColor1, eyesColor1);
-      }
-      foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
-         hairLayer.setType(hairType);
-         hairLayer.recolor(hairColor1, hairColor2);
-      }
+            // We only call recolor on the body because we want the material to be instanced like all the others
+            bodyLayer.recolor(ColorType.None, ColorType.None);
+         }
+         foreach (EyesLayer eyesLayer in GetComponentsInChildren<EyesLayer>()) {
+            eyesLayer.setType(eyesType);
+            eyesLayer.recolor(eyesColor1, eyesColor1);
+         }
+         foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
+            hairLayer.setType(hairType);
+            hairLayer.recolor(hairColor1, hairColor2);
+         }
 
-      // Update the Armor and Weapon
-      if (armorManager.hasArmor()) {
-         armorManager.updateSprites();
-      }
-      if (weaponManager.hasWeapon()) {
-         weaponManager.updateSprites();
+         // Update the Armor and Weapon
+         if (armorManager.hasArmor()) {
+            armorManager.updateSprites();
+         }
+         if (weaponManager.hasWeapon()) {
+            weaponManager.updateSprites();
+         }
       }
    }
 
@@ -574,6 +582,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
+      if (basicAbilityList.Count == 0) {
+         _battlerBasicAbilities.Add(AbilityManager.self.allAttackbilities[0]);
+      }
+
       if (battlerAbilitiesInitialized) {
          return;
       }
@@ -594,7 +606,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
          battlerAbilitiesInitialized = true;
       } else {
-         Debug.LogError("There is no ability");
+         D.debug("Issue here, There is no ability to set");
       }
    }
 
@@ -1427,7 +1439,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (battle == null) {
          if (battlerType == BattlerType.PlayerControlled) {
             battle = BattleManager.self.getBattle(battleId);
-            transform.SetParent(battle.transform, false);
+            transform.SetParent(battle.transform);
+            transform.position = battleSpot.transform.position;
          }
       }
 
@@ -1904,8 +1917,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public AttackAbilityData getBasicAttack () {
       // Safe check
       if (getAttackAbilities().Count <= 0) {
-         Debug.LogError("This battler do not have any abilities");
-         return null;
+         Debug.LogError("This battler do not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
+         return AbilityManager.self.allAttackbilities[0];
       }
 
       return getAttackAbility(0);

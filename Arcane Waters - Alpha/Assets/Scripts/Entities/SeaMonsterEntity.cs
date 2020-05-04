@@ -105,29 +105,31 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
       _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
 
-      ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
-      
-      Sprite rippleTextureSprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
-      Texture2D croppedTexture = new Texture2D((int) rippleTextureSprite.rect.width, (int) rippleTextureSprite.rect.height);
-      Color[] pixels = rippleTextureSprite.texture.GetPixels((int) rippleTextureSprite.textureRect.x,
-                                              (int) rippleTextureSprite.textureRect.y,
-                                              (int) rippleTextureSprite.textureRect.width,
-                                              (int) rippleTextureSprite.textureRect.height);
-      croppedTexture.SetPixels(pixels);
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
-      ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
+      if (ImageManager.self.imageDataList.Count > 0 && !Util.isBatch()) {
+         ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
 
-      ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
-      spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
-      spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
+         Sprite rippleTextureSprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
+         Texture2D croppedTexture = new Texture2D((int) rippleTextureSprite.rect.width, (int) rippleTextureSprite.rect.height);
+         Color[] pixels = rippleTextureSprite.texture.GetPixels((int) rippleTextureSprite.textureRect.x,
+                                                   (int) rippleTextureSprite.textureRect.y,
+                                                   (int) rippleTextureSprite.textureRect.width,
+                                                   (int) rippleTextureSprite.textureRect.height);
+         croppedTexture.SetPixels(pixels);
+         ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
+         ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
 
-      _simpleAnimRipple.group = seaMonsterData.animGroup;
-      _simpleAnimRipple.frameLengthOverride = seaMonsterData.rippleAnimationSpeedOverride;
-      _simpleAnimRipple.enabled = true;
+         ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
+         spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
+         spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
 
-      _simpleAnim.group = seaMonsterData.animGroup;
-      _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
-      _simpleAnim.enabled = true;
+         _simpleAnimRipple.group = seaMonsterData.animGroup;
+         _simpleAnimRipple.frameLengthOverride = seaMonsterData.rippleAnimationSpeedOverride;
+         _simpleAnimRipple.enabled = true;
+
+         _simpleAnim.group = seaMonsterData.animGroup;
+         _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+         _simpleAnim.enabled = true;
+      }
 
       reloadDelay = seaMonsterData.reloadDelay;
       currentHealth = seaMonsterData.maxHealth;
@@ -145,10 +147,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          spritesContainer.transform.GetChild(0).gameObject.SetActive(false);
       }
 
-      if (variety != 0 && seaMonsterData.secondarySpritePath != null) {
-         spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.secondarySpritePath);
-      } else {
-         spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultSpritePath);
+      if (ImageManager.self.imageDataList.Count > 0 && !Util.isBatch()) {
+         if (variety != 0 && seaMonsterData.secondarySpritePath != null) {
+            spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.secondarySpritePath);
+         } else {
+            spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultSpritePath);
+         }
       }
    }
 

@@ -205,20 +205,25 @@ public class Instance : NetworkBehaviour
                foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
-                  // Add it to the Instance
-                  SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
-                  seaMonster.monsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
-                  seaMonster.areaKey = area.areaKey;
+                  SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
 
-                  SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonster.monsterType);
-                  if (seaMonsterData != null) {
+                  if (SeaMonsterManager.self.getMonster(seaMonsterType) == null) {
+                     D.debug("Sea monster is null! " + seaMonsterType);
+                  } else {
+                     // Add it to the Instance
+                     SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
+                     seaMonster.monsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
+                     seaMonster.areaKey = area.areaKey;
+
+                     SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonster.monsterType);
+
                      seaMonster.initData(seaMonsterData);
                      seaMonster.facing = Direction.South;
-                  }
 
-                  InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
-                  seaMonster.transform.position = this.transform.position + targetLocalPos;
-                  NetworkServer.Spawn(seaMonster.gameObject);
+                     InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
+                     seaMonster.transform.position = this.transform.position + targetLocalPos;
+                     NetworkServer.Spawn(seaMonster.gameObject);
+                  }
                }
             }
 

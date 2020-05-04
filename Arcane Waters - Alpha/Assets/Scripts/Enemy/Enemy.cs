@@ -74,7 +74,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       _startPos = this.transform.position;
 
       // Update our sprite
-      if (this.enemyType != Type.None) {
+      if (this.enemyType != Type.None && ImageManager.self.imageDataList.Count > 0) {
          string enemySpriteName = System.Enum.GetName(typeof(Enemy.Type), (int) this.enemyType).ToLower();
          bodyAnim.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture("Enemies/LandMonsters/" + enemySpriteName);
       }

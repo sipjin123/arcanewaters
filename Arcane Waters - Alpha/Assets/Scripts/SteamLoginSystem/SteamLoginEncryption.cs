@@ -4,12 +4,11 @@ using System;
 
 namespace SteamLoginSystem
 {
-   public class SteamLoginEncryption {
-      #if IS_SERVER_BUILD
-
+   public class SteamLoginEncryption { 
       // The encryption key code (Do not Change or else the previous user entries will not work)
       public const string ENCRYPTION_KEY = "arcw-enc8-lxmq19";
 
+      [ServerOnly]
       public static string Encrypt (string input) {
          byte[] inputArray = UTF8Encoding.UTF8.GetBytes(input);
          TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider();
@@ -22,6 +21,7 @@ namespace SteamLoginSystem
          return Convert.ToBase64String(resultArray, 0, resultArray.Length);
       }
 
+      [ServerOnly]
       public static string Decrypt (string input) {
          byte[] inputArray = Convert.FromBase64String(input);
          TripleDESCryptoServiceProvider tripleDES = new TripleDESCryptoServiceProvider();
@@ -33,7 +33,5 @@ namespace SteamLoginSystem
          tripleDES.Clear();
          return UTF8Encoding.UTF8.GetString(resultArray);
       }
-
-      #endif
    }
 }

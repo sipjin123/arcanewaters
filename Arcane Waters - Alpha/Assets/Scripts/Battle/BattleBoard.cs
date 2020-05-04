@@ -37,18 +37,25 @@ public class BattleBoard : MonoBehaviour {
 
    public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots, int newXmlId) {
       xmlID = newXmlId;
-
       int boardIndex = 0;
       foreach (GameObject attackerSpot in attackerSpots) {
-         Transform attackSpot = attackersSpotHolder.GetChild(boardIndex);
-         attackSpot.transform.position = attackerSpot.transform.position;
+         if(attackersSpotHolder.childCount < boardIndex) {
+            Transform attackSpot = attackersSpotHolder.GetChild(boardIndex);
+            attackSpot.transform.position = attackerSpot.transform.position;
+         } else {
+            break;
+         }
          boardIndex++;
       }
 
       boardIndex = 0;
       foreach (GameObject defendersSpot in defenderSpots) {
-         Transform defenderSpot = defendersSpotHolder.GetChild(boardIndex);
-         defenderSpot.transform.position = defendersSpot.transform.position;
+         if (defendersSpotHolder.childCount < boardIndex) {
+            Transform defenderSpot = defendersSpotHolder.GetChild(boardIndex);
+            defenderSpot.transform.position = defendersSpot.transform.position;
+         } else {
+            break;
+         }
          boardIndex++;
       }
    }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using SteamLoginSystem;
+using System;
 
 public class ServerMessageManager : MonoBehaviour {
    #region Public Variables
@@ -77,7 +78,14 @@ public class ServerMessageManager : MonoBehaviour {
             // Create an account for this new steam user after it is authorized
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
-               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, "", 0);
+               try {
+                  accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
+                  On_LogInUserMessage(conn, logInUserMessage);
+               } catch {
+                  accountId = 0;
+                  D.debug("Failed to create account for steam id: " + logInUserMessage.accountName);
+               }
+               return;
             }
          }
 
@@ -187,7 +195,8 @@ public class ServerMessageManager : MonoBehaviour {
       AppOwnershipEvent newAppOwnershipEvent = new AppOwnershipEvent();
       newAppOwnershipEvent.AddListener(_ => {
          // Extract user and password
-         string rawPassword = _.appownership.ownersteamid + "[spc]" + _.appownership.timestamp;
+         DateTime dateOfPurchase = DateTime.Parse(_.appownership.timestamp);
+         string rawPassword = _.appownership.ownersteamid + "[spc]" + dateOfPurchase.Year + "[spc]" + dateOfPurchase.Month + "[spc]" + dateOfPurchase.Day;
          string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
          string userName = _.appownership.ownersteamid;
 

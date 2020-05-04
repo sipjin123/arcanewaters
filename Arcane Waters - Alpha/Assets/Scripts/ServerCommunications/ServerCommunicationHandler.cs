@@ -54,9 +54,6 @@ public class ServerCommunicationHandler : MonoBehaviour
    // The latest chat info
    public ChatInfo latestChatinfo = new ChatInfo();
 
-   // Determines if the voyages have been initialized
-   public bool hasInitiatedVoyage;
-
    // The servers that needs updating
    public List<ServerSqlData> serversToUpdate = new List<ServerSqlData>();
 
@@ -414,11 +411,6 @@ public class ServerCommunicationHandler : MonoBehaviour
                ServerNetwork.self.server.claimedUserIds = new HashSet<int>(newSqlData.claimedUserIds);
             }
 
-            if (!hasInitiatedVoyage) {
-               // Regularly check that there are enough voyage instances open and create more
-               VoyageManager.self.startVoyageManagement();
-               hasInitiatedVoyage = true;
-            }
          } else {
             StartCoroutine(CO_ResetServerData(newSqlData));
             D.editorLog("Missing server, it is not existing yet: " + newSqlData.deviceName + " - " + newSqlData.ip, Color.green);

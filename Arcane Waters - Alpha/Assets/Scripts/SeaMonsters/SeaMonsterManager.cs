@@ -15,7 +15,7 @@ public class SeaMonsterManager : MonoBehaviour {
    public bool hasInitialized;
 
    // Holds the list of the xml translated data
-   public List<SeaMonsterEntityData> seaMonsterDataList;
+   public List<SeaMonsterEntityData> seaMonsterDataList = new List<SeaMonsterEntityData>();
 
    // Holds the info the monsters to spawn after fetching data from SQL database
    public List<SeaMonsterSpawnData> scheduledSpawnList = new List<SeaMonsterSpawnData>();
@@ -51,6 +51,8 @@ public class SeaMonsterManager : MonoBehaviour {
    }
 
    public void spawnSeamonstersOnServerForInstance  () {
+      // TODO: Confirm if this is still needed
+      /*
       foreach (SeaMonsterSpawnData spawnSched in scheduledSpawnList) {
          // If we don't have any spawners defined for this Area, then we're done
          if (!_spawners.ContainsKey(spawnSched.instance.areaKey)) {
@@ -59,7 +61,7 @@ public class SeaMonsterManager : MonoBehaviour {
          }
 
          spawnSched.spawn();
-      }
+      }*/
    }
 
    #endregion
