@@ -2509,9 +2509,9 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Verify that the user is not already in a group
-         int previousGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
+         VoyageGroupInfo previousGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
 
-         if (previousGroupId >= 0) {
+         if (previousGroupInfo != null) {
             sendError("You must leave your current group before joining another!");
             return;
          }
@@ -2583,8 +2583,8 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Verify that the user is not already in a group
-         int previousGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
-         if (previousGroupId >= 0) {
+         VoyageGroupInfo previousGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
+         if (previousGroupInfo != null) {
             sendError("You must leave your current group before joining another!");
             return;
          }
@@ -2630,24 +2630,21 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Verify that the user is in a group
-         int voyageGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
+         VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
 
-         if (voyageGroupId == -1) {
-            D.error(string.Format("Could not warp player {0} to its current voyage group - the player does not belong to a group.", Global.player.userId));
+         if (voyageGroupInfo == null) {
+            D.error(string.Format("Could not warp player {0} to its current voyage group - the player does not belong to a group.", _player.userId));
             sendError("An error occurred when searching the voyage group.");
             return;
          }
 
-         // Get the group info
-         VoyageGroupInfo groupInfo = DB_Main.getVoyageGroup(voyageGroupId);
-
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Retrieve the voyage data
-            Voyage voyage = VoyageManager.self.getVoyage(groupInfo.voyageId);
+            Voyage voyage = VoyageManager.self.getVoyage(voyageGroupInfo.voyageId);
 
             if (voyage == null) {
-               D.error(string.Format("Could not find the voyage {0} for user {1}.", voyageGroupId, Global.player.userId));
+               D.error(string.Format("Could not find the voyage {0} for user {1}.", voyageGroupInfo.groupId, _player.userId));
                sendError("An error occurred when searching for the voyage.");
                return;
             }
@@ -2694,11 +2691,11 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
-         // Get the invitee voyage group id, if any
-         int inviteeCurrentGroupId = DB_Main.getVoyageGroupForMember(inviteeInfo.userId);
+         // Get the invitee voyage group, if any
+         VoyageGroupInfo inviteeVoyageGroup = DB_Main.getVoyageGroupForMember(inviteeInfo.userId);
 
          // Check if the invitee already belongs to the group
-         if (inviteeCurrentGroupId == voyageGroup.groupId) {
+         if (inviteeVoyageGroup != null && inviteeVoyageGroup.groupId == voyageGroup.groupId) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, inviteeName + " already belongs to the group!");
             });
@@ -2777,14 +2774,14 @@ public class RPCManager : NetworkBehaviour {
                }
 
                // Get the current voyage group the user belongs to, if any
-               int currentGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
+               VoyageGroupInfo currentGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
 
                // If the user already belongs to the destination group, do nothing
-               if (currentGroupId == voyageGroupId) {
+               if (currentGroupInfo != null && currentGroupInfo.groupId == voyageGroupId) {
                   return;
                }
 
-               if (currentGroupId >= 0) {
+               if (currentGroupInfo != null) {
                   sendError("You must leave your current group before joining another!");
                   return;
                }
@@ -2822,18 +2819,15 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Get the current voyage group the user belongs to, if any
-         int currentGroupId = DB_Main.getVoyageGroupForMember(_player.userId);
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
 
          // If the player is not in a group, do nothing
-         if (currentGroupId < 0) {
+         if (voyageGroup == null) {
             return;
          }
 
-         // Retrieve the group info
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
-
          // Remove the player from its group
-         DB_Main.deleteMemberFromVoyageGroup(_player.voyageGroupId, _player.userId);
+         DB_Main.deleteMemberFromVoyageGroup(_player.userId);
 
          // Update the group member count
          voyageGroup.memberCount--;

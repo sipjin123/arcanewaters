@@ -63,7 +63,7 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    }
 
    private void setResolution (int resolutionIndex) {
-      ScreenSettingsManager.setResolution(Screen.resolutions[resolutionIndex].width, Screen.resolutions[resolutionIndex].height);
+      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height);
    }
 
    public override void show () {
@@ -73,12 +73,24 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    }
 
    private void initializeResolutionsDropdown () {
-      Resolution[] supportedResolutions = Screen.resolutions;
+      Resolution[] allResolutions = Screen.resolutions;
+
+      // Remove unsupported and duplicate resolutions (duplicate with different refresh rates)
+      _supportedResolutions = new List<Resolution>();
+      for (int i = 0; i < allResolutions.Length; i++) {
+         if (allResolutions[i].width >= ScreenSettingsManager.MIN_WIDTH &&
+            allResolutions[i].height >= ScreenSettingsManager.MIN_HEIGHT &&
+            !_supportedResolutions.Exists(r => r.width == allResolutions[i].width &&
+               r.height == allResolutions[i].height)) {
+            _supportedResolutions.Add(allResolutions[i]);
+         }
+      }
+
       List<OptionData> options = new List<OptionData>();
       int currentResolution = -1;
 
-      for (int i = 0; i < supportedResolutions.Length; i++) {
-         Resolution res = supportedResolutions[i];
+      for (int i = 0; i < _supportedResolutions.Count; i++) {
+         Resolution res = _supportedResolutions[i];
          OptionData o = new OptionData($"{res.width} x {res.height}");
          options.Add(o);
 
@@ -207,6 +219,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    // The time at which we were last shown
    protected float _lastShownTime;
+
+   // The list of supported resolutions
+   private List<Resolution> _supportedResolutions = new List<Resolution>();
 
    #endregion
 }

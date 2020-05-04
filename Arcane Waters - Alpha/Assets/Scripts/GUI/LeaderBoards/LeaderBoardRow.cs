@@ -23,7 +23,7 @@ public class LeaderBoardRow : MonoBehaviour
    #endregion
 
    public void setRowForLeaderBoard (LeaderBoardInfo entry) {
-      rankText.text = entry.rank.ToString() + ".";
+      rankText.text = entry.userRank.ToString() + ".";
       factionIcon.sprite = Faction.getShipIcon(entry.userFaction);
       userName.text = entry.userName;
       score.text = entry.score.ToString();

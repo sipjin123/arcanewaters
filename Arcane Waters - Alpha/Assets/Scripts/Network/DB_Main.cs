@@ -5643,13 +5643,13 @@ public class DB_Main : DB_MainStub {
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               int rank = 1;
+               int userRank = 1;
                while (dataReader.Read()) {
                   int userId = DataUtil.getInt(dataReader, "usrId");
                   int totalMetric = DataUtil.getInt(dataReader, "totalMetric");
-                  LeaderBoardInfo entry = new LeaderBoardInfo(rank, jobType, boardFaction, period, userId, totalMetric);
+                  LeaderBoardInfo entry = new LeaderBoardInfo(userRank, jobType, boardFaction, period, userId, totalMetric);
                   list.Add(entry);
-                  rank++;
+                  userRank++;
                }
             }
          }
@@ -5689,12 +5689,12 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO leader_boards (rank, jobType, boardFaction, period, usrId, score) " +
-            "VALUES (@rank, @jobType, @boardFaction, @period, @usrId, @score)", conn)) {
+            "INSERT INTO leader_boards (userRank, jobType, boardFaction, period, usrId, score) " +
+            "VALUES (@userRank, @jobType, @boardFaction, @period, @usrId, @score)", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.Add(new MySqlParameter("@rank", MySqlDbType.Int16));
+            cmd.Parameters.Add(new MySqlParameter("@userRank", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@jobType", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@boardFaction", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@period", MySqlDbType.Int16));
@@ -5703,7 +5703,7 @@ public class DB_Main : DB_MainStub {
 
             // Execute the query for each leader board entry
             for (int i = 0; i < entries.Count; i++) {
-               cmd.Parameters["@rank"].Value = entries[i].rank;
+               cmd.Parameters["@userRank"].Value = entries[i].userRank;
                cmd.Parameters["@jobType"].Value = (int) entries[i].jobType;
                cmd.Parameters["@boardFaction"].Value = (int) entries[i].boardFaction;
                cmd.Parameters["@period"].Value = (int) entries[i].period;
@@ -5784,7 +5784,7 @@ public class DB_Main : DB_MainStub {
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM leader_boards JOIN users USING (usrID) " +
             "WHERE leader_boards.period=@period AND leader_boards.boardFaction=@boardFaction " +
-            "ORDER BY leader_boards.jobType, leader_boards.rank", conn)) {
+            "ORDER BY leader_boards.jobType, leader_boards.userRank", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@period", (int) period);

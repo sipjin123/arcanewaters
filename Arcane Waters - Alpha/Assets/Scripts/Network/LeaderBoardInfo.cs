@@ -14,7 +14,7 @@ public class LeaderBoardInfo
    #region Public Variables
 
    // The rank of the user
-   public int rank;
+   public int userRank;
 
    // The job type
    public Jobs.Type jobType;
@@ -44,7 +44,7 @@ public class LeaderBoardInfo
 #if IS_SERVER_BUILD
 
    public LeaderBoardInfo (MySqlDataReader dataReader) {
-      this.rank = DataUtil.getInt(dataReader, "rank");
+      this.userRank = DataUtil.getInt(dataReader, "userRank");
       this.jobType = (Jobs.Type) DataUtil.getInt(dataReader, "jobType");
       this.boardFaction = (Faction.Type) DataUtil.getInt(dataReader, "boardFaction");
       this.period = (LeaderBoardsManager.Period) DataUtil.getInt(dataReader, "period");
@@ -56,9 +56,9 @@ public class LeaderBoardInfo
 
 #endif
 
-   public LeaderBoardInfo (int rank, Jobs.Type jobType, Faction.Type boardFaction, LeaderBoardsManager.Period period, int userId,
+   public LeaderBoardInfo (int userRank, Jobs.Type jobType, Faction.Type boardFaction, LeaderBoardsManager.Period period, int userId,
       int score) {
-      this.rank= rank;
+      this.userRank= userRank;
       this.jobType = jobType;
       this.boardFaction = boardFaction;
       this.period = period;
@@ -71,13 +71,13 @@ public class LeaderBoardInfo
    public override bool Equals (object rhs) {
       if (rhs is LeaderBoardInfo) {
          var other = rhs as LeaderBoardInfo;
-         return (rank == other.rank && jobType == other.jobType && period == other.period);
+         return (userRank == other.userRank && jobType == other.jobType && period == other.period);
       }
       return false;
    }
 
    public override int GetHashCode () {
-      return 17 + 31 * rank.GetHashCode()
+      return 17 + 31 * userRank.GetHashCode()
          + 883 * jobType.GetHashCode()
          + 9719 * period.GetHashCode();
    }

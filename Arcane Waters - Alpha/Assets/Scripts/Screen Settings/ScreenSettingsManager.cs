@@ -20,6 +20,12 @@ public class ScreenSettingsManager : MonoBehaviour {
    // Boolean that is true if FullScreenMode isn't Windowed
    public static bool IsFullScreen { get { return FullScreenMode == FullScreenMode.ExclusiveFullScreen; } }
 
+   // The minimum screen resolution width
+   public static int MIN_WIDTH = 1024;
+
+   // The minimum screen resolution height
+   public static int MIN_HEIGHT = 768;
+
    #endregion
 
    private void Awake () {
@@ -36,9 +42,22 @@ public class ScreenSettingsManager : MonoBehaviour {
          FullScreenMode = Screen.fullScreenMode;
          saveSettings();
       }
+
+      // If the resolution is too low, change it to the minimum supported
+      if (Width < MIN_WIDTH || Height < MIN_HEIGHT) {
+         Width = MIN_WIDTH;
+         Height = MIN_HEIGHT;
+         setResolution(Width, Height);
+      }
    }
 
    public static void setResolution (int width, int height) {
+      // If the given resolution is too low, change it to the minimum supported
+      if (width < MIN_WIDTH || height < MIN_HEIGHT) {
+         width = MIN_WIDTH;
+         height = MIN_HEIGHT;
+      }
+
       Width = width;
       Height = height;
       Screen.SetResolution(width, height, FullScreenMode);
