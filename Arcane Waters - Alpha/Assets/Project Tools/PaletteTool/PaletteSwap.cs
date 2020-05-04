@@ -13,10 +13,10 @@ public class PaletteSwap : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      if (!GetComponent<SpriteRenderer>().material.HasProperty(SHADER_TEXTURE_KEY)) {
+      if (!GetComponent<SpriteRenderer>().material.HasProperty("_PaletteId")) {
          GetComponent<SpriteRenderer>().material = Material.Instantiate(PaletteSwapManager.self.paletteSwapMaterial);
       }
-      GetComponent<SpriteRenderer>().material.SetTexture(SHADER_TEXTURE_KEY, PaletteSwapManager.generateTexture2D(paletteName));
+      GetComponent<SpriteRenderer>().material.SetInt("_PaletteId", PaletteSwapManager.generatePaletteId(paletteName));
    }
 
    public void generatePaletteSwapTexture () {

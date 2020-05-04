@@ -342,7 +342,6 @@ GameObject:
   - component: {fileID: 9161421361191220153}
   - component: {fileID: 6797200162000116777}
   - component: {fileID: 7307660222695324248}
-  - component: {fileID: -9123268119562274129}
   m_Layer: 0
   m_Name: MapTemplate
   m_TagString: Untagged
@@ -415,7 +414,6 @@ MonoBehaviour:
   biome: 0
   cameraBounds: {fileID: 5006032918482514862}
   vcam: {fileID: 817877264993902990}
-  pathfindingGrid: {fileID: -9123268119562274129}
   isSea: 0
   waterZ: 0
   isInterior: 0
@@ -433,26 +431,6 @@ MonoBehaviour:
   secretsParent: {fileID: 6276908446848925016}
   treasureSiteParent: {fileID: 3905302753718024948}
   seaMonsterParent: {fileID: 325350921020266170}
---- !u!114 &-9123268119562274129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5700123884375856064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 322532b722ed52540aa6aff6bf85475e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showGizmo: 1
-  nodeList: []
-  pathToDraw: []
-  gridTiles: {x: 0, y: 0}
-  gridBounds:
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Size: {x: 0, y: 0, z: 0}
-  cellSize: {x: 0, y: 0}
 --- !u!1 &5944893375042056862
 GameObject:
   m_ObjectHideFlags: 0

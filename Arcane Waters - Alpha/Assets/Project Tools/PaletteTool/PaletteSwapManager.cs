@@ -35,6 +35,7 @@ public class PaletteSwapManager : MonoBehaviour {
 
                // Save the palette data in the memory cache
                _paletteDataList.Add(paletteData);
+               _paletteIdList.Add(xmlPair.xmlId);
             }
          });
       });
@@ -72,10 +73,19 @@ public class PaletteSwapManager : MonoBehaviour {
       return tex;
    }
 
+   public static int generatePaletteId (string name) {
+      int index = _paletteDataList.FindIndex((PaletteToolData toolData) => toolData.paletteName.Equals(name));
+      if (index < 0) {
+         return -1;
+      }
+      return _paletteIdList[index];
+   }
+
    #region Private Variables
 
    // Cached data from database about created palettes
    private static List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
+   private static List<int> _paletteIdList = new List<int>();
 
    #endregion
 }

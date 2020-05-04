@@ -3626,61 +3626,6 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void setNewLocalPositionWhenInArea (List<int> userIds, List<string> areaKeys, Vector2 localPosition, Direction facingDirection, string areaKey) {
-      if (userIds.Count <= 0) {
-         return;
-      }
-
-      // Build the query
-      StringBuilder query = new StringBuilder();
-      query.Append("UPDATE users SET localX=@localX, localY=@localY, usrFacing=@usrFacing, areaKey=@areaKey ");
-      query.Append("WHERE ");
-
-      // Add the userId filter
-      query.Append("usrId IN (");
-      for (int i = 0; i < userIds.Count; i++) {
-         query.Append("@usrId" + i + ", ");
-      }
-
-      // Delete the last ", "
-      query.Length = query.Length - 2;
-      query.Append(") ");
-
-      // Add the areaKey filter
-      query.Append("AND areaKey IN (");
-      for (int i = 0; i < areaKeys.Count; i++) {
-         query.Append("@areaKey" + i + ", ");
-      }
-
-      // Delete the last ", "
-      query.Length = query.Length - 2;
-      query.Append(") ");
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
-            conn.Open();
-            cmd.Prepare();
-            for (int i = 0; i < userIds.Count; i++) {
-               cmd.Parameters.AddWithValue("@usrId" + i, userIds[i]);
-            }
-            for (int i = 0; i < areaKeys.Count; i++) {
-               cmd.Parameters.AddWithValue("@areaKey" + i, areaKeys[i]);
-            }
-
-            cmd.Parameters.AddWithValue("@localX", localPosition.x);
-            cmd.Parameters.AddWithValue("@localY", localPosition.y);
-            cmd.Parameters.AddWithValue("@usrFacing", (int) facingDirection);
-            cmd.Parameters.AddWithValue("@areaKey", areaKey);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
    public static new void storeShipHealth (int shipId, int shipHealth) {
       shipHealth = Mathf.Max(shipHealth, 0);
 
@@ -6575,13 +6520,16 @@ public class DB_Main : DB_MainStub {
       return groupInfo;
    }
 
-   public static new int getVoyageGroupForMember (int userId) {
-      int groupId = -1;
+   public static new VoyageGroupInfo getVoyageGroupForMember (int userId) {
+      VoyageGroupInfo groupInfo = null;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM voyage_group_members WHERE usrId=@usrId", conn)) {
+            "SELECT *, COUNT(*) AS memberCount FROM voyage_groups " +
+            "JOIN voyage_group_members ON voyage_groups.groupId = voyage_group_members.groupId " +
+            "WHERE voyage_groups.groupId IN (SELECT groupId FROM voyage_group_members WHERE usrId=@usrId) " +
+            "GROUP BY voyage_groups.groupId", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -6590,7 +6538,7 @@ public class DB_Main : DB_MainStub {
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  groupId = DataUtil.getInt(dataReader, "groupId");
+                  groupInfo = new VoyageGroupInfo(dataReader);
                }
             }
 
@@ -6601,7 +6549,7 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return groupId;
+      return groupInfo;
    }
 
    public static new List<int> getVoyageGroupMembers (int groupId) {
@@ -6687,15 +6635,14 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void deleteMemberFromVoyageGroup (int groupId, int userId) {
+   public static new void deleteMemberFromVoyageGroup (int userId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "DELETE FROM voyage_group_members WHERE groupId=@groupId AND usrId=@usrId", conn)) {
+            "DELETE FROM voyage_group_members WHERE usrId=@usrId", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@groupId", groupId);
             cmd.Parameters.AddWithValue("@usrId", userId);
 
             // Execute the command
@@ -6706,7 +6653,7 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void deleteAllVoyageGroupsForDevice (string deviceName) {
+   public static new void deleteAllVoyageGroups (string deviceName) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -6898,7 +6845,7 @@ public class DB_Main : DB_MainStub {
    }
 
    */
-   public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
+   public static new int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
 
       try {
@@ -8044,10 +7991,10 @@ public class DB_Main : DB_MainStub {
    #region Private Variables
 
    // Database connection settings
-   private static string _remoteServer = "52.72.202.104"; // 52.72.202.104 // "127.0.0.1";//
+   private static string _remoteServer = "dev.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; // 52.72.202.104 // "127.0.0.1";//
    private static string _database = "arcane";
-   private static string _uid = "test_user";
-   private static string _password = "test_password";
+   private static string _uid = "userAdKmE";
+   private static string _password = "HEqbVDsvvCza5n4N";
    private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion

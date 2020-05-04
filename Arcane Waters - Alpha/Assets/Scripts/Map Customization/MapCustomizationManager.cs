@@ -71,9 +71,13 @@ namespace MapCustomization
       /// <param name="worldPosition"></param>
       public static void pointerDrag (Vector2 delta) {
          if (_selectedPrefab != null) {
-            Vector2 originalPos = (Vector2) _selectedPrefab.transform.position - _selectedPrefab.unappliedChanges.translation;
-            _selectedPrefab.unappliedChanges.translation += delta;
-            _selectedPrefab.transform.position = originalPos + _selectedPrefab.unappliedChanges.translation;
+            if (_selectedPrefab.unappliedChanges.localPosition == null) {
+               _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.anchorLocalPosition + delta;
+            } else {
+               _selectedPrefab.unappliedChanges.localPosition += delta;
+            }
+
+            _selectedPrefab.transform.localPosition = _selectedPrefab.unappliedChanges.localPosition.Value;
             _selectedPrefab.GetComponent<ZSnap>()?.snapZ();
          }
       }

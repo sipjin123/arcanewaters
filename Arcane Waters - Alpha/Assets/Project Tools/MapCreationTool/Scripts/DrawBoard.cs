@@ -104,6 +104,9 @@ namespace MapCreationTool
       }
 
       public static void changeLoadedVersion (MapVersion version) {
+         if (version == null) {
+            PlacedPrefab.nextPrefabId = 0;
+         }
          loadedVersion = version;
          loadedVersionChanged?.Invoke(loadedVersion);
       }
@@ -175,17 +178,9 @@ namespace MapCreationTool
       public void applyDeserializedData (DeserializedProject data, MapVersion mapVersion) {
          changeLoadedVersion(null);
 
-         changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs, currentSelection));
-         foreach (var pref in data.prefabs) {
-            PlacedPrefab pp = placedPrefabs.FirstOrDefault(p => p.original == pref.prefab &&
-                     (Vector2) p.placedInstance.transform.position == (Vector2) pref.position);
+         PlacedPrefab.nextPrefabId = data.nextPrefabId;
 
-            if (pp != null && pref.dataFields != null) {
-               foreach (var df in pref.dataFields) {
-                  setPrefabData(pp, df.k, df.v, false);
-               }
-            }
-         }
+         changeBoard(BoardChange.calculateDeserializedDataChange(data, layers, placedPrefabs, currentSelection));
 
          changeLoadedVersion(mapVersion);
       }
@@ -196,6 +191,18 @@ namespace MapCreationTool
 
       public void changeBoard (BoardChange change, bool registerUndo = true) {
          if (change == null) return;
+
+         // Give prefabs new ids if they do not have them already
+         foreach (PrefabChange prefChange in change.prefabChanges) {
+            if (prefChange.prefabToPlace != null) {
+               if (prefChange.dataToSet == null) {
+                  prefChange.dataToSet = new Dictionary<string, string>();
+               }
+               if (!prefChange.dataToSet.ContainsKey(DataField.PLACED_PREFAB_ID)) {
+                  prefChange.dataToSet[DataField.PLACED_PREFAB_ID] = (PlacedPrefab.nextPrefabId++).ToString();
+               }
+            }
+         }
 
          BoardChange undoChange = new BoardChange() { isSelectionChange = change.isSelectionChange };
 
@@ -661,6 +668,12 @@ namespace MapCreationTool
 
          return null;
       }
+
+      //private void OnDrawGizmos () {
+      //   foreach (PlacedPrefab prefab in placedPrefabs) {
+      //      UnityEditor.Handles.Label(prefab.placedInstance.transform.position, prefab.getData("id"));
+      //   }
+      //}
 
       public static Bounds getPrefabBounds () {
          Bounds result = new Bounds(Vector3.zero, (Vector3Int) size);

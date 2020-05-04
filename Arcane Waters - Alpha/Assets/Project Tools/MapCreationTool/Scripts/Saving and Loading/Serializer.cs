@@ -78,7 +78,8 @@ namespace MapCreationTool.Serialization
             layers = layersSerialized.ToArray(),
             prefabs = prefabsSerialized,
             editorType = editorType,
-            size = size
+            size = size,
+            nextPrefabId = PlacedPrefab.nextPrefabId
          };
 
          return JsonUtility.ToJson(project, prettyPrint);
@@ -603,7 +604,8 @@ namespace MapCreationTool.Serialization
             tiles = tiles.ToArray(),
             biome = dt.biome,
             size = dt.size,
-            editorType = dt.editorType
+            editorType = dt.editorType,
+            nextPrefabId = dt.nextPrefabId
          }.fixPrefabFields();
       }
 
@@ -749,6 +751,7 @@ namespace MapCreationTool.Serialization
       public Biome.Type biome;
       public EditorType editorType;
       public Vector2Int size;
+      public int nextPrefabId;
 
       public DeserializedProject fixPrefabFields () {
          foreach (DeserializedPrefab prefab in prefabs) {
@@ -784,6 +787,7 @@ namespace MapCreationTool.Serialization
       public Layer002[] layers;
       public Prefab001[] prefabs;
       public Vector2Int size;
+      public int nextPrefabId;
    }
 
    [Serializable]
@@ -880,6 +884,8 @@ namespace MapCreationTool.Serialization
       public const string POSSIBLE_DISCOVERY = "possible discovery";
 
       public const string SHIP_DATA_KEY = "ship data";
+
+      public const string PLACED_PREFAB_ID = "id";
 
       public string k; // Key
       public string v; // Value

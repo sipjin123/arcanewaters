@@ -30,6 +30,8 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
                warp.spawnTarget = field.v.Trim(' ');
                warp.gameObject.SetActive(true);
                break;
+            case DataField.PLACED_PREFAB_ID:
+               break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");
                break;

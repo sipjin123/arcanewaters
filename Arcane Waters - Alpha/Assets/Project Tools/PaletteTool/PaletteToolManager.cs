@@ -492,6 +492,127 @@ public class PaletteToolManager : XmlDataToolManager {
       return tex;
    }
 
+   private Color findNearestColor(Color referenceColor, List<Color> availableColors) {
+      Color nearestColor = Color.black;
+      float dotDiff = float.MaxValue;
+
+      foreach (Color color in availableColors) {
+         float tmpDiffDot = Vector3.Distance(new Vector3(color.r, color.g, color.b), new Vector3(referenceColor.r, referenceColor.g, referenceColor.b));
+
+         if (tmpDiffDot < dotDiff) {
+            nearestColor = color;
+            dotDiff = tmpDiffDot;
+         }
+      }
+
+      return nearestColor;
+   }
+
+   private void generateLutTextureFromFilePalette(Texture2D tex) {
+      #if UNITY_EDITOR
+      if (tex.width != 16 || tex.height != 16) {
+         D.error("Please provide texture of size 16x16");
+         return;
+      }
+
+      // Get texture to work with
+      Texture2D readableCopy = createReadableTextureCopy(tex);
+
+      // Fill list with pixels
+      List<Color> availableColors = new List<Color>(readableCopy.GetPixels());
+
+      Color[] finalList = new Color[256*16];
+
+      for (int z = 0; z < 16; z++) {
+         for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+               Color refColor = new Color((float) x / 15.0f, 1.0f - (float) z / 15.0f, (float) y / 15.0f);
+               finalList[x + y * 16 + z * 256] = findNearestColor(refColor, availableColors); ;
+            }
+         }
+      }
+
+      // Save texture to png
+      Texture2D outTex = new Texture2D(256, 16);
+      outTex.wrapMode = TextureWrapMode.Clamp;
+      outTex.filterMode = FilterMode.Point;
+      outTex.SetPixels(finalList);
+      byte[] atlasPng = outTex.EncodeToPNG();
+      string path2 = Application.dataPath + "/Project Tools/PaletteTool/" + "lutTex.png";
+      File.WriteAllBytes(path2, atlasPng);
+      AssetDatabase.Refresh();
+      #endif
+   }
+
+   private void generateTextureFromFilePalette(Texture2D tex, int popularRejectCount = 1) {
+      #if UNITY_EDITOR
+      // Get atlas texture to work with
+      Texture2D readableCopy = createReadableTextureCopy(tex);
+
+      List<Color> colorList = new List<Color>();
+      Dictionary<Color, int> popularColors = new Dictionary<Color, int>();
+
+      // Get all colors and check how often they occur
+      Color[] pixels = readableCopy.GetPixels();
+      foreach (Color color in pixels) {
+         if (color.a > 0) {
+            bool failed = false;
+            foreach (Color arrayColor in colorList) {
+               if (arrayColor.r == color.r && arrayColor.g == color.g && arrayColor.b == color.b) {
+                  if (popularColors.ContainsKey(color)) {
+                     popularColors[color]++;
+                  } else {
+                     popularColors.Add(color, 1);
+                  }
+                  failed = true;
+                  break;
+               }
+            }
+            if (failed) {
+               continue;
+            }
+            colorList.Add(color);
+         }
+      }
+
+      // Remove number of pixels that are not related to palette that we need (usually single color in-between palette colors)
+      for (int i = 0; i < popularRejectCount; i++) {
+         int maxValue = int.MinValue;
+         Color currentColor = Color.black;
+         foreach (KeyValuePair<Color, int> colorWeightPair in popularColors) {
+            if (colorWeightPair.Value > maxValue) {
+               maxValue = colorWeightPair.Value;
+               currentColor = colorWeightPair.Key;
+            }
+         }
+
+         colorList.Remove(currentColor);
+         popularColors.Remove(currentColor);
+         if (popularColors.Keys.Count == 0) {
+            break;
+         }
+      }
+
+      // Fill with data to correct texture size
+      int size = Mathf.RoundToInt(Mathf.Sqrt(colorList.Count));
+      for (int i = 0; i < (size * size) - colorList.Count; i++) {
+         colorList.Add(Color.black);
+      }
+
+      colorList.Sort(sortColors);
+
+      // Save texture to png
+      Texture2D outTex = new Texture2D(size, size);
+      outTex.wrapMode = TextureWrapMode.Clamp;
+      outTex.filterMode = FilterMode.Point;      
+      outTex.SetPixels(colorList.ToArray());
+      byte[] atlasPng = outTex.EncodeToPNG();
+      string path2 = Application.dataPath + "/Project Tools/PaletteTool/" + "mainPalette.png";
+      File.WriteAllBytes(path2, atlasPng);
+      AssetDatabase.Refresh();
+      #endif
+   }
+
    private List<Color> generateMostCommonPixelsInSprite (Sprite sprite) {
       // Get atlas texture to work with
       Texture2D readableCopy = createReadableTextureCopy(sprite.texture);
@@ -574,7 +695,7 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void generatePaletteFromAllAssets () {
-#if UNITY_EDITOR
+      #if UNITY_EDITOR
       string[] spritesFolder = { "Assets/Sprites" };
       string[] allPaths = AssetDatabase.FindAssets("t:texture2D");
 
@@ -641,7 +762,7 @@ public class PaletteToolManager : XmlDataToolManager {
       string path2 = Application.dataPath + "/Project Tools/PaletteTool/" + "allColorsInProject.png";
       File.WriteAllBytes(path2, atlasPng);
       AssetDatabase.Refresh();
-#endif
+      #endif
    }
 
    private int sortColors (Color a, Color b) {

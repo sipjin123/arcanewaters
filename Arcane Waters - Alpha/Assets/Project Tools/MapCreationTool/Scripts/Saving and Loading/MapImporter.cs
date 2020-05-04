@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using System;
+using MapCustomization;
 
 namespace MapCreationTool
 {
@@ -263,9 +264,15 @@ namespace MapCreationTool
                   }
                }
 
-               IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
-               if (receiver != null && prefab.d != null) {
-                  receiver.receiveData(prefab.d);
+               if (prefab.d != null) {
+                  foreach (IMapEditorDataReceiver receiver in pref.GetComponents<IMapEditorDataReceiver>()) {
+                     receiver.receiveData(prefab.d);
+                  }
+               }
+
+               CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
+               if (customizablePrefab != null) {
+                  customizablePrefab.anchorLocalPosition = pref.transform.localPosition;
                }
             }
          }

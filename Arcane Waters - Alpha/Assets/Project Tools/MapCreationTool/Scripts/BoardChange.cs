@@ -106,7 +106,8 @@ namespace MapCreationTool
 
             result.prefabChanges.Add(new PrefabChange {
                positionToPlace = prefab.position,
-               prefabToPlace = prefab.prefab
+               prefabToPlace = prefab.prefab,
+               dataToSet = prefab.dataFields.ToDictionary(f => f.k, f => f.v)
             });
          }
 

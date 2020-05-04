@@ -910,8 +910,8 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static int getVoyageGroupForMember (int userId) {
-      return 0;
+   public static VoyageGroupInfo getVoyageGroupForMember (int userId) {
+      return null;
    }
 
    public static List<int> getVoyageGroupMembers (int groupId) {
@@ -926,11 +926,11 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void deleteMemberFromVoyageGroup (int groupId, int userId) {
+   public static void deleteMemberFromVoyageGroup (int userId) {
 
    }
 
-   public static void deleteAllVoyageGroupsForDevice (string deviceName) {
+   public static void deleteAllVoyageGroups (string deviceName) {
 
    }
 
@@ -975,14 +975,14 @@ public class DB_MainStub : MonoBehaviour {
       return new List<XMLPair>();
    }
 
+   public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
+      return 0;
+   }
+
    /*
 
    public static void refillSupplies (int userId) {
 
-   }
-
-   public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
-      return 0;
    }
 
    public static void deleteAccount (int accountId) {

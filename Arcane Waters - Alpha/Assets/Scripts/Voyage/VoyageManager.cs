@@ -10,6 +10,9 @@ public class VoyageManager : MonoBehaviour {
 
    #region Public Variables
 
+   // The number of seconds before an offline user is removed from its voyage group
+   public static int DELAY_BEFORE_GROUP_REMOVAL = 5 * 60;
+
    // Self
    public static VoyageManager self;
 
@@ -238,6 +241,45 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   public void onUserDisconnectsFromServer (int userId) {
+      // Stop any existing group removal coroutine
+      stopExistingGroupRemovalCoroutine(userId);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the current voyage group the user belongs to, if any
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(userId);
+
+         // Back to Unity Thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // If the player is not in a group, do nothing
+            if (voyageGroup == null) {
+               return;
+            }
+
+            // Remove the disconnected user from its voyage group after a delay
+            Coroutine removalCO = StartCoroutine(CO_RemoveDisconnectedUserFromVoyageGroup(userId));
+
+            // Keep a reference to the coroutine
+            _pendingRemovalFromGroups.Add(userId, removalCO);
+         });
+      });
+   }
+
+   public void onUserConnectsToServer (int userId) {
+      // Stop any existing group removal coroutine
+      stopExistingGroupRemovalCoroutine(userId);
+   }
+
+   private void stopExistingGroupRemovalCoroutine (int userId) {
+      if (_pendingRemovalFromGroups.TryGetValue(userId, out Coroutine existingCO)) {
+         if (existingCO != null) {
+            StopCoroutine(existingCO);
+         }
+         _pendingRemovalFromGroups.Remove(userId);
+      }
+   }
+
    private void updateVoyageGroupMembers () {
       if (Global.player == null || !Global.player.isLocalPlayer) {
          return;
@@ -411,8 +453,15 @@ public class VoyageManager : MonoBehaviour {
       // Get our server
       Server server = ServerNetwork.self.server;
 
-      // Get the voyage area keys
-      List<string> voyageAreas = getVoyageAreaKeys();
+      // Wait until our server port is initialized
+      while (server.port == 0) {
+         yield return null;
+      }
+
+      // Check that our server is the main server
+      if (!server.isMainServer()) {
+         yield break;
+      }
 
       // Get the location of the starting spawn
       SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
@@ -426,18 +475,73 @@ public class VoyageManager : MonoBehaviour {
          // Get all users, members of groups created by this computer
          List<int> groupMembers = DB_Main.getAllVoyageGroupMembersForDevice(deviceName);
 
-         // If the users are in a voyage area, move them to the starting town
-         DB_Main.setNewLocalPositionWhenInArea(groupMembers, voyageAreas, startingSpawnLocalPos, Direction.South, Area.STARTING_TOWN);
-
          // Delete the groups and group members created by this computer
-         DB_Main.deleteAllVoyageGroupsForDevice(deviceName);
+         DB_Main.deleteAllVoyageGroups(deviceName);
+
+         // Do additional updates on the users after being removed from the group
+         foreach (int userId in groupMembers) {
+            checkUserConsistencyAfterRemovalFromGroup(userId, startingSpawnLocalPos);
+         }
       });
+   }
+
+   private IEnumerator CO_RemoveDisconnectedUserFromVoyageGroup (int userId) {
+      // Wait a few minutes in case the user reconnects
+      yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
+
+      // Get the location of the starting spawn
+      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+      Vector2 startingSpawnLocalPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the current voyage group the user belongs to, if any
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(userId);
+
+         // If the player is not in a group, do nothing
+         if (voyageGroup == null) {
+            return;
+         }
+
+         // Remove the player from its group
+         DB_Main.deleteMemberFromVoyageGroup(userId);
+
+         // Update the group member count
+         voyageGroup.memberCount--;
+
+         // If the group is now empty, delete it
+         if (voyageGroup.memberCount <= 0) {
+            DB_Main.deleteVoyageGroup(voyageGroup.groupId);
+         }
+
+         // Do additional updates on the user after being removed from the group
+         checkUserConsistencyAfterRemovalFromGroup(userId, startingSpawnLocalPos);
+      });
+   }
+
+   // Must be called in the background thread!
+   private void checkUserConsistencyAfterRemovalFromGroup (int userId, Vector2 startingSpawnLocalPos) {
+      // Get the user objects
+      UserObjects userObjects = DB_Main.getUserObjects(userId);
+
+      // If the user is in a voyage area, move him to the starting town
+      if (isVoyageArea(userObjects.userInfo.areaKey)) {
+         DB_Main.setNewLocalPosition(userId, startingSpawnLocalPos, Direction.South, Area.STARTING_TOWN);
+      }
+
+      // If the user's ship was killed, restore its hp
+      if (userObjects.shipInfo.health <= 0) {
+         DB_Main.storeShipHealth(userObjects.shipInfo.shipId, userObjects.shipInfo.maxHealth);
+      }
    }
 
    #region Private Variables
 
    // Keeps track of the group members visible by this client
    private List<int> _visibleGroupMembers = new List<int>();
+
+   // The pending coroutines that remove users from groups after disconnecting
+   private Dictionary<int, Coroutine> _pendingRemovalFromGroups = new Dictionary<int, Coroutine>();
 
    // The id of the group the player is being invited to, if any
    private int _invitationVoyageGroupId = -1;

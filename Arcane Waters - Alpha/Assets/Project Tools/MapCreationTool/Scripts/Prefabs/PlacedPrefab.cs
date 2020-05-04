@@ -11,6 +11,8 @@ namespace MapCreationTool
 
       public Dictionary<string, string> data { get; private set; }
 
+      public static int nextPrefabId { get; set; }
+
       public PlacedPrefab () {
          data = new Dictionary<string, string>();
       }

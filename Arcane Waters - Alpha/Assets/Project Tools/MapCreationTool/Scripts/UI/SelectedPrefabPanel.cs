@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MapCreationTool.Serialization;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -71,7 +72,7 @@ namespace MapCreationTool
          if (prefab != null) {
             dataDef = prefab.placedInstance.GetComponent<PrefabDataDefinition>();
             if (dataDef != null) {
-               setLayout(dataDef);
+               setLayout(dataDef, prefab);
                setData(prefab, dataDef);
             }
          }
@@ -83,8 +84,8 @@ namespace MapCreationTool
          }
       }
 
-      private void setLayout (PrefabDataDefinition data) {
-         titleText.text = data.title;
+      private void setLayout (PrefabDataDefinition data, PlacedPrefab prefab) {
+         titleText.text = data.title + " " + prefab.getData(DataField.PLACED_PREFAB_ID);
          // Custom logic for warps
          if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0 || data.title.CompareTo("Secret") == 0) {
             // target map

@@ -63,6 +63,8 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
             case DataField.GENERIC_ACTION_TRIGGER_HEIGHT_KEY:
                _collider.size = new Vector2(_collider.size.x, field.floatValue);
                break;
+            case DataField.PLACED_PREFAB_ID:
+               break;
             default:
                Debug.LogWarning($"Unrecognized data field key: { field.k }");
                break;

@@ -13,7 +13,10 @@ namespace MapCustomization
       public Collider2D interactionCollider;
 
       // Changes that the user is currently making and were not yet submitted to the server
-      public Changes unappliedChanges;
+      public PrefabChanges unappliedChanges;
+
+      // Last confirmed placement position of the prefab
+      public Vector2 anchorLocalPosition;
 
       #endregion
 
@@ -26,14 +29,20 @@ namespace MapCustomization
       }
 
       public void clearChanges () {
-         unappliedChanges.translation = Vector2.zero;
+         unappliedChanges.localPosition = null;
       }
 
       public void revertChanges () {
+         transform.localPosition = anchorLocalPosition;
 
+         unappliedChanges.localPosition = null;
       }
 
       public void submitChanges () {
+         if (unappliedChanges.localPosition != null) {
+            anchorLocalPosition = unappliedChanges.localPosition.Value;
+         }
+
          clearChanges();
       }
 
@@ -43,10 +52,5 @@ namespace MapCustomization
       private SpriteRenderer _ren;
 
       #endregion
-
-      public struct Changes
-      {
-         public Vector2 translation;
-      }
    }
 }

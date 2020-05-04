@@ -151,6 +151,9 @@ public class MyNetworkManager : NetworkManager {
       // Set up tutorial data
       NewTutorialManager.self.storeInfoFromDatabase();
 
+      // Start the voyage maps and voyage groups management
+      VoyageManager.self.startVoyageManagement();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -203,14 +206,10 @@ public class MyNetworkManager : NetworkManager {
          ShipInfo shipInfo = userObjects.shipInfo;
 
          // Get the current voyage group the user is member of, if any
-         int voyageGroupId = DB_Main.getVoyageGroupForMember(authenticatedUserId);
+         VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(authenticatedUserId);
 
          // Get the voyage id, if any
-         int voyageId = -1;
-         if (voyageGroupId != -1) {
-            VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroup(voyageGroupId);
-            voyageId = voyageGroupInfo.voyageId;
-         }
+         int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : - 1;
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -231,6 +230,9 @@ public class MyNetworkManager : NetworkManager {
 
             // Check if the player disconnected a few seconds ago and its object is still in the server
             DisconnectionManager.self.reconnectDisconnectedUser(userInfo, shipInfo);
+
+            // Manage the voyage groups on user connection
+            VoyageManager.self.onUserConnectsToServer(userInfo.userId);
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
@@ -261,7 +263,7 @@ public class MyNetworkManager : NetworkManager {
             player.facing = (Direction) userInfo.facingDirection;
             player.desiredAngle = DirectionUtil.getAngle(player.facing);
             player.XP = userInfo.XP;
-            player.voyageGroupId = voyageGroupId;
+            player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
             ServerCommunicationHandler.self.addPlayer(player.userId);
@@ -350,6 +352,9 @@ public class MyNetworkManager : NetworkManager {
 
          // Remove this player from the user list of the server
          ServerCommunicationHandler.self.removePlayer(player.userId);
+
+         // Manage the voyage groups on user disconnection
+         VoyageManager.self.onUserDisconnectsFromServer(player.userId);
 
          if (player is ShipEntity) {
             // If the player is a ship, keep it in the server for a few seconds
