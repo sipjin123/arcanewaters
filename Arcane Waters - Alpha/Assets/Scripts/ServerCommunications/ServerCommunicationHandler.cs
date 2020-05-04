@@ -165,6 +165,8 @@ public class ServerCommunicationHandler : MonoBehaviour
       });
    }
 
+   #region UserManagement
+
    public void addPlayer (int userId) {
       if (!ourServerData.connectedUserIds.Contains(userId)) {
          ourServerData.connectedUserIds.Add(userId);
@@ -212,6 +214,8 @@ public class ServerCommunicationHandler : MonoBehaviour
          updateServerDatabase(ourServerData, true);
       }
    }
+
+   #endregion
 
    #region Server Data Features
 
@@ -331,7 +335,7 @@ public class ServerCommunicationHandler : MonoBehaviour
                   if (existingSqlData != null) {
                      // Update the server data if it was modified
                      if (newSqlData.latestUpdate > existingSqlData.latestUpdate) {
-                        D.editorLog("The server: " + newSqlData.deviceName + " has updated its data from: " + existingSqlData.latestUpdate + " to " + newSqlData.latestUpdate, Color.green);
+                        //D.editorLog("The server: " + newSqlData.deviceName + " has updated its data from: " + existingSqlData.latestUpdate + " to " + newSqlData.latestUpdate, Color.green);
                         serversToUpdate.Add(existingSqlData);
                      } 
                   } else {
@@ -382,7 +386,7 @@ public class ServerCommunicationHandler : MonoBehaviour
                   // Keep our local cache to self updated
                   if (existingData.deviceName == ourDeviceName && existingData.port == ourPort && existingData.ip == ourIp) {
                      ourServerData = existingData;
-                  }
+                  } 
                } else {
                   // Fail safe code, assign the missing data incase it is missing
                   if (newSqlData.deviceName == ourDeviceName && newSqlData.port == ourPort && existingData.ip == ourIp) {
@@ -413,7 +417,7 @@ public class ServerCommunicationHandler : MonoBehaviour
 
          } else {
             StartCoroutine(CO_ResetServerData(newSqlData));
-            D.editorLog("Missing server, it is not existing yet: " + newSqlData.deviceName + " - " + newSqlData.ip, Color.green);
+            D.editorLog("Missing server, it is not existing yet: " + newSqlData.deviceName + " - " + newSqlData.ip + " - " + newSqlData.port, Color.green);
          }
       }
    }

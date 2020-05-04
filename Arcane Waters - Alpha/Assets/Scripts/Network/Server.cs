@@ -15,9 +15,6 @@ public class Server : MonoBehaviour {
    // Our server port
    public int port;
 
-   // The number of players on this server
-   public int playerCount;
-
    // The device name
    public string deviceName;
     
@@ -54,12 +51,6 @@ public class Server : MonoBehaviour {
 
       // In Editor host mode, the instance is created before this Server object exists
       InstanceManager.self.recalculateOpenAreas();
-   }
-
-   private void Update () {
-      if (isLocalServer) {
-         this.playerCount = MyNetworkManager.self.numPlayers;
-      }
    }
 
    void OnDestroy () {

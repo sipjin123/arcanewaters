@@ -108,12 +108,24 @@ public class ServerCommunicationSimulator : MonoBehaviour {
             GUILayout.Space(10);
             GUILayout.Box("Connected Users: " + server.connectedUserIds.Count);
             foreach (int ids in server.connectedUserIds) {
-               GUILayout.Box("User: " + ids);
+               GUILayout.Box("Svr Data User: " + ids);
             }
             GUILayout.Space(10);
-            GUILayout.Box("Existing Voyages:" + server.voyageList.Count);
+
+            Server equivalentServer = ServerNetwork.self.servers.ToList().Find(_ => _.port == server.port);
+            try {
+               GUILayout.Box("Connected Users in ServerObj: " + equivalentServer.connectedUserIds.Count);
+               foreach (int ids in equivalentServer.connectedUserIds) {
+                  GUILayout.Box("Svr User: " + ids);
+               }
+            } catch {
+               GUILayout.Box("No equivalent Server for port: " + server.port);
+            }
+
+            GUILayout.Space(10);
+            //GUILayout.Box("Existing Voyages:" + server.voyageList.Count);
             foreach (Voyage voyages in server.voyageList) {
-               GUILayout.Box("Voyages: " + voyages.voyageId);
+               //GUILayout.Box("Voyages: " + voyages.voyageId);
             }
             GUILayout.EndVertical();
          }

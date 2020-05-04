@@ -49,7 +49,6 @@ namespace SteamLoginSystem
          self = this;
       }
 
-      [ServerOnly]
       public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent) {
          StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent));
       }
@@ -94,7 +93,6 @@ namespace SteamLoginSystem
          }
       }
 
-      [ServerOnly]
       public void getOwnershipInfo (string steamId, AppOwnershipEvent newOwnershipEvent) {
          StartCoroutine(CO_ProcessAppOwnership(steamId, newOwnershipEvent));
       }

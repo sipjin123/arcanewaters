@@ -219,7 +219,7 @@ public class MyNetworkManager : NetworkManager {
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
             if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.ourPort) {
-               D.editorLog("Best server is Not the Local Server: (" + bestServer.deviceName + "), now Redirecting", Color.yellow);
+               D.editorLog("Best server is Not the Local Server: (" + bestServer.port + "), now Redirecting", Color.yellow);
 
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);

@@ -51,7 +51,7 @@ public class ServerNetwork : MonoBehaviour {
       Server bestServer = getServerWithLeastPlayers();
       try {
          string logMsg = string.Format("Found best server {0}:{1} with player count {2} for {3} ({4})",
-            bestServer.ipAddress, bestServer.port, bestServer.playerCount, username, address);
+            bestServer.ipAddress, bestServer.port, bestServer.connectedUserIds.Count, username, address);
          D.debug(logMsg);
       } catch {
          D.debug("Found best server but cannot get details");
@@ -112,20 +112,21 @@ public class ServerNetwork : MonoBehaviour {
       List<Server> bestServers = new List<Server>();
 
       foreach (Server server in servers) {
-         if (server.playerCount == leastPlayers) {
+         if (server.connectedUserIds.Count == leastPlayers) {
             bestServers.Add(server);
-         } else if (server.playerCount < leastPlayers) {
+         } else if (server.connectedUserIds.Count < leastPlayers) {
             bestServers.Clear();
             bestServers.Add(server);
-            leastPlayers = server.playerCount;
+            leastPlayers = server.connectedUserIds.Count;
          }
       }
 
-      if (bestServers.Count  == 0) {
+      if (bestServers.Count == 0) {
          return null;
       } else {
-         // If many servers have the same lowest number of players, randomly choose one
-         return bestServers[Random.Range(0, bestServers.Count)];
+         // If many servers have the same lowest number of players, select the first port
+         List<Server> similarServers = bestServers.OrderBy(_ => _.port).ToList();
+         return similarServers[0];   
       }
    }
 
