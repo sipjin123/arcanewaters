@@ -38,6 +38,8 @@ public class PlayerShipEntity : ShipEntity {
 
    #endregion
 
+   protected override bool isBot () { return false; }
+
    protected override void Start () {
       base.Start();
 

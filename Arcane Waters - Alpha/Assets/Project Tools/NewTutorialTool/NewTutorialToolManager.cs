@@ -39,16 +39,6 @@ public class NewTutorialToolManager : XmlDataToolManager {
       });
    }
 
-   public void duplicateNewTutorial (NewTutorialData data) {
-      data.tutorialId = 0;
-
-      foreach (TutorialStepData step in data.tutorialStepList) {
-         step.stepId = 0;
-      }
-
-      saveNewTutorial(data);
-   }
-
    public void deleteNewTutorial (NewTutorialData data) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deleteNewTutorialById(data.tutorialId);

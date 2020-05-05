@@ -234,17 +234,18 @@ namespace MapCreationTool
 
                placedPrefabs.Add(newPref);
 
+               var pdd = pref.GetComponent<PrefabDataDefinition>();
+               if (pdd != null) {
+                  pdd.restructureCustomFields();
+                  foreach (var kv in pdd.dataFields)
+                     setPrefabData(newPref, kv.name, kv.defaultValue, false);
+                  foreach (var kv in pdd.selectDataFields)
+                     setPrefabData(newPref, kv.name, kv.options[kv.defaultOption].value, false);
+               }
+
                if (pc.dataToSet != null) {
-                  foreach (var d in pc.dataToSet)
+                  foreach (var d in pc.dataToSet) {
                      setPrefabData(newPref, d.Key, d.Value, false);
-               } else {
-                  var pdd = pref.GetComponent<PrefabDataDefinition>();
-                  if (pdd != null) {
-                     pdd.restructureCustomFields();
-                     foreach (var kv in pdd.dataFields)
-                        setPrefabData(newPref, kv.name, kv.defaultValue, false);
-                     foreach (var kv in pdd.selectDataFields)
-                        setPrefabData(newPref, kv.name, kv.options[kv.defaultOption].value, false);
                   }
                }
             }

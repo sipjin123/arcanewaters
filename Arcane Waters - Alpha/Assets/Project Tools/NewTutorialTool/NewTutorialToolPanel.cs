@@ -24,10 +24,14 @@ public class NewTutorialToolPanel : MonoBehaviour {
       saveButton.onClick.AddListener(() => {
          NewTutorialData tutorialData = getNewTutorialData();
          toolManager.saveNewTutorial(tutorialData);
+         toolManager.loadAreaKeys();
+         toolManager.loadTutorialStepActionOptions();
          gameObject.SetActive(false);
       });
 
       cancelButton.onClick.AddListener(() => {
+         toolManager.loadAreaKeys();
+         toolManager.loadTutorialStepActionOptions();
          gameObject.SetActive(false);
       });
 
@@ -48,18 +52,20 @@ public class NewTutorialToolPanel : MonoBehaviour {
       });
    }
 
-   private void Start () {
-      toolManager.loadAreaKeys();
-   }
-
-
    public void loadData (NewTutorialData data) {
-      Debug.Log("Loading data");
       _tutorialId = data.tutorialId;
       _tutorialName.text = data.tutorialName;
       _tutorialDescription.text = data.tutorialDescription;
       IEnumerable<KeyValuePair<int, string>> areaKeyValuePair = _tutorialAreaKeyDictionary.Where(x => x.Value == data.tutorialAreaKey);
-      _tutorialAreaKey.value = areaKeyValuePair.Any() ? areaKeyValuePair.First().Key : 0;
+
+      if (areaKeyValuePair.Any()) {
+         _tutorialAreaKey.value = areaKeyValuePair.First().Key;
+      } else {
+         // We are editing a tutorial that already has an area key value. Available area keys are not sufficient. 
+         _tutorialAreaKeyDictionary.Add(_tutorialAreaKeyDictionary.Keys.Count, data.tutorialAreaKey);
+         _tutorialAreaKey.options.Add(new TMPro.TMP_Dropdown.OptionData(data.tutorialAreaKey));
+         _tutorialAreaKey.value = _tutorialAreaKeyDictionary.Where(x => x.Value == data.tutorialAreaKey).First().Key;
+      }
 
       if (!string.IsNullOrEmpty(data.tutorialImageUrl)) {
          _tutorialImage.sprite = ImageManager.getSprite(data.tutorialImageUrl);
@@ -89,6 +95,7 @@ public class NewTutorialToolPanel : MonoBehaviour {
    }
 
    public void loadAreaKeysOptions (List<string> areaKeys) {
+      _tutorialAreaKeyDictionary.Clear();
       _tutorialAreaKey.ClearOptions();
       List<TMPro.TMP_Dropdown.OptionData> options = new List<TMPro.TMP_Dropdown.OptionData>();
       int index = 0;
@@ -103,7 +110,7 @@ public class NewTutorialToolPanel : MonoBehaviour {
    }
 
    public void loadTutorialStepActionOptions (List<TutorialStepAction> actions) {
-      Debug.Log("Loading actions");
+      _tutorialStepActionDictionary.Clear();
       int index = 0;
 
       foreach (TutorialStepAction action in actions) {

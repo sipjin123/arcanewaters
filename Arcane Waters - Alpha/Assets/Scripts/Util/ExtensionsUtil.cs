@@ -78,8 +78,7 @@ public static class ExtensionsUtil {
    }
 
    public static TKey RandomKey<TKey, TValue> (this Dictionary<TKey, TValue> dictionary) {
-      List<TKey> keys = new List<TKey>();
-
+      List<TKey> keys = dictionary.Keys.ToList();
       return keys.ChooseRandom();
    }
 

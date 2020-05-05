@@ -38,9 +38,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The Type of NPC this is
    public Type npcType;
 
-   // The speed that we move at
-   public float moveSpeed = 3f;
-
    // Shop Name (if any)
    [SyncVar]
    public string shopName = ShopManager.DEFAULT_SHOP_NAME;
@@ -237,6 +234,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             // Only change our movement if enough time has passed
             float moveTime = Time.time - _lastMoveChangeTime;
             if (moveTime >= MOVE_CHANGE_INTERVAL) {
+               float moveSpeed = getMoveSpeed() * 0.5f;
                _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
                _lastMoveChangeTime = Time.time;
             }
@@ -305,6 +303,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       findAndSetPath_Asynchronous(_startPosition + Random.insideUnitCircle * MAX_MOVE_DISTANCE);
    }
 
+   [Server]
    private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
       if (!_seeker.IsDone()) {
          _seeker.CancelCurrentPathRequest();
@@ -312,6 +311,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       _seeker.StartPath(transform.position, targetPosition);
    }
 
+   [Server]
    private void setPath_Asynchronous (Path newPath) {
       _currentPath = newPath.vectorPath;
       _currentPathIndex = 0;

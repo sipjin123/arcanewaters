@@ -189,11 +189,10 @@ public class ShipEntity : SeaEntity
       float normalizedDistance = getNormalizedTargetDistance(spot);
 
       // Calculate shot parameters
-      float distanceModifier = getDamageModifierForDistance(normalizedDistance);
-      float projectileFlightDuration = (normalizedDistance * normalizedDistance * 1f) * ShipAbilityManager.self.getAbility(attackType).projectileSpeed;
-
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
-      this.currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);
+      float distanceModifier = getDamageModifierForDistance(normalizedDistance);
+      float projectileFlightDuration = normalizedDistance / shipData.projectileSpeed;
+      currentImpactMagnitude = ShipAbilityData.getImpactType(normalizedDistance);
 
       // Fire the cannon ball and display an attack circle in all the clients
       Rpc_CreateCannonBall(spawnPosition, spot, Util.netTime(), Util.netTime() + projectileFlightDuration,

@@ -2267,9 +2267,13 @@ MonoBehaviour:
     imagePath: Assets/Sprites/Cannon/cannonball_hit_16x16.png
     imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_hit_16x16
     texture2D: {fileID: 2800000, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
-    sprite: {fileID: 21300000, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
+    sprite: {fileID: -1074112231116301255, guid: 7e114aecb3882944ab03382a5b174fd2,
+      type: 3}
     sprites:
-    - {fileID: 21300000, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
+    - {fileID: -1074112231116301255, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
+    - {fileID: -44032050291884399, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
+    - {fileID: 5819765203680231530, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
+    - {fileID: -2854029049591181981, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
   - imageName: cannonball_shadow_8x4
     imagePath: Assets/Sprites/Cannon/cannonball_shadow_8x4.PNG
     imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_shadow_8x4
@@ -20337,9 +20341,48 @@ MonoBehaviour:
     imagePath: Assets/Sprites/Enemies/LandMonsters/shroom.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/shroom
     texture2D: {fileID: 2800000, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
-    sprite: {fileID: 21300000, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    sprite: {fileID: -2643051324994869849, guid: dc27c4c2d6ece104795ab765858564a2,
+      type: 3}
     sprites:
-    - {fileID: 21300000, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -2643051324994869849, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -351240666533949351, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -5618723105780267644, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 4686026002024490610, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 1178046711048854651, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 5997121973431522649, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 5408724569086694770, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -1498687963777439386, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -3867306246040011490, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 9188316771232051756, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -4495550743120494126, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 4819572454234531260, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 8246215822605615826, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 2778237062399885624, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -2850277430371310804, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -2906929693856510975, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 8577322154599420983, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -5608275296114726308, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -3509886222095677840, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 2411856403490027419, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -2460148557603047941, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 3013898794692136063, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 6897957849810390088, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 1129890800335416231, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -6889110463603046392, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -5622430451557409328, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 2488436432140237309, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 9170022242951153924, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 7942906828107636250, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -819858536511142403, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -473009385714314949, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -1834584129166207522, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 1651433970691933853, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 6873563334247559776, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 4510885360505171064, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -3959824950957635008, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -6395441946885380613, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: -6430407678458643270, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
+    - {fileID: 5928618726741369484, guid: dc27c4c2d6ece104795ab765858564a2, type: 3}
   - imageName: shroom_1
     imagePath: Assets/Sprites/Faces/shroom_1.png
     imagePathWithoutExtension: Assets/Sprites/Faces/shroom_1

@@ -92,10 +92,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       moveAlongCurrentPath();
 
       if (_attackers != null && _attackers.Count > 0) {
-         if(!_wasAttackedLastFrame) {
+         if (!_wasAttackedLastFrame) {
             _currentSecondsBetweenAttackRoutes = 0.0f;
             _attackingWaypointState = WaypointState.FINDING_PATH;
-            if(_currentPath != null) {
+            if (_currentPath != null) {
                _currentPath.Clear();
             }
             findAndSetPath_Asynchronous(findAttackerVicinityPosition(true));
@@ -105,7 +105,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
       } else {
-         if(_wasAttackedLastFrame) {
+         if (_wasAttackedLastFrame) {
             _currentSecondsBetweenPatrolRoutes = 0.0f;
             _currentSecondsPatroling = 0.0f;
             _patrolingWaypointState = WaypointState.FINDING_PATH;
@@ -194,6 +194,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+   [Server]
    private void moveAlongCurrentPath () {
       if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
          // Only change our movement if enough time has passed
@@ -211,6 +212,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+   [Server]
    private Vector3 findTreasureSiteVicinityPosition (bool newSite) {
       // If we should choose a new site, and we have a selection available, pick a unique one randomly, favoring a new target if possible
       if (newSite && _treasureSitesInArea != null && _treasureSitesInArea.Count > 0) {
@@ -229,14 +231,17 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+   [Server]
    private Vector3 findAttackerVicinityPosition (bool newAttacker) {
       // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
       if (newAttacker && _attackers != null && _attackers.Count > 0) {
          _currentAttacker = _attackers.RandomKey() as SeaEntity;
       }
+
       return _currentAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
    }
 
+   [Server]
    private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
       if (!_seeker.IsDone()) {
          _seeker.CancelCurrentPathRequest();
@@ -244,12 +249,14 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       _seeker.StartPath(transform.position, targetPosition);
    }
 
+   [Server]
    private void setPath_Asynchronous (Path newPath) {
       _currentPath = newPath.vectorPath;
       _currentPathIndex = 0;
       _seeker.CancelCurrentPathRequest(true);
    }
 
+   [Server]
    protected void checkForAttackers () {
       if (isDead() || !isServer) {
          return;

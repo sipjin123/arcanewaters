@@ -52,6 +52,8 @@ public class SeaEntity : NetEntity
 
    #endregion
 
+   protected virtual bool isBot () { return true; }
+
    protected override void Start () {
       base.Start();
 
@@ -399,8 +401,8 @@ public class SeaEntity : NetEntity
    }
 
    protected IEnumerator CO_UpdateAllSprites () {
-      // Wait until we receive data
-      while (Util.isEmpty(this.entityName)) {
+      // Wait until we receive data of the player, but if we're a bot we skip the wait as we already have the data
+      while (!isBot() && Util.isEmpty(entityName)) {
          yield return null;
       }
 

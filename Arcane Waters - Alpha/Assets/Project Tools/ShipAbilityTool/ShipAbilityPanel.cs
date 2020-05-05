@@ -139,7 +139,7 @@ public class ShipAbilityPanel : MonoBehaviour {
 
       // Loads all int and float data
       _abilityDamage.text = shipAbilityData.damage.ToString();
-      _projectileSpeed.text = shipAbilityData.damage.ToString();
+      _projectileSpeed.text = shipAbilityData.projectileSpeed.ToString();
       _cooldown.text = shipAbilityData.coolDown.ToString();
       _fxPerFrame.text = shipAbilityData.abilitySpriteFXPerFrame.ToString();
       _levelRequirement.text = shipAbilityData.levelRequirement.ToString();

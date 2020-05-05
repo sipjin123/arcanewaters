@@ -46,6 +46,7 @@ public class NewTutorialToolScene : MonoBehaviour {
 
    private void Start () {
       toolManager.loadNewTutorialList();
+      toolManager.loadAreaKeys();
       toolManager.loadTutorialStepActionOptions();
    }
 
@@ -67,10 +68,6 @@ public class NewTutorialToolScene : MonoBehaviour {
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
             toolManager.deleteNewTutorial(tutorialData);
-         });
-
-         template.duplicateButton.onClick.AddListener(() => {
-            toolManager.duplicateNewTutorial(tutorialData);
          });
 
          try {
@@ -109,10 +106,6 @@ public class NewTutorialToolScene : MonoBehaviour {
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
          toolManager.deleteNewTutorial(tutorialData);
-      });
-
-      template.duplicateButton.onClick.AddListener(() => {
-         toolManager.duplicateNewTutorial(tutorialData);
       });
 
       try {
