@@ -9,6 +9,7 @@ using System;
 using System.Text;
 using BackgroundTool;
 using Random = UnityEngine.Random;
+using ServerCommunicationHandlerv2;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables

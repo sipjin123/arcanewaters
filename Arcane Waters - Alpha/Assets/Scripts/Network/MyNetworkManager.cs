@@ -9,6 +9,7 @@ using System.Xml;
 using MapCreationTool;
 using MapCreationTool.Serialization;
 using BackgroundTool;
+using ServerCommunicationHandlerv2;
 
 public class MyNetworkManager : NetworkManager {
    #region Public Variables

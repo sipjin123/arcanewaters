@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using Random = UnityEngine.Random;
+using ServerCommunicationHandlerv2;
 
 [Serializable]
 public class PrefabTypes

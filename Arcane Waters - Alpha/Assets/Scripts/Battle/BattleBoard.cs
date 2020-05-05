@@ -39,7 +39,7 @@ public class BattleBoard : MonoBehaviour {
       xmlID = newXmlId;
       int boardIndex = 0;
       foreach (GameObject attackerSpot in attackerSpots) {
-         if(attackersSpotHolder.childCount < boardIndex) {
+         if (attackersSpotHolder.childCount < boardIndex) {
             Transform attackSpot = attackersSpotHolder.GetChild(boardIndex);
             attackSpot.transform.position = attackerSpot.transform.position;
          } else {

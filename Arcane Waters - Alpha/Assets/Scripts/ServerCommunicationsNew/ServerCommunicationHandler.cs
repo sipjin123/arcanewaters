@@ -11,7 +11,7 @@ using System.Xml;
 using Random = UnityEngine.Random;
 using System.Linq;
 
-namespace ServerCommunicationHandlerv1 {
+namespace ServerCommunicationHandlerv2 {
    public class ServerCommunicationHandler : MonoBehaviour {
       #region Public Variables
 
@@ -35,6 +35,9 @@ namespace ServerCommunicationHandlerv1 {
 
       // The chat list existing in the database
       public List<ChatInfo> chatInfoList = new List<ChatInfo>();
+
+      // The chat id's sent to all players
+      public List<int> distributedChatInfoList = new List<int>();
 
       // Server data of all servers
       public List<ServerSqlData> serverDataList = new List<ServerSqlData>();
@@ -63,6 +66,9 @@ namespace ServerCommunicationHandlerv1 {
       // Determines if is using the local database
       public bool isLocalDatabase = false;
 
+      // The time our local server initialized
+      private DateTime localServerStartTime;
+
       #endregion
 
       #region Initialization
@@ -74,11 +80,7 @@ namespace ServerCommunicationHandlerv1 {
       public void initializeServers () {
          initializeLocalServer();
 
-         float checkUpdateInterval = .1f;
-         if (!isLocalDatabase) {
-            checkUpdateInterval = .5f;
-         }
-         InvokeRepeating("checkServerUpdates", 2, checkUpdateInterval);
+         InvokeRepeating("checkServerUpdates", 2, .5f);
       }
 
       private void confirmServerActivity () {
@@ -86,12 +88,12 @@ namespace ServerCommunicationHandlerv1 {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Frequently send to the database to confirm that this server is active
             ourServerData.lastPingTime = DateTime.UtcNow;
-            DB_Main.sendServerPing(ourServerData);
+            ServerDataWritter.self.updateServerData(ourServerData);
 
             // Fetch the ping of the other servers
             foreach (ServerSqlData serverData in serverDataList) {
                if (!isOurServer(serverData)) {
-                  ServerSqlData newServerData = DB_Main.getLatestServerPing(serverData);
+                  ServerSqlData newServerData = ServerDataWritter.self.getServerPing(serverData);
                   fetchedServerData.Add(newServerData);
                }
             }
@@ -121,6 +123,7 @@ namespace ServerCommunicationHandlerv1 {
       }
 
       private void initializeLocalServer () {
+         localServerStartTime = DateTime.UtcNow;
          ourDeviceName = SystemInfo.deviceName;
          ourIp = MyNetworkManager.self.networkAddress;
          ServerSqlData newSqlData = new ServerSqlData {
@@ -155,10 +158,16 @@ namespace ServerCommunicationHandlerv1 {
                latestChatinfo = sortedChatList[0];
                chatInfoList = sortedChatList;
 
-               if (latestChatinfo.chatTime >= ourServerData.latestUpdate) {
-                  foreach (int userId in ourServerData.connectedUserIds) {
-                     NetEntity targetEntity = EntityManager.self.getEntity(userId);
-                     targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
+               if (!distributedChatInfoList.Contains(latestChatinfo.chatId)) {
+                  // Prevents chat spam
+                  distributedChatInfoList.Add(latestChatinfo.chatId);
+
+                  // Make sure to fetch only chats created after our local server is initialized
+                  if (latestChatinfo.chatTime >= localServerStartTime) {
+                     foreach (int userId in ourServerData.connectedUserIds) {
+                        NetEntity targetEntity = EntityManager.self.getEntity(userId);
+                        targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
+                     }
                   }
                }
             });
@@ -262,10 +271,6 @@ namespace ServerCommunicationHandlerv1 {
          }
          serverData.latestUpdate = DateTime.UtcNow;
          serverData.lastPingTime = serverData.latestUpdate;
-
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.setServerContent(serverData);
-         });
       }
 
       public List<PendingVoyageCreation> newCopyOfVoyageCreations (List<PendingVoyageCreation> fetchedVoyageCreation) {
@@ -292,7 +297,7 @@ namespace ServerCommunicationHandlerv1 {
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Fetch all server update info
-            List<ServerSqlData> serverListUpdateTime = DB_Main.getServerUpdateTime(ourDeviceName);
+            List<ServerSqlData> serverListUpdateTime = ServerDataWritter.self.getServersUpdateTime(ourServerData);
             List<PendingVoyageCreation> fetchedVoyageCreation = DB_Main.getPendingVoyageCreations(ourDeviceName);
             ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
             pendingVoyageInvites = DB_Main.getAllVoyageInvites();
@@ -350,7 +355,7 @@ namespace ServerCommunicationHandlerv1 {
 
       private void processNewEntry (ServerSqlData newSqlData) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            ServerSqlData pingedServerData = DB_Main.getLatestServerPing(newSqlData);
+            ServerSqlData pingedServerData = ServerDataWritter.self.getServerPing(newSqlData);
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                TimeSpan timeSpan = DateTime.UtcNow - pingedServerData.lastPingTime;
@@ -370,7 +375,7 @@ namespace ServerCommunicationHandlerv1 {
       public void getServerContent (List<ServerSqlData> serverList) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Fetch the content of the recently updated servers
-            List<ServerSqlData> serverListContent = DB_Main.getServerContent(serverList);
+            List<ServerSqlData> serverListContent = ServerDataWritter.self.getServerContent(serverList);
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                foreach (ServerSqlData newSqlData in serverListContent) {
@@ -492,7 +497,7 @@ namespace ServerCommunicationHandlerv1 {
             foreach (PendingVoyageCreation voyageCreations in newVoyageCreations) {
                if (!disposedVoyageIds.Contains(voyageCreations.id)) {
                   disposedVoyageIds.Add(voyageCreations.id);
-                  DB_Main.setServerVoyageCreation(voyageCreations, DateTime.UtcNow, voyageCreations.id);
+                  DB_Main.removeServerVoyageCreation(voyageCreations.id);
                }
             }
          });
@@ -523,4 +528,5 @@ namespace ServerCommunicationHandlerv1 {
 
       #endregion
    }
+
 }

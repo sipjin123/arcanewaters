@@ -23,7 +23,7 @@ public class ServerRoomManager : MonoBehaviour {
       Debug.Log("Connected to Master!");
       if (!hasInitialized) {
          hasInitialized = true;
-         ServerCommunicationHandler.self.initializeServers();
+         ServerCommunicationHandlerv2.ServerCommunicationHandler.self.initializeServers();
       }
    }
 

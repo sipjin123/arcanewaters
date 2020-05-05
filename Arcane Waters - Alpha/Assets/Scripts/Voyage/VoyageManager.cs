@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
+using ServerCommunicationHandlerv2;
 
 public class VoyageManager : MonoBehaviour {
 

@@ -82,8 +82,10 @@ public class ServerMessageManager : MonoBehaviour {
 
                accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
                if (accountId != 0) {
-                  On_LogInUserMessage(conn, logInUserMessage);
-                  return;
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     On_LogInUserMessage(conn, logInUserMessage);
+                     return;
+                  });
                } else {
                   hasFailedToCreateAccount = true;
                   D.debug("Failed to create account for steam id: " + logInUserMessage.accountName);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using ServerCommunicationHandlerv2;
 
 public class QuickLaunchPanel : MonoBehaviour {
    #region Public Variables

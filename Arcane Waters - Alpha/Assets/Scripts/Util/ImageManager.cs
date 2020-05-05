@@ -47,7 +47,7 @@ public class ImageManager : ClientMonoBehaviour {
    protected override void Awake () {
       // The batchmode server doesn't need to waste memory on these images
       if (Util.isBatch()) {
-          //imageDataList.Clear();
+          imageDataList.Clear();
       }
 
       base.Awake();
