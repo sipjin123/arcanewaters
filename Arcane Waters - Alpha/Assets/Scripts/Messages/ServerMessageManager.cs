@@ -84,8 +84,8 @@ public class ServerMessageManager : MonoBehaviour {
                if (accountId != 0) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      On_LogInUserMessage(conn, logInUserMessage);
-                     return;
                   });
+                  return;
                } else {
                   hasFailedToCreateAccount = true;
                   D.debug("Failed to create account for steam id: " + logInUserMessage.accountName);

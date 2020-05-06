@@ -55,7 +55,6 @@ public class Armor : EquippableItem {
       this.category = Category.Armor;
       this.id = id;
       this.itemTypeId = armorType;
-      this.itemTypeId = (int) armorType;
       this.count = 1;
       this.color1 = color1;
       this.color2 = color2;
@@ -76,7 +75,6 @@ public class Armor : EquippableItem {
       this.category = Category.Armor;
       this.id = id;
       this.count = 1;
-      this.itemTypeId = armorType;
       this.itemTypeId = armorType;
       this.color1 = ColorType.None;
       this.color2 = ColorType.None;

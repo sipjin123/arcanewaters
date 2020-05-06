@@ -2729,7 +2729,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Send the invitation
-            ServerCommunicationHandler.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
+            SharedServerDataHandler.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
@@ -2796,7 +2796,7 @@ public class RPCManager : NetworkBehaviour {
                   _player.voyageGroupId = voyageGroup.groupId;
 
                   // Mark the voyage invite as Accepted in the database
-                  ServerCommunicationHandler.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
+                  SharedServerDataHandler.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
                });
             });
          });
@@ -2806,7 +2806,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
       // Mark the voyage invite as Declined in the database
-      ServerCommunicationHandler.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
+      SharedServerDataHandler.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
    }
 
    [Command]

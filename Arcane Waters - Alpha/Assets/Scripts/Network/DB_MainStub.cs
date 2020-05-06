@@ -22,39 +22,8 @@ public class DB_MainStub : MonoBehaviour {
       return new List<VoyageInviteData>();
    }
 
-   public static void sendServerPing (ServerSqlData serverData) {
-
-   }
-
-   public static ServerSqlData getLatestServerPing (ServerSqlData currentServerData) {
-      return new ServerSqlData();
-   }
-
-   public static List<ServerSqlData> getServerUpdateTime (string localDeviceName) {
-      return new List<ServerSqlData>();
-   }
-
-   public static List<ServerSqlData> getServerContent (List<ServerSqlData> serverDataList) {
-      return new List<ServerSqlData>();
-   }
-
-   public static void setServerVoyageCreation (PendingVoyageCreation voyageCreation, DateTime dateTime, int id) {
-
-   }
-
-   public static List<PendingVoyageCreation> getPendingVoyageCreations (string ourDeviceName) {
-      return new List<PendingVoyageCreation>();
-   }
-
    public static ChatInfo getLatestChatInfo () {
       return new ChatInfo();
-   }
-
-   public static void removeServerVoyageCreation (int id) {
-
-   }
-
-   public static void setServerContent (ServerSqlData serverSqlData) {
    }
 
    public static void updateCompanionExp (int xmlId, int userId, int exp) {

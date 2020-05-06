@@ -11,8 +11,11 @@ namespace ServerCommunicationHandlerv1 {
    public class ServerCommunicationSimulator : MonoBehaviour {
       #region Public Variables
 
-      // Reference to the web request script
-      public ServerCommunicationHandlerv2.ServerCommunicationHandler serverWebRequest;
+      // Reference to the communication handler
+      public ServerCommunicationHandlerv2.ServerCommunicationHandler communicationHandler;
+
+      // Reference to the voyage handler
+      public ServerCommunicationHandlerv2.SharedServerDataHandler voyageHandler;
 
       // Simulator flags
       public bool toggleGUI;
@@ -87,8 +90,8 @@ namespace ServerCommunicationHandlerv1 {
       }
 
       private void guiServerSetup () {
-         GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + serverWebRequest.ourPort);
-         GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + serverWebRequest.ourDeviceName);
+         GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + communicationHandler.ourPort);
+         GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + communicationHandler.ourDeviceName);
          if (GUI.Button(new Rect(Screen.width - 400, 0, 200, 30), "Send Glboal Msg")) {
             ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0);
          }
@@ -100,10 +103,9 @@ namespace ServerCommunicationHandlerv1 {
          _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Width(serverLogWidth), GUILayout.Height(serverLogHeight));
          GUILayout.BeginHorizontal();
          {
-            foreach (ServerSqlData server in serverWebRequest.serverDataList) {
+            foreach (ServerData server in communicationHandler.serverDataList) {
                GUILayout.BeginVertical();
-               if (GUILayout.Button("Randomly Update Server:\n" + server.port + " : " + (server == serverWebRequest.ourServerData ? "(LocalServer)" : "(RemoteServer)"))) {
-                  serverWebRequest.updateServerDatabase(server, true);
+               if (GUILayout.Button("Randomly Update Server:\n" + server.port + " : " + (server == communicationHandler.ourServerData ? "(LocalServer)" : "(RemoteServer)"))) {
                }
 
                GUILayout.Space(10);
@@ -177,14 +179,8 @@ namespace ServerCommunicationHandlerv1 {
 
          GUILayout.BeginVertical();
          {
-            if (GUILayout.Button("Generate a \nnew random server")) {
-               createRandomServer();
-            }
-            if (GUILayout.Button("Update and \nRandomize any Server")) {
-               updateAnyRandomServer();
-            }
             if (GUILayout.Button("Clear Server Data")) {
-               serverWebRequest.serverDataList.Clear();
+               communicationHandler.serverDataList.Clear();
             }
          }
          GUILayout.EndVertical();
@@ -196,20 +192,9 @@ namespace ServerCommunicationHandlerv1 {
             GUILayout.Box("Pending Invites are: ");
             GUILayout.Space(5);
             int index = 0;
-            foreach (VoyageInviteData pendingVoyage in serverWebRequest.pendingVoyageInvites) {
+            foreach (VoyageInviteData pendingVoyage in voyageHandler.pendingVoyageInvites) {
                GUILayout.Box("Invite: " + index + ": Inviter:{" + pendingVoyage.inviterId + "} Invitee:{" + pendingVoyage.inviteeId + "}\nStatus:{" + pendingVoyage.inviteStatus + "} GrpID:{" + pendingVoyage.voyageGroupId + "}");
                index++;
-            }
-         }
-         GUILayout.EndVertical();
-         GUILayout.BeginVertical();
-         {
-            GUILayout.Box("Pending Creations are: " + serverWebRequest.pendingVoyageCreations.Count);
-            GUILayout.Space(5);
-            foreach (PendingVoyageCreation pendingVoyage in serverWebRequest.pendingVoyageCreations) {
-               if (GUILayout.Button("Clear pending voyage\nCreation: ID:{" + pendingVoyage.id + "} - Area:{" + pendingVoyage.areaKey + "}")) {
-                  //serverWebRequest.clearVoyageCreation(pendingVoyage);
-               }
             }
          }
          GUILayout.EndVertical();
@@ -240,24 +225,8 @@ namespace ServerCommunicationHandlerv1 {
          }
       }
 
-      private void updateAnyRandomServer () {
-         List<ServerSqlData> newestList = new List<ServerSqlData>(serverWebRequest.serverDataList);
-         ServerSqlData ourServerContent = newestList.Find(_ => _.deviceName == serverWebRequest.ourServerData.deviceName);
-         newestList.Remove(ourServerContent);
-
-         ServerSqlData randomServer = newestList[Random.Range(0, newestList.Count)];
-         serverWebRequest.updateServerDatabase(randomServer, true);
-      }
-
-      private void createRandomServer () {
-         ServerSqlData sqlData = createRandomData();
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.setServerContent(sqlData);
-         });
-      }
-
-      private ServerSqlData createRandomData () {
-         ServerSqlData newData = new ServerSqlData();
+      private ServerData createRandomData () {
+         ServerData newData = new ServerData();
 
          newData.deviceName = "device_";
          for (int i = 0; i < 5; i++) {
@@ -266,7 +235,7 @@ namespace ServerCommunicationHandlerv1 {
          }
          newData.ip = "127.0.0.1";
          newData.port = 7777;
-         newData.latestUpdate = DateTime.UtcNow;
+         newData.latestUpdateTime = DateTime.UtcNow;
 
          newData.voyageList = generateRandomVoyage();
          newData.openAreas = generateRandomArea();
@@ -285,31 +254,28 @@ namespace ServerCommunicationHandlerv1 {
             voyageId = Random.Range(1, 1000)
          };
 
-         serverWebRequest.ourServerData.voyageList.Add(newVoyage);
+         communicationHandler.ourServerData.voyageList.Add(newVoyage);
          if (ServerNetwork.self != null) {
-            ServerNetwork.self.server.voyages = serverWebRequest.ourServerData.voyageList;
+            ServerNetwork.self.server.voyages = communicationHandler.ourServerData.voyageList;
          }
-         serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
       }
 
       private void createLocalPlayers () {
          int newUserId = Random.Range(1, 1000);
          if (ServerNetwork.self != null) {
-            serverWebRequest.addPlayer(newUserId);
+            communicationHandler.addPlayer(newUserId);
          }
-         serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
       }
 
       private void createOpenArea () {
          string newArea = "area_" + Random.Range(1, 1000);
-         serverWebRequest.ourServerData.openAreas.Add(newArea);
+         communicationHandler.ourServerData.openAreas.Add(newArea);
          if (ServerNetwork.self != null) {
-            ServerNetwork.self.server.openAreas = serverWebRequest.ourServerData.openAreas.ToArray();
+            ServerNetwork.self.server.openAreas = communicationHandler.ourServerData.openAreas.ToArray();
          }
-         serverWebRequest.updateServerDatabase(serverWebRequest.ourServerData, true);
       }
 
-      public List<VoyageInviteData> generateVoyageInviteForServer (ServerSqlData serverSelected) {
+      public List<VoyageInviteData> generateVoyageInviteForServer (ServerData serverSelected) {
          List<VoyageInviteData> newInviteList = new List<VoyageInviteData>();
          int inviteeId = serverSelected.connectedUserIds[0];
          string inviterName = "Player_";

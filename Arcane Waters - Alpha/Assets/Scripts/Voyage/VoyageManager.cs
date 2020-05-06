@@ -388,7 +388,7 @@ public class VoyageManager : MonoBehaviour {
                   isPvP = _isNewVoyagePvP
                };
                voyageList.Add(newVoyage);
-               ServerCommunicationHandler.self.requestCreateVoyage(voyageList);
+               SharedServerDataHandler.self.createVoyage(voyageList);
             }
          });
       });
@@ -440,7 +440,7 @@ public class VoyageManager : MonoBehaviour {
          }
 
          if (pendingVoyageList.Count > 0) {
-            ServerCommunicationHandler.self.requestCreateVoyage(pendingVoyageList);
+            SharedServerDataHandler.self.createVoyage(pendingVoyageList);
          }
       }
    }

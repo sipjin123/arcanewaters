@@ -8,7 +8,7 @@ using System.Xml;
 using UnityEngine;
 
 [Serializable]
-public class ServerSqlData {
+public class ServerData {
    // The device name
    public string deviceName;
 
@@ -19,10 +19,7 @@ public class ServerSqlData {
    public string ip;
 
    // The latest update time of the server data
-   public DateTime latestUpdate;
-
-   // The last time the server sent a ping to the database
-   public DateTime lastPingTime;
+   public DateTime latestUpdateTime;
 
    // The list of active voyage instances on this server
    public List<Voyage> voyageList = new List<Voyage>();
@@ -36,14 +33,13 @@ public class ServerSqlData {
    // A listing of open area types on this server
    public List<string> openAreas = new List<string>();
 
-   public static ServerSqlData copyData (ServerSqlData sourceData) {
-      ServerSqlData newData = new ServerSqlData();
+   public static ServerData copyData (ServerData sourceData) {
+      ServerData newData = new ServerData();
       newData.deviceName = sourceData.deviceName;
       newData.port = sourceData.port;
       newData.ip = sourceData.ip;
 
-      newData.latestUpdate = sourceData.latestUpdate;
-      newData.lastPingTime = sourceData.lastPingTime;
+      newData.latestUpdateTime = sourceData.latestUpdateTime;
 
       newData.voyageList = sourceData.voyageList;
       newData.connectedUserIds = sourceData.connectedUserIds;
@@ -53,87 +49,8 @@ public class ServerSqlData {
       return newData;
    }
 
-   public string getRawVoyage () {
-      XmlSerializer ser = new XmlSerializer(voyageList.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, voyageList);
-      }
-
-      return sb.ToString();
+   public ServerData () {
    }
-
-   public string getOpenAreas () {
-      XmlSerializer ser = new XmlSerializer(openAreas.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, openAreas);
-      }
-
-      return sb.ToString();
-   }
-
-   public static string getRawPendingVoyageCreation (List<PendingVoyageCreation> voyageCreationList) {
-      XmlSerializer ser = new XmlSerializer(voyageCreationList.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, voyageCreationList);
-      }
-
-      return sb.ToString();
-   }
-
-   public string getConnectedUsers () {
-      XmlSerializer ser = new XmlSerializer(connectedUserIds.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, connectedUserIds);
-      }
-
-      return sb.ToString();
-   }
-
-   public string getClaimedUsers () {
-      XmlSerializer ser = new XmlSerializer(claimedUserIds.GetType());
-      StringBuilder sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, claimedUserIds);
-      }
-
-      return sb.ToString();
-   }
-
-   public ServerSqlData () {
-   }
-
-   #if IS_SERVER_BUILD
-
-   public ServerSqlData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
-      this.port = DataUtil.getInt(dataReader, "svrPort");
-      this.ip = DataUtil.getString(dataReader, "srvAddress");
-      this.deviceName = DataUtil.getString(dataReader, "svrDeviceName");
-      this.latestUpdate = DateTime.Parse(DataUtil.getString(dataReader, "updateTime"));
-   }
-
-   public void updateServerData (MySql.Data.MySqlClient.MySqlDataReader dataReader, ServerSqlData currentServerData) {
-      string[] openAreas = Util.xmlLoad<string[]>(DataUtil.getString(dataReader, "openAreas"));
-      List<Voyage> voyages = Util.xmlLoad<List<Voyage>>(DataUtil.getString(dataReader, "voyages"));
-      List<int> connectedUsers = Util.xmlLoad<List<int>>(DataUtil.getString(dataReader, "connectedUserIds"));
-      List<int> claimedUserIds = Util.xmlLoad<List<int>>(DataUtil.getString(dataReader, "claimedUserIds"));
-     
-      this.latestUpdate = DateTime.Parse(DataUtil.getString(dataReader, "updateTime"));
-
-      this.openAreas = new List<string>(openAreas);
-      this.voyageList = voyages;
-      this.connectedUserIds = connectedUsers;
-      this.claimedUserIds = claimedUserIds;
-
-      this.port = currentServerData.port;
-      this.ip = currentServerData.ip;
-      this.deviceName = currentServerData.deviceName;
-   }
-
-   #endif
 }
 
 [Serializable]
