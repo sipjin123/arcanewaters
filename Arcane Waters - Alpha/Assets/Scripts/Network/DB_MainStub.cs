@@ -12,17 +12,6 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   public static void createVoyageInvite (VoyageInviteData inviteData) {
-
-   }
-
-   public static void modifyServerVoyageInvite (int id, InviteStatus status) {
-   }
-
-   public static List<VoyageInviteData> getAllVoyageInvites () {
-      return new List<VoyageInviteData>();
-   }
-
    public static ChatInfo getLatestChatInfo () {
       return new ChatInfo();
    }

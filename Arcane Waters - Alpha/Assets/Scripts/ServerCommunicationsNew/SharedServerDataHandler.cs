@@ -17,9 +17,6 @@ namespace ServerCommunicationHandlerv2 {
       // Reference to the server communication handler
       public ServerCommunicationHandler serverCommuncationHandler;
 
-      // List of voyage invitations
-      public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
-
       // The chat list existing in the database
       public List<ChatInfo> chatInfoList = new List<ChatInfo>();
 
@@ -39,13 +36,9 @@ namespace ServerCommunicationHandlerv2 {
 
       private void handleSharedServerData () {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            pendingVoyageInvites = DB_Main.getAllVoyageInvites();
             ChatInfo latestChatInfo = DB_Main.getLatestChatInfo();
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               // Handle new voyage invite data
-               handleVoyageInvites();
-
                // Handle new chat data
                if (latestChatinfo.chatId > 0) {
                   List<ChatInfo> chatList = chatInfoList.OrderByDescending(_ => _.chatTime).ToList();
@@ -97,34 +90,12 @@ namespace ServerCommunicationHandlerv2 {
       public void createInvite (Server server, int groupId, int inviterId, string inviterName, int inviteeId) {
          VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, groupId, InviteStatus.Created, DateTime.UtcNow);
 
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.createVoyageInvite(newVoyageInvite);
-         });
-      }
-
-      public void respondVoyageInvite (int groupId, string inviterName, int inviteeId, InviteStatus status) {
-         VoyageInviteData selectedVoyageInvite = pendingVoyageInvites.Find(_ => _.voyageGroupId == groupId && _.inviterName == inviterName && _.inviteeId == inviteeId);
-         selectedVoyageInvite.inviteStatus = status;
-
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.modifyServerVoyageInvite(selectedVoyageInvite.voyageXmlId, selectedVoyageInvite.inviteStatus);
-         });
-      }
-
-      private void handleVoyageInvites () {
-         foreach (VoyageInviteData voyageInvite in pendingVoyageInvites) {
-            if (voyageInvite.inviteStatus == InviteStatus.Created) {
-               Server selectedServer = ServerNetwork.self.getServerContainingUser(voyageInvite.inviteeId);
-               if (selectedServer != null) {
-                  selectedServer.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
-                  voyageInvite.inviteStatus = InviteStatus.Pending;
-                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.modifyServerVoyageInvite(voyageInvite.voyageXmlId, voyageInvite.inviteStatus);
-                  });
-               } else {
-                  D.editorLog("Could not find the server: " + voyageInvite.serverName + " - " + voyageInvite.serverPort + " for user: " + voyageInvite.inviteeId, Color.red);
-               }
-            }
+         if (serverCommuncationHandler.ourServerData.connectedUserIds.Contains(inviteeId)) {
+            // If the invitee id is existing in our server, process the invite immediately
+            ServerNetwork.self.server.handleVoyageGroupInvite(newVoyageInvite.voyageGroupId, newVoyageInvite.inviterName, newVoyageInvite.inviteeId);
+         } else {
+            //If the server does not have access to the invitee, cache it to server data and let the main server handle this (Server with port 7777)
+            serverCommuncationHandler.createPendingInvite(newVoyageInvite);
          }
       }
 

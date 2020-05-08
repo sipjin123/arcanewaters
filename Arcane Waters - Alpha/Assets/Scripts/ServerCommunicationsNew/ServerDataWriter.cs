@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using System;
+using SimpleJSON;
 
 namespace ServerCommunicationHandlerv2 {
    public class ServerDataWriter : MonoBehaviour {
@@ -13,14 +14,70 @@ namespace ServerCommunicationHandlerv2 {
       // Location where the text files are written
       public string path = "";
 
+      // Location where the pending invites are registered by the main server
+      public string invitePath = "";
+
+      // The file name containing the voyage invites
+      public const string voyageInviteText = "VoyageInvites.txt";
+
       // Self
       public static ServerDataWriter self;
+
+      // The list of invites that the remote servers cannot process and will be passed on the main server
+      public List<VoyageInviteData> pendingNetworkVoyageInvites;
 
       #endregion
 
       private void Awake () {
          self = this;
          path = Application.persistentDataPath + "/ServerData/";
+         invitePath = Application.persistentDataPath + "/VoyageInvites/";
+      }
+
+      public void initializeMainServerInviteFile () {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Makes sure the invite file is existing
+            Directory.CreateDirectory(invitePath);
+            File.Create(invitePath + voyageInviteText).Close();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Frequently check if other servers are requesting the main server to process the invites
+               InvokeRepeating("processRemoteServerInvites", 1, 2);
+            });
+         });
+      }
+
+      public void processRemoteServerInvites () {
+         List<VoyageInviteData> remoteVoyageInvites = new List<VoyageInviteData>();
+
+         // Extract all voyage invites from remote servers
+         foreach (ServerData remoteServerData in ServerCommunicationHandler.self.serverDataList) {
+            foreach (VoyageInviteData remoteServerInvite in remoteServerData.pendingVoyageInvites) {
+               remoteVoyageInvites.Add(remoteServerInvite);
+            }
+         }
+
+         // Create new data to serialize
+         VoyageInviteCompiler newInvitesCompiler = new VoyageInviteCompiler();
+         newInvitesCompiler.serverVoyageInviteData = remoteVoyageInvites;
+         string content = JsonUtility.ToJson(newInvitesCompiler);
+         
+         // Write to file to be read by other servers
+         File.WriteAllText(invitePath + voyageInviteText, content);
+      }
+
+      public List<VoyageInviteData> fetchVoyageInvitesFromText () {
+         // Read file from text file
+         StreamReader reader = new StreamReader(invitePath + voyageInviteText);
+         string rawTextData = reader.ReadToEnd();
+         reader.Close();
+
+         // Unserialize text content
+         VoyageInviteCompiler voyageinviteCompiler = JsonUtility.FromJson<VoyageInviteCompiler>(rawTextData);
+
+         // Fetch only the invites that is relevant to our port
+         List<VoyageInviteData> newInvites = voyageinviteCompiler.serverVoyageInviteData.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.ourPort);
+         return newInvites;
       }
 
       public void clearExistingData (ServerData serverData) {
@@ -105,4 +162,9 @@ namespace ServerCommunicationHandlerv2 {
 
       #endregion
    }
+}
+
+public class VoyageInviteCompiler {
+   // The list of voyage invites to be serialized in json format
+   public List<VoyageInviteData> serverVoyageInviteData;
 }

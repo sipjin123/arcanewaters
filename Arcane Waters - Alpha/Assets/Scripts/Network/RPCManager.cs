@@ -2794,9 +2794,6 @@ public class RPCManager : NetworkBehaviour {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   // Update its voyage group in the net entity
                   _player.voyageGroupId = voyageGroup.groupId;
-
-                  // Mark the voyage invite as Accepted in the database
-                  SharedServerDataHandler.self.respondVoyageInvite(voyageGroup.groupId, inviterName, _player.userId, InviteStatus.Accepted);
                });
             });
          });
@@ -2805,8 +2802,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
-      // Mark the voyage invite as Declined in the database
-      SharedServerDataHandler.self.respondVoyageInvite(voyageId, inviterName, inviteeId, InviteStatus.Declined);
+      // TODO: Enter decline logic here
    }
 
    [Command]

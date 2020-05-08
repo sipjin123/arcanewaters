@@ -68,6 +68,11 @@ public class QuickLaunchPanel : MonoBehaviour {
          this.accountInputField.text = PlayerPrefs.GetString(ACCOUNT_KEY);
          this.passwordInputField.text = PlayerPrefs.GetString(PASSWORD_KEY);
       }
+
+      #if !UNITY_CLOUD_BUILD
+      // Set steam autologin as disabled if not cloud build
+      blockSteamLogin.isOn = true;
+      #endif
    }
 
    private void Update () {

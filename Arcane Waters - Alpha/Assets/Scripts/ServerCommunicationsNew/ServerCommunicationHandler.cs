@@ -43,6 +43,9 @@ namespace ServerCommunicationHandlerv2 {
       // Reference to the shared server data handler
       public SharedServerDataHandler sharedServerDataHandler;
 
+      // The maximum count of the processed invite cache, which is a list being referenced by other servers to determine if their invite request is processed
+      public const int MAX_PROCESSED_INVITE_CACHE = 5;
+
       #endregion
 
       #region Initialization
@@ -64,8 +67,16 @@ namespace ServerCommunicationHandlerv2 {
             deviceName = ourDeviceName
          };
 
+         // Initialize server data writer if this is the main server
+         if (ourPort == 7777) {
+            ServerDataWriter.self.initializeMainServerInviteFile();
+         } 
+         InvokeRepeating("processServerDeclaredInvites", 3, 1);
+
          // Initialize data
          newServerData.voyageList = new List<Voyage>();
+         newServerData.pendingVoyageInvites = new List<VoyageInviteData>();
+         newServerData.processedVoyageInvites = new List<VoyageInviteData>();
          newServerData.connectedUserIds = new List<int>();
          newServerData.openAreas = new List<string>();
          newServerData.latestUpdateTime = DateTime.UtcNow;
@@ -88,6 +99,60 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       #endregion
+
+      private void processServerDeclaredInvites () {
+         // This function is for non main servers, the function will fetch all invites that is declared by the main server and send the invites to the connected users
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Fetch invites for this server
+            List<VoyageInviteData> serverDeclaredInvites = ServerDataWriter.self.fetchVoyageInvitesFromText();
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (VoyageInviteData voyageInvite in serverDeclaredInvites) {
+                  bool existsInProcessedList = existsInProcessList(ourServerData, voyageInvite);
+
+                  // Send out the invite to the connected user and cache it as processed invites for the origin server to see
+                  if (ourServerData.connectedUserIds.Contains(voyageInvite.inviteeId) && !existsInProcessedList) {
+                     ServerNetwork.self.server.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
+                     ourServerData.processedVoyageInvites.Add(voyageInvite);
+
+                     // Only keep reference to 5 entries then delete the first entry if it exceeds
+                     if (ourServerData.processedVoyageInvites.Count > MAX_PROCESSED_INVITE_CACHE) {
+                        ourServerData.processedVoyageInvites.RemoveAt(0);
+                     }
+                  }
+               }
+            });
+         });
+
+         // If we have a pending voyage invite, check other servers if they have successfully processed it
+         if (ourServerData.pendingVoyageInvites.Count > 0) {
+            // Cycle through our pending invite list
+            List<VoyageInviteData> invitesToRemove = new List<VoyageInviteData>();
+            foreach (VoyageInviteData pendingInvite in ourServerData.pendingVoyageInvites) {
+               //Cycle through the remote server's processed invite list
+               foreach (ServerData serverData in serverDataList) {
+                  bool existsInProcessedList = existsInProcessList(serverData, pendingInvite);
+
+                  // If the pending invite exists in the other server's processed list, cache the pending invite as a candidate for removal since it is finished processing
+                  if (existsInProcessedList) {
+                     invitesToRemove.Add(pendingInvite);
+                  }
+               }
+            }
+
+            // Remove the collected pending invites from our list
+            foreach (VoyageInviteData pendingInvite in invitesToRemove) {
+               ourServerData.pendingVoyageInvites.Remove(pendingInvite);
+            }
+         }
+      }
+
+      private bool existsInProcessList (ServerData serverData, VoyageInviteData voyageData) {
+         return serverData.processedVoyageInvites.Exists(_ => _.inviteeId == voyageData.inviteeId
+                  && _.inviterId == voyageData.inviterId
+                  && _.voyageGroupId == voyageData.voyageGroupId 
+                  && _.creationTime == voyageData.creationTime);
+      }
 
       private void confirmServerActivity () {
          List<ServerData> fetchedServerData = new List<ServerData>();
@@ -126,6 +191,13 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       #region UserManagement
+
+      public void createPendingInvite (VoyageInviteData voyageData) {
+         ourServerData.pendingVoyageInvites.Add(voyageData);
+
+         // Sync server data and servers
+         overwriteNetworkServer(ourServerData, true);
+      }
 
       public void addPlayer (int userId) {
          if (!ourServerData.connectedUserIds.Contains(userId)) {
@@ -203,29 +275,35 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       public void fetchOtherServerData () {
-         // Fetch all server update info
-         List<ServerData> activeServers = ServerDataWriter.self.getServers();
-         serversToUpdate = new List<ServerData>();
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Fetch active servers in background thread
+            List<ServerData> activeServers = ServerDataWriter.self.getServers();
 
-         // Handle Server Data update and registry
-         foreach (ServerData newServerData in activeServers) {
-            if (newServerData.port != ourPort) {
-               ServerData existingServerData = serverDataList.Find(_ => _.port == newServerData.port);
-               if (existingServerData != null) {
-                  serversToUpdate.Add(existingServerData);
-               } else {
-                  processNewServerDataEntry(newServerData);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // Handle Server Data update and registry
+               serversToUpdate = new List<ServerData>();
+               foreach (ServerData newServerData in activeServers) {
+                  if (newServerData.port != ourPort) {
+                     ServerData existingServerData = serverDataList.Find(_ => _.port == newServerData.port);
+                     if (existingServerData != null) {
+                        serversToUpdate.Add(existingServerData);
+                     } else {
+                        processNewServerDataEntry(newServerData);
+                     }
+                  }
                }
-            }
-         }
-         processServerContent(serversToUpdate);
+
+               processServerContent(serversToUpdate);
+            });
+         });
       }
 
       private void processNewServerDataEntry (ServerData newServerData) {
+         // Fetch last server modification time in main thread since it only accesses the last modification time of the text file
          ServerData fetchedServerData = ServerDataWriter.self.getLastServerUpdate(newServerData);
-         TimeSpan timeSpan = DateTime.UtcNow - fetchedServerData.latestUpdateTime;
 
          // Will acknowledge server is active if the server text file was updated in less than 3 seconds
+         TimeSpan timeSpan = DateTime.UtcNow - fetchedServerData.latestUpdateTime;
          if (timeSpan.TotalSeconds < SERVER_ACTIVE_TIME) {
             // Add server data if not yet existing in server data list
             serversToUpdate.Add(newServerData);
@@ -237,22 +315,28 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       public void processServerContent (List<ServerData> serverList) {
-         // Fetch the content of the recently updated servers
-         List<ServerData> serverListContent = ServerDataWriter.self.getServerContent(serverList);
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Fetch the content of the recently updated servers in background thread
+            List<ServerData> serverListContent = ServerDataWriter.self.getServerContent(serverList);
 
-         foreach (ServerData newServerData in serverListContent) {
-            ServerData existingData = serverDataList.Find(_ => _.port == newServerData.port);
-            if (existingData != null) {
-               if (existingData.port != ourPort) {
-                  // Assign the content of the recently updated servers
-                  existingData.voyageList = newServerData.voyageList;
-                  existingData.connectedUserIds = newServerData.connectedUserIds;
-                  existingData.openAreas = newServerData.openAreas;
-                  existingData.latestUpdateTime = newServerData.latestUpdateTime;
-                  overwriteNetworkServer(newServerData);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (ServerData newServerData in serverListContent) {
+                  ServerData existingData = serverDataList.Find(_ => _.port == newServerData.port);
+                  if (existingData != null) {
+                     if (existingData.port != ourPort) {
+                        // Assign the content of the recently updated servers
+                        existingData.voyageList = newServerData.voyageList;
+                        existingData.connectedUserIds = newServerData.connectedUserIds;
+                        existingData.pendingVoyageInvites = newServerData.pendingVoyageInvites;
+                        existingData.processedVoyageInvites = newServerData.processedVoyageInvites;
+                        existingData.openAreas = newServerData.openAreas;
+                        existingData.latestUpdateTime = newServerData.latestUpdateTime;
+                        overwriteNetworkServer(newServerData);
+                     }
+                  }
                }
-            } 
-         }
+            });
+         });
       }
 
       private void overwriteNetworkServer (ServerData newData, bool localServer = false) {

@@ -66,6 +66,8 @@ public class SteamManager : MonoBehaviour {
 		// We want our SteamManager Instance to persist across scenes.
 		DontDestroyOnLoad(gameObject);
 
+      #if UNITY_CLOUD_BUILD
+      Debug.Log("Cloud build, blocking steam init");
 		if (!Packsize.Test()) {
 			Debug.LogError("[Steamworks.NET] Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.", this);
 		}
@@ -110,6 +112,7 @@ public class SteamManager : MonoBehaviour {
 		}
 
 		s_EverInitialized = true;
+      #endif
 	}
 
 	// This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.

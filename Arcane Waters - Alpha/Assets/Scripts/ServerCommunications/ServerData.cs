@@ -33,6 +33,12 @@ public class ServerData {
    // A listing of open area types on this server
    public List<string> openAreas = new List<string>();
 
+   // A list containing the active voyage invites in the server (this is processed by the main server only, Server with Port 7777)
+   public List<VoyageInviteData> pendingVoyageInvites = new List<VoyageInviteData>();
+
+   // The list of invites processed by a server which will be read by the server containing the inviter to clear out the pendingInvite entry
+   public List<VoyageInviteData> processedVoyageInvites = new List<VoyageInviteData>();
+
    public static ServerData copyData (ServerData sourceData) {
       ServerData newData = new ServerData();
       newData.deviceName = sourceData.deviceName;
@@ -42,6 +48,8 @@ public class ServerData {
       newData.latestUpdateTime = sourceData.latestUpdateTime;
 
       newData.voyageList = sourceData.voyageList;
+      newData.pendingVoyageInvites = sourceData.pendingVoyageInvites;
+      newData.processedVoyageInvites = sourceData.processedVoyageInvites;
       newData.connectedUserIds = sourceData.connectedUserIds;
       newData.claimedUserIds = sourceData.claimedUserIds;
       newData.openAreas = sourceData.openAreas;
@@ -55,9 +63,6 @@ public class ServerData {
 
 [Serializable]
 public class VoyageInviteData {
-   // The voyage entry id in the database
-   public int voyageXmlId;
-
    // The id of the player who sent the invite
    public int inviterId;
 
@@ -74,7 +79,7 @@ public class VoyageInviteData {
    public InviteStatus inviteStatus;
 
    // The date this invite was created
-   public DateTime creationTime;
+   public string creationTime;
 
    // The server info
    public string serverName;
@@ -91,27 +96,8 @@ public class VoyageInviteData {
       this.inviteeId = inviteeId;
       this.voyageGroupId = voyageGroupId;
       this.inviteStatus = inviteStatus;
-      this.creationTime = creationTime;
+      this.creationTime = creationTime.ToString();
    }
-   
-   #if IS_SERVER_BUILD
-
-   public VoyageInviteData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
-      this.voyageXmlId = DataUtil.getInt(dataReader, "id");
-      this.inviterId = DataUtil.getInt(dataReader, "inviterId");
-      this.inviterName = DataUtil.getString(dataReader, "inviterName");
-      this.inviteeId = DataUtil.getInt(dataReader, "inviteeId");
-
-      this.voyageGroupId = DataUtil.getInt(dataReader, "voyageGroupId");
-      this.inviteStatus = (InviteStatus) DataUtil.getInt(dataReader, "inviteStatus");
-      this.creationTime = DateTime.Parse(DataUtil.getString(dataReader, "creationTime"));
-
-      this.serverName = DataUtil.getString(dataReader, "svrDeviceName");
-      this.serverPort = DataUtil.getInt(dataReader, "svrPort");
-      this.serverIp = DataUtil.getString(dataReader, "srvAddress");
-   }
-
-   #endif
 }
 
 [Serializable]

@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using Random = UnityEngine.Random;
 using System.Linq;
+using ServerCommunicationHandlerv2;
 
 namespace ServerCommunicationHandlerv1 {
    public class ServerCommunicationSimulator : MonoBehaviour {
@@ -58,7 +59,6 @@ namespace ServerCommunicationHandlerv1 {
          {
             guiButtonTests();
             forceClientServerConnection();
-            guiInviteInfo();
          }
          GUILayout.EndHorizontal();
       }
@@ -131,9 +131,14 @@ namespace ServerCommunicationHandlerv1 {
                }
 
                GUILayout.Space(10);
-               //GUILayout.Box("Existing Voyages:" + server.voyageList.Count);
-               foreach (Voyage voyages in server.voyageList) {
-                  //GUILayout.Box("Voyages: " + voyages.voyageId);
+               GUILayout.Box("======= Pending Voyage Invites:" + server.pendingVoyageInvites.Count);
+               foreach (VoyageInviteData voyages in server.pendingVoyageInvites) {
+                  GUILayout.Box("Invite: " + voyages.inviterId + " -> " + voyages.inviteeId + " [" + voyages.voyageGroupId + "]");
+               }
+               GUILayout.Space(10);
+               GUILayout.Box("======= Processed Voyage Invites:" + server.processedVoyageInvites.Count);
+               foreach (VoyageInviteData voyages in server.processedVoyageInvites) {
+                  GUILayout.Box("Invite: " + voyages.inviterId + " -> " + voyages.inviteeId + " [" + voyages.voyageGroupId + "]");
                }
                GUILayout.EndVertical();
             }
@@ -186,20 +191,6 @@ namespace ServerCommunicationHandlerv1 {
          GUILayout.EndVertical();
       }
 
-      private void guiInviteInfo () {
-         GUILayout.BeginVertical();
-         {
-            GUILayout.Box("Pending Invites are: ");
-            GUILayout.Space(5);
-            int index = 0;
-            foreach (VoyageInviteData pendingVoyage in voyageHandler.pendingVoyageInvites) {
-               GUILayout.Box("Invite: " + index + ": Inviter:{" + pendingVoyage.inviterId + "} Invitee:{" + pendingVoyage.inviteeId + "}\nStatus:{" + pendingVoyage.inviteStatus + "} GrpID:{" + pendingVoyage.voyageGroupId + "}");
-               index++;
-            }
-         }
-         GUILayout.EndVertical();
-      }
-
       #endregion
 
       #region Simulator Functions
@@ -214,15 +205,11 @@ namespace ServerCommunicationHandlerv1 {
          } catch {
          }
 
-         foreach (Server server in ServerNetwork.self.servers) {
-            bool containsUser = server.connectedUserIds.ToList().Contains(inviteeId);
-
-            VoyageInviteData newVoyageInvite = new VoyageInviteData(server, inviterId, inviterName, inviteeId, voyageId, InviteStatus.Created, DateTime.UtcNow);
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.createVoyageInvite(newVoyageInvite);
-            });
-            break;
+         Server serverContaininguser = ServerNetwork.self.getServerContainingUser(inviteeId);
+         if (serverContaininguser == null) {
+            serverContaininguser = ServerNetwork.self.server;
          }
+         SharedServerDataHandler.self.createInvite(serverContaininguser, voyageId, inviterId, inviterName, inviteeId);
       }
 
       private ServerData createRandomData () {
@@ -237,7 +224,7 @@ namespace ServerCommunicationHandlerv1 {
          newData.port = 7777;
          newData.latestUpdateTime = DateTime.UtcNow;
 
-         newData.voyageList = generateRandomVoyage();
+         newData.voyageList = new List<Voyage>();
          newData.openAreas = generateRandomArea();
          newData.connectedUserIds = generateRandomUserIds();
 
@@ -273,38 +260,6 @@ namespace ServerCommunicationHandlerv1 {
          if (ServerNetwork.self != null) {
             ServerNetwork.self.server.openAreas = communicationHandler.ourServerData.openAreas.ToArray();
          }
-      }
-
-      public List<VoyageInviteData> generateVoyageInviteForServer (ServerData serverSelected) {
-         List<VoyageInviteData> newInviteList = new List<VoyageInviteData>();
-         int inviteeId = serverSelected.connectedUserIds[0];
-         string inviterName = "Player_";
-         for (int i = 0; i < 5; i++) {
-            inviterName += _alphabets[Random.Range(1, _alphabets.Length)];
-         }
-         int groupId = serverSelected.voyageList[0].voyageId;
-
-         newInviteList.Add(new VoyageInviteData(ServerNetwork.self.server, 0, inviterName, inviteeId, groupId, InviteStatus.Created, DateTime.UtcNow));
-         return newInviteList;
-      }
-
-      public List<Voyage> generateRandomVoyage () {
-         List<Voyage> voyageList = new List<Voyage>();
-         int randomCount = Random.Range(1, 5);
-
-         for (int i = 0; i < randomCount; i++) {
-            string voyageName = "voyage_" + Random.Range(1, 1000);
-            int biomeCount = Enum.GetValues(typeof(Biome.Type)).Length;
-
-            Voyage newVoyage = new Voyage {
-               areaKey = voyageName,
-               biome = (Biome.Type) Random.Range(1, biomeCount - 1),
-               voyageId = Random.Range(1, 1000)
-            };
-            voyageList.Add(newVoyage);
-         }
-
-         return voyageList;
       }
 
       public List<string> generateRandomArea () {
