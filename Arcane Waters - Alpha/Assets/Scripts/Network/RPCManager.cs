@@ -10,6 +10,7 @@ using System.Text;
 using BackgroundTool;
 using Random = UnityEngine.Random;
 using ServerCommunicationHandlerv2;
+using MapCustomization;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -3929,7 +3930,7 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_FoundDiscovery (int discoveryId) {
       Discovery discovery = DiscoveryManager.self.getSpawnedDiscoveryById(discoveryId);
 
-      if (isDiscoveryFindingValid(discovery) && _player.instanceId == discovery.instanceId) {
+      if (isDiscoveryFindingValid(discovery) && discovery.instanceId == _player.instanceId) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             int gainedXP = discovery.getXPValue();
 
@@ -3944,13 +3945,52 @@ public class RPCManager : NetworkBehaviour {
             });
          });
       } else {
-         D.log($"Player {_player.nameText.text} reported an invalid discovery.");
+         D.log($"Player {_player.nameText.text} reported an invalid discovery.\nPlayer Instance ID: {_player.instanceId}\n" +
+            $"Discovery Instance ID: {discovery.instanceId}\nDistance from discovery: {getDistanceFromDiscovery(discovery)}\nDistance is valid: {isDiscoveryFindingValid(discovery)}");
       }
    }
 
    [Server]
    private bool isDiscoveryFindingValid (Discovery discovery) {
-      return Vector2.Distance(discovery.transform.position, _player.transform.position) < Discovery.MAX_VALID_DISTANCE;
+      return getDistanceFromDiscovery(discovery) <= Discovery.MAX_VALID_DISTANCE;
+   }
+
+   private float getDistanceFromDiscovery (Discovery discovery) {
+      return Vector2.Distance(discovery.transform.position, _player.transform.position);
+   }
+
+   [Command]
+   public void Cmd_RequestMapCustomizationManagerData (int userId, string areaKey) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int mapId = DB_Main.getMapId(areaKey);
+         MapCustomizationData data = DB_Main.getMapCustomizationData(mapId, userId);
+         if (data == null) {
+            data = new MapCustomizationData() { userId = userId, mapId = mapId };
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_SetMapCustomizationManagerData(data);
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_SetMapCustomizationManagerData (MapCustomizationData data) {
+      MapCustomizationManager.receiveMapCustomizationData(data);
+   }
+
+   [Command]
+   public void Cmd_UpdateMapCustomizationData (MapCustomizationData data, string areaKey, PrefabChanges newChanges) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setMapCustomizationData(data);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Rpc_SetPrefabCustomization(areaKey, newChanges);
+         });
+      });
+   }
+
+   [ClientRpc]
+   public void Rpc_SetPrefabCustomization (string areaKey, PrefabChanges changes) {
+      MapCustomizationManager.receivePrefabChanges(areaKey, changes);
    }
 
    [Command]
