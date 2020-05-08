@@ -347,10 +347,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
-            //ShipDataManager.self.storeShip(this);
 
-            speed = Ship.getBaseSpeed(shipType);
-            attackRangeModifier = Ship.getBaseAttackRange(shipType);
+            initialize(shipData);
 
             // Assign ripple sprites
             _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));

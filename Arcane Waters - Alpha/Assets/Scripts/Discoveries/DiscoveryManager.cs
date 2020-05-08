@@ -28,6 +28,7 @@ public class DiscoveryManager : MonoBehaviour
 
       // Look up the Area associated with this intance
       Area area = AreaManager.self.getArea(instance.areaKey);
+      List<Discovery> spawnedDiscoveries = new List<Discovery>();
 
       // Find all of the possible discoveries in this Area
       foreach (DiscoverySpot spot in area.GetComponentsInChildren<DiscoverySpot>()) {
@@ -38,6 +39,7 @@ public class DiscoveryManager : MonoBehaviour
             if (discovery != null) {
                // Keep track of the discoveries that we've created
                _discoveries.Add(discovery.id, discovery);
+               spawnedDiscoveries.Add(discovery);
             }
          }
       }
@@ -72,24 +74,17 @@ public class DiscoveryManager : MonoBehaviour
          return null;
       }
 
-      // Instantiate a new Discovery
-      Discovery discovery = Instantiate(discoveryPrefab);
-
-      // Keep it parented to its spot
-      discovery.transform.SetParent(spot.transform);
-      discovery.transform.position = spot.transform.position;
+      // Instantiate a new Discovery, keep it parented to its spot
+      Discovery discovery = Instantiate(discoveryPrefab, spot.transform.position, Quaternion.identity, spot.transform);
 
       // Assign a unique ID
       discovery.id = _lastUsedId++;
-
-      // Note which instance the discovery is in
-      discovery.instanceId = instance.id;
 
       // Initialize the discovery
       discovery.assignDiscoveryAndPosition(_discoveryDatas[discoveryId], spot.transform.position);
 
       // The Instance needs to keep track of all Networked objects inside
-      instance.entities.Add(discovery);
+      InstanceManager.self.addDiscoveryToInstance(discovery, instance);
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(discovery.gameObject);

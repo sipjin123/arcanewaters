@@ -10,6 +10,7 @@ using MapCreationTool;
 using MapCreationTool.Serialization;
 using System.IO;
 using SimpleJSON;
+using MapCustomization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -1096,7 +1097,66 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region Map Customization
+
+   public static new MapCustomizationData getMapCustomizationData (int mapId, int userId) {
+      string cmdText = "SELECT data FROM map_customizations WHERE map_id = @map_id AND user_id = @user_id;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@map_id", mapId);
+         cmd.Parameters.AddWithValue("@user_id", userId);
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (dataReader.Read()) {
+               MapCustomizationData data = MapCustomizationData.deserialize(dataReader.GetString("data"));
+               data.userId = userId;
+               data.mapId = mapId;
+               return data;
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public static new void setMapCustomizationData (MapCustomizationData data) {
+      string cmdText = "INSERT INTO map_customizations(user_id, map_id, data) Values(@user_id, @map_id, @data) " +
+         "ON DUPLICATE KEY UPDATE data = @data;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@map_id", data.mapId);
+         cmd.Parameters.AddWithValue("@user_id", data.userId);
+         cmd.Parameters.AddWithValue("@data", data.serialize());
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   #endregion
+
    #region Map Editor Data
+
+   public static new int getMapId (string areaKey) {
+      string cmdText = "SELECT id FROM maps_v2 WHERE name = @areaKey;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@areaKey", areaKey);
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (dataReader.Read()) {
+               return dataReader.GetInt32("id");
+            }
+         }
+      }
+
+      return -1;
+   }
 
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();

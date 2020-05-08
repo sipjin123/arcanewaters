@@ -28,22 +28,26 @@ namespace MapCustomization
          _ren.color = new Color(_ren.color.r, _ren.color.g, _ren.color.b, semiTransparent ? SEMI_TRANSPARENT_ALPHA : 1f);
       }
 
+      public bool areChangesEmpty () {
+         return !unappliedChanges.isLocalPositionSet();
+      }
+
       public void clearChanges () {
-         unappliedChanges.localPosition = null;
+         unappliedChanges.clearLocalPosition();
       }
 
       public void revertChanges () {
          transform.localPosition = anchorLocalPosition;
 
-         unappliedChanges.localPosition = null;
+         clearChanges();
       }
 
       public void submitChanges () {
-         if (unappliedChanges.localPosition != null) {
-            anchorLocalPosition = unappliedChanges.localPosition.Value;
+         if (unappliedChanges.isLocalPositionSet()) {
+            anchorLocalPosition = unappliedChanges.localPosition;
          }
 
-         clearChanges();
+         revertChanges();
       }
 
       #region Private Variables

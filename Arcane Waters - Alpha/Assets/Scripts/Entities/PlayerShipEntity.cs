@@ -141,17 +141,9 @@ public class PlayerShipEntity : ShipEntity {
       base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
 
       // Ship stuff
-      this.shipType = shipInfo.shipType;
-      this.skinType = shipInfo.skinType;
-      this.shipId = shipInfo.shipId;
-      this.currentHealth = shipInfo.health;
-      this.maxHealth = shipInfo.maxHealth;
-      this.attackRangeModifier = shipInfo.attackRange;
-      this.speed = shipInfo.speed;
-      this.sailors = shipInfo.sailors;
-      this.rarity = shipInfo.rarity;
-
-      this.shipAbilities = shipInfo.shipAbilities;
+      initialize(shipInfo);
+      shipId = shipInfo.shipId;
+      shipAbilities = shipInfo.shipAbilities;
 
       // Store the equipped items characteristics
       weaponType = weapon.itemTypeId;

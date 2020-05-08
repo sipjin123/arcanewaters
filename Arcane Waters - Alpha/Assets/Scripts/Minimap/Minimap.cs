@@ -247,6 +247,14 @@ public class Minimap : ClientMonoBehaviour {
       _discoveryIcons.Add(icon);
    }
 
+   public void deleteDiscoveryIcon (Discovery discovery) {
+      MM_Icon icon = _discoveryIcons.Find(x => x.target == discovery.gameObject);
+
+      if (icon != null) {
+         Destroy(icon.gameObject);
+      }
+   }
+
    public void addTreasureChestIcon (GameObject chestObject) {
       if (_treasureChestIcons.Find(iconItem => iconItem.target == chestObject) == null) {
          MM_Icon icon = Instantiate(treasureChestIconPrefab, this.iconContainer.transform);

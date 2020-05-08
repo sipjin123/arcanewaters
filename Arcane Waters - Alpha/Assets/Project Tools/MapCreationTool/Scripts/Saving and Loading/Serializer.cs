@@ -890,6 +890,18 @@ namespace MapCreationTool.Serialization
       public string k; // Key
       public string v; // Value
 
+      public static int extractId (DataField[] dataFields) {
+         if (dataFields == null) return -1;
+
+         foreach (DataField dataField in dataFields) {
+            if (dataField.k.CompareTo(PLACED_PREFAB_ID) == 0) {
+               return dataField.intValue;
+            }
+         }
+
+         return -1;
+      }
+
       public float floatValue
       {
          get { return float.Parse(v, US_CULTURE); }

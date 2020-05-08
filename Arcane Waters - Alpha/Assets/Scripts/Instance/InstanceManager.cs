@@ -60,6 +60,11 @@ public class InstanceManager : MonoBehaviour {
       return instance;
    }
 
+   public void addDiscoveryToInstance (Discovery discovery, Instance instance) {
+      instance.entities.Add(discovery);
+      discovery.instanceId = instance.id;      
+   }
+
    public void addEnemyToInstance (Enemy enemy, Instance instance) {
       instance.entities.Add(enemy);
       enemy.instanceId = instance.id;

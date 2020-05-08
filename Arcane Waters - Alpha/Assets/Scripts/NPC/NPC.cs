@@ -89,6 +89,19 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          animator.SetInteger("facing", (int) facing);
       }
 
+      string spriteAddress = spritePath;
+      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
+      if (newSprites.Count > 0) {
+         GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
+
+         // If we have a sprite swapper, we want to check that instead
+         Texture2D newTexture = newSprites[0].texture2D;
+         if (newTexture) {
+            SpriteSwap swapper = GetComponent<SpriteSwap>();
+            swapper.newTexture = newTexture;
+         }
+      }
+
       // Continually pick new move targets
       if (isServer) {
          _seeker = GetComponent<Seeker>();
@@ -127,19 +140,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    private void setupClientSideValues () {
-      string spriteAddress = spritePath;
-      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
-      if (newSprites.Count > 0) {
-         GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
-
-         // If we have a sprite swapper, we want to check that instead
-         Texture2D newTexture = newSprites[0].texture2D;
-         if (newTexture) {
-            SpriteSwap swapper = GetComponent<SpriteSwap>();
-            swapper.newTexture = newTexture;
-         }
-      }
-
       _shopTrigger = gameObject.AddComponent<ShopTrigger>();
       _shopTrigger.panelType = shopPanelType;
    }
@@ -263,7 +263,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (_shopTrigger != null) {
+      if (_shopTrigger != null && _shopTrigger.panelType != Panel.Type.None) {
          // If this is a Shop NPC, then show the appropriate panel
          switch (_shopTrigger.panelType) {
             case Panel.Type.Adventure:

@@ -6,38 +6,29 @@ namespace MapCustomization
    /// <summary>
    /// Represents changes applied to a placed prefab in map customization
    /// </summary>
-   [System.Serializable]
+   [Serializable]
    public struct PrefabChanges
    {
       #region Public Variables
 
-      #endregion
-
-      public Vector2? localPosition
-      {
-         get
-         {
-            if (_localPosition.x == Mathf.NegativeInfinity) {
-               return null;
-            } else {
-               return _localPosition;
-            }
-         }
-         set
-         {
-            if (value == null) {
-               _localPosition = new Vector2(Mathf.NegativeInfinity, 0);
-            } else {
-               _localPosition = value.Value;
-            }
-         }
-      }
-
-      #region Private Variables
+      // Unique id of the prefab within the map
+      public int id;
 
       // New localPosition, (-infinity, 0) if not changed
       [SerializeField]
-      private Vector2 _localPosition;
+      public Vector2 localPosition;
+
+      #endregion
+
+      public void clearLocalPosition () {
+         localPosition = new Vector2(Mathf.NegativeInfinity, 0);
+      }
+
+      public bool isLocalPositionSet () {
+         return localPosition.x != Mathf.NegativeInfinity;
+      }
+
+      #region Private Variables
 
       #endregion
    }

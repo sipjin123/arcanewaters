@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.UI;
-using Mirror;
 using MapCustomization;
 
 namespace MapCreationTool
@@ -17,6 +14,12 @@ namespace MapCreationTool
       // Is the UI currently enabled and showing to the user
       public static bool isShowing { get; private set; }
 
+      // Is the UI showing the loading screen
+      public static bool isLoading { get; private set; }
+
+      // Title text of UI
+      public Text titleText;
+
       #endregion
 
       private void OnEnable () {
@@ -29,7 +32,7 @@ namespace MapCreationTool
       }
 
       private void Update () {
-         if (!isShowing) return;
+         if (!isShowing || isLoading) return;
 
          Vector2 pointerPos = Input.mousePosition;
          if (pointerPos != _lastPointerPos) {
@@ -49,6 +52,11 @@ namespace MapCreationTool
          if (Input.GetMouseButtonUp(0)) {
             MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerPos));
          }
+      }
+
+      public static void setLoading (bool loading) {
+         isLoading = loading;
+         self.titleText.text = loading ? "Loading..." : "Customizing a map";
       }
 
       public static void show () {

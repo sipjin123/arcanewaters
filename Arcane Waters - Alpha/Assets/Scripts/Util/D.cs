@@ -95,7 +95,7 @@ public class D : MonoBehaviour {
       prefix = (type == ChatInfo.Type.Error) ? "[ERROR] " + prefix : prefix;
 
       // Maybe write it to a client log file
-      if (writeThisToFile) {
+      if (writeThisToFile && !Util.isEmpty(_logFilePath)) {
          using (StreamWriter file = new StreamWriter(@"" + _logFilePath, true)) {
             string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
             string lineToWrite = logTime + prefix + msg;

@@ -11,7 +11,7 @@ public class Discovery : NetworkBehaviour
    #region Public Variables
 
    // The max valid distance between the player and a discovery
-   public const float MAX_VALID_DISTANCE = 1.0f;
+   public const float MAX_VALID_DISTANCE = 5.0f;
 
    // The chances of spawning this discovery   
    public float spawnChance;
@@ -24,9 +24,14 @@ public class Discovery : NetworkBehaviour
    [SyncVar]
    public int id;
 
-   // The instance ID of the area this discovery belongs to
-   [HideInInspector]
+   // The instance ID of the area this discovery belongs to   
    public int instanceId;
+
+   // The animator for the mist
+   public Animator mistAnimator;
+
+   // The animator for the spinning icon
+   public Animator spinningIconAnimator;
 
    #endregion
 
@@ -39,6 +44,10 @@ public class Discovery : NetworkBehaviour
    private void Start () {
       initializeDiscovery();
       Minimap.self.addDiscoveryIcon(this);
+   }
+
+   private void OnDestroy () {
+      Minimap.self.deleteDiscoveryIcon(this);
    }
 
    private void Update () {
@@ -87,8 +96,9 @@ public class Discovery : NetworkBehaviour
       _spriteRenderer = GetComponent<SpriteRenderer>();
       _outline = GetComponent<SpriteOutline>();
 
-      _spriteAnimation.sprites = ImageManager.getSprites(data.spriteUrl);
-      _spriteRenderer.enabled = true;
+      // Hide the discovery sprite and outline until the discovery is revealed
+      _spriteRenderer.enabled = false;
+      _outline.setVisibility(false);
 
       // Adjust the size of the trigger
       _triggerCollider.offset = Vector2.zero;
@@ -102,8 +112,8 @@ public class Discovery : NetworkBehaviour
    private void OnTriggerEnter2D (Collider2D collision) {
       if (Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
          _isLocalPlayerInside = true;
-
          if (!_isRevealed) {
+            spinningIconAnimator.SetBool("PlayerInside", true);
             _progressBarSlider.value = 0;
             _currentProgress = 0;
             _progressBarSlider.gameObject.SetActive(true);
@@ -115,12 +125,20 @@ public class Discovery : NetworkBehaviour
       if (_isLocalPlayerInside && Global.player != null && collision.GetComponent<NetEntity>() == Global.player) {
          _isLocalPlayerInside = false;
          _progressBarSlider.gameObject.SetActive(false);
+
+         if (!_isRevealed) {
+            spinningIconAnimator.SetBool("PlayerInside", false);
+         }
       }
    }
 
    [TargetRpc]
    public void Target_RevealDiscovery (NetworkConnection connection) {
       _isRevealed = true;
+      _spriteRenderer.enabled = true;
+      _spriteAnimation.sprites = ImageManager.getSprites(data.spriteUrl);
+      mistAnimator.SetTrigger("Revealed");
+      spinningIconAnimator.gameObject.SetActive(false);
       _progressBarSlider.gameObject.SetActive(false);
    }
 
@@ -164,6 +182,7 @@ public class Discovery : NetworkBehaviour
    [SerializeField]
    private CircleCollider2D _triggerCollider;
 
+   // The clickable box
    [SerializeField]
    private ClickableBox _clickableBox;
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using MapCreationTool;
 using UnityEngine;
 using System.Linq;
@@ -11,6 +12,9 @@ namespace MapCustomization
 
       // Singleton instance
       public static MapCustomizationManager self;
+
+      // Currently made customizations to the map
+      private static MapCustomizationData customizationData;
 
       /// <summary>
       /// Current area that is being customized, null if customization is not active currently
@@ -31,25 +35,40 @@ namespace MapCustomization
             return;
          }
 
+         currentArea = areaName;
+
+         CustomizationUI.show();
+         CustomizationUI.setLoading(true);
+
+         self.StartCoroutine(enterCustomizationRoutine());
+      }
+
+      private static IEnumerator enterCustomizationRoutine () {
          // Gather prefabs from the scene that can be customized
-         _customizablePrefabs = new HashSet<CustomizablePrefab>(AreaManager.self.getArea(areaName).GetComponentsInChildren<CustomizablePrefab>());
+         CustomizablePrefab[] prefabs = AreaManager.self.getArea(currentArea).GetComponentsInChildren<CustomizablePrefab>();
+         _customizablePrefabs = prefabs.ToDictionary(p => p.unappliedChanges.id, p => p);
 
          // Set all customizable prefabs to semi-transparent
-         foreach (CustomizablePrefab prefab in _customizablePrefabs) {
+         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
             prefab.setSemiTransparent(true);
          }
 
-         CustomizationUI.show();
+         // Fetch customization data that is saved for this map
+         Global.player.rpc.Cmd_RequestMapCustomizationManagerData(Global.player.userId, currentArea);
+         yield return new WaitWhile(() => customizationData == null);
 
-         currentArea = areaName;
+         CustomizationUI.setLoading(false);
       }
 
       public static void exitCustomization () {
          currentArea = null;
+         customizationData = null;
          CustomizationUI.hide();
 
+         self.StopAllCoroutines();
+
          // Reset all customizable prefabs color
-         foreach (CustomizablePrefab prefab in _customizablePrefabs) {
+         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
             prefab.setSemiTransparent(false);
          }
       }
@@ -71,13 +90,13 @@ namespace MapCustomization
       /// <param name="worldPosition"></param>
       public static void pointerDrag (Vector2 delta) {
          if (_selectedPrefab != null) {
-            if (_selectedPrefab.unappliedChanges.localPosition == null) {
+            if (!_selectedPrefab.unappliedChanges.isLocalPositionSet()) {
                _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.anchorLocalPosition + delta;
             } else {
                _selectedPrefab.unappliedChanges.localPosition += delta;
             }
 
-            _selectedPrefab.transform.localPosition = _selectedPrefab.unappliedChanges.localPosition.Value;
+            _selectedPrefab.transform.localPosition = _selectedPrefab.unappliedChanges.localPosition;
             _selectedPrefab.GetComponent<ZSnap>()?.snapZ();
          }
       }
@@ -89,7 +108,12 @@ namespace MapCustomization
 
       public static void pointerUp (Vector2 worldPosition) {
          if (_selectedPrefab != null) {
-            _selectedPrefab.submitChanges();
+            if (!_selectedPrefab.areChangesEmpty()) {
+               customizationData.add(_selectedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_UpdateMapCustomizationData(customizationData, currentArea, _selectedPrefab.unappliedChanges);
+
+               _selectedPrefab.submitChanges();
+            }
          }
 
          selectPrefab(null);
@@ -98,7 +122,7 @@ namespace MapCustomization
 
       private static void updatePrefabHighlights (bool preferSemiTransparent) {
          // Set all except selected prefabs to semi-transparent
-         foreach (CustomizablePrefab prefab in _customizablePrefabs) {
+         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
             prefab.setSemiTransparent(prefab != _selectedPrefab && preferSemiTransparent);
          }
       }
@@ -108,7 +132,7 @@ namespace MapCustomization
          float minZ = float.MaxValue;
 
          // Iterate over all prefabs that overlap given point
-         foreach (CustomizablePrefab prefab in _customizablePrefabs.Where(p => p.interactionCollider.OverlapPoint(position))) {
+         foreach (CustomizablePrefab prefab in _customizablePrefabs.Values.Where(p => p.interactionCollider.OverlapPoint(position))) {
             if (prefab.transform.position.z < minZ) {
                minZ = prefab.transform.position.z;
                result = prefab;
@@ -126,10 +150,43 @@ namespace MapCustomization
          }
       }
 
+      /// <summary>
+      /// Called from the server, whenever changes to a prefab are made and saved in the database
+      /// </summary>
+      /// <param name="areaKey"></param>
+      /// <param name="changes"></param>
+      public static void receivePrefabChanges (string areaKey, PrefabChanges changes) {
+         // If we are customizing this map, let the user-end handle the changes
+         if (currentArea != null && currentArea.CompareTo(areaKey) == 0) return;
+
+         // Find the prefab in the area
+         CustomizablePrefab prefab = AreaManager.self.getArea(currentArea)?.GetComponentsInChildren<CustomizablePrefab>()
+            .FirstOrDefault(p => p.unappliedChanges.id == changes.id);
+
+         if (prefab != null) {
+            prefab.unappliedChanges = changes;
+            prefab.submitChanges();
+         }
+      }
+
+      /// <summary>
+      /// Called from the server, after the manager initially request all customization data
+      /// </summary>
+      /// <param name="data"></param>
+      public static void receiveMapCustomizationData (MapCustomizationData data) {
+         customizationData = data;
+         foreach (PrefabChanges pc in data.prefabChanges) {
+            if (_customizablePrefabs.TryGetValue(pc.id, out CustomizablePrefab pref)) {
+               pref.unappliedChanges = pc;
+               pref.submitChanges();
+            }
+         }
+      }
+
       #region Private Variables
 
       // Prefabs in the scene that can be customized
-      private static HashSet<CustomizablePrefab> _customizablePrefabs;
+      private static Dictionary<int, CustomizablePrefab> _customizablePrefabs;
 
       // Currently selected prefab
       private static CustomizablePrefab _selectedPrefab;

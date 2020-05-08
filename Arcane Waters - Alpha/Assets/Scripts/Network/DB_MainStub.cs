@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Text;
 using MapCreationTool.Serialization;
+using MapCustomization;
 
 public class DB_MainStub : MonoBehaviour {
    #region Public Variables
@@ -221,6 +222,18 @@ public class DB_MainStub : MonoBehaviour {
 
    public static void deleteNPCXML (int typeID) {
 
+   }
+
+   public static MapCustomizationData getMapCustomizationData (int mapId, int userId) {
+      return null;
+   }
+
+   public static void setMapCustomizationData (MapCustomizationData data) {
+
+   }
+
+   public static int getMapId (string areaKey) {
+      return -1;
    }
 
    public static List<Map> getMaps () {

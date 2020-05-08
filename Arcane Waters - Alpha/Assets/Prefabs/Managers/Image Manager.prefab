@@ -4486,6 +4486,33 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 6eda7393cf281894c8f93a255f84c3ea, type: 3}
     sprites:
     - {fileID: 21300000, guid: 6eda7393cf281894c8f93a255f84c3ea, type: 3}
+  - imageName: discovery-icon-sprite-sheet
+    imagePath: Assets/Sprites/Discoveries/discovery-icon-sprite-sheet.png
+    imagePathWithoutExtension: Assets/Sprites/Discoveries/discovery-icon-sprite-sheet
+    texture2D: {fileID: 2800000, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    sprite: {fileID: -1213143928269218802, guid: d4ace41e3408e1b4faff5c935faa7f5f,
+      type: 3}
+    sprites:
+    - {fileID: -1213143928269218802, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -7145972781451567710, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -8872550813584469152, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 5172475894399236880, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -3566516040047335053, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 880192399774399376, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -4289168836829717812, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 6491715167092801706, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 7430744534576082987, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 3710370649337629387, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -457076696727609394, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -2658548988208806438, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 6543780424835282852, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -922034172509317364, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -3850688135135319828, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -8102594487237518009, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: 1997242180982174826, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -1773916719184699070, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -7769199652821741970, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
+    - {fileID: -7619210329361584622, guid: d4ace41e3408e1b4faff5c935faa7f5f, type: 3}
   - imageName: DiscoveryPanel_Name+Rating
     imagePath: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_Name+Rating.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Discoveries/DiscoveryPanel_Name+Rating
@@ -16498,6 +16525,23 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 15a4d1ee5b372ac418eedda1845aef17, type: 3}
     sprites:
     - {fileID: 21300000, guid: 15a4d1ee5b372ac418eedda1845aef17, type: 3}
+  - imageName: Mist-cloud-sprite-sheet
+    imagePath: Assets/Sprites/Discoveries/Mist-cloud-sprite-sheet.png
+    imagePathWithoutExtension: Assets/Sprites/Discoveries/Mist-cloud-sprite-sheet
+    texture2D: {fileID: 2800000, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    sprite: {fileID: -1205877163343838545, guid: 7227d68947db43044b6a8ae32f064228,
+      type: 3}
+    sprites:
+    - {fileID: -1205877163343838545, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -8006836669310039988, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: 2569205706303695583, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -5229909188194946455, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -2086905960580853903, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -4908762582876181250, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -6082589842732312734, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -2138336197509065494, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: 7818723871613296792, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
+    - {fileID: -3013865412523773942, guid: 7227d68947db43044b6a8ae32f064228, type: 3}
   - imageName: mm_green_dot
     imagePath: Assets/Sprites/Minimap/mm_green_dot.png
     imagePathWithoutExtension: Assets/Sprites/Minimap/mm_green_dot

@@ -25,13 +25,14 @@ namespace MapCreationTool.IssueResolving
       private static List<MapSummary> mapSummaries;
       private static bool alterData;
       private static bool saveMaps;
+      private static bool createNewVersion;
       private static IssueContainer issueContainer;
 
       private void Awake () {
          instance = this;
       }
 
-      public static void run (bool alterData, bool saveMaps) {
+      public static void run (bool alterData, bool saveMaps, bool createNewVersion) {
          if (running) {
             UI.messagePanel.displayError("Issue resolver is already running.");
             return;
@@ -39,6 +40,7 @@ namespace MapCreationTool.IssueResolving
 
          IssueResolver.alterData = alterData;
          IssueResolver.saveMaps = saveMaps;
+         IssueResolver.createNewVersion = createNewVersion;
          running = true;
          scheduledForResolve = new ConcurrentQueue<MapVersion>();
          resolvedMaps = 0;
@@ -118,9 +120,17 @@ namespace MapCreationTool.IssueResolving
 
                if (saveMaps && resolvingResult?.exception == null) {
                   MapVersion newVersion = serializeVersion();
-                  Task uploadTask = Utilities.doBackgroundTask(() => DB_Main.createNewMapVersion(newVersion), null,
-                     logException(newVersion.map.name + "_uploadError.txt", "There was an error uploading the version:"));
-                  runningTasks.Add(uploadTask);
+                  if (createNewVersion) {
+                     Task uploadTask = Utilities.doBackgroundTask(() => DB_Main.createNewMapVersion(newVersion), null,
+                        logException(newVersion.map.name + "_uploadError.txt", "There was an error uploading the version:"));
+                     runningTasks.Add(uploadTask);
+                  } else {
+                     newVersion.version = DrawBoard.loadedVersion.version;
+                     newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
+                     Task uploadTask = Utilities.doBackgroundTask(() => DB_Main.updateMapVersion(newVersion), null,
+                        logException(newVersion.map.name + "_uploadError.txt", "There was an error uploading the version:"));
+                     runningTasks.Add(uploadTask);
+                  }
                }
 
                resolvedMaps++;
@@ -291,14 +301,16 @@ namespace MapCreationTool.IssueResolving
 
       private static string formLongSummary (IEnumerable<MapSummary> summaries) {
          return
-            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues") + Environment.NewLine +
+            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
+            + $" (New version = {createNewVersion})" + Environment.NewLine +
             (alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
             string.Join(Environment.NewLine, summaries.Select(ms => ms.toLongSummary())) + Environment.NewLine;
       }
 
       private static string formShortSummary (IEnumerable<MapSummary> summaries) {
          return
-            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues") + Environment.NewLine +
+            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
+            + $" (New version = {createNewVersion})" + Environment.NewLine +
             (alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
             toStringLines(summaries.Select(ms => ms.toShortSummary()));
       }

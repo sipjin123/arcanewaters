@@ -36,6 +36,31 @@ public class ShipEntity : SeaEntity
 
    #endregion
 
+   protected virtual void initialize (ShipData data) {
+      shipType = data.shipType;
+      skinType = data.skinType;
+      currentHealth = data.baseHealth;
+      maxHealth = data.baseHealth;
+      attackRangeModifier = data.baseRange;
+      speed = data.baseSpeed;
+      sailors = data.baseSailors;
+      rarity = Rarity.Type.None;
+      damage = data.baseDamage;
+      nationType = Nation.Type.None;
+   }
+   protected virtual void initialize(ShipInfo info) {
+      shipType = info.shipType;
+      skinType = info.skinType;
+      currentHealth = info.health;
+      maxHealth = info.maxHealth;
+      attackRangeModifier = info.attackRange;
+      speed = info.speed;
+      sailors = info.sailors;
+      rarity = info.rarity;
+      damage = info.damage;
+      nationType = info.nationType;
+   }
+
    public override void playAttackSound () {
       // Play a sound effect
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
