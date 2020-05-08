@@ -79,7 +79,7 @@ public class ClientManager : MonoBehaviour {
    }
 
    public static void sendAccountNameAndUserId () {
-      if (SteamManager.Initialized && !QuickLaunchPanel.self.blockSteamLogin.isOn) {
+      if (SteamManager.Initialized) {
          SteamLoginManager.self.getAuthTicketEvent.RemoveAllListeners();
          SteamLoginManager.self.getAuthTicketEvent = new GetAuthTicketEvent();
 

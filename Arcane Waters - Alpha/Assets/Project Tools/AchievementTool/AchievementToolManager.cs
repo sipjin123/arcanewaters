@@ -37,6 +37,7 @@ public class AchievementToolManager : XmlDataToolManager {
 
    private void Start () {
       Invoke("loadXMLData", MasterToolScene.loadDelay);
+      EquipmentXMLManager.self.initializeDataCache();
    }
 
    public void saveXMLData (AchievementData data, int xmlID) {

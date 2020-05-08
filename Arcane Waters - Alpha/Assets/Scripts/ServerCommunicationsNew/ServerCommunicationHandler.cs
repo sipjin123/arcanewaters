@@ -44,7 +44,7 @@ namespace ServerCommunicationHandlerv2 {
       public SharedServerDataHandler sharedServerDataHandler;
 
       // The maximum count of the processed invite cache, which is a list being referenced by other servers to determine if their invite request is processed
-      public const int MAX_PROCESSED_INVITE_CACHE = 5;
+      public const int MAX_PROCESSED_INVITE_CACHE = 100;
 
       #endregion
 
@@ -115,7 +115,7 @@ namespace ServerCommunicationHandlerv2 {
                      ServerNetwork.self.server.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
                      ourServerData.processedVoyageInvites.Add(voyageInvite);
 
-                     // Only keep reference to 5 entries then delete the first entry if it exceeds
+                     // Only keep reference to 100 entries then delete the first entry if it exceeds
                      if (ourServerData.processedVoyageInvites.Count > MAX_PROCESSED_INVITE_CACHE) {
                         ourServerData.processedVoyageInvites.RemoveAt(0);
                      }
@@ -129,7 +129,7 @@ namespace ServerCommunicationHandlerv2 {
             // Cycle through our pending invite list
             List<VoyageInviteData> invitesToRemove = new List<VoyageInviteData>();
             foreach (VoyageInviteData pendingInvite in ourServerData.pendingVoyageInvites) {
-               //Cycle through the remote server's processed invite list
+               // Cycle through the remote server's processed invite list
                foreach (ServerData serverData in serverDataList) {
                   bool existsInProcessedList = existsInProcessList(serverData, pendingInvite);
 

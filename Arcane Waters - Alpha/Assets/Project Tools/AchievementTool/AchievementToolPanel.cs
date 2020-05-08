@@ -53,7 +53,7 @@ public class AchievementToolPanel : MonoBehaviour {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.AchievementIcon, _achievementIcon, _achievementIconPath);
       });
       _itemCategoryButton.onClick.AddListener(() => {
-         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ItemCategory, _itemCategoryText, selectionChangedEvent);
+         selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.AchievementItemCategory, _itemCategoryText, selectionChangedEvent);
       });
       _itemTypeButton.onClick.AddListener(() => {
          Item.Category newCategory = (Item.Category) Enum.Parse(typeof(Item.Category), _itemCategoryText.text);

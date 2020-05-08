@@ -94,7 +94,7 @@ namespace ServerCommunicationHandlerv2 {
             // If the invitee id is existing in our server, process the invite immediately
             ServerNetwork.self.server.handleVoyageGroupInvite(newVoyageInvite.voyageGroupId, newVoyageInvite.inviterName, newVoyageInvite.inviteeId);
          } else {
-            //If the server does not have access to the invitee, cache it to server data and let the main server handle this (Server with port 7777)
+            // If the server does not have access to the invitee, cache it to server data and let the main server handle this (Server with port 7777)
             serverCommuncationHandler.createPendingInvite(newVoyageInvite);
          }
       }

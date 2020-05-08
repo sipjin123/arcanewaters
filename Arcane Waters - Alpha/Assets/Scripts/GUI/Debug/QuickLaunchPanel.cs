@@ -33,9 +33,6 @@ public class QuickLaunchPanel : MonoBehaviour {
    // Our Game is in single player mode
    public Toggle singlePlayerToggle;
 
-   // Launch the game using username and steamid instead of username and password
-   public Toggle blockSteamLogin;
-
    // Some keys we use to store login credentials
    public static string ACCOUNT_KEY = "quick_launch_account";
    public static string PASSWORD_KEY = "quick_launch_password";
@@ -68,11 +65,6 @@ public class QuickLaunchPanel : MonoBehaviour {
          this.accountInputField.text = PlayerPrefs.GetString(ACCOUNT_KEY);
          this.passwordInputField.text = PlayerPrefs.GetString(PASSWORD_KEY);
       }
-
-      #if !UNITY_CLOUD_BUILD
-      // Set steam autologin as disabled if not cloud build
-      blockSteamLogin.isOn = true;
-      #endif
    }
 
    private void Update () {
@@ -84,7 +76,7 @@ public class QuickLaunchPanel : MonoBehaviour {
       // Store the values we've specified
       PlayerPrefs.SetString(ACCOUNT_KEY, this.accountInputField.text);
       PlayerPrefs.SetString(PASSWORD_KEY, this.passwordInputField.text);
-      if (SteamManager.Initialized && !blockSteamLogin.isOn) {
+      if (SteamManager.Initialized) {
          Steamworks.CSteamID steamId = Steamworks.SteamUser.GetSteamID();
          Global.isSteamLogin = true;
          Global.lastSteamId = steamId.ToString();

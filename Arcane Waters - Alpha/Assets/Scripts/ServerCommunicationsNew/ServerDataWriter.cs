@@ -60,10 +60,10 @@ namespace ServerCommunicationHandlerv2 {
          // Create new data to serialize
          VoyageInviteCompiler newInvitesCompiler = new VoyageInviteCompiler();
          newInvitesCompiler.serverVoyageInviteData = remoteVoyageInvites;
-         string content = JsonUtility.ToJson(newInvitesCompiler);
+         string[] content = Util.serialize(remoteVoyageInvites);
          
          // Write to file to be read by other servers
-         File.WriteAllText(invitePath + voyageInviteText, content);
+         File.WriteAllText(invitePath + voyageInviteText, content.Length > 0 ? content[0] : "");
       }
 
       public List<VoyageInviteData> fetchVoyageInvitesFromText () {
@@ -72,11 +72,17 @@ namespace ServerCommunicationHandlerv2 {
          string rawTextData = reader.ReadToEnd();
          reader.Close();
 
+         // Return empty list if the text file is empty
+         if (rawTextData.Length < 1) {
+            return new List<VoyageInviteData>();
+         }
+
          // Unserialize text content
-         VoyageInviteCompiler voyageinviteCompiler = JsonUtility.FromJson<VoyageInviteCompiler>(rawTextData);
+         string[] voyageString = new string[1] { rawTextData };
+         List<VoyageInviteData> voyageSerializer = Util.unserialize<VoyageInviteData>(voyageString);
 
          // Fetch only the invites that is relevant to our port
-         List<VoyageInviteData> newInvites = voyageinviteCompiler.serverVoyageInviteData.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.ourPort);
+         List<VoyageInviteData> newInvites = voyageSerializer.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.ourPort);
          return newInvites;
       }
 

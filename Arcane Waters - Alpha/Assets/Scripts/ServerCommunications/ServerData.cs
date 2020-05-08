@@ -82,9 +82,9 @@ public class VoyageInviteData {
    public string creationTime;
 
    // The server info
-   public string serverName;
-   public int serverPort;
-   public string serverIp;
+   public string serverName = "";
+   public int serverPort = 0;
+   public string serverIp = "";
 
    public VoyageInviteData (Server targetServer, int inviterId, string inviterName, int inviteeId, int voyageGroupId, InviteStatus inviteStatus, DateTime creationTime) {
       this.serverName = targetServer.deviceName;

@@ -99,7 +99,8 @@ public class GenericSelectionPopup : MonoBehaviour
       ArmorTypeSprites = 38,
       WeaponActionType = 39,
       CropsIcon = 40,
-      DiscoverySprites = 41
+      DiscoverySprites = 41,
+      AchievementItemCategory = 42
    }
 
    #endregion
@@ -376,6 +377,13 @@ public class GenericSelectionPopup : MonoBehaviour
          case selectionType.ItemCategory:
             foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
                createTextTemplate(category.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.AchievementItemCategory:
+            foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
+               if (category == Item.Category.None || category == Item.Category.Weapon || category == Item.Category.Armor || category == Item.Category.CraftingIngredients) {
+                  createTextTemplate(category.ToString(), textUI, changeEvent);
+               }
             }
             break;
          case selectionType.PlayerClassType:
