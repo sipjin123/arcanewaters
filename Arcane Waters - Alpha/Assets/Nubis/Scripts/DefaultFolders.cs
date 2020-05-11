@@ -1,4 +1,5 @@
-﻿#if NUBIS
+﻿#define NUBIS
+#if NUBIS
 using System.IO;
 using System;
 

@@ -1,4 +1,5 @@
-﻿#if NUBIS
+﻿#define NUBIS
+#if NUBIS
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -189,6 +190,8 @@ public class NubisManager : MonoBehaviour
       i($"{NubisStatics.AppName} web server stopped.");
    }
    private bool StartWebServer (HttpListener httpServer, int port) {
+      D.editorLog("Port: "+port, Color.red);
+      port = 7777;
       // try to start web server.
       try {
          httpServer.Prefixes.Add($"http://*:{port.ToString()}/");
