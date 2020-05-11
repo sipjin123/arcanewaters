@@ -2983,6 +2983,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7b48a302e39584d4eb47a7cc691eeb86, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7b48a302e39584d4eb47a7cc691eeb86, type: 3}
+  - imageName: context_menu_panel
+    imagePath: Assets/Sprites/GUI/Context Menu/context_menu_panel.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Context Menu/context_menu_panel
+    texture2D: {fileID: 2800000, guid: d4ace3d9e5cea554996073f6f0148269, type: 3}
+    sprite: {fileID: 21300000, guid: d4ace3d9e5cea554996073f6f0148269, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d4ace3d9e5cea554996073f6f0148269, type: 3}
+  - imageName: context_menu_title_panel
+    imagePath: Assets/Sprites/GUI/Context Menu/context_menu_title_panel.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Context Menu/context_menu_title_panel
+    texture2D: {fileID: 2800000, guid: befa87b3dc307b246b9b47930b3d6c72, type: 3}
+    sprite: {fileID: 21300000, guid: befa87b3dc307b246b9b47930b3d6c72, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: befa87b3dc307b246b9b47930b3d6c72, type: 3}
   - imageName: corn
     imagePath: Assets/Sprites/Cargo/corn.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/corn

@@ -10,6 +10,9 @@ using System;
 public class VoyageMapCell : MonoBehaviour {
    #region Public Variables
 
+   // Path for Sea Random map sprites
+   public static string SEA_MAP_PATH = "GUI/Voyages/";
+
    // The biome image
    public Image biomeImage;
 
@@ -70,7 +73,7 @@ public class VoyageMapCell : MonoBehaviour {
       mapNameText.text = Area.getName(voyage.areaKey);
 
       // Set the plaque images
-      statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName());
+      statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName(_voyage.difficulty));
 
       // Set the PvP-PvE label
       pvpPveText.text = voyage.isPvP ? "PvP" : "PvE";
@@ -123,7 +126,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void OnPointerEnter () {
       if (_interactable) {
          // Change frame sprite - HOVERED
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName() + "_frame_hover");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_hover");
 
          // Change biome sprite - HOVERED
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_hover");
@@ -133,7 +136,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void OnPointerExit () {
       if (_interactable) {
          // Change frame sprite - DEFAULT
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName() + "_frame_default");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_default");
 
          // Change biome sprite - DEFAULT
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_default");
@@ -143,7 +146,7 @@ public class VoyageMapCell : MonoBehaviour {
    public void OnPointerDown () {
       if (_interactable) {
          // Change frame sprite - PRESSED
-         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName() + "_frame_pressed");
+         frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_pressed");
 
          // Change biome sprite - PRESSED
          biomeImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getBiomeName() + "_pressed");
@@ -167,8 +170,8 @@ public class VoyageMapCell : MonoBehaviour {
       _interactable = false;
    }
 
-   private string getFrameName () {
-      switch (_voyage.difficulty) {
+   public static string getFrameName (Voyage.Difficulty voyageDifficulty) {
+      switch (voyageDifficulty) {
          case Voyage.Difficulty.Easy:
             return "bronze";
          case Voyage.Difficulty.Medium:
@@ -184,9 +187,6 @@ public class VoyageMapCell : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Path for Sea Random map sprites
-   private static string SEA_MAP_PATH = "GUI/Voyages/";
 
    // The voyage being displayed
    private Voyage _voyage;

@@ -91,6 +91,7 @@ public class InstanceManager : MonoBehaviour {
    public void addTreasureSiteToInstance (TreasureSite treasureSite, Instance instance) {
       instance.entities.Add(treasureSite);
       treasureSite.instanceId = instance.id;
+      instance.treasureSiteCount++;
    }
 
    public Instance getInstance (int instanceId) {
@@ -123,7 +124,7 @@ public class InstanceManager : MonoBehaviour {
       instance.updateMaxPlayerCount(isSinglePlayer);
 
       // Keep track of it
-      _instances.Add(instance.id, instance); 
+      _instances.Add(instance.id, instance);
 
       // Note the open Areas on this server
       recalculateOpenAreas();

@@ -41,6 +41,10 @@ public class EntityManager : MonoBehaviour
       return allEntities;
    }
 
+   public int getEntityCount () {
+      return _entities.Count;
+   }
+
    #region Private Variables
 
    // A mapping of userId to Entity object

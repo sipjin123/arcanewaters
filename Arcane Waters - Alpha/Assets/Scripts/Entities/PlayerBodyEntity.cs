@@ -30,11 +30,26 @@ public class PlayerBodyEntity : BodyEntity
          return;
       }
 
-      // Allow right clicking people to bring up their info, only if no panel is opened
+      // Allow right clicking people to bring up the context menu, only if no panel is opened
       if (Input.GetMouseButtonUp(1) && !PanelManager.self.hasPanelInStack()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null) {
-            this.rpc.Cmd_RequestCharacterInfoFromServer(body.userId);
+            // Make sure the parameters are captured for the click events
+            int userId = body.userId;
+            string userName = body.entityName;
+
+            PanelManager.self.contextMenuPanel.clearButtons();
+
+            // Add the context menu buttons
+            PanelManager.self.contextMenuPanel.addButton("Info", () => this.rpc.Cmd_RequestCharacterInfoFromServer(userId));
+            if (VoyageManager.isInVoyage(this) && this.voyageGroupId != body.voyageGroupId) {
+               PanelManager.self.contextMenuPanel.addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
+            }
+            if (this.userId != body.userId) {
+               PanelManager.self.contextMenuPanel.addButton("Add Friend", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
+            }
+
+            PanelManager.self.contextMenuPanel.show(userName);
          }
       }
 

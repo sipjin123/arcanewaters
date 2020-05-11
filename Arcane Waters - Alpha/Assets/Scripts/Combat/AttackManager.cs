@@ -52,14 +52,17 @@ public class AttackManager : ClientMonoBehaviour {
       // Get the player ship
       PlayerShipEntity playerShipEntity = (PlayerShipEntity) Global.player;
 
-      // Hide the cursor when the right mouse is down
-      Cursor.visible = !Input.GetMouseButton(1);
+      // Check if the player is aiming a shot
+      bool isAiming = Input.GetMouseButton(1) && !VoyageGroupPanel.self.isMouseOverAnyMemberCell();
+
+      // Hide the cursor when the player is aiming
+      Cursor.visible = !isAiming;
 
       // Get the mouse position
       Vector2 mousePosition = Util.getMousePos();      
 
-      // Check if the mouse right button is pressed
-      if (Input.GetMouseButton(1)) {
+      // Show or hide the attack UI
+      if (isAiming) {
          // Move the clamped aim indicator to the mouse position - clamped inside the range zone
          Util.setXY(clampedCursor.transform, playerShipEntity.clampToRange(mousePosition));
 

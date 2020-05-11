@@ -87,7 +87,7 @@ public class PlayerShipEntity : ShipEntity {
       }
 
       // Right-click to attack in a circle
-      if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air) {
+      if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          // If the ship is reloading, set the next shot
          if (!hasReloaded()) {
             nextShotTarget = clampToRange(Util.getMousePos());
@@ -112,7 +112,7 @@ public class PlayerShipEntity : ShipEntity {
       }*/
 
       // Right click to fire out the sides
-      if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air) {
+      if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
       }
    }

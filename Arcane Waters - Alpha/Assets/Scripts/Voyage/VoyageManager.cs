@@ -14,6 +14,9 @@ public class VoyageManager : MonoBehaviour {
    // The number of seconds before an offline user is removed from its voyage group
    public static int DELAY_BEFORE_GROUP_REMOVAL = 5 * 60;
 
+   // The number of seconds a user must wait before inviting the same user to a group again
+   public static int GROUP_INVITE_MIN_INTERVAL = 60;
+
    // Self
    public static VoyageManager self;
 
@@ -172,13 +175,14 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public void handleInviteCommand (string inputString) {
-      // Split things apart based on spaces
-      string[] sections = inputString.Split(' ');
-
       // Get the user name
+      string[] sections = inputString.Split(' ');
       string userName = sections[0];
 
-      // Send the invite request to the server
+      invitePlayerToVoyageGroup(userName);
+   }
+
+   public void invitePlayerToVoyageGroup (string userName) {
       Global.player.rpc.Cmd_SendVoyageGroupInvitationToUser(userName);
    }
 
@@ -239,6 +243,37 @@ public class VoyageManager : MonoBehaviour {
 
          // Clear the invitation group id so that we can receive more invitations
          _invitationVoyageGroupId = -1;
+      }
+   }
+
+   public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {
+      // Get the invitee log for this user
+      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
+         if (inviteeLog.Contains(inviteeName)) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public void logGroupInvitation (int inviterUserId, string inviteeName) {
+      // Check if the log exists for this inviter
+      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
+         if (!inviteeLog.Contains(inviteeName)) {
+            inviteeLog.Add(inviteeName);
+
+            // Remove the invitee from the log after the defined interval
+            StartCoroutine(CO_RemoveGroupInvitationLog(inviterUserId, inviteeName));
+         }
+      } else {
+         // Create the log
+         HashSet<string> newInviteeLog = new HashSet<string>();
+         newInviteeLog.Add(inviteeName);
+         _groupInvitationsLog.Add(inviterUserId, newInviteeLog);
+
+         // Remove the invitee from the log after the defined interval
+         StartCoroutine(CO_RemoveGroupInvitationLog(inviterUserId, inviteeName));
       }
    }
 
@@ -326,7 +361,7 @@ public class VoyageManager : MonoBehaviour {
 
       foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
          Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, instance.difficulty, instance.isPvP,
-            instance.creationDate, instance.getTreasureSitesCount(), instance.getCapturedTreasureSitesCount());
+            instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount);
          allVoyages.Add(voyage);
       }
 
@@ -486,6 +521,14 @@ public class VoyageManager : MonoBehaviour {
       });
    }
 
+   private IEnumerator CO_RemoveGroupInvitationLog (int inviterUserId, string inviteeName) {
+      yield return new WaitForSeconds(GROUP_INVITE_MIN_INTERVAL);
+
+      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
+         inviteeLog.Remove(inviteeName);
+      }
+   }
+
    private IEnumerator CO_RemoveDisconnectedUserFromVoyageGroup (int userId) {
       // Wait a few minutes in case the user reconnects
       yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
@@ -552,6 +595,9 @@ public class VoyageManager : MonoBehaviour {
 
    // Gets toggled every time a new voyage is created, to ensure an equal number of PvP and PvE instances
    private bool _isNewVoyagePvP = false;
+
+   // Keeps a log of the group invitations to prevent spamming
+   private Dictionary<int, HashSet<string>> _groupInvitationsLog = new Dictionary<int, HashSet<string>>();
 
    #endregion
 }

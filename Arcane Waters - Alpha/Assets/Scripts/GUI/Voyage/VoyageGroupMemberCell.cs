@@ -89,22 +89,44 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       hpBar.enabled = true;
       hpBar.fillAmount = (float) entity.currentHealth / entity.maxHealth;
       hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
+
+      // Allow right clicking to bring up the context menu, only if no panel is opened
+      if (Input.GetMouseButtonUp(1) && _mouseOver && !PanelManager.self.hasPanelInStack() ) {
+         // Make sure the parameters are captured for the click events
+         int userId = _userId;
+         string userName = entity.entityName;
+
+         // Add the context menu buttons
+         PanelManager.self.contextMenuPanel.clearButtons();
+         PanelManager.self.contextMenuPanel.addButton("Info", () => Global.player.rpc.Cmd_RequestCharacterInfoFromServer(userId));
+         if (Global.player.userId != _userId) {
+            PanelManager.self.contextMenuPanel.addButton("Add Friend", () => FriendListManager.self.sendFriendshipInvite(userName));
+         }
+
+         PanelManager.self.contextMenuPanel.show(userName);
+      }
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
       if (_active) {
          tooltipBox.SetActive(true);
       }
+      _mouseOver = true;
    }
 
    public void OnPointerExit (PointerEventData eventData) {
       if (_active) {
          tooltipBox.SetActive(false);
       }
+      _mouseOver = false;
    }
 
    public int getUserId () {
       return _userId;
+   }
+
+   public bool isMouseOver () {
+      return _mouseOver;
    }
 
    private IEnumerator CO_InitializePortrait (NetEntity entity) {
@@ -132,6 +154,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
 
    // Gets set to true when the cell is updating the group member info
    private bool _active = true;
+
+   // Gets set to true when the mouse is hovering the cell
+   private bool _mouseOver = false;
 
    #endregion
 }

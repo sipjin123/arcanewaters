@@ -42,6 +42,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Clear out any info
       memberContainer.DestroyChildren();
+      _memberCells.Clear();
    }
 
    public void Update () {
@@ -74,6 +75,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       if (!VoyageManager.isInVoyage(Global.player) || groupMembers.Count <= 0) {
          // Clear out any old info
          memberContainer.DestroyChildren();
+         _memberCells.Clear();
 
          // Hide the panel
          hide();
@@ -85,11 +87,13 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
       // Clear out any old info
       memberContainer.DestroyChildren();
+      _memberCells.Clear();
 
       // Instantiate the cells
-      foreach(int memberUserId in groupMembers) {
+      foreach (int memberUserId in groupMembers) {
          VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
          cell.setCellForGroupMember(memberUserId);
+         _memberCells.Add(cell);
       }
    }
 
@@ -131,6 +135,34 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
    }
 
+   public bool isMouseOverMemberCell (int memberUserId) {
+      if (!isShowing()) {
+         return false;
+      }
+
+      foreach (VoyageGroupMemberCell cell in _memberCells) {
+         if (cell.isMouseOver() && cell.getUserId() == memberUserId) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public bool isMouseOverAnyMemberCell () {
+      if (!isShowing()) {
+         return false;
+      }
+
+      foreach (VoyageGroupMemberCell cell in _memberCells) {
+         if (cell.isMouseOver()) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
    public void show () {
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
@@ -154,6 +186,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    // The countdown when leaving the group
    private float _countdown = 0;
+
+   // The list of member cells
+   private List<VoyageGroupMemberCell> _memberCells = new List<VoyageGroupMemberCell>();
 
    #endregion
 }

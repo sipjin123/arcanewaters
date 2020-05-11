@@ -42,8 +42,8 @@ public class ShipPortrait : MonoBehaviour
    }
 
    void Update () {
-      // Only show the user portrait when the mouse is over
-      if (!_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver())) {
+      // Only show the user portrait when the mouse is over the entity or its member cell in the group panel
+      if (!_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId))) {
          show();
          portrait.updateBackground(_entity);
       } else {

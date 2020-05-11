@@ -493,6 +493,24 @@ public class NetEntity : NetworkBehaviour {
       return new Weapon(0, 0);
    }
 
+   public Instance getInstance () {
+      // Check if the last requested instance is the one where we are located
+      if (_lastInstance != null && _lastInstance.id == instanceId) {
+         return _lastInstance;
+      } else {
+         // Look for the instance in the InstanceManager childs
+         foreach (Instance instance in InstanceManager.self.GetComponentsInChildren<Instance>()) {
+            if (instance.id == instanceId) {
+               // Store the instance for subsequent calls
+               _lastInstance = instance;
+               return instance;
+            }
+         }
+      }
+
+      return null;
+   }
+
    public void updatePlayerCamera () {
       // Only do this for our own player, and never 
       if (!this.isLocalPlayer) {
@@ -1087,6 +1105,9 @@ public class NetEntity : NetworkBehaviour {
 
    // Wether the player is climbing
    private bool _isClimbing = false;
+
+   // Keep a reference to the last instance accessed with getInstance
+   private Instance _lastInstance = null;
 
    // The alpha cutoff value when we want to show the shadow
    private const float VISIBLE_SHADOW_ALPHACUTOFF = 0;

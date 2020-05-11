@@ -521,8 +521,8 @@ public class RPCManager : NetworkBehaviour {
          PanelManager.self.pushPanel(panel.type);
       }
 
-      // Pass the data to the panel
-      panel.receiveUserIdForFriendshipInvite(friendUserId, friendName);
+      // Send the invitation with the received userId
+      FriendListManager.self.sendFriendshipInvite(friendUserId, friendName);
    }
 
    [TargetRpc]
@@ -2670,6 +2670,12 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      // Prevent spamming invitations
+      if (VoyageManager.self.isGroupInvitationSpam(_player.userId, inviteeName)) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You must wait " + VoyageManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
+         return;
+      }
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
@@ -2734,6 +2740,9 @@ public class RPCManager : NetworkBehaviour {
 
             // Write in the inviter chat that the invitation has been sent
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
+
+            // Log the invitation
+            VoyageManager.self.logGroupInvitation(_player.userId, inviteeName);
          });
       });
    }

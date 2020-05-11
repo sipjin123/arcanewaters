@@ -182,17 +182,6 @@ public class FriendListPanel : Panel
       }
    }
 
-   public void receiveUserIdForFriendshipInvite (int friendUserId, string friendName) {
-      _selectedFriendUserId = friendUserId;
-
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmSendFriendshipInvite());
-
-      // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to ask " + friendName + " to be your friend?");
-   }
-
    public void onFriendListTabButtonPress () {
       _friendshipStatusFilter = Friendship.Status.Friends;
       _currentPage = 1;
@@ -218,12 +207,8 @@ public class FriendListPanel : Panel
       if ("".Equals(inviteInputField.text)) {
          PanelManager.self.noticeScreen.show("Please enter a player name.");
       } else {
-         Global.player.rpc.Cmd_RequestUserIdForFriendshipInvite(inviteInputField.text);
+         FriendListManager.self.sendFriendshipInvite(inviteInputField.text);
       }
-   }
-
-   public void confirmSendFriendshipInvite () {
-      Global.player.rpc.Cmd_SendFriendshipInvite(_selectedFriendUserId);
    }
 
    public void onChatButtonPress (int friendUserId, string friendName) {
@@ -240,40 +225,39 @@ public class FriendListPanel : Panel
    }
 
    public void onDeleteFriendButtonPress (int friendUserId, string friendName) {
-      _selectedFriendUserId = friendUserId;
+      // Make sure the value of the friend user id is captured
+      int friendUserIdForButtonEvent = friendUserId;
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmDeleteFriend());
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => FriendListManager.self.confirmDeleteFriend(friendUserIdForButtonEvent));
 
       // Show a confirmation panel
       PanelManager.self.confirmScreen.show("Are you sure you want to delete your friend " + friendName + "?");
    }
 
    public void onRejectFriendshipRequestButtonPress (int friendUserId, string friendName) {
-      _selectedFriendUserId = friendUserId;
+      // Make sure the value of the friend user id is captured
+      int friendUserIdForButtonEvent = friendUserId;
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmDeleteFriend());
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => FriendListManager.self.confirmDeleteFriend(friendUserIdForButtonEvent));
 
       // Show a confirmation panel
       PanelManager.self.confirmScreen.show("Are you sure you want to reject the friendship invitation from " + friendName + "?");
    }
 
    public void onCancelFriendshipRequestButtonPress (int friendUserId, string friendName) {
-      _selectedFriendUserId = friendUserId;
+      // Make sure the value of the friend user id is captured
+      int friendUserIdForButtonEvent = friendUserId;
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmDeleteFriend());
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => FriendListManager.self.confirmDeleteFriend(friendUserIdForButtonEvent));
 
       // Show a confirmation panel
       PanelManager.self.confirmScreen.show("Are you sure you want to cancel the friendship invitation to " + friendName + "?");
-   }
-
-   public void confirmDeleteFriend () {
-      Global.player.rpc.Cmd_DeleteFriendship(_selectedFriendUserId);
    }
 
    public void nextPage () {

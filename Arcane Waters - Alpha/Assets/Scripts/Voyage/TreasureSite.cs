@@ -117,6 +117,12 @@ public class TreasureSite : NetworkBehaviour
                if (capturePoints >= 1) {
                   capturePoints = 1;
                   status = Status.Captured;
+
+                  // Increase the number of captured treasure sites in the instance
+                  Instance instance = InstanceManager.self.getInstance(instanceId);
+                  if (instance != null) {
+                     instance.capturedTreasureSiteCount++;
+                  }
                }
             }
             // If the site was being captured by another group

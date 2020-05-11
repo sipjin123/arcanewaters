@@ -42,6 +42,14 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int npcCount;
 
+   // For the number of treasure sites in the instance
+   [SyncVar]
+   public int treasureSiteCount = 0;
+
+   // For the number of captured treasure sites in the instance
+   [SyncVar]
+   public int capturedTreasureSiteCount = 0;
+
    // The number assigned to this instance based on the area type
    [SyncVar]
    public int numberInArea;
@@ -85,6 +93,11 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
+      // On clients, set the instance manager as the parent transform
+      if (isClient) {
+         transform.SetParent(InstanceManager.self.transform);
+      }
+
       // Spawn all the area prefabs that are specific to this instance
       if (NetworkServer.active) {
          StartCoroutine(CO_SpawnInstanceSpecificPrefabs());
@@ -136,30 +149,6 @@ public class Instance : NetworkBehaviour
       if (entities.Contains(entity)) {
          this.entities.Remove(entity);
       }
-   }
-
-   public int getCapturedTreasureSitesCount () {
-      int count = 0;
-
-      foreach (NetworkBehaviour entity in entities) {
-         if (entity != null && entity is TreasureSite && ((TreasureSite)entity).isCaptured()) {
-            count++;
-         }
-      }
-
-      return count;
-   }
-
-   public int getTreasureSitesCount () {
-      int count = 0;
-
-      foreach (NetworkBehaviour entity in entities) {
-         if (entity != null && entity is TreasureSite) {
-            count++;
-         }
-      }
-
-      return count;
    }
 
    protected void checkIfInstanceIsEmpty () {

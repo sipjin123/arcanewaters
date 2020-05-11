@@ -180,7 +180,9 @@ public class ClientMessageManager : MonoBehaviour {
             FriendListPanel friendListPanel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
             // Refresh the panel
-            friendListPanel.refreshPanel();
+            if (friendListPanel.isShowing()) {
+               friendListPanel.refreshPanel();
+            }
 
             // Show a confirmation panel if there is a custom message to display
             if (!"".Equals(msg.customMessage)) {

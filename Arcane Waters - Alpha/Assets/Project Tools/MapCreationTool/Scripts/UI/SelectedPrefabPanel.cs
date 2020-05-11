@@ -24,6 +24,7 @@ namespace MapCreationTool
       private Selection selection;
       private PlacedPrefab prefab;
       private PrefabDataDefinition dataDef;
+      private bool hasWarpLogic = false;
 
       private void Awake () {
          cGroup = GetComponent<CanvasGroup>();
@@ -72,6 +73,7 @@ namespace MapCreationTool
          if (prefab != null) {
             dataDef = prefab.placedInstance.GetComponent<PrefabDataDefinition>();
             if (dataDef != null) {
+               hasWarpLogic = dataDef.title.CompareTo("Warp") == 0 || dataDef.title.CompareTo("House") == 0 || dataDef.title.CompareTo("Secret") == 0;
                setLayout(dataDef, prefab);
                setData(prefab, dataDef);
             }
@@ -87,7 +89,7 @@ namespace MapCreationTool
       private void setLayout (PrefabDataDefinition data, PlacedPrefab prefab) {
          titleText.text = data.title + " " + prefab.getData(DataField.PLACED_PREFAB_ID);
          // Custom logic for warps
-         if (data.title.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0 || data.title.CompareTo("Secret") == 0) {
+         if (hasWarpLogic) {
             // target map
             Field mf = Instantiate(dropdownFieldPref, transform);
             mf.setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
@@ -133,7 +135,7 @@ namespace MapCreationTool
             f.Value.setValue(placedPrefab.getData(f.Key));
          }
 
-         if (titleText.text.CompareTo("Warp") == 0 || data.title.CompareTo("House") == 0 || data.title.CompareTo("Secret") == 0) {
+         if (hasWarpLogic) {
             fields["target map"].setFieldProperties(Overlord.remoteMaps.formMapsSelectOptions());
             fields["target map"].setValue(placedPrefab.getData("target map"));
             string mapValue = fields["target map"].value;
@@ -155,7 +157,7 @@ namespace MapCreationTool
 
          drawBoard.setPrefabData(prefab, key, value);
 
-         if (titleText.text.CompareTo("Warp") == 0 || dataDef.title.CompareTo("House") == 0) {
+         if (hasWarpLogic) {
             if (key.CompareTo("target map") == 0) {
                if (int.TryParse(value, out int mapId)) {
                   fields["target spawn"].setFieldProperties(Overlord.remoteSpawns.formSpawnsSelectOptions(mapId));
