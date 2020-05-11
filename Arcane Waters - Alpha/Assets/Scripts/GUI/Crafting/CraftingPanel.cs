@@ -74,15 +74,15 @@ public class CraftingPanel : Panel
    }
 
    public void refreshBlueprintList () {
-      UserEquipmentFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
+      NubisDataHandling.NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
    }
 
    public void displayBlueprint (int itemId) {
-      UserEquipmentFetcher.self.checkCraftingInfo(itemId);
+      NubisDataHandling.NubisDataFetcher.self.checkCraftingInfo(itemId);
    }
 
    public void refreshCurrentlySelectedBlueprint () {
-      UserEquipmentFetcher.self.checkCraftingInfo(_selectedBlueprintId);
+      NubisDataHandling.NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
    }
 
    public void clearSelectedBlueprint () {

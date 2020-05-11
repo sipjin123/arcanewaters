@@ -38,13 +38,13 @@ namespace MapCreationTool
          return ImageManager.getTexture(idToLandMonster[id].battler.imagePath);
       }
 
-      public Texture2D getSeaMonsterTexture (int id) {
-         if (!idToSeaMonster.ContainsKey(id)) {
-            Debug.LogWarning($"Unrecognized monster ID {id}.");
+      public Texture2D getSeaMonsterTexture (int seamonsterType) {
+         if (!idToSeaMonster.Values.ToList().Exists(_=> _.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType)) {
+            Debug.LogWarning($"Unrecognized monster ID {seamonsterType}.");
             return null;
          }
 
-         return ImageManager.getTexture(idToSeaMonster[id].seaMonsterData.defaultSpritePath);
+         return ImageManager.getTexture(idToSeaMonster.Values.ToList().Find(_=>_.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType).seaMonsterData.defaultSpritePath);
       }
 
       public Texture2D getFirstLandMonsterTexture () {
@@ -99,7 +99,7 @@ namespace MapCreationTool
                BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
                int enemyTypeID = (int) battler.enemyType;
 
-               if (!idToLandMonster.ContainsKey(enemyTypeID)) {
+               if (!idToLandMonster.ContainsKey(enemyTypeID) && data.isEnabled) {
                   idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
                      xmlId = data.xmlId,
                      battler = battler,
@@ -112,8 +112,8 @@ namespace MapCreationTool
                SeaMonsterEntityData monster = Util.xmlLoad<SeaMonsterEntityData>(new TextAsset(data.rawXmlData));
                int monsterID = (int) monster.seaMonsterType;
 
-               if (!idToSeaMonster.ContainsKey(monsterID)) {
-                  idToSeaMonster.Add(monsterID, new SeaMonsterXMLContent {
+               if (!idToSeaMonster.ContainsKey(data.xmlId) && data.isEnabled) {
+                  idToSeaMonster.Add(data.xmlId, new SeaMonsterXMLContent {
                      xmlId = data.xmlId,
                      seaMonsterData = monster,
                      isEnabled = data.isEnabled

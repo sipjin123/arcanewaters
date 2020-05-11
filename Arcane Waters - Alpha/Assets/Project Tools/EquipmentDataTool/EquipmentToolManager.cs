@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Text;
 using System.Xml;
+using NubisDataHandling;
 
 public class EquipmentToolManager : XmlDataToolManager {
    #region Public Variables
@@ -26,14 +27,6 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    // Self reference to the specific tool
    public static EquipmentToolManager equipmentToolSelf;
-
-   public enum EquipmentType
-   {
-      None = 0,
-      Weapon =  1,
-      Armor = 2,
-      Helm = 3,
-   }
 
    #endregion
 

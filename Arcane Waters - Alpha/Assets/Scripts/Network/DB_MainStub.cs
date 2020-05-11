@@ -60,7 +60,7 @@ public class DB_MainStub : MonoBehaviour {
       return new List<SQLEntryNameClass>();
    }
 
-   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentToolManager.EquipmentType equipmentType = EquipmentToolManager.EquipmentType.None) {
+   public static List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentType equipmentType = EquipmentType.None) {
       return new List<SQLEntryIDClass>();
    }
 
@@ -89,14 +89,14 @@ public class DB_MainStub : MonoBehaviour {
       return new List<string>();
    }
 
-   public static void updateEquipmentXML (string rawData, int typeID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
+   public static void updateEquipmentXML (string rawData, int typeID, EquipmentType equipType, string equipmentName, bool isEnabled) {
 
    }
 
-   public static void deleteEquipmentXML (int type, EquipmentToolManager.EquipmentType equipType) {
+   public static void deleteEquipmentXML (int type, EquipmentType equipType) {
    }
 
-   public static List<XMLPair> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+   public static List<XMLPair> getEquipmentXML (EquipmentType equipType) {
       return new List<XMLPair>();
    }
 

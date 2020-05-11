@@ -595,7 +595,7 @@ public class DB_Main : DB_MainStub {
       return rawDataList;
    }
 
-   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentToolManager.EquipmentType equipmentType = EquipmentToolManager.EquipmentType.None) {
+   public static new List<SQLEntryIDClass> getSQLDataByID (EditorSQLManager.EditorToolType editorType, EquipmentType equipmentType = EquipmentType.None) {
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
       try {
@@ -2726,7 +2726,7 @@ public class DB_Main : DB_MainStub {
 
    #region Equipment XML Data
 
-   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentToolManager.EquipmentType equipType, string equipmentName, bool isEnabled) {
+   public static new void updateEquipmentXML (string rawData, int xmlID, EquipmentType equipType, string equipmentName, bool isEnabled) {
       string tableName = "";
       string xmlKey = "xml_id, ";
       string xmlValue = "@xml_id, ";
@@ -2736,13 +2736,13 @@ public class DB_Main : DB_MainStub {
       }
 
       switch (equipType) {
-         case EquipmentToolManager.EquipmentType.Weapon:
+         case EquipmentType.Weapon:
             tableName = "equipment_weapon_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Armor:
+         case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Helm:
+         case EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
             break;
       }
@@ -2773,16 +2773,16 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void deleteEquipmentXML (int xml_id, EquipmentToolManager.EquipmentType equipType) {
+   public static new void deleteEquipmentXML (int xml_id, EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
-         case EquipmentToolManager.EquipmentType.Weapon:
+         case EquipmentType.Weapon:
             tableName = "equipment_weapon_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Armor:
+         case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Helm:
+         case EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
             break;
       }
@@ -2802,16 +2802,16 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<XMLPair> getEquipmentXML (EquipmentToolManager.EquipmentType equipType) {
+   public static new List<XMLPair> getEquipmentXML (EquipmentType equipType) {
       string tableName = "";
       switch (equipType) {
-         case EquipmentToolManager.EquipmentType.Weapon:
+         case EquipmentType.Weapon:
             tableName = "equipment_weapon_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Armor:
+         case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentToolManager.EquipmentType.Helm:
+         case EquipmentType.Helm:
             tableName = "equipment_helm_xml_v2";
             break;
       }
