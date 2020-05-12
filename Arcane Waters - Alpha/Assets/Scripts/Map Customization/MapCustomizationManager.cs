@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MapCreationTool;
 using UnityEngine;
 using System.Linq;
+using System;
 
 namespace MapCustomization
 {
@@ -50,6 +51,14 @@ namespace MapCustomization
       }
 
       private static IEnumerator enterCustomizationRoutine () {
+         // Fetch customization data that is saved for this map
+         _waitingServerResponse = true;
+         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMap);
+         yield return new WaitWhile(() => _waitingServerResponse);
+
+         // Set customization data
+         MapManager.self.setCustomizations(AreaManager.self.getArea(currentArea), customizationData);
+
          // Gather prefabs from the scene that can be customized
          CustomizablePrefab[] prefabs = AreaManager.self.getArea(currentArea).GetComponentsInChildren<CustomizablePrefab>();
          _customizablePrefabs = prefabs.ToDictionary(p => p.unappliedChanges.id, p => p);
@@ -59,16 +68,15 @@ namespace MapCustomization
             prefab.setSemiTransparent(true);
          }
 
-         // Fetch customization data that is saved for this map
-         Global.player.rpc.Cmd_RequestMapCustomizationManagerData(Global.player.userId, currentAreaBaseMap);
-         yield return new WaitWhile(() => customizationData == null);
-
          CustomizationUI.setLoading(false);
       }
 
       public static void exitCustomization () {
+         Global.player.rpc.Cmd_ExitMapCustomization(Global.player.userId, currentArea);
+
          currentArea = null;
          customizationData = null;
+         _selectedPrefab = null;
          CustomizationUI.hide();
 
          self.StopAllCoroutines();
@@ -115,9 +123,8 @@ namespace MapCustomization
       public static void pointerUp (Vector2 worldPosition) {
          if (_selectedPrefab != null) {
             if (!_selectedPrefab.areChangesEmpty()) {
+               Global.player.rpc.Cmd_AddPrefabCustomization(Global.player.userId, currentArea, currentAreaBaseMap, _selectedPrefab.unappliedChanges);
                customizationData.add(_selectedPrefab.unappliedChanges);
-               Global.player.rpc.Cmd_UpdateMapCustomizationData(customizationData, currentArea, _selectedPrefab.unappliedChanges);
-
                _selectedPrefab.submitChanges();
             }
          }
@@ -156,40 +163,53 @@ namespace MapCustomization
          }
       }
 
-      /// <summary>
-      /// Called from the server, whenever changes to a prefab are made and saved in the database
-      /// </summary>
-      /// <param name="areaKey"></param>
-      /// <param name="changes"></param>
-      public static void receivePrefabChanges (string areaKey, PrefabChanges changes) {
-         // If we are customizing this map, let the user-end handle the changes
+      public static void serverAllowedEnterCustomization (MapCustomizationData currentMapCustomizationData) {
+         _waitingServerResponse = false;
+         customizationData = currentMapCustomizationData;
+      }
+
+      public static void serverDeniedEnterCustomization (string message) {
+         _waitingServerResponse = false;
+         ChatPanel.self.addChatInfo(new ChatInfo(0, message, DateTime.Now, ChatInfo.Type.System));
+         exitCustomization();
+      }
+
+      public static bool validatePrefabChanges (string areaKey, PrefabChanges newChanges, out string errorMessage) {
+         if (UnityEngine.Random.value < 0.1f) {
+            errorMessage = "Randomly generated testing error";
+            return false;
+         }
+
+         errorMessage = null;
+         return true;
+      }
+
+      public static void serverAddPrefabChangeSuccess (string areaKey, PrefabChanges changes) {
+         // If we are customizing this map, the customization process will handle the change
          if (currentArea != null && currentArea.CompareTo(areaKey) == 0) return;
 
-         // Find the prefab in the area
-         CustomizablePrefab prefab = AreaManager.self.getArea(currentArea)?.GetComponentsInChildren<CustomizablePrefab>()
-            .FirstOrDefault(p => p.unappliedChanges.id == changes.id);
-
-         if (prefab != null) {
-            prefab.unappliedChanges = changes;
-            prefab.submitChanges();
+         Area area = AreaManager.self.getArea(currentArea);
+         if (area != null) {
+            MapManager.self.addCustomizations(area, changes);
          }
       }
 
-      /// <summary>
-      /// Called from the server, after the manager initially request all customization data
-      /// </summary>
-      /// <param name="data"></param>
-      public static void receiveMapCustomizationData (MapCustomizationData data) {
-         customizationData = data;
+      public static void serverAddPrefabChangeFail (PrefabChanges changes, string message) {
+         ChatPanel.self.addChatInfo(new ChatInfo(0, "Failed to apply changes: " + message, DateTime.Now, ChatInfo.Type.System));
+
+         // TODO: reset failed changes on user's end
       }
 
       #region Private Variables
 
       // Prefabs in the scene that can be customized
-      private static Dictionary<int, CustomizablePrefab> _customizablePrefabs;
+      private static Dictionary<int, CustomizablePrefab> _customizablePrefabs = new Dictionary<int, CustomizablePrefab>();
 
       // Currently selected prefab
       private static CustomizablePrefab _selectedPrefab;
+
+      // Are we waiting for the server to respond
+      private static bool _waitingServerResponse;
 
       #endregion
    }

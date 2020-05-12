@@ -4,11 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PaletteSwapManager : MonoBehaviour {
+public class PaletteSwapManager {
    #region Public Variables
-
-   // Prefab of material used for palette swaps
-   public Material paletteSwapMaterial;
 
    // Singleton reference
    public static PaletteSwapManager self;
@@ -16,15 +13,10 @@ public class PaletteSwapManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      if (self == null) {
-         self = this;
-         loadXMLData();
-      } else {
-         Destroy(this);
-      }
+      instantiate();
    }
 
-   public void loadXMLData () {
+   private void loadXMLData () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML();
 
@@ -42,6 +34,11 @@ public class PaletteSwapManager : MonoBehaviour {
    }
 
    public static Texture2D generateTexture2D (string name) {
+      if (self == null) {
+         PaletteSwapManager paletteSwapManager = new PaletteSwapManager();
+         paletteSwapManager.instantiate();
+      }
+
       PaletteToolData data = _paletteDataList.Find((PaletteToolData toolData) => toolData.paletteName.Equals(name));
       if (data == null) {
          return null;
@@ -81,10 +78,19 @@ public class PaletteSwapManager : MonoBehaviour {
       return _paletteIdList[index];
    }
 
+   private void instantiate () {
+      if (self == null) {
+         self = this;
+         loadXMLData();
+      }
+   }
+
    #region Private Variables
 
    // Cached data from database about created palettes
    private static List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
+
+   // Cached data from database about created palette ids
    private static List<int> _paletteIdList = new List<int>();
 
    #endregion

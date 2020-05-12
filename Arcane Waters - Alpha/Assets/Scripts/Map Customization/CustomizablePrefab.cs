@@ -18,6 +18,9 @@ namespace MapCustomization
       // Last confirmed placement position of the prefab
       public Vector2 anchorLocalPosition;
 
+      // Position that is set in the map editor
+      public Vector2 mapEditorLocalPosition;
+
       #endregion
 
       private void OnEnable () {
@@ -38,6 +41,12 @@ namespace MapCustomization
 
       public void revertChanges () {
          transform.localPosition = anchorLocalPosition;
+
+         clearChanges();
+      }
+
+      public void revertToMapEditor () {
+         transform.localPosition = mapEditorLocalPosition;
 
          clearChanges();
       }

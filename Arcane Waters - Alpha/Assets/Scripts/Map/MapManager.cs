@@ -240,12 +240,22 @@ public class MapManager : MonoBehaviour
 
          foreach (PrefabChanges pc in customizationData.prefabChanges) {
             if (prefabs.TryGetValue(pc.id, out CustomizablePrefab pref)) {
+               pref.revertToMapEditor();
                pref.unappliedChanges = pc;
                pref.submitChanges();
             }
          }
       } catch (Exception ex) {
          D.error($"Unable to set customizations for area { area.areaKey }:\n{ ex }");
+      }
+   }
+
+   public void addCustomizations (Area area, PrefabChanges prefabChanges) {
+      foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
+         if (pref.unappliedChanges.id == prefabChanges.id) {
+            pref.unappliedChanges = prefabChanges;
+            pref.submitChanges();
+         }
       }
    }
 

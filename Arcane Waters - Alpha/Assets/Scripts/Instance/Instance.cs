@@ -82,6 +82,9 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
 
+   // Player that is currently customizing the area
+   public NetEntity playerMakingCustomizations;
+
    // Our network ident
    public NetworkIdentity netIdent;
 

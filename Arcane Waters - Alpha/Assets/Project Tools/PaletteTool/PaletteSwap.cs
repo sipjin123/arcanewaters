@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEditor;
 
 public class PaletteSwap : MonoBehaviour {
    #region Public Variables
@@ -13,18 +14,37 @@ public class PaletteSwap : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      if (!GetComponent<SpriteRenderer>().material.HasProperty(SHADER_MATERIAL_ID_KEY)) {
-         Material[] materials = new Material[GetComponent<SpriteRenderer>().materials.Length + 1];
-         GetComponent<SpriteRenderer>().materials.CopyTo(materials, 0);
-         materials[GetComponent<SpriteRenderer>().materials.Length - 1] = Material.Instantiate(PaletteSwapManager.self.paletteSwapMaterial);
+      _material = GetComponent<SpriteRenderer>().material;
 
-         GetComponent<SpriteRenderer>().materials = materials;
+      if (_material.HasProperty(SHADER_TEXTURE_KEY)) {
+         generatePaletteSwapTexture();
+      } else {
+         terminatePaletteSwapping();
       }
-      GetComponent<SpriteRenderer>().materials[GetComponent<SpriteRenderer>().materials.Length - 1].SetInt(SHADER_MATERIAL_ID_KEY, PaletteSwapManager.generatePaletteId(paletteName));
    }
 
    public void generatePaletteSwapTexture () {
-      GetComponent<SpriteRenderer>().material.SetTexture(SHADER_TEXTURE_KEY, PaletteSwapManager.generateTexture2D(paletteName));
+      if (paletteName.Length == 0) {
+         terminatePaletteSwapping();
+         return;
+      }
+
+      Texture2D paletteTex = PaletteSwapManager.generateTexture2D(paletteName);
+      if (paletteTex == null) {
+         Invoke("generatePaletteSwapTexture", 1.0f);
+         return;
+      }
+
+      if (_material.HasProperty(SHADER_TEXTURE_KEY)) {
+         _material.SetTexture(SHADER_TEXTURE_KEY, paletteTex);
+      } else {
+         D.error("Failed to assign palette to material. Destroying palette swap script");
+         terminatePaletteSwapping();
+      }
+   }
+
+   private void terminatePaletteSwapping () {
+      Destroy(this);
    }
 
    #region Private Variables
@@ -32,8 +52,8 @@ public class PaletteSwap : MonoBehaviour {
    // Shader property name of palette's texture
    private const string SHADER_TEXTURE_KEY = "_Palette";
 
-   // Shader property name of palette's material id
-   private const string SHADER_MATERIAL_ID_KEY = "_PaletteId";
+   // Material which has correct property key
+   private Material _material = null;
 
    #endregion
 }

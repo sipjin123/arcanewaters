@@ -3969,37 +3969,100 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestMapCustomizationManagerData (int userId, string areaKey) {
+   public void Cmd_RequestEnterMapCustomization (int userId, string areaKey, string baseMapAreaKey) {
+      // Find the player
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player == null) {
+         Target_DenyEnterMapCustomization("Player doesn't exist");
+         return;
+      }
+
+      // Check if player is in the area
+      if (!areaKey.Equals(player.areaKey)) {
+         Target_DenyEnterMapCustomization("Player must be in the area to customize it");
+         return;
+      }
+
+      // Get the instance
+      Instance instance = InstanceManager.self.getInstance(player.instanceId);
+
+      // Check if someone is already customizing
+      if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != userId) {
+         Target_DenyEnterMapCustomization("Someone else is already customizing the area");
+         return;
+      }
+
+      // Allow player to enter customization
+      instance.playerMakingCustomizations = player;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int mapId = DB_Main.getMapId(areaKey);
-         MapCustomizationData data = DB_Main.getMapCustomizationData(mapId, userId);
-         if (data == null) {
-            data = new MapCustomizationData() { userId = userId, mapId = mapId };
-         }
+         int mapId = DB_Main.getMapId(baseMapAreaKey);
+         MapCustomizationData data = DB_Main.getMapCustomizationData(mapId, userId) ?? new MapCustomizationData() { userId = userId, mapId = mapId };
+
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_SetMapCustomizationManagerData(data);
+            Target_AllowEnterMapCustomization(data);
          });
       });
    }
 
    [TargetRpc]
-   private void Target_SetMapCustomizationManagerData (MapCustomizationData data) {
-      MapCustomizationManager.receiveMapCustomizationData(data);
+   private void Target_AllowEnterMapCustomization (MapCustomizationData data) {
+      MapCustomizationManager.serverAllowedEnterCustomization(data);
+   }
+
+   [TargetRpc]
+   private void Target_DenyEnterMapCustomization (string message) {
+      MapCustomizationManager.serverDeniedEnterCustomization(message);
    }
 
    [Command]
-   public void Cmd_UpdateMapCustomizationData (MapCustomizationData data, string areaKey, PrefabChanges newChanges) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setMapCustomizationData(data);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Rpc_SetPrefabCustomization(areaKey, newChanges);
+   public void Cmd_ExitMapCustomization (int userId, string areaKey) {
+      // Find the player
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         // Check if player is in the area
+         if (areaKey.Equals(player.areaKey)) {
+            // Get the instance
+            Instance instance = InstanceManager.self.getInstance(player.instanceId);
+
+            // Check if someone is already customizing
+            if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId == userId) {
+               instance.playerMakingCustomizations = null;
+            }
+         }
+      }
+   }
+
+   [Command]
+   public void Cmd_AddPrefabCustomization (int userId, string areaKey, string baseMapAreaKey, PrefabChanges newChanges) {
+      // Check if changes are valid
+      if (MapCustomizationManager.validatePrefabChanges(areaKey, newChanges, out string errorMessage)) {
+         // Set changes in the server
+         MapManager.self.addCustomizations(AreaManager.self.getArea(areaKey), newChanges);
+
+         // Notify all clients about them
+         Rpc_AddPrefabCustomizationSuccess(areaKey, newChanges);
+
+         // Set changes in the database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            int mapId = DB_Main.getMapId(baseMapAreaKey);
+            MapCustomizationData data = DB_Main.getMapCustomizationData(mapId, userId) ?? new MapCustomizationData() { userId = userId, mapId = mapId };
+            data.add(newChanges);
+            DB_Main.setMapCustomizationData(data);
          });
-      });
+      } else {
+         Target_FailAddPrefabCustomization(newChanges, errorMessage);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_FailAddPrefabCustomization (PrefabChanges failedChanges, string message) {
+      MapCustomizationManager.serverAddPrefabChangeFail(failedChanges, message);
    }
 
    [ClientRpc]
-   public void Rpc_SetPrefabCustomization (string areaKey, PrefabChanges changes) {
-      MapCustomizationManager.receivePrefabChanges(areaKey, changes);
+   public void Rpc_AddPrefabCustomizationSuccess (string areaKey, PrefabChanges changes) {
+      MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, changes);
    }
 
    [Command]
