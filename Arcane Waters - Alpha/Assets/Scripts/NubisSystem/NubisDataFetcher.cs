@@ -1,11 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using System;
-using Nubis.Controllers;
-using UnityEngine.Events;
 using UnityEngine.Networking;
 
 namespace NubisDataHandling {
@@ -33,6 +28,18 @@ namespace NubisDataHandling {
       private void Awake () {
          self = this;
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
+      }
+
+      private IEnumerator processMapData (string mapName) {
+         string rawMapData = "";
+         UnityWebRequest mapDataRequest = UnityWebRequest.Get(webDirectory + "fetch_map_data_v1?mapName=" + mapName);
+         yield return mapDataRequest.SendWebRequest();
+
+         if (mapDataRequest.isNetworkError || mapDataRequest.isHttpError) {
+            D.warning(mapDataRequest.error);
+         } else {
+            rawMapData = mapDataRequest.downloadHandler.text;
+         }
       }
 
       public void checkCraftingInfo (int bluePrintId) {

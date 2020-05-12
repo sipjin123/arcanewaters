@@ -278,8 +278,9 @@ public class MapManager : MonoBehaviour
    }
 
    public IEnumerator CO_DownloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
-      // Request the map from the web
-      UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + baseMapAreaKey);
+      // Request the map from Nubis Cloud
+      string nubisDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/"; 
+      UnityWebRequest www = UnityWebRequest.Get(nubisDirectory + "fetch_map_data_v1?mapName=" + baseMapAreaKey);  
       yield return www.SendWebRequest();
 
       if (www.isNetworkError || www.isHttpError) {

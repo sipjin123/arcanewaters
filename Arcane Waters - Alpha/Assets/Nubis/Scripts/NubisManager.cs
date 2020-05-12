@@ -73,6 +73,11 @@ public class NubisManager : MonoBehaviour
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
+               case "fetch_map_data_v1": // params: INT usrId
+                  string str_mapData_v1_name = context.Request.QueryString.Get("mapName");
+                  string mapData_v1 = Fetch_Map_Data_v1Controller.fetchMapData(str_mapData_v1_name);
+                  Content(context, mapData_v1);
+                  break;
                case "fetch_user_inventory_v1": // params: INT usrId
                   string str_inventory_v1_usrid = context.Request.QueryString.Get("usrId");
                   string str_inventory_v1_itmType = context.Request.QueryString.Get("itmType");
