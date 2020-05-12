@@ -174,6 +174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 766927375}
   - component: {fileID: 766927376}
+  - component: {fileID: 766927377}
   m_Layer: 0
   m_Name: NubisTester
   m_TagString: Untagged
@@ -207,11 +208,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e55240851645fc842890990f41ae56ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  categoryFilter: 0
+  itemsPerPage: 0
+  pageIndex: 0
+--- !u!114 &766927377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766927374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23373662ca0d67419354c7cd44d3a90, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   ingredients: []
   itemId: 
   nubisUserInfoEvent:
     m_PersistentCalls:
       m_Calls: []
-  categoryFilter: 0
-  itemsPerPage: 0
-  pageIndex: 0
+  nubisInventoryEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  nubisCraftingIngredientEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  nubisEquippedItemEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  nubisCraftableItemEvent:
+    m_PersistentCalls:
+      m_Calls: []

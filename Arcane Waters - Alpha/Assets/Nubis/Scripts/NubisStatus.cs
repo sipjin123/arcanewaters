@@ -1,5 +1,4 @@
-﻿#define NUBIS
-#if NUBIS
+﻿#if NUBIS
 public enum NubisStatus
 {
    Starting,

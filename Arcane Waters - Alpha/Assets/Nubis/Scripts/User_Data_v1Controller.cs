@@ -1,5 +1,4 @@
-﻿#define NUBIS
-#if NUBIS
+﻿#if NUBIS
 using System;
 using System.Collections.Generic;
 using System.Linq;

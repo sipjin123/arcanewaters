@@ -1,4 +1,4 @@
-﻿#define NUBIS
+﻿//#define NUBIS
 #if NUBIS
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Nubis.Controllers
 {
    public class Fetch_Single_Blueprint_v4Controller
    {
-      public static string fetchSingleBlueprint (int usrId, int bpId) {
+      public static string fetchSingleBlueprint (int bpId, int usrId) {
 
          try {
             // Connect to the server.
@@ -39,8 +39,8 @@ namespace Nubis.Controllers
 
                using (MySqlCommand command = new MySqlCommand(query,connection)) {
 
-                  command.Parameters.AddWithValue("@usrId", usrId);
                   command.Parameters.AddWithValue("@itmId", bpId);
+                  command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder builder = new StringBuilder();
 
