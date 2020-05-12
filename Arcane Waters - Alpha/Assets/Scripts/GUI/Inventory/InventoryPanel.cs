@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using NubisDataHandling;
 
 public class InventoryPanel : Panel, IPointerClickHandler {
 
@@ -125,7 +126,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Hide the context menu
       hideContextMenu();
 
-      NubisDataHandling.NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
+      NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex) {

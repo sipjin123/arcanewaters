@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Linq;
+using NubisDataHandling;
 
 public class CraftingPanel : Panel
 {
@@ -74,15 +75,15 @@ public class CraftingPanel : Panel
    }
 
    public void refreshBlueprintList () {
-      NubisDataHandling.NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
+      NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
    }
 
    public void displayBlueprint (int itemId) {
-      NubisDataHandling.NubisDataFetcher.self.checkCraftingInfo(itemId);
+      NubisDataFetcher.self.checkCraftingInfo(itemId);
    }
 
    public void refreshCurrentlySelectedBlueprint () {
-      NubisDataHandling.NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
+      NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
    }
 
    public void clearSelectedBlueprint () {
