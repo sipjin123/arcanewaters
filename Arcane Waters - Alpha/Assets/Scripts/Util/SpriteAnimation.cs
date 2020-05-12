@@ -45,6 +45,9 @@ public class SpriteAnimation : ClientMonoBehaviour
       }
    }
 
+   public void startPlaying () {
+      InvokeRepeating("changeSprite", initialDelay, frameDuration);
+   }
 
    protected void changeSprite () {
       // If we've been temporarily paused, don't do anything

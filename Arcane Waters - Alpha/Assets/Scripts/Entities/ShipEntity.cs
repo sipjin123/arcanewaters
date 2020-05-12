@@ -48,7 +48,8 @@ public class ShipEntity : SeaEntity
       damage = data.baseDamage;
       nationType = Nation.Type.None;
    }
-   protected virtual void initialize(ShipInfo info) {
+
+   protected virtual void initialize (ShipInfo info) {
       shipType = info.shipType;
       skinType = info.skinType;
       currentHealth = info.health;

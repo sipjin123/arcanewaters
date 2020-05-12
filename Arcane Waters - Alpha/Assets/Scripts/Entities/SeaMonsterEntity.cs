@@ -331,9 +331,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             if (hit == null) {
                continue;
             }
-            if (hit.GetComponent<PlayerShipEntity>() != null) {
-               if (!_attackers.ContainsKey(hit.GetComponent<NetEntity>()) && !hit.GetComponent<PlayerShipEntity>().isDead()) {
-                  noteAttacker(hit.GetComponent<PlayerShipEntity>());
+            if (hit.GetComponent<ShipEntity>() != null) {
+               if (!_attackers.ContainsKey(hit.GetComponent<NetEntity>()) && !hit.GetComponent<ShipEntity>().isDead()) {
+                  noteAttacker(hit.GetComponent<ShipEntity>());
                }
             }
          }

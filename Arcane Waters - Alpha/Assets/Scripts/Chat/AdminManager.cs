@@ -651,26 +651,34 @@ public class AdminManager : NetworkBehaviour
 
       string closestAreaKey;
 
+      // For owned maps, the base map key
+      string baseMapAreaKey = null;
+
       // If no partialAreaKey passed as parameter, then choosing random area to warp
       if (string.IsNullOrEmpty(partialAreaKey)) {
          // string[] testAreaKeys = { "Pineward_Shipyard", "Far Sands", "Snow Weapon Shop 1", "Andriusti", "Starting Sea Map", "Starting Treasure Site", "Andrius Ledge" };
          string[] testAreaKeys = { "Snow Town Lite", "Far Sands", "Starting Treasure Site" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
-      }
-      else {
-         // Try to select area keys whose beginning match exactly with the user input
-         List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
-         if (exactMatchKeys.Count > 0) {
-            // If there are matchs, use that sub-list instead
-            areaKeys = exactMatchKeys;
-         }
+      } else {
+         // Try to find an owned map of this key
+         if (AreaManager.self.tryGetOwnedMapManager(partialAreaKey, out OwnedMapManager ownedMapManager)) {
+            baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(partialAreaKey);
+            closestAreaKey = partialAreaKey;
+         } else {
+            // Try to select area keys whose beginning match exactly with the user input
+            List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            if (exactMatchKeys.Count > 0) {
+               // If there are matchs, use that sub-list instead
+               areaKeys = exactMatchKeys;
+            }
 
-         // Get the area key closest to the given partial key
-         closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+            // Get the area key closest to the given partial key
+            closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+         }
       }
 
       // Get the default spawn for the destination area
-      Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(closestAreaKey);
+      Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(baseMapAreaKey ?? closestAreaKey);
 
       if (spawnLocalPos == Vector2.zero) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + closestAreaKey);

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-3342392143284799129
+--- !u!21 &-4454081117109342734
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 1
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: Book-Images-Spritesheet
   m_EditorClassIdentifier: 
   hashCode: 887983611
-  material: {fileID: -3342392143284799129}
+  material: {fileID: -4454081117109342734}
   materialHashCode: 0
   m_Version: 1.1.0
   m_FaceInfo:
@@ -76,14 +76,14 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 0
     m_Scale: 1
-    m_Name: Blunderbuss
-    m_HashCode: -883164847
+    m_Name: The Blunderbuss
+    m_HashCode: 1769609896
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 1
     m_Scale: 1
-    m_Name: Caravel
-    m_HashCode: 1969267438
+    m_Name: Origin of Sailing Page 8 (Caravel)
+    m_HashCode: 1050868014
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 2
@@ -94,20 +94,20 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 3
     m_Scale: 1
-    m_Name: Dread Pirate
-    m_HashCode: 53760941
+    m_Name: Dread Pirate Roberts
+    m_HashCode: 1571213314
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 4
     m_Scale: 1
-    m_Name: Lizard Men
-    m_HashCode: -1718903186
+    m_Name: The Lizard People (Lizard Men)
+    m_HashCode: 1639984829
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 5
     m_Scale: 1
-    m_Name: Mage Staff
-    m_HashCode: -1026731256
+    m_Name: Sceptics Guide to Magic (Mage Staff)
+    m_HashCode: -827832159
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 6
@@ -118,32 +118,32 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 7
     m_Scale: 1
-    m_Name: Mushroom Man
-    m_HashCode: -23200098
+    m_Name: Dangerous Mushrooms (Charging Mushroom)
+    m_HashCode: 100701183
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 8
     m_Scale: 1
-    m_Name: Origin Of Sailing
-    m_HashCode: -1924194838
+    m_Name: Origin of Sailing Page 1
+    m_HashCode: -1831536152
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 9
     m_Scale: 1
-    m_Name: Tropics
-    m_HashCode: -799777888
+    m_Name: Discovery Of The Tropics (Tropics Biome)
+    m_HashCode: -751320905
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 10
     m_Scale: 1
-    m_Name: Origin Of Sailing (Page 3)
-    m_HashCode: -833227573
+    m_Name: Origin Of Sailing Page 3
+    m_HashCode: -159618038
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 11
     m_Scale: 1
-    m_Name: Pirates vs Privateers
-    m_HashCode: -1679808892
+    m_Name: Pirates Vs Privateers
+    m_HashCode: 5496868
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 12
@@ -154,8 +154,8 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 13
     m_Scale: 1
-    m_Name: Terrible Captain
-    m_HashCode: 855651635
+    m_Name: The Terrible Captain
+    m_HashCode: 1080529130
   - m_ElementType: 2
     m_Unicode: 0
     m_GlyphIndex: 14
@@ -166,8 +166,56 @@ MonoBehaviour:
     m_Unicode: 0
     m_GlyphIndex: 15
     m_Scale: 1
-    m_Name: Famous Explorer
-    m_HashCode: 557514280
+    m_Name: The Famous Explorer
+    m_HashCode: 1418197009
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 16
+    m_Scale: 1
+    m_Name: Arctic Biome
+    m_HashCode: 1546903010
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 17
+    m_Scale: 1
+    m_Name: Origin Of Sailing Page 9 (Galleon)
+    m_HashCode: -1821751517
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 18
+    m_Scale: 1
+    m_Name: Maps and How to Read Them (Map Reading)
+    m_HashCode: 701416230
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 19
+    m_Scale: 1
+    m_Name: Merchant Routes
+    m_HashCode: 1628938496
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 20
+    m_Scale: 1
+    m_Name: Origin Of Sailing Page 4
+    m_HashCode: -159618035
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 21
+    m_Scale: 1
+    m_Name: Origin Of Sailing Page 5
+    m_HashCode: -159618036
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 22
+    m_Scale: 1
+    m_Name: Origin Of Sailing Page 7
+    m_HashCode: -159618034
+  - m_ElementType: 2
+    m_Unicode: 0
+    m_GlyphIndex: 23
+    m_Scale: 1
+    m_Name: The Tale of a Drunken Sailor (Serpent)
+    m_HashCode: 2143975488
   m_SpriteGlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -178,12 +226,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 0
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -5252950084528753182, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 1
     m_Metrics:
@@ -194,12 +242,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 272
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: 7976254157481263416, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 2
     m_Metrics:
@@ -210,7 +258,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 544
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -225,12 +273,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 816
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -7535963740083298426, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: -2434995272506181264, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 4
     m_Metrics:
@@ -241,12 +289,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1088
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -2329782588177953955, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 5
     m_Metrics:
@@ -257,12 +305,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1360
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -5232607487846524872, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 6
     m_Metrics:
@@ -273,7 +321,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1632
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -289,13 +337,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 1904
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -2690409963767841539, guid: 8e874fc7795c8574e9d3daf080834808,
-      type: 3}
+    sprite: {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
   - m_Index: 8
     m_Metrics:
       m_Width: 272
@@ -305,12 +352,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2176
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: 3657272984899651282, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 9
     m_Metrics:
@@ -321,12 +368,13 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2448
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: 630768475038213008, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    sprite: {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
   - m_Index: 10
     m_Metrics:
       m_Width: 272
@@ -336,12 +384,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2720
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -4897904742699538711, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 11
     m_Metrics:
@@ -352,12 +400,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 2992
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -8596748011561582631, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: -5894425961036811378, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 12
     m_Metrics:
@@ -368,7 +416,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 3264
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -383,12 +431,12 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 3536
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -2634445103299172339, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   - m_Index: 14
     m_Metrics:
@@ -399,7 +447,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 3808
-      m_Y: 272
+      m_Y: 3824
       m_Width: 272
       m_Height: 272
     m_Scale: 1
@@ -415,12 +463,140 @@ MonoBehaviour:
       m_HorizontalAdvance: 272
     m_GlyphRect:
       m_X: 0
-      m_Y: 0
+      m_Y: 3552
       m_Width: 272
       m_Height: 272
     m_Scale: 1
     m_AtlasIndex: 0
-    sprite: {fileID: -6880748857453255580, guid: 8e874fc7795c8574e9d3daf080834808,
+    sprite: {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 16
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 272
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 17
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 544
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 18
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 816
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 19
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 1088
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 20
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 1360
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 1814198793275410985, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 21
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 1632
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 22
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 1904
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+  - m_Index: 23
+    m_Metrics:
+      m_Width: 272
+      m_Height: 272
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 136
+      m_HorizontalAdvance: 272
+    m_GlyphRect:
+      m_X: 2176
+      m_Y: 3552
+      m_Width: 272
+      m_Height: 272
+    m_Scale: 1
+    m_AtlasIndex: 0
+    sprite: {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

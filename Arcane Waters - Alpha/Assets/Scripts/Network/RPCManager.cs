@@ -696,7 +696,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, int latestVersion, Vector3 mapPosition) {
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations) {
       D.debug($"Client received areaKey {areaKey} with latest version {latestVersion} from the server.");
 
       // Check if we already have the Area created
@@ -708,21 +708,21 @@ public class RPCManager : NetworkBehaviour {
 
       // If our version is outdated (and we're not a server/host), then delete the old version
       if (area != null && area.version != latestVersion && !NetworkServer.active) {
-         D.debug($"Found outdated {areaKey} with version {area.version}, so destroying it.");
+         D.debug($"Found outdated {baseMapAreaKey} with version {area.version}, so destroying it.");
          Destroy(area.gameObject);
       }
 
       // Check if we have stored map data for that area and version
-      if (MapCache.hasMap(areaKey, latestVersion)) {
-         D.debug($"Found cached map data for {areaKey} and version {latestVersion}, using that.");
-         string mapData = MapCache.getMapData(areaKey, latestVersion);
-         MapManager.self.createLiveMap(areaKey, mapData, latestVersion, mapPosition);
+      if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
+         D.debug($"Found cached map data for {baseMapAreaKey} and version {latestVersion}, using that.");
+         string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
+         MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
          return;
       }
 
       // If we don't have the latest version of the map, download it
-      D.debug($"Client did not have area or map data for {areaKey} with latest version {latestVersion}, so downloading and storing it.");
-      StartCoroutine(MapManager.self.CO_DownloadAndCreateMap(areaKey, latestVersion, mapPosition));
+      D.debug($"Client did not have area or map data for {baseMapAreaKey} with latest version {latestVersion}, so downloading and storing it.");
+      StartCoroutine(MapManager.self.CO_DownloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations));
    }
 
    [Command]

@@ -234,10 +234,16 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    [Server]
    private Vector3 findAttackerVicinityPosition (bool newAttacker) {
       // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
-      if (newAttacker && _attackers != null && _attackers.Count > 0) {
-         _currentAttacker = _attackers.RandomKey() as SeaEntity;
+      if ((_currentAttacker == null || newAttacker) && _attackers != null && _attackers.Count > 0) {
+         _currentAttacker = _attackers.RandomKey();
       }
 
+      // If we fail to get a non-null attacker, return somewhere around yourself
+      if(_currentAttacker == null) {
+         return transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
+      }
+
+      // If we have an attacker, find new position around it
       return _currentAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
    }
 
@@ -270,38 +276,28 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       Instance instance = InstanceManager.self.getInstance(instanceId);
       if (instance != null) {
          float degreesToDot = aggroConeDegrees / 90.0f;
-         foreach (NetworkBehaviour iEntity in instance.getEntities()) {
-            SeaEntity entity = iEntity.GetComponent<SeaEntity>();
+         foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
+            NetEntity iEntity = iBehaviour as NetEntity;
 
-            // If the attacker has already been added, early out
-            bool earlyOut = false;
-            foreach (SeaEntity attacker in _attackers.Keys) {
-               if (attacker == entity) {
-                  earlyOut = true;
-               }
-            }
-            if (earlyOut) {
+            if (iEntity == null || iEntity.faction == faction)
+               continue;
+
+            // If enemy isn't within radius, early out
+            if ((transform.position - iEntity.transform.position).magnitude > aggroConeRadius)
+               continue;
+
+            // If enemy isn't within cone aggro range, early out
+            if (Vector2.Dot(Util.getDirectionFromFacing(facing), (iEntity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
                continue;
             }
 
-            if (entity != null && entity.faction != faction) {
-               // If enemy isn't within radius, early out
-               if ((transform.position - entity.transform.position).magnitude > aggroConeRadius)
-                  continue;
-
-               // If enemy isn't within cone aggro range, early out
-               if (Vector2.Dot(Util.getDirectionFromFacing(facing), (entity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
-                  continue;
-               }
-
-               // We can see the enemy, attack it
-               _attackers[entity] = TimeManager.self.getSyncedTime();
-            }
+            // We can see the enemy, attack it
+            _attackers[iEntity] = TimeManager.self.getSyncedTime();
          }
       }
 
       // Check if any of our attackers are within range
-      foreach (SeaEntity attacker in _attackers.Keys) {
+      foreach (NetEntity attacker in _attackers.Keys) {
          if (attacker == null || attacker.isDead()) {
             continue;
          }
@@ -440,7 +436,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    private List<Vector3> _currentPath;
 
    // The first and closest attacker that we've aggroed
-   private SeaEntity _currentAttacker;
+   private NetEntity _currentAttacker;
 
    // The generated mesh for showing the cone of aggro in the Editor
    private Mesh _editorConeAggroGizmoMesh;

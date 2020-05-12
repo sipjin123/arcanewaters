@@ -46,40 +46,85 @@ TextureImporter:
     second: Terrible Captain
   - first:
       213: 1721623004347349377
-    second: Book-Images-Spritesheet_4
+    second: The Lizard People (Lizard Men)
   - first:
       213: -2061607768087564823
-    second: Book-Images-Spritesheet_5
+    second: Sceptics Guide to Magic (Mage Staff)
   - first:
       213: 4235067048679347026
-    second: Book-Images-Spritesheet_6
+    second: Mushroom Biome
   - first:
       213: 752899332120568913
-    second: Book-Images-Spritesheet_7
+    second: Dangerous Mushrooms (Charging Mushroom)
   - first:
       213: 7668651126283048510
-    second: Book-Images-Spritesheet_8
+    second: Origin of Sailing Page 1
   - first:
       213: 6881099103547005729
-    second: Book-Images-Spritesheet_9
+    second: Discovery Of The Tropics (Tropics Biome)
   - first:
       213: -6708834595854665298
-    second: Book-Images-Spritesheet_10
+    second: Origin Of Sailing Page 3
   - first:
       213: -5894425961036811378
-    second: Book-Images-Spritesheet_11
+    second: Pirates Vs Privateers
   - first:
       213: -2564405830465889342
-    second: Book-Images-Spritesheet_12
+    second: Privateer Captain
   - first:
       213: -6956481233850781577
-    second: Book-Images-Spritesheet_13
+    second: The Terrible Captain
   - first:
       213: -6175816270813957836
     second: Pirate Captain
   - first:
       213: -6880748857453255580
     second: Famous Explorer
+  - first:
+      213: 5360088244845722316
+    second: The Blunderbuss
+  - first:
+      213: 7233732880463160162
+    second: Origin of Sailing Page 8 (Caravel)
+  - first:
+      213: 8365766049954345755
+    second: Deep Sea Horror
+  - first:
+      213: -2434995272506181264
+    second: Dread Pirate Roberts
+  - first:
+      213: 6407914438160260758
+    second: Pirate Captain
+  - first:
+      213: 1624263401308742618
+    second: The Famous Explorer
+  - first:
+      213: 5701517878748478354
+    second: Arctic Biome
+  - first:
+      213: -7269676825590791275
+    second: Origin Of Sailing Page 9 (Galleon)
+  - first:
+      213: -798845081429025011
+    second: Maps and How to Read Them (Map Reading)
+  - first:
+      213: -4684199425938345598
+    second: Merchant Routes
+  - first:
+      213: 1814198793275410985
+    second: Origin Of Sailing Page 4
+  - first:
+      213: 7038889133911777677
+    second: Origin Of Sailing Page 5
+  - first:
+      213: -6341793325149322918
+    second: Origin Of Sailing Page 7
+  - first:
+      213: 4779734361057495426
+    second: The Tale of a Drunken Sailor (Serpent)
+  - first:
+      213: 2320397192776967940
+    second: Book-Images-Spritesheet_24
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -165,32 +210,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Blunderbuss
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 272
-        width: 272
-        height: 272
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2e53eccbab5c917b0800000000000000
-      internalID: -5252950084528753182
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Caravel
+      name: Origin of Sailing Page 8 (Caravel)
       rect:
         serializedVersion: 2
         x: 272
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -200,8 +224,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83147ee65e851be60800000000000000
-      internalID: 7976254157481263416
+      spriteID: 263e1149ab1636460800000000000000
+      internalID: 7233732880463160162
       vertices: []
       indices: 
       edges: []
@@ -211,7 +235,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 544
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -221,18 +245,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ecff07eaae53fcd00800000000000000
-      internalID: 995073324737429454
+      spriteID: b133d8116eb291470800000000000000
+      internalID: 8365766049954345755
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Dread Pirate
+      name: Dread Pirate Roberts
       rect:
         serializedVersion: 2
         x: 816
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -242,18 +266,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 68f5c18d7e0ea6790800000000000000
-      internalID: -7535963740083298426
+      spriteID: 079738863b8253ed0800000000000000
+      internalID: -2434995272506181264
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lizard Men
+      name: The Lizard People (Lizard Men)
       rect:
         serializedVersion: 2
         x: 1088
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -263,18 +287,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d5b43cb6413faafd0800000000000000
-      internalID: -2329782588177953955
+      spriteID: 189b34b300f64e710800000000000000
+      internalID: 1721623004347349377
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mage Staff
+      name: Sceptics Guide to Magic (Mage Staff)
       rect:
         serializedVersion: 2
         x: 1360
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -284,8 +308,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 838dbdd963b0267b0800000000000000
-      internalID: -5232607487846524872
+      spriteID: 9ed64f468a2b363e0800000000000000
+      internalID: -2061607768087564823
       vertices: []
       indices: 
       edges: []
@@ -295,7 +319,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1632
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -305,18 +329,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e94419100303f540800000000000000
-      internalID: 5040375706913360352
+      spriteID: 2539e7cda0bf5ca30800000000000000
+      internalID: 4235067048679347026
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Mushroom Man
+      name: Dangerous Mushrooms (Charging Mushroom)
       rect:
         serializedVersion: 2
         x: 1904
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -326,18 +350,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dfc3271746eb9aad0800000000000000
-      internalID: -2690409963767841539
+      spriteID: 154ecaa14f5d27a00800000000000000
+      internalID: 752899332120568913
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Origin Of Sailing
+      name: Origin of Sailing Page 1
       rect:
         serializedVersion: 2
         x: 2176
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -347,18 +371,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d68397176e31c230800000000000000
-      internalID: 3657272984899651282
+      spriteID: e361080b1958c6a60800000000000000
+      internalID: 7668651126283048510
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Tropics
+      name: Discovery Of The Tropics (Tropics Biome)
       rect:
         serializedVersion: 2
         x: 2448
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -368,18 +392,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 093ea2a0690f0c800800000000000000
-      internalID: 630768475038213008
+      spriteID: 12b9d235d239e7f50800000000000000
+      internalID: 6881099103547005729
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Origin Of Sailing (Page 3)
+      name: Origin Of Sailing Page 3
       rect:
         serializedVersion: 2
         x: 2720
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -389,18 +413,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9e661b33695270cb0800000000000000
-      internalID: -4897904742699538711
+      spriteID: ea93b31ea7e65e2a0800000000000000
+      internalID: -6708834595854665298
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Pirates vs Privateers
+      name: Pirates Vs Privateers
       rect:
         serializedVersion: 2
         x: 2992
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -410,8 +434,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9df73532b3732b880800000000000000
-      internalID: -8596748011561582631
+      spriteID: e837f8581dac23ea0800000000000000
+      internalID: -5894425961036811378
       vertices: []
       indices: 
       edges: []
@@ -421,7 +445,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 3264
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -431,18 +455,18 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 568767e5d231f2500800000000000000
-      internalID: 373538379674318949
+      spriteID: 2cbd327eb76696cd0800000000000000
+      internalID: -2564405830465889342
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Terrible Captain
+      name: The Terrible Captain
       rect:
         serializedVersion: 2
         x: 3536
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
@@ -452,8 +476,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d08e59de222907bd0800000000000000
-      internalID: -2634445103299172339
+      spriteID: 77037a1cc2d957f90800000000000000
+      internalID: -6956481233850781577
       vertices: []
       indices: 
       edges: []
@@ -463,39 +487,228 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 3808
-        y: 272
+        y: 3824
         width: 272
         height: 272
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4317e0492d71b4aa0800000000000000
-      internalID: -6175816270813957836
+      spriteID: 69e93ad1b3c7de850800000000000000
+      internalID: 6407914438160260758
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Famous Explorer
+      name: The Famous Explorer
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 3552
         width: 272
         height: 272
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 464e2d2be5ba280a0800000000000000
-      internalID: -6880748857453255580
+      spriteID: ad3eca035fa8a8610800000000000000
+      internalID: 1624263401308742618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Arctic Biome
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29b77538d4cdf1f40800000000000000
+      internalID: 5701517878748478354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Origin Of Sailing Page 9 (Galleon)
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59385ca817bec1b90800000000000000
+      internalID: -7269676825590791275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Maps and How to Read Them (Map Reading)
+      rect:
+        serializedVersion: 2
+        x: 816
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0fdad281aee9e4f0800000000000000
+      internalID: -798845081429025011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Merchant Routes
+      rect:
+        serializedVersion: 2
+        x: 1088
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2813bd7a0716efeb0800000000000000
+      internalID: -4684199425938345598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Origin Of Sailing Page 4
+      rect:
+        serializedVersion: 2
+        x: 1360
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92a8f11c0345d2910800000000000000
+      internalID: 1814198793275410985
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Origin Of Sailing Page 5
+      rect:
+        serializedVersion: 2
+        x: 1632
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d812b28af582fa160800000000000000
+      internalID: 7038889133911777677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Origin Of Sailing Page 7
+      rect:
+        serializedVersion: 2
+        x: 1904
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a51088f229c6df7a0800000000000000
+      internalID: -6341793325149322918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: The Tale of a Drunken Sailor (Serpent)
+      rect:
+        serializedVersion: 2
+        x: 2176
+        y: 3552
+        width: 272
+        height: 272
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2898f87c317055240800000000000000
+      internalID: 4779734361057495426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: The Blunderbuss
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 3824
+        width: 272
+        height: 272
+      alignment: 5
+      pivot: {x: 1, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ccab6c61cdbd26a40800000000000000
+      internalID: 5360088244845722316
       vertices: []
       indices: 
       edges: []

@@ -10,6 +10,7 @@ using MapCreationTool;
 using MapCreationTool.Serialization;
 using BackgroundTool;
 using ServerCommunicationHandlerv2;
+using MapCustomization;
 
 public class MyNetworkManager : NetworkManager {
    #region Public Variables
@@ -155,6 +156,9 @@ public class MyNetworkManager : NetworkManager {
       // Start the voyage maps and voyage groups management
       VoyageManager.self.startVoyageManagement();
 
+      // Fetch discovery data from DB
+      DiscoveryManager.self.fetchDiscoveriesOnServer();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -236,6 +240,19 @@ public class MyNetworkManager : NetworkManager {
             // Manage the voyage groups on user connection
             VoyageManager.self.onUserConnectsToServer(userInfo.userId);
 
+            // Get information about owned map
+            string baseMapAreaKey = previousAreaKey;
+            int mapOwnerId = -1;
+
+            if (AreaManager.self.tryGetOwnedMapManager(previousAreaKey, out OwnedMapManager ownedMapManager)) {
+               // Get base map area key for owned maps, for others keep it the same as area key
+               baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(previousAreaKey);
+
+               if (OwnedMapManager.isUserSpecificAreaKey(previousAreaKey)) {
+                  mapOwnerId = OwnedMapManager.getUserId(previousAreaKey);
+               }
+            }
+
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
             if (AreaManager.self.hasArea(previousAreaKey)) {
@@ -247,9 +264,9 @@ public class MyNetworkManager : NetworkManager {
             } else {
                // If we don't have the requested area, we need to create it now
                D.debug($"Server does not have Area {previousAreaKey}, creating it now.");
-               MapManager.self.createLiveMap(previousAreaKey);
+               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey);
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
-            } 
+            }
 
             // Note where we're going to create the player
             Vector3 playerCreationPos = mapPosition + userInfo.localPos;
@@ -280,7 +297,18 @@ public class MyNetworkManager : NetworkManager {
             InstanceManager.self.rebuildInstanceObservers(player, instance);
 
             // Tell the player information about the Area we're going to send them to
-            player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, AreaManager.self.getAreaVersion(previousAreaKey), mapPosition);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               // Get map customizations if needed
+               MapCustomizationData customizationData = new MapCustomizationData();
+               if (mapOwnerId != -1) {
+                  int baseMapId = DB_Main.getMapId(baseMapAreaKey);
+                  customizationData = DB_Main.getMapCustomizationData(baseMapId, mapOwnerId) ?? customizationData;
+               }
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
+               });
+            });
 
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);

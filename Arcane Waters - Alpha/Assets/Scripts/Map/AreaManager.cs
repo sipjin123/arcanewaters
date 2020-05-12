@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using MapCreationTool;
+using System.Linq;
 
 public class AreaManager : MonoBehaviour
 {
@@ -62,7 +63,7 @@ public class AreaManager : MonoBehaviour
       return areaId.ToString();
    }
 
-   public Biome.Type getAreaBiome(string areaKey) {
+   public Biome.Type getAreaBiome (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).biome;
       } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
@@ -153,6 +154,17 @@ public class AreaManager : MonoBehaviour
       EnemyManager.self.removeSpawners(areaKey);
    }
 
+   public bool tryGetOwnedMapManager (string areaKey, out OwnedMapManager manager) {
+      foreach (OwnedMapManager ownedMapManager in _ownedMapManagers) {
+         if (ownedMapManager.associatedWithAreaKey(areaKey)) {
+            manager = ownedMapManager;
+            return true;
+         }
+      }
+      manager = null;
+      return false;
+   }
+
    protected void toggleAreaCollidersForPerformanceImprovement () {
       foreach (Area area in _areas.Values) {
          // We only need colliders for the area that the player is in
@@ -176,6 +188,9 @@ public class AreaManager : MonoBehaviour
 
    // The list of areas that are sea maps
    protected List<string> _seaAreaKeys = new List<string>();
+
+   // Managers of owned maps
+   protected OwnedMapManager[] _ownedMapManagers = new OwnedMapManager[] { new PlayerOwnedHouseManager() };
 
    #endregion
 }

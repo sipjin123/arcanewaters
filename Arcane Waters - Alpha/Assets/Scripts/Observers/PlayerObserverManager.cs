@@ -64,6 +64,8 @@ public class PlayerObserverManager : NetworkBehaviour {
          _instanceId = ((OreNode) _entity).instanceId;
       } else if (_entity is SecretEntrance) {
          _instanceId = ((SecretEntrance) _entity).instanceId;
+      } else if (_entity is Discovery) {
+         _instanceId = ((Discovery) _entity).instanceId;
       }
 
       return _instanceId;

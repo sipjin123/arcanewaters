@@ -16,10 +16,10 @@ namespace MapCustomization
       // Currently made customizations to the map
       private static MapCustomizationData customizationData;
 
-      /// <summary>
-      /// Current area that is being customized, null if customization is not active currently
-      /// </summary>
+
+      // Current area that is being customized, null if customization is not active currently
       public static string currentArea { get; private set; }
+      public static string currentAreaBaseMap { get; private set; }
 
       #endregion
 
@@ -35,7 +35,13 @@ namespace MapCustomization
             return;
          }
 
-         currentArea = areaName;
+         if (!AreaManager.self.tryGetOwnedMapManager(areaName, out OwnedMapManager ownedMapManager)) {
+            D.error("Trying to customize a map that is not an owned map");
+            return;
+         } else {
+            currentArea = areaName;
+            currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(areaName);
+         }
 
          CustomizationUI.show();
          CustomizationUI.setLoading(true);
@@ -54,7 +60,7 @@ namespace MapCustomization
          }
 
          // Fetch customization data that is saved for this map
-         Global.player.rpc.Cmd_RequestMapCustomizationManagerData(Global.player.userId, currentArea);
+         Global.player.rpc.Cmd_RequestMapCustomizationManagerData(Global.player.userId, currentAreaBaseMap);
          yield return new WaitWhile(() => customizationData == null);
 
          CustomizationUI.setLoading(false);
@@ -175,12 +181,6 @@ namespace MapCustomization
       /// <param name="data"></param>
       public static void receiveMapCustomizationData (MapCustomizationData data) {
          customizationData = data;
-         foreach (PrefabChanges pc in data.prefabChanges) {
-            if (_customizablePrefabs.TryGetValue(pc.id, out CustomizablePrefab pref)) {
-               pref.unappliedChanges = pc;
-               pref.submitChanges();
-            }
-         }
       }
 
       #region Private Variables

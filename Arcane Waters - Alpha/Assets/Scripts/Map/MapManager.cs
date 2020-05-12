@@ -9,6 +9,7 @@ using UnityEngine.Networking;
 using UnityEngine.Tilemaps;
 using System.Linq;
 using System;
+using MapCustomization;
 
 public class MapManager : MonoBehaviour
 {
@@ -27,19 +28,14 @@ public class MapManager : MonoBehaviour
    }
 
    public void createLiveMap (string areaKey) {
-      // Spawn the Area using the map data
-      createLiveMap(areaKey, null, getNextMapPosition());
+      createLiveMap(areaKey, areaKey);
    }
 
-   public void createLiveMap (string areaKey, string mapData, int latestVersion, Vector3 mapPosition) {
-      // Build the map info from the input data
-      MapInfo mapInfo = new MapInfo(areaKey, mapData, latestVersion);
-
-      // Spawn the Area using the map data
-      createLiveMap(areaKey, mapInfo, mapPosition);
+   public void createLiveMap (string areaKey, string baseMapAreaKey) {
+      createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null);
    }
 
-   protected void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition) {
+   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
          D.warning($"Area {areaKey} already exists!");
@@ -57,6 +53,7 @@ public class MapManager : MonoBehaviour
          _nextAreaKey = areaKey;
          _nextMapInfo = mapInfo;
          _nextMapPosition = mapPosition;
+         _nextMapCustomizationData = customizationData;
          return;
       }
 
@@ -68,11 +65,27 @@ public class MapManager : MonoBehaviour
          PanelManager.self.loadingScreen.show();
       }
 
+      // Find out if we are creating an owned map, if so, get owner id
+      int ownerId = -1;
+      if (!areaKey.Equals(mapInfo.mapName)) {
+         if (AreaManager.self.tryGetOwnedMapManager(areaKey, out OwnedMapManager ownedMapManager)) {
+            if (OwnedMapManager.isUserSpecificAreaKey(areaKey)) {
+               ownerId = OwnedMapManager.getUserId(areaKey);
+            }
+         }
+      }
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read the map data
-         if (mapInfo == null) {
-            mapInfo = DB_Main.getMapInfo(areaKey);
+         if (mapInfo.gameData == null) {
+            mapInfo = DB_Main.getMapInfo(mapInfo.mapName);
+         }
+
+         // Fetch map customization data if required
+         if (ownerId != -1 && customizationData == null) {
+            int baseMapId = DB_Main.getMapId(mapInfo.mapName);
+            customizationData = DB_Main.getMapCustomizationData(baseMapId, ownerId);
          }
 
          // Deserialize the map
@@ -89,12 +102,12 @@ public class MapManager : MonoBehaviour
             }
             D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapVersion}");
 
-            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition));
+            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
          });
       });
    }
 
-   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition) {
+   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
       MapImporter.ensureSerializationMapsLoaded();
 
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
@@ -122,7 +135,7 @@ public class MapManager : MonoBehaviour
       // Calculate the map bounds
       Bounds bounds = MapImporter.calculateBounds(exportedProject);
       yield return null;
-      
+
       List<TilemapLayer> tilemaps = new List<TilemapLayer>();
       int unrecognizedTiles = 0;
 
@@ -142,7 +155,7 @@ public class MapManager : MonoBehaviour
       List<MapChunk> mapColliderChunks = new List<MapChunk>();
 
       // Calculate the number of chunks
-      int chunkCount = (int)((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
+      int chunkCount = (int) ((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
 
       // Create the tilemap colliders in chunks
       for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
@@ -178,6 +191,10 @@ public class MapManager : MonoBehaviour
       MapImporter.addEdgeColliders(result, bounds);
       yield return null;
 
+      if (customizationData != null) {
+         setCustomizations(area, customizationData);
+      }
+
       // Destroy the template component
       Destroy(result);
 
@@ -212,8 +229,23 @@ public class MapManager : MonoBehaviour
 
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
-         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition);
+         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData);
          _nextAreaKey = null;
+      }
+   }
+
+   public void setCustomizations (Area area, MapCustomizationData customizationData) {
+      try {
+         Dictionary<int, CustomizablePrefab> prefabs = area.gameObject.GetComponentsInChildren<CustomizablePrefab>().ToDictionary(p => p.unappliedChanges.id, p => p);
+
+         foreach (PrefabChanges pc in customizationData.prefabChanges) {
+            if (prefabs.TryGetValue(pc.id, out CustomizablePrefab pref)) {
+               pref.unappliedChanges = pc;
+               pref.submitChanges();
+            }
+         }
+      } catch (Exception ex) {
+         D.error($"Unable to set customizations for area { area.areaKey }:\n{ ex }");
       }
    }
 
@@ -235,9 +267,9 @@ public class MapManager : MonoBehaviour
       return new Vector2();
    }
 
-   public IEnumerator CO_DownloadAndCreateMap (string areaKey, int version, Vector3 mapPosition) {
+   public IEnumerator CO_DownloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
       // Request the map from the web
-      UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + areaKey);
+      UnityWebRequest www = UnityWebRequest.Get("http://arcanewaters.com/maps.php?mapName=" + baseMapAreaKey);
       yield return www.SendWebRequest();
 
       if (www.isNetworkError || www.isHttpError) {
@@ -247,10 +279,10 @@ public class MapManager : MonoBehaviour
          string mapData = www.downloadHandler.text;
 
          // Store it for later reference
-         MapCache.storeMapData(areaKey, version, mapData);
+         MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // Spawn the Area using the map data
-         createLiveMap(areaKey, mapData, version, mapPosition);
+         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);
       }
    }
 
@@ -266,6 +298,7 @@ public class MapManager : MonoBehaviour
    private string _nextAreaKey = null;
    private MapInfo _nextMapInfo;
    private Vector3 _nextMapPosition;
+   private MapCustomizationData _nextMapCustomizationData;
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();

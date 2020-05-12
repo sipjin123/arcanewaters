@@ -75,7 +75,7 @@ public partial class SpawnManager : MonoBehaviour {
 
    public Vector2 getDefaultSpawnLocalPosition (string areaKey) {
       foreach (SpawnID spawnID in _spawnLocalPositions.Keys) {
-         if (spawnID.areaKey == areaKey) {
+         if (spawnID.areaKey.Equals(areaKey, System.StringComparison.OrdinalIgnoreCase)) {
             return _spawnLocalPositions[spawnID];
          }
       }

@@ -20,7 +20,7 @@ public class BottomBar : MonoBehaviour {
    private void Update () {
       mapCustomizationButton.gameObject.SetActive(
          Global.player != null &&
-         AreaManager.self.isInteriorArea(Global.player.areaKey) &&
+         OwnedMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
          !MapCustomizationManager.isCustomizing);
    }
 

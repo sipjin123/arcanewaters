@@ -942,6 +942,21 @@ public class NetEntity : NetworkBehaviour {
 
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+      // Check if area is an owned area type
+      if (AreaManager.self.tryGetOwnedMapManager(newArea, out OwnedMapManager ownedMapManager)) {
+         // Check if user is not able to warp into owned area
+         if (!ownedMapManager.canUserWarpInto(this, newArea, out System.Action<NetEntity> denyWarphandler)) {
+            // Deny access to owned area
+            denyWarphandler?.Invoke(this);
+            return;
+         }
+
+         // Make a user-specific area key for this user, if it is not a user-specific key already
+         if (!OwnedMapManager.isUserSpecificAreaKey(newArea)) {
+            newArea = ownedMapManager.getUserSpecificAreaKey(userId);
+         }
+      }
+
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 

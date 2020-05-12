@@ -137,6 +137,7 @@ public class Discovery : NetworkBehaviour
       _isRevealed = true;
       _spriteRenderer.enabled = true;
       _spriteAnimation.sprites = ImageManager.getSprites(data.spriteUrl);
+      _spriteAnimation.startPlaying();
       mistAnimator.SetTrigger("Revealed");
       spinningIconAnimator.gameObject.SetActive(false);
       _progressBarSlider.gameObject.SetActive(false);

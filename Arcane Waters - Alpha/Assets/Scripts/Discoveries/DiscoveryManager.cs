@@ -21,11 +21,6 @@ public class DiscoveryManager : MonoBehaviour
    }
 
    public void createDiscoveriesForInstance (Instance instance) {
-      if (_discoveryDatas == null || _discoveryDatas.Count == 0) {
-         fetchAndCreateDiscoveriesForInstance(instance);
-         return;
-      }
-
       // Look up the Area associated with this intance
       Area area = AreaManager.self.getArea(instance.areaKey);
       List<Discovery> spawnedDiscoveries = new List<Discovery>();
@@ -45,21 +40,21 @@ public class DiscoveryManager : MonoBehaviour
       }
    }
 
-   private void fetchAndCreateDiscoveriesForInstance (Instance instance) {
+   public void fetchDiscoveriesOnServer () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<DiscoveryData> dataList = DB_Main.getDiscoveriesList();
-         _discoveryDatas = new Dictionary<int, DiscoveryData>();
-
-         foreach (DiscoveryData data in dataList) {
-            if (_discoveryDatas.ContainsKey(data.discoveryId)) {
-               D.log("Duplicated discovery id=" + data.discoveryId);
-            }
-
-            _discoveryDatas.Add(data.discoveryId, data);
-         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            createDiscoveriesForInstance(instance);
+            _discoveryDatas = new Dictionary<int, DiscoveryData>();
+
+            foreach (DiscoveryData data in dataList) {
+               if (_discoveryDatas.ContainsKey(data.discoveryId)) {
+                  D.editorLog("Duplicated discovery id=" + data.discoveryId);
+                  continue;
+               }
+
+               _discoveryDatas.Add(data.discoveryId, data);
+            }
          });
       });
    }
