@@ -10,6 +10,8 @@ using MySql.Data.MySqlClient;
 using UnityEngine;
 using NubisDataHandling;
 using UnityEngine.Analytics;
+using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 namespace Nubis.Controllers {
    public class NubisDataFetchTest : MonoBehaviour {
@@ -27,28 +29,93 @@ namespace Nubis.Controllers {
       public NubisCraftingIngredientEvent nubisCraftingIngredientEvent = new NubisCraftingIngredientEvent();
       public NubisEquippedItemEvent nubisEquippedItemEvent = new NubisEquippedItemEvent();
       public NubisCraftableItemEvent nubisCraftableItemEvent = new NubisCraftableItemEvent();
-      
+
+      // The directory
+      public string webDirectory = "";
+
       #endregion
 
+      private void Awake () {
+         webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
+      }
+
+      private void Update () {
+         int userID = 745;
+
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            StartCoroutine(CO_FetchUserData(userID));
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            StartCoroutine(CO_FetchIngredients(userID));
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            StartCoroutine(CO_FetchEquippedItems(userID));
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            StartCoroutine(CO_FetchCraftableGroups(userID));
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            StartCoroutine(CO_FetchSingleBlueprint(userID, 5998));
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            StartCoroutine(CO_FetchInventoryData(userID));
+         }
+      }
+
+      private IEnumerator CO_TestWebReq () {
+         D.editorLog("Start");
+         int userID = 745;
+
+         //http://52.1.218.202:7900/fetch_craftable_armors_v4?usrId=745
+
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "fetch_craftable_armors_v4?usrId=" + userID);
+         yield return www.SendWebRequest();
+
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+         } else {
+            // Grab the map data from the request
+            string rawData = www.downloadHandler.text;
+            D.editorLog("RawData is: " + rawData, Color.cyan);
+         }
+      }
+
       protected IEnumerator CO_FetchSingleBlueprint (int userId, int itmId) {
-         string rawBlueprintData = "";
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "fetch_single_blueprint_v4?usrId=" + userId + "&bpId=" + itmId);
+         yield return www.SendWebRequest();
 
-         yield return rawBlueprintData = Fetch_Single_Blueprint_v4Controller.fetchSingleBlueprint(userId, itmId);
-         D.editorLog("Fetching raw data BP is: " + rawBlueprintData, Color.cyan);
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+         } else {
+            string rawData = www.downloadHandler.text;
+            D.editorLog("RawData is: " + rawData, Color.cyan);
 
-         List<CraftableItemData> craftable = CraftableItem.processCraftableGroups(rawBlueprintData, ingredients);
+            List<CraftableItemData> craftable = CraftableItem.processCraftableGroups(rawData, ingredients);
 
-         foreach (CraftableItemData data in craftable) {
-            D.editorLog("Info is: " + data.craftableItem.id + " : " + data.craftingStatus + " : " + data.craftableItem.category + " : " + data.craftableItem.itemTypeId, Color.red);
+            foreach (CraftableItemData data in craftable) {
+               D.editorLog("Info is: " + data.craftableItem.id + " : " + data.craftingStatus + " : " + data.craftableItem.category + " : " + data.craftableItem.itemTypeId, Color.red);
+            }
          }
       }
 
       protected IEnumerator CO_FetchInventoryData (int userId) {
          string weaponRawData = "";
          string armorRawData = "";
+         UnityWebRequest weaponInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int)EquipmentType.Weapon);
+         yield return weaponInventoryRequest.SendWebRequest();
+         UnityWebRequest armorInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Armor);
+         yield return armorInventoryRequest.SendWebRequest();
 
-         yield return weaponRawData = Fetch_Inventory_v1Controller.userInventory(userId, EquipmentType.Weapon);
-         yield return armorRawData = Fetch_Inventory_v1Controller.userInventory(userId, EquipmentType.Armor);
+         if (weaponInventoryRequest.isNetworkError || weaponInventoryRequest.isHttpError) {
+            D.warning(weaponInventoryRequest.error);
+         } else {
+            weaponRawData = weaponInventoryRequest.downloadHandler.text;
+         }
+         if (armorInventoryRequest.isNetworkError || armorInventoryRequest.isHttpError) {
+            D.warning(armorInventoryRequest.error);
+         } else {
+            armorRawData = armorInventoryRequest.downloadHandler.text;
+         }
 
          D.editorLog("Fetching raw data weapon is: " + weaponRawData, Color.cyan);
          D.editorLog("Fetching raw data armor is: " + armorRawData, Color.cyan);
@@ -77,41 +144,70 @@ namespace Nubis.Controllers {
       }
 
       protected IEnumerator CO_FetchUserData (int userId) {
-         string rawUserContent = "";
-         yield return rawUserContent = User_Data_v1Controller.userData(userId);
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "user_data_v1?usrId=" + userId);
+         yield return www.SendWebRequest();
 
-         UserInfo userInfo = UserInfoData.processUserInfo(rawUserContent);
-         nubisUserInfoEvent.Invoke(userInfo);
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+         } else {
+            string rawData = www.downloadHandler.text;
+            D.editorLog("RawData is: " + rawData, Color.cyan);
 
-         D.editorLog("Fetch: " + rawUserContent, Color.blue);
-         D.editorLog("UserInfo AccName: " + userInfo.username, Color.yellow);
-         D.editorLog("UserInfo UsrGold: " + userInfo.gold, Color.yellow);
-         D.editorLog("UserInfo WepId: " + userInfo.weaponId, Color.yellow);
-         D.editorLog("UserInfo ArmId: " + userInfo.armorId, Color.yellow);
+
+            UserInfo userInfo = UserInfoData.processUserInfo(rawData);
+            nubisUserInfoEvent.Invoke(userInfo);
+
+            D.editorLog("Fetch: " + rawData, Color.blue);
+            D.editorLog("UserInfo AccName: " + userInfo.username, Color.yellow);
+            D.editorLog("UserInfo UsrGold: " + userInfo.gold, Color.yellow);
+            D.editorLog("UserInfo WepId: " + userInfo.weaponId, Color.yellow);
+            D.editorLog("UserInfo ArmId: " + userInfo.armorId, Color.yellow);
+         }
       }
 
       protected IEnumerator CO_FetchIngredients (int userId) {
-         string stringContent = "";
-         yield return stringContent = Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(userId);
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "fetch_crafting_ingredients_v3?usrId=" + userId);
+         yield return www.SendWebRequest();
 
-         D.editorLog("Fetch: " + stringContent, Color.blue);
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+         } else {
+            string rawData = www.downloadHandler.text;
+            D.editorLog("RawData is: " + rawData, Color.cyan);
 
-         List<Item> craftingList = NubisDataHandling.CraftingIngredients.processCraftingIngredients(stringContent);
-         D.editorLog("Here are the crafting list: " + craftingList.Count, Color.cyan);
+            List<Item> craftingList = NubisDataHandling.CraftingIngredients.processCraftingIngredients(rawData);
+            D.editorLog("Here are the crafting list: " + craftingList.Count, Color.cyan);
 
-         foreach (Item data in craftingList) {
-            D.editorLog("Data: " + data.category + " : " + data.itemTypeId, Color.yellow);
+            foreach (Item data in craftingList) {
+               D.editorLog("Data: " + data.category + " : " + data.itemTypeId, Color.yellow);
+            }
+
+            ingredients = craftingList;
          }
-
-         ingredients = craftingList;
       }
 
       protected IEnumerator CO_FetchCraftableGroups (int userId) {
-         string armorFetch = "";
-         string weaponFetch = "";
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "fetch_craftable_weapons_v4?usrId=" + userId);
+         yield return www.SendWebRequest();
+         UnityWebRequest www2 = UnityWebRequest.Get(webDirectory + "fetch_craftable_armors_v4?usrId=" + userId);
+         yield return www2.SendWebRequest();
 
-         yield return armorFetch = Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(userId);
-         yield return weaponFetch = Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(userId);
+         string weaponFetch = "";
+         string armorFetch = "";
+
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+            yield return null;
+         } else {
+            weaponFetch = www.downloadHandler.text;
+         }
+
+         if (www2.isNetworkError || www2.isHttpError) {
+            D.warning(www2.error);
+            yield return null;
+         } else {
+            armorFetch = www2.downloadHandler.text;
+         }
 
          D.editorLog("Weapon Fetch: " + weaponFetch, Color.blue);
          D.editorLog("Armor Fetch: " + armorFetch, Color.blue);
@@ -133,16 +229,20 @@ namespace Nubis.Controllers {
       }
 
       protected IEnumerator CO_FetchEquippedItems (int userId) {
-         string equippedItemContent = "";
-         yield return equippedItemContent = Fetch_Equipped_Items_v3Controller.fetchEquippedItems(userId);
+         UnityWebRequest www = UnityWebRequest.Get(webDirectory + "fetch_equipped_items_v3?usrId=" + userId);
+         yield return www.SendWebRequest();
 
-         D.editorLog("Fetch: " + equippedItemContent, Color.blue);
+         if (www.isNetworkError || www.isHttpError) {
+            D.warning(www.error);
+         } else {
+            string rawData = www.downloadHandler.text;
+            D.editorLog("RawData is: " + rawData, Color.cyan);
 
-         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
+            EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(rawData);
 
-         D.editorLog("The equippedItem weapon is: " + equippedItemData.weaponItem.id + " : " + equippedItemData.weaponItem.category + " : " + equippedItemData.weaponItem.itemTypeId, Color.yellow);
-         D.editorLog("The equippedItem armor is: " + equippedItemData.armorItem.id + " : " +equippedItemData.armorItem.category + " : " + equippedItemData.armorItem.itemTypeId, Color.yellow);
-
+            D.editorLog("The equippedItem weapon is: " + equippedItemData.weaponItem.id + " : " + equippedItemData.weaponItem.category + " : " + equippedItemData.weaponItem.itemTypeId, Color.yellow);
+            D.editorLog("The equippedItem armor is: " + equippedItemData.armorItem.id + " : " + equippedItemData.armorItem.category + " : " + equippedItemData.armorItem.itemTypeId, Color.yellow);
+         }
       }
 
       #region Private Variables

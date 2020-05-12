@@ -60,6 +60,13 @@ public class SeaMonsterDataPanel : MonoBehaviour
    public Button previewMonster, closePreview;
    public SeaMonsterDisplay seaMonsterDisplay;
 
+   // Skill features
+   public Transform skillHolder, skillOptionHolder;
+   public GameObject skillSelectionPanel;
+   public ShipSkillTemplate skillTemplate;
+   public Button addSkillButton;
+   public Button closeSkillSelectionButton;
+
    public enum DirectoryType
    {
       AvatarSprite = 0,
@@ -184,6 +191,42 @@ public class SeaMonsterDataPanel : MonoBehaviour
       animGroup.onValueChanged.AddListener(_ => {
          animGroupText.text = ((Anim.Group) animGroup.value).ToString() + countSliderValue(animGroup);
       });
+
+      closeSkillSelectionButton.onClick.AddListener(() => skillSelectionPanel.SetActive(false));
+      addSkillButton.onClick.AddListener(() => {
+         skillSelectionPanel.SetActive(true);
+
+         skillOptionHolder.gameObject.DestroyChildren();
+         foreach (ShipAbilityPair skillOption in monsterToolManager.shipSkillList) {
+            if (!existingInInventory(skillOption.abilityId)) {
+               ShipSkillTemplate skillOptionTemp = Instantiate(skillTemplate, skillOptionHolder.transform);
+               skillOptionTemp.skillNameText.text = skillOption.abilityName;
+               skillOptionTemp.skillIdText.text = skillOption.abilityId.ToString();
+
+               skillOptionTemp.deleteButton.gameObject.SetActive(false);
+               skillOptionTemp.selectButton.gameObject.SetActive(true);
+
+               skillOptionTemp.selectButton.onClick.AddListener(() => {
+                  skillSelectionPanel.SetActive(false);
+                  ShipSkillTemplate skillTemp = Instantiate(skillTemplate, skillHolder.transform);
+                  skillTemp.skillNameText.text = skillOption.abilityName;
+                  skillTemp.skillIdText.text = skillOption.abilityId.ToString();
+                  skillTemp.deleteButton.onClick.AddListener(() => {
+                     Destroy(skillTemp.gameObject);
+                  });
+               });
+            }
+         }
+      });
+   }
+
+   private bool existingInInventory (int id) {
+      List<int> cachedAbilityList = new List<int>();
+      foreach (Transform child in skillHolder) {
+         int skillId = int.Parse(child.GetComponent<ShipSkillTemplate>().skillIdText.text);
+         cachedAbilityList.Add(skillId);
+      }
+      return cachedAbilityList.Exists(_ => _ == id);
    }
 
    #region Save and Load Data
@@ -250,6 +293,20 @@ public class SeaMonsterDataPanel : MonoBehaviour
          avatarIcon.sprite = ImageManager.getSprite(seaMonsterData.avatarSpritePath);
       }
 
+      // Load all the skills of the sea monster
+      skillHolder.gameObject.DestroyChildren();
+      foreach (int skillId in seaMonsterData.skillIdList) {
+         ShipAbilityPair skillData = SeaMonsterToolManager.instance.shipSkillList.Find(_ => _.abilityId == skillId);
+         if (skillData != null) {
+            ShipSkillTemplate skillTemp = Instantiate(skillTemplate.gameObject, skillHolder).GetComponent<ShipSkillTemplate>();
+            skillTemp.skillNameText.text = skillData.abilityName;
+            skillTemp.skillIdText.text = skillData.abilityId.ToString();
+            skillTemp.deleteButton.onClick.AddListener(()=> {
+               Destroy(skillTemp.gameObject);
+            });
+         }
+      }
+
       loadProjectileSpawnRow(seaMonsterData);
 
       loadLootTemplates(seaMonsterData.lootData);
@@ -308,6 +365,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
             newPos.spawnTransform = new Vector3(x, y, z);
             seaMonsterData.projectileSpawnLocations.Add(newPos);
          }
+      }
+
+      seaMonsterData.skillIdList = new List<int>();
+      foreach (Transform abilityTemplate in skillHolder.transform) {
+         int skillId = int.Parse(abilityTemplate.GetComponent<ShipSkillTemplate>().skillIdText.text);
+         seaMonsterData.skillIdList.Add(skillId);
       }
 
       return seaMonsterData;

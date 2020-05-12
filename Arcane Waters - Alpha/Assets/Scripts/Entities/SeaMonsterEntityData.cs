@@ -119,4 +119,7 @@ public class SeaMonsterEntityData
 
    // Holds the data for the loot of this monster
    public RawGenericLootData lootData;
+
+   // The list of the skill id's this unit has
+   public List<int> skillIdList = new List<int>();
 }

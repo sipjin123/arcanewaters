@@ -1,4 +1,4 @@
-﻿#define NUBIS
+﻿//#define NUBIS
 #if NUBIS
 using UnityEngine;
 using System.Collections;
@@ -73,6 +73,14 @@ public class NubisManager : MonoBehaviour
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
+               case "fetch_user_inventory_v1": // params: INT usrId
+                  string str_inventory_v1_usrid = context.Request.QueryString.Get("usrId");
+                  string str_inventory_v1_itmType = context.Request.QueryString.Get("itmType");
+                  int inventory_v1_usrid = int.Parse(str_inventory_v1_usrid);
+                  int inventory_v1_itmType = int.Parse(str_inventory_v1_itmType);
+                  string userInventory_v1 = Fetch_Inventory_v1Controller.userInventory(inventory_v1_usrid, inventory_v1_itmType);
+                  Content(context, userInventory_v1);
+                  break;
                case "fetch_craftable_armors_v3": // params: INT usrId
                   string str_armor_usrid_v3 = context.Request.QueryString.Get("usrId");
                   int armor_usrid_v3 = int.Parse(str_armor_usrid_v3);
@@ -190,8 +198,6 @@ public class NubisManager : MonoBehaviour
       i($"{NubisStatics.AppName} web server stopped.");
    }
    private bool StartWebServer (HttpListener httpServer, int port) {
-      D.editorLog("Port: "+port, Color.red);
-      port = 7777;
       // try to start web server.
       try {
          httpServer.Prefixes.Add($"http://*:{port.ToString()}/");

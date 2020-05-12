@@ -95,6 +95,7 @@ public class ClientManager : MonoBehaviour {
          // Trigger the fetching of the ownership info
          SteamLoginManager.self.getAuthenticationTicket();
       } else {
+         D.debug("Steam is not Active, proceed to regular login");
          LogInUserMessage msg = new LogInUserMessage(Global.netId,
              Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, QuickLaunchPanel.self.singlePlayerToggle.isOn, new byte[0], 0);
 

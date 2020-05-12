@@ -23,6 +23,9 @@ public class SeaMonsterToolManager : XmlDataToolManager
    // Reference to self
    public static SeaMonsterToolManager instance;
 
+   // List of abilities
+   public List<ShipAbilityPair> shipSkillList = new List<ShipAbilityPair>();
+
    #endregion
 
    private void Awake () {
@@ -48,12 +51,24 @@ public class SeaMonsterToolManager : XmlDataToolManager
    public void loadAllDataFiles () {
       XmlLoadingPanel.self.startLoading();
       _monsterDataList = new List<SeaMonsterXMLContent>();
+      shipSkillList = new List<ShipAbilityPair>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getSeaMonsterXML();
          userIdData = DB_Main.getSQLDataByID(editorToolType);
+         List<XMLPair> rawSeaEntityAbilityXMLData = DB_Main.getShipAbilityXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Ability loading
+            foreach (XMLPair seaEntityAbilityText in rawSeaEntityAbilityXMLData) {
+               TextAsset newTextAsset = new TextAsset(seaEntityAbilityText.rawXmlData);
+               ShipAbilityData shipAbility = Util.xmlLoad<ShipAbilityData>(newTextAsset);
+               shipSkillList.Add(new ShipAbilityPair {
+                  abilityName = shipAbility.abilityName,
+                  abilityId = seaEntityAbilityText.xmlId
+               });
+            }
+
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);

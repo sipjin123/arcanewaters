@@ -67,7 +67,7 @@ public class SteamManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 
       #if UNITY_CLOUD_BUILD
-      Debug.Log("Build Type: Cloud build, Steam is Initializing");
+      Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
 		if (!Packsize.Test()) {
 			Debug.LogError("[Steamworks.NET] Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.", this);
 		}
@@ -84,7 +84,7 @@ public class SteamManager : MonoBehaviour {
 			// remove steam_appid.txt from the game depot. eg: "(AppId_t)480" or "new AppId_t(480)".
 			// See the Valve documentation for more information: https://partner.steamgames.com/doc/sdk/api#initialization_and_shutdown
 			if (SteamAPI.RestartAppIfNecessary(AppId_t.Invalid)) {
-				Application.Quit();
+				//Application.Quit();
 				return;
 			}
 		}
@@ -112,6 +112,10 @@ public class SteamManager : MonoBehaviour {
 		}
 
 		s_EverInitialized = true;
+      #endif
+      
+      #if !UNITY_CLOUD_BUILD
+      Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
       #endif
 	}
 

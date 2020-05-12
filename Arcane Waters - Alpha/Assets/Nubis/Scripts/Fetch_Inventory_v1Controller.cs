@@ -1,4 +1,4 @@
-﻿#define NUBIS
+﻿//#define NUBIS
 #if NUBIS
 using System;
 using System.Collections.Generic;
@@ -9,20 +9,18 @@ using MySql.Data.MySqlClient;
 
 namespace Nubis.Controllers {
    public class Fetch_Inventory_v1Controller {
-      public static string userInventory (int usrId, EquipmentType equipType) {
+      public static string userInventory (int usrId, int equipType) {
          try {
             // Connect to the server.
             string connString = DB_Main.buildConnectionString(DB_Main.RemoteServer);
             string equipmentTable = "";
-            int equipmentCategory = 1;
+            int equipmentCategory = equipType;
             switch (equipType) {
-               case EquipmentType.Weapon:
+               case 1:
                   equipmentTable = "equipment_weapon_xml_v3";
-                  equipmentCategory = 1;
                   break;
-               case EquipmentType.Armor:
+               case 2:
                   equipmentTable = "equipment_armor_xml_v3";
-                  equipmentCategory = 2;
                   break;
             }
 
