@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 212336764478243162}
   - component: {fileID: 58897821517896252}
   m_Layer: 11
-  m_Name: Ball
+  m_Name: ProjectileHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -112,9 +113,9 @@ GameObject:
   - component: {fileID: 4121225054123846}
   - component: {fileID: 114360563254751778}
   - component: {fileID: 50551729850668140}
-  - component: {fileID: -4185592917747285817}
+  - component: {fileID: 872506999601214794}
   m_Layer: 11
-  m_Name: Networked Boulder Projectile
+  m_Name: Networked Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 1441108888436672}
 --- !u!50 &50551729850668140
@@ -172,7 +174,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &-4185592917747285817
+--- !u!114 &872506999601214794
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -181,16 +183,50 @@ MonoBehaviour:
   m_GameObject: {fileID: 1322573946227394}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3f207c213d43cf4f8289e99b95cee0b, type: 3}
+  m_Script: {fileID: 11500000, guid: 007f461a5e376344f979f72b862fb9ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  creatorUserId: 0
-  instanceId: 0
-  boulderProjectile: {fileID: 1112950965488062}
+  lifeTime: 1.25
+  archHeight: 0.1
+  moveSpeed: 1.55
+  projectileSpriteObj: {fileID: 1112950965488062}
+  projectileSprites:
+  - {fileID: 1117925372851522292}
+  - {fileID: 2704168833168170108}
   body: {fileID: 50551729850668140}
   circleCollider: {fileID: 58897821517896252}
-  endPos: {x: 0, y: 0}
+  attackType: 0
+  abilityData:
+    abilityId: 0
+    abilityName: 
+    selectedAttackType: 0
+    abilityDescription: 
+    shipTypeVariety: 0
+    levelRequirement: 0
+    damage: 0
+    abilitySpriteFXPerFrame: 0.06
+    coolDown: 0
+    projectileSpeed: 0
+    skillIconPath: 
+    projectileSpritePath: 
+    castSpritePath: 
+    collisionSpritePath: 
+    castSFXPath: 
+    collisionSFXPath: 
+    shipCastType: 0
+    shipCastCollisionType: 0
+    shipAbilityEffect: 0
+    impactMagnitude: 0
+    isSpecialProjectile: 0
+    hasArch: 0
+    syncHeightToArch: 1
+    hasTrail: 0
+    lifeTime: 1
+    splitsAfterAttackCap: 0
+    splitAttackCap: -1
+  projectileEndType: 0
   startPos: {x: 0, y: 0}
+  endPos: {x: 0, y: 0}
 --- !u!1 &1441108888436672
 GameObject:
   m_ObjectHideFlags: 0
@@ -236,6 +272,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -317,6 +354,7 @@ TrailRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -417,8 +455,9 @@ GameObject:
   m_Component:
   - component: {fileID: 170627260588576477}
   - component: {fileID: 2704168833168170108}
+  - component: {fileID: 3041190630980445034}
   m_Layer: 0
-  m_Name: Venom (2)
+  m_Name: ProjectileSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -452,6 +491,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -476,7 +516,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9133b898d9019394d83176fe10dfcbe4, type: 3}
+  m_Sprite: {fileID: -7590832542369293719, guid: 3b90013e05e79d642b3b38fb41e1e922,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -487,6 +528,29 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &3041190630980445034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6895647865833253742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
 --- !u!1 &7627738781658145285
 GameObject:
   m_ObjectHideFlags: 0
@@ -497,8 +561,9 @@ GameObject:
   m_Component:
   - component: {fileID: 470698061831097888}
   - component: {fileID: 1117925372851522292}
+  - component: {fileID: 1449515355299745784}
   m_Layer: 0
-  m_Name: Venom (1)
+  m_Name: ProjectileSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -532,6 +597,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -556,7 +622,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 9133b898d9019394d83176fe10dfcbe4, type: 3}
+  m_Sprite: {fileID: -7590832542369293719, guid: 3b90013e05e79d642b3b38fb41e1e922,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -567,3 +634,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1449515355299745784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7627738781658145285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0

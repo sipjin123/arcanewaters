@@ -622,8 +622,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 9450d20867407f84cbff65bfcdc978b8, type: 3}
   - imageName: attack_circle
-    imagePath: Assets/Sprites/Cannon/attack_circle.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/attack_circle
+    imagePath: Assets/Sprites/Projectiles/attack_circle.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/attack_circle
     texture2D: {fileID: 2800000, guid: 35a6509148df77447bd0ca5f9ac7c6e5, type: 3}
     sprite: {fileID: 21300000, guid: 35a6509148df77447bd0ca5f9ac7c6e5, type: 3}
     sprites:
@@ -1409,8 +1409,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: bffdb90ca35a0ae4f80b27c724cc471c, type: 3}
   - imageName: BoulderParticle
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/BoulderParticle.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/BoulderParticle
+    imagePath: Assets/Sprites/Projectiles/BoulderParticle.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/BoulderParticle
     texture2D: {fileID: 2800000, guid: c467ab646cdeab8478f528eecc9a2f07, type: 3}
     sprite: {fileID: 2166883337420641683, guid: c467ab646cdeab8478f528eecc9a2f07,
       type: 3}
@@ -2221,36 +2221,36 @@ MonoBehaviour:
     - {fileID: 1680018087139272486, guid: 7372beeeb2bce5a4099d77427ac4d384, type: 3}
     - {fileID: 6608061523586572997, guid: 7372beeeb2bce5a4099d77427ac4d384, type: 3}
   - imageName: cannonball_8x8
-    imagePath: Assets/Sprites/Cannon/cannonball_8x8.PNG
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_8x8
+    imagePath: Assets/Sprites/Projectiles/cannonball_8x8.PNG
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_8x8
     texture2D: {fileID: 2800000, guid: e970c317a274c1445af1d30e97c8634c, type: 3}
     sprite: {fileID: 21300000, guid: e970c317a274c1445af1d30e97c8634c, type: 3}
     sprites:
     - {fileID: 21300000, guid: e970c317a274c1445af1d30e97c8634c, type: 3}
   - imageName: cannonball_air
-    imagePath: Assets/Sprites/Cannon/cannonball_air.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_air
+    imagePath: Assets/Sprites/Projectiles/cannonball_air.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_air
     texture2D: {fileID: 2800000, guid: 9d28f62732c80e84686c8fa9de1bd19e, type: 3}
     sprite: {fileID: 21300000, guid: 9d28f62732c80e84686c8fa9de1bd19e, type: 3}
     sprites:
     - {fileID: 21300000, guid: 9d28f62732c80e84686c8fa9de1bd19e, type: 3}
   - imageName: cannonball_burn
-    imagePath: Assets/Sprites/Cannon/cannonball_burn.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_burn
+    imagePath: Assets/Sprites/Projectiles/cannonball_burn.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_burn
     texture2D: {fileID: 2800000, guid: 7c716d0867ef3cc418c41d5dd1dda20b, type: 3}
     sprite: {fileID: 21300000, guid: 7c716d0867ef3cc418c41d5dd1dda20b, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7c716d0867ef3cc418c41d5dd1dda20b, type: 3}
   - imageName: cannonball_freeze
-    imagePath: Assets/Sprites/Cannon/cannonball_freeze.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_freeze
+    imagePath: Assets/Sprites/Projectiles/cannonball_freeze.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_freeze
     texture2D: {fileID: 2800000, guid: fdf70ad147fb75247aac7521a684c2ee, type: 3}
     sprite: {fileID: 21300000, guid: fdf70ad147fb75247aac7521a684c2ee, type: 3}
     sprites:
     - {fileID: 21300000, guid: fdf70ad147fb75247aac7521a684c2ee, type: 3}
   - imageName: cannonball_freeze_anim
-    imagePath: Assets/Sprites/Cannon/cannonball_freeze_anim.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_freeze_anim
+    imagePath: Assets/Sprites/Projectiles/cannonball_freeze_anim.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_freeze_anim
     texture2D: {fileID: 2800000, guid: fbc89945b3c229c42aa315e8adac298a, type: 3}
     sprite: {fileID: 21300000, guid: fbc89945b3c229c42aa315e8adac298a, type: 3}
     sprites:
@@ -2265,15 +2265,15 @@ MonoBehaviour:
     - {fileID: 21300016, guid: fbc89945b3c229c42aa315e8adac298a, type: 3}
     - {fileID: 21300018, guid: fbc89945b3c229c42aa315e8adac298a, type: 3}
   - imageName: cannonball_grapeshot
-    imagePath: Assets/Sprites/Cannon/cannonball_grapeshot.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_grapeshot
+    imagePath: Assets/Sprites/Projectiles/cannonball_grapeshot.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_grapeshot
     texture2D: {fileID: 2800000, guid: 27b5d6a8568c1c9449539268ac5304c7, type: 3}
     sprite: {fileID: 21300000, guid: 27b5d6a8568c1c9449539268ac5304c7, type: 3}
     sprites:
     - {fileID: 21300000, guid: 27b5d6a8568c1c9449539268ac5304c7, type: 3}
   - imageName: cannonball_hit_16x16
-    imagePath: Assets/Sprites/Cannon/cannonball_hit_16x16.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_hit_16x16
+    imagePath: Assets/Sprites/Projectiles/cannonball_hit_16x16.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_hit_16x16
     texture2D: {fileID: 2800000, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
     sprite: {fileID: -1074112231116301255, guid: 7e114aecb3882944ab03382a5b174fd2,
       type: 3}
@@ -2283,15 +2283,15 @@ MonoBehaviour:
     - {fileID: 5819765203680231530, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
     - {fileID: -2854029049591181981, guid: 7e114aecb3882944ab03382a5b174fd2, type: 3}
   - imageName: cannonball_shadow_8x4
-    imagePath: Assets/Sprites/Cannon/cannonball_shadow_8x4.PNG
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_shadow_8x4
+    imagePath: Assets/Sprites/Projectiles/cannonball_shadow_8x4.PNG
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_shadow_8x4
     texture2D: {fileID: 2800000, guid: 8dd09b703c76bd8428ce391229c5b844, type: 3}
     sprite: {fileID: 21300000, guid: 8dd09b703c76bd8428ce391229c5b844, type: 3}
     sprites:
     - {fileID: 21300000, guid: 8dd09b703c76bd8428ce391229c5b844, type: 3}
   - imageName: cannonball_trail
-    imagePath: Assets/Sprites/Cannon/cannonball_trail.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/cannonball_trail
+    imagePath: Assets/Sprites/Projectiles/cannonball_trail.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/cannonball_trail
     texture2D: {fileID: 2800000, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
     sprite: {fileID: -1400713052799229439, guid: 99ffeb3171dc89443aeb38468cf96686,
       type: 3}
@@ -10413,8 +10413,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 04539a00e26b72241ac3613406e55375, type: 3}
   - imageName: grapeshot_targeting
-    imagePath: Assets/Sprites/Cannon/grapeshot_targeting.png
-    imagePathWithoutExtension: Assets/Sprites/Cannon/grapeshot_targeting
+    imagePath: Assets/Sprites/Projectiles/grapeshot_targeting.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/grapeshot_targeting
     texture2D: {fileID: 2800000, guid: db6506654a9f6714c9d2debe24a1d574, type: 3}
     sprite: {fileID: 21300000, guid: db6506654a9f6714c9d2debe24a1d574, type: 3}
     sprites:
@@ -12938,8 +12938,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: e1bfe5557e8a2ce48952b677d77b82b8, type: 3}
   - imageName: LightningParticle
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/LightningParticle.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/LightningParticle
+    imagePath: Assets/Sprites/Projectiles/LightningParticle.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/LightningParticle
     texture2D: {fileID: 2800000, guid: 1d8c1763ac86ab24fbe6ef2987ab8187, type: 3}
     sprite: {fileID: 4507358555687290566, guid: 1d8c1763ac86ab24fbe6ef2987ab8187,
       type: 3}
@@ -19374,8 +19374,8 @@ MonoBehaviour:
     - {fileID: 21300012, guid: f4fa7263b53ee4c428a6f5b1e1518151, type: 3}
     - {fileID: 21300014, guid: f4fa7263b53ee4c428a6f5b1e1518151, type: 3}
   - imageName: rock_small
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/rock_small.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/rock_small
+    imagePath: Assets/Sprites/Projectiles/rock_small.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/rock_small
     texture2D: {fileID: 2800000, guid: 9133b898d9019394d83176fe10dfcbe4, type: 3}
     sprite: {fileID: 21300000, guid: 9133b898d9019394d83176fe10dfcbe4, type: 3}
     sprites:
@@ -20337,15 +20337,15 @@ MonoBehaviour:
     - {fileID: 1036609945976456190, guid: 8258a01ffce5f1a468c6e5ba8621d0dd, type: 3}
     - {fileID: 4054432977817172626, guid: 8258a01ffce5f1a468c6e5ba8621d0dd, type: 3}
   - imageName: shockball_shadow
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/shockball_shadow.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/shockball_shadow
+    imagePath: Assets/Sprites/Projectiles/shockball_shadow.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/shockball_shadow
     texture2D: {fileID: 2800000, guid: 1cd001573cb6fe54bbd5adc03f89e2f9, type: 3}
     sprite: {fileID: 21300000, guid: 1cd001573cb6fe54bbd5adc03f89e2f9, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1cd001573cb6fe54bbd5adc03f89e2f9, type: 3}
   - imageName: shockball_sm
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/shockball_sm.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/shockball_sm
+    imagePath: Assets/Sprites/Projectiles/shockball_sm.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/shockball_sm
     texture2D: {fileID: 2800000, guid: 985d96371850099458d9d4397f89e429, type: 3}
     sprite: {fileID: -3339692170741146141, guid: 985d96371850099458d9d4397f89e429,
       type: 3}
@@ -21207,8 +21207,8 @@ MonoBehaviour:
     - {fileID: -6775867435950622097, guid: 5df5b619853a7644daac83d349e048e6, type: 3}
     - {fileID: 5262790422144453505, guid: 5df5b619853a7644daac83d349e048e6, type: 3}
   - imageName: slimee
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/slimee.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/slimee
+    imagePath: Assets/Sprites/Projectiles/slimee.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/slimee
     texture2D: {fileID: 2800000, guid: da85bd55cd10f8f489b924f442d55bf9, type: 3}
     sprite: {fileID: -4835634955521686989, guid: da85bd55cd10f8f489b924f442d55bf9,
       type: 3}
@@ -22675,8 +22675,8 @@ MonoBehaviour:
     - {fileID: 7716980122487213858, guid: e9ebbf80d23dad34b86a73806d8737fc, type: 3}
     - {fileID: 4921345120742822559, guid: e9ebbf80d23dad34b86a73806d8737fc, type: 3}
   - imageName: Tentacle_CollisionOnly_SpriteSheet
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/Tentacle_CollisionOnly_SpriteSheet.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/Tentacle_CollisionOnly_SpriteSheet
+    imagePath: Assets/Sprites/Projectiles/Tentacle_CollisionOnly_SpriteSheet.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/Tentacle_CollisionOnly_SpriteSheet
     texture2D: {fileID: 2800000, guid: 10b5de16529c88546879fb2d67ef9561, type: 3}
     sprite: {fileID: 7427575274860778101, guid: 10b5de16529c88546879fb2d67ef9561,
       type: 3}
@@ -22701,8 +22701,8 @@ MonoBehaviour:
     - {fileID: -1081760654066441141, guid: c69a30d84ef49af42aff2e1beef82d05, type: 3}
     - {fileID: -5536927713217157128, guid: c69a30d84ef49af42aff2e1beef82d05, type: 3}
   - imageName: Tentacle_ProjectileOnly_SpriteSheet
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/Tentacle_ProjectileOnly_SpriteSheet.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/Tentacle_ProjectileOnly_SpriteSheet
+    imagePath: Assets/Sprites/Projectiles/Tentacle_ProjectileOnly_SpriteSheet.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/Tentacle_ProjectileOnly_SpriteSheet
     texture2D: {fileID: 2800000, guid: 73262e163085d0f45ac94461b134801d, type: 3}
     sprite: {fileID: 4019607189785247734, guid: 73262e163085d0f45ac94461b134801d,
       type: 3}
@@ -24091,8 +24091,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 92f9a998fea6c844c85d91ba9ba15a36, type: 3}
   - imageName: venom
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/venom.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/venom
+    imagePath: Assets/Sprites/Projectiles/venom.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/venom
     texture2D: {fileID: 2800000, guid: 3b90013e05e79d642b3b38fb41e1e922, type: 3}
     sprite: {fileID: -7590832542369293719, guid: 3b90013e05e79d642b3b38fb41e1e922,
       type: 3}
@@ -24106,8 +24106,8 @@ MonoBehaviour:
     - {fileID: 5407685807441948192, guid: 3b90013e05e79d642b3b38fb41e1e922, type: 3}
     - {fileID: 122228660748904575, guid: 3b90013e05e79d642b3b38fb41e1e922, type: 3}
   - imageName: venom_shadow
-    imagePath: Assets/Sprites/Enemies/SeaMonsters/venom_shadow.png
-    imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/venom_shadow
+    imagePath: Assets/Sprites/Projectiles/venom_shadow.png
+    imagePathWithoutExtension: Assets/Sprites/Projectiles/venom_shadow
     texture2D: {fileID: 2800000, guid: 49e0f1d90bad3e2418b14e4cf6091303, type: 3}
     sprite: {fileID: 21300000, guid: 49e0f1d90bad3e2418b14e4cf6091303, type: 3}
     sprites:
