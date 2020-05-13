@@ -2500,7 +2500,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + tableName, conn)) {
+            "SELECT * FROM arcane." + tableName + " ORDER BY xml_id", conn)) {
 
             conn.Open();
             cmd.Prepare();

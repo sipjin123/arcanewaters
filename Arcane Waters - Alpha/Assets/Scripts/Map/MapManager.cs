@@ -38,7 +38,6 @@ public class MapManager : MonoBehaviour
    public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
-         D.warning($"Area {areaKey} already exists!");
          return;
       }
 
@@ -100,7 +99,6 @@ public class MapManager : MonoBehaviour
                D.debug("Map info does not Exist!! Failed to fetch using DBMain: " + mapInfo);
                return;
             }
-            D.debug($"Preparing to create live map {areaKey} at {mapPosition} with version {mapVersion}");
 
             StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
          });
@@ -238,11 +236,11 @@ public class MapManager : MonoBehaviour
       try {
          Dictionary<int, CustomizablePrefab> prefabs = area.gameObject.GetComponentsInChildren<CustomizablePrefab>().ToDictionary(p => p.unappliedChanges.id, p => p);
 
-         foreach (PrefabChanges pc in customizationData.prefabChanges) {
-            if (prefabs.TryGetValue(pc.id, out CustomizablePrefab pref)) {
+         foreach (PrefabState state in customizationData.prefabChanges) {
+            if (prefabs.TryGetValue(state.id, out CustomizablePrefab pref)) {
                pref.revertToMapEditor();
-               pref.unappliedChanges = pc;
-               pref.submitChanges();
+               pref.unappliedChanges = state;
+               pref.submitUnappliedChanges();
             }
          }
       } catch (Exception ex) {
@@ -250,11 +248,13 @@ public class MapManager : MonoBehaviour
       }
    }
 
-   public void addCustomizations (Area area, PrefabChanges prefabChanges) {
+   public void addCustomizations (Area area, PrefabState changes) {
       foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
-         if (pref.unappliedChanges.id == prefabChanges.id) {
-            pref.unappliedChanges = prefabChanges;
-            pref.submitChanges();
+         if (pref.unappliedChanges.id == changes.id) {
+            pref.unappliedChanges = changes;
+            pref.submitUnappliedChanges();
+
+            break;
          }
       }
    }

@@ -82,11 +82,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          if (serverVersion > clientXmlVersion) {
             clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
-            D.debug(clientMessage);
+            debugLog(clientMessage);
             StartCoroutine(CO_DownloadClientData(serverVersion));
          } else {
             clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
-            D.debug(clientMessage);
+            debugLog(clientMessage);
             processClientXml();
          }
       }
@@ -97,16 +97,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       var uwr = new UnityWebRequest(WEB_DIRECTORY + XML_ZIP_GET + targetVersion, UnityWebRequest.kHttpVerbGET);
       string path = ZIP_PATH;
-      string resultMessage = "";
       uwr.downloadHandler = new DownloadHandlerFile(path);
       yield return uwr.SendWebRequest();
       if (uwr.isNetworkError || uwr.isHttpError) {
-         resultMessage = uwr.error;
+         D.debug(uwr.error);
       } else {
-         resultMessage = "File successfully downloaded and saved to " + path;
+         debugLog("File successfully downloaded and saved to " + path);
       }
 
-      D.debug(resultMessage);
       StartCoroutine(CO_ExtractTextFiles());
       PlayerPrefs.SetInt(XML_VERSION, targetVersion);
    }
@@ -144,12 +142,12 @@ public class XmlVersionManagerClient : MonoBehaviour {
          }
       }
 
-      D.debug("Finished Extracting Zip");
+      debugLog("Finished Extracting Zip");
       processClientXml();
    }
 
    private void processClientXml () {
-      D.debug("Initializing Text Extraction");
+      debugLog("Initializing Text Extraction");
       targetProgress = 0;
       currentProgress = 0;
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Crops));
@@ -507,15 +505,19 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
 
    private void checkTextExtractionProgress () {
-      if (includeProgressInEditorLog) {
-         D.debug("Progress is: " + currentProgress + " / " + targetProgress);
-      }
+      debugLog("Progress is: " + currentProgress + " / " + targetProgress);
 
       if (currentProgress >= targetProgress) {
          isInitialized = true;
          finishedLoadingXmlData.Invoke();
-         D.debug("Finished assigning Xml Data");
+         debugLog("Finished assigning Xml Data");
          loadBlocker.SetActive(false);
+      }
+   }
+
+   private void debugLog (string message) {
+      if (includeProgressInEditorLog) {
+         D.debug(message);
       }
    }
 

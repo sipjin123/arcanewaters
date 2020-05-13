@@ -79,12 +79,8 @@ public class ShipEntity : SeaEntity
       return this.shipType.ToString().ToLower().Contains(skinClass.ToLower());
    }
 
-   public bool isInRange (Vector2 spot) {
-      if (Vector2.SqrMagnitude(spot - (Vector2) transform.position) < getAttackRange() * getAttackRange()) {
-         return true;
-      } else {
-         return false;
-      }
+   public bool isInRange (Vector2 position) {
+      return Vector2.SqrMagnitude(position - (Vector2) transform.position) <= getAttackRange() * getAttackRange();
    }
 
    public float getAttackRange () {

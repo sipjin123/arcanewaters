@@ -46,14 +46,11 @@ public class ServerMessageManager : MonoBehaviour {
          if (logInUserMessage.isSteamLogin) {
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
-               D.editorLog("Loging in using steam: " + logInUserMessage.accountName, Color.green);
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
             } else {
                D.editorLog("Loging in using steam But needs to be authenticated first", Color.green);
             }
          } else {
-            D.editorLog("Loging in using account" + logInUserMessage.accountName, Color.green);
-
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);

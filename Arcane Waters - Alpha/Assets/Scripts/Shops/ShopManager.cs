@@ -145,7 +145,7 @@ public class ShopManager : MonoBehaviour {
       }
 
       // Generate ships for each of the areas
-      foreach (string areaKey in Area.getAllAreaKeys()) {
+      foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          // Clear out the previous list
          _shipsByArea[areaKey] = new List<int>();
 

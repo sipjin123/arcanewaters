@@ -39,8 +39,7 @@ public class GroundChecker : ClientMonoBehaviour {
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area != null) {
-         Grid grid = area.GetComponentInChildren<Grid>();
-         Vector3Int cellPos = grid.WorldToCell(_player.sortPoint.transform.position);
+         Vector3Int cellPos = area.worldToCell(_player.sortPoint.transform.position);
 
          // Locate the tilemaps within the area
          foreach (TilemapLayer layer in area.getTilemapLayers()) {

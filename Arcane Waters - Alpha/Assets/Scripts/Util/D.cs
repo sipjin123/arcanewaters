@@ -142,12 +142,22 @@ public class D : MonoBehaviour {
    }
 
    public static void editorLog (string text, Color color = new Color()) {
+      if (UnityThreadHelper.IsMainThread) {
+         editorLogProcess(text, color);
+      } else {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            editorLogProcess(text, color);
+         });
+      }
+   }
+
+   private static void editorLogProcess (string text, Color color) {
       try {
          if (Util.isBatch()) {
             return;
          }
-      } catch {
-         UnityEngine.Debug.LogWarning("Not Main Thread");
+      } catch (Exception e) {
+         UnityEngine.Debug.LogWarning("Batch test failed with exception: " + e.ToString());
       }
 
       #if UNITY_EDITOR

@@ -25,14 +25,8 @@ public class PlayerOwnedHouseManager : OwnedMapManager
          // User is trying to warp into someone else's house
          // TODO: check if user is allowed to access some else's house
 
-         // For testing, return a random value
-         if (UnityEngine.Random.value > 0.5) {
-            denyWarpHandler = null;
-            return true;
-         } else {
-            denyWarpHandler = (u) => D.log("User is not allowed to access this house!");
-            return false;
-         }
+         denyWarpHandler = null;
+         return true;
       }
    }
 

@@ -15,12 +15,12 @@ namespace MapCustomization
       public int mapId;
 
       // Deserialized prefab changes
-      public PrefabChanges[] prefabChanges;
+      public PrefabState[] prefabChanges;
 
       #endregion
 
       public MapCustomizationData () {
-         prefabChanges = new PrefabChanges[0];
+         prefabChanges = new PrefabState[0];
       }
 
       public static MapCustomizationData deserialize (string data) {
@@ -29,7 +29,7 @@ namespace MapCustomization
          MapCustomizationData result = JsonUtility.FromJson<MapCustomizationData>(data);
 
          if (result != null && result.prefabChanges == null) {
-            result.prefabChanges = new PrefabChanges[0];
+            result.prefabChanges = new PrefabState[0];
          }
 
          return result;
@@ -39,12 +39,10 @@ namespace MapCustomization
          return JsonUtility.ToJson(this);
       }
 
-      public void add (PrefabChanges newChanges) {
+      public void add (PrefabState newChanges) {
          for (int i = 0; i < prefabChanges.Length; i++) {
             if (prefabChanges[i].id == newChanges.id) {
-               if (newChanges.isLocalPositionSet()) {
-                  prefabChanges[i].localPosition = newChanges.localPosition;
-               }
+               prefabChanges[i].add(newChanges);
                return;
             }
          }

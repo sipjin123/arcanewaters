@@ -272,9 +272,12 @@ namespace MapCreationTool
 
                CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
                if (customizablePrefab != null) {
-                  customizablePrefab.mapEditorLocalPosition = pref.transform.localPosition;
-                  customizablePrefab.anchorLocalPosition = pref.transform.localPosition;
-                  customizablePrefab.unappliedChanges.id = DataField.extractId(prefab.d);
+                  customizablePrefab.mapEditorState.localPosition = pref.transform.localPosition;
+                  customizablePrefab.mapEditorState.id = DataField.extractId(prefab.d);
+
+                  customizablePrefab.customizedState = customizablePrefab.mapEditorState;
+                  customizablePrefab.unappliedChanges = customizablePrefab.mapEditorState;
+                  customizablePrefab.unappliedChanges.clearAll();
                }
             }
          }

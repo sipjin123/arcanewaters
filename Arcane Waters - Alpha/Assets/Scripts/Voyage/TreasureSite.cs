@@ -218,26 +218,24 @@ public class TreasureSite : NetworkBehaviour
       Area area = AreaManager.self.getArea(areaKey);
       this.transform.SetParent(area.treasureSiteParent, false);
 
-      if (isServer) {
-         // Get all the nearby colliders
-         Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.6f);
+      // Get all the nearby colliders
+      Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.6f);
 
-         // Find the warp associated with this treasure site
-         bool found = false;
-         foreach (Collider2D c in nearbyColliders) {
-            Warp warp = c.gameObject.GetComponent<Warp>();
-            if (warp != null) {
-               // Set this treasure site as controller of the warp
-               warp.setTreasureSite(instanceId, this);
-               _warp = warp;
-               found = true;
-               break;
-            }
+      // Find the warp associated with this treasure site
+      bool found = false;
+      foreach (Collider2D c in nearbyColliders) {
+         Warp warp = c.gameObject.GetComponent<Warp>();
+         if (warp != null) {
+            // Set this treasure site as controller of the warp
+            warp.setTreasureSite(instanceId, this);
+            _warp = warp;
+            found = true;
+            break;
          }
+      }
 
-         if (!found) {
-            D.error("Could not find the warp associated with a treasure site in area " + areaKey);
-         }
+      if (!found) {
+         D.error("Could not find the warp associated with a treasure site in area " + areaKey);
       }
    }
 

@@ -530,18 +530,19 @@ public class NetEntity : NetworkBehaviour {
    }
 
    protected void cleanAttackers () {
-      HashSet<NetEntity> oldAttackers = new HashSet<NetEntity>();
+      List<uint> oldAttackers = new List<uint>();
 
       // Take note of all the attackers that must be removed
-      foreach (KeyValuePair<NetEntity, float> KV in _attackers) {
-         if (TimeManager.self.getSyncedTime() - KV.Value > ATTACKER_STATUS_DURATION) {
+      foreach (KeyValuePair<uint, float> KV in _attackers) {
+         NetEntity entity = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(KV.Key);
+         if (entity == null || entity.isDead() || TimeManager.self.getSyncedTime() - KV.Value > ATTACKER_STATUS_DURATION) {
             oldAttackers.Add(KV.Key);
          }
       }
 
       // Remove the old attackers
-      foreach (NetEntity attacker in oldAttackers) {
-         _attackers.Remove(attacker);
+      foreach (uint attackerId in oldAttackers) {
+         _attackers.Remove(attackerId);
       }
    }
 
@@ -576,7 +577,7 @@ public class NetEntity : NetworkBehaviour {
          return false;
       }
 
-      return _attackers.ContainsKey(otherEntity);
+      return _attackers.ContainsKey(otherEntity.netId);
    }
 
    public bool isEnemyOf (NetEntity otherEntity) {
@@ -1072,6 +1073,8 @@ public class NetEntity : NetworkBehaviour {
    protected virtual void onStartMoving () { }
    protected virtual void onEndMoving () { }
 
+   public virtual bool isBotShip() { return false; }
+
    #region Private Variables
 
    // Whether we should automatically move around
@@ -1104,7 +1107,7 @@ public class NetEntity : NetworkBehaviour {
    protected Text _nameText;
 
    // Entities that have attacked us and the time when they attacked
-   protected Dictionary<NetEntity, float> _attackers = new Dictionary<NetEntity, float>();
+   protected Dictionary<uint, float> _attackers = new Dictionary<uint, float>();
 
    // Used by the server to keep track of which tutorial steps have already been processed
    protected Dictionary<int, bool> _processedTutorialSteps = new Dictionary<int, bool>();

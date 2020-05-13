@@ -113,6 +113,9 @@ public class Area : MonoBehaviour
          }
       }
 
+      // Store a reference to the grid
+      _grid = GetComponentInChildren<Grid>();
+
       // Retrieve the z coordinate of the water tilemap
       foreach (TilemapLayer layer in getTilemapLayers()) {
          if (layer.name.ToLower().EndsWith("water")) {
@@ -149,18 +152,6 @@ public class Area : MonoBehaviour
       return areaKey.Contains("Town");
    }
 
-   public static bool isTreasureSite (string areaKey) {
-      return areaKey.Contains("Treasure");
-   }
-
-   public static bool isShop (string areaKey) {
-      return areaKey.Contains("Shop") || areaKey.Contains("Shipyard");
-   }
-
-   public static bool isMerchantShop (string areaKey) {
-      return areaKey.StartsWith("MerchantShop");
-   }
-
    public List<TilemapLayer> getTilemapLayers () {
       return _tilemapLayers;
    }
@@ -182,32 +173,20 @@ public class Area : MonoBehaviour
       _colliderChunks = chunks;
    }
 
+   public Vector3Int worldToCell (Vector2 worldPos) {
+      return _grid.WorldToCell(worldPos);
+   }
+
    public static string getName (string areaKey) {
-      if (areaKey.StartsWith("Adventure")) {
+      if (areaKey.Contains("Adventure")) {
          return "Adventure Shop";
-      } else if (areaKey.StartsWith("Merchant")) {
+      } else if (areaKey.Contains("Merchant")) {
          return "Merchant Shop";
-      } else if (areaKey.StartsWith("Shipyard")) {
+      } else if (areaKey.Contains("Shipyard")) {
          return "Shipyard";
       }
 
-      switch (areaKey) {
-         case "StartingTown":
-            return "Serenity Village";
-         case "DesertTown":
-            return "Desert Oasis";
-         case "Ocean1":
-         case "SeaBottom":
-            return "Emerald Shores";
-         case "SeaMiddle":
-            return "Desert Isles";
-         case "SeaTop":
-            return "Hidden Forest";
-         case "TreasurePine":
-            return "Forest Treasure";
-         default:
-            return areaKey;
-      }
+      return areaKey;
    }
 
    public static Biome.Type getBiome (string areaKey) {
@@ -238,28 +217,6 @@ public class Area : MonoBehaviour
 
    public static int getAreaId (string areaKey) {
       return areaKey.GetHashCode();
-   }
-
-   public static List<string> getAllAreaKeys () {
-      return new List<string>() {
-         "StartingTown",
-         "Farm",
-         "Ocean1",
-         "House",
-         "TreasurePine",
-         "DesertTown",
-         "SeaBottom",
-         "SeaMiddle",
-         "SeaTop",
-         "MerchantShop_Desert",
-         "MerchantShop_Forest",
-         "AdventureShop_Forest",
-         "AdventureShop_Desert",
-         "Shipyard_Forest",
-         "TonyTest",
-         "CollisionTest",
-         "BurlTestMap"
-      };
    }
 
    public static float getTilemapZ (string areaKey, string layerName) {
@@ -350,6 +307,9 @@ public class Area : MonoBehaviour
 
    // The initial enable/disable state of the tilemap colliders
    protected Dictionary<TilemapCollider2D, bool> _initialStates = new Dictionary<TilemapCollider2D, bool>();
+
+   // A reference to the tilemap grid
+   protected Grid _grid = null;
 
    #endregion
 }

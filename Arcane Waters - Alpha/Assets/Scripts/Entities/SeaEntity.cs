@@ -330,7 +330,7 @@ public class SeaEntity : NetEntity
 
       // Note the attacker
       SeaEntity attacker = SeaManager.self.getEntity(attackerId);
-      _attackers[attacker] = TimeManager.self.getSyncedTime();
+      _attackers[attacker.netId] = TimeManager.self.getSyncedTime();
 
       // Show some visual effects when the damage occurs
       List<Effect.Type> effectTypes = EffectManager.getEffects(attackType);
@@ -380,7 +380,7 @@ public class SeaEntity : NetEntity
    }
 
    public virtual void noteAttacker (NetEntity entity) {
-      _attackers[entity] = TimeManager.self.getSyncedTime();
+      _attackers[entity.netId] = TimeManager.self.getSyncedTime();
    }
 
    public bool hasReloaded () {

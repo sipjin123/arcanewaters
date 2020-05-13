@@ -14,13 +14,12 @@ namespace MapCustomization
       // Singleton instance
       public static MapCustomizationManager self;
 
-      // Currently made customizations to the map
-      private static MapCustomizationData customizationData;
-
-
       // Current area that is being customized, null if customization is not active currently
       public static string currentArea { get; private set; }
       public static string currentAreaBaseMap { get; private set; }
+
+      // Owner userId of the current area
+      public static int areaOwnerId { get; private set; }
 
       #endregion
 
@@ -37,12 +36,18 @@ namespace MapCustomization
          }
 
          if (!AreaManager.self.tryGetOwnedMapManager(areaName, out OwnedMapManager ownedMapManager)) {
-            D.error("Trying to customize a map that is not an owned map");
+            D.error("Trying to customize a map that is not an owned map: " + areaName);
             return;
-         } else {
-            currentArea = areaName;
-            currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(areaName);
          }
+
+         if (!OwnedMapManager.isUserSpecificAreaKey(areaName)) {
+            D.error("Trying to customize a map by a key that is not user-specific: " + areaName);
+            return;
+         }
+
+         currentArea = areaName;
+         currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(areaName);
+         areaOwnerId = OwnedMapManager.getUserId(areaName);
 
          CustomizationUI.show();
          CustomizationUI.setLoading(true);
@@ -53,15 +58,13 @@ namespace MapCustomization
       private static IEnumerator enterCustomizationRoutine () {
          // Fetch customization data that is saved for this map
          _waitingServerResponse = true;
-         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMap);
+         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMap, areaOwnerId);
          yield return new WaitWhile(() => _waitingServerResponse);
-
-         // Set customization data
-         MapManager.self.setCustomizations(AreaManager.self.getArea(currentArea), customizationData);
 
          // Gather prefabs from the scene that can be customized
          CustomizablePrefab[] prefabs = AreaManager.self.getArea(currentArea).GetComponentsInChildren<CustomizablePrefab>();
-         _customizablePrefabs = prefabs.ToDictionary(p => p.unappliedChanges.id, p => p);
+         _customizablePrefabs = prefabs.ToDictionary(p => p.mapEditorState.id, p => p);
+         _serverApprovedState = prefabs.ToDictionary(p => p.mapEditorState.id, p => p.customizedState);
 
          // Set all customizable prefabs to semi-transparent
          foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
@@ -75,7 +78,6 @@ namespace MapCustomization
          Global.player.rpc.Cmd_ExitMapCustomization(Global.player.userId, currentArea);
 
          currentArea = null;
-         customizationData = null;
          _selectedPrefab = null;
          CustomizationUI.hide();
 
@@ -105,7 +107,7 @@ namespace MapCustomization
       public static void pointerDrag (Vector2 delta) {
          if (_selectedPrefab != null) {
             if (!_selectedPrefab.unappliedChanges.isLocalPositionSet()) {
-               _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.anchorLocalPosition + delta;
+               _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.customizedState.localPosition + delta;
             } else {
                _selectedPrefab.unappliedChanges.localPosition += delta;
             }
@@ -122,10 +124,9 @@ namespace MapCustomization
 
       public static void pointerUp (Vector2 worldPosition) {
          if (_selectedPrefab != null) {
-            if (!_selectedPrefab.areChangesEmpty()) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(Global.player.userId, currentArea, currentAreaBaseMap, _selectedPrefab.unappliedChanges);
-               customizationData.add(_selectedPrefab.unappliedChanges);
-               _selectedPrefab.submitChanges();
+            if (_selectedPrefab.anyUnappliedState()) {
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea, currentAreaBaseMap, _selectedPrefab.unappliedChanges);
+               _selectedPrefab.submitUnappliedChanges();
             }
          }
 
@@ -159,13 +160,12 @@ namespace MapCustomization
          _selectedPrefab = prefab;
 
          if (_selectedPrefab != null) {
-            _selectedPrefab.clearChanges();
+            _selectedPrefab.unappliedChanges.clearAll();
          }
       }
 
-      public static void serverAllowedEnterCustomization (MapCustomizationData currentMapCustomizationData) {
+      public static void serverAllowedEnterCustomization () {
          _waitingServerResponse = false;
-         customizationData = currentMapCustomizationData;
       }
 
       public static void serverDeniedEnterCustomization (string message) {
@@ -174,7 +174,7 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (string areaKey, PrefabChanges newChanges, out string errorMessage) {
+      public static bool validatePrefabChanges (string areaKey, PrefabState changes, out string errorMessage) {
          if (UnityEngine.Random.value < 0.1f) {
             errorMessage = "Randomly generated testing error";
             return false;
@@ -184,20 +184,44 @@ namespace MapCustomization
          return true;
       }
 
-      public static void serverAddPrefabChangeSuccess (string areaKey, PrefabChanges changes) {
+      public static void serverAddPrefabChangeSuccess (string areaKey, PrefabState changes) {
          // If we are customizing this map, the customization process will handle the change
-         if (currentArea != null && currentArea.CompareTo(areaKey) == 0) return;
+         // Just keep track of changes that were approved by the server
+         if (currentArea != null && currentArea.CompareTo(areaKey) == 0) {
+            if (_serverApprovedState.ContainsKey(changes.id)) {
+               _serverApprovedState[changes.id] = _serverApprovedState[changes.id].add(changes);
+            } else {
+               _serverApprovedState.Add(changes.id, changes);
+            }
+            return;
+         }
 
-         Area area = AreaManager.self.getArea(currentArea);
+         // Otherwise, someone else changed the map. Check if we have the map, if so, update it
+         Area area = AreaManager.self.getArea(areaKey);
          if (area != null) {
             MapManager.self.addCustomizations(area, changes);
          }
       }
 
-      public static void serverAddPrefabChangeFail (PrefabChanges changes, string message) {
+      public static void serverAddPrefabChangeFail (PrefabState changes, string message) {
          ChatPanel.self.addChatInfo(new ChatInfo(0, "Failed to apply changes: " + message, DateTime.Now, ChatInfo.Type.System));
 
-         // TODO: reset failed changes on user's end
+         // If player is modifying a prefab that had failed changes, stop modification
+         if (_selectedPrefab != null && _selectedPrefab.customizedState.id == changes.id) {
+            _selectedPrefab.revertUnappliedChanges();
+            selectPrefab(null);
+            foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
+               prefab.setSemiTransparent(true);
+            }
+         }
+
+         // Revert to most recent approved change
+         if (_customizablePrefabs.TryGetValue(changes.id, out CustomizablePrefab changedPrefab)) {
+            if (_serverApprovedState.TryGetValue(changes.id, out PrefabState approvedState)) {
+               changedPrefab.unappliedChanges = approvedState;
+               changedPrefab.submitUnappliedChanges();
+            }
+         }
       }
 
       #region Private Variables
@@ -210,6 +234,9 @@ namespace MapCustomization
 
       // Are we waiting for the server to respond
       private static bool _waitingServerResponse;
+
+      // State that was approved by a server as valid
+      private static Dictionary<int, PrefabState> _serverApprovedState;
 
       #endregion
    }

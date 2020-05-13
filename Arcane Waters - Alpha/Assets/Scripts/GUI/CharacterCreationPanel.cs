@@ -225,7 +225,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.classType = list[currentIndex].type;
+      currentClassData = list[currentIndex];
+      _char.classType = currentClassData.type;
       classText.text = currentClassData.className;
       classDescriptionText.text = currentClassData.description;
 
@@ -251,7 +252,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.specialty = list[currentIndex].type;
+      currentSpecialtyData = list[currentIndex];
+      _char.specialty = currentSpecialtyData.type;
       specialtyText.text = currentSpecialtyData.specialtyName;
       specialtyDescriptionText.text = currentSpecialtyData.description; 
 
@@ -277,7 +279,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the data
-      _char.faction = list[currentIndex].type;
+      currentFactionData = list[currentIndex];
+      _char.faction = currentFactionData.type;
       factionText.text = currentFactionData.factionName;
       factionDescriptionText.text = currentFactionData.description;
 

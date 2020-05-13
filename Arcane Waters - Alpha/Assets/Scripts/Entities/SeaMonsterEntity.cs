@@ -331,9 +331,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             if (hit == null) {
                continue;
             }
-            if (hit.GetComponent<ShipEntity>() != null) {
-               if (!_attackers.ContainsKey(hit.GetComponent<NetEntity>()) && !hit.GetComponent<ShipEntity>().isDead()) {
-                  noteAttacker(hit.GetComponent<ShipEntity>());
+
+            ShipEntity ship = hit.GetComponent<ShipEntity>();
+            if (ship != null) {
+               if (!_attackers.ContainsKey(ship.netId) && !ship.isDead()) {
+                  noteAttacker(ship);
                }
             }
          }
@@ -396,7 +398,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       NetEntity nearestEntity = null;
       float oldDistanceGap = 100;
 
-      foreach (NetEntity attacker in _attackers.Keys) {
+      foreach (uint attackerId in _attackers.Keys) {
+         NetEntity attacker = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(attackerId);
          if (attacker == null) {
             continue;
          }

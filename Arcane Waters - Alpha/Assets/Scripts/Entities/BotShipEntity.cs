@@ -60,6 +60,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          }
 
          _originalPosition = transform.position;
+
+         StartCoroutine(shouldAggroEnemies(0.5f));
+         StartCoroutine(attackEnemiesInRange(0.25f));
       }
 
       if (Application.isEditor) {
@@ -86,8 +89,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       if (!isServer || isDead()) {
          return;
       }
-
-      checkForAttackers();
 
       moveAlongCurrentPath();
 
@@ -225,26 +226,45 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
 
       if (_currentSite != null) {
-         return _currentSite.transform.position + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius;
+         return findPositionAroundPosition(_currentSite.transform.position, patrolingWaypointsRadius);
       } else {
-         return _originalPosition + Random.insideUnitCircle.ToVector3() * patrolingWaypointsRadius;
+         return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
       }
    }
 
    [Server]
    private Vector3 findAttackerVicinityPosition (bool newAttacker) {
+      bool hasAttacker = _attackers.ContainsKey(_currentAttacker);
+
       // If we should choose a new attacker, and we have a selection available, pick a unique one randomly, which could be the same as the previous
-      if ((_currentAttacker == null || newAttacker) && _attackers != null && _attackers.Count > 0) {
+      if ((!hasAttacker || (hasAttacker && newAttacker)) && _attackers.Count > 0) {
          _currentAttacker = _attackers.RandomKey();
+         hasAttacker = true;
       }
 
       // If we fail to get a non-null attacker, return somewhere around yourself
-      if(_currentAttacker == null) {
-         return transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
+      if (!hasAttacker) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
+      }
+
+      // If we have a registered attacker but it's not in the scene list of spawned NetworkIdentities, then return somewhere around yourself
+      if (!NetworkIdentity.spawned.ContainsKey(_currentAttacker)) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
+      }
+
+      // If we have gotten a NetworkIdentity but it's by some chance null, then return somewhere around yourself
+      NetworkIdentity attackerIdentity = NetworkIdentity.spawned[_currentAttacker];
+      if (attackerIdentity == null) {
+         return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
       }
 
       // If we have an attacker, find new position around it
-      return _currentAttacker.transform.position + Random.insideUnitCircle.ToVector3() * attackingWaypointsRadius;
+      return findPositionAroundPosition(attackerIdentity.transform.position, attackingWaypointsRadius);
+   }
+
+   [Server]
+   private Vector3 findPositionAroundPosition(Vector3 position, float radius) {
+      return position + Random.insideUnitCircle.ToVector3() * radius;
    }
 
    [Server]
@@ -263,27 +283,29 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected void checkForAttackers () {
-      if (isDead() || !isServer) {
-         return;
-      }
-
-      // If we haven't reloaded, we can't attack
-      if (!hasReloaded()) {
-         return;
-      }
-
+   private IEnumerator shouldAggroEnemies (float delayInSeconds) {
       Instance instance = InstanceManager.self.getInstance(instanceId);
-      if (instance != null) {
-         float degreesToDot = aggroConeDegrees / 90.0f;
+      // An instance is required to function, so if it's not in an instance yet, let the developer know something is wrong and then try again in a little while
+      while (instance == null) {
+         D.log("BotshipEntity needs to be placed in an instance");
+         yield return new WaitForSeconds(1.0f);
+
+         // Try get the instance again
+         instance = InstanceManager.self.getInstance(instanceId);
+      }
+
+      float degreesToDot = aggroConeDegrees / 90.0f;
+
+      while (!isDead()) {
          foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
             NetEntity iEntity = iBehaviour as NetEntity;
 
-            if (iEntity == null || iEntity.faction == faction)
+            // If the entity is a fellow bot ship, ignore it
+            if (iEntity == null || iEntity.isBotShip())
                continue;
 
             // If enemy isn't within radius, early out
-            if ((transform.position - iEntity.transform.position).magnitude > aggroConeRadius)
+            if ((transform.position - iEntity.transform.position).sqrMagnitude > aggroConeRadius * aggroConeRadius)
                continue;
 
             // If enemy isn't within cone aggro range, early out
@@ -292,26 +314,39 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             }
 
             // We can see the enemy, attack it
-            _attackers[iEntity] = TimeManager.self.getSyncedTime();
+            _attackers[iEntity.netId] = TimeManager.self.getSyncedTime();
          }
+
+         yield return new WaitForSeconds(delayInSeconds);
       }
+   }
 
-      // Check if any of our attackers are within range
-      foreach (NetEntity attacker in _attackers.Keys) {
-         if (attacker == null || attacker.isDead()) {
-            continue;
+   [Server]
+   private IEnumerator attackEnemiesInRange (float delayInSecondsWhenNotReloading) {
+      while (!isDead()) {
+         bool attacked = false;
+
+         // Check if any of our attackers are within range
+         foreach (uint attackerId in _attackers.Keys) {
+            NetEntity attacker = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(attackerId);
+            if (attacker == null || attacker.isDead()) {
+               continue;
+            }
+
+            Vector2 attackerPosition = attacker.transform.position;
+            if (isInRange(attackerPosition)) {
+               ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
+               fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
+               attacked = true;
+               break;
+            }
          }
 
-         // Check where the attacker currently is
-         Vector2 spot = attacker.transform.position;
-
-         // If the requested spot is not in the allowed area, reject the request
-         if (isInRange(spot)) {
-            ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
-            fireAtSpot(spot, shipAbilityData.abilityId, 0, 0, transform.position);
-
-            return;
+         float waitTimeToUse = delayInSecondsWhenNotReloading;
+         if(attacked) {
+            waitTimeToUse = reloadDelay;
          }
+         yield return new WaitForSeconds(waitTimeToUse);
       }
    }
 
@@ -396,6 +431,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
+   public override bool isBotShip () { return true; }
+
    #region Private Variables
 
    // The Seeker that handles Pathfinding
@@ -437,7 +474,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    private List<Vector3> _currentPath;
 
    // The first and closest attacker that we've aggroed
-   private NetEntity _currentAttacker;
+   private uint _currentAttacker;
 
    // The generated mesh for showing the cone of aggro in the Editor
    private Mesh _editorConeAggroGizmoMesh;

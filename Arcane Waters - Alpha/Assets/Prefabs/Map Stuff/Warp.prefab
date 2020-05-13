@@ -171,6 +171,7 @@ MonoBehaviour:
   areaTarget: 
   spawnTarget: 0
   newFacingDirection: 1
+  arrow: {fileID: 114106990}
 --- !u!61 &5635096014128105181
 BoxCollider2D:
   m_ObjectHideFlags: 0

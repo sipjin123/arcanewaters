@@ -335,12 +335,15 @@ public class Util : MonoBehaviour {
       }
 
       Area area = AreaManager.self.getArea(Global.player.areaKey);
-      Grid grid = area.GetComponentInChildren<Grid>();
+      if (area == null) {
+         return false;
+      }
 
-      foreach (Tilemap tilemap in area.GetComponentsInChildren<Tilemap>()) {
-         if (tilemap.name.StartsWith("Land")) {
-            Vector3Int cellPos = grid.WorldToCell(pos);
-            TileBase tile = tilemap.GetTile(cellPos);
+      Vector3Int cellPos = area.worldToCell(pos);
+
+      foreach (TilemapLayer layer in area.getTilemapLayers()) {
+         if (layer.name.ToLower().StartsWith("mountain")) {
+            TileBase tile = layer.tilemap.GetTile(cellPos);
 
             if (tile != null) {
                return true;

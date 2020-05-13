@@ -11,8 +11,6 @@ public class ClientMessageManager : MonoBehaviour {
    #endregion
 
    public static void On_Redirect (NetworkConnection conn, RedirectMessage msg) {
-      D.debug("Received redirect message to " + msg.newIpAddress + ":" + msg.newPort);
-
       // If the address and port are the same, we just send another login request
       if (Util.isSameIpAddress(msg.newIpAddress, NetworkManager.singleton.networkAddress) && msg.newPort == MyNetworkManager.self.telepathy.port) {
          ClientManager.sendAccountNameAndUserId();

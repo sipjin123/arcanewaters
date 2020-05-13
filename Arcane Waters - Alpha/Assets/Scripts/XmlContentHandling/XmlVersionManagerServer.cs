@@ -97,7 +97,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    }
 
    private IEnumerator CO_GetXmlData () {
-      D.editorLog("Preparing to Process Files...", Color.cyan);
+      debugLog("Preparing to Process Files...", Color.cyan);
       yield return new WaitForSeconds(5);
       UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + LAST_UPDATED_GET);
       yield return www.SendWebRequest();
@@ -138,18 +138,14 @@ public class XmlVersionManagerServer : MonoBehaviour {
                      D.editorLog("Failed to convert: " + newGroup[1], Color.red);
                   }
 
-                  if (includeProgressInEditorLog) {
-                     D.editorLog(xmlTableName + "  There are saved files: Old:" + savedDate + " - New: " + serverDate, Color.cyan);
-                  }
+                  debugLog(xmlTableName + "  There are saved files: Old:" + savedDate + " - New: " + serverDate, Color.cyan);
 
                   if (serverDate > savedDate) {
                      shouldZipNewFiles = true;
                      PlayerPrefs.SetString(xmlTableName, serverDate.ToString());
-                     D.editorLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
+                     debugLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
                   } else {
-                     if (includeProgressInEditorLog) {
-                        D.editorLog("NO updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
-                     }
+                     debugLog("NO updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
                   }
                }
             }
@@ -205,11 +201,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
             serverMessage = "No new version, set as cached version: " + databaseVersion;
          }
 
-         try {
-            D.debug(serverMessage);
-         } catch {
-            D.editorLog(serverMessage, Color.cyan);
-         }
+         debugLog(serverMessage, Color.cyan);
       }
    }
 
@@ -280,13 +272,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       }
       currentProgress++;
 
-      if (includeProgressInEditorLog) {
-         try {
-            D.log(resultMessage + " (" + currentProgress + "/" + targetProgress + ")");
-         } catch {
-            D.editorLog(resultMessage + " (" + currentProgress + "/" + targetProgress + ")", Color.cyan);
-         }
-      }
+      debugLog(resultMessage + " (" + currentProgress + "/" + targetProgress + ")", Color.cyan);
       checkUploadProgress();
    }
 
@@ -305,10 +291,16 @@ public class XmlVersionManagerServer : MonoBehaviour {
       } else {
          // Grab the map data from the request
          string rawData = www.downloadHandler.text;
+         debugLog(rawData, Color.cyan);
+      }
+   }
+
+   private void debugLog (string message, Color color) {
+      if (includeProgressInEditorLog) {
          try {
-            D.log(rawData);
+            D.debug(message);
          } catch {
-            D.editorLog(rawData, Color.cyan);
+            D.editorLog(message, Color.cyan);
          }
       }
    }

@@ -225,8 +225,6 @@ public class MyNetworkManager : NetworkManager {
                conn.address, userObjects.isSinglePlayer, voyageId);
 
             if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.ourPort) {
-               D.editorLog("Best server is Not the Local Server: (" + bestServer.port + "), now Redirecting", Color.yellow);
-
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);
                conn.Send(redirectMessage);
@@ -263,7 +261,6 @@ public class MyNetworkManager : NetworkManager {
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             } else {
                // If we don't have the requested area, we need to create it now
-               D.debug($"Server does not have Area {previousAreaKey}, creating it now.");
                MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey);
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             }
@@ -449,6 +446,27 @@ public class MyNetworkManager : NetworkManager {
 
    public static Dictionary<int, NetEntity> getPlayers () {
       return _players;
+   }
+
+   public static T fetchNetEntityTypeFromNetIdentity<T>(uint netId) where T : NetEntity {
+      if (!NetworkIdentity.spawned.ContainsKey(netId)) {
+         return null;
+      }
+
+      NetworkIdentity identity = NetworkIdentity.spawned[netId];
+      NetworkBehaviour[] behaviours = identity.NetworkBehaviours;
+      T entity = null;
+
+      if (identity != null && behaviours != null) {
+         foreach (NetworkBehaviour behaviour in behaviours) {
+            entity = behaviour as T;
+            if (entity != null) {
+               break;
+            }
+         }
+      }
+
+      return entity;
    }
 
    #region Private Variables

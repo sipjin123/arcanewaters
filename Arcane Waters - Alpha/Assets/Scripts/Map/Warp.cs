@@ -17,6 +17,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The facing direction we should have after spawning
    public Direction newFacingDirection = Direction.South;
 
+   // The animated arrow
+   public GameObject arrow;
+
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -31,6 +34,10 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       _collider = GetComponent<BoxCollider2D>();
    }
 
+   void Start () {
+      InvokeRepeating("showOrHideArrow", Random.Range(0f, 1f), 0.5f);
+   }
+
    void OnTriggerEnter2D (Collider2D other) {
       NetEntity player = other.transform.GetComponent<NetEntity>();
 
@@ -39,16 +46,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       // If a player entered this warp on the server, move them
-      if (player.isServer && player.connectionToClient != null) {
-         // Check if a treasure site is controlling the warp in this instance
-         TreasureSite site;
-         if (_treasureSites.TryGetValue(player.instanceId, out site)) {
-            // Verify that the player is allowed to use the warp
-            if (site != null && !(VoyageManager.isInVoyage(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
-               return;
-            }
-         }
-
+      if (player.isServer && player.connectionToClient != null && canPlayerUseWarp(player)) {
          SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
          Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
          player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
@@ -115,12 +113,46 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
    }
 
+   private void showOrHideArrow () {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Check if the local player can use the warp
+      if (canPlayerUseWarp(Global.player)) {
+         if (!arrow.activeSelf) {
+            arrow.SetActive(true);
+         }
+      } else {
+         if (arrow.activeSelf) {
+            arrow.SetActive(false);
+         }
+      }
+   }
+
    public void setTreasureSite (int instanceId, TreasureSite treasureSite) {
       _treasureSites.Add(instanceId, treasureSite);
    }
 
    public void removeTreasureSite (int instanceId) {
       _treasureSites.Remove(instanceId);
+   }
+
+   private bool canPlayerUseWarp (NetEntity player) {
+      if (string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
+         return false;
+      }
+
+      // Check if a treasure site is controlling the warp in this instance
+      TreasureSite site;
+      if (_treasureSites.TryGetValue(player.instanceId, out site)) {
+         // Verify that the player is allowed to use the warp
+         if (site != null && !(VoyageManager.isInVoyage(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
+            return false;
+         }
+      }
+
+      return true;
    }
 
    #region Private Variables

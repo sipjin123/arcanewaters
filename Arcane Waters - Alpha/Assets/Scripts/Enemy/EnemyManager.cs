@@ -15,9 +15,11 @@ public class EnemyManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
+   }
 
+   public void Start () {
       // Create empty lists for each Area Type
-      foreach (string areaKey in Area.getAllAreaKeys()) {
+      foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          _spawners[areaKey] = new List<Enemy_Spawner>();
       }
    }

@@ -12,14 +12,14 @@ namespace MapCustomization
       // Bounds in which the mouse cursor has to be to interact with the prefab
       public Collider2D interactionCollider;
 
-      // Changes that the user is currently making and were not yet submitted to the server
-      public PrefabChanges unappliedChanges;
+      // State of the prefab that is set in map editor
+      public PrefabState mapEditorState;
 
-      // Last confirmed placement position of the prefab
-      public Vector2 anchorLocalPosition;
+      // State of the prefab after server-confirmed customizations are applied
+      public PrefabState customizedState;
 
-      // Position that is set in the map editor
-      public Vector2 mapEditorLocalPosition;
+      // Changes of state during user-end customization
+      public PrefabState unappliedChanges;
 
       #endregion
 
@@ -31,32 +31,30 @@ namespace MapCustomization
          _ren.color = new Color(_ren.color.r, _ren.color.g, _ren.color.b, semiTransparent ? SEMI_TRANSPARENT_ALPHA : 1f);
       }
 
-      public bool areChangesEmpty () {
-         return !unappliedChanges.isLocalPositionSet();
+      public bool anyUnappliedState () {
+         return unappliedChanges.isLocalPositionSet();
       }
 
-      public void clearChanges () {
-         unappliedChanges.clearLocalPosition();
-      }
+      public void revertUnappliedChanges () {
+         transform.localPosition = customizedState.localPosition;
 
-      public void revertChanges () {
-         transform.localPosition = anchorLocalPosition;
-
-         clearChanges();
+         unappliedChanges.clearAll();
       }
 
       public void revertToMapEditor () {
-         transform.localPosition = mapEditorLocalPosition;
+         transform.localPosition = mapEditorState.localPosition;
 
-         clearChanges();
+         customizedState = mapEditorState;
+
+         unappliedChanges.clearAll();
       }
 
-      public void submitChanges () {
+      public void submitUnappliedChanges () {
          if (unappliedChanges.isLocalPositionSet()) {
-            anchorLocalPosition = unappliedChanges.localPosition;
+            customizedState.localPosition = unappliedChanges.localPosition;
          }
 
-         revertChanges();
+         revertUnappliedChanges();
       }
 
       #region Private Variables
