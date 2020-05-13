@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using System.Linq;
 
 public class ShipAbilityManager : MonoBehaviour {
    #region Public Variables
@@ -37,8 +38,9 @@ public class ShipAbilityManager : MonoBehaviour {
                   TextAsset newTextAsset = new TextAsset(rawData.rawXmlData);
                   ShipAbilityData shipAbilityData = Util.xmlLoad<ShipAbilityData>(newTextAsset);
 
-                  if (!_shipAbilityData.ContainsKey(rawData.xmlId)) {
-                     _shipAbilityData.Add(rawData.xmlId, shipAbilityData);
+                  if (!shipAbilityDataList.Exists(_=>_.abilityId == rawData.xmlId)) {
+                     shipAbilityData.abilityId = rawData.xmlId;
+
                      shipAbilityDataList.Add(new ShipAbilityPair { 
                         abilityId = rawData.xmlId,
                         abilityName = shipAbilityData.abilityName,
@@ -57,9 +59,10 @@ public class ShipAbilityManager : MonoBehaviour {
       if (!hasInitialized) {
          shipAbilityDataList = new List<ShipAbilityPair>();
          foreach (ShipAbilityPair data in dataCollection) {
-            if (!_shipAbilityData.ContainsKey(data.abilityId)) {
-               _shipAbilityData.Add(data.abilityId, data.shipAbilityData);
-               this.shipAbilityDataList.Add(new ShipAbilityPair { 
+            if (!shipAbilityDataList.Exists(_=>_.abilityId == data.abilityId)) {
+               data.shipAbilityData.abilityId = data.abilityId;
+
+               shipAbilityDataList.Add(new ShipAbilityPair { 
                   abilityName = data.abilityName,
                   abilityId = data.abilityId,
                   shipAbilityData = data.shipAbilityData
@@ -72,7 +75,12 @@ public class ShipAbilityManager : MonoBehaviour {
    }
 
    public ShipAbilityData getAbility (int id) {
-      return _shipAbilityData[id];
+      ShipAbilityPair shipAbility = shipAbilityDataList.Find(_ => _.shipAbilityData.abilityId == id);
+      if (shipAbility == null) {
+         D.editorLog("Missing ability: " + id, Color.red);
+         return shipAbilityDataList[0].shipAbilityData;
+      }
+      return shipAbility.shipAbilityData;
    }
 
    public ShipAbilityData getAbility (Attack.Type attackType) {
@@ -105,9 +113,6 @@ public class ShipAbilityManager : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // The cached data 
-   private Dictionary<int, ShipAbilityData> _shipAbilityData = new Dictionary<int, ShipAbilityData>();
 
    #endregion
 }

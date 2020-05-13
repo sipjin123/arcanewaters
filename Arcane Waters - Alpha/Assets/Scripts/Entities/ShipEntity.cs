@@ -258,20 +258,8 @@ public class ShipEntity : SeaEntity
       EffectManager.createDynamicEffect(shipAbilityData.castSpritePath, startPos, shipAbilityData.abilitySpriteFXPerFrame);
 
       // Create a cannon ball
-      CannonBall ball = Instantiate(PrefabsManager.self.getCannonBallPrefab(attackType), startPos, Quaternion.identity);
-      ball.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude);
-
-      string projectilePath = ShipAbilityManager.self.getAbility(attackType).projectileSpritePath;
-      if (projectilePath != "") {
-         Sprite[] spriteArray = ImageManager.getSprites(projectilePath);
-         if (spriteArray.Length == 1) {
-            ball.staticSprite.gameObject.SetActive(true);
-            ball.staticSprite.sprite = spriteArray[0];
-         } else {
-            ball.animatedSprite.gameObject.SetActive(true);
-            ball.animatedSprite.sprite = spriteArray[0];
-         }
-      }
+      GenericSeaProjectile ball = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);
+      ball.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude, shipAbilityData.abilityId);
 
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;

@@ -41,8 +41,8 @@ public class PrefabsManager : MonoBehaviour {
    public GameObject cropPickupPrefab;
 
    [Header("Sea Combat Projectiles")]
-   // The Prefab we use for creating venom projectiles
-   public VenomProjectile venomPrefab;
+   // The Prefab we use for creating dynamic projectiles
+   public GenericSeaProjectile seaEntityProjectile;
 
    // The Prefab we use for creating venom sticky residue
    public GameObject venomStickyPrefab;
@@ -52,24 +52,6 @@ public class PrefabsManager : MonoBehaviour {
 
    // The Prefab we use for creating lightning chain
    public LightningBoltScript lightningChainPrefab;
-
-   // The Prefab we use for creating shockball projectiles
-   public ShockballProjectile shockballPrefab;
-
-   // The Prefab we use for creating boulder projectiles
-   public GameObject boulderPrefab;
-
-   // The Prefab we use for creating mini boulder projectiles
-   public BoulderProjectile miniBoulderPrefab;
-
-   // The Prefab we use for creating cannon balls
-   public CannonBall cannonBallPrefab;
-
-   // The Prefab we use for creating ice cannon balls
-   public CannonBall cannonBallIcePrefab;
-
-   // The Prefab we use for creating air cannon balls
-   public CannonBall cannonBallAirPrefab;
 
    // The Prefab we use for creating tentacle collision effects
    public GameObject tentacleCollisionPrefab;
@@ -84,11 +66,8 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating networked cannon balls
    public GameObject networkedCannonBallPrefab;
 
-   // The Prefab we use for creating networked venom projectiles
-   public GameObject networkedVenomProjectilePrefab;
-
-   // The Prefab we use for creating tentacle projectiles
-   public TentacleProjectile tentacleProjectilePrefab;
+   // The Prefab we use for creating network projectiles
+   public GameObject networkProjectilePrefab;
 
    [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
@@ -174,49 +153,6 @@ public class PrefabsManager : MonoBehaviour {
 
    protected void Awake () {
       self = this;
-   }
-
-   public CannonBall getCannonBallPrefab (Attack.Type attackType) {
-      return cannonBallPrefab;
-
-      // TODO: Temporary disable cannon ball variety
-      /*
-      switch (attackType) {
-         case Attack.Type.Ice:
-            return cannonBallIcePrefab;
-         case Attack.Type.Air:
-            return cannonBallAirPrefab;
-         default:
-            return cannonBallPrefab;
-      }*/
-   }
-
-   public VenomProjectile getVenomPrefab (Attack.Type attackType) {
-      switch (attackType) {
-         default:
-            return venomPrefab;
-      }
-   }
-
-   public ShockballProjectile getShockballPrefab (Attack.Type attackType) {
-      switch (attackType) {
-         default:
-            return shockballPrefab;
-      }
-   }
-
-   public BoulderProjectile getMiniBoulderPrefab (Attack.Type attackType) {
-      switch (attackType) {
-         default:
-            return miniBoulderPrefab;
-      }
-   }
-
-   public TentacleProjectile getTentacleProjectilePrefab (Attack.Type attackType) {
-      switch (attackType) {
-         default:
-            return tentacleProjectilePrefab;
-      }
    }
 
    public ShipDamageText getTextPrefab (Attack.Type attackType) {

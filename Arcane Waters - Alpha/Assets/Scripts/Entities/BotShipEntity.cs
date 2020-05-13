@@ -307,7 +307,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          // If the requested spot is not in the allowed area, reject the request
          if (isInRange(spot)) {
-            fireAtSpot(spot, Attack.Type.Cannon, 0, 0, transform.position);
+            ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
+            fireAtSpot(spot, shipAbilityData.abilityId, 0, 0, transform.position);
 
             return;
          }

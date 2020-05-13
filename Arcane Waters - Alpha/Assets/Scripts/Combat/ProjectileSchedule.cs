@@ -29,5 +29,8 @@ public class ProjectileSchedule
    // A flag to determine if the schedule should be disposed
    public bool dispose;
 
+   // The ability id of the attack
+   public int attackAbilityId;
+
    #endregion
 }

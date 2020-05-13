@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class PlayerShipEntity : ShipEntity {
    #region Public Variables
@@ -289,7 +290,15 @@ public class PlayerShipEntity : ShipEntity {
       // Create the cannon ball object from the prefab
       GameObject ballObject = Instantiate(PrefabsManager.self.networkedCannonBallPrefab, this.transform.position, Quaternion.identity);
       NetworkedCannonBall netBall = ballObject.GetComponent<NetworkedCannonBall>();
-      netBall.init(this.userId, this.instanceId, currentImpactMagnitude);
+
+      int abilityId = -1;
+      if (shipAbilities.ShipAbilities.Length > 0) {
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities.ShipAbilities[0]);
+         if (shipAbilityData != null) {
+            abilityId = shipAbilityData.abilityId;
+         }
+      } 
+      netBall.init(this.userId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position);
 
       // Add velocity to the ball
       netBall.body.velocity = velocity;

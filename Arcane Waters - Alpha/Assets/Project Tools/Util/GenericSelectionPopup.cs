@@ -160,7 +160,7 @@ public class GenericSelectionPopup : MonoBehaviour
       string shipAbilityEffectPath = "Assets/Sprites/Effects/";
       setupSpriteContent(shipAbilityEffectSpriteList, shipAbilityEffectPath);
 
-      string cannonSpritePath = "Assets/Sprites/Cannon/";
+      string cannonSpritePath = "Assets/Sprites/Projectiles/";
       setupSpriteContent(cannonSpriteList, cannonSpritePath);
 
       string shopIconPath = "Assets/Sprites/Icons/";

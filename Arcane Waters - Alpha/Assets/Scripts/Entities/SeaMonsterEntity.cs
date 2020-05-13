@@ -359,6 +359,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // Check where the attacker currently is
       Vector2 spot = targetEntity.transform.position;
 
+      // TODO: Setup a more efficient method for attack type setup
+      if (seaMonsterData.skillIdList.Count > 0) {
+         ShipAbilityData seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+         if (seaEntityAbilityData != null) {
+            seaMonsterData.attackType = seaEntityAbilityData.selectedAttackType;
+         }
+      }
+
       if (seaMonsterData.attackType != Attack.Type.None) {
          if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
             meleeAtSpot(spot, seaMonsterData.attackType);
@@ -367,7 +375,13 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             planNextMove();
          } else {
             if (seaMonsterData.isRanged) {
-               launchProjectile(spot, targetEntity.GetComponent<SeaEntity>(), seaMonsterData.attackType, .2f, .4f);
+               int abilityId = -1;
+               if (seaMonsterData.skillIdList.Count > 0) {
+                  ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+                  abilityId = shipAbility.abilityId;
+               }
+
+               launchProjectile(spot, targetEntity.GetComponent<SeaEntity>(), abilityId, .2f, .4f);
                monsterBehavior = MonsterBehavior.AttackTarget;
             }
          }
@@ -641,7 +655,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   protected void launchProjectile (Vector2 spot, SeaEntity attacker, Attack.Type attackType, float attackDelay, float launchDelay) {
+   protected void launchProjectile (Vector2 spot, SeaEntity attacker, int abilityId, float attackDelay, float launchDelay) {
       this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker, transform.position);
 
       int accuracy = Random.Range(1, 4);
@@ -662,7 +676,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             spawnPosition = _projectileSpawnLocation.position;
          }
       }
-      fireAtSpot(targetLoc, attackType, attackDelay, launchDelay, spawnPosition);
+      fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
 
       isEngaging = true;
 

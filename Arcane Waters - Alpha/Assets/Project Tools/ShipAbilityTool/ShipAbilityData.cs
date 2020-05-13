@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using System.Xml.Serialization;
 
 [Serializable]
 public class ShipAbilityData
 {
+   // The ability Id
+   public int abilityId;
+
    // The name of the ability
    public string abilityName;
 
@@ -64,6 +68,30 @@ public class ShipAbilityData
 
    // The strength of the impact
    public Attack.ImpactMagnitude impactMagnitude = Attack.ImpactMagnitude.None;
+
+   // Determines if the projectile is arching
+   public bool hasArch;
+
+   // Adjusts the height of the projectile sprite based in an arch
+   public bool syncHeightToArch = true;
+
+   // Determines if this projectile has a trail
+   public bool hasTrail;
+
+   // Maximum lifespan of this projectile
+   public float lifeTime = 1;
+
+   // Launches a split attack after a certain number of attack
+   public bool splitsAfterAttackCap;
+
+   // The number of attacks before the projectile launches a split attack
+   public int splitAttackCap = -1;
+
+   // The status effect per collision
+   public int statusType;
+
+   // The duration of the status
+   public float statusDuration = 1;
 
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
       if (normalizedValue < .33f) {
