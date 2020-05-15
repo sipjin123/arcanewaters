@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using DG.Tweening;
 
 public class CharacterSpot : ClientMonoBehaviour {
    #region Public Variables
@@ -23,7 +24,16 @@ public class CharacterSpot : ClientMonoBehaviour {
    // The character delete Button for this spot
    public Button charDeleteButton;
 
+   // The transform values for the camera when creating a character for this spot
+   public Transform spotCamera;
+
    #endregion
+
+   private void Awake () {
+      _spotCameraSettings = new VirtualCameraSettings();
+      _spotCameraSettings.position = spotCamera.position;
+      _spotCameraSettings.ppuScale = MyCamera.CHARACTER_CREATION_PPU_SCALE;
+   }
 
    void Update () {
       charCreateButton.transform.parent.gameObject.SetActive(character == null);
@@ -76,6 +86,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Create a new character at this spot
       OfflineCharacter offlineChar = Instantiate(CharacterScreen.self.offlineCharacterPrefab, this.transform.position, Quaternion.identity);
       offlineChar.creationMode = true;
+      offlineChar.spot = this;
 
       // Set up the initial values
       UserInfo userInfo = new UserInfo();
@@ -97,16 +108,11 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2);
 
+      CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
+         SpotFader.self.closeSpotTowardsPosition(offlineChar.transform.position);
+      });
+
       this.assignCharacter(offlineChar);
-   }
-
-   public void doneCreatingCharacterButtonWasPressed () {
-      // Temporarily turn off the buttons
-      StartCoroutine(CO_temporarilyDisableInput());
-
-      // Send the creation request to the server
-      NetworkClient.Send(new CreateUserMessage(Global.netId,
-         character.getUserInfo(), character.armor.getType(), character.armor.getColor1(), character.armor.getColor2()));
    }
 
    protected void sendDeleteUserRequest (int userId) {
@@ -126,6 +132,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    #region Private Variables
+
+   // The camera settings to focus on this spot
+   private VirtualCameraSettings _spotCameraSettings;
 
    #endregion
 }

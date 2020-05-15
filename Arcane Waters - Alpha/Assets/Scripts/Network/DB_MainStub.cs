@@ -135,6 +135,16 @@ public class DB_MainStub : MonoBehaviour {
       return new List<XMLPair>();
    }
 
+   public static List<Perk> getPerkPointsForUser (int usrId) {
+      return new List<Perk>();
+   }
+
+   public static void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
+   }
+
+   public static void addPerkPointsForUser (int usrId, List<Perk> perks) {
+   }
+
    public static void upsertBook (string content, string title, int bookId) {
    }
 

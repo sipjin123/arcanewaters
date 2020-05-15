@@ -18,10 +18,30 @@ public class BottomBar : MonoBehaviour {
    }
 
    private void Update () {
+      if (Global.player == null) {
+         return;
+      }
+
       mapCustomizationButton.gameObject.SetActive(
-         Global.player != null &&
          OwnedMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
          !MapCustomizationManager.isCustomizing);
+
+      // Disable the bottom bar buttons when the area is being loaded
+      if (!AreaManager.self.hasArea(Global.player.areaKey)) {
+         if (_areButtonsActive) {
+            foreach (Button button in GetComponentsInChildren<Button>()) {
+               button.interactable = false;
+            }
+            _areButtonsActive = false;
+         }
+      } else {
+         if (!_areButtonsActive) {
+            foreach (Button button in GetComponentsInChildren<Button>()) {
+               button.interactable = true;
+            }
+            _areButtonsActive = true;
+         }
+      }
    }
 
    public void toggleCharacterInfoPanel () {
@@ -155,6 +175,9 @@ public class BottomBar : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // Gets set to true when the bar buttons are interactable
+   private bool _areButtonsActive = true;
 
    #endregion
 }

@@ -55,6 +55,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // The Faction we've chosen
    public Faction.Type faction = Faction.Type.Neutral;
 
+   // The spot this character is in
+   public CharacterSpot spot;
+
    #endregion
 
    private void Start () {
@@ -141,13 +144,6 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    public void cancelCreating () {
       Destroy(this.gameObject);
-   }
-
-   public void doneCreating () {
-      CharacterSpot spot = GetComponentInParent<CharacterSpot>();
-
-      // Send a request to the server
-      spot.doneCreatingCharacterButtonWasPressed();
    }
 
    public UserInfo getUserInfo () {

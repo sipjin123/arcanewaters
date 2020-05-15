@@ -178,6 +178,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
          return;
       }
 
+      // Hide the voyage group invite panel, if opened
+      VoyageManager.self.refuseVoyageInvitation();
+
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();
 

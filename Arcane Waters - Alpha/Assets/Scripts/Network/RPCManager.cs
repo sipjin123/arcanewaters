@@ -1362,11 +1362,13 @@ public class RPCManager : NetworkBehaviour {
          }
 
          bool canInteractDialogue = true;
-         foreach (QuestActionRequirement questRequirements in destinationNode.actionRequirements) {
-            AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
-            AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
-            if (userAchievement == null) {
-               canInteractDialogue = false;
+         if (destinationNode.actionRequirements != null) {
+            foreach (QuestActionRequirement questRequirements in destinationNode.actionRequirements) {
+               AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
+               AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
+               if (userAchievement == null) {
+                  canInteractDialogue = false;
+               }
             }
          }
 

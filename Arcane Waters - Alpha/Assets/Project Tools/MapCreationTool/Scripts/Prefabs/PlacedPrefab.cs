@@ -75,10 +75,16 @@ namespace MapCreationTool
       }
 
       public void setData (string key, string value) {
-         if (data.ContainsKey(key)) {
-            data[key] = value;
+         if (value == null) {
+            if (data.ContainsKey(key)) {
+               data.Remove(key);
+            }
          } else {
-            data.Add(key, value);
+            if (data.ContainsKey(key)) {
+               data[key] = value;
+            } else {
+               data.Add(key, value);
+            }
          }
       }
 

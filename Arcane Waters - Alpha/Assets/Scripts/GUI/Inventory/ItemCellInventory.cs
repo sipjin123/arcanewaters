@@ -29,8 +29,6 @@ public class ItemCellInventory : ItemCell, IPointerDownHandler, IPointerEnterHan
    public void OnPointerDown (PointerEventData eventData) {
       if (_interactable) {
          if (eventData.button == PointerEventData.InputButton.Left) {
-            InventoryPanel.self.hideContextMenu();
-
             // Wait until the mouse has moved a little before start dragging
             // This is to avoid interference with double click
             StartCoroutine(trackDrag(Input.mousePosition));

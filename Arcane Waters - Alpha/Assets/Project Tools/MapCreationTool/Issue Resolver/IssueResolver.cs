@@ -19,7 +19,9 @@ namespace MapCreationTool.IssueResolving
 
       private static List<Map> maps;
       private static ConcurrentQueue<MapVersion> scheduledForResolve;
-      private static List<Task> runningTasks;
+      private static ConcurrentQueue<(Action action, string mapName)> scheduledUpload;
+      private static List<Task> downloadTasks;
+      private static List<Task> uploadTasks;
       private static int resolvedMaps;
       private static string rootReportFolder;
       private static List<MapSummary> mapSummaries;
@@ -43,8 +45,10 @@ namespace MapCreationTool.IssueResolving
          IssueResolver.createNewVersion = createNewVersion;
          running = true;
          scheduledForResolve = new ConcurrentQueue<MapVersion>();
+         scheduledUpload = new ConcurrentQueue<(Action, string)>();
          resolvedMaps = 0;
-         runningTasks = new List<Task>();
+         downloadTasks = new List<Task>();
+         uploadTasks = new List<Task>();
          rootReportFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Issue Resolver " + DateTime.Now.ToString("MMMM dd H.mm.ss");
          mapSummaries = new List<MapSummary>();
 
@@ -66,7 +70,7 @@ namespace MapCreationTool.IssueResolving
          UI.loadingPanel.display("Resolving Issues");
 
          Utilities.doBackgroundTask(
-            () => maps = DB_Main.getMaps().ToList(),
+            () => maps = DB_Main.getMaps().Where(m => m.editorType == EditorType.Sea).ToList(),
             receivedMaps,
             encounteredError
          );
@@ -76,10 +80,11 @@ namespace MapCreationTool.IssueResolving
          // Download all latest map versions
          foreach (Map map in maps) {
             Task task = Utilities.doBackgroundTask(() => scheduledForResolve.Enqueue(DB_Main.getLatestMapVersionEditor(map)), null, encounteredError);
-            runningTasks.Add(task);
+            downloadTasks.Add(task);
          }
 
          instance.StartCoroutine(instance.resolveMapsRoutine());
+         instance.StartCoroutine(instance.controlUploadTasks());
       }
 
 
@@ -117,19 +122,16 @@ namespace MapCreationTool.IssueResolving
                int misusedAfterCount = 0;
                doIOAction(() => File.WriteAllBytes(mapDirectory + @"\" + "after.png", ScreenRecorder.recordPng()));
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "after misused tiles.txt", getMisusedTilesReport(tileDataDictionary, out misusedAfterCount)));
+               doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "removed data fields.txt", getRemovedDataFieldsReport(resolvingResult)));
 
                if (saveMaps && resolvingResult?.exception == null) {
                   MapVersion newVersion = serializeVersion();
                   if (createNewVersion) {
-                     Task uploadTask = Utilities.doBackgroundTask(() => DB_Main.createNewMapVersion(newVersion), null,
-                        logException(newVersion.map.name + "_uploadError.txt", "There was an error uploading the version:"));
-                     runningTasks.Add(uploadTask);
+                     scheduledUpload.Enqueue((() => DB_Main.createNewMapVersion(newVersion), newVersion.map.name));
                   } else {
                      newVersion.version = DrawBoard.loadedVersion.version;
                      newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
-                     Task uploadTask = Utilities.doBackgroundTask(() => DB_Main.updateMapVersion(newVersion), null,
-                        logException(newVersion.map.name + "_uploadError.txt", "There was an error uploading the version:"));
-                     runningTasks.Add(uploadTask);
+                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion), newVersion.map.name));
                   }
                }
 
@@ -157,7 +159,8 @@ namespace MapCreationTool.IssueResolving
             IssueResolvingResult result = new IssueResolvingResult {
                layerChanges = replaceTileLayers(),
                tilesToPrefabChanges = replaceTilesWithPrefabs(),
-               removedUnnecessaryTiles = removeUnnecessaryTiles()
+               removedUnnecessaryTiles = removeUnnecessaryTiles(),
+               removedDataFields = removeMissingDataFields()
             };
 
             return result;
@@ -262,6 +265,27 @@ namespace MapCreationTool.IssueResolving
          return result;
       }
 
+      public static List<string> removeMissingDataFields () {
+         List<string> result = new List<string>();
+
+         foreach (PlacedPrefab pref in DrawBoard.instance.prefabsBetween(new Vector3(-1000, -1000, 0), new Vector3(1000, 1000, 0))) {
+            if (issueContainer.removedDataFields.TryGetValue(pref.original, out HashSet<string> removedFields)) {
+               List<string> keysToRemove = new List<string>();
+               foreach (string key in pref.data.Keys) {
+                  if (removedFields.Contains(key)) {
+                     keysToRemove.Add(key);
+                  }
+               }
+
+               foreach (string key in keysToRemove) {
+                  DrawBoard.instance.setPrefabData(pref, key, null, false);
+                  result.Add(pref.placedInstance.name + ": " + key);
+               }
+            }
+         }
+
+         return result;
+      }
       private static string toStringLines<T> (IEnumerable<T> collection, string beforeEachLine = "") {
          return string.Join(Environment.NewLine, collection.Select(e => beforeEachLine + e.ToString())) + Environment.NewLine;
       }
@@ -270,6 +294,18 @@ namespace MapCreationTool.IssueResolving
          var misuedTiles = getMisusedTiles(tileDataDictionary);
          misuedCount = misuedTiles.Item1.Count + misuedTiles.Item2.Count;
          return toStringLines(misuedTiles.Item1, "Missing from palette: ") + toStringLines(misuedTiles.Item2, "Incorrect layer: ");
+      }
+
+      private static string getRemovedDataFieldsReport (IssueResolvingResult? resolveResult) {
+         if (resolveResult == null) {
+            return "Resolver didn't run";
+         }
+
+         if (resolveResult.Value.exception != null) {
+            return "Resolver encountered an exception: \n" + resolveResult.Value.exception;
+         }
+
+         return string.Join(Environment.NewLine, resolveResult.Value.removedDataFields);
       }
 
       private static (List<PlacedTile>, List<PlacedTile>) getMisusedTiles (Dictionary<TileBase, PaletteTilesData.TileData> tileDataDictionary) {
@@ -341,9 +377,22 @@ namespace MapCreationTool.IssueResolving
          }
       }
 
+      private IEnumerator controlUploadTasks () {
+         while (runningUploadTasks > 0 || runningDownloadTasks > 0 || scheduledUpload.Count > 0 || resolvedMaps < maps.Count) {
+            yield return new WaitForEndOfFrame();
+            if (runningUploadTasks < 2 && scheduledUpload.Count > 0) {
+               if (scheduledUpload.TryDequeue(out (Action, string) job)) {
+                  Task task = Utilities.doBackgroundTask(job.Item1, null,
+                     logException(job.Item2 + "_uploadError.txt", "There was an error uploading the version:"));
+                  uploadTasks.Add(task);
+               }
+            }
+         }
+      }
+
       private IEnumerator waitForEndOfUpload () {
-         while (notEndedTasks > 0) {
-            UI.loadingPanel.display($"Resolving Issues - waiting for maps to finish uploading - { notEndedTasks }");
+         while (runningUploadTasks > 0 || scheduledUpload.Count > 0) {
+            UI.loadingPanel.display($"Resolving Issues - waiting for maps to finish uploading - { runningUploadTasks + scheduledUpload.Count }");
             yield return new WaitForEndOfFrame();
          }
 
@@ -367,9 +416,14 @@ namespace MapCreationTool.IssueResolving
          };
       }
 
-      private static int notEndedTasks
+      private static int runningDownloadTasks
       {
-         get { return runningTasks.Count(t => !t.HasEnded); }
+         get { return downloadTasks.Count(t => !t.HasEnded); }
+      }
+
+      private static int runningUploadTasks
+      {
+         get { return uploadTasks.Count(t => !t.HasEnded); }
       }
 
       private static Action<Exception> logException (string fileName, string header) {
@@ -385,7 +439,7 @@ namespace MapCreationTool.IssueResolving
             return (ex) => {
                UI.loadingPanel.close();
                UI.messagePanel.displayError("Encountered an error while resolving issues:\n" + ex.ToString());
-               foreach (Task task in runningTasks) {
+               foreach (Task task in downloadTasks.Union(uploadTasks)) {
                   if (!task.HasEnded) {
                      task.Abort();
                   }
@@ -418,6 +472,7 @@ namespace MapCreationTool.IssueResolving
          public List<LayerChangeResult> layerChanges { get; set; }
          public List<TilesToPrefabChangeResult> tilesToPrefabChanges { get; set; }
          public List<PlacedTile> removedUnnecessaryTiles { get; set; }
+         public List<string> removedDataFields { get; set; }
 
          public string formReport () {
             if (exception != null) {
@@ -474,11 +529,12 @@ namespace MapCreationTool.IssueResolving
                "Attempted to change layer of " + resolvedTileWrongLayers + " tiles" + Environment.NewLine +
                "Added " + resolvedPrefabsFromTiles + " prefabs instead of " + removedTilesForPrefabs + " tiles" + Environment.NewLine +
                "Removed " + removedUnnecessaryTiles + " unnecessary tiles" + Environment.NewLine +
+               "Removed " + removedDataFields + " missing data fields" + Environment.NewLine +
                new string('=', 100) + Environment.NewLine;
          }
 
          public string toShortSummary () {
-            int resolvedIssues = resolvedTileWrongLayers + resolvedPrefabsFromTiles + removedUnnecessaryTiles;
+            int resolvedIssues = resolvedTileWrongLayers + resolvedPrefabsFromTiles + removedUnnecessaryTiles + removedDataFields;
             return mapName + " - " + misuedTilesBeforeResolving + "->" + misuedTilesAfterResolving +
                " misusedTiles. Resolver: " + issueResolverStatus() + ", detected " + resolvedIssues + " issues";
          }
@@ -507,6 +563,15 @@ namespace MapCreationTool.IssueResolving
             {
                return issueResolvingResult == null || issueResolvingResult.Value.exception != null ? 0
                   : issueResolvingResult.Value.tilesToPrefabChanges.Count;
+            }
+         }
+
+         public int removedDataFields
+         {
+            get
+            {
+               return issueResolvingResult == null || issueResolvingResult.Value.exception != null ? 0
+                  : issueResolvingResult.Value.removedDataFields.Count;
             }
          }
 

@@ -4,17 +4,53 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using DG.Tweening;
+using TMPro;
 
-public class CharacterCreationPanel : ClientMonoBehaviour {
+public class CharacterCreationPanel : ClientMonoBehaviour
+{
    #region Public Variables
+
+   // The different sections in the screen
+   public enum Section
+   {
+      Appearance = 1,
+      Questions = 2
+   }
+
+   // The text to display on the "next" button to indicate there are more steps after the current one
+   public const string NEXT_STEP_BUTTON_TEXT = "Next";
+
+   // The text to display on the "next" button to indicate confirming the answer will finish the questionnaire
+   public const string CONFIRM_QUESTIONNAIRE_BUTTON_TEXT = "Finish";
+
+   // The text to display on the "back" button to indicate the player can go to the previous step
+   public const string BACK_STEP_BUTTON_TEXT = "Back";
+
+   // The text to display on the "back" button to indicate clicking it will cancel character creation
+   public const string CANCEL_CREATION_BUTTON_TEXT = "Cancel";
+
+   // The time (in seconds) for the moving panel animations
+   public const float WINDOW_TRANSITION_TIME = 0.25f;
+
+   [Header("References")]
+   // The button to go to the next screen
+   public Button nextButton;
+
+   // The button to go to the previous screen
+   public Button backButton;
+
+   // The button to skip the perk questions
+   public Button skipButton;
+
+   // The text of the "next"/"finish" button
+   public Text nextButtonText;
+
+   // The text of the "back"/"cancel" button
+   public Text backButtonText;
 
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
-
-   // Icons we manage
-   public Image classIcon;
-   public Image specialtyIcon;
-   public Image factionIcon;
 
    // Our toggle groups
    public ToggleGroup hairGroup1;
@@ -24,19 +60,26 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
    public ToggleGroup eyeGroup1;
 
    // The Text that contains our name
-   public Text nameText;
+   public InputField nameText;
 
-   // The Text that contains our class type
-   public Text classText;
-   public Text classDescriptionText;
+   // The perk questions screen
+   public CharacterCreationQuestionsScreen questionsScreen;
 
-   // The Text that contains our specialty
-   public Text specialtyText;
-   public Text specialtyDescriptionText;
+   // The appearance screen
+   public GameObject appearanceScreen;
 
-   // The Text that contains our faction
-   public Text factionText;
-   public Text factionDescriptionText;
+   [Header("Settings")]
+   // The color for the background of the spot
+   public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
+
+   // The material used for the "cancel" button
+   public Material cancelButtonMaterial;
+
+   // The material used for the "confirm" button
+   public Material confirmButtonMaterial;
+
+   // The material used for buttons when they're not cancel/confirm
+   public Material generalButtonMaterial;
 
    // Self
    public static CharacterCreationPanel self;
@@ -47,21 +90,56 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       base.Awake();
 
       self = this;
+
+      // Get the RectTransforms of our different screens to animate them
+      _rectTransform = transform as RectTransform;
+      _appearanceScreenRectTransform = appearanceScreen.transform as RectTransform;
    }
 
-   private void Update () {
-      // By default, hide the character creation canvas group
+   private void Start () {
+      // Only enable the "next" button if the name is valid
+      nameText.onValueChanged.AddListener((name) => {
+         nextButton.interactable = NameUtil.isValid(name);
+      });
+
+      questionsScreen.gameObject.SetActive(false);
+      initializeValues();
+      hide();
+   }
+
+   private void initializeValues () {
+      _leftPanelPosition = -_appearanceScreenRectTransform.rect.width;
+      _rightPanelPosition = questionsScreen.rectTransform.rect.width;
+            
+      questionsScreen.rectTransform.anchoredPosition = new Vector2(_rightPanelPosition, questionsScreen.rectTransform.anchoredPosition.y);
+      _appearanceScreenRectTransform.anchoredPosition = Vector2.zero;
+
+      // "Next" button is disabled by default
+      nextButton.interactable = false;
+
+      // The "Skip" button isn't shown until the perk questions step
+      skipButton.gameObject.SetActive(false);
+
+      // Set up our next/back buttons
+      setNextButtonToNormal();
+      setBackButtonToCancel();
+
+      // Clear the name input field
+      nameText.text = "";
+
+      canvasGroup.alpha = 1;
+      canvasGroup.interactable = true;
+
+      _currentSection = Section.Appearance;
+   }
+
+   private void show () {
+      initializeValues();
+      Util.enableCanvasGroup(this.canvasGroup);
+   }
+
+   private void hide () {
       Util.disableCanvasGroup(this.canvasGroup);
-
-      // If the Character screen is not showing, we don't need to do anything
-      if (!CharacterScreen.self.isShowing()) {
-         return;
-      }
-
-      // If a character is being created, then we show the panel
-      if (_char != null && _char.creationMode) {
-         Util.enableCanvasGroup(this.canvasGroup);
-      }
    }
 
    public void setCharacterBeingCreated (OfflineCharacter offlineChar) {
@@ -69,34 +147,136 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
       this.genderSelected((int) _char.genderType);
 
-      if (!XmlVersionManagerClient.self.isInitialized) {
-         // Wait for the xml setup to finish
-         XmlVersionManagerClient.self.finishedLoadingXmlData.AddListener(() => {
-            D.editorLog("Finished loading Xml Data, proceed to class setup", Color.cyan);
-            changeClass(0);
-            changeSpecialty(0);
-            changeFaction(0);
-         });
-      } else {
-         // Update the text for our selections
-         changeClass(0);
-         changeSpecialty(0);
-         changeFaction(0);
-      }
+      questionsScreen.gameObject.SetActive(true);
+      questionsScreen.startQuestionnaire();
+
+      SpotFader.self.setColor(circleFaderBackgroundColor);
+
+      show();
    }
 
-   public void doneCreatingCharacterButtonWasPressed () {
-      // Temporarily turn off the buttons
-      StartCoroutine(CO_temporarilyDisableInput());
+   public void submitCharacterCreation (bool ignorePerkQuestions = false) {
+      questionsScreen.gameObject.SetActive(false);
+      this.canvasGroup.interactable = false;
+      this.canvasGroup.alpha = 0;
+
+      SpotFader.self.doCircleFade(_char.transform.position, Color.black, true, -1, true);
+            
+      List<int> chosenAnswers = questionsScreen.chosenAnswers;
+
+      // If the perk questions are skipped, send a list with "unassigned perk" values
+      if (ignorePerkQuestions) {
+         chosenAnswers = new List<int>();
+
+         for (int i = 0; i < questionsScreen.questions.Count; i++) {
+            chosenAnswers.Add(-1);
+         }
+      }
 
       // Send the creation request to the server
       NetworkClient.Send(new CreateUserMessage(Global.netId,
-         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getColor1(), _char.armor.getColor2()));
+         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getColor1(), _char.armor.getColor2(), chosenAnswers));
+   }
+
+   public void onNextButtonClicked () {
+      if (_currentSection == Section.Appearance) {
+         goToQuestions();
+      } else {
+         questionsScreen.confirmAnswerClicked();
+      }
+   }
+
+   public void onBackButtonClicked () {
+      if (_currentSection == Section.Questions) {
+         questionsScreen.previousQuestionClicked();
+      } else {
+         PanelManager.self.showConfirmationPanel("Are you sure you want to cancel the character creation?", () => cancelCreating());
+      }
+   }
+
+   public void onSkipButtonClicked () {
+      if (_currentSection == Section.Questions) {
+         PanelManager.self.showConfirmationPanel("Are you sure you want to skip the questions?\n\nYour perk points will remain unassigned until you assign them in the game.", () => submitCharacterCreation(true));
+      }
+   }
+
+   public void goToQuestions () {
+      _currentSequence?.Kill();
+
+      _currentSequence = DOTween.Sequence();
+      _currentSequence.Join(questionsScreen.rectTransform.DOAnchorPosX(0.0f, WINDOW_TRANSITION_TIME));
+      _currentSequence.Join(_appearanceScreenRectTransform.DOAnchorPosX(_leftPanelPosition, WINDOW_TRANSITION_TIME));
+
+      _currentSequence.AppendCallback(() => {
+         // Enable the "back" button so we can return if we want to change appearance
+         setBackButtonToNormal();
+
+         skipButton.gameObject.SetActive(true);
+
+         // Update the current section
+         _currentSection = Section.Questions;
+
+         // Tell the questions screen it's being shown
+         questionsScreen.onShown();
+      });
+
+      _currentSequence.Play();
+   }
+
+   public void returnToAppearanceScreen () {
+      _currentSequence?.Kill();
+
+      _currentSequence = DOTween.Sequence();
+      _currentSequence.Join(questionsScreen.rectTransform.DOAnchorPosX(_rightPanelPosition, WINDOW_TRANSITION_TIME));
+      _currentSequence.Join(_appearanceScreenRectTransform.DOAnchorPosX(0.0f, WINDOW_TRANSITION_TIME));
+
+      _currentSequence.AppendCallback(() => {
+         setBackButtonToCancel();
+
+         // Re-enable the "next" button
+         nextButton.interactable = NameUtil.isValid(nameText.text);
+
+         // Disable the "skip" button in the appearance section
+         skipButton.gameObject.SetActive(false);
+
+         _currentSection = Section.Appearance;
+      });
+
+      _currentSequence.Play();
    }
 
    public void cancelCreating () {
+      CharacterScreen.self.myCamera.setDefaultSettings();
       Destroy(_char.gameObject);
+      SpotFader.self.openSpotToMaxSize();
+      hide();
    }
+
+   #region Buttons Personalization
+
+   public void setNextButtonToNormal () {
+      nextButton.targetGraphic.material = generalButtonMaterial;
+      nextButtonText.text = NEXT_STEP_BUTTON_TEXT;
+   }
+
+   public void setNextButtonToFinish () {
+      nextButton.targetGraphic.material = confirmButtonMaterial;
+      nextButtonText.text = CONFIRM_QUESTIONNAIRE_BUTTON_TEXT;
+   }
+
+   public void setBackButtonToNormal () {
+      backButton.targetGraphic.material = generalButtonMaterial;
+      backButtonText.text = BACK_STEP_BUTTON_TEXT;
+   }
+
+   public void setBackButtonToCancel () {
+      backButton.targetGraphic.material = cancelButtonMaterial;
+      backButtonText.text = CANCEL_CREATION_BUTTON_TEXT;
+   }
+
+   #endregion
+
+   #region Character Appearance Customization
 
    public void genderSelected (int newGender) {
       Gender.Type gender = (Gender.Type) newGender;
@@ -207,87 +387,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       }
    }
 
-   public void changeClass (int offset) {
-      List<PlayerClassData> list = new List<PlayerClassData>();
-      foreach (PlayerClassData classData in ClassManager.self.classDataList) {
-         if (classData.type != Class.Type.None) {
-            list.Add(classData);
-         }
-      }
-
-      // Adjust the index
-      PlayerClassData currentClassData = ClassManager.self.getClassData(_char.classType);
-      int currentIndex = list.IndexOf(currentClassData);
-      if (currentIndex == -1) {
-         currentIndex = 0;
-      }
-      currentIndex += offset;
-      currentIndex = (currentIndex + list.Count) % list.Count;
-
-      // Update the data
-      currentClassData = list[currentIndex];
-      _char.classType = currentClassData.type;
-      classText.text = currentClassData.className;
-      classDescriptionText.text = currentClassData.description;
-
-      // Update the icon
-      classIcon.sprite = ImageManager.getSprite(currentClassData.itemIconPath);
-   }
-
-   public void changeSpecialty (int offset) {
-      List<PlayerSpecialtyData> list = new List<PlayerSpecialtyData>();
-      foreach (PlayerSpecialtyData specialtyData in SpecialtyManager.self.specialtyDataList) {
-         if (specialtyData.type != Specialty.Type.None) {
-            list.Add(specialtyData);
-         }
-      }
-
-      // Adjust the index
-      PlayerSpecialtyData currentSpecialtyData = SpecialtyManager.self.getSpecialtyData(_char.specialty);
-      int currentIndex = list.IndexOf(currentSpecialtyData);
-      if (currentIndex == -1) {
-         currentIndex = 0;
-      }
-      currentIndex += offset;
-      currentIndex = (currentIndex + list.Count) % list.Count;
-
-      // Update the data
-      currentSpecialtyData = list[currentIndex];
-      _char.specialty = currentSpecialtyData.type;
-      specialtyText.text = currentSpecialtyData.specialtyName;
-      specialtyDescriptionText.text = currentSpecialtyData.description; 
-
-      // Update the icon
-      specialtyIcon.sprite = ImageManager.getSprite(currentSpecialtyData.specialtyIconPath);
-   }
-
-   public void changeFaction (int offset) {
-      List<PlayerFactionData> list = new List<PlayerFactionData>();
-      foreach (PlayerFactionData factionData in FactionManager.self.factionDataList) {
-         if (factionData.type != Faction.Type.None) {
-            list.Add(factionData);
-         }
-      }
-
-      // Adjust the index
-      PlayerFactionData currentFactionData = FactionManager.self.getFactionData(_char.faction);
-      int currentIndex = list.IndexOf(currentFactionData);
-      if (currentIndex == -1) {
-         currentIndex = 0;
-      }
-      currentIndex += offset;
-      currentIndex = (currentIndex + list.Count) % list.Count;
-
-      // Update the data
-      currentFactionData = list[currentIndex];
-      _char.faction = currentFactionData.type;
-      factionText.text = currentFactionData.factionName;
-      factionDescriptionText.text = currentFactionData.description;
-
-      // Update the icon
-      factionIcon.sprite = ImageManager.getSprite(currentFactionData.factionIconPath);
-   }
-
    public void onHairColorChanged () {
       if (_char == null) {
          return;
@@ -386,7 +485,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
 
    protected List<EyesLayer.Type> getEyeList () {
       if (_char.genderType == Gender.Type.Female) {
-         return new List<EyesLayer.Type>() { EyesLayer.Type.Female_Eyes_1, EyesLayer.Type.Female_Eyes_2 , EyesLayer.Type.Female_Eyes_3 };
+         return new List<EyesLayer.Type>() { EyesLayer.Type.Female_Eyes_1, EyesLayer.Type.Female_Eyes_2, EyesLayer.Type.Female_Eyes_3 };
       } else {
          return new List<EyesLayer.Type>() { EyesLayer.Type.Male_Eyes_1, EyesLayer.Type.Male_Eyes_2, EyesLayer.Type.Male_Eyes_3 };
       }
@@ -403,13 +502,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_temporarilyDisableInput () {
-      this.canvasGroup.interactable = false;
-
-      yield return new WaitForSeconds(1.25f);
-
-      this.canvasGroup.interactable = true;
-   }
+   #endregion
 
    #region Private Variables
 
@@ -424,6 +517,24 @@ public class CharacterCreationPanel : ClientMonoBehaviour {
    protected List<ColorType> _maleArmorColors2 = new List<ColorType>() { ColorType.Brown, ColorType.White, ColorType.Blue, ColorType.Red, ColorType.Green };
    protected List<ColorType> _femaleArmorColors1 = new List<ColorType>() { ColorType.Brown, ColorType.Red, ColorType.Yellow, ColorType.Blue, ColorType.Teal };
    protected List<ColorType> _femaleArmorColors2 = new List<ColorType>() { ColorType.Brown, ColorType.White, ColorType.Yellow, ColorType.Blue, ColorType.Teal };
+
+   // The DOTween Squence that animates the different panels
+   private Sequence _currentSequence;
+
+   // The rect transform of the appearance screen
+   private RectTransform _appearanceScreenRectTransform;
+
+   // The transform as a rect transform
+   private RectTransform _rectTransform;
+
+   // The position at which a panel is invisible at the right
+   private float _rightPanelPosition = 236.0f;
+
+   // The position at which a panel is invisible at the left
+   private float _leftPanelPosition = -236.0f;
+
+   // The current customization section
+   private Section _currentSection = Section.Appearance;
 
    #endregion
 }

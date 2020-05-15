@@ -310,6 +310,8 @@ public class ServerMessageManager : MonoBehaviour {
          DB_Main.deleteAllFromTable(accountId, msg.userId, "crops");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "silo");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "tutorial");
+         DB_Main.deleteAllFromTable(accountId, msg.userId, "perks");
+
          DB_Main.deleteUser(accountId, msg.userId);
 
          // Send confirmation to the client, so that they can request their user list again
@@ -355,6 +357,9 @@ public class ServerMessageManager : MonoBehaviour {
 
       // Add the ability to the user
       DB_Main.updateAbilitiesData(userId, startingAbilitySQL);
+
+      // Add the perks to the user
+      DB_Main.addPerkPointsForUser(userId, PerkManager.self.getPerksFromAnswers(new List<int>(msg.perkAnswers)));
 
       // Give some additional armor and weapons to test users
       /*if (true) {

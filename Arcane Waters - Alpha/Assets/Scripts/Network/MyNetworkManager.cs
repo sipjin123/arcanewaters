@@ -12,11 +12,13 @@ using BackgroundTool;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
 
-public class MyNetworkManager : NetworkManager {
+public class MyNetworkManager : NetworkManager
+{
    #region Public Variables
 
    // Server addresses
-   public enum ServerType {
+   public enum ServerType
+   {
       None = 0, Localhost = 1, AmazonVPC = 2, AmazonSydney = 3, ProductionWindows = 4, ProductionLinux = 5
    }
 
@@ -47,18 +49,18 @@ public class MyNetworkManager : NetworkManager {
       self = this;
 
       #if FORCE_AMAZON_SERVER
-            Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
-            this.serverOverride = ServerType.AmazonVPC;
+      Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
+      this.serverOverride = ServerType.AmazonVPC;
       #endif
       #if FORCE_SYDNEY
-            this.serverOverride = ServerType.AmazonSydney;
+      this.serverOverride = ServerType.AmazonSydney;
       #endif
       #if FORCE_LOCALHOST
-            this.serverOverride = ServerType.Localhost;
+      this.serverOverride = ServerType.Localhost;
       #endif
 
       #if !FORCE_AMAZON_SERVER
-            Debug.Log("FORCE_AMAZON_SERVER is not defined.");
+      Debug.Log("FORCE_AMAZON_SERVER is not defined.");
       #endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
@@ -214,7 +216,7 @@ public class MyNetworkManager : NetworkManager {
          VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(authenticatedUserId);
 
          // Get the voyage id, if any
-         int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : - 1;
+         int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -448,7 +450,7 @@ public class MyNetworkManager : NetworkManager {
       return _players;
    }
 
-   public static T fetchNetEntityTypeFromNetIdentity<T>(uint netId) where T : NetEntity {
+   public static T fetchEntityFromNetId<T> (uint netId) where T : NetEntity {
       if (!NetworkIdentity.spawned.ContainsKey(netId)) {
          return null;
       }

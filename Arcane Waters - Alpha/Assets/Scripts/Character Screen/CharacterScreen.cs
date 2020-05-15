@@ -24,8 +24,14 @@ public class CharacterScreen : MonoBehaviour {
    // Self
    public static CharacterScreen self;
 
+   // The character creation panel
+   public CharacterCreationPanel characterCreationPanel;
+
    // List of armor data
    public List<StartingArmorData> startingArmorData;
+
+   // The MyCamera component
+   public MyCamera myCamera;
 
    public class StartingArmorData
    {
@@ -51,6 +57,8 @@ public class CharacterScreen : MonoBehaviour {
       foreach (CharacterSpot spot in GetComponentsInChildren<CharacterSpot>()) {
          _spots[spot.number] = spot;
       }
+
+      myCamera = virtualCam.GetComponent<MyCamera>();      
    }
 
    public StartingArmorData getStartingArmor (int index) {

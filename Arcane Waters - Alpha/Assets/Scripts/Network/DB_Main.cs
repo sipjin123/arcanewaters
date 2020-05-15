@@ -1873,6 +1873,89 @@ public class DB_Main : DB_MainStub {
    }
    #endregion
 
+   #region Perks
+
+   public static new List<Perk> getPerkPointsForUser (int usrId) {
+      List<Perk> points = new List<Perk>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.perks WHERE usrId = @usrId", conn)) {
+
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  points.Add(new Perk(dataReader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return points;
+   }
+
+   public static new void addPerkPointsForUser (int usrId, int perkTypeId, int perkPoints) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO arcane.perks (usrId, perkTypeId, perkPoints) " +
+            "VALUES(@usrId, @perkTypeId, @perkPoints) " +
+            "ON DUPLICATE KEY UPDATE perkPoints = perkPoints + @perkPoints", conn)) {
+
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@perkTypeId", perkTypeId);
+            cmd.Parameters.AddWithValue("@perkPoints", perkPoints);
+
+            cmd.Prepare();
+
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void addPerkPointsForUser (int usrId, List<Perk> perks) {
+      StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.perks (usrId, perkTypeId, perkPoints) VALUES ");
+      int i = 0;
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText.ToString(), conn)) {
+         foreach (Perk perk in perks) {
+            cmdText.Append($"(@usrId{i}, @perkTypeId{i}, @perkPoints{i})");
+            cmd.Parameters.AddWithValue($"@usrId{i}", usrId);
+            cmd.Parameters.AddWithValue($"@perkTypeId{i}", perk.perkTypeId);
+            cmd.Parameters.AddWithValue($"@perkPoints{i}", perk.points);
+
+            i++;
+
+            if (i != perks.Count()) {
+               cmdText.Append(", ");
+            }
+         }
+
+         cmdText.Append(" ON DUPLICATE KEY UPDATE perkPoints = perkPoints + VALUES(perkPoints); ");
+
+         conn.Open();
+         cmd.CommandText = cmdText.ToString();
+         cmd.CommandType = System.Data.CommandType.Text;
+         cmd.Prepare();
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   #endregion
+
    #region Books Data
 
    public static new void upsertBook (string bookContent, string name, int bookId) {
@@ -1976,7 +2059,8 @@ public class DB_Main : DB_MainStub {
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM arcane.tutorial_v2 " +
             "LEFT JOIN arcane.tutorial_step USING (tutorialId) " +
-            "LEFT JOIN arcane.tutorial_step_action USING (stepActionId)", conn)) {
+            "LEFT JOIN arcane.tutorial_step_action USING (stepActionId) " +
+            "ORDER BY tutorialId, stepActionId", conn)) {
 
             conn.Open();
             cmd.Prepare();

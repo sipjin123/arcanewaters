@@ -277,10 +277,10 @@ public class ShipEntity : SeaEntity
       // Store the ripple sprites for later so we can quickly swap them once the entity starts/stops moving
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
       _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
+      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
 
       // Set the initial idle sprites
-      spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getSkinPath(shipType, skinType));
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+      spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getSkinPath(shipType, skinType, isBotShip()));
    }
 
    protected override void onStartMoving () {

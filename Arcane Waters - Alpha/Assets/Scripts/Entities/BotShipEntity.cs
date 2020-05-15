@@ -61,8 +61,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
          _originalPosition = transform.position;
 
-         StartCoroutine(shouldAggroEnemies(0.5f));
-         StartCoroutine(attackEnemiesInRange(0.25f));
+         InvokeRepeating(nameof(checkEnemiesToAggro), 0.0f, 0.5f);
+         StartCoroutine(CO_attackEnemiesInRange(0.25f));
       }
 
       if (Application.isEditor) {
@@ -283,52 +283,44 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    }
 
    [Server]
-   private IEnumerator shouldAggroEnemies (float delayInSeconds) {
-      Instance instance = InstanceManager.self.getInstance(instanceId);
-      // An instance is required to function, so if it's not in an instance yet, let the developer know something is wrong and then try again in a little while
-      while (instance == null) {
+   private void checkEnemiesToAggro () {
+      if (instanceId <= 0) {
          D.log("BotshipEntity needs to be placed in an instance");
-         yield return new WaitForSeconds(1.0f);
-
-         // Try get the instance again
-         instance = InstanceManager.self.getInstance(instanceId);
+         return;
       }
 
+      Instance instance = InstanceManager.self.getInstance(instanceId);
       float degreesToDot = aggroConeDegrees / 90.0f;
 
-      while (!isDead()) {
-         foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
-            NetEntity iEntity = iBehaviour as NetEntity;
+      foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
+         NetEntity iEntity = iBehaviour as NetEntity;
 
-            // If the entity is a fellow bot ship, ignore it
-            if (iEntity == null || iEntity.isBotShip())
-               continue;
+         // If the entity is a fellow bot ship, ignore it
+         if (iEntity == null || iEntity.isBotShip())
+            continue;
 
-            // If enemy isn't within radius, early out
-            if ((transform.position - iEntity.transform.position).sqrMagnitude > aggroConeRadius * aggroConeRadius)
-               continue;
+         // If enemy isn't within radius, early out
+         if ((transform.position - iEntity.transform.position).sqrMagnitude > aggroConeRadius * aggroConeRadius)
+            continue;
 
-            // If enemy isn't within cone aggro range, early out
-            if (Vector2.Dot(Util.getDirectionFromFacing(facing), (iEntity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
-               continue;
-            }
-
-            // We can see the enemy, attack it
-            _attackers[iEntity.netId] = TimeManager.self.getSyncedTime();
+         // If enemy isn't within cone aggro range, early out
+         if (Vector2.Dot(Util.getDirectionFromFacing(facing), (iEntity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
+            continue;
          }
 
-         yield return new WaitForSeconds(delayInSeconds);
+         // We can see the enemy, attack it
+         _attackers[iEntity.netId] = TimeManager.self.getSyncedTime();
       }
    }
 
    [Server]
-   private IEnumerator attackEnemiesInRange (float delayInSecondsWhenNotReloading) {
+   private IEnumerator CO_attackEnemiesInRange (float delayInSecondsWhenNotReloading) {
       while (!isDead()) {
          bool attacked = false;
 
          // Check if any of our attackers are within range
          foreach (uint attackerId in _attackers.Keys) {
-            NetEntity attacker = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(attackerId);
+            NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
             if (attacker == null || attacker.isDead()) {
                continue;
             }

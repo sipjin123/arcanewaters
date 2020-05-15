@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class PanelManager : MonoBehaviour {
    #region Public Variables
@@ -224,6 +225,17 @@ public class PanelManager : MonoBehaviour {
       foreach (Panel panel in modalPanels) {
          panel.hide();
       }
+   }
+
+   public void showConfirmationPanel(string message, UnityAction action, bool hideOnConfirmation = true) {
+      confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      confirmScreen.confirmButton.onClick.AddListener(action);
+
+      if (hideOnConfirmation) {
+         confirmScreen.confirmButton.onClick.AddListener(() => confirmScreen.hide());
+      }
+
+      confirmScreen.show(message);
    }
 
    protected Panel showPanel (Panel.Type panelType) {

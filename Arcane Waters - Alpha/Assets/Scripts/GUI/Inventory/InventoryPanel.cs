@@ -46,15 +46,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public ItemDropZone inventoryDropZone;
    public ItemDropZone equipmentDropZone;
 
-   // The context menu common to all cells
-   public GameObject contextMenu;
-
-   // The buttons of the context menu
-   public GameObject equipButtonGO;
-   public GameObject unequipButtonGO;
-   public GameObject useButtonGO;
-   public GameObject trashButtonGO;
-
    // The inventory tab renderers
    public Image allTabRenderer;
    public Image weaponTabRenderer;
@@ -90,9 +81,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       base.Awake();
       self = this;
 
-      // Hide the context menu
-      contextMenu.SetActive(false);
-
       // Deactivate the grabbed item
       grabbedItem.deactivate();
 
@@ -123,9 +111,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void refreshPanel () {
-      // Hide the context menu
-      hideContextMenu();
-
       NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
@@ -194,7 +179,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             cell.leftClickEvent.RemoveAllListeners();
             cell.rightClickEvent.RemoveAllListeners();
             cell.doubleClickEvent.RemoveAllListeners();
-            cell.leftClickEvent.AddListener(() => hideContextMenu());
             cell.rightClickEvent.AddListener(() => showContextMenu(cell));
             cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
          }
@@ -409,44 +393,26 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          return;
       }
 
-      contextMenu.SetActive(true);
+      PanelManager.self.contextMenuPanel.clearButtons();
 
-      // Move the menu to the mouse position
-      contextMenu.transform.position = Input.mousePosition;
-
-      // Activate the 'equipped' or 'unequipped' button
+      // Add the context menu buttons
       if (_selectedItem.canBeEquipped()) {
          if (isEquipped(_selectedItem.id)) {
-            equipButtonGO.SetActive(false);
-            unequipButtonGO.SetActive(true);
+            PanelManager.self.contextMenuPanel.addButton("Unequip", () => equipOrUnequipSelected());
          } else {
-            equipButtonGO.SetActive(true);
-            unequipButtonGO.SetActive(false);
+            PanelManager.self.contextMenuPanel.addButton("Equip", () => equipOrUnequipSelected());
          }
-      } else {
-         equipButtonGO.SetActive(false);
-         unequipButtonGO.SetActive(false);
       }
 
-      // Check if the item can be used
       if (_selectedItem.canBeUsed()) {
-         useButtonGO.SetActive(true);
-      } else {
-         useButtonGO.SetActive(false);
+         PanelManager.self.contextMenuPanel.addButton("Use", () => useSelected());
       }
 
-      // Check if the item can be trashed
       if (_selectedItem.canBeTrashed()) {
-         trashButtonGO.SetActive(true);
-      } else {
-         trashButtonGO.SetActive(false);
+         PanelManager.self.contextMenuPanel.addButton("Trash", () => trashSelected());
       }
-   }
 
-   public void hideContextMenu () {
-      if (contextMenu.activeSelf) {
-         contextMenu.SetActive(false);
-      }
+      PanelManager.self.contextMenuPanel.show("");
    }
 
    public void tryGrabItem(ItemCellInventory itemCell) {
@@ -505,9 +471,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public void tryEquipOrUseItem(Item castedItem) {
       _selectedItem = castedItem;
 
-      // Hide the context menu
-      hideContextMenu();
-
       // Equip the item if it is equippable
       if (castedItem.canBeEquipped()) {
          equipOrUnequipSelected();
@@ -522,9 +485,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void equipOrUnequipSelected () {
-      // Hide the context menu
-      hideContextMenu();
-
       // Check which type of item we requested to equip/unequip
       if (_selectedItem is Weapon) {
          // Check if it's currently equipped or not
@@ -542,9 +502,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void useSelected () {
-      // Hide the context menu
-      hideContextMenu();
-
       // Show an error panel if the item cannot be used
       if (!_selectedItem.canBeUsed()) {
          PanelManager.self.noticeScreen.show("This item can not be used.");
@@ -557,9 +514,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Show a confirmation panel
       PanelManager.self.confirmScreen.show("Are you sure you want to use your " + _selectedItem.getName() + "?");
-
-      // Hide the context menu
-      hideContextMenu();
    }
 
    public void confirmUseSelectedItem () {
@@ -568,9 +522,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void trashSelected () {
-      // Hide the context menu
-      hideContextMenu();
-
       // Show an error panel if the item cannot be trashed
       if (!_selectedItem.canBeTrashed()) {
          PanelManager.self.noticeScreen.show("This item can not be trashed.");
@@ -583,9 +534,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Show a confirmation panel with the user name
       PanelManager.self.confirmScreen.show("Are you sure you want to trash " + _selectedItem.getName() + "?");
-
-      // Hide the context menu
-      hideContextMenu();
    }
 
    protected void confirmTrashSelectedItem () {
@@ -624,10 +572,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // If the black background outside is clicked, hide the Inventory panel
       if (eventData.rawPointerPress == this.gameObject) {
          PanelManager.self.popPanel();
-      } else if (eventData.button == PointerEventData.InputButton.Left) {
-
-         // Hides the context menu if it is active
-         hideContextMenu();
       }
    }
 

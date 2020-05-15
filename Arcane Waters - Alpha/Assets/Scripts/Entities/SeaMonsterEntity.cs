@@ -399,7 +399,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       float oldDistanceGap = 100;
 
       foreach (uint attackerId in _attackers.Keys) {
-         NetEntity attacker = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(attackerId);
+         NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
          if (attacker == null) {
             continue;
          }

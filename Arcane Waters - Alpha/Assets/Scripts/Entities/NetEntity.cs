@@ -534,7 +534,7 @@ public class NetEntity : NetworkBehaviour {
 
       // Take note of all the attackers that must be removed
       foreach (KeyValuePair<uint, float> KV in _attackers) {
-         NetEntity entity = MyNetworkManager.fetchNetEntityTypeFromNetIdentity<NetEntity>(KV.Key);
+         NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
          if (entity == null || entity.isDead() || TimeManager.self.getSyncedTime() - KV.Value > ATTACKER_STATUS_DURATION) {
             oldAttackers.Add(KV.Key);
          }
