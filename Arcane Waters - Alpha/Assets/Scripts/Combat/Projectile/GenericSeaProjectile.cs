@@ -168,13 +168,6 @@ public class GenericSeaProjectile : MonoBehaviour {
                      break;
                   }
 
-                  // Did we hit a treasure site gate
-                  TreasureSiteGate gate = hit.GetComponent<TreasureSiteGate>();
-
-                  if (gate != null && gate.colliderContainsPoint(this.transform.position) && this._creator == Global.player) {
-                     gate.wasHit();
-                  }
-
                   Boss boss = hit.GetComponent<Boss>();
                   if (boss != null) {
                      hitEnemy = true;

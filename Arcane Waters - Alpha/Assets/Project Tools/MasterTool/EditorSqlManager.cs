@@ -39,6 +39,30 @@ public class EditorSQLManager {
       NewTutorial = 24
    }
 
+   public static string getSqlTable (EditorToolType editorType) {
+      string tableName = getSQLTableByName(editorType);
+      if (tableName == "") {
+         int subType = 0;
+         switch (editorType) {
+            case EditorToolType.Equipment_Weapon:
+               editorType = EditorToolType.Equipment;
+               subType = 1;
+               break;
+            case EditorToolType.Equipment_Armor:
+               editorType = EditorToolType.Equipment;
+               subType = 2;
+               break;
+            case EditorToolType.Equipment_Helm:
+               editorType = EditorToolType.Equipment;
+               subType = 3;
+               break;
+         }
+         tableName = getSQLTableByID(editorType, (EquipmentType) subType);
+      }
+
+      return tableName;
+   }
+
    public static string getSQLTableByName (EditorToolType editorType, int subType = 0) {
       switch (editorType) {
          case EditorToolType.BattlerAbility:
@@ -53,6 +77,10 @@ public class EditorSQLManager {
             return "books_xml";
          case EditorToolType.NewTutorial:
             return "tutorial_v2";
+         case EditorToolType.Crops:
+            return "crops_xml_v1";
+         case EditorToolType.Background:
+            return "background_xml_v2";
       }
       return "";
    }

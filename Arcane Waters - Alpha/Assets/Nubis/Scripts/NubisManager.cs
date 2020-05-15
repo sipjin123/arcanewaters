@@ -15,6 +15,12 @@ public class NubisManager : MonoBehaviour
 {
    #region Public Variables
 
+   // Nubis dedicated directory
+   public static string NUBIS_LOG_DIRECTORY = "C:/NubisLog/";
+
+   // Nubis dedicated file
+   public static string NUBIS_FILE = "NubisLog.txt";
+
    #endregion
 
    /// <summary>
@@ -22,9 +28,25 @@ public class NubisManager : MonoBehaviour
    /// </summary>
    public void Start () {
       i("NubisManager starting");
+
+      if (!Directory.Exists(NUBIS_LOG_DIRECTORY)) {
+         Directory.CreateDirectory(NUBIS_LOG_DIRECTORY);
+      }
+      if (!File.Exists(NUBIS_LOG_DIRECTORY + NUBIS_FILE)) {
+         File.Create(NUBIS_LOG_DIRECTORY + NUBIS_FILE).Close();
+      }
+
+      customLog("Starting Log");
+
       _ = StartNubis();
    }
    
+   private void customLog (string content) {
+      using (StreamWriter w = File.AppendText(NUBIS_LOG_DIRECTORY + NUBIS_FILE)) {
+         w.WriteLine(content);
+      }
+   }
+
    public void OnDestroy () {
       Stop();
    }
@@ -68,11 +90,21 @@ public class NubisManager : MonoBehaviour
             //string Fetch_Craftable_Armors_v3_Endpoint = "Fetch_Craftable_Armors_v3";
             //string action = context.Request.QueryString.Get("action");
             if (context.Request.Url.Segments == null || context.Request.Url.Segments.Length < 1) {
-            OK(context,"");
+               OK(context,"");
             return;
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
+               case "fetch_xml_zip_v1":
+                  string xmlZipData_v1 = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
+                  customLog("Str is: " + xmlZipData_v1);
+                  Content(context, xmlZipData_v1);
+                  break;
+               case "fetch_xml_version_v1": 
+                  string xmlVersion_v1 = Fetch_Xml_Version_v1Controller.fetchXmlVersion();
+                  customLog("Str is: " + xmlVersion_v1);
+                  Content(context, xmlVersion_v1);
+                  break;
                case "fetch_map_data_v1": // params: INT usrId
                   string str_mapData_v1_name = context.Request.QueryString.Get("mapName");
                   string mapData_v1 = Fetch_Map_Data_v1Controller.fetchMapData(str_mapData_v1_name);

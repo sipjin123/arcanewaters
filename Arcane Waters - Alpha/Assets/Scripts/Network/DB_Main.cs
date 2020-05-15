@@ -25,6 +25,111 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region XML Content Handling
+
+   public static new void writeZipData (byte[] bytes) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "UPDATE xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = 1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.Add("@xmlZipData", MySqlDbType.MediumBlob).Value = bytes;
+            cmd.Parameters.AddWithValue("@dataSize", bytes.Length);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new string getXmlContent (string tableName) {
+      string content = "";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT xml_id, xmlContent FROM arcane."+ tableName, conn)) {
+
+            
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  string xmlContent = dataReader.GetString("xmlContent");
+                  int xmlId = dataReader.GetInt32("xml_id");
+                  content += xmlId + "[space]" + xmlContent + "[next]\n"; // xmlContent;//
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return content;
+   }
+
+   public static new int getLatestXmlVersion () {
+      int latestVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT version FROM xml_status where id = 1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  latestVersion = dataReader.GetInt32("version");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return latestVersion;
+   }
+
+   public static new string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
+      string updateContent = "";
+      string tableName = EditorSQLManager.getSqlTable(editorType); 
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT lastUserUpdate FROM arcane." + tableName + " order by lastUserUpdate DESC limit 1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  string lastUserUpdate = dataReader.GetString("lastUserUpdate");
+                  updateContent = tableName + "[space]" + lastUserUpdate + "[next]\n";
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("Request Data was: " + editorType);
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return updateContent;
+   }
+
+   #endregion
+
    #region Server Communications
 
    public static new ChatInfo getLatestChatInfo () {

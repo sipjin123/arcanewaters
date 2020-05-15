@@ -2,8 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using UnityEngine.Events;
 
 namespace NubisDataHandling {
+
+   public class XmlVersionEvent : UnityEvent<int> { 
+   }
+
    public class NubisDataFetcher : MonoBehaviour {
 
       #region Public Variables
@@ -23,6 +28,9 @@ namespace NubisDataHandling {
       // The web directory
       public string webDirectory = "";
 
+      // The xml version event 
+      public XmlVersionEvent xmlVersionEvent = new XmlVersionEvent();
+
       #endregion
 
       private void Awake () {
@@ -30,7 +38,23 @@ namespace NubisDataHandling {
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
       }
 
-      private IEnumerator processMapData (string mapName) {
+      public void fetchXmlVersion () {
+         StartCoroutine(CO_ProcessXmlVersion());
+      }
+
+      private IEnumerator CO_ProcessXmlVersion () {
+         UnityWebRequest mapDataRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_version_v1");
+         yield return mapDataRequest.SendWebRequest();
+
+         if (mapDataRequest.isNetworkError || mapDataRequest.isHttpError) {
+            D.warning(mapDataRequest.error);
+         } else {
+            int xmlVersion = int.Parse(mapDataRequest.downloadHandler.text);
+            xmlVersionEvent.Invoke(xmlVersion);
+         }
+      }
+
+      private IEnumerator CO_ProcessMapData (string mapName) {
          string rawMapData = "";
          UnityWebRequest mapDataRequest = UnityWebRequest.Get(webDirectory + "fetch_map_data_v1?mapName=" + mapName);
          yield return mapDataRequest.SendWebRequest();

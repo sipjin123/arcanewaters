@@ -31,7 +31,7 @@ public class ShipDataManager : MonoBehaviour {
    public ShipData getShipData (Ship.Type shipType) {
       if (!_shipData.ContainsKey(shipType)) {
          D.debug("Failed to fetch ship data: " + shipType);
-         return new ShipData();
+         return _shipData.Values.ToList()[0];
       }
       ShipData returnData = _shipData[shipType];
       return returnData;

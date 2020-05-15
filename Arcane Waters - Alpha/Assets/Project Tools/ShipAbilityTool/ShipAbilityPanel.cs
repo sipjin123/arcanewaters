@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using UnityEditor;
 
 public class ShipAbilityPanel : MonoBehaviour {
    #region Public Variables
@@ -58,6 +59,11 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipAbilityEffect.maxValue = Enum.GetValues(typeof(ShipAbilityData.ShipAbilityEffect)).Length - 1;
       _shipAbilityAttackType.maxValue = Enum.GetValues(typeof(Attack.Type)).Length - 1;
       _impactMagnitude.maxValue = Enum.GetValues(typeof(Attack.ImpactMagnitude)).Length - 1;
+      _statusSlider.maxValue = Enum.GetValues(typeof(Status.Type)).Length - 1;
+
+      _statusSlider.onValueChanged.AddListener(_ => {
+         _statusText.text = ((Status.Type) _).ToString();
+      });
 
       _impactMagnitude.onValueChanged.AddListener(_ => {
          _impactMagnitudeText.text = ((Attack.ImpactMagnitude) _).ToString();
@@ -158,6 +164,18 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipCastCollisionType.value = (int) shipAbilityData.shipCastCollisionType;
       _shipAbilityEffect.value = (int) shipAbilityData.shipAbilityEffect;
 
+      _hasArch.isOn = shipAbilityData.hasArch;
+      _hasTrail.isOn = shipAbilityData.hasTrail;
+      _splitsAfterCap.isOn = shipAbilityData.splitsAfterAttackCap;
+      _syncHeightToArc.isOn = shipAbilityData.syncHeightToArch;
+
+      _statusDuration.text = shipAbilityData.statusDuration.ToString();
+      _lifeTime.text = shipAbilityData.lifeTime.ToString();
+      _splitAttackCap.text = shipAbilityData.splitAttackCap.ToString();
+
+      _statusSlider.value = shipAbilityData.statusType;
+      _statusText.text = ((Status.Type) shipAbilityData.statusType).ToString();
+
       _hitAudioText.text = shipAbilityData.collisionSFXPath;
       _castAudioText.text = shipAbilityData.castSFXPath;
       if (shipAbilityData.collisionSFXPath != "") {
@@ -196,11 +214,35 @@ public class ShipAbilityPanel : MonoBehaviour {
       abilityData.castSFXPath = _castAudioText.text;
       abilityData.collisionSFXPath = _hitAudioText.text;
 
+      abilityData.hasArch = _hasArch.isOn;
+      abilityData.hasTrail = _hasTrail.isOn;
+      abilityData.splitsAfterAttackCap = _splitsAfterCap.isOn;
+      abilityData.syncHeightToArch = _syncHeightToArc.isOn;
+
+      abilityData.statusDuration = float.Parse(_statusDuration.text);
+      abilityData.lifeTime = float.Parse(_lifeTime.text);
+      abilityData.splitAttackCap = int.Parse(_splitAttackCap.text);
+
+      abilityData.statusType = (int)_statusSlider.value;
+
       return abilityData;
    }
 
    #region Private Variables
 #pragma warning disable 0649
+
+   [SerializeField]
+   private Toggle _hasArch, _syncHeightToArc, _hasTrail, _splitsAfterCap;
+
+   [SerializeField]
+   private InputField _lifeTime, _splitAttackCap, _statusDuration;
+
+   [SerializeField]
+   private Text _statusText;
+
+   [SerializeField]
+   private Slider _statusSlider;
+
    [SerializeField]
    private InputField _abilityName, _abilityDescription;
 

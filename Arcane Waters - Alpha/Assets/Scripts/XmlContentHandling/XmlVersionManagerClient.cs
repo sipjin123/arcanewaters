@@ -10,18 +10,13 @@ using System.IO;
 using System;
 using static ShopDataToolManager;
 using UnityEngine.Events;
+using NubisDataHandling;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
 
    // The player pref key for clients
    public static string XML_VERSION = "xml_version";
-
-   // The server directory
-   public static string WEB_DIRECTORY = "http://arcanewaters.com/";//"http://localhost/";
-
-   public static string XML_VERSION_GET = "getXmlVersion.php";
-   public static string XML_ZIP_GET = "downloadZip.php?id=";
 
    // Path of the streaming files
    public static string ZIP_PATH = Application.streamingAssetsPath + "/XmlZip/XmlContent.zip";
@@ -30,6 +25,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Progress indicators
    public int targetProgress;
    public int currentProgress;
+
+   // The web directory
+   public string webDirectory = "";
 
    // Self
    public static XmlVersionManagerClient self;
@@ -56,6 +54,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
    private void Awake () {
       self = this;
+      webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
    }
 
    public void initializeClient () {
@@ -63,46 +62,40 @@ public class XmlVersionManagerClient : MonoBehaviour {
          PlayerPrefs.SetInt(XML_VERSION, 0);
       }
       loadBlocker.SetActive(true);
-      StartCoroutine(CO_ProcessClientData());
+
+      NubisDataFetcher.self.xmlVersionEvent.AddListener(_ => {
+         processClientData(_);
+         NubisDataFetcher.self.xmlVersionEvent.RemoveAllListeners();
+      });
+
+      NubisDataFetcher.self.fetchXmlVersion();
    }
 
-   private IEnumerator CO_ProcessClientData () {
+   private void processClientData (int serverVersion) {
       int clientXmlVersion = PlayerPrefs.GetInt(XML_VERSION, 0);
+      string clientMessage = "";
 
-      UnityWebRequest www = UnityWebRequest.Get(WEB_DIRECTORY + XML_VERSION_GET);
-      yield return www.SendWebRequest();
-      if (www.isNetworkError || www.isHttpError) {
-         D.warning(www.error);
+      if (serverVersion > clientXmlVersion) {
+         clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
+         debugLog(clientMessage);
+         StartCoroutine(CO_DownloadClientData(serverVersion));
       } else {
-         string rawData = www.downloadHandler.text;
-
-         // Web request will return the xml version of the server
-         int serverVersion = int.Parse(rawData);
-         string clientMessage = "";
-
-         if (serverVersion > clientXmlVersion) {
-            clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
-            debugLog(clientMessage);
-            StartCoroutine(CO_DownloadClientData(serverVersion));
-         } else {
-            clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
-            debugLog(clientMessage);
-            processClientXml();
-         }
+         clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
+         debugLog(clientMessage);
+         processClientXml();
       }
    }
 
    private IEnumerator CO_DownloadClientData (int targetVersion) {
-      yield return new WaitForSeconds(1);
+      UnityWebRequest zipDataRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_zip_v1");
+      yield return zipDataRequest.SendWebRequest();
 
-      var uwr = new UnityWebRequest(WEB_DIRECTORY + XML_ZIP_GET + targetVersion, UnityWebRequest.kHttpVerbGET);
-      string path = ZIP_PATH;
-      uwr.downloadHandler = new DownloadHandlerFile(path);
-      yield return uwr.SendWebRequest();
-      if (uwr.isNetworkError || uwr.isHttpError) {
-         D.debug(uwr.error);
+      if (zipDataRequest.isNetworkError || zipDataRequest.isHttpError) {
+         D.warning(zipDataRequest.error);
       } else {
-         debugLog("File successfully downloaded and saved to " + path);
+         string zipStringData = zipDataRequest.downloadHandler.text; 
+         byte[] bytes = Convert.FromBase64String(zipStringData);
+         File.WriteAllBytes(ZIP_PATH, bytes);
       }
 
       StartCoroutine(CO_ExtractTextFiles());
@@ -114,19 +107,13 @@ public class XmlVersionManagerClient : MonoBehaviour {
       using (ZipInputStream s = new ZipInputStream(File.OpenRead(ZIP_PATH))) {
          ZipEntry theEntry;
          while ((theEntry = s.GetNextEntry()) != null) {
-            string directoryName = Path.GetDirectoryName(theEntry.Name);
             string fileName = Path.GetFileName(theEntry.Name);
 
-            // Create directory
-            if (directoryName.Length > 0) {
-               Directory.CreateDirectory(directoryName);
-            }
-
             if (fileName != String.Empty) {
-               string filename = TEXT_PATH + "/";
-               filename += theEntry.Name;
+               string directory = TEXT_PATH + "/";
+               directory += fileName;
 
-               using (FileStream streamWriter = File.Create(filename)) {
+               using (FileStream streamWriter = File.Create(directory)) {
                   int size = 2048;
                   byte[] fdata = new byte[2048];
                   while (true) {
@@ -156,14 +143,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Armor));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Weapon));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Helm));
+
       StartCoroutine(CO_ExtractXmlData(EditorToolType.LandMonster));
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.SeaMonster));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.NPC));
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerClass));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerFaction));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerSpecialty));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerJob));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.SeaMonster));
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Shop));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Ship));

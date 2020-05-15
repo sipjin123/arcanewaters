@@ -276,7 +276,7 @@ public class ClientMessageManager : MonoBehaviour {
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
 
       // Do a circle fader when the user first logs in
-      if (!Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
+      if (CircleFader.self != null && !Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
          CircleFader.self.doCircleFade(CharacterScreen.self.virtualCam.transform.position);
       }
 

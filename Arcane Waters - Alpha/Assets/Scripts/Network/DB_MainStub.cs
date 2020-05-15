@@ -12,6 +12,21 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void writeZipData (byte[] bytes) { 
+   }
+
+   public static string getXmlContent (string tableName) {
+      return "";
+   }
+
+   public static int getLatestXmlVersion () {
+      return 0;
+   }
+
+   public static string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
+      return "";
+   }
+
    public static ChatInfo getLatestChatInfo () {
       return new ChatInfo();
    }
