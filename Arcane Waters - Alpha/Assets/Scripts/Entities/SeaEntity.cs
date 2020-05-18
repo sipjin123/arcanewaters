@@ -80,7 +80,7 @@ public class SeaEntity : NetEntity
          for (int i = 0; i < _projectileSched.Count; i++) {
             ProjectileSchedule sched = _projectileSched[i];
             if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
-               serverFireProjectile(sched.targetLocation, sched.attackAbilityId, sched.spawnLocation, sched.impactTimestamp);
+               serverFireProjectile(sched.targetLocation, sched.attackAbilityId, sched.spawnLocation, sched.impactTimestamp, sched.isMultipleProjectile);
                sched.dispose = true;
             }
          }
@@ -436,7 +436,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public virtual void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true) {
+   public virtual void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true, bool isMultipleProjectile = false) {
       // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
       if (isLastProjectile && (isDead() || !hasReloaded())) {
          return;
@@ -453,12 +453,12 @@ public class SeaEntity : NetEntity
       float delay = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
 
       if (attackDelay <= 0) {
-         serverFireProjectile(spot, abilityId, spawnPosition, delay);
+         serverFireProjectile(spot, abilityId, spawnPosition, delay, isMultipleProjectile);
       } else {
          // Speed modifiers for the projectile types
          delay /= Attack.getSpeedModifier(shipAbility.selectedAttackType);
 
-         registerProjectileSchedule(spot, spawnPosition, shipAbility.selectedAttackType, attackDelay, Util.netTime() + launchDelay, delay, abilityId, isLastProjectile);
+         registerProjectileSchedule(spot, spawnPosition, shipAbility.selectedAttackType, attackDelay, Util.netTime() + launchDelay, delay, abilityId, isLastProjectile, isMultipleProjectile);
       }
 
       if (isLastProjectile) {
@@ -478,7 +478,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   protected void registerProjectileSchedule (Vector2 targetposition, Vector2 spawnPosition, Attack.Type attackType, float animationTime, float projectileTime, float impactDelay, int abilityId, bool lastProjectile = true) {
+   protected void registerProjectileSchedule (Vector2 targetposition, Vector2 spawnPosition, Attack.Type attackType, float animationTime, float projectileTime, float impactDelay, int abilityId, bool lastProjectile = true, bool isMultipleProjectile = false) {
       _projectileSched.RemoveAll(item => item.dispose == true);
       ProjectileSchedule newSched = new ProjectileSchedule {
          attackAnimationTime = animationTime,
@@ -487,7 +487,8 @@ public class SeaEntity : NetEntity
          spawnLocation = spawnPosition,
          targetLocation = targetposition,
          impactTimestamp = impactDelay,
-         attackAbilityId = abilityId
+         attackAbilityId = abilityId,
+         isMultipleProjectile = isMultipleProjectile
       };
 
       // Registers attack for animation if the projectile is final in a list to avoid animating attack more than once / Defaults as final if single projectile
@@ -499,7 +500,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   protected void serverFireProjectile (Vector2 spot, int abilityId, Vector2 spawnPosition, float delay) {
+   protected void serverFireProjectile (Vector2 spot, int abilityId, Vector2 spawnPosition, float delay, bool isMultipleProjectile) {
       ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
 
       // Creates the projectile and the target circle
@@ -507,19 +508,23 @@ public class SeaEntity : NetEntity
          Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
          Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, false);
       } else {
-         switch (shipAbilityData.selectedAttackType) {
-            case Attack.Type.Venom:
-            case Attack.Type.Boulder:
-               // Create network boulder projectile
-               fireTimedGenericProjectile(spawnPosition, spot, abilityId);
-               break;
-            case Attack.Type.Tentacle:
-               // Create multiple tentacle projectile
-               fireMultiDirectionalProjectile(transform.position, abilityId);
-               break;
-            default:
-               Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
-               break;
+         if (!isMultipleProjectile) {
+            switch (shipAbilityData.selectedAttackType) {
+               case Attack.Type.Venom:
+               case Attack.Type.Boulder:
+                  // Create network boulder projectile
+                  fireTimedGenericProjectile(spawnPosition, spot, abilityId);
+                  break;
+               case Attack.Type.Tentacle:
+                  // Create multiple tentacle projectile
+                  fireMultiDirectionalProjectile(transform.position, abilityId);
+                  break;
+               default:
+                  Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
+                  break;
+            }
+         } else {
+            Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
          }
       }
    }
@@ -637,16 +642,16 @@ public class SeaEntity : NetEntity
 
       if (attackCounter % 2 == 0) {
          // North East West South Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(0, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, offset), false);
-         fireAtSpot(sourcePos + new Vector2(0, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(offset, 0), false);
-         fireAtSpot(sourcePos + new Vector2(-target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, 0), true);
+         fireAtSpot(sourcePos + new Vector2(0, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, offset), false, true);
+         fireAtSpot(sourcePos + new Vector2(0, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, -offset), false, true);
+         fireAtSpot(sourcePos + new Vector2(target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(offset, 0), false, true);
+         fireAtSpot(sourcePos + new Vector2(-target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, 0), true, true);
       } else {
          // Diagonal Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, offset), false);
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, -offset), false);
-         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, diagonalValue), false);
-         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, -diagonalValue), true);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, offset), false, true);
+         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, -offset), false, true);
+         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, diagonalValue), false, true);
+         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, -diagonalValue), true, true);
       }
    }
 

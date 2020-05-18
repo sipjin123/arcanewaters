@@ -71,8 +71,13 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void updateArmor (Gender.Type gender, int armorType, ColorType color1, ColorType color2) {
-      armorLayer.setType(gender,armorType);
-      armorLayer.recolor(color1, color2);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+      ColorKey colorKey = new ColorKey(Global.player.gender, armorType, new Armor());
+      PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
+
+      armorLayer.setType(gender, armorType);
+      armorLayer.recolor(playerEntity.armorManager.color1, playerEntity.armorManager.color2);
+      armorLayer.recolor(colorKey, playerEntity.armorManager.color1, playerEntity.armorManager.color2, armorData.materialType, true);
    }
 
    public void updateHair (HairLayer.Type hairType, ColorType color1, ColorType color2) {

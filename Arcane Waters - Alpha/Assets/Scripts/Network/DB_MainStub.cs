@@ -15,7 +15,7 @@ public class DB_MainStub : MonoBehaviour {
    public static void writeZipData (byte[] bytes) { 
    }
 
-   public static string getXmlContent (string tableName) {
+   public static string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {
       return "";
    }
 

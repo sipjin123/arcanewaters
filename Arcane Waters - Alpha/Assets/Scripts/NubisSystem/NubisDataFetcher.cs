@@ -208,41 +208,55 @@ namespace NubisDataHandling {
          string weaponRawData = "";
          string armorRawData = "";
          string userRawData = "";
-         UnityWebRequest weaponInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Weapon);
-         yield return weaponInventoryRequest.SendWebRequest();
-         UnityWebRequest armorInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Armor);
-         yield return armorInventoryRequest.SendWebRequest();
+         string equippedItemContent = "";
+
+         // Fetch the user data before anything else
          UnityWebRequest userDataRequest = UnityWebRequest.Get(webDirectory + "user_data_v1?usrId=" + userId);
          yield return userDataRequest.SendWebRequest();
 
-         if (weaponInventoryRequest.isNetworkError || weaponInventoryRequest.isHttpError) {
-            D.warning(weaponInventoryRequest.error);
-         } else {
-            weaponRawData = weaponInventoryRequest.downloadHandler.text;
-         }
-         if (armorInventoryRequest.isNetworkError || armorInventoryRequest.isHttpError) {
-            D.warning(armorInventoryRequest.error);
-         } else {
-            armorRawData = armorInventoryRequest.downloadHandler.text;
-         }
          if (userDataRequest.isNetworkError || userDataRequest.isHttpError) {
             D.warning(userDataRequest.error);
          } else {
             userRawData = userDataRequest.downloadHandler.text;
+            newUserInfo = UserInfoData.processUserInfo(userRawData);
          }
 
-         List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
-         List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
-         newUserInfo = UserInfoData.processUserInfo(userRawData);
+         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.None) {
+            UnityWebRequest weaponInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Weapon);
+            yield return weaponInventoryRequest.SendWebRequest();
 
-         foreach (Item weapon in weaponList) {
-            WeaponStatData weaponData = WeaponStatData.getStatData(weapon.data, 1);
-            userInventory.Add(weapon);
+            // Process weapon filter
+            if (weaponInventoryRequest.isNetworkError || weaponInventoryRequest.isHttpError) {
+               D.warning(weaponInventoryRequest.error);
+            } else {
+               weaponRawData = weaponInventoryRequest.downloadHandler.text;
+               List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
+               foreach (Item weapon in weaponList) {
+                  if (weapon.id != newUserInfo.weaponId) {
+                     WeaponStatData weaponData = WeaponStatData.getStatData(weapon.data, 1);
+                     userInventory.Add(weapon);
+                  }
+               }
+            }
          }
 
-         foreach (Item armor in armorList) {
-            ArmorStatData armorData = ArmorStatData.getStatData(armor.data, 2);
-            userInventory.Add(armor);
+         if (this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.None) {
+            UnityWebRequest armorInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Armor);
+            yield return armorInventoryRequest.SendWebRequest();
+
+            // Process armor filter
+            if (armorInventoryRequest.isNetworkError || armorInventoryRequest.isHttpError) {
+               D.warning(armorInventoryRequest.error);
+            } else {
+               armorRawData = armorInventoryRequest.downloadHandler.text;
+               List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
+               foreach (Item armor in armorList) {
+                  if (armor.id != newUserInfo.armorId) {
+                     ArmorStatData armorData = ArmorStatData.getStatData(armor.data, 2);
+                     userInventory.Add(armor);
+                  }
+               }
+            }
          }
 
          // Calculate the maximum page number
@@ -254,14 +268,22 @@ namespace NubisDataHandling {
          // Clamp the requested page number to the max page - the number of items could have changed
          pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
 
-         Item equippedWeapon = userInventory.Find(_ => _.id == newUserInfo.weaponId);
-         if (equippedWeapon == null) {
-            equippedWeapon = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
+         // Process user equipped items
+         UnityWebRequest equippedItemRequest = UnityWebRequest.Get(webDirectory + "fetch_equipped_items_v3?usrId=" + userId);
+         yield return equippedItemRequest.SendWebRequest();
+
+         Item equippedWeapon = new Item();
+         Item equippedArmor = new Item();
+         if (equippedItemRequest.isNetworkError || equippedItemRequest.isHttpError) {
+            D.warning(equippedItemRequest.error);
+         } else {
+            equippedItemContent = equippedItemRequest.downloadHandler.text;
          }
-         Item equippedArmor = userInventory.Find(_ => _.id == newUserInfo.armorId);
-         if (equippedArmor == null) {
-            equippedArmor = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
-         }
+         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
+         equippedWeapon = equippedItemData.weaponItem;
+         equippedArmor = equippedItemData.armorItem;
+         userInventory.Add(equippedWeapon);
+         userInventory.Add(equippedArmor);
 
          // Get the inventory panel
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);

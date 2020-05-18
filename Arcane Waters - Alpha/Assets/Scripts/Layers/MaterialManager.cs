@@ -18,6 +18,15 @@ public class MaterialManager : MonoBehaviour {
    public Material material_flags;
    public Material noRecolorMaterial;
 
+   // Materials for Character stack
+   public Material guiMaterial_G;
+   public Material guiMaterial_G_B;
+   public Material guiMaterial_G_R;
+   public Material guiMaterial_R;
+   public Material guiMaterial_R_G;
+   public Material guiMaterial_flags;
+   public Material guiNoRecolorMaterial;
+
    // Self
    public static MaterialManager self;
 
@@ -88,6 +97,25 @@ public class MaterialManager : MonoBehaviour {
             return material_flags;
          default:
             return noRecolorMaterial;
+      }
+   }
+
+   public Material translateGUIMaterial (MaterialType materialType) {
+      switch (materialType) {
+         case MaterialType.Material_G:
+            return guiMaterial_G;
+         case MaterialType.Material_G_B:
+            return guiMaterial_G_B;
+         case MaterialType.Material_G_R:
+            return guiMaterial_G_R;
+         case MaterialType.Material_R:
+            return guiMaterial_R;
+         case MaterialType.Material_R_G:
+            return guiMaterial_R_G;
+         case MaterialType.Material_flags:
+            return guiMaterial_flags;
+         default:
+            return guiNoRecolorMaterial;
       }
    }
 

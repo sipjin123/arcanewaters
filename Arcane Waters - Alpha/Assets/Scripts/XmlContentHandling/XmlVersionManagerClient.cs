@@ -93,9 +93,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
       if (zipDataRequest.isNetworkError || zipDataRequest.isHttpError) {
          D.warning(zipDataRequest.error);
       } else {
-         string zipStringData = zipDataRequest.downloadHandler.text; 
-         byte[] bytes = Convert.FromBase64String(zipStringData);
-         File.WriteAllBytes(ZIP_PATH, bytes);
+         string zipStringData = zipDataRequest.downloadHandler.text;
+         try {
+            byte[] bytes = Convert.FromBase64String(zipStringData);
+            File.WriteAllBytes(ZIP_PATH, bytes);
+         } catch {
+            D.editorLog("Failed to convert byttes:", Color.red);
+            File.WriteAllText("C:/XmlErrorLog/ErrorFile.txt", zipStringData);
+         }
       }
 
       StartCoroutine(CO_ExtractTextFiles());
@@ -215,17 +220,13 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
 
       // Read the text from directly from the txt file
-      try {
-         StreamReader reader = new StreamReader(path);
-         content = reader.ReadToEnd();
-         reader.Close();
+      StreamReader reader = new StreamReader(path);
+      content = reader.ReadToEnd();
+      reader.Close();
 
-         assignDataToManagers(xmlType, content);
-         currentProgress++;
-         checkTextExtractionProgress();
-      } catch {
-         D.editorLog("Failed to read: " + xmlType + " - " + path, Color.red);
-      }
+      assignDataToManagers(xmlType, content);
+      currentProgress++;
+      checkTextExtractionProgress();
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {
@@ -254,21 +255,28 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.BattlerAbility:
             List<AttackAbilityData> attackAbilityList = new List<AttackAbilityData>();
             List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
+
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
+             
                // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 3) {
+               if (xmlSubGroup.Length == 2) {
+                  int abilityXmlContentIndex = 1;
+
                   int abilityId = int.Parse(xmlSubGroup[0]);
-                  AbilityType abilityType = (AbilityType) int.Parse(xmlSubGroup[1]);
+                  AbilityType abilityType = AbilityType.Standard;
+
+                  if (xmlSubGroup[abilityXmlContentIndex].Contains("BuffAbilityData")) {
+                     abilityType = AbilityType.BuffDebuff;
+                  }
 
                   if (abilityType == AbilityType.Standard || abilityType == AbilityType.Stance) {
-                     AttackAbilityData attackAbility = Util.xmlLoad<AttackAbilityData>(xmlSubGroup[2]);
+                     AttackAbilityData attackAbility = Util.xmlLoad<AttackAbilityData>(xmlSubGroup[abilityXmlContentIndex]);
                      attackAbilityList.Add(attackAbility);
                   } else if (abilityType == AbilityType.BuffDebuff) {
-                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[2]);
+                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[abilityXmlContentIndex]);
                      buffAbilityList.Add(buffAbility);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[abilityXmlContentIndex];
                   }
                }
             }

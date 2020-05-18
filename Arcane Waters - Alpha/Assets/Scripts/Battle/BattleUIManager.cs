@@ -176,6 +176,8 @@ public class BattleUIManager : MonoBehaviour {
 
                   abilityButton.abilityIndex = indexCounter;
                   attackAbilityIndex++;
+               } else {
+                  Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
                }
             } else if (abilitydata[indexCounter].abilityType == AbilityType.BuffDebuff) {
                BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilitydata[indexCounter].abilityType);
@@ -199,11 +201,14 @@ public class BattleUIManager : MonoBehaviour {
 
                   abilityButton.abilityIndex = indexCounter;
                   buffAbilityIndex++;
+               } else {
+                  Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
                }
             } else {
-               Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
+               Debug.LogWarning("Undefined ability Type: " + abilityButton.abilityIndex);
             }
 
+            abilityButton.gameObject.SetActive(true);
             abilityButton.enabled = true;
             buffPlayerButtons[indexCounter].enabled = true;
          } else {
@@ -438,6 +443,13 @@ public class BattleUIManager : MonoBehaviour {
       playerBattler.onBattlerSelect.AddListener(() => {
          playerMainUIHolder.gameObject.SetActive(true);
          playerBattleCG.Show();
+
+         foreach (AbilityButton abilityButton in abilityTargetButtons) {
+            if (abilityButton.isEnabled) {
+               abilityButton.gameObject.SetActive(true);
+               abilityButton.enableButton();
+            }
+         }
       });
 
       // Remove world space local battler canvas

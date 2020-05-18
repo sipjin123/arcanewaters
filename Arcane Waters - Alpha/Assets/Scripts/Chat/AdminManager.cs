@@ -33,6 +33,7 @@ public class AdminManager : NetworkBehaviour
    protected static string CREATE_SHOP_SHIPS = "create_shop_ships";
    protected static string CREATE_SHOP_ITEMS = "create_shop_items";
    protected static string PORT_GO = "portgo";
+   protected static string SHIP_SPEED_UP = "ship_speedup";
    protected static string SITE_GO = "sitego";
    protected static string PLAYER_GO = "pgo";
    protected static string BOT_WAYPOINT = "bot_waypoint";
@@ -129,6 +130,8 @@ public class AdminManager : NetworkBehaviour
          Cmd_NpcTest(parameters);
       } else if (GET_ITEM.Equals(adminCommand)) {
          requestGetItem(parameters);
+      } else if (SHIP_SPEED_UP.Equals(adminCommand)) {
+         requestShipSpeedup();
       } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
          requestGetAllItems(parameters);
       } else if (SCHEDULE_SERVER_RESTART.Equals(adminCommand)) {
@@ -306,6 +309,11 @@ public class AdminManager : NetworkBehaviour
    protected void requestWarp (string parameters) {
       // Send the request to the server
       Cmd_Warp(parameters);
+   }
+
+   protected void requestShipSpeedup () {
+      // Unlocks ship speed boost x2
+      _player.shipSpeedupFlag = true;
    }
 
    protected void requestGetItem (string parameters) {

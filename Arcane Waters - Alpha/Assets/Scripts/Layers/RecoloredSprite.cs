@@ -21,7 +21,7 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (ColorKey colorKey, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None) {
+   public void recolor (ColorKey colorKey, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None, bool isGUI = false) {
       _color1 = color1;
       _color2 = color2;
 
@@ -35,8 +35,13 @@ public class RecoloredSprite : MonoBehaviour {
       }
 
       // Assign the color associated with our color id from the database
-      Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateMaterial(materialType) : material;
-      setNewMaterial(newMaterial);
+      if (!isGUI) {
+         Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateMaterial(materialType) : material;
+         setNewMaterial(newMaterial);
+      } else {
+         Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateGUIMaterial(materialType) : material;
+         setNewMaterial(newMaterial);
+      }
    }
 
    public void setNewMaterial (Material oldMaterial) {

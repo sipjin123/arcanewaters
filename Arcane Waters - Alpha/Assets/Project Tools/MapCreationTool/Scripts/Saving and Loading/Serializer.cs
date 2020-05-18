@@ -865,6 +865,7 @@ namespace MapCreationTool.Serialization
       public const string NPC_DATA_KEY = "npc data";
       public const string NPC_SHOP_NAME_KEY = "shop name";
       public const string NPC_PANEL_TYPE_KEY = "panel type";
+      public const string NPC_DIRECTION_KEY = "direction default";
 
       public const string SPIDER_WEB_HEIGHT_KEY = "height";
 

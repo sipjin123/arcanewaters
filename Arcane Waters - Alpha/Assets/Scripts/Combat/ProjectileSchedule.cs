@@ -29,6 +29,9 @@ public class ProjectileSchedule
    // A flag to determine if the schedule should be disposed
    public bool dispose;
 
+   // A flag to determine if the attack is multiple
+   public bool isMultipleProjectile;
+
    // The ability id of the attack
    public int attackAbilityId;
 

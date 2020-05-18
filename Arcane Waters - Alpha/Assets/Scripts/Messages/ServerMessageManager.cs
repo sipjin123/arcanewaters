@@ -349,14 +349,18 @@ public class ServerMessageManager : MonoBehaviour {
       UserObjects userObjects = DB_Main.getUserObjects(userId);
 
       // Create the default ability
-      BasicAbilityData startingAbility = AbilityManager.getAbility(AbilityManager.STARTING_ABILITY_ID, AbilityType.Standard);
-      AbilitySQLData startingAbilitySQL = AbilitySQLData.TranslateBasicAbility(startingAbility);
+      int abilitySlotIndex = 0;
+      foreach (int abilityId in AbilityManager.STARTING_ABILITIES) {
+         BasicAbilityData startingAbility = AbilityManager.getAbility(abilityId, AbilityType.Standard);
+         AbilitySQLData startingAbilitySQL = AbilitySQLData.TranslateBasicAbility(startingAbility);
 
-      // Make sure the ability is equipped
-      startingAbilitySQL.equipSlotIndex = 0;
+         // Make sure the ability is equipped
+         startingAbilitySQL.equipSlotIndex = abilitySlotIndex;
 
-      // Add the ability to the user
-      DB_Main.updateAbilitiesData(userId, startingAbilitySQL);
+         // Add the ability to the user
+         DB_Main.updateAbilitiesData(userId, startingAbilitySQL);
+         abilitySlotIndex++;
+      }
 
       // Add the perks to the user
       DB_Main.addPerkPointsForUser(userId, PerkManager.self.getPerksFromAnswers(new List<int>(msg.perkAnswers)));

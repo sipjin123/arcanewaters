@@ -11,6 +11,7 @@ using MapCreationTool.Serialization;
 using System.IO;
 using SimpleJSON;
 using MapCustomization;
+using UnityEditor.EditorTools;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -47,13 +48,17 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new string getXmlContent (string tableName) {
+   public static new string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {
       string content = "";
+      string addedFields = "";
+      if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
+         addedFields = ", ability_type";
+      }
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT xml_id, xmlContent FROM arcane."+ tableName, conn)) {
+            "SELECT xml_id, xmlContent "+ addedFields + " FROM arcane."+ tableName, conn)) {
 
             
             conn.Open();
@@ -64,7 +69,13 @@ public class DB_Main : DB_MainStub {
                while (dataReader.Read()) {
                   string xmlContent = dataReader.GetString("xmlContent");
                   int xmlId = dataReader.GetInt32("xml_id");
-                  content += xmlId + "[space]" + xmlContent + "[next]\n"; // xmlContent;//
+
+                  string addedContent = "";
+                  if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
+                     addedContent = dataReader.GetInt32("ability_type") + "[space]";
+                  }
+
+                  content += xmlId + "[space]" + addedContent + xmlContent + "[next]\n";
                }
             }
          }

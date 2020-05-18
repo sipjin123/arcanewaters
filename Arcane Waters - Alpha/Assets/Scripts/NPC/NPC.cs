@@ -111,10 +111,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _seeker.pathCallback = setPath_Asynchronous;
 
          _startPosition = transform.position;
-
-         if (isShopNpc) {
-            facing = Direction.South;
-         }
       } else {
          setupClientSideValues();
       }
@@ -523,6 +519,12 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          } else if (field.k.CompareTo(DataField.NPC_PANEL_TYPE_KEY) == 0) {
             // Get Shop Panel Type (if any)
             panelName = field.v.Split(':')[0];
+         } else if (field.k.CompareTo(DataField.NPC_DIRECTION_KEY) == 0) {
+            try {
+               facing = (Direction) Enum.Parse(typeof(Direction), field.v.Split(':')[0]);
+            } catch {
+               facing = Direction.South;
+            }
          }
       }
 

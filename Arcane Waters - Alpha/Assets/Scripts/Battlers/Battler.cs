@@ -596,12 +596,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _defensiveInitializedStance = BasicAbilityData.CreateInstance(AbilityInventory.self.defenseStance);
 
       if (basicAbilityList != null) {
-         foreach (BasicAbilityData item in basicAbilityList) {
-            _battlerBasicAbilities.Add(item);
+         foreach (BasicAbilityData abilityData in basicAbilityList) {
+            _battlerBasicAbilities.Add(abilityData);
 
-            // Sync ID's for Player battlers
-            if (battlerType == BattlerType.PlayerControlled && NetworkServer.active) {
-               basicAbilityIDList.Add(item.itemID);
+            // Sync ID's for battlers
+            if (NetworkServer.active) {
+               basicAbilityIDList.Add(abilityData.itemID);
             }
          }
          battlerAbilitiesInitialized = true;
@@ -1533,7 +1533,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public float getPreContactLength () {
       // The amount of time our attack takes depends the type of Battler
-      return 0.5f;
+      return 0.35f;
    }
 
    public float getPreMagicLength () {

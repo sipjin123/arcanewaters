@@ -11,8 +11,13 @@ public class AbilityManager : MonoBehaviour
    // The maximum number of abilities that can be equipped in combat
    public static int MAX_EQUIPPED_ABILITIES = 5;
 
-   // The global id of the default ability all users start with
-   public static int STARTING_ABILITY_ID = 9;
+   // TODO: Propose a compiled starting data and set in sql database to be fetched when creating new users
+   // Default Attack = 9
+   // Fire ball = 20
+   // Air Slash = 37
+   // Earth Slash = 6
+   // Water Bullet = 18
+   public static int[] STARTING_ABILITIES = { 9, 20, 37, 6, 18};
 
    // A convenient self reference
    public static AbilityManager self;
