@@ -487,7 +487,31 @@ MonoBehaviour:
   wrongLayerIssues: []
   tilesSharedBetweenPrefabs: []
   unnecessaryTileIssues: []
-  removedDataFieldIssues: []
+  removedDataFieldIssues:
+  - prefab: {fileID: 4021854546249159720, guid: ffb35290c2379ea4bafb0af252b624c1,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 5663650462920956806, guid: 8da36abb80a99ed4e8d417a68904cbb5,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 1451683548362239122, guid: c60fb9b65d0918f49947be2fd28375f4,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 1141342231038569384, guid: f929627d29ddbf74b8b37c89831b7ed1,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 5673885531666727826, guid: 2148b87917dc20245beb83d73fd13b82,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 6880365461504764757, guid: c763fc1db5e84d44d8204bd21412cee5,
+      type: 3}
+    dataField: locked
+  - prefab: {fileID: 1536697751256960758, guid: 9610679f8c099574e8580bc7d4be69ef,
+      type: 3}
+    dataField: width
+  - prefab: {fileID: 1536697751256960758, guid: 9610679f8c099574e8580bc7d4be69ef,
+      type: 3}
+    dataField: height
 --- !u!1 &8951884888714914873
 GameObject:
   m_ObjectHideFlags: 0

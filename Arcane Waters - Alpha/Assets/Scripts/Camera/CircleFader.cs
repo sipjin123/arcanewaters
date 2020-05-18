@@ -55,6 +55,10 @@ public class CircleFader : ClientMonoBehaviour {
       }
    }
 
+   public bool isAnimating () {
+      return spotEffect.Radius > -.1f && spotEffect.Radius < 1f;
+   }
+
    protected IEnumerator CO_doCircleFade () {
       CameraFilterPack_FX_Spot spotEffect = Camera.main.GetComponent<CameraFilterPack_FX_Spot>();
 
@@ -76,6 +80,16 @@ public class CircleFader : ClientMonoBehaviour {
       // Wait until we're in the new area (or enough time passes)
       while (!hasCameraChanged() && Time.time - _startTime < TIMEOUT_DURATION) {
          yield return null;
+      }
+
+      if (PanelManager.self.loadingScreen.isShowing()) {
+         // Wait until the loading screen is hidden
+         while (PanelManager.self.loadingScreen.isShowing()) {
+            yield return null;
+         }
+
+         // Show a black screen for a short duration after the loading screen disappears
+         yield return new WaitForSeconds(0.2f);
       }
 
       // Turn the camera back on

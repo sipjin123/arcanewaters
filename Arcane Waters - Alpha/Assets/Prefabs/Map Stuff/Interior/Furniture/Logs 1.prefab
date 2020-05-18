@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6054124148363431641}
   - component: {fileID: 2210708155698818834}
   - component: {fileID: 377709887751690831}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Logs 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 8481032048556979068}
 --- !u!114 &2210708155698818834

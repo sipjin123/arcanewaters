@@ -13174,6 +13174,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 574c25251beafcc419b8bbbff61822f7,
         type: 3}
+    - target: {fileID: 901777596126141856, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
+        type: 3}
+      propertyPath: text
+      value: Earth
+      objectReference: {fileID: 0}
     - target: {fileID: 1602464449627320603, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -13547,6 +13552,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: d2b30eee6f9fe7d49963428f9208cb27,
         type: 3}
+    - target: {fileID: 901777596126141856, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
+        type: 3}
+      propertyPath: text
+      value: Air
+      objectReference: {fileID: 0}
     - target: {fileID: 1602464449627320603, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -13934,6 +13944,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 901777596126141856, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
+        type: 3}
+      propertyPath: text
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1602464449627320603, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -14315,6 +14330,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 23217a436b5744646bc5f4bb4a1eb637,
         type: 3}
+    - target: {fileID: 901777596126141856, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
+        type: 3}
+      propertyPath: text
+      value: Fire
+      objectReference: {fileID: 0}
     - target: {fileID: 1602464449627320603, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -14688,6 +14708,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 372f663fb49e39d4d8f2e2d638eaa6b2,
         type: 3}
+    - target: {fileID: 901777596126141856, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
+        type: 3}
+      propertyPath: text
+      value: Water
+      objectReference: {fileID: 0}
     - target: {fileID: 1602464449627320603, guid: 5f896f7f45d23d146841ed15c5c6f6d9,
         type: 3}
       propertyPath: m_AnchorMin.y

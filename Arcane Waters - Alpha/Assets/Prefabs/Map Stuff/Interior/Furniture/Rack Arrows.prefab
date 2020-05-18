@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9110118520963519100}
   - component: {fileID: 3571944212066439538}
   - component: {fileID: 7989759400973128517}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Rack Arrows
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -98,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 6243868539610433277}
 --- !u!61 &3571944212066439538

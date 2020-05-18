@@ -324,6 +324,9 @@ public class NetEntity : NetworkBehaviour {
 
       if (isLocalPlayer && !TitleScreen.self.isShowing()) {
          CircleFader.self.doCircleFade();
+         if (LocationBanner.self != null) {
+            LocationBanner.self.hide();
+         }
       }
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
@@ -1057,6 +1060,11 @@ public class NetEntity : NetworkBehaviour {
       this.transform.SetParent(area.transform, worldPositionStays);
 
       if (isLocalPlayer) {
+         // Wait until the loading screen is hidden
+         while (PanelManager.self.loadingScreen.isShowing()) {
+            yield return null;
+         }
+
          // Set the music according to our Area
          SoundManager.setBackgroundMusic(this.areaKey);
 

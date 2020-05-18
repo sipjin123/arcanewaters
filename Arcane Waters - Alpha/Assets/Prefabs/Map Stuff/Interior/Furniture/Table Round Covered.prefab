@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -94,7 +95,7 @@ GameObject:
   - component: {fileID: 5833168585432024454}
   - component: {fileID: 763653612044969365}
   - component: {fileID: 5279056754995727997}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Table Round Covered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,6 +132,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

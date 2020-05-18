@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6830913656969825487}
   - component: {fileID: 1626285406025954270}
   - component: {fileID: 7303331529993135684}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Rack Spears
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -97,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7630214752615084997}
 --- !u!61 &1626285406025954270

@@ -29,7 +29,9 @@ public class CharacterSpot : ClientMonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
+
       _spotCameraSettings = new VirtualCameraSettings();
       _spotCameraSettings.position = spotCamera.position;
       _spotCameraSettings.ppuScale = MyCamera.CHARACTER_CREATION_PPU_SCALE;

@@ -44,6 +44,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Container for list of palettes downloaded from database
    public RectTransform paletteRowParent;
 
+   // Main canvas gameobject showing palette options
+   public GameObject paletteDataScene;
+
    [Header("Edit palette menu")]
    public Image previewSprite;
    public Text choosePaletteNameText;
@@ -59,6 +62,12 @@ public class PaletteToolManager : XmlDataToolManager {
    
    // Background button - if user press anything beside Color Picker, it disappears
    public GameObject colorPickerHideButton;
+
+   // Start picking color from currently chosen sprite
+   public Button pickColorButton;
+
+   // Sprite preview using SpriteRender to allow using color picking
+   public SpriteRenderer spritePreviewForColorPicker;
 
    [Header("Confirm deleting palette scene")]
    // Object holds UI with confirm/cancel button
@@ -94,6 +103,26 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Data of the palette
       public PaletteToolData paletteData;
+   }
+
+   [Header("Palette type dropwdown")]
+   // Parent of elements used to pick palette type
+   public GameObject dropdownPaletteTypeParent;
+
+   // Dropdown element to populate with palette types to choose from
+   public TMPro.TMP_Dropdown dropdownPaletteType;
+
+   public enum PaletteImageType
+   {
+      None = 0,
+      Armor = 1,
+      Weapon = 2,
+      Hair = 3,
+      Eyes = 4,
+      Body = 5,
+      NPC = 6,
+      Ship = 7,
+      MAX = 8
    }
 
    #endregion
@@ -148,8 +177,16 @@ public class PaletteToolManager : XmlDataToolManager {
          confirmDeletingPaletteScene.gameObject.SetActive(false);
       });
 
+      // Start picking color from current sprite preview
+      pickColorButton.onClick.AddListener(() => {
+         startPickingColorFromSprite();
+      });
+
       // Fill dropdown, used for choosing preview sprite, with filenames
       prepareSpriteChooseDropdown();
+
+      // Fill dropdown, used for choosing palette types, with values based on palette type enum
+      preparePaletteTypeDropdown();
    }
 
    public void generateList () {
@@ -196,6 +233,14 @@ public class PaletteToolManager : XmlDataToolManager {
       }
       for (int i = 0; i < data.dstColor.Length; i++) {
          dst.Add(convertHexToRGB(data.dstColor[i]));
+      }
+      _paletteImageType = (PaletteImageType) data.paletteType;
+      string dropdownTextToFind = System.Enum.GetName(typeof(PaletteImageType), _paletteImageType);
+      int paletteTypeIndex = dropdownPaletteType.options.FindIndex((TMPro.TMP_Dropdown.OptionData optionData) => optionData.text.Equals(dropdownTextToFind));
+      if (paletteTypeIndex >= 0) {
+         dropdownPaletteType.SetValueWithoutNotify(paletteTypeIndex);
+      } else {
+         dropdownPaletteType.SetValueWithoutNotify(0);
       }
 
       // Present edit scene with downloaded data
@@ -328,7 +373,7 @@ public class PaletteToolManager : XmlDataToolManager {
          D.error("Source and destination color palette sizes are different. Cannot save palette in database!");
          return;
       }
-      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst);
+      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst, (int) _paletteImageType);
       saveXMLData(data, _currentRow == null ? -1 : _paletteDataList[_currentRow.dataIndex].paletteId);
    }
 
@@ -430,23 +475,67 @@ public class PaletteToolManager : XmlDataToolManager {
       }
    }
 
-   private void prepareSpriteChooseDropdown () {
-      DirectoryInfo directoryInfo = new DirectoryInfo(Application.dataPath);
-      dropdownFileChoose.options.Clear();
+   private void startPickingColorFromSprite () {
+      paletteDataScene.SetActive(false);
+      changePaletteScene.gameObject.SetActive(false);
+      colorPickerHideButton.gameObject.SetActive(false);
+      spritePreviewForColorPicker.gameObject.SetActive(true);
+      spritePreviewForColorPicker.sprite = previewSprite.sprite;
+      spritePreviewForColorPicker.material.SetTexture("_Palette", previewSprite.material.GetTexture("_Palette"));
 
-      List<FileInfo> fileInfo = new List<FileInfo>();
-      fileInfo.AddRange(directoryInfo.GetFiles("*.jpg", SearchOption.AllDirectories));
-      fileInfo.AddRange(directoryInfo.GetFiles("*.png", SearchOption.AllDirectories));
-      fileInfo.AddRange(directoryInfo.GetFiles("*.jpeg", SearchOption.AllDirectories));
-      fileInfo.AddRange(directoryInfo.GetFiles("*.bmp", SearchOption.AllDirectories));
+      float desiredWidth = Screen.width * 0.4f;
+      float startWidth = spritePreviewForColorPicker.sprite.textureRect.size.x;
+      float scale = desiredWidth / startWidth;
+      spritePreviewForColorPicker.transform.localScale = new Vector3(scale, scale, 1.0f);
 
-      foreach (FileInfo file in fileInfo) {
-         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(file.Name);
-         dropdownFileChoose.options.Add(optionData);
-         _cachedPathsOfSpriteDropdown.Add(file.FullName);
+      PaletteToolColorUnderCursor.self.activate(_currentlyEditedElementInPalette.GetComponent<Image>().color);
+   }
+
+   public void updatePickingColorFromSprite(Color color) {
+      colorPicker.GetComponent<ColorPicker>().CurrentColor = color;
+   }
+
+   public void finalizePickingColorFromSprite (bool ignoreColorChange = false) {
+      paletteDataScene.SetActive(true);
+      spritePreviewForColorPicker.gameObject.SetActive(false);
+      changePaletteScene.gameObject.SetActive(true);
+      colorPickerHideButton.gameObject.SetActive(true);
+      colorPickerHideButton.gameObject.SetActive(false);
+      colorPicker.SetActive(false);
+   }
+
+   public void finalizePickingColorFromSprite (bool ignoreColorChange, Color revertColor) {
+      if (ignoreColorChange) {
+         changeColorInPalette(revertColor);
+      }
+      finalizePickingColorFromSprite(ignoreColorChange);      
+   }
+
+   private void preparePaletteTypeDropdown () {
+      dropdownPaletteType.options.Clear();
+
+      for (int i = (int) PaletteImageType.None + 1; i < (int) PaletteImageType.MAX; i++) {
+         string text = System.Enum.GetName(typeof(PaletteImageType), (PaletteImageType) i);
+         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(text);
+         dropdownPaletteType.options.Add(optionData);
       }
 
-      if (_cachedPathsOfSpriteDropdown.Count == 1) {
+      dropdownPaletteType.onValueChanged.AddListener((int index) => {
+         _paletteImageType = (PaletteImageType) (index + 1);
+      });
+   }
+
+   private void prepareSpriteChooseDropdown () {
+      const string spritePath = "Assets/Sprites";
+      _cachedSpriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
+      dropdownFileChoose.options.Clear();
+
+      foreach (ImageManager.ImageData imageData in _cachedSpriteIconFiles) {
+         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(imageData.imageName);
+         dropdownFileChoose.options.Add(optionData);
+      }
+
+      if (_cachedSpriteIconFiles.Count == 1) {
          choosePreviewSprite(0);
          dropdownFileChoose.value = 0;
       } else {
@@ -458,18 +547,51 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void choosePreviewSprite (int dropdownIndex) {
-      if (_cachedPathsOfSpriteDropdown.Count > dropdownIndex && File.Exists(_cachedPathsOfSpriteDropdown[dropdownIndex])) {
-         byte[] data = File.ReadAllBytes(_cachedPathsOfSpriteDropdown[dropdownIndex]);
-         Texture2D texture = new Texture2D(1, 1);
-         texture.filterMode = FilterMode.Point;
-         texture.wrapMode = TextureWrapMode.Clamp;
-         texture.LoadImage(data);
+      bool isPaletteEmpty = true;
+      foreach (Image image in _srcColors) {
+         if (image.color != Color.black) {
+            isPaletteEmpty = false;
+            break;
+         }
+      }
 
-         // Works only for "single sprite". We do not have enough information for slicing here
-         Sprite sprite = Sprite.Create(texture, new Rect(Vector2.zero, new Vector2(texture.width, texture.height)), Vector2.zero);
-         previewSprite.sprite = sprite;
-         //colorPicker.GetComponent<ColorPicker>().Setup.DefaultPresetColors = generateMostCommonPixelsInSprite(previewSprite.sprite).ToArray();
-         colorPresets.forceUpdateColors(generateMostCommonPixelsInSprite(previewSprite.sprite));
+      if (isPaletteEmpty) {
+         foreach (Image image in _dstColors) {
+            if (image.color != Color.black) {
+               isPaletteEmpty = false;
+               break;
+            }
+         }
+      }
+
+      // Works only for "single sprite". We do not have enough information for slicing here
+      previewSprite.sprite = _cachedSpriteIconFiles[dropdownIndex].sprite;
+      colorPresets.forceUpdateColors(generateMostCommonPixelsInSprite(previewSprite.sprite));
+
+      // If preview changed for empty palette - fill with sprite colors
+      if (isPaletteEmpty) {
+         List<Color> allColors = generateMostCommonPixelsInSprite(previewSprite.sprite, 0);
+         if (allColors.Count <= 8) {
+            changeArraySize(8);
+         } else if (allColors.Count <= 16) {
+            changeArraySize(16);
+         } else if (allColors.Count <= 32) {
+            changeArraySize(32);
+         } else if (allColors.Count <= 64) {
+            changeArraySize(64);
+         } else {
+            changeArraySize(128);
+         }
+
+         int count = _srcColors.Count;
+         if (allColors.Count < _srcColors.Count) {
+            count = allColors.Count;
+         }
+
+         for (int i = 0; i < count; i++) {
+            _srcColors[i].color = allColors[i];
+            _dstColors[i].color = allColors[i];
+         }
       }
    }
 
@@ -613,7 +735,7 @@ public class PaletteToolManager : XmlDataToolManager {
       #endif
    }
 
-   private List<Color> generateMostCommonPixelsInSprite (Sprite sprite) {
+   private List<Color> generateMostCommonPixelsInSprite (Sprite sprite, int count = 10) {
       // Get atlas texture to work with
       Texture2D readableCopy = createReadableTextureCopy(sprite.texture);
 
@@ -649,11 +771,15 @@ public class PaletteToolManager : XmlDataToolManager {
          }
       }
 
+      if (count <= 0) {
+         return colorList;
+      }
+
       // Clear list to reuse it as an output
       colorList.Clear();
 
-      // Take 10 most often occurring colors
-      for (int i = 0; i < 10; i++) {
+      // Take most often occurring colors
+      for (int i = 0; i < count; i++) {
          int maxValue = int.MinValue;
          Color currentColor = Color.black;
          foreach (KeyValuePair<Color, int> colorWeightPair in popularColors) {
@@ -802,8 +928,11 @@ public class PaletteToolManager : XmlDataToolManager {
    // Currently edited row of data
    private PaletteButtonRow _currentRow;
 
-   // Contains full path of files which are presented on choosing sprite dropdown
-   private List<string> _cachedPathsOfSpriteDropdown = new List<string>();
+   // Cached all images available in project used for preview sprite
+   private List<ImageManager.ImageData> _cachedSpriteIconFiles = new List<ImageManager.ImageData>();
+
+   // Current palette image type
+   private PaletteImageType _paletteImageType;
 
    #endregion
 }

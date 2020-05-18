@@ -17,7 +17,8 @@ public class MyCamera : BaseCamera
 
    #endregion
 
-   void Awake () {
+   public override void Awake () {
+      base.Awake();
       _vcam = GetComponent<Cinemachine.CinemachineVirtualCamera>();
 
       _defaultOrthographicSize = Screen.height / DEFAULT_PPU_SCALE;

@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 4067209793722120581}
   - component: {fileID: 2566221693344506546}
   - component: {fileID: 3168773921852128316}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Bush 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -128,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 1890067401426966862}
 --- !u!114 &2566221693344506546

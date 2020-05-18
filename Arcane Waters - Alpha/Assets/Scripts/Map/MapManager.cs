@@ -141,7 +141,7 @@ public class MapManager : MonoBehaviour
       foreach (ExportedLayer001 layer in exportedProject.layers) {
          MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
             result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
-         PanelManager.self.loadingScreen.setPercentage(-0.4f + ((0.5f / exportedProject.layers.Length) * tilemaps.Count));
+         PanelManager.self.loadingScreen.setPercentage((0.1f / exportedProject.layers.Length) * tilemaps.Count);
          yield return null;
       }
 
@@ -167,12 +167,10 @@ public class MapManager : MonoBehaviour
             mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
                exportedProject.biome, rect));
 
-            PanelManager.self.loadingScreen.setPercentage(0.1f + (1f / chunkCount) * mapColliderChunks.Count);
+            PanelManager.self.loadingScreen.setPercentage(0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
             yield return null;
          }
       }
-
-      PanelManager.self.loadingScreen.setPercentage(1f);
 
       result.area.setTilemapLayers(tilemaps);
       result.area.setColliderChunks(mapColliderChunks);
@@ -209,6 +207,8 @@ public class MapManager : MonoBehaviour
       // Set the area as available
       AreaManager.self.storeArea(area);
 
+      PanelManager.self.loadingScreen.setPercentage(1f);
+
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
       // Only remove old maps on the Clients
@@ -222,8 +222,6 @@ public class MapManager : MonoBehaviour
       if (Global.player != null) {
          Global.player.updatePlayerCamera();
       }
-
-      PanelManager.self.loadingScreen.hide();
 
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {

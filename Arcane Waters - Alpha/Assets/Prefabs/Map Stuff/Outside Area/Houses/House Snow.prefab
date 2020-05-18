@@ -307,7 +307,7 @@ GameObject:
   - component: {fileID: 2711334786512257047}
   - component: {fileID: 5954101539184854241}
   - component: {fileID: 2233037652101023129}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: House Snow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

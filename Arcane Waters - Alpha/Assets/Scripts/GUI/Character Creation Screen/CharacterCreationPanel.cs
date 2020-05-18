@@ -157,8 +157,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    public void submitCharacterCreation (bool ignorePerkQuestions = false) {
       questionsScreen.gameObject.SetActive(false);
-      this.canvasGroup.interactable = false;
-      this.canvasGroup.alpha = 0;
+      hide();
 
       SpotFader.self.doCircleFade(_char.transform.position, Color.black, true, -1, true);
             

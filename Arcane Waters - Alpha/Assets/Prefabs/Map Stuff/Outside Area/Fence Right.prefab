@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -126,6 +127,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -204,7 +206,7 @@ GameObject:
   - component: {fileID: 989230506474246993}
   - component: {fileID: 5867030183641573788}
   - component: {fileID: -4262839522886840907}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Fence Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,6 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 3282928474115027392}
 --- !u!114 &5867030183641573788

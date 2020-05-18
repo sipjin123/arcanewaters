@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 8591980966588862482}
   - component: {fileID: 4281089792992207385}
   - component: {fileID: 4835292954512017587}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: House Desert
   m_TagString: Untagged
   m_Icon: {fileID: 0}

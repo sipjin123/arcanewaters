@@ -70,7 +70,7 @@ namespace MapCreationTool.IssueResolving
          UI.loadingPanel.display("Resolving Issues");
 
          Utilities.doBackgroundTask(
-            () => maps = DB_Main.getMaps().Where(m => m.editorType == EditorType.Sea).ToList(),
+            () => maps = DB_Main.getMaps().ToList(),
             receivedMaps,
             encounteredError
          );
@@ -79,7 +79,7 @@ namespace MapCreationTool.IssueResolving
       private static void receivedMaps () {
          // Download all latest map versions
          foreach (Map map in maps) {
-            Task task = Utilities.doBackgroundTask(() => scheduledForResolve.Enqueue(DB_Main.getLatestMapVersionEditor(map)), null, encounteredError);
+            Task task = Utilities.doBackgroundTask(() => scheduledForResolve.Enqueue(DB_Main.getLatestMapVersionEditor(map, true)), null, encounteredError);
             downloadTasks.Add(task);
          }
 
@@ -131,7 +131,7 @@ namespace MapCreationTool.IssueResolving
                   } else {
                      newVersion.version = DrawBoard.loadedVersion.version;
                      newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
-                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion), newVersion.map.name));
+                     scheduledUpload.Enqueue((() => DB_Main.updateMapVersion(newVersion, true), newVersion.map.name));
                   }
                }
 

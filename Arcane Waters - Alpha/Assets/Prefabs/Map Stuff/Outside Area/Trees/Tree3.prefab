@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9001825663692574}
   - component: {fileID: 1918065376102985519}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -92,7 +93,7 @@ GameObject:
   - component: {fileID: 8658449126033229096}
   - component: {fileID: 3485375377103548470}
   - component: {fileID: 2563438927760776648}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: bot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,6 +128,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -204,7 +206,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 637134308845316348}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Sort Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +238,7 @@ GameObject:
   - component: {fileID: 384970685727403341}
   - component: {fileID: 6384349401052609547}
   - component: {fileID: 2874684099393637305}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Tree3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,6 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 5502170458395138647}
 --- !u!114 &2874684099393637305

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3422777832017436295}
   - component: {fileID: -7480134141693223039}
   - component: {fileID: -8922480294558251014}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Chair N
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,6 +157,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 6781903743018792231}
+  mapEditorState:
+    id: 0
+    localPosition: {x: 0, y: 0}
+  customizedState:
+    id: 0
+    localPosition: {x: 0, y: 0}
+  unappliedChanges:
+    id: 0
+    localPosition: {x: 0, y: 0}
 --- !u!1 &3422777832018557691
 GameObject:
   m_ObjectHideFlags: 0

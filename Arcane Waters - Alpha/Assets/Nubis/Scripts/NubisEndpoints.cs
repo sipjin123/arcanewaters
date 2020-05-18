@@ -3,15 +3,17 @@ public class NubisEndpoints
 {
    #region "Public Variables"
 
-   //public const string fetch = "fetch";
+   // RPC - Nubis Endpoint. Used for invoking methods.
+   public const string RPC = "rpc";
 
-   //public const string notify = "notify";
+   // Terminate - Nubis Endpoint. Used to stop Nubis' execution.
+   public const string TERMINATE = "terminate";
 
-   public const string stop = "nubis_stop";
-
-   public const string log = "nubis_log";
+   // Log - Nubis Endpoint. Used to access Nubis logs.
+   public const string LOG = "log";
 
    #endregion
+
 }
 
 #endif

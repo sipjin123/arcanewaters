@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 
-public class CharacterScreen : MonoBehaviour {
+public class CharacterScreen : MonoBehaviour
+{
    #region Public Variables
 
    // Our virtual camera
@@ -37,7 +38,7 @@ public class CharacterScreen : MonoBehaviour {
    {
       // The sql id 
       public int equipmentId;
-      
+
       // The sprite index 
       public int spriteId;
 
@@ -58,7 +59,7 @@ public class CharacterScreen : MonoBehaviour {
          _spots[spot.number] = spot;
       }
 
-      myCamera = virtualCam.GetComponent<MyCamera>();      
+      myCamera = virtualCam.GetComponent<MyCamera>();
    }
 
    public StartingArmorData getStartingArmor (int index) {
@@ -126,7 +127,7 @@ public class CharacterScreen : MonoBehaviour {
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], (ColorType) armorColors1[i], (ColorType) armorColors2[i]);
             spot.assignCharacter(offlineChar);
-         } 
+         }
       }
 
       // Sometimes we just want to auto-select a character when debugging

@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 3094853600236848530}
   - component: {fileID: 3441501338249686521}
   - component: {fileID: -2793312725250676367}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Shipyard Sign
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -154,6 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 801700925166041629}
 --- !u!114 &-2793312725250676367

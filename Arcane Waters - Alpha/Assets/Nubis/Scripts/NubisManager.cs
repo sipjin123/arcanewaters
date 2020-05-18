@@ -1,5 +1,4 @@
-﻿//#define NUBIS
-#if NUBIS
+﻿#if NUBIS
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,38 +14,17 @@ public class NubisManager : MonoBehaviour
 {
    #region Public Variables
 
-   // Nubis dedicated directory
-   public static string NUBIS_LOG_DIRECTORY = "C:/NubisLog/";
-
-   // Nubis dedicated file
-   public static string NUBIS_FILE = "NubisLog.txt";
-
    #endregion
 
    /// <summary>
    /// Unity Start Message.
    /// </summary>
    public void Start () {
+      Application.targetFrameRate = 1;
       i("NubisManager starting");
-
-      if (!Directory.Exists(NUBIS_LOG_DIRECTORY)) {
-         Directory.CreateDirectory(NUBIS_LOG_DIRECTORY);
-      }
-      if (!File.Exists(NUBIS_LOG_DIRECTORY + NUBIS_FILE)) {
-         File.Create(NUBIS_LOG_DIRECTORY + NUBIS_FILE).Close();
-      }
-
-      customLog("Starting Log");
-
       _ = StartNubis();
    }
    
-   private void customLog (string content) {
-      using (StreamWriter w = File.AppendText(NUBIS_LOG_DIRECTORY + NUBIS_FILE)) {
-         w.WriteLine(content);
-      }
-   }
-
    public void OnDestroy () {
       Stop();
    }
@@ -56,6 +34,7 @@ public class NubisManager : MonoBehaviour
       if (!IsSupported) return false;
       return true;
    }
+
    private static void Content (HttpListenerContext context, string message = "") {
       try {
          i("Replying to client...");
@@ -70,6 +49,7 @@ public class NubisManager : MonoBehaviour
          i("Replying to client: FAILED");
       }
    }
+   
    private static void OK (HttpListenerContext context, string message = "OK") {
       try {
          i("Replying to client...");
@@ -84,100 +64,30 @@ public class NubisManager : MonoBehaviour
          i("Replying to client: FAILED");
       }
    }
+   
    private async Task ProcessRequestAsync (HttpListenerContext context) {
       await Task.Run(() => {
          try {
-            //string Fetch_Craftable_Armors_v3_Endpoint = "Fetch_Craftable_Armors_v3";
-            //string action = context.Request.QueryString.Get("action");
             if (context.Request.Url.Segments == null || context.Request.Url.Segments.Length < 1) {
-               OK(context,"");
+            OK(context,"");
             return;
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
-               case "fetch_xml_zip_v1":
-                  string xmlZipData_v1 = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
-                  customLog("Str is: " + xmlZipData_v1);
-                  Content(context, xmlZipData_v1);
+               case NubisEndpoints.RPC:
+                  var result = NubisRelay.call(context.Request.Url.AbsoluteUri);
+                  OK(context, result);
                   break;
-               case "fetch_xml_version_v1": 
-                  string xmlVersion_v1 = Fetch_Xml_Version_v1Controller.fetchXmlVersion();
-                  customLog("Str is: " + xmlVersion_v1);
-                  Content(context, xmlVersion_v1);
-                  break;
-               case "fetch_map_data_v1": // params: INT usrId
-                  string str_mapData_v1_name = context.Request.QueryString.Get("mapName");
-                  string mapData_v1 = Fetch_Map_Data_v1Controller.fetchMapData(str_mapData_v1_name);
-                  Content(context, mapData_v1);
-                  break;
-               case "fetch_user_inventory_v1": // params: INT usrId
-                  string str_inventory_v1_usrid = context.Request.QueryString.Get("usrId");
-                  string str_inventory_v1_itmType = context.Request.QueryString.Get("itmType");
-                  int inventory_v1_usrid = int.Parse(str_inventory_v1_usrid);
-                  int inventory_v1_itmType = int.Parse(str_inventory_v1_itmType);
-                  string userInventory_v1 = Fetch_Inventory_v1Controller.userInventory(inventory_v1_usrid, inventory_v1_itmType);
-                  Content(context, userInventory_v1);
-                  break;
-               case "fetch_craftable_armors_v3": // params: INT usrId
-                  string str_armor_usrid_v3 = context.Request.QueryString.Get("usrId");
-                  int armor_usrid_v3 = int.Parse(str_armor_usrid_v3);
-                  string craftableArmors_v3 = Fetch_Craftable_Armors_v3Controller.fetchCraftableArmors(armor_usrid_v3);
-                  Content(context, craftableArmors_v3);
-                  break;
-               case "fetch_craftable_armors_v4": // params: INT usrId
-                  string str_armor_v4_usrid = context.Request.QueryString.Get("usrId");
-                  int armor_usrid_v4 = int.Parse(str_armor_v4_usrid);
-                  string craftableArmors_v4 = Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(armor_usrid_v4);
-                  Content(context, craftableArmors_v4);
-                  break;
-               case "fetch_craftable_weapons_v3": // params: INT usrId
-                  string str_weapon_v3_usrid = context.Request.QueryString.Get("usrId");
-                  int weapons_v3_usrid = int.Parse(str_weapon_v3_usrid);
-                  string craftableWeapons_v3 = Fetch_Craftable_Weapons_v3Controller.fetchCraftableWeapons(weapons_v3_usrid);
-                  Content(context, craftableWeapons_v3);
-                  break;
-               case "fetch_craftable_weapons_v4": // params: INT usrId
-                  string str_weapons_v4_usrid = context.Request.QueryString.Get("usrId");
-                  int weapons_v4_usrid = int.Parse(str_weapons_v4_usrid);
-                  string craftableWeapons_v4 = Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(weapons_v4_usrid);
-                  Content(context, craftableWeapons_v4);
-                  break;
-               case "fetch_crafting_ingredients_v3": // params: INT usrId
-                  string str_ingredient_v3_usrid = context.Request.QueryString.Get("usrId");
-                  int ingredient_v3_usrid = int.Parse(str_ingredient_v3_usrid);
-                  string craftingIngredients_v3 = Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(ingredient_v3_usrid);
-                  Content(context, craftingIngredients_v3);
-                  break;
-               case "fetch_equipped_items_v3": // params: INT usrId
-                  string str_equipped_item_v3_usrid = context.Request.QueryString.Get("usrId");
-                  int equipped_item_v3_usrid = int.Parse(str_equipped_item_v3_usrid);
-                  string equippedItems_v3 = Fetch_Equipped_Items_v3Controller.fetchEquippedItems(equipped_item_v3_usrid);
-                  Content(context, equippedItems_v3);
-                  break;
-               case "fetch_single_blueprint_v4": // params: INT bpId, INT usrId 
-                  string str_single_blueprint_v4_bpid = context.Request.QueryString.Get("bpId");
-                  string str_single_blueprint_v4_usrid = context.Request.QueryString.Get("usrId");
-                  int single_blueprint_v4_bpid = int.Parse(str_single_blueprint_v4_bpid);
-                  int single_blueprint_v4_usrid = int.Parse(str_single_blueprint_v4_usrid);
-                  string singleBlueprint_v4 = Fetch_Single_Blueprint_v4Controller.fetchSingleBlueprint(single_blueprint_v4_bpid, single_blueprint_v4_usrid);
-                  Content(context, singleBlueprint_v4);
-                  break;
-               case "user_data_v1": // params: INT usrId
-                  string str_user_data_v1_usrid = context.Request.QueryString.Get("usrId");
-                  int user_data_usrid = int.Parse(str_user_data_v1_usrid);
-                  string userData = User_Data_v1Controller.userData(user_data_usrid);
-                  Content(context, userData);
-                  break;
-               case NubisEndpoints.stop:
+               case NubisEndpoints.TERMINATE:
                   string msg = "Stop request received.";
                   i(msg);
                   OK(context, msg);
                   Stop();
                   break;
-               case NubisEndpoints.log:
+               case NubisEndpoints.LOG:
                   i("Log requsted.");
                   using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-                     foreach (string line in File.ReadAllLines(NubisConfiguration.ConfigFilePath()))
+                     foreach (string line in File.ReadAllLines(NubisConfiguration.LogFilePath()))
                         writer.WriteLine(line);
                   }
                   context.Response.StatusCode = 200;
@@ -194,6 +104,7 @@ public class NubisManager : MonoBehaviour
          
       });
    }
+   
    public async Task StartNubis () {
       if (Status == NubisStatus.Starting || Status == NubisStatus.Running) return;
       Status = NubisStatus.Starting;
@@ -202,6 +113,7 @@ public class NubisManager : MonoBehaviour
       configuration = NubisConfiguration.LoadSafe();
       await CreateWebServerAsync(configuration.WebServerPort);
    }
+   
    private bool CheckSystemRequirements () {
       i("Checking System Requirements...");
       bool httpListenerSupported = HttpListener.IsSupported;
@@ -213,6 +125,7 @@ public class NubisManager : MonoBehaviour
       i("Checking System Requirements: DONE.");
       return true;
    }
+   
    private void WebServerLoop () {
       try {
          i($"{NubisStatics.AppName} waiting for requests.");
@@ -234,6 +147,7 @@ public class NubisManager : MonoBehaviour
       }
       i($"{NubisStatics.AppName} web server stopped.");
    }
+   
    private bool StartWebServer (HttpListener httpServer, int port) {
       // try to start web server.
       try {
@@ -256,6 +170,7 @@ public class NubisManager : MonoBehaviour
       }
       return true;
    }
+   
    private async Task CreateWebServerAsync (int port) {
       try {
          // create web server.
@@ -267,12 +182,14 @@ public class NubisManager : MonoBehaviour
          e(ex);
       }
    }
+   
    public void Stop () {
       if (Status == NubisStatus.Stopping || Status == NubisStatus.Idle) return;
       Status = NubisStatus.Stopping;
       i($"{NubisStatics.AppName} stopping...");
       httpServer?.Abort();
    }
+ 
 
    #region Private Variables
 
@@ -282,7 +199,7 @@ public class NubisManager : MonoBehaviour
    private HttpListener httpServer;
    //// List of the processes that have been run.
    //private List<ProcessInfo> spawnedProcesses = new List<ProcessInfo>();
-   //// Reference to the current status of the Butler.
+   // Reference to the current status of the Butler.
    public NubisStatus Status { get; private set; } = NubisStatus.Idle;
 
    #endregion

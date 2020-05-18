@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 1681070814382834720}
   - component: {fileID: 2134123980644196088}
   - component: {fileID: 8243424991923865238}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Rack Swords
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -128,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 6532566009759989115}
 --- !u!61 &2134123980644196088

@@ -247,7 +247,7 @@ GameObject:
   - component: {fileID: 5292249670881763097}
   - component: {fileID: 2587621505532540718}
   - component: {fileID: 7859778589576658263}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: House Shroom
   m_TagString: Untagged
   m_Icon: {fileID: 0}

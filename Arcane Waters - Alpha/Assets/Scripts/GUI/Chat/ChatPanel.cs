@@ -112,8 +112,8 @@ public class ChatPanel : MonoBehaviour {
             inputField.text = "";
          }
 
-         // Reselect the input field
-         inputField.ActivateInputField();
+         // Deselect the input field
+         inputField.DeactivateInputField();
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the

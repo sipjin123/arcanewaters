@@ -254,50 +254,15 @@ public class Area : MonoBehaviour
       graph.center = transform.position;
       Tilemap firstTilemap = GetComponentInChildren<Tilemap>();
       graph.SetDimensions(firstTilemap.size.x, firstTilemap.size.y, firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
-      graph.rotation = new Vector3(90.0f, 0.0f, 0.0f);
+      graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
       graph.collision.use2D = true;
+      graph.collision.Initialize(graph.transform, 1.0f);
+      graph.collision.type = ColliderType.Ray;
+      graph.collision.mask = LayerMask.GetMask("GridColliders");
       graph.Scan();
-
-      // Manually update the Graph as it doesn't detect our Tilemaps by default
-      for (int y = 0; y < graph.Depth; y++) {
-         for (int x = 0; x < graph.Width; x++) {
-            // Get the map chunk at this grid position
-            Vector3Int centeredCellPos = new Vector3Int(x - graph.Width / 2, (graph.Depth / 2 - 1) - y, 0);
-            MapChunk chunk = getColliderChunkAtCell(centeredCellPos);
-
-            // Iterate over the tilemap list of the chunk
-            bool isWall = false;
-            if (chunk != null) {
-               foreach (Tilemap tilemap in chunk.getTilemaps()) {
-                  TileBase tile = tilemap.GetTile(centeredCellPos);
-                  if (tile == null) {
-                     continue;
-                  }
-
-                  foreach (string collisionName in COLLIDING_TILEMAPS) {
-                     if (tilemap.name.StartsWith(collisionName)) {
-                        isWall = true;
-                        break;
-                     }
-                  }
-
-                  if (isWall) {
-                     break;
-                  }
-               }
-            }
-
-            graph.nodes[y * graph.width + x].Walkable = !isWall;
-         }
-      }
    }
 
    #region Private Variables
-
-   // The starting names of the tilemaps that will be considered for blocking Nodes
-   private static readonly string[] COLLIDING_TILEMAPS = new string[] {
-      "mountain", "shrub", "water", "fence", "bush", "stump", "stair", "prop"
-   };
 
    // Stores the Tilemaps for this area
    protected List<TilemapLayer> _tilemapLayers = new List<TilemapLayer>();

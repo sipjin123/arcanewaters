@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6255790322949146146}
   - component: {fileID: 2482271965635932700}
   - component: {fileID: -9044325572988965749}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Clock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51,6 +51,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -139,6 +140,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 3086768177529354106}
 --- !u!114 &2482271965635932700

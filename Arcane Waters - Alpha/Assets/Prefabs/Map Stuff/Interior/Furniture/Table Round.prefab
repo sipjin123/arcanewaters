@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6617651779735342966}
   - component: {fileID: 7529398635569606952}
   - component: {fileID: 5381676183707409189}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Table Round
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

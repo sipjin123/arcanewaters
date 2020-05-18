@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9056272327084922341}
   - component: {fileID: 3051194416001677771}
   - component: {fileID: 951518545783518435}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Weapon Shop Sign
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,6 +49,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -124,6 +125,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 5004551392967781964}
 --- !u!114 &951518545783518435

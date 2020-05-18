@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6203272665619712772}
   - component: {fileID: 6294104036873642338}
   - component: {fileID: 6294682998910953150}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Dresser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -68,6 +68,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -117,6 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 6307001380784294122}
 --- !u!61 &6294104036873642338

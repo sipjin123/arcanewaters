@@ -1327,15 +1327,18 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new MapVersion getLatestMapVersionEditor (Map map) {
+   public static new MapVersion getLatestMapVersionEditor (Map map, bool infiniteCommandTimeout = false) {
       string cmdText = "SELECT version, createdAt, updatedAt, editorData " +
          "FROM map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id);";
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         if (infiniteCommandTimeout) {
+            cmd.CommandTimeout = 0;
+         }
+
          conn.Open();
          cmd.Prepare();
-
          cmd.Parameters.AddWithValue("@id", map.id);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1523,9 +1526,13 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void updateMapVersion (MapVersion mapVersion) {
+   public static new void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
+         if (infiniteCommandTimeout) {
+            cmd.CommandTimeout = 0;
+         }
+
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
          cmd.Transaction = transaction;

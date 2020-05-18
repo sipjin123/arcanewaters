@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 6584422729957349177}
   - component: {fileID: 5668770284191497096}
   - component: {fileID: -2982095028698323453}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -244,3 +244,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 6256182019317202255}
+  mapEditorState:
+    id: 0
+    localPosition: {x: 0, y: 0}
+  customizedState:
+    id: 0
+    localPosition: {x: 0, y: 0}
+  unappliedChanges:
+    id: 0
+    localPosition: {x: 0, y: 0}

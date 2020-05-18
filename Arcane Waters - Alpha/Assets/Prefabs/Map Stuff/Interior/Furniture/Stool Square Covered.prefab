@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -94,7 +95,7 @@ GameObject:
   - component: {fileID: 7747730122611628474}
   - component: {fileID: 8207126114700835076}
   - component: {fileID: 1580079874567133320}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Stool Square Covered
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -131,6 +132,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -180,6 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 7342026400979959997}
 --- !u!114 &8207126114700835076

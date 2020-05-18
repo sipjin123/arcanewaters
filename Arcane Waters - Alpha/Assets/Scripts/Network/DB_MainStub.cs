@@ -274,7 +274,7 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static MapVersion getLatestMapVersionEditor (Map map) {
+   public static MapVersion getLatestMapVersionEditor (Map map, bool infiniteCommandTimeout = false) {
       return null;
    }
 
@@ -294,7 +294,7 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static void updateMapVersion (MapVersion mapVersion) {
+   public static void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
 
    }
 

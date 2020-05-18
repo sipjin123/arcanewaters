@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 3368595994322380614}
   - component: {fileID: 5036891397796978333}
   - component: {fileID: 8846518366900384796}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Hanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -128,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 474846251673048159}
 --- !u!114 &5036891397796978333

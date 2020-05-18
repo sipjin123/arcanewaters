@@ -36,6 +36,12 @@ public class LocationBanner : MonoBehaviour {
       StartCoroutine(CO_ChangeText(locationName));
    }
 
+   public void hide () {
+      StopAllCoroutines();
+      _textSetTime = float.MinValue;
+      canvasGroup.alpha = 0f;
+   }
+
    protected IEnumerator CO_ChangeText (string locationName) {
       // Start out hidden
       _textSetTime = float.MinValue;

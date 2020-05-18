@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 796001944652219185}
   - component: {fileID: 740777358782956963}
   - component: {fileID: -4407400206545456818}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Item Shop Sign
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -154,6 +155,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 852497347181876031}
 --- !u!114 &-4407400206545456818

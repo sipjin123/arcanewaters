@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.Tilemaps;
-using ProceduralMap;
-using Mirror;
 using System;
+using UnityEngine.EventSystems;
 
 public class VoyageMapCell : MonoBehaviour {
    #region Public Variables
@@ -67,7 +65,7 @@ public class VoyageMapCell : MonoBehaviour {
       _voyage = voyage;
 
       // Set default sprites
-      OnPointerExit();
+      onPointerExitButton();
 
       // Set the map name
       mapNameText.text = Area.getName(voyage.areaKey);
@@ -123,7 +121,7 @@ public class VoyageMapCell : MonoBehaviour {
       }
    }
 
-   public void OnPointerEnter () {
+   public void onPointerEnterButton () {
       if (_interactable) {
          // Change frame sprite - HOVERED
          frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_hover");
@@ -133,7 +131,7 @@ public class VoyageMapCell : MonoBehaviour {
       }
    }
 
-   public void OnPointerExit () {
+   public void onPointerExitButton () {
       if (_interactable) {
          // Change frame sprite - DEFAULT
          frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_default");
@@ -143,7 +141,7 @@ public class VoyageMapCell : MonoBehaviour {
       }
    }
 
-   public void OnPointerDown () {
+   public void onPointerDownOnButton () {
       if (_interactable) {
          // Change frame sprite - PRESSED
          frameImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + getFrameName(_voyage.difficulty) + "_frame_pressed");
@@ -153,14 +151,14 @@ public class VoyageMapCell : MonoBehaviour {
       }
    }
 
-   public void OnPointerUp () {
+   public void OnPointerUpOnButton () {
       if (_interactable) {
          // Set default sprites
-         OnPointerExit();
+         onPointerExitButton();
       }
    }
 
-   public void OnPointerClick () {
+   public void onPointerClickButton () {
       if (_interactable) {
          VoyagePanel.self.selectVoyageMap(_voyage);
       }
