@@ -165,6 +165,7 @@ GameObject:
   - component: {fileID: 2575094517970617630}
   - component: {fileID: 7389063324670619871}
   - component: {fileID: 7753525932266648148}
+  - component: {fileID: 6196524559996398816}
   m_Layer: 0
   m_Name: Treasure Spot Map Editor
   m_TagString: Untagged
@@ -273,8 +274,15 @@ MonoBehaviour:
     defaultValue: 1
     toolTip: Chance For Treasure To Spawn, Value from 0 To 1
     type: 1
+  - name: treasure user custom sprite
+    defaultValue: 0
+    toolTip: Chance For Treasure To Spawn, Value from 0 To 1
+    type: 0
   selectDataFields: []
-  customDataFields: []
+  customDataFields:
+  - name: treasure sprite type
+    toolTip: 
+    type: 13
 --- !u!114 &7389063324670619871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,6 +330,21 @@ CircleCollider2D:
   m_Offset: {x: 0, y: -0.041784666}
   serializedVersion: 2
   m_Radius: 0.13178466
+--- !u!114 &6196524559996398816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7563978654119275295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b1b93684f52d2943956d7ef2153d252, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnChance: 0
+  useCustomSprite: 0
+  customSpritePath: 
 --- !u!1 &8551196386268900114
 GameObject:
   m_ObjectHideFlags: 0

@@ -459,13 +459,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5e64d69e88382ec4bb4ccb045891f5e1, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5e64d69e88382ec4bb4ccb045891f5e1, type: 3}
-  - imageName: anvil 1
-    imagePath: Assets/Sprites/Secrets/anvil 1.png
-    imagePathWithoutExtension: Assets/Sprites/Secrets/anvil 1
-    texture2D: {fileID: 2800000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
-    sprite: {fileID: 21300000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: ca03ec24818bf544ba9bc8186b676be8, type: 3}
   - imageName: Apples
     imagePath: Assets/Sprites/Cargo/Apples.png
     imagePathWithoutExtension: Assets/Sprites/Cargo/Apples
@@ -4118,57 +4111,57 @@ MonoBehaviour:
     imagePath: Assets/Sprites/Secrets/desert_boulder.png
     imagePathWithoutExtension: Assets/Sprites/Secrets/desert_boulder
     texture2D: {fileID: 2800000, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    sprite: {fileID: 6297028439291842438, guid: 474729d155c8ab34a8188e171781b6db,
+    sprite: {fileID: -3295055759941171001, guid: 474729d155c8ab34a8188e171781b6db,
       type: 3}
     sprites:
-    - {fileID: 6297028439291842438, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -8860333054012288059, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -7240866056051590280, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 962593160757370988, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -1761762975683602760, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8895301142113865775, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -4665672960449357208, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -8277911215125753796, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 1469712998349476088, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 7494371378535531797, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 6291948876695576899, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 9050004766368301047, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -769796315220709842, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 5926114023006937310, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8007643886034082476, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 7426701958670461492, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -2877343936851165053, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -1727928455989501438, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 2707422520274613525, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -2850350501923863320, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -2479800725086009282, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -9084722203350976069, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -6490722664620415416, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 2393115195731057959, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -3411522782196743342, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 3208826953091255695, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -4463798424926879219, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -8045250716246337380, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8616533711335579893, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -5967171994749449632, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8898200445806599872, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -1623092656694565427, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 4358505497548385601, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 6168514399492411722, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -3456233510427630531, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 14686166440764757, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -8578890585329459373, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -8364507144208625574, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 691992043210846454, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -1543026483040781588, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -5795290450100037364, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8979879555963832252, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -2402505964621057835, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 8350797602598464661, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -6428728770440408827, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 6497003004841151693, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: -315359511075555012, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
-    - {fileID: 2459354761529422078, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -3295055759941171001, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -4085947459598364911, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -9180372166374541925, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -7779794441510569443, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 7351388749126366597, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 5174594054069276469, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -5327854521262615936, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -2302518878898176162, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 3281872399141315455, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 7278992905570850816, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -3719578347245262085, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -7919629328511329706, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -2406752549484162817, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -788330288675640999, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -8593974472774208789, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -7333379106438472869, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 7781775068372214608, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 8191680826072069176, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 8769841962969923189, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 6186481173339369291, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -5669369512148123660, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 2740824752132533967, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -9170321947985255801, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -5890246420911162492, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -3272408721470584726, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 4575410516456723723, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -451902850012307666, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -623502733866130390, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -2000395890254520952, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 3003257740397537304, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 3920348159096058102, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -820538578731666818, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -1761113147367423391, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 6148433761427323481, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 2398990757959868072, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -3283303229865360016, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -509647749852281986, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -3961067769279519117, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 5206241339161912962, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 3272860909972907227, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 4103212083353984301, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 8814497212656758011, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -195650947292680383, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 3834184821057005881, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 6843545144567050327, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -7645670916415914677, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: 8391340957817016901, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
+    - {fileID: -5646397697296040562, guid: 474729d155c8ab34a8188e171781b6db, type: 3}
   - imageName: Desert_Clouds_Lower
     imagePath: Assets/Sprites/BackgroundEntities/Desert Elements/SkiesAndGround/Desert_Clouds_Lower.png
     imagePathWithoutExtension: Assets/Sprites/BackgroundEntities/Desert Elements/SkiesAndGround/Desert_Clouds_Lower
@@ -4848,13 +4841,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 208e700436689a24eb5878e4864c8ebc, type: 3}
     sprites:
     - {fileID: 21300000, guid: 208e700436689a24eb5878e4864c8ebc, type: 3}
-  - imageName: dresser 1
-    imagePath: Assets/Sprites/Secrets/dresser 1.png
-    imagePathWithoutExtension: Assets/Sprites/Secrets/dresser 1
-    texture2D: {fileID: 2800000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
-    sprite: {fileID: 21300000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 7479069902b698e4083ba26a715d39fb, type: 3}
   - imageName: dresser_open
     imagePath: Assets/Sprites/Furniture/dresser_open.png
     imagePathWithoutExtension: Assets/Sprites/Furniture/dresser_open
@@ -4862,18 +4848,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: da6f033ecc269f9428c79f44fa2669b7, type: 3}
     sprites:
     - {fileID: 21300000, guid: da6f033ecc269f9428c79f44fa2669b7, type: 3}
-  - imageName: dresser_open 1
-    imagePath: Assets/Sprites/Secrets/dresser_open 1.png
-    imagePathWithoutExtension: Assets/Sprites/Secrets/dresser_open 1
-    texture2D: {fileID: 2800000, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    sprite: {fileID: 670707692688299835, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    sprites:
-    - {fileID: 670707692688299835, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    - {fileID: -1873806968354122575, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    - {fileID: -4896173872563681062, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    - {fileID: -6536929365723060119, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    - {fileID: 7744361854726596387, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
-    - {fileID: -1903714075290974759, guid: 9ebd9ba58463c764780ff3dc0ef3a8ea, type: 3}
   - imageName: Drop_Down_Cliff
     imagePath: Assets/Sprites/Map/Drop_Down_Cliff.png
     imagePathWithoutExtension: Assets/Sprites/Map/Drop_Down_Cliff
@@ -5150,13 +5124,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: fbb6ce02c3095d64dbb1baeae476e8d0, type: 3}
     sprites:
     - {fileID: 21300000, guid: fbb6ce02c3095d64dbb1baeae476e8d0, type: 3}
-  - imageName: end_table 1
-    imagePath: Assets/Sprites/Secrets/end_table 1.png
-    imagePathWithoutExtension: Assets/Sprites/Secrets/end_table 1
-    texture2D: {fileID: 2800000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
-    sprite: {fileID: 21300000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: 5db3ad2ab80361b41b2170f37869f432, type: 3}
   - imageName: enemy
     imagePath: Assets/Sprites/Icons/Status/enemy.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Status/enemy
@@ -17444,6 +17411,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 5effd6bb0d6a51f4dbfe42028e55e64e, type: 3}
   - imageName: none
+    imagePath: Assets/Sprites/Secrets/none.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/none
+    texture2D: {fileID: 2800000, guid: e2d24b3524b84a543aa382f0acc75460, type: 3}
+    sprite: {fileID: 21300000, guid: e2d24b3524b84a543aa382f0acc75460, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e2d24b3524b84a543aa382f0acc75460, type: 3}
+  - imageName: none
     imagePath: Assets/Sprites/Mining/none.png
     imagePathWithoutExtension: Assets/Sprites/Mining/none
     texture2D: {fileID: 2800000, guid: 68dccfd031897f848b755664eb1bc621, type: 3}
@@ -23940,13 +23914,6 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
     sprites:
     - {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
-  - imageName: totem 1
-    imagePath: Assets/Sprites/Secrets/totem 1.png
-    imagePathWithoutExtension: Assets/Sprites/Secrets/totem 1
-    texture2D: {fileID: 2800000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
-    sprite: {fileID: 21300000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
-    sprites:
-    - {fileID: 21300000, guid: cbeeaf797d33644488e529062d78e61b, type: 3}
   - imageName: trade_button
     imagePath: Assets/Sprites/GUI/Bottom Buttons/trade_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/trade_button
@@ -24009,6 +23976,18 @@ MonoBehaviour:
     - {fileID: 21300006, guid: e86aa3963766a764ab6a89f2a4ec7908, type: 3}
     - {fileID: 21300008, guid: e86aa3963766a764ab6a89f2a4ec7908, type: 3}
     - {fileID: 21300010, guid: e86aa3963766a764ab6a89f2a4ec7908, type: 3}
+  - imageName: treasure_chest
+    imagePath: Assets/Sprites/Secrets/treasure_chest.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/treasure_chest
+    texture2D: {fileID: 2800000, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    sprite: {fileID: 21300000, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    - {fileID: 21300002, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    - {fileID: 21300004, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    - {fileID: 21300006, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    - {fileID: 21300008, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
+    - {fileID: 21300010, guid: 1d41fd41d78fc14439d7c996e5837eec, type: 3}
   - imageName: treasure_chest_sheet_01
     imagePath: Assets/Sprites/Treasure/treasure_chest_sheet_01.png
     imagePathWithoutExtension: Assets/Sprites/Treasure/treasure_chest_sheet_01
