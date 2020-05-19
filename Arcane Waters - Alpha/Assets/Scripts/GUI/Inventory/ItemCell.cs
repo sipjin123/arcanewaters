@@ -92,8 +92,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Show the item count when relevant
-      if (count > 1) {
+      if (count > 1 || item.category == Item.Category.CraftingIngredients) {
          itemCountText.SetText(count.ToString());
+         itemCountText.gameObject.SetActive(true);
       } else {
          itemCountText.gameObject.SetActive(false);
       }

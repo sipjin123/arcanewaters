@@ -42,18 +42,18 @@ public class TreasureManager : MonoBehaviour {
    }
 
    protected TreasureChest createTreasure (Instance instance, TreasureSpot spot) {
-      return createTreasure(instance, spot.transform.position);
-   }
-
-   public TreasureChest createTreasure (Instance instance, Vector3 spot) {
       // Instantiate a new Treasure Chest
-      TreasureChest chest = Instantiate(chestPrefab, spot, Quaternion.identity);
+      TreasureChest chest = Instantiate(chestPrefab, spot.transform.position, Quaternion.identity);
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);
 
       // Assign a unique ID
       chest.id = _id++;
+
+      // Sets up the custom sprite of the treasure
+      chest.useCustomSprite = spot.useCustomSprite;
+      chest.customSpritePath = spot.customSpritePath;
 
       // Note which instance the chest is in
       chest.instanceId = instance.id;

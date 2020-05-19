@@ -22,15 +22,21 @@ namespace NubisDataHandling {
             string[] dataGroup = itemGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
 
             if (dataGroup.Length > 0) {
-               if (dataGroup.Length == 4) {
+               if (dataGroup.Length == 4 || dataGroup.Length == 5) {
                   int itemID = int.Parse(dataGroup[0]);
                   Item.Category itemCategory = (Item.Category) int.Parse(dataGroup[1]);
                   int itemTypeID = int.Parse(dataGroup[2]);
+                  int itemCount = 1;
+
+                  if (dataGroup.Length == 5) {
+                     itemCount = int.Parse(dataGroup[3]);
+                  }
 
                   craftingIngredientList.Add(new Item {
                      id = itemID,
                      category = itemCategory,
-                     itemTypeId = itemTypeID
+                     itemTypeId = itemTypeID,
+                     count = itemCount
                   });
                }
             }

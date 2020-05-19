@@ -163,8 +163,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             // Instantiates the cell
             ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
 
-            // Initializes the cell
-            cell.setCellForItem(item);
+            // Initializes the cell, cast if it is ingredient type
+            cell.setCellForItem(item.category == Item.Category.CraftingIngredients ? item.getCastItem() : item);
 
             // If the item is equipped, place the item cell in the equipped slots
             if (item.id == _equippedWeaponId && item.id != 0) {

@@ -41,7 +41,17 @@ public class AudioClipManager : MonoBehaviour {
    }
 
    public AudioClipData getAudioClipData (string path) {
-      return audioDataList.Find(_=> _.audioPath == path);
+      if (audioDataList.Exists(_=>_.audioPath == path)) {
+         AudioClipData audioClip = audioDataList.Find(_ => _.audioPath == path);
+         return audioClip;
+      } else {
+         return new AudioClipData { 
+            audioClip = null,
+            audioPath = "",
+            audioName = "",
+            audioPathWithoutExtension = ""
+         };
+      }
    }
 
    #region Private Variables

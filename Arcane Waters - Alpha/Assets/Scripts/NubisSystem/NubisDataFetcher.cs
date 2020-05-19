@@ -43,14 +43,19 @@ namespace NubisDataHandling {
       }
 
       private IEnumerator CO_ProcessXmlVersion () {
-         UnityWebRequest mapDataRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_version_v1");
-         yield return mapDataRequest.SendWebRequest();
+         UnityWebRequest xmlVersionRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_version_v1");
+         yield return xmlVersionRequest.SendWebRequest();
 
-         if (mapDataRequest.isNetworkError || mapDataRequest.isHttpError) {
-            D.warning(mapDataRequest.error);
+         if (xmlVersionRequest.isNetworkError || xmlVersionRequest.isHttpError) {
+            D.warning(xmlVersionRequest.error);
          } else {
-            int xmlVersion = int.Parse(mapDataRequest.downloadHandler.text);
-            xmlVersionEvent.Invoke(xmlVersion);
+            try {
+               int xmlVersion = int.Parse(xmlVersionRequest.downloadHandler.text);
+               xmlVersionEvent.Invoke(xmlVersion);
+            } catch {
+               D.debug("Something went wrong with xml version fetching! Report: " + xmlVersionRequest.downloadHandler.text);
+               xmlVersionEvent.Invoke(0);
+            }
          }
       }
 
@@ -209,6 +214,7 @@ namespace NubisDataHandling {
          string armorRawData = "";
          string userRawData = "";
          string equippedItemContent = "";
+         string craftingIngredientRawData = "";
 
          // Fetch the user data before anything else
          UnityWebRequest userDataRequest = UnityWebRequest.Get(webDirectory + "user_data_v1?usrId=" + userId);
@@ -218,6 +224,10 @@ namespace NubisDataHandling {
             D.warning(userDataRequest.error);
          } else {
             userRawData = userDataRequest.downloadHandler.text;
+            if (userRawData.Length < 10) {
+               D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
+               D.editorLog("Content: " + userRawData, Color.red);
+            }
             newUserInfo = UserInfoData.processUserInfo(userRawData);
          }
 
@@ -233,7 +243,6 @@ namespace NubisDataHandling {
                List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
                foreach (Item weapon in weaponList) {
                   if (weapon.id != newUserInfo.weaponId) {
-                     WeaponStatData weaponData = WeaponStatData.getStatData(weapon.data, 1);
                      userInventory.Add(weapon);
                   }
                }
@@ -252,9 +261,24 @@ namespace NubisDataHandling {
                List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
                foreach (Item armor in armorList) {
                   if (armor.id != newUserInfo.armorId) {
-                     ArmorStatData armorData = ArmorStatData.getStatData(armor.data, 2);
                      userInventory.Add(armor);
                   }
+               }
+            }
+         }
+
+         if (this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
+            UnityWebRequest craftingIngredientRequest = UnityWebRequest.Get(webDirectory + "fetch_crafting_ingredients_v3?usrId=" + userId);
+            yield return craftingIngredientRequest.SendWebRequest();
+            
+            // Process ingredients filter
+            if (craftingIngredientRequest.isNetworkError || craftingIngredientRequest.isHttpError) {
+               D.warning(craftingIngredientRequest.error);
+            } else {
+               craftingIngredientRawData = craftingIngredientRequest.downloadHandler.text;
+               List<Item> ingredientList = CraftingIngredients.processCraftingIngredients(craftingIngredientRawData);
+               foreach (Item ingredientItem in ingredientList) {
+                  userInventory.Add(ingredientItem);
                }
             }
          }
@@ -289,7 +313,10 @@ namespace NubisDataHandling {
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
          // Show the inventory panel
-         PanelManager.self.pushPanel(inventoryPanel.type);
+         // Make sure the inventory panel is showing
+         if (!inventoryPanel.isShowing()) {
+            PanelManager.self.pushPanel(Panel.Type.Inventory);
+         }
 
          UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor };
          inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex);

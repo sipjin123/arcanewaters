@@ -33,8 +33,9 @@ namespace Nubis.Controllers
                         int itmId = reader.GetInt32("itmId");
                         int itmCategory = reader.GetInt32("itmCategory");
                         int itmType = reader.GetInt32("itmType");
+                        int itmCount = reader.GetInt32("itmCount");
 
-                        result += $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]";
+                        result += $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]";
 
                      }
                      return result;

@@ -22,6 +22,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
    public static string ZIP_PATH = Application.streamingAssetsPath + "/XmlZip/XmlContent.zip";
    public static string TEXT_PATH = Application.streamingAssetsPath + "/XmlTexts/";
 
+   // Error directory for log purposes
+   public static string ERROR_DIRECTORY = "C:/XmlErrorLog/";
+   public static string ERROR_FILENAME = "ErrorFile.txt";
+
    // Progress indicators
    public int targetProgress;
    public int currentProgress;
@@ -98,8 +102,15 @@ public class XmlVersionManagerClient : MonoBehaviour {
             byte[] bytes = Convert.FromBase64String(zipStringData);
             File.WriteAllBytes(ZIP_PATH, bytes);
          } catch {
-            D.editorLog("Failed to convert byttes:", Color.red);
-            File.WriteAllText("C:/XmlErrorLog/ErrorFile.txt", zipStringData);
+            D.editorLog("Failed to convert bytes:", Color.red);
+
+            if (!Directory.Exists(ERROR_DIRECTORY)) {
+               Directory.CreateDirectory(ERROR_DIRECTORY);
+            }
+            if (!File.Exists(ERROR_DIRECTORY + ERROR_FILENAME)) {
+               File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
+            }
+            File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipStringData);
          }
       }
 

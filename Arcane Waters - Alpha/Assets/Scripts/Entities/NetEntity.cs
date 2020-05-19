@@ -424,7 +424,14 @@ public class NetEntity : NetworkBehaviour {
          }
       }
 
-      return baseSpeed * modifier;
+      // Admin move speed overrides all modifiers
+      // Debug speed boost for Admin users only
+      int moveSpeedModifier = 1;
+      if (Input.GetKey(KeyCode.LeftShift) && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
+         moveSpeedModifier = 2;
+      }
+
+      return (baseSpeed * modifier) * moveSpeedModifier;
    }
 
    public virtual void handleSpriteOutline () {
@@ -636,12 +643,6 @@ public class NetEntity : NetworkBehaviour {
       // Get a list of the directions we're allowed to move (sometimes includes diagonal directions)
       List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true, _isClimbing);
 
-      // Debug speed boost for Admin users only
-      int moveSpeedModifier = 1;
-      if (Input.GetKey(KeyCode.LeftShift) && isAdmin() && this is PlayerShipEntity && shipSpeedupFlag) {
-         moveSpeedModifier = 2;
-      }
-
       // Check if we're pressing the keys for any of the directions, and if so, add an appropriate force
       foreach (Direction direction in availableDirections) {
          if (DirectionUtil.isPressingDirection(direction)) {
@@ -656,7 +657,7 @@ public class NetEntity : NetworkBehaviour {
 
             // Figure out the force vector we should apply
             Vector2 forceToApply = DirectionUtil.getVectorForDirection(direction);
-            _body.AddForce(forceToApply.normalized * (getMoveSpeed() * moveSpeedModifier));
+            _body.AddForce(forceToApply.normalized * getMoveSpeed());
 
             // Make note of the time
             _lastMoveChangeTime = Time.time;
@@ -1087,7 +1088,7 @@ public class NetEntity : NetworkBehaviour {
    protected virtual void onStartMoving () { }
    protected virtual void onEndMoving () { }
 
-   public virtual bool isBotShip() { return false; }
+   public virtual bool isBotShip () { return false; }
 
    #region Private Variables
 

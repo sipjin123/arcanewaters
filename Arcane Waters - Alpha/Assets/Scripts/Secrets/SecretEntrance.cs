@@ -61,9 +61,15 @@ public class SecretEntrance : NetworkBehaviour {
    // The text where the warp will lead to
    public Text warpAreaText;
 
+   // The animation speed of the secret entrance
+   public float animationSpeed = .1f;
+
    // The sprite to be animated
    public SecretObjectSpriteData mainSpriteComponent = new SecretObjectSpriteData();
    public SecretObjectSpriteData subSpriteComponent = new SecretObjectSpriteData();
+
+   // The base number of animation sprites in a sheet
+   public static int DEFAULT_SPRITESHEET_COUNT = 24;
 
    #endregion
 
@@ -84,10 +90,19 @@ public class SecretEntrance : NetworkBehaviour {
          spriteRenderer.sprite = mainSprite;
       } else {
          int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
-         spriteRenderer.sprite = ImageManager.getSprites(interactSpritePath)[spriteLength - 1];
+         Sprite[] mainSprites = ImageManager.getSprites(interactSpritePath);
+         spriteRenderer.sprite = mainSprites[spriteLength - 1];
+
+         // Multiplies the animation speed depending on the number of sprites in the sprite sheet (the more the sprites the faster the animation)
+         animationSpeed *= mainSprites.Length / DEFAULT_SPRITESHEET_COUNT;
+         animationSpeed = Mathf.Clamp(animationSpeed, .05f, 2);
       }
 
+      if (subSpriteRenderer.sprite.name == "none") {
+         subSpriteRenderer.gameObject.SetActive(false);
+      }
       spriteRenderer.enabled = true;
+
       _outline.Regenerate();
       _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
 
@@ -188,7 +203,7 @@ public class SecretEntrance : NetworkBehaviour {
 
          setSprites();
 
-         InvokeRepeating("playMainSpriteAnimation", 0, .1f);
+         InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
          _outline.setVisibility(false);
 
          Rpc_InteractAnimation();
@@ -214,8 +229,8 @@ public class SecretEntrance : NetworkBehaviour {
       setSprites();
 
       _outline.setVisibility(false);
-      InvokeRepeating("playMainSpriteAnimation", 0, .1f);
-      InvokeRepeating("playSubSpriteAnimation", 1, .1f);
+      InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
+      InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
    }
 
    private void playMainSpriteAnimation () {

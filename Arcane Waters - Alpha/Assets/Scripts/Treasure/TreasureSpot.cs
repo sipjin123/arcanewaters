@@ -12,6 +12,12 @@ public class TreasureSpot : MonoBehaviour, IMapEditorDataReceiver
    // The chance of treasure spawning at this spot
    public float spawnChance = 0f;
 
+   // If this treasure is using a custom sprite
+   public bool useCustomSprite;
+
+   // The custom sprite path
+   public string customSpritePath;
+
    #endregion
 
    public void receiveData (DataField[] dataFields) {
@@ -20,6 +26,22 @@ public class TreasureSpot : MonoBehaviour, IMapEditorDataReceiver
             if (field.tryGetFloatValue(out float chance)) {
                spawnChance = Mathf.Clamp(chance, 0, 1);
                Debug.Log("parsed chance " + chance);
+            }
+         }
+
+         if (field.k.CompareTo(DataField.TREASURE_USE_CUSTOM_TYPE_KEY) == 0) {
+            try {
+               if (field.tryGetIntValue(out int boolResult)) {
+                  useCustomSprite = boolResult == 1 ? true : false;
+               }
+            } catch {
+               useCustomSprite = false;
+            }
+         }
+
+         if (field.k.CompareTo(DataField.TREASURE_SPRITE_TYPE_KEY) == 0) {
+            if (useCustomSprite) {
+               customSpritePath = field.v;
             }
          }
       }

@@ -219,7 +219,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, int abilityId, bool showCircle) {
-      ShipAbilityData shipData = ShipAbilityManager.self.getAbility(abilityId);
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
 
       if (showCircle) {
          // Create a new Attack Circle object from the prefab
@@ -232,9 +232,19 @@ public class SeaEntity : NetEntity
       }
 
       GenericSeaProjectile seaEntityProjectile = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);
-      seaEntityProjectile.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude, shipData.abilityId);
+      seaEntityProjectile.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude, abilityData.abilityId);
 
-      if (shipData.selectedAttackType == Attack.Type.Shock_Ball) {
+      AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
+      if (audioClipData.audioPath.Length > 1) {
+         AudioClip clip = audioClipData.audioClip;
+         if (clip != null) {
+            SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+         }
+      } else {
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);
+      }
+
+      if (abilityData.selectedAttackType == Attack.Type.Shock_Ball) {
          seaEntityProjectile.setDirection((Direction) facing);
       }
 
@@ -242,9 +252,6 @@ public class SeaEntity : NetEntity
       Vector2 direction = endPos - startPos;
       Vector2 offset = direction.normalized * .1f;
       Instantiate(PrefabsManager.self.requestCannonSmokePrefab(currentImpactMagnitude), startPos + offset, Quaternion.identity);
-
-      // Play an appropriate sound
-      playAttackSound();
 
       // If it was our ship, shake the camera
       if (isLocalPlayer) {

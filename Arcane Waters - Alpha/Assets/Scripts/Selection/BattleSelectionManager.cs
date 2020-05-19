@@ -120,6 +120,11 @@ public class BattleSelectionManager : MonoBehaviour {
       }
    }
 
+   public void deselectTarget () {
+      enemySelection.SetActive(false);
+      allySelection.SetActive(false);
+   }
+
    #region Private Variables
 
    #endregion

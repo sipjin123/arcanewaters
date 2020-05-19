@@ -30,20 +30,35 @@ namespace NubisDataHandling {
             }
          }
 
+         // Isolation of data parsing to detect future parsing errors
+         int gold = int.Parse(xmlPairCollection["usrGold"]);
+         int gem = int.Parse(xmlPairCollection["accGems"]);
+         Gender.Type gender = (Gender.Type) int.Parse(xmlPairCollection["usrGender"]);
+         BodyLayer.Type bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]);
+         HairLayer.Type hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]);
+         ColorType hairColor1 = (ColorType) int.Parse(xmlPairCollection["hairColor1"]);
+         ColorType hairColor2 = (ColorType) int.Parse(xmlPairCollection["hairColor2"]);
+         EyesLayer.Type eyesType = (EyesLayer.Type) int.Parse(xmlPairCollection["eyesType"]);
+         ColorType eyesColor1 = (ColorType) int.Parse(xmlPairCollection["eyesColor1"]);
+         ColorType eyesColor2 = (ColorType) int.Parse(xmlPairCollection["eyesColor2"]);
+         string userName = xmlPairCollection["usrName"];
+         int weaponId = int.Parse(xmlPairCollection["wpnId"]);
+         int armorId = int.Parse(xmlPairCollection["armId"]);
+
          UserInfo newInfo = new UserInfo {
-            gold = int.Parse(xmlPairCollection["usrGold"]),
-            gems = int.Parse(xmlPairCollection["accGems"]),
-            gender = (Gender.Type) int.Parse(xmlPairCollection["usrGender"]),
-            username = xmlPairCollection["usrName"],
-            bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]),
-            hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]),
-            hairColor1 = (ColorType) int.Parse(xmlPairCollection["hairColor1"]),
-            hairColor2 = (ColorType) int.Parse(xmlPairCollection["hairColor2"]),
-            eyesType = (EyesLayer.Type) int.Parse(xmlPairCollection["eyesType"]),
-            eyesColor1 = (ColorType) int.Parse(xmlPairCollection["eyesColor1"]),
-            eyesColor2 = (ColorType) int.Parse(xmlPairCollection["eyesColor2"]),
-            weaponId = int.Parse(xmlPairCollection["wpnId"]),
-            armorId = int.Parse(xmlPairCollection["armId"])
+            gold = gold,
+            gems = gem,
+            gender = gender,
+            username = userName,
+            bodyType = bodyType,
+            hairType = hairType,
+            hairColor1 = hairColor1,
+            hairColor2 = hairColor2,
+            eyesType = eyesType,
+            eyesColor1 = eyesColor1,
+            eyesColor2 = eyesColor2,
+            weaponId = weaponId,
+            armorId = armorId
          };
 
          return newInfo;

@@ -1056,6 +1056,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the target died, animate that death now
             if (targetBattler.displayedHealth <= 0) {
+               BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
@@ -1165,6 +1166,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the target died, animate that death now
             if (targetBattler.isDead()) {
+               BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 
@@ -1272,6 +1274,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // If the target died, animate that death now
             if (targetBattler.isDead()) {
+               BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
 

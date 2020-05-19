@@ -163,6 +163,8 @@ public class BattleUIManager : MonoBehaviour {
                   if (abilityButton.abilityIcon != null) {
                      abilityButton.abilityIcon.sprite = skillSprite;
                      buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
+                  } else {
+                     D.editorLog("This ability does not have an icon", Color.red);
                   }
 
                   abilityButton.enableButton();

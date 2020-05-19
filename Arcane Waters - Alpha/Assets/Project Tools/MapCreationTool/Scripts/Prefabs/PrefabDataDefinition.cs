@@ -112,6 +112,13 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = SecretsMapManager.instance.formInitialSprite()
                };
+            } else if (customData.type == CustomFieldType.TreasureType) {
+               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
+               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
+                  name = customData.name,
+                  toolTip = customData.toolTip,
+                  options = SecretsMapManager.instance.formInitialSprite()
+               };
             }
          }
       }
@@ -164,7 +171,8 @@ namespace MapCreationTool
          SecretType,
          SecretStartSprite,
          SecretInteractSprite,
-         Ship
+         Ship,
+         TreasureType
       }
    }
 }

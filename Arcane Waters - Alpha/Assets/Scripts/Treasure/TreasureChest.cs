@@ -60,6 +60,14 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public bool autoDestroy;
 
+   // If this treasure is using a custom sprite
+   [SyncVar]
+   public bool useCustomSprite;
+
+   // The custom sprite path
+   [SyncVar]
+   public string customSpritePath;
+
    #endregion
 
    private void Awake () {
@@ -85,6 +93,14 @@ public class TreasureChest : NetworkBehaviour {
 
    public void Start () {
       Minimap.self.addTreasureChestIcon(this.gameObject);
+
+      if (useCustomSprite) {
+         Sprite[] customSprites = ImageManager.getSprites(customSpritePath);
+         spriteRenderer.sprite = customSprites[0];
+         int lastIntex = customSprites.Length / 2;
+         openedChestSprite = customSprites[lastIntex];
+         chestOpeningAnimation.maxIndex = lastIntex;
+      }
    }
 
    public void Update () {
@@ -210,8 +226,19 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.transform.SetParent(this.transform);
       floatingIcon.transform.localPosition = new Vector3(0f, .04f);
       Image image = floatingIcon.GetComponentInChildren<Image>();
+      string itemName = item.getName();
       if (item.category != Item.Category.Blueprint) {
-         image.sprite = ImageManager.getSprite(item.getIconPath());
+         if (item.category == Item.Category.Weapon) {
+            WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+            image.sprite = ImageManager.getSprite(weaponStatData.equipmentIconPath);
+            itemName = weaponStatData.equipmentName;
+         } else if (item.category == Item.Category.Armor) {
+            ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            image.sprite = ImageManager.getSprite(armorStatData.equipmentIconPath);
+            itemName = armorStatData.equipmentName;
+         } else {
+            image.sprite = ImageManager.getSprite(item.getIconPath());
+         }
       } else {
          if (item.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
             image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
@@ -230,7 +257,7 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // Set the name text
-      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = item.getName();
+      floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = itemName;
    }
 
    private void OnTriggerStay2D (Collider2D other) {
