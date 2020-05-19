@@ -260,8 +260,8 @@ MonoBehaviour:
   raisedHeight: 0.48
   loweredHeight: 0.36
   sheetsAreLowered: 0
-  sheetValue: 1
   animationSpeed: 8
+  _sheetValue: 1
 --- !u!114 &9137713577721029384
 MonoBehaviour:
   m_ObjectHideFlags: 0

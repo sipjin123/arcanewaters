@@ -28,6 +28,38 @@ public class ImageManager : ClientMonoBehaviour {
 
       // A list of sprite frames, if there are any
       public List<Sprite> sprites;
+
+      public override bool Equals (object obj) {
+         return obj is ImageData && Equals((ImageData) obj);
+      }
+
+      public bool Equals (ImageData other) {
+         if (imageName.CompareTo(other.imageName) != 0 ||
+            imagePath.CompareTo(other.imagePath) != 0 ||
+            imagePathWithoutExtension.CompareTo(other.imagePathWithoutExtension) != 0 ||
+            texture2D != other.texture2D ||
+            sprite != other.sprite ||
+            sprites.Count != other.sprites.Count)
+            return false;
+
+         for (int i = 0; i < sprites.Count; i++) {
+            if (sprites[i] != other.sprites[i]) {
+               return false;
+            }
+         }
+
+         return true;
+      }
+
+      public override int GetHashCode () {
+         return
+            imageName.GetHashCode() ^
+            imagePath.GetHashCode() ^
+            imagePathWithoutExtension.GetHashCode() ^
+            texture2D.GetHashCode() ^
+            sprite.GetHashCode() ^
+            sprites.GetHashCode();
+      }
    }
 
    // An array of data on the image assets in our project

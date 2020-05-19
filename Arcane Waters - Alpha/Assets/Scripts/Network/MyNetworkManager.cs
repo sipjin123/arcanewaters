@@ -161,6 +161,9 @@ public class MyNetworkManager : NetworkManager
       // Fetch discovery data from DB
       DiscoveryManager.self.fetchDiscoveriesOnServer();
 
+      // Download all palette configurations from DB
+      PaletteSwapManager.self.fetchPaletteData();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -324,6 +327,9 @@ public class MyNetworkManager : NetworkManager
 
             // Give the player local authority so that movement feels instantaneous
             player.netIdent.AssignClientAuthority(conn);
+
+            // Pass cached palette data for switching color to player
+            player.rpc.Target_CachePaletteData(PaletteSwapManager.self.getPaletteData());
          });
       });
    }

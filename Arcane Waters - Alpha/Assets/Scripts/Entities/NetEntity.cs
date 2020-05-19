@@ -220,11 +220,7 @@ public class NetEntity : NetworkBehaviour {
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
 
-         // Check if the character has completed the tutorial
-         if (PlayerPrefs.GetInt(this.entityName, 0) == 0) {
-            PanelManager.self.noticeScreen.show("Welcome to Arcane Waters!\nIf you ever need assistance, just press F12 to bring up the Help menu.\nSafe travels!");
-            PlayerPrefs.SetInt(this.entityName, 1);
-         }
+         // TODO: Display tutorial notice screen
       }
 
       // Routinely clean the attackers set

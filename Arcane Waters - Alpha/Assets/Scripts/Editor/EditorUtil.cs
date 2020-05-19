@@ -84,8 +84,28 @@ public class EditorUtil : EditorWindow {
          return;
       }
 
-      // Clear out the stored paths
-      imageManager.imageDataList.Clear();
+      // Get all images in project currently
+      List<ImageManager.ImageData> newImageList = findAllImagesInProject();
+
+      // Sort by image name
+      newImageList = newImageList.OrderBy(o => o.imageName).ToList();
+
+      // Check if there are any changes
+      if (!areImageDataListsEqual(newImageList, imageManager.imageDataList)) {
+         // Set new image list
+         imageManager.imageDataList = newImageList;
+
+         // Save the changes to the prefab asset
+         PrefabUtility.SaveAsPrefabAsset(loadedPrefab, IMAGE_MANAGER_PATH);
+      }
+
+      // Unload prefab from memory
+      PrefabUtility.UnloadPrefabContents(loadedPrefab);
+   }
+
+   private static List<ImageManager.ImageData> findAllImagesInProject () {
+      // Create new image list
+      List<ImageManager.ImageData> imageList = new List<ImageManager.ImageData>();
 
       // Look through all of our stuff in the Assets folder
       foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
@@ -123,20 +143,26 @@ public class EditorUtil : EditorWindow {
             imageData.sprites = imageData.sprites.OrderBy(_ => extractInteger(_.name)).ToList();
 
             // Add the new Image Data instance to the Image Manager's list
-            imageManager.imageDataList.Add(imageData);
+            imageList.Add(imageData);
          }
       }
 
-      // Sort by image name
-      imageManager.imageDataList = imageManager.imageDataList.OrderBy(o => o.imageName).ToList();
-
-      // Save the changes to the prefab asset
-      PrefabUtility.SaveAsPrefabAsset(loadedPrefab, IMAGE_MANAGER_PATH);
-
-      // Unload prefab from memory
-      PrefabUtility.UnloadPrefabContents(loadedPrefab);
+      return imageList;
    }
 
+   private static bool areImageDataListsEqual (List<ImageManager.ImageData> list1, List<ImageManager.ImageData> list2) {
+      if (list1.Count != list2.Count) {
+         return false;
+      }
+
+      for (int i = 0; i < list1.Count; i++) {
+         if (!list1[i].Equals(list2[i])) {
+            return false;
+         }
+      }
+
+      return true;
+   }
 
    [MenuItem("Util/Update Audio Manager")]
    public static void updateAudioManager () {

@@ -11,7 +11,6 @@ using MapCreationTool.Serialization;
 using System.IO;
 using SimpleJSON;
 using MapCustomization;
-using UnityEditor.EditorTools;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;

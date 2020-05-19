@@ -4079,6 +4079,10 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [TargetRpc]
+   public void Target_CachePaletteData (PaletteToolData[] paletteData) {
+      PaletteSwapManager.self.storePaletteData(paletteData);
+   }
 
    #region Private Variables
 

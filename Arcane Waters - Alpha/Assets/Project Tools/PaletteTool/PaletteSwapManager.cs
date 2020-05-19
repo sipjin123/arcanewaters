@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PaletteSwapManager {
+public class PaletteSwapManager : MonoBehaviour {
    #region Public Variables
 
    // Singleton reference
@@ -13,10 +13,25 @@ public class PaletteSwapManager {
    #endregion
 
    private void Awake () {
-      instantiate();
+      if (self == null) {
+         self = this;
+      } else {
+         Destroy(this);
+      }
    }
 
-   private void loadXMLData () {
+   public PaletteToolData[] getPaletteData () {
+      return _paletteDataList.ToArray();
+   }
+
+   public void storePaletteData (PaletteToolData[] paletteData) {
+      _paletteDataList.Clear();
+      foreach (PaletteToolData data in paletteData) {
+         _paletteDataList.Add(data);
+      }
+   }
+
+   public void fetchPaletteData () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML();
 
@@ -27,7 +42,6 @@ public class PaletteSwapManager {
 
                // Save the palette data in the memory cache
                _paletteDataList.Add(paletteData);
-               _paletteIdList.Add(xmlPair.xmlId);
             }
          });
       });
@@ -35,8 +49,8 @@ public class PaletteSwapManager {
 
    public static Texture2D generateTexture2D (string name) {
       if (self == null) {
-         PaletteSwapManager paletteSwapManager = new PaletteSwapManager();
-         paletteSwapManager.instantiate();
+         D.error("PaletteSwapManager has not been created yet");
+         return null;
       }
 
       PaletteToolData data = _paletteDataList.Find((PaletteToolData toolData) => toolData.paletteName.Equals(name));
@@ -70,28 +84,10 @@ public class PaletteSwapManager {
       return tex;
    }
 
-   public static int generatePaletteId (string name) {
-      int index = _paletteDataList.FindIndex((PaletteToolData toolData) => toolData.paletteName.Equals(name));
-      if (index < 0) {
-         return -1;
-      }
-      return _paletteIdList[index];
-   }
-
-   private void instantiate () {
-      if (self == null) {
-         self = this;
-         loadXMLData();
-      }
-   }
-
    #region Private Variables
 
    // Cached data from database about created palettes
    private static List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
-
-   // Cached data from database about created palette ids
-   private static List<int> _paletteIdList = new List<int>();
 
    #endregion
 }

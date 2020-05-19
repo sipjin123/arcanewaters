@@ -21,33 +21,22 @@ public class BedSheets : ClientMonoBehaviour
    // Gets set to true when the sheets are lowered
    public bool sheetsAreLowered = false;
 
-   [Tooltip("Sheet lowered state - from 0(fully lowered) to 1(fully up)")]
-   public float sheetValue = 1f;
-
    // Sheet lower speed - how many fully animations in a second
    public float animationSpeed = 1f;
 
    #endregion
-
-   private void OnValidate () {
-      sheetValue = Mathf.Clamp(sheetValue, 0, 1f);
-
-      if (sheets != null) {
-         updateSheetSprite(sheets, sheetValue);
-      }
-   }
 
    private void Update () {
       // Find target sheet value
       float targetValue = sheetsAreLowered ? 0 : 1f;
 
       // Check if there is no change
-      if (targetValue == sheetValue) return;
+      if (targetValue == _sheetValue) return;
 
       // Move towards target value
-      sheetValue = Mathf.MoveTowards(sheetValue, targetValue, animationSpeed * Time.deltaTime);
+      _sheetValue = Mathf.MoveTowards(_sheetValue, targetValue, animationSpeed * Time.deltaTime);
 
-      updateSheetSprite(sheets, sheetValue);
+      updateSheetSprite(sheets, _sheetValue);
    }
 
    private void updateSheetSprite (SpriteRenderer sheets, float value) {
@@ -84,6 +73,9 @@ public class BedSheets : ClientMonoBehaviour
    }
 
    #region Private Variables
+
+   // Sheet lowered state - from 0(fully lowered) to 1(fully up)
+   private float _sheetValue = 1f;
 
    #endregion
 }
