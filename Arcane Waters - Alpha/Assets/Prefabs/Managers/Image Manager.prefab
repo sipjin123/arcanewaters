@@ -4834,6 +4834,62 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 0dda3d1f410071d4581cd4ffa7116d90, type: 3}
     sprites:
     - {fileID: 21300000, guid: 0dda3d1f410071d4581cd4ffa7116d90, type: 3}
+  - imageName: drawer
+    imagePath: Assets/Sprites/Secrets/drawer.png
+    imagePathWithoutExtension: Assets/Sprites/Secrets/drawer
+    texture2D: {fileID: 2800000, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    sprite: {fileID: -4136729397018612694, guid: 374ec45dced72df43800345e9881a0df,
+      type: 3}
+    sprites:
+    - {fileID: -4136729397018612694, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -3849358106225406392, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -777274457187688957, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -9223203673115840557, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -503937883103888151, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 1651637827491145029, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 1151252108351694114, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -2657281620463465313, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 3489006390587975933, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -7154673510327806462, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 1723183693551648550, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 1566027416633967504, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 4635494786931536368, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -7187938017111343939, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 3240026057908809986, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -4753595183871925970, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -5086455039856443674, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 2832913814058388293, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -1402817922569966404, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -3639570646845078014, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 5138069167259238948, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -6957963344520797410, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -4586894674779669885, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -4108966672840588463, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -275451732384991632, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -8025642894177152134, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -3674269865260395462, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -3953918871496598122, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -4001109863294306126, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 5112287772046283815, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 2820639081136366115, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -7369145808694686588, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -8863470691394355738, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 3222509243963309370, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 6285936193861312831, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 5297229291387158936, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 6795496457390539117, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 4699182506541067346, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 7838389319170716825, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -1143178347650759794, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 4466717549700133534, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 9073696853703416974, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -1610901575878517049, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -7817443147146758775, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -2944207821237750200, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -8189616288913292912, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 7271272880178226442, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: 5344882927155680090, guid: 374ec45dced72df43800345e9881a0df, type: 3}
+    - {fileID: -7766048413483037627, guid: 374ec45dced72df43800345e9881a0df, type: 3}
   - imageName: dresser
     imagePath: Assets/Sprites/Furniture/dresser.png
     imagePathWithoutExtension: Assets/Sprites/Furniture/dresser
@@ -10297,8 +10353,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon

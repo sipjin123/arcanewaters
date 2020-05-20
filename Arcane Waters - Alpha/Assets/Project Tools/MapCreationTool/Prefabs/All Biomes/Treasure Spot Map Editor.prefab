@@ -274,7 +274,7 @@ MonoBehaviour:
     defaultValue: 1
     toolTip: Chance For Treasure To Spawn, Value from 0 To 1
     type: 1
-  - name: treasure user custom sprite
+  - name: treasure use custom sprite
     defaultValue: 0
     toolTip: Chance For Treasure To Spawn, Value from 0 To 1
     type: 0

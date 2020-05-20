@@ -22,7 +22,12 @@ namespace MapCreationTool
       public MinimapGeneration.MinimapGeneratorPreset[] seaPresets;
       public MinimapGeneration.MinimapGeneratorPreset interiorPreset;
 
-      public Color[] rugLookup;
+      public Color[] rugLookupForest;
+      public Color[] rugLookupDesert;
+      public Color[] rugLookupLava;
+      public Color[] rugLookupShroom;
+      public Color[] rugLookupPine;
+      public Color[] rugLookupSnow;
 
       public string[] areaLayerNames
       {

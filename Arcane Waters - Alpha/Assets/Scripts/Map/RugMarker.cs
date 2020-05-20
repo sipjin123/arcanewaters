@@ -16,16 +16,6 @@ public class RugMarker : MonoBehaviour
    #endregion
 
    public void processData() {
-      if (type > _rugColorLookup.Length) {
-         D.warning("Not enough rug colors specified");
-         return;
-      }
-      if (Minimap.self.mapEditorConfig.rugLookup.Length <= type) {
-         gameObject.name = "Incorrect rug type";
-      } else {
-         gameObject.name = _rugColorLookup[type];
-      }
-
       Vector2 minBoundsFloat = (center * 6.25f - size * 6.25f * 0.5f);
       Vector2 maxBoundsFloat = (center * 6.25f + size * 6.25f * 0.5f);
 
@@ -54,18 +44,47 @@ public class RugMarker : MonoBehaviour
    }
 
    public Color getRugColor () {
-      if (Minimap.self.mapEditorConfig.rugLookup.Length <= type) {
+      Color[] rugLookup = null;
+      Biome.Type biome = AreaManager.self.getArea(Global.player.areaKey).biome;
+      switch (biome) {
+         case Biome.Type.Forest:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupForest;
+            break;
+
+         case Biome.Type.Desert:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupDesert;
+            break;
+
+         case Biome.Type.Lava:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupLava;
+            break;
+
+         case Biome.Type.Mushroom:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupShroom;
+            break;
+
+         case Biome.Type.Pine:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupPine;
+            break;
+
+         case Biome.Type.Snow:
+            rugLookup = Minimap.self.mapEditorConfig.rugLookupSnow;
+            break;
+
+         default:
+            D.warning("Player's current biome not found");
+            return Color.magenta;
+      }
+
+      if (rugLookup.Length <= type) {
          D.warning("Existing rug type is not existing");
          return Color.magenta;
       }
-      return Minimap.self.mapEditorConfig.rugLookup[type];
+      return rugLookup[type];
    }
 
    #region Private Variables
 
-   // Rug name based on tile type
-   private static string[] _rugColorLookup = { "", "Red", "Yellow", "Green", "Violet" };
-   
    // Minimum tile position
    private Vector2Int _minBounds;
 
