@@ -166,6 +166,9 @@ public class SecretEntrance : NetworkBehaviour {
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = value;
                break;
+            case DataField.PLACED_PREFAB_ID:
+               // TODO: Confirm if this will still be needed
+               break;
             case DataField.WARP_ARRIVE_FACING_KEY:
                if (field.tryGetDirectionValue(out Direction dir)) {
                   newFacingDirection = dir;

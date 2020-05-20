@@ -1,5 +1,4 @@
-﻿#if NUBIS
-public class NubisEndpoints
+﻿public class NubisEndpoints
 {
    #region "Public Variables"
 
@@ -15,5 +14,3 @@ public class NubisEndpoints
    #endregion
 
 }
-
-#endif

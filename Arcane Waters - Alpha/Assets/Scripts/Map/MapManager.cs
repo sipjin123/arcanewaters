@@ -275,23 +275,19 @@ public class MapManager : MonoBehaviour
       return new Vector2();
    }
 
-   public IEnumerator CO_DownloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
+   public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
       // Request the map from Nubis Cloud
-      string nubisDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/"; 
-      UnityWebRequest www = UnityWebRequest.Get(nubisDirectory + "fetch_map_data_v1?mapName=" + baseMapAreaKey);  
-      yield return www.SendWebRequest();
-
-      if (www.isNetworkError || www.isHttpError) {
-         D.warning(www.error);
-      } else {
+      try {
          // Grab the map data from the request
-         string mapData = www.downloadHandler.text;
+         string mapData = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), baseMapAreaKey);
 
          // Store it for later reference
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);
+      } catch {
+         D.log("Error in retrieving map data from NUBIS");
       }
    }
 

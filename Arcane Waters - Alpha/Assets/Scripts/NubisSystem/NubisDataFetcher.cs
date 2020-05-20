@@ -39,78 +39,33 @@ namespace NubisDataHandling {
       }
 
       public void fetchXmlVersion () {
-         StartCoroutine(CO_ProcessXmlVersion());
+         processXmlVersion();
       }
 
-      private IEnumerator CO_ProcessXmlVersion () {
-         UnityWebRequest xmlVersionRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_version_v1");
-         yield return xmlVersionRequest.SendWebRequest();
-
-         if (xmlVersionRequest.isNetworkError || xmlVersionRequest.isHttpError) {
-            D.warning(xmlVersionRequest.error);
-         } else {
-            try {
-               int xmlVersion = int.Parse(xmlVersionRequest.downloadHandler.text);
-               xmlVersionEvent.Invoke(xmlVersion);
-            } catch {
-               D.debug("Something went wrong with xml version fetching! Report: " + xmlVersionRequest.downloadHandler.text);
-               xmlVersionEvent.Invoke(0);
-            }
-         }
-      }
-
-      private IEnumerator CO_ProcessMapData (string mapName) {
-         string rawMapData = "";
-         UnityWebRequest mapDataRequest = UnityWebRequest.Get(webDirectory + "fetch_map_data_v1?mapName=" + mapName);
-         yield return mapDataRequest.SendWebRequest();
-
-         if (mapDataRequest.isNetworkError || mapDataRequest.isHttpError) {
-            D.warning(mapDataRequest.error);
-         } else {
-            rawMapData = mapDataRequest.downloadHandler.text;
+      private async void processXmlVersion () {
+         string returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchXmlVersion), "1");
+         try {
+            int xmlVersion = int.Parse(returnCode);
+            xmlVersionEvent.Invoke(xmlVersion);
+         } catch {
+            xmlVersionEvent.Invoke(0);
+            D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.nubisFetchXmlVersion));
          }
       }
 
       public void checkCraftingInfo (int bluePrintId) {
-         StartCoroutine(CO_ProcessCraftingInfo(bluePrintId));
+         processCraftingInfo(bluePrintId);
       }
 
-      private IEnumerator CO_ProcessCraftingInfo (int bluePrintId) {
+      private async void processCraftingInfo (int bluePrintId) {
          int userId = Global.player == null ? 0 : Global.player.userId;
          EquippedItemData equippedItemData = new EquippedItemData();
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
 
-         UnityWebRequest singleBpRequest = UnityWebRequest.Get(webDirectory + "fetch_single_blueprint_v4?usrId=" + userId + "&bpId=" + bluePrintId);
-         yield return singleBpRequest.SendWebRequest();
-
-         UnityWebRequest craftingIngredientRequest = UnityWebRequest.Get(webDirectory + "fetch_crafting_ingredients_v3?usrId=" + userId);
-         yield return craftingIngredientRequest.SendWebRequest();
-
-         UnityWebRequest equippedItemRequest = UnityWebRequest.Get(webDirectory + "fetch_equipped_items_v3?usrId=" + userId);
-         yield return equippedItemRequest.SendWebRequest();
-
-         string rawBlueprintData = "";
-         string craftingIngredientData = "";
-         string equippedItemContent = "";
-
-         if (singleBpRequest.isNetworkError || singleBpRequest.isHttpError) {
-            D.warning(singleBpRequest.error);
-         } else {
-            rawBlueprintData = singleBpRequest.downloadHandler.text;
-         }
-
-         if (craftingIngredientRequest.isNetworkError || craftingIngredientRequest.isHttpError) {
-            D.warning(craftingIngredientRequest.error);
-         } else {
-            craftingIngredientData = craftingIngredientRequest.downloadHandler.text;
-         }
-
-         if (equippedItemRequest.isNetworkError || equippedItemRequest.isHttpError) {
-            D.warning(equippedItemRequest.error);
-         } else {
-            equippedItemContent = equippedItemRequest.downloadHandler.text;
-         }
+         string rawBlueprintData = await NubisClient.call(nameof(DB_Main.nubisFetchSingleBlueprint), bluePrintId + "_space_" + userId.ToString());
+         string craftingIngredientData = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), userId.ToString());
+         string equippedItemContent = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), userId.ToString());
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientData);
          craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients);
@@ -131,43 +86,18 @@ namespace NubisDataHandling {
       }
 
       public void fetchCraftableData (int pageIndex, int itemsPerPage) {
-         StartCoroutine(CO_ProcessCraftableData(pageIndex, itemsPerPage));
+         processCraftableData(pageIndex, itemsPerPage);
       }
 
-      private IEnumerator CO_ProcessCraftableData (int pageIndex, int itemsPerPage) {
+      private async void processCraftableData (int pageIndex, int itemsPerPage) {
          int userId = Global.player == null ? 0 : Global.player.userId;
          List<Item> craftingIngredients = new List<Item>();
          List<Item> craftableItems = new List<Item>();
          List<Blueprint.Status> blueprintStatus = new List<Blueprint.Status>();
 
-         string craftingIngredientXml = "";
-         string armorFetch = "";
-         string weaponFetch = "";
-
-         UnityWebRequest craftingIngredientRequest = UnityWebRequest.Get(webDirectory + "fetch_crafting_ingredients_v3?usrId=" + userId);
-         yield return craftingIngredientRequest.SendWebRequest();
-
-         UnityWebRequest craftableWeaponsRequest = UnityWebRequest.Get(webDirectory + "fetch_craftable_weapons_v4?usrId=" + userId);
-         yield return craftableWeaponsRequest.SendWebRequest();
-
-         UnityWebRequest craftableArmorsRequest = UnityWebRequest.Get(webDirectory + "fetch_craftable_armors_v4?usrId=" + userId);
-         yield return craftableArmorsRequest.SendWebRequest();
-
-         if (craftingIngredientRequest.isNetworkError || craftingIngredientRequest.isHttpError) {
-            D.warning(craftingIngredientRequest.error);
-         } else {
-            craftingIngredientXml = craftingIngredientRequest.downloadHandler.text;
-         }
-         if (craftableWeaponsRequest.isNetworkError || craftableWeaponsRequest.isHttpError) {
-            D.warning(craftableWeaponsRequest.error);
-         } else {
-            weaponFetch = craftableWeaponsRequest.downloadHandler.text;
-         }
-         if (craftableArmorsRequest.isNetworkError || craftableArmorsRequest.isHttpError) {
-            D.warning(craftableArmorsRequest.error);
-         } else {
-            armorFetch = craftableArmorsRequest.downloadHandler.text;
-         }
+         string craftingIngredientXml = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), userId.ToString());
+         string armorFetch = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableArmors), userId.ToString());
+         string weaponFetch = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableWeapons), userId.ToString());
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients);
@@ -198,10 +128,10 @@ namespace NubisDataHandling {
             D.warning("Requesting too many items per page.");
             return;
          }
-         StartCoroutine(processUserInventory(pageIndex, itemsPerPage, categoryFilter));
+         processUserInventory(pageIndex, itemsPerPage, categoryFilter);
       }
 
-      private IEnumerator processUserInventory (int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
+      private async void processUserInventory (int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
          int userId = Global.player == null ? 0 : Global.player.userId;
          UserInfo newUserInfo = new UserInfo();
          List<Item> userInventory = new List<Item>();
@@ -210,76 +140,38 @@ namespace NubisDataHandling {
          this.pageIndex = pageIndex;
          this.itemsPerPage = itemsPerPage;
 
-         string weaponRawData = "";
-         string armorRawData = "";
-         string userRawData = "";
-         string equippedItemContent = "";
-         string craftingIngredientRawData = "";
-
-         // Fetch the user data before anything else
-         UnityWebRequest userDataRequest = UnityWebRequest.Get(webDirectory + "user_data_v1?usrId=" + userId);
-         yield return userDataRequest.SendWebRequest();
-
-         if (userDataRequest.isNetworkError || userDataRequest.isHttpError) {
-            D.warning(userDataRequest.error);
-         } else {
-            userRawData = userDataRequest.downloadHandler.text;
-            if (userRawData.Length < 10) {
-               D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
-               D.editorLog("Content: " + userRawData, Color.red);
-            }
-            newUserInfo = UserInfoData.processUserInfo(userRawData);
+         string userRawData = await NubisClient.call(nameof(DB_Main.nubisFetchUserData), userId.ToString());
+         if (userRawData.Length < 10) {
+            D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
+            D.editorLog("Content: " + userRawData, Color.red);
          }
+         newUserInfo = UserInfoData.processUserInfo(userRawData);
 
          if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.None) {
-            UnityWebRequest weaponInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Weapon);
-            yield return weaponInventoryRequest.SendWebRequest();
-
-            // Process weapon filter
-            if (weaponInventoryRequest.isNetworkError || weaponInventoryRequest.isHttpError) {
-               D.warning(weaponInventoryRequest.error);
-            } else {
-               weaponRawData = weaponInventoryRequest.downloadHandler.text;
-               List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
-               foreach (Item weapon in weaponList) {
-                  if (weapon.id != newUserInfo.weaponId) {
-                     userInventory.Add(weapon);
-                  }
+            string weaponRawData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + "_space_1");
+            List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
+            foreach (Item weapon in weaponList) {
+               if (weapon.id != newUserInfo.weaponId) {
+                  userInventory.Add(weapon);
                }
             }
          }
 
          if (this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.None) {
-            UnityWebRequest armorInventoryRequest = UnityWebRequest.Get(webDirectory + "fetch_user_inventory_v1?usrId=" + userId + "&itmType=" + (int) EquipmentType.Armor);
-            yield return armorInventoryRequest.SendWebRequest();
-
-            // Process armor filter
-            if (armorInventoryRequest.isNetworkError || armorInventoryRequest.isHttpError) {
-               D.warning(armorInventoryRequest.error);
-            } else {
-               armorRawData = armorInventoryRequest.downloadHandler.text;
-               List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
-               foreach (Item armor in armorList) {
-                  if (armor.id != newUserInfo.armorId) {
-                     userInventory.Add(armor);
-                  }
+            string armorRawData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + "_space_2");
+            List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
+            foreach (Item armor in armorList) {
+               if (armor.id != newUserInfo.armorId) {
+                  userInventory.Add(armor);
                }
             }
          }
 
          if (this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            UnityWebRequest craftingIngredientRequest = UnityWebRequest.Get(webDirectory + "fetch_crafting_ingredients_v3?usrId=" + userId);
-            yield return craftingIngredientRequest.SendWebRequest();
-            
-            // Process ingredients filter
-            if (craftingIngredientRequest.isNetworkError || craftingIngredientRequest.isHttpError) {
-               D.warning(craftingIngredientRequest.error);
-            } else {
-               craftingIngredientRawData = craftingIngredientRequest.downloadHandler.text;
-               List<Item> ingredientList = CraftingIngredients.processCraftingIngredients(craftingIngredientRawData);
-               foreach (Item ingredientItem in ingredientList) {
-                  userInventory.Add(ingredientItem);
-               }
+            string craftingIngredientRawData = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), userId.ToString());
+            List<Item> ingredientList = CraftingIngredients.processCraftingIngredients(craftingIngredientRawData);
+            foreach (Item ingredientItem in ingredientList) {
+               userInventory.Add(ingredientItem);
             }
          }
 
@@ -293,16 +185,10 @@ namespace NubisDataHandling {
          pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
 
          // Process user equipped items
-         UnityWebRequest equippedItemRequest = UnityWebRequest.Get(webDirectory + "fetch_equipped_items_v3?usrId=" + userId);
-         yield return equippedItemRequest.SendWebRequest();
-
+         string equippedItemContent = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), userId.ToString());
          Item equippedWeapon = new Item();
          Item equippedArmor = new Item();
-         if (equippedItemRequest.isNetworkError || equippedItemRequest.isHttpError) {
-            D.warning(equippedItemRequest.error);
-         } else {
-            equippedItemContent = equippedItemRequest.downloadHandler.text;
-         }
+
          EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
          equippedWeapon = equippedItemData.weaponItem;
          equippedArmor = equippedItemData.armorItem;

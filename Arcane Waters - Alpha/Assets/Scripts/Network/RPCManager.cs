@@ -717,7 +717,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // If we don't have the latest version of the map, download it
-      StartCoroutine(MapManager.self.CO_DownloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations));
+      MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations);
    }
 
    [Command]

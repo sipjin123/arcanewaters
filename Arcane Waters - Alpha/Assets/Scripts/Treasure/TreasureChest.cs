@@ -68,6 +68,9 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public string customSpritePath;
 
+   // If this object is waiting for a server response (for animation sync purposes)
+   public bool isWaitingForServerResponse;
+
    #endregion
 
    private void Awake () {
@@ -100,6 +103,10 @@ public class TreasureChest : NetworkBehaviour {
          int lastIntex = customSprites.Length / 2;
          openedChestSprite = customSprites[lastIntex];
          chestOpeningAnimation.maxIndex = lastIntex;
+
+         float frameRateReduction = customSprites.Length / 24;
+         frameRateReduction = Mathf.Clamp(frameRateReduction, .1f, 2f);
+         chestOpeningAnimation.frameLengthOverride = (chestOpeningAnimation.frameLengthOverride / frameRateReduction);
       }
    }
 
@@ -125,7 +132,9 @@ public class TreasureChest : NetworkBehaviour {
       if (hasBeenOpened()) {
          openButtonContainer.SetActive(false);
          shineContainer.SetActive(false);
-         spriteRenderer.sprite = openedChestSprite;
+         if ((!isWaitingForServerResponse && chestOpeningAnimation.getIndex() == chestOpeningAnimation.minIndex) || chestOpeningAnimation.isPaused) {
+            spriteRenderer.sprite = openedChestSprite;
+         }
       }
    }
 
@@ -133,6 +142,7 @@ public class TreasureChest : NetworkBehaviour {
       if (hasBeenOpened()) {
          return;
       }
+      isWaitingForServerResponse = true;
 
       // The player has to be close enough
       if (!_isGlobalPlayerNearby) {
@@ -219,7 +229,9 @@ public class TreasureChest : NetworkBehaviour {
 
    public IEnumerator CO_CreatingFloatingIcon (Item item) {
       // Give some time for the chest to open
-      yield return new WaitForSeconds(.18f);
+      float animationDuration = chestOpeningAnimation.frameLengthOverride * chestOpeningAnimation.maxIndex;
+      animationDuration = Mathf.Clamp(animationDuration, .1f, 2);
+      yield return new WaitForSeconds(animationDuration + 0.2f);
 
       // Create a floating icon
       GameObject floatingIcon = Instantiate(TreasureManager.self.floatingIconPrefab, Vector3.zero, Quaternion.identity);
@@ -258,6 +270,8 @@ public class TreasureChest : NetworkBehaviour {
 
       // Set the name text
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = itemName;
+
+      isWaitingForServerResponse = false;
    }
 
    private void OnTriggerStay2D (Collider2D other) {

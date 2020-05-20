@@ -12,6 +12,46 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static string nubisFetchUserData (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchCraftingIngredients (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchXmlZipBytes (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchXmlVersion (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchSingleBlueprint (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchEquippedItems (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchCraftableWeapons (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchCraftableArmors (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchInventory (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchMapData (string rawMapName) {
+      return "";
+   }
+
    public static void writeZipData (byte[] bytes) { 
    }
 

@@ -369,7 +369,7 @@ public class Instance : NetworkBehaviour
             // Create the discoveries that could exist in this instance
             DiscoveryManager.self.createDiscoveriesForInstance(this);
 
-            // TODO: Confirm if this is the proper spot for creating treasure chests
+            // Spawn potential treasure chests for this instance
             TreasureManager.self.createTreasureForInstance(this);
          }
       }

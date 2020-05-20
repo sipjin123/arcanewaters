@@ -25,6 +25,7 @@ public class Anim : MonoBehaviour {
       Interact_East = 20,
       Interact_North = 21,
       Interact_South = 22,
+      Play_Once = 23
    }
 
    // The different animation groups
@@ -57,6 +58,8 @@ public class Anim : MonoBehaviour {
             return true;
          case Type.Finish_Attack:
             return true;
+         case Type.Play_Once:
+            return true; 
          default:
             return false;
       }

@@ -1,27 +1,18 @@
-﻿#if NUBIS
+﻿//#define NUBIS
+#if NUBIS
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+#endif
 
-namespace Nubis.Controllers
-{
-   public class Fetch_Craftable_Weapons_v4Controller
-   {
+namespace NubisTranslator {
+   public class Fetch_Craftable_Weapons_v4Controller {
       public static string fetchCraftableWeapons (int usrId) {
-
+#if NUBIS
          try {
             // Connect to the server.
-            string connString = DB_Main.buildConnectionString(DB_Main.RemoteServer);
-
-            if (String.IsNullOrEmpty(connString)) return string.Empty;
-
-            using (MySqlConnection connection = new MySqlConnection(connString)) {
-
+            using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
-
                using (MySqlCommand command = new MySqlCommand(
                   "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_weapon_xml_v3.xmlContent AS equipmentXML " +
                   "FROM items " +
@@ -29,13 +20,10 @@ namespace Nubis.Controllers
                   "RIGHT JOIN equipment_weapon_xml_v3 ON(itmType = equipment_weapon_xml_v3.equipmentTypeID AND itmData LIKE '%blueprintType=weapon%') " +
                   "WHERE(itmCategory = 7) AND items.usrId = @usrId",
                   connection)) {
-
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder stringBuilder = new StringBuilder();
-
                   using (MySqlDataReader reader = command.ExecuteReader()) {
-
                      while (reader.Read()) {
                         int itmId = reader.GetInt32("itmId");
                         int itmCategory = reader.GetInt32("itmCategory");
@@ -46,17 +34,14 @@ namespace Nubis.Controllers
                         stringBuilder.AppendLine(result);
                      }
                   }
-
                   return stringBuilder.ToString();
                }
             }
-
          } catch {
             return "Failed to Query";
          }
-
+#endif
+         return "";
       }
-
    }
 } 
-#endif

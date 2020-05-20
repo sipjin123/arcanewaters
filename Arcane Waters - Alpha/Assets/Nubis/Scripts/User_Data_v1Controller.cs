@@ -1,28 +1,14 @@
 ﻿#if NUBIS
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+#endif
 
-namespace Nubis.Controllers
-{
-   public class User_Data_v1Controller
-   {
-
+namespace NubisTranslator {
+   public class User_Data_v1Controller {
       public static string userData (int usrId) {
-
+#if NUBIS
          try {
-            // Connect to the server.
-            string connString = DB_Main.buildConnectionString(DB_Main.RemoteServer);
-
-            if (String.IsNullOrEmpty(connString)) return string.Empty;
-
-            using (MySqlConnection connection = new MySqlConnection(connString)) {
-
+            using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
-
                using (MySqlCommand command = new MySqlCommand(
                   "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairColor1, hairColor2, eyesType, eyesColor1, eyesColor2, wpnId, armId " +
                   "FROM users " +
@@ -30,11 +16,9 @@ namespace Nubis.Controllers
                   "USING (accId) " +
                   "WHERE usrId=@usrId",
                   connection)) {
-
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   using (MySqlDataReader reader = command.ExecuteReader()) {
-
                      while (reader.Read()) {
                         int usrGold = reader.GetInt32("usrGold");
                         int accGems = reader.GetInt32("accGems");
@@ -53,17 +37,13 @@ namespace Nubis.Controllers
                         return result;
                      }
                   }
-
                }
             }
-
          } catch {
             return string.Empty;
          }
-
+#endif
          return string.Empty;
       }
-
    }
 }
-#endif

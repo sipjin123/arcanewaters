@@ -81,37 +81,32 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       if (serverVersion > clientXmlVersion) {
          clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
+         D.debug("Client is outdated, downloading new ver: " + clientXmlVersion + " -> " + serverVersion);
          debugLog(clientMessage);
-         StartCoroutine(CO_DownloadClientData(serverVersion));
+         downloadClientData(serverVersion);
       } else {
          clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
+         D.debug("Client is up to date");
          debugLog(clientMessage);
          processClientXml();
       }
    }
 
-   private IEnumerator CO_DownloadClientData (int targetVersion) {
-      UnityWebRequest zipDataRequest = UnityWebRequest.Get(webDirectory + "fetch_xml_zip_v1");
-      yield return zipDataRequest.SendWebRequest();
+   private async void downloadClientData (int targetVersion) {
+      string zipDataRequest = await NubisClient.call(nameof(DB_Main.nubisFetchXmlZipBytes), "1");
+      try {
+         byte[] bytes = Convert.FromBase64String(zipDataRequest);
+         File.WriteAllBytes(ZIP_PATH, bytes);
+      } catch {
+         D.editorLog("Failed to convert bytes:", Color.red);
 
-      if (zipDataRequest.isNetworkError || zipDataRequest.isHttpError) {
-         D.warning(zipDataRequest.error);
-      } else {
-         string zipStringData = zipDataRequest.downloadHandler.text;
-         try {
-            byte[] bytes = Convert.FromBase64String(zipStringData);
-            File.WriteAllBytes(ZIP_PATH, bytes);
-         } catch {
-            D.editorLog("Failed to convert bytes:", Color.red);
-
-            if (!Directory.Exists(ERROR_DIRECTORY)) {
-               Directory.CreateDirectory(ERROR_DIRECTORY);
-            }
-            if (!File.Exists(ERROR_DIRECTORY + ERROR_FILENAME)) {
-               File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
-            }
-            File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipStringData);
+         if (!Directory.Exists(ERROR_DIRECTORY)) {
+            Directory.CreateDirectory(ERROR_DIRECTORY);
          }
+         if (!File.Exists(ERROR_DIRECTORY + ERROR_FILENAME)) {
+            File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
+         }
+         File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipDataRequest);
       }
 
       StartCoroutine(CO_ExtractTextFiles());

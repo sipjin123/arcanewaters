@@ -871,7 +871,7 @@ namespace MapCreationTool.Serialization
 
       public const string TREASURE_SPOT_SPAWN_CHANCE_KEY = "spawn chance";
       public const string TREASURE_SPRITE_TYPE_KEY = "treasure sprite type";
-      public const string TREASURE_USE_CUSTOM_TYPE_KEY = "treasure user custom sprite";
+      public const string TREASURE_USE_CUSTOM_TYPE_KEY = "treasure use custom sprite";
 
       public const string GENERIC_ACTION_TRIGGER_INTERACTION_TYPE = "interaction type";
       public const string GENERIC_ACTION_TRIGGER_ACTION_NAME = "action name";

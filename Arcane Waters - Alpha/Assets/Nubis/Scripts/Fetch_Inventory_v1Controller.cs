@@ -1,18 +1,15 @@
 ﻿//#define NUBIS
 #if NUBIS
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+#endif
 
-namespace Nubis.Controllers {
+namespace NubisTranslator {
    public class Fetch_Inventory_v1Controller {
       public static string userInventory (int usrId, int equipType) {
+#if NUBIS
          try {
-            // Connect to the server.
-            string connString = DB_Main.buildConnectionString(DB_Main.RemoteServer);
             string equipmentTable = "";
             int equipmentCategory = equipType;
             switch (equipType) {
@@ -23,22 +20,14 @@ namespace Nubis.Controllers {
                   equipmentTable = "equipment_armor_xml_v3";
                   break;
             }
-
-            if (String.IsNullOrEmpty(connString)) return string.Empty;
-
-            using (MySqlConnection connection = new MySqlConnection(connString)) {
-
+            using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
-
                using (MySqlCommand command = new MySqlCommand(
                "SELECT xmlContent, itmId FROM items left join " + equipmentTable + " on itmType = xml_id where itmCategory = " + equipmentCategory + " and usrId = @usrId", connection)) {
-
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder stringBuilder = new StringBuilder();
-
                   using (MySqlDataReader reader = command.ExecuteReader()) {
-
                      while (reader.Read()) {
                         string xmlData = reader.GetString("xmlContent");
                         int itmId = reader.GetInt32("itmId");
@@ -46,15 +35,14 @@ namespace Nubis.Controllers {
                         stringBuilder.AppendLine(result);
                      }
                   }
-
                   return stringBuilder.ToString();
                }
             }
-
          } catch {
             return "Failed to Query";
          }
+#endif
+         return "";
       }
    }
 }
-#endif

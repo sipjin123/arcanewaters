@@ -1,4 +1,5 @@
-﻿#if NUBIS
+﻿//#define NUBIS
+#if NUBIS
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ public class NubisManager : MonoBehaviour
          i("Replying to client: FAILED");
       }
    }
-   
+
    private static void OK (HttpListenerContext context, string message = "OK") {
       try {
          i("Replying to client...");
@@ -59,12 +60,41 @@ public class NubisManager : MonoBehaviour
             writer.Flush();
          }
          context.Response.Close();
-         i("Replying to client: OK");
+         i("Replying to client: DONE");
       } catch {
          i("Replying to client: FAILED");
       }
    }
-   
+
+   private static void NotFound (HttpListenerContext context, string message = "Not Found") {
+      try {
+         i("Replying to client...");
+         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
+            context.Response.StatusCode = 404;
+            writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
+            writer.Flush();
+         }
+         context.Response.Close();
+         i("Replying to client: DONE");
+      } catch {
+         i("Replying to client: FAILED");
+      }
+   }
+
+   private static void InternalServerError (HttpListenerContext context, string message = "Internal Server Error") {
+      try {
+         i("Replying to client...");
+         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
+            context.Response.StatusCode = 500;
+            writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
+            writer.Flush();
+         }
+         context.Response.Close();
+         i("Replying to client: DONE");
+      } catch {
+         i("Replying to client: FAILED");
+      }
+   }
    private async Task ProcessRequestAsync (HttpListenerContext context) {
       await Task.Run(() => {
          try {
@@ -76,7 +106,7 @@ public class NubisManager : MonoBehaviour
             switch (endpoint) {
                case NubisEndpoints.RPC:
                   var result = NubisRelay.call(context.Request.Url.AbsoluteUri);
-                  OK(context, result);
+                  Content(context, result);
                   break;
                case NubisEndpoints.TERMINATE:
                   string msg = "Stop request received.";
@@ -94,12 +124,12 @@ public class NubisManager : MonoBehaviour
                   context.Response.Close();
                   break;
                default:
-                  OK(context);
+                  NotFound(context);
                   break;
             }
          } catch (Exception ex) {
             e(ex);
-            OK(context);
+            InternalServerError(context);
          }
          
       });
@@ -131,7 +161,7 @@ public class NubisManager : MonoBehaviour
          i($"{NubisStatics.AppName} waiting for requests.");
          do {
             HttpListenerContext context = httpServer.GetContext(); // blocks until a request is received.
-            i($"request received! -from: {context.Request.RemoteEndPoint.ToString()} -url: {context.Request.Url}");
+            i($"Request received! -from: {context.Request.RemoteEndPoint.ToString()} -url: {context.Request.Url}");
             _ = ProcessRequestAsync(context);
          }
          while (httpServer.IsListening);
@@ -191,7 +221,7 @@ public class NubisManager : MonoBehaviour
    }
  
 
-   #region Private Variables
+#region Private Variables
 
    // Reference to the current instance of the configuration.
    private NubisConfiguration configuration;

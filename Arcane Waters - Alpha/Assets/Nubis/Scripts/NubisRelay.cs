@@ -42,7 +42,7 @@ public class NubisRelay
          object result = methodInfo.Invoke(null, args);
          if (result == null) return string.Empty;
          NubisLogger.i($"Invoking '{function}({argString})' : OK");
-         return result as string;
+         return result.ToString();
       } catch (Exception ex) {
          NubisLogger.i($"Invoking '{function}({argString})' : FAILED");
          NubisLogger.e(ex);
