@@ -8,7 +8,6 @@ using System.Net;
 using System.Threading.Tasks;
 using System.IO;
 using System;
-using Nubis.Controllers;
 using static NubisLogger;
 
 public class NubisManager : MonoBehaviour
