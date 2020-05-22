@@ -37,6 +37,22 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public ColorType armorColor2 = ColorType.None;
 
+   // The effect that indicates this ship is speeding up
+   public GameObject speedUpEffect;
+   public Canvas speedupGUI;
+   public Transform speedupEffectPivot;
+   public Image speedUpBar;
+
+   // Color indications if the fuel is usable or not
+   public Color recoveringColor, defaultColor;
+
+   // Speedup variables
+   public float speedMeter = 0;
+   public static float SPEEDUP_METER_MAX = 10;
+   public bool isReadyToSpeedup = true;
+   public float fuelDepleteValue = 2;
+   public float fuelRecoverValue = 1.2f;
+
    #endregion
 
    protected override bool isBot () { return false; }
@@ -102,6 +118,27 @@ public class PlayerShipEntity : ShipEntity {
          }
       }
 
+      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
+         isSpeedingUp = true;
+         if (speedMeter > 0) {
+            speedMeter -= Time.deltaTime * fuelDepleteValue;
+         } else {
+            isReadyToSpeedup = false;
+            isSpeedingUp = false;
+         }
+      } else {
+         // Only notify other clients once if disabling
+         isSpeedingUp = false;
+         if (speedMeter < SPEEDUP_METER_MAX) {
+            speedMeter += Time.deltaTime * fuelRecoverValue;
+         } else {
+            isReadyToSpeedup = true;
+         }
+      }
+
+      Cmd_UpdateSpeedupDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup);
+      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup);
+
       // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
       if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
          isNextShotDefined = false;
@@ -116,6 +153,36 @@ public class PlayerShipEntity : ShipEntity {
       if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
       }
+   }
+
+   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup) {
+      // Handle GUI
+      if (isOn || meter < SPEEDUP_METER_MAX) {
+         speedupGUI.enabled = true;
+         speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
+      } else {
+         speedupGUI.enabled = false;
+      }
+
+      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
+
+      // Handle sprite effects
+      if (isOn) {
+         speedUpEffect.SetActive(true);
+         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
+      } else {
+         speedUpEffect.SetActive(false);
+      }
+   }
+
+   [Command]
+   void Cmd_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup) {
+      Rpc_UpdateSpeedupDisplay(speedMeter, isOn, isReadySpeedup);
+   }
+
+   [ClientRpc]
+   public void Rpc_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup) {
+      updateSpeedUpDisplay(speedMeter, isOn, isReadySpeedup);
    }
 
    [ServerOnly]

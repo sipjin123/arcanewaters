@@ -25,66 +25,6 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   #region NUBIS data fetching
-
-   public static new string nubisFetchUserData (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.User_Data_v1Controller.userData(userId);
-   }
-
-   public static new string nubisFetchCraftingIngredients (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(userId);
-   }
-
-   public static new string nubisFetchXmlZipBytes (string rawUserId) {
-      return NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
-   }
-
-   public static new string nubisFetchXmlVersion (string rawUserId) {
-      return NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion();
-   }
-
-   public static new string nubisFetchSingleBlueprint (string rawContent) {
-      string splitter = "_space_";
-      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
-
-      int blueprintId = int.Parse(rawItemGroup[0]);
-      int userId = int.Parse(rawItemGroup[1]);
-
-      return NubisTranslator.Fetch_Single_Blueprint_v4Controller.fetchSingleBlueprint(blueprintId, userId);
-   }
-
-   public static new string nubisFetchEquippedItems (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Equipped_Items_v3Controller.fetchEquippedItems(userId);
-   }
-
-   public static new string nubisFetchCraftableWeapons (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(userId);
-   }
-
-   public static new string nubisFetchCraftableArmors (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(userId);
-   }
-
-   public static new string nubisFetchInventory (string rawContent) {
-      string splitter = "_space_";
-      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
-
-      int userId = int.Parse(rawItemGroup[0]);
-      int equipmentType = int.Parse(rawItemGroup[1]);
-      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, equipmentType);
-   }
-
-   public static new string nubisFetchMapData (string rawMapName) {
-      return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName);
-   }
-
-   #endregion
-
    #region XML Content Handling
 
    public static new void writeZipData (byte[] bytes) {
@@ -3823,8 +3763,10 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
+            cmd.Parameters.AddWithValue("@accId", player.accountId);
             cmd.Parameters.AddWithValue("@bugSubject", subject);
             cmd.Parameters.AddWithValue("@bugLog", bugReport);
+            cmd.Parameters.AddWithValue("@status", "Unassigned");
 
             // Execute the command
             cmd.ExecuteNonQuery();

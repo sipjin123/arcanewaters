@@ -69,6 +69,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_InteractSecretEntrance (int instanceId, int spawnId) {
+      SecretEntranceSpawnData secretEntranceSpawnData = SecretsManager.self.secretInstanceIdList.Find(_ => _.instanceId == instanceId && _.spawnId == spawnId);
+      if (secretEntranceSpawnData != null) {
+         if (!secretEntranceSpawnData.secretEntrance.isInteracted) {
+            secretEntranceSpawnData.secretEntrance.completeInteraction();
+         }
+      }
+   }
+
+   [Command]
    public void Cmd_InteractAnimation (Anim.Type animType) {
       Rpc_InteractAnimation(animType);
    }
@@ -443,10 +453,6 @@ public class RPCManager : NetworkBehaviour {
       // Play some sounds
       SoundManager.create3dSound("Door_open", Global.player.transform.position);
       SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
-
-      // Show a confirmation in chat
-      string msg = string.Format("You found one <color=red>{0}</color>!", item.getName());
-      ChatManager.self.addChat(msg, ChatInfo.Type.System);
 
       if (chest.autoDestroy) {
          chest.disableChest();

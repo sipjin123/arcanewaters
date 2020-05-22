@@ -47,7 +47,7 @@ public class SteamManager : MonoBehaviour {
 		Debug.LogWarning(pchDebugText);
 	}
 
-	protected virtual void Awake() {
+	protected virtual void Awake () {
 		// Only one instance of SteamManager at a time!
 		if (s_instance != null) {
 			Destroy(gameObject);
@@ -68,7 +68,14 @@ public class SteamManager : MonoBehaviour {
 
       #if UNITY_CLOUD_BUILD
       Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
-		if (!Packsize.Test()) {
+      #endif
+
+      #if !UNITY_CLOUD_BUILD
+      Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
+      #endif
+
+      #if !IS_SERVER_BUILD && !UNITY_EDITOR
+      if (!Packsize.Test()) {
 			Debug.LogError("[Steamworks.NET] Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.", this);
 		}
 
@@ -113,14 +120,10 @@ public class SteamManager : MonoBehaviour {
 
 		s_EverInitialized = true;
       #endif
-      
-      #if !UNITY_CLOUD_BUILD
-      Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
-      #endif
-	}
+   }
 
-	// This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
-	protected virtual void OnEnable() {
+   // This should only ever get called on first load and after an Assembly reload, You should never Disable the Steamworks Manager yourself.
+   protected virtual void OnEnable() {
 		if (s_instance == null) {
 			s_instance = this;
 		}

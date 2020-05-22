@@ -35,7 +35,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    }
 
    void Start () {
-      InvokeRepeating("showOrHideArrow", Random.Range(0f, 1f), 0.5f);
+      try {
+         InvokeRepeating("showOrHideArrow", Random.Range(0f, 1f), 0.5f);
+      } catch {
+         // TODO: Confirm if this is still an issue on cloud build
+         D.log("Bug: Issue with warp arrow");
+         CancelInvoke();
+      }
    }
 
    void OnTriggerEnter2D (Collider2D other) {
@@ -114,19 +120,25 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    }
 
    private void showOrHideArrow () {
-      if (Global.player == null) {
-         return;
-      }
+      try {
+         if (Global.player == null) {
+            return;
+         }
 
-      // Check if the local player can use the warp
-      if (canPlayerUseWarp(Global.player)) {
-         if (!arrow.activeSelf) {
-            arrow.SetActive(true);
+         // Check if the local player can use the warp
+         if (canPlayerUseWarp(Global.player)) {
+            if (!arrow.activeSelf) {
+               arrow.SetActive(true);
+            }
+         } else {
+            if (arrow.activeSelf) {
+               arrow.SetActive(false);
+            }
          }
-      } else {
-         if (arrow.activeSelf) {
-            arrow.SetActive(false);
-         }
+      } catch {
+         // TODO: Confirm if this is still an issue on cloud build
+         D.log("Bug 2: Issue with warp arrow");
+         CancelInvoke();
       }
    }
 

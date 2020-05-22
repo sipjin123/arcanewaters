@@ -14,10 +14,19 @@ public class SecretsManager : MonoBehaviour {
    // The list of secrets data registered
    public List<SecretsData> secretsDataList = new List<SecretsData>();
 
+   // Cached list of spawn data which will be the same data in all clients
+   public List<SecretEntranceSpawnData> secretInstanceIdList = new List<SecretEntranceSpawnData>();
+
    #endregion
 
    private void Awake () {
       self = this;
+   }
+
+   public void registerSecretEntrance (SecretEntranceSpawnData secretSpawnData) {
+      if (secretInstanceIdList.Find(_=>_.instanceId == secretSpawnData.instanceId && _.spawnId == secretSpawnData.spawnId) == null) {
+         secretInstanceIdList.Add(secretSpawnData);
+      }
    }
 
    public void enterUserToSecret (int userId, string areaName, int instanceId, SecretEntrance secretArea) {
@@ -59,8 +68,7 @@ public class SecretsManager : MonoBehaviour {
 }
 
 [Serializable]
-public class SecretsData
-{
+public class SecretsData {
    // The current players in the list
    public List<int> userIdList = new List<int>();
 
@@ -72,4 +80,16 @@ public class SecretsData
 
    // The secret node
    public SecretEntrance secretArea;
+}
+
+[Serializable]
+public class SecretEntranceSpawnData {
+   // The instance the secret entrance belongs to
+   public int instanceId;
+
+   // The index id of the spawn
+   public int spawnId;
+
+   // Reference to the class
+   public SecretEntrance secretEntrance;
 }

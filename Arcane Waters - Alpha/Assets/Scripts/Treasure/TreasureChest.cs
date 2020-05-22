@@ -49,6 +49,9 @@ public class TreasureChest : NetworkBehaviour {
    // The container for our animated arrow
    public GameObject arrowContainer;
 
+   // The object containing the special effects (This is disabled if the chest is using custom sprite, intended for secret chests)
+   public GameObject effectsHolder;
+
    // Determines the type of chest if it is dropped by a land or sea monster or spawned at a treasure site
    public ChestSpawnType chestType;
 
@@ -70,6 +73,9 @@ public class TreasureChest : NetworkBehaviour {
 
    // If this object is waiting for a server response (for animation sync purposes)
    public bool isWaitingForServerResponse;
+
+   // The standard sprite count of a chest open animation to be based upon
+   public const int DEFAULT_SPRITES_PER_SHEET = 24;
 
    #endregion
 
@@ -95,18 +101,29 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public void Start () {
+      if (Util.isBatch()) {
+         return;
+      }
+      
       Minimap.self.addTreasureChestIcon(this.gameObject);
 
       if (useCustomSprite) {
          Sprite[] customSprites = ImageManager.getSprites(customSpritePath);
-         spriteRenderer.sprite = customSprites[0];
          int lastIntex = customSprites.Length / 2;
+
+         // Sets the sprite and sprite animations last frame
+         spriteRenderer.sprite = customSprites[0];
          openedChestSprite = customSprites[lastIntex];
          chestOpeningAnimation.maxIndex = lastIntex;
 
-         float frameRateReduction = customSprites.Length / 24;
+         // Adjusts the speed of the animation depending on the number of sprites in the sheet
+         float frameRateReduction = customSprites.Length / DEFAULT_SPRITES_PER_SHEET;
          frameRateReduction = Mathf.Clamp(frameRateReduction, .1f, 2f);
          chestOpeningAnimation.frameLengthOverride = (chestOpeningAnimation.frameLengthOverride / frameRateReduction);
+
+         if (effectsHolder != null) {
+            effectsHolder.SetActive(false);
+         }
       }
    }
 
@@ -132,8 +149,11 @@ public class TreasureChest : NetworkBehaviour {
       if (hasBeenOpened()) {
          openButtonContainer.SetActive(false);
          shineContainer.SetActive(false);
-         if ((!isWaitingForServerResponse && chestOpeningAnimation.getIndex() == chestOpeningAnimation.minIndex) || chestOpeningAnimation.isPaused) {
-            spriteRenderer.sprite = openedChestSprite;
+
+         if (!Util.isBatch()) {
+            if ((!isWaitingForServerResponse && chestOpeningAnimation.getIndex() == chestOpeningAnimation.minIndex) || chestOpeningAnimation.isPaused) {
+               spriteRenderer.sprite = openedChestSprite;
+            }
          }
       }
    }
@@ -272,6 +292,10 @@ public class TreasureChest : NetworkBehaviour {
       floatingIcon.GetComponentInChildren<FloatAndStop>().nameText.text = itemName;
 
       isWaitingForServerResponse = false;
+
+      // Show a confirmation in chat
+      string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
+      ChatManager.self.addChat(msg, ChatInfo.Type.System);
    }
 
    private void OnTriggerStay2D (Collider2D other) {
@@ -305,7 +329,7 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    private IEnumerator CO_DisableChestAfterDelay() {
-      yield return new WaitForSeconds(3);
+      yield return new WaitForSeconds(5);
       gameObject.SetActive(false);
       deleteTreasureChestIcon();
    }

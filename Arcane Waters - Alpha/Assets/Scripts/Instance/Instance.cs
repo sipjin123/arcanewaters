@@ -322,21 +322,33 @@ public class Instance : NetworkBehaviour
 
             if (area.secretsEntranceDataFields.Count > 0) {
                Transform secretsParent = AreaManager.self.getArea(areaKey).secretsParent;
+
+               int spawnIdCounter = 0;
                foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
                   SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab, secretsParent);
-                  secretObjNode.areaKey = area.areaKey;
-                  secretObjNode.receiveData(dataField.d);
-                  secretObjNode.transform.localPosition = targetLocalPos;
 
+                  // Make sure obj has correct data
+                  IMapEditorDataReceiver receiver = secretObjNode.GetComponent<IMapEditorDataReceiver>();
+                  if (receiver != null && dataField.d != null) {
+                     receiver.receiveData(dataField.d);
+                  }
+
+                  secretObjNode.areaKey = area.areaKey;
+
+                  // Transform Setup
+                  secretObjNode.transform.localPosition = targetLocalPos;
                   secretObjNode.syncedPosition = secretObjNode.transform.position;
 
-                  // The Instance needs to keep track of all Networked objects inside
+                  // Id Setup
                   secretObjNode.instanceId = id;
+                  secretObjNode.spawnId = spawnIdCounter;
+
                   entities.Add(secretObjNode);
 
                   NetworkServer.Spawn(secretObjNode.gameObject);
+                  spawnIdCounter++;
                }
             }
 

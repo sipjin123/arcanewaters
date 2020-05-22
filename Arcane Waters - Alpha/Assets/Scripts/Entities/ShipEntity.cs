@@ -31,6 +31,12 @@ public class ShipEntity : SeaEntity
    [SyncVar]
    public int sailors;
 
+   // Determines if this unit is speeding
+   public bool isSpeedingUp;
+
+   // The speed multiplied when speed boosting
+   public static float SPEEDUP_MULTIPLIER = 2;
+
    // The Rarity of the ship
    public Rarity.Type rarity;
 
@@ -90,6 +96,9 @@ public class ShipEntity : SeaEntity
    public override float getMoveSpeed () {
       // Start with the base speed for all sea entities
       float baseSpeed = base.getMoveSpeed();
+      if (isSpeedingUp) {
+         baseSpeed *= SPEEDUP_MULTIPLIER;
+      }
 
       // Increase or decrease our speed based on the settings for this ship
       return baseSpeed * (this.speed / 100f);

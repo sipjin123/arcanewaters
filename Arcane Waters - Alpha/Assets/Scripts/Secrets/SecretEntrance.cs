@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 
-public class SecretEntrance : NetworkBehaviour {
+public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // The id of this node
@@ -20,6 +20,10 @@ public class SecretEntrance : NetworkBehaviour {
    // The instance that this node is in
    [SyncVar]
    public int instanceId;
+
+   // The unique id for each secret entrance per instance id
+   [SyncVar]
+   public int spawnId;
 
    // The world position of this node
    [SyncVar]
@@ -71,6 +75,10 @@ public class SecretEntrance : NetworkBehaviour {
    // The base number of animation sprites in a sheet
    public static int DEFAULT_SPRITESHEET_COUNT = 24;
 
+   // If the animation is finished
+   [SyncVar]
+   public bool isFinishedAnimating;
+
    #endregion
 
    private void Awake () {
@@ -83,43 +91,70 @@ public class SecretEntrance : NetworkBehaviour {
       if (isMapEditorMode) {
          return;
       }
-      
-      mainSprite = ImageManager.getSprite(initSpritePath);
-      subSprite = ImageManager.getSprites(interactSpritePath)[0];
-      if (!isInteracted) {
-         spriteRenderer.sprite = mainSprite;
-      } else {
-         int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
-         Sprite[] mainSprites = ImageManager.getSprites(interactSpritePath);
-         spriteRenderer.sprite = mainSprites[spriteLength - 1];
 
-         // Multiplies the animation speed depending on the number of sprites in the sprite sheet (the more the sprites the faster the animation)
-         animationSpeed *= mainSprites.Length / DEFAULT_SPRITESHEET_COUNT;
-         animationSpeed = Mathf.Clamp(animationSpeed, .05f, 2);
+      if (!Util.isBatch()) {
+         try {
+            mainSprite = ImageManager.getSprite(initSpritePath);
+            subSprite = ImageManager.getSprites(interactSpritePath)[0];
+            if (!isInteracted) {
+               spriteRenderer.sprite = mainSprite;
+            } else {
+               int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
+               Sprite[] mainSprites = ImageManager.getSprites(interactSpritePath);
+               spriteRenderer.sprite = mainSprites[spriteLength - 1];
+
+               // Multiplies the animation speed depending on the number of sprites in the sprite sheet (the more the sprites the faster the animation)
+               animationSpeed *= mainSprites.Length / DEFAULT_SPRITESHEET_COUNT;
+               animationSpeed = Mathf.Clamp(animationSpeed, .05f, 2);
+            }
+
+            if (subSprite.name == "none") {
+               subSpriteRenderer.gameObject.SetActive(false);
+            }
+            spriteRenderer.enabled = true;
+
+            _outline.Regenerate();
+            _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+         } catch {
+            D.debug("Failed to process sprites for Secret Entrance");
+         }
       }
 
-      if (subSpriteRenderer.sprite.name == "none") {
-         subSpriteRenderer.gameObject.SetActive(false);
+      // Server will set the warp info
+      if (NetworkServer.active) {
+         warp.areaTarget = areaTarget;
+         warp.spawnTarget = spawnTarget;
+         warp.newFacingDirection = newFacingDirection;
+         warp.warpEvent.AddListener(player => {
+            userIds.Add(player.userId);
+
+            // Keep track of the user's location while in the secrets room
+            SecretsManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
+         });
+         warp.gameObject.SetActive(false);
       }
-      spriteRenderer.enabled = true;
-
-      _outline.Regenerate();
-      _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
-
-      warp.areaTarget = areaTarget;
-      warp.spawnTarget = spawnTarget;
-      warp.newFacingDirection = newFacingDirection;
-      warp.warpEvent.AddListener(player => {
-         userIds.Add(player.userId);
-
-         // Keep track of the user's location while in the secrets room
-         SecretsManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
-      });
 
       transform.position = syncedPosition;
       if (AreaManager.self.getArea(areaKey) != null) {
          transform.SetParent(AreaManager.self.getArea(areaKey).secretsParent);
       }
+
+      if (isFinishedAnimating && !Util.isBatch()) {
+         setSprites();
+         if (subSprite.name == "none") {
+            subSpriteRenderer.gameObject.SetActive(false);
+         }
+
+         _outline.setVisibility(false);
+         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
+         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+      }
+
+      SecretsManager.self.registerSecretEntrance(new SecretEntranceSpawnData {
+         instanceId = instanceId,
+         spawnId = spawnId,
+         secretEntrance = this
+      });
    }
 
    public void Update () {
@@ -149,13 +184,9 @@ public class SecretEntrance : NetworkBehaviour {
                secretsId = int.Parse(value);
                break;
             case DataField.SECRETS_START_SPRITE:
-               mainSprite = ImageManager.getSprite(value);
-               spriteRenderer.sprite = mainSprite;
                initSpritePath = value;
                break;
             case DataField.SECRETS_INTERACT_SPRITE:
-               subSprite = ImageManager.getSprites(value)[0];
-               subSpriteRenderer.sprite = subSprite;
                interactSpritePath = value;
                break;
             case DataField.WARP_TARGET_MAP_KEY:
@@ -181,59 +212,50 @@ public class SecretEntrance : NetworkBehaviour {
       }
    }
 
-   private void OnTriggerEnter2D (Collider2D collision) {
-      if (collision.GetComponent<PlayerBodyEntity>() != null) {
-         PlayerBodyEntity entity = collision.GetComponent<PlayerBodyEntity>();
-         if (entity.isServer && entity.connectionToClient != null) {
-            if (!userIds.Contains(entity.userId)) {
-               completeInteraction(entity);
-            } 
-         }
-      }
-   }
-
    public void tryToInteract () {
       if (Global.player != null) {
-         if (!userIds.Contains(Global.player.userId)) {
-            completeInteraction((PlayerBodyEntity) Global.player);
-         }
+         Global.player.rpc.Cmd_InteractSecretEntrance(instanceId, spawnId);
       }
    }
 
-   private void completeInteraction (PlayerBodyEntity player) {
+   public void completeInteraction () {
       if (!isInteracted) {
          isInteracted = true;
 
-         setSprites();
-
-         InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
-         _outline.setVisibility(false);
-
+         // Sends animation commands to all clients
          Rpc_InteractAnimation();
-         StartCoroutine(CO_ProcessInteraction(player));
+
+         // Let the animation play before enabling the warp object
+         StartCoroutine(CO_ProcessInteraction());
       }
    }
 
    private void setSprites () {
-      spriteRenderer.sprite = mainSprite;
-      subSpriteRenderer.sprite = subSprite;
+      if (!Util.isBatch()) {
+         spriteRenderer.sprite = mainSprite;
+         subSpriteRenderer.sprite = subSprite;
 
-      mainSpriteComponent.sprites = ImageManager.getSprites(mainSprite.texture);
-      mainSpriteComponent.maxIndex = mainSpriteComponent.sprites.Length;
-      mainSpriteComponent.currentIndex = 0;
+         mainSpriteComponent.sprites = ImageManager.getSprites(mainSprite.texture);
+         mainSpriteComponent.maxIndex = mainSpriteComponent.sprites.Length;
+         mainSpriteComponent.currentIndex = 0;
 
-      subSpriteComponent.sprites = ImageManager.getSprites(subSprite.texture);
-      subSpriteComponent.maxIndex = subSpriteComponent.sprites.Length;
-      subSpriteComponent.currentIndex = 0;
+         subSpriteComponent.sprites = ImageManager.getSprites(subSprite.texture);
+         subSpriteComponent.maxIndex = subSpriteComponent.sprites.Length;
+         subSpriteComponent.currentIndex = 0;
+      }
    }
 
    [ClientRpc]
    public void Rpc_InteractAnimation () {
-      setSprites();
+      if (!Util.isBatch()) {
+         setSprites();
 
-      _outline.setVisibility(false);
-      InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
-      InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
+         _outline.setVisibility(false);
+         _outline.enabled = false;
+         _outline = null;
+         InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
+         InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
+      }
    }
 
    private void playMainSpriteAnimation () {
@@ -253,15 +275,19 @@ public class SecretEntrance : NetworkBehaviour {
    }
 
    private void endSpriteAnimation () {
-      spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
-      subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+      if (!Util.isBatch()) {
+         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
+         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+
+      }
       CancelInvoke();
    }
 
-   private IEnumerator CO_ProcessInteraction (PlayerBodyEntity player) {
-      yield return new WaitForSeconds(1.5f);
+   private IEnumerator CO_ProcessInteraction () {
+      yield return new WaitForSeconds(2);
       spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
+      isFinishedAnimating = true;
    }
 
    #region Private Variables

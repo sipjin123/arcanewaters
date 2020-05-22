@@ -81,13 +81,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       if (serverVersion > clientXmlVersion) {
          clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
-         D.debug("Client is outdated, downloading new ver: " + clientXmlVersion + " -> " + serverVersion);
-         debugLog(clientMessage);
+         D.debug(clientMessage);
          downloadClientData(serverVersion);
       } else {
          clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
-         D.debug("Client is up to date");
-         debugLog(clientMessage);
+         D.debug(clientMessage);
          processClientXml();
       }
    }

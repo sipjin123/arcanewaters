@@ -20,18 +20,24 @@ public class MM_Icon : ClientMonoBehaviour {
    }
 
    private void Update () {
-      // Hide the icon if necessary
-      Util.setAlpha(_image, shouldShowIcon() ? 1f : 0f);
+      try {
+         // Hide the icon if necessary
+         Util.setAlpha(_image, shouldShowIcon() ? 1f : 0f);
 
-      // Keep the icon in the right position
-      if (Global.player != null) {
-         Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
-         if (currentArea != null) {
-            Vector3 relativePosition = target.transform.position - currentArea.transform.position;
-            relativePosition *= 12f;
-            relativePosition += new Vector3(-64f, 64f);
-            Util.setLocalXY(this.transform, relativePosition);
+         // Keep the icon in the right position
+         if (Global.player != null) {
+            Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
+            if (currentArea != null) {
+               Vector3 relativePosition = target.transform.position - currentArea.transform.position;
+               relativePosition *= 12f;
+               relativePosition += new Vector3(-64f, 64f);
+               Util.setLocalXY(this.transform, relativePosition);
+            }
          }
+      } catch {
+         // TODO: Investigate this when encountered again (rare encounter)
+         D.debug("ERROR! Something went wrong with: " + gameObject.name);
+         gameObject.SetActive(false);
       }
    }
 
