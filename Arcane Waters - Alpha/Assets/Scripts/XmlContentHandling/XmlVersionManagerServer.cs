@@ -45,6 +45,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string SHOP_TABLE = "shop_xml_v2";
    public static string TUTORIAL_TABLE = "tutorial_xml";
    public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
+   public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -66,6 +67,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string SHOP_FILE = "shops";
    public static string TUTORIAL_FILE = "tutorials";
    public static string SHIP_ABILITY_FILE = "ships_abilities";
+   public static string BACKGROUND_DATA_FILE = "battle_bg_data";
 
    // Progress indicators
    public int targetProgress;
@@ -110,6 +112,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(SHOP_FILE);
       confirmTextFile(TUTORIAL_FILE);
       confirmTextFile(SHIP_ABILITY_FILE);
+      confirmTextFile(BACKGROUND_DATA_FILE);
 
       self = this;
    }
@@ -250,6 +253,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string shopData = DB_Main.getXmlContent(SHOP_TABLE);
          string shipData = DB_Main.getXmlContent(SHIP_TABLE);
          string shipAbilityData = DB_Main.getXmlContent(SHIP_ABILITY_TABLE);
+         string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
@@ -270,6 +274,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHOP_FILE + ".txt", shopData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_FILE + ".txt", shipData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_ABILITY_FILE + ".txt", shipAbilityData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectoryFile = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

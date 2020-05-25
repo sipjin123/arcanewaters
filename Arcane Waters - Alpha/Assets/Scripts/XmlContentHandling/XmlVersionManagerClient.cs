@@ -11,6 +11,7 @@ using System;
 using static ShopDataToolManager;
 using UnityEngine.Events;
 using NubisDataHandling;
+using BackgroundTool;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -164,6 +165,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Shop));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Ship));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.ShipAbility));
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.Background));
    }
 
    private IEnumerator CO_ExtractXmlData (EditorToolType xmlType) {
@@ -220,6 +222,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Shop:
             path = TEXT_PATH + XmlVersionManagerServer.SHOP_FILE + ".txt";
+            break;
+         case EditorToolType.Background:
+            path = TEXT_PATH + XmlVersionManagerServer.BACKGROUND_DATA_FILE + ".txt";
             break;
       }
 
@@ -495,7 +500,25 @@ public class XmlVersionManagerClient : MonoBehaviour {
             }
             ShopXMLManager.self.receiveDataFromZipData(shopDataList.ToArray());
             break;
-            #endregion
+         #endregion
+
+         case EditorToolType.Background:
+            List<BackgroundContentData> bgContentDataList = new List<BackgroundContentData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  BackgroundContentData actualData = Util.xmlLoad<BackgroundContentData>(xmlSubGroup[1]);
+                  actualData.xmlId = dataId;
+                  bgContentDataList.Add(actualData);
+
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            BackgroundGameManager.self.receiveNewContent(bgContentDataList.ToArray());
+            break;
       }
 
       if (includeProgressInEditorLog) {

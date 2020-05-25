@@ -33,15 +33,41 @@ namespace NubisDataHandling {
          // Isolation of data parsing to detect future parsing errors
          int gold = int.Parse(xmlPairCollection["usrGold"]);
          int gem = int.Parse(xmlPairCollection["accGems"]);
+         string userName = xmlPairCollection["usrName"];
          Gender.Type gender = (Gender.Type) int.Parse(xmlPairCollection["usrGender"]);
          BodyLayer.Type bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]);
+
+         // Hair data setup
          HairLayer.Type hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]);
-         string hairPalette1 = xmlPairCollection["hairPalette1"];
-         string hairPalette2 = xmlPairCollection["hairPalette2"];
+         string hairPalette1 = PaletteDef.Hair.Yellow;
+         string hairPalette2 = PaletteDef.Hair.Yellow;
+         try {
+            hairPalette1 = xmlPairCollection["hairPalette1"];
+         } catch {
+            D.debug("Hair palette 1 fetch Issue for user: " + userName);
+         }
+         try {
+            hairPalette2 = xmlPairCollection["hairPalette2"];
+         } catch {
+            D.debug("Hair palette 2 fetch Issue for user: " + userName);
+         }
+
+         // Eyes data setup
          EyesLayer.Type eyesType = (EyesLayer.Type) int.Parse(xmlPairCollection["eyesType"]);
-         string eyesPalette1 = xmlPairCollection["eyesPalette1"];
-         string eyesPalette2 = xmlPairCollection["eyesPalette2"];
-         string userName = xmlPairCollection["usrName"];
+         string eyesPalette1 = PaletteDef.Eyes.Blue;
+         string eyesPalette2 = PaletteDef.Eyes.Blue;
+         try {
+            eyesPalette1 = xmlPairCollection["eyesPalette1"];
+         } catch {
+            D.debug("Eye palette 1 fetch Issue for user: " + userName);
+         }
+         try {
+            eyesPalette2 = xmlPairCollection["eyesPalette2"];
+         } catch {
+            D.debug("Eye palette 2 fetch Issue for user: " + userName);
+         }
+
+         // Equipped item setup
          int weaponId = int.Parse(xmlPairCollection["wpnId"]);
          int armorId = int.Parse(xmlPairCollection["armId"]);
 

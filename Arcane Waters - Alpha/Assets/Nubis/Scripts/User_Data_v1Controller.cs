@@ -1,4 +1,5 @@
-﻿#if NUBIS
+﻿//#define NUBIS
+#if NUBIS
 using MySql.Data.MySqlClient;
 #endif
 
@@ -10,7 +11,7 @@ namespace NubisTranslator {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-                  "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairColor1, hairColor2, eyesType, eyesColor1, eyesColor2, wpnId, armId " +
+                  "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, wpnId, armId " +
                   "FROM users " +
                   "JOIN accounts " +
                   "USING (accId) " +
@@ -26,11 +27,11 @@ namespace NubisTranslator {
                         string usrName = reader.GetString("usrName");
                         int bodyType = reader.GetInt32("bodyType");
                         int hairType = reader.GetInt32("hairType");
-                        int hairColor1 = reader.GetInt32("hairColor1");
-                        int hairColor2 = reader.GetInt32("hairColor2");
+                        int hairColor1 = reader.GetString("hairPalette1");
+                        int hairColor2 = reader.GetString("hairPalette2");
                         int eyesType = reader.GetInt32("eyesType");
-                        int eyesColor1 = reader.GetInt32("eyesColor1");
-                        int eyesColor2 = reader.GetInt32("eyesColor2");
+                        int eyesColor1 = reader.GetString("eyesPalette1");
+                        int eyesColor2 = reader.GetString("eyesPalette2");
                         int wpnId = reader.GetInt32("wpnId");
                         int armId = reader.GetInt32("armId");
                         string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairColor1:{hairColor1}[space]hairColor2:{hairColor2}[space]eyesType:{eyesType}[space]eyesColor1:{eyesColor1}[space]eyesColor2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}\n";

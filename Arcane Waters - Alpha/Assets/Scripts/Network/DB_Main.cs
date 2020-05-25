@@ -80,11 +80,11 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new string nubisFetchMapData (string rawMapName) {
+      rawMapName = rawMapName.Replace("+", " ");
       return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName);
    }
 
    #endregion
-
 
    #region XML Content Handling
 

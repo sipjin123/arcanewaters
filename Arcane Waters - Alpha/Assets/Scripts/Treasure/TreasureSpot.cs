@@ -25,7 +25,6 @@ public class TreasureSpot : MonoBehaviour, IMapEditorDataReceiver
          if (field.k.CompareTo(DataField.TREASURE_SPOT_SPAWN_CHANCE_KEY) == 0) {
             if (field.tryGetFloatValue(out float chance)) {
                spawnChance = Mathf.Clamp(chance, 0, 1);
-               Debug.Log("parsed chance " + chance);
             }
          }
 

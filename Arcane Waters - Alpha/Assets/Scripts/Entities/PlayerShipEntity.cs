@@ -122,13 +122,19 @@ public class PlayerShipEntity : ShipEntity {
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
+            Cmd_UpdateSpeedupDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
          } else {
             isReadyToSpeedup = false;
             isSpeedingUp = false;
+            Cmd_UpdateSpeedupDisplay(speedMeter, false, false, true);
          }
       } else {
          // Only notify other clients once if disabling
-         isSpeedingUp = false;
+         if (isSpeedingUp) {
+            Cmd_UpdateSpeedupDisplay(speedMeter, false, false, true);
+            isSpeedingUp = false;
+         }
+
          if (speedMeter < SPEEDUP_METER_MAX) {
             speedMeter += Time.deltaTime * fuelRecoverValue;
          } else {
@@ -136,8 +142,7 @@ public class PlayerShipEntity : ShipEntity {
          }
       }
 
-      Cmd_UpdateSpeedupDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup);
-      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup);
+      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
 
       // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
       if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
@@ -155,9 +160,9 @@ public class PlayerShipEntity : ShipEntity {
       }
    }
 
-   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup) {
+   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
       // Handle GUI
-      if (isOn || meter < SPEEDUP_METER_MAX) {
+      if (!forceDisable && (isOn || meter < SPEEDUP_METER_MAX)) {
          speedupGUI.enabled = true;
          speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
       } else {
@@ -176,13 +181,13 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    [Command]
-   void Cmd_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup) {
-      Rpc_UpdateSpeedupDisplay(speedMeter, isOn, isReadySpeedup);
+   void Cmd_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup, bool forceDisable) {
+      Rpc_UpdateSpeedupDisplay(speedMeter, isOn, isReadySpeedup, forceDisable);
    }
 
    [ClientRpc]
-   public void Rpc_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup) {
-      updateSpeedUpDisplay(speedMeter, isOn, isReadySpeedup);
+   public void Rpc_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup, bool forceDisable) {
+      updateSpeedUpDisplay(speedMeter, isOn, isReadySpeedup, forceDisable);
    }
 
    [ServerOnly]

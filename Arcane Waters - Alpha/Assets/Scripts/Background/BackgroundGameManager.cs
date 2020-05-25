@@ -64,6 +64,13 @@ public class BackgroundGameManager : MonoBehaviour {
       }
    }
 
+   public void activateBgContent (int bgXmlId) {
+      BattleManager.self.initializeBattleBoards();
+      BattleBoard board = BattleManager.self.battleBoard;
+      setSpritesToClientBoard(bgXmlId, board);
+      board.gameObject.SetActive(true);
+   }
+
    private void resetBackgroundList () {
       backgroundContentList = new List<BackgroundContentData>();
    }

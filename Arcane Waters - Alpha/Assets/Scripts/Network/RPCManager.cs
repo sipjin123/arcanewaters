@@ -718,6 +718,10 @@ public class RPCManager : NetworkBehaviour {
       // Check if we have stored map data for that area and version
       if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
+
+         // TODO: Do not Remove until this issue is completely fixed
+         D.debug("Map Log: Creating Map data from Map Cache Data");
+
          MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
          return;
       }
@@ -3416,8 +3420,7 @@ public class RPCManager : NetworkBehaviour {
 
             // Send Battle Bg data
             int bgXmlID = battle.battleBoard.xmlID;
-            BackgroundContentData fetchedBGData = BackgroundGameManager.self.backgroundContentList.Find(_ => _.xmlId == bgXmlID);
-            Target_ReceiveBackgroundInfo(_player.connectionToClient, Util.serialize(new List<BackgroundContentData>() { fetchedBGData }));
+            Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
 
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
@@ -3611,9 +3614,8 @@ public class RPCManager : NetworkBehaviour {
    #region Basic Info Fetching
 
    [TargetRpc]
-   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, string[] rawBGData) {
-      List<BackgroundContentData> backgroundContentList = Util.unserialize<BackgroundContentData>(rawBGData); 
-      BackgroundGameManager.self.receiveNewContent(backgroundContentList.ToArray());
+   public void Target_ReceiveBackgroundInfo (NetworkConnection connection, int bgXmlId) {
+      BackgroundGameManager.self.activateBgContent(bgXmlId);
    }
 
    #endregion
