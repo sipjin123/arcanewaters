@@ -26,8 +26,8 @@ namespace NubisTranslator {
          } catch {
             return string.Empty;
          }
-#endif
-         return string.Empty;
+         #endif
+         return "0";
       }
    }
 }

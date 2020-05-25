@@ -509,7 +509,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       if (currentProgress >= targetProgress) {
          isInitialized = true;
          finishedLoadingXmlData.Invoke();
-         debugLog("Finished assigning Xml Data");
+         D.debug("Finished assigning Xml Data");
          loadBlocker.SetActive(false);
       }
    }

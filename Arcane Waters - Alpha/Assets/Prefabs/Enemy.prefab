@@ -50,10 +50,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 62dece7c2cbfade48a09942044a981a0, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -218,9 +219,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
 --- !u!114 &114000012734016052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,9 +244,9 @@ MonoBehaviour:
   bodyType: 0
   eyesType: 0
   hairType: 0
-  eyesColor1: 0
-  hairColor1: 0
-  hairColor2: 0
+  eyesPalette1: 
+  hairPalette1: 
+  hairPalette2: 
   entityName: Enemy
   nationType: 0
   currentHealth: 1000
@@ -265,6 +266,7 @@ MonoBehaviour:
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
+  shipSpeedupFlag: 0
   classType: 0
   specialty: 0
   faction: 0
@@ -273,7 +275,6 @@ MonoBehaviour:
   voyageGroupId: -1
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
-  isClimbing: 0
   animGroupType: 0
   enemyType: 205
   targetUserId: 0
@@ -333,6 +334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 4162388096487284447}
 --- !u!114 &114000010622259172
@@ -779,6 +781,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

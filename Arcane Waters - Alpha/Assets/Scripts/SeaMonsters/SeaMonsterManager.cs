@@ -79,12 +79,16 @@ public class SeaMonsterManager : MonoBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                foreach (XMLPair xmlPair in rawXMLData) {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-                  SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
-                  SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
+                  try {
+                     SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
+                     SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
 
-                  if (!_seaMonsterData.ContainsKey(typeID) && xmlPair.isEnabled) {
-                     _seaMonsterData.Add(typeID, newSeaData);
-                     seaMonsterDataList.Add(newSeaData);
+                     if (!_seaMonsterData.ContainsKey(typeID) && xmlPair.isEnabled) {
+                        _seaMonsterData.Add(typeID, newSeaData);
+                        seaMonsterDataList.Add(newSeaData);
+                     }
+                  } catch {
+                     D.debug("Failed to load sea monster: " + xmlPair.xmlId);
                   }
                }
                spawnSeamonstersOnServerForInstance ();

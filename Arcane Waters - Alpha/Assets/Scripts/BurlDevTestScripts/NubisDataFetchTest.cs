@@ -7,6 +7,9 @@ public class NubisDataFetchTest : MonoBehaviour
    #endregion
 
    private void Awake () {
+      string testmap = "Shroom+Ruins";
+      testmap = testmap.Replace("+", " ");
+      D.debug(testmap);
    }
 
    private void Update () {
@@ -39,6 +42,10 @@ public class NubisDataFetchTest : MonoBehaviour
       }
       if (Input.GetKeyDown(KeyCode.Alpha0)) {
          nubisXmlVer();
+      }
+
+      if (Input.GetKeyDown(KeyCode.X)) {
+         nubisMap2();
       }
    }
 
@@ -81,6 +88,12 @@ public class NubisDataFetchTest : MonoBehaviour
    private async void nubisMap () {
       D.debug("ASync start");
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), "burl_farm"); 
+      D.debug("ASync start: " + returnCode);
+   }
+
+   private async void nubisMap2 () {
+      D.debug("ASync start");
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), "Shroom Ruins");
       D.debug("ASync start: " + returnCode);
    }
 

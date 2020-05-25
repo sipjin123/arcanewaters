@@ -15,59 +15,43 @@ public class DB_MainStub : MonoBehaviour {
    #region NUBIS data fetching
 
    public static string nubisFetchUserData (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.User_Data_v1Controller.userData(userId);
+      return "";
    }
 
    public static string nubisFetchCraftingIngredients (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(userId);
+      return "";
    }
 
    public static string nubisFetchXmlZipBytes (string rawUserId) {
-      return NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
+      return "";
    }
 
    public static string nubisFetchXmlVersion (string rawUserId) {
-      return NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion();
+      return "";
    }
 
    public static string nubisFetchSingleBlueprint (string rawContent) {
-      string splitter = "_space_";
-      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
-
-      int blueprintId = int.Parse(rawItemGroup[0]);
-      int userId = int.Parse(rawItemGroup[1]);
-
-      return NubisTranslator.Fetch_Single_Blueprint_v4Controller.fetchSingleBlueprint(blueprintId, userId);
+      return "";
    }
 
    public static string nubisFetchEquippedItems (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Equipped_Items_v3Controller.fetchEquippedItems(userId);
+      return "";
    }
 
    public static string nubisFetchCraftableWeapons (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(userId);
+      return "";
    }
 
    public static string nubisFetchCraftableArmors (string rawUserId) {
-      int userId = int.Parse(rawUserId);
-      return NubisTranslator.Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(userId);
+      return "";
    }
 
    public static string nubisFetchInventory (string rawContent) {
-      string splitter = "_space_";
-      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
-
-      int userId = int.Parse(rawItemGroup[0]);
-      int equipmentType = int.Parse(rawItemGroup[1]);
-      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, equipmentType);
+      return "";
    }
 
    public static string nubisFetchMapData (string rawMapName) {
-      return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName);
+      return "";
    }
 
    #endregion
@@ -648,11 +632,11 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static int insertNewArmor (int userId, int armorType, ColorType color1, ColorType color2) {
+   public static int insertNewArmor (int userId, int armorType, string palette1, string palette2) {
       return 0;
    }
 
-   public static int insertNewWeapon (int userId, int weaponType, ColorType color1, ColorType color2) {
+   public static int insertNewWeapon (int userId, int weaponType, string palette1, string palette2) {
       return 0;
    }
 
@@ -759,7 +743,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static int insertNewUsableItem (int userId, UsableItem.Type itemType, ColorType color1, ColorType color2) {
+   public static int insertNewUsableItem (int userId, UsableItem.Type itemType, string palette1, string palette2) {
       return 0;
    }
 
@@ -771,7 +755,7 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static void setHairColor (int userId, ColorType newColor) {
+   public static void setHairColor (int userId, string newPalette) {
 
    }
 

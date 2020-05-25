@@ -25,6 +25,67 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
+   #region NUBIS data fetching
+
+   public static new string nubisFetchUserData (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.User_Data_v1Controller.userData(userId);
+   }
+
+   public static new string nubisFetchCraftingIngredients (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(userId);
+   }
+
+   public static new string nubisFetchXmlZipBytes (string rawUserId) {
+      return NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
+   }
+
+   public static new string nubisFetchXmlVersion (string rawUserId) {
+      return NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion();
+   }
+
+   public static new string nubisFetchSingleBlueprint (string rawContent) {
+      string splitter = "_space_";
+      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
+
+      int blueprintId = int.Parse(rawItemGroup[0]);
+      int userId = int.Parse(rawItemGroup[1]);
+
+      return NubisTranslator.Fetch_Single_Blueprint_v4Controller.fetchSingleBlueprint(blueprintId, userId);
+   }
+
+   public static new string nubisFetchEquippedItems (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.Fetch_Equipped_Items_v3Controller.fetchEquippedItems(userId);
+   }
+
+   public static new string nubisFetchCraftableWeapons (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(userId);
+   }
+
+   public static new string nubisFetchCraftableArmors (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(userId);
+   }
+
+   public static new string nubisFetchInventory (string rawContent) {
+      string splitter = "_space_";
+      string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
+
+      int userId = int.Parse(rawItemGroup[0]);
+      int equipmentType = int.Parse(rawItemGroup[1]);
+      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, equipmentType);
+   }
+
+   public static new string nubisFetchMapData (string rawMapName) {
+      return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName);
+   }
+
+   #endregion
+
+
    #region XML Content Handling
 
    public static new void writeZipData (byte[] bytes) {
@@ -3936,8 +3997,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("SELECT *, " +
-            "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmColor1 AS armorColor1, armor.itmColor2 AS armorColor2, armor.itmData AS armorData, " +
-            "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmColor1 AS weaponColor1, weapon.itmColor2 AS weaponColor2, weapon.itmData AS weaponData " +
+            "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmPalette1 AS armorPalette1, armor.itmPalette2 AS armorPalette2, armor.itmData AS armorData, " +
+            "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmPalette1 AS weaponPalette1, weapon.itmPalette2 AS weaponPalette2, weapon.itmData AS weaponData " +
             "FROM users JOIN accounts USING (accId) LEFT JOIN ships USING (shpId) " +
             "LEFT JOIN items AS armor ON (users.armId=armor.itmId) " +
             "LEFT JOIN items AS weapon ON (users.wpnId=weapon.itmId) " +
@@ -3961,10 +4022,10 @@ public class DB_Main : DB_MainStub {
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
-                     userObjects.armorColor1 = userObjects.armor.color1;
-                     userObjects.armorColor2 = userObjects.armor.color2;
-                     userObjects.weaponColor1 = userObjects.weapon.color1;
-                     userObjects.weaponColor2 = userObjects.weapon.color2;
+                     userObjects.armorPalette1 = userObjects.armor.paletteName1;
+                     userObjects.armorPalette2 = userObjects.armor.paletteName2;
+                     userObjects.weaponPalette1 = userObjects.weapon.paletteName1;
+                     userObjects.weaponPalette2 = userObjects.weapon.paletteName2;
 
                      // These aren't working as expected, so we just get the info from the objects
                      // userObjects.weaponInfo = new WeaponInfo(dataReader);
@@ -4067,12 +4128,12 @@ public class DB_Main : DB_MainStub {
                while (dataReader.Read()) {
                   int itemId = dataReader.GetInt32("itmId");
                   int itemTypeId = dataReader.GetInt32("itmType");
-                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
-                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
                   Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
 
                   if (category == Item.Category.Armor) {
-                     armor = new Armor(itemId, itemTypeId, color1, color2, dataReader.GetString("itmData"));
+                     armor = new Armor(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
                   }
                }
             }
@@ -4099,12 +4160,12 @@ public class DB_Main : DB_MainStub {
                while (dataReader.Read()) {
                   int itemId = dataReader.GetInt32("itmId");
                   int itemTypeId = dataReader.GetInt32("itmType");
-                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
-                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
                   Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
 
                   if (category == Item.Category.Weapon) {
-                     weapon = new Weapon(itemId, itemTypeId, color1, color2, dataReader.GetString("itmData"));
+                     weapon = new Weapon(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
                   }
                }
             }
@@ -4121,8 +4182,8 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairColor1, hairColor2, eyesType, eyesColor1, eyesColor2, armId, areaKey, charSpot, class, specialty, faction) VALUES " +
-             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairColor1, @hairColor2, @eyesType, @eyesColor1, @eyesColor2, @armId, @areaKey, @charSpot, @class, @specialty, @faction);", conn)) {
+            "INSERT INTO users (accId, usrName, usrGender, localX, localY, bodyType, usrAdminFlag, usrFacing, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, armId, areaKey, charSpot, class, specialty, faction) VALUES " +
+             "(@accId, @usrName, @usrGender, @localX, @localY, @bodyType, @usrAdminFlag, @usrFacing, @hairType, @hairPalette1, @hairPalette2, @eyesType, @eyesPalette1, @eyesPalette2, @armId, @areaKey, @charSpot, @class, @specialty, @faction);", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -4134,11 +4195,11 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@usrAdminFlag", usrAdminFlag);
             cmd.Parameters.AddWithValue("@usrFacing", (int) userInfo.facingDirection);
             cmd.Parameters.AddWithValue("@hairType", (int) userInfo.hairType);
-            cmd.Parameters.AddWithValue("@hairColor1", (int) userInfo.hairColor1);
-            cmd.Parameters.AddWithValue("@hairColor2", (int) userInfo.hairColor2);
+            cmd.Parameters.AddWithValue("@hairPalette1", userInfo.hairPalette1);
+            cmd.Parameters.AddWithValue("@hairPalette2", userInfo.hairPalette2);
             cmd.Parameters.AddWithValue("@eyesType", (int) userInfo.eyesType);
-            cmd.Parameters.AddWithValue("@eyesColor1", (int) userInfo.eyesColor1);
-            cmd.Parameters.AddWithValue("@eyesColor2", (int) userInfo.eyesColor2);
+            cmd.Parameters.AddWithValue("@eyesPalette1", userInfo.eyesPalette1);
+            cmd.Parameters.AddWithValue("@eyesPalette2", userInfo.eyesPalette2);
             cmd.Parameters.AddWithValue("@armId", userInfo.armorId);
             cmd.Parameters.AddWithValue("@areaKey", area.areaKey);
             cmd.Parameters.AddWithValue("@charSpot", userInfo.charSpot);
@@ -4163,16 +4224,16 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) " +
-            "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @itmCount) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData, itmCount) " +
+            "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData, @itmCount) ", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) baseItem.category);
             cmd.Parameters.AddWithValue("@itmType", (int) baseItem.itemTypeId);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) baseItem.color1);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) baseItem.color2);
+            cmd.Parameters.AddWithValue("@itmPalette1", baseItem.paletteName1);
+            cmd.Parameters.AddWithValue("@itmPalette2", baseItem.paletteName2);
             cmd.Parameters.AddWithValue("@itmData", baseItem.data);
             cmd.Parameters.AddWithValue("@itmCount", baseItem.count);
 
@@ -4187,21 +4248,21 @@ public class DB_Main : DB_MainStub {
       return newItem;
    }
 
-   public static new int insertNewArmor (int userId, int armorType, ColorType color1, ColorType color2) {
+   public static new int insertNewArmor (int userId, int armorType, string palette1, string palette2) {
       int itemId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Armor);
             cmd.Parameters.AddWithValue("@itmType", armorType);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) color1);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) color2);
+            cmd.Parameters.AddWithValue("@itmPalette1", palette1);
+            cmd.Parameters.AddWithValue("@itmPalette2", palette2);
             cmd.Parameters.AddWithValue("@itmData", "");
 
             // Execute the command
@@ -4215,21 +4276,21 @@ public class DB_Main : DB_MainStub {
       return itemId;
    }
 
-   public static new int insertNewWeapon (int userId, int weaponType, ColorType color1, ColorType color2) {
+   public static new int insertNewWeapon (int userId, int weaponType, string palette1, string palette2) {
       int itemId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Weapon);
             cmd.Parameters.AddWithValue("@itmType", (int) weaponType);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) color1);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) color2);
+            cmd.Parameters.AddWithValue("@itmPalette1", palette1);
+            cmd.Parameters.AddWithValue("@itmPalette2", palette2);
             cmd.Parameters.AddWithValue("@itmData", "");
 
             // Execute the command
@@ -4297,7 +4358,7 @@ public class DB_Main : DB_MainStub {
    public static new ShipInfo createStartingShip (int userId) {
       Ship.Type shipType = Ship.Type.Type_1;
       ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
-            ColorType.HullBrown, ColorType.HullBrown, ColorType.SailWhite, ColorType.SailWhite, 100, 100, 20,
+            PaletteDef.ShipHull.Brown, PaletteDef.ShipHull.Brown, PaletteDef.ShipSail.White, PaletteDef.ShipSail.White, 100, 100, 20,
             80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
       shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
 
@@ -4312,21 +4373,21 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
+            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@shpType", (int) shipInfo.shipType);
             cmd.Parameters.AddWithValue("@skinType", (int) shipInfo.skinType);
-            cmd.Parameters.AddWithValue("@color1", (int) shipInfo.color1);
-            cmd.Parameters.AddWithValue("@color2", (int) shipInfo.color2);
+            cmd.Parameters.AddWithValue("@palette1", shipInfo.palette1);
+            cmd.Parameters.AddWithValue("@palette2", shipInfo.palette2);
             cmd.Parameters.AddWithValue("@mastType", (int) shipInfo.mastType);
             cmd.Parameters.AddWithValue("@sailType", (int) shipInfo.sailType);
             cmd.Parameters.AddWithValue("@shipName", shipInfo.shipType + "");
-            cmd.Parameters.AddWithValue("@sailColor1", shipInfo.sailColor1);
-            cmd.Parameters.AddWithValue("@sailColor2", shipInfo.sailColor2);
+            cmd.Parameters.AddWithValue("@sailPalette1", shipInfo.sailPalette1);
+            cmd.Parameters.AddWithValue("@sailPalette2", shipInfo.sailPalette2);
             cmd.Parameters.AddWithValue("@supplies", shipInfo.supplies);
             cmd.Parameters.AddWithValue("@suppliesMax", shipInfo.suppliesMax);
             cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
@@ -4379,21 +4440,21 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, color1, color2, mastType, sailType, shpName, sailColor1, sailColor2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shpType, @color1, @color2, @mastType, @sailType, @shipName, @sailColor1, @sailColor2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
+            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@shpType", (int) shipyardInfo.shipType);
             cmd.Parameters.AddWithValue("@skinType", (int) shipyardInfo.skinType);
-            cmd.Parameters.AddWithValue("@color1", (int) shipyardInfo.color1);
-            cmd.Parameters.AddWithValue("@color2", (int) shipyardInfo.color2);
+            cmd.Parameters.AddWithValue("@palette1", shipyardInfo.palette1);
+            cmd.Parameters.AddWithValue("@palette2", shipyardInfo.palette2);
             cmd.Parameters.AddWithValue("@mastType", (int) shipyardInfo.mastType);
             cmd.Parameters.AddWithValue("@sailType", (int) shipyardInfo.sailType);
             cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipType + "");
-            cmd.Parameters.AddWithValue("@sailColor1", shipyardInfo.sailColor1);
-            cmd.Parameters.AddWithValue("@sailColor2", shipyardInfo.sailColor2);
+            cmd.Parameters.AddWithValue("@sailPalette1", shipyardInfo.sailPalette1);
+            cmd.Parameters.AddWithValue("@sailPalette2", shipyardInfo.sailPalette2);
             cmd.Parameters.AddWithValue("@supplies", shipyardInfo.supplies);
             cmd.Parameters.AddWithValue("@suppliesMax", shipyardInfo.suppliesMax);
             cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
@@ -4617,8 +4678,8 @@ public class DB_Main : DB_MainStub {
             query.Append("UPDATE items SET itmCount=@toItmCount WHERE usrId=@toUsrId and itmId=@toItmId;");
          } else {
             // If the recipient has no stack, the item must be created
-            query.Append("INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData, itmCount) ");
-            query.Append("VALUES(@toUsrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData, @toItmCount);");
+            query.Append("INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData, itmCount) ");
+            query.Append("VALUES(@toUsrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData, @toItmCount);");
          }
 
          // Close the transaction
@@ -4635,8 +4696,8 @@ public class DB_Main : DB_MainStub {
                // Item parameters
                cmd.Parameters.AddWithValue("@itmCategory", (int) fromItem.category);
                cmd.Parameters.AddWithValue("@itmType", (int) fromItem.itemTypeId);
-               cmd.Parameters.AddWithValue("@itmColor1", (int) fromItem.color1);
-               cmd.Parameters.AddWithValue("@itmColor2", (int) fromItem.color2);
+               cmd.Parameters.AddWithValue("@itmPalette1", fromItem.paletteName1);
+               cmd.Parameters.AddWithValue("@itmPalette2", fromItem.paletteName2);
                cmd.Parameters.AddWithValue("@itmData", fromItem.data);
 
                // From
@@ -4895,13 +4956,13 @@ public class DB_Main : DB_MainStub {
                   int itemId = dataReader.GetInt32("itmId");
                   Item.Category itemCategory = (Item.Category) dataReader.GetInt32("itmCategory");
                   int itemTypeId = dataReader.GetInt32("itmType");
-                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
-                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  Item item = new Item(itemId, itemCategory, itemTypeId, count, color1, color2, data);
+                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palette1, palette2, data);
                   itemList.Add(item.getCastItem());
                }
             }
@@ -4945,12 +5006,12 @@ public class DB_Main : DB_MainStub {
                   int itemId = DataUtil.getInt(dataReader, "itmId");
                   Item.Category category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
                   int itemTypeId = DataUtil.getInt(dataReader, "itmType");
-                  ColorType color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
-                  ColorType color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+                  string palette1 = DataUtil.getString(dataReader, "itmPalette1");
+                  string palette2 = DataUtil.getString(dataReader, "itmPalette2");
                   string data = DataUtil.getString(dataReader, "itmData");
                   int itemCount = DataUtil.getInt(dataReader, "itmCount");
 
-                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, color1, color2, data);
+                  Item newItem = new Item(itemId, category, itemTypeId, itemCount, palette1, palette2, data);
                   itemList.Add(newItem);
                }
             }
@@ -4978,21 +5039,21 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, ColorType color1, ColorType color2) {
+   public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, string palette1, string palette2) {
       int itemId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Usable);
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) color1);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) color2);
+            cmd.Parameters.AddWithValue("@itmPalette1", palette1);
+            cmd.Parameters.AddWithValue("@itmPalette2", palette2);
             cmd.Parameters.AddWithValue("@itmData", "");
 
             // Execute the command
@@ -5012,15 +5073,15 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Usable);
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) ColorType.None);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) ColorType.None);
+            cmd.Parameters.AddWithValue("@itmPalette1", "");
+            cmd.Parameters.AddWithValue("@itmPalette2", "");
             cmd.Parameters.AddWithValue("@itmData", "skinType=" + ((int) skinType));
 
             // Execute the command
@@ -5040,15 +5101,15 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO items (usrId, itmCategory, itmType, itmColor1, itmColor2, itmData) " +
-                 "VALUES(@usrId, @itmCategory, @itmType, @itmColor1, @itmColor2, @itmData) ", conn)) {
+            "INSERT INTO items (usrId, itmCategory, itmType, itmPalette1, itmPalette2, itmData) " +
+                 "VALUES(@usrId, @itmCategory, @itmType, @itmPalette1, @itmPalette2, @itmData) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.Usable);
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
-            cmd.Parameters.AddWithValue("@itmColor1", (int) ColorType.None);
-            cmd.Parameters.AddWithValue("@itmColor2", (int) ColorType.None);
+            cmd.Parameters.AddWithValue("@itmPalette1", "");
+            cmd.Parameters.AddWithValue("@itmPalette2", "");
             cmd.Parameters.AddWithValue("@itmData", "hairType=" + ((int) hairType));
 
             // Execute the command
@@ -5062,14 +5123,14 @@ public class DB_Main : DB_MainStub {
       return itemId;
    }
 
-   public static new void setHairColor (int userId, ColorType newColor) {
+   public static new void setHairColor (int userId, string newPalette) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET hairColor1=@hairColor1 WHERE usrId=@usrId", conn)) {
+            "UPDATE users SET hairPalette1=@hairPalette1 WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@hairColor1", (int) newColor);
+            cmd.Parameters.AddWithValue("@hairPalette1", newPalette);
             cmd.Parameters.AddWithValue("@usrId", userId);
 
             // Execute the command
@@ -5169,13 +5230,13 @@ public class DB_Main : DB_MainStub {
                while (dataReader.Read()) {
                   Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
                   int itemTypeId = dataReader.GetInt32("itmType");
-                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
-                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class, and then add it to the list
-                  item = new Item(itemId, category, itemTypeId, count, color1, color2, data);
+                  item = new Item(itemId, category, itemTypeId, count, palette1, palette2, data);
                }
             }
          }
@@ -5207,13 +5268,13 @@ public class DB_Main : DB_MainStub {
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
                   int itemId = dataReader.GetInt32("itmId");
-                  ColorType color1 = (ColorType) dataReader.GetInt32("itmColor1");
-                  ColorType color2 = (ColorType) dataReader.GetInt32("itmColor2");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
                   string data = dataReader.GetString("itmData");
                   int count = dataReader.GetInt32("itmCount");
 
                   // Create an Item instance of the proper class
-                  item = new Item(itemId, itemCategory, itemTypeId, count, color1, color2, data);
+                  item = new Item(itemId, itemCategory, itemTypeId, count, palette1, palette2, data);
                }
             }
          }
@@ -6689,21 +6750,21 @@ public class DB_Main : DB_MainStub {
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");
       int itemTypeId = DataUtil.getInt(dataReader, "armorType");
-      ColorType color1 = (ColorType) DataUtil.getInt(dataReader, "armorColor1");
-      ColorType color2 = (ColorType) DataUtil.getInt(dataReader, "armorColor2");
+      string palette1 = DataUtil.getString(dataReader, "armorPalette1");
+      string palette2 = DataUtil.getString(dataReader, "armorPalette2");
       string itemData = DataUtil.getString(dataReader, "armorData");
 
-      return new Armor(itemId, itemTypeId, color1, color2, itemData);
+      return new Armor(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
    protected static Weapon getWeapon (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "weaponId");
       int itemTypeId = DataUtil.getInt(dataReader, "weaponType");
-      ColorType color1 = (ColorType) DataUtil.getInt(dataReader, "weaponColor1");
-      ColorType color2 = (ColorType) DataUtil.getInt(dataReader, "weaponColor2");
+      string palette1 = DataUtil.getString(dataReader, "weaponPalette1");
+      string palette2 = DataUtil.getString(dataReader, "weaponPalette2");
       string itemData = DataUtil.getString(dataReader, "weaponData");
 
-      return new Weapon(itemId, itemTypeId, color1, color2, itemData);
+      return new Weapon(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
    public static new int getUsrAdminFlag (int accountId) {
