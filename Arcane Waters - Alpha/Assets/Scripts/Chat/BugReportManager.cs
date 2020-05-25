@@ -17,7 +17,7 @@ public class BugReportManager : MonoBehaviour {
    }
 
    [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message) {
+   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps) {
       // Check when they last submitted a bug report
       if (_lastBugReportTime.ContainsKey(player.userId)) {
          float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
@@ -39,7 +39,7 @@ public class BugReportManager : MonoBehaviour {
 
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message);
+         DB_Main.saveBugReport(player, subject, message, ping, fps);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -49,30 +49,36 @@ public class BugReportManager : MonoBehaviour {
    }
 
    public void sendBugReportToServer (string subjectString) {
+      StopAllCoroutines();
+      StartCoroutine(CO_CollectDataAndSendBugReport(subjectString));
+   }
+
+   private IEnumerator CO_CollectDataAndSendBugReport (string subjectString) {
       NetEntity player = Global.player;
       string bugReport = D.getLogString();
+      int ping = PingPanel.getPing();
 
       if (player == null) {
          D.warning("Can't submit a bug report because we have no player object.");
-         return;
+         yield break;
       }
 
       // Require a decent subject
       if (subjectString.Length < MIN_SUBJECT_LENGTH) {
          ChatManager.self.addChat("Please include a descriptive subject for the bug report.", ChatInfo.Type.System);
-         return;
+         yield break;
       }
 
       // Make sure the subject isn't too long
       if (subjectString.Length > MAX_SUBJECT_LENGTH) {
          ChatManager.self.addChat("The subject of the bug report is too long.", ChatInfo.Type.System);
-         return;
+         yield break;
       }
 
       // Make sure the bug report file hasn't grown too large
       if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
          ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
-         return;
+         yield break;
       }
 
       int userId = player.userId;
@@ -81,11 +87,21 @@ public class BugReportManager : MonoBehaviour {
       if (_lastBugReportTime.ContainsKey(userId)) {
          if (Time.time - _lastBugReportTime[userId] < BUG_REPORT_INTERVAL) {
             D.warning("Bug report already submitted.");
-            return;
+            yield break;
          }
       }
 
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport);
+      // Calculate the frames per second over the given time interval
+      float totalTime = 0;
+      int frameCount = 0;
+      while (totalTime < FPS_CALCULATION_INTERVAL) {
+         totalTime += Time.unscaledDeltaTime;
+         frameCount++;
+         yield return null;
+      }
+      int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
+
+      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps);
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 
@@ -98,7 +114,7 @@ public class BugReportManager : MonoBehaviour {
    protected static int MIN_SUBJECT_LENGTH = 3;
 
    // The max length of bug report subject lines
-   protected static int MAX_SUBJECT_LENGTH = 80;
+   protected static int MAX_SUBJECT_LENGTH = 256;
 
    // The max length of bug reports
    protected static int MAX_BUG_REPORT_LENGTH = 1600;
@@ -108,6 +124,9 @@ public class BugReportManager : MonoBehaviour {
 
    // The maximum number of bytes we'll allow a submitted bug report to have
    protected static int MAX_BYTES = ONE_MEGABYTE_IN_BYTES * 5;
+
+   // The time interval used to calculate the average fps
+   protected static float FPS_CALCULATION_INTERVAL = 1f;
 
    // Stores the time at which a bug report was last submitted, indexed by user ID for the server's sake
    protected Dictionary<int, float> _lastBugReportTime = new Dictionary<int, float>();

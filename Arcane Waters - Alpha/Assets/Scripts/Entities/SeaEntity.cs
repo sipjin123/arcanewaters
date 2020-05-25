@@ -48,7 +48,7 @@ public class SeaEntity : NetEntity
    public List<Collider2D> colliderList;
 
    // Cache the impact type of the ability
-   public Attack.ImpactMagnitude currentImpactMagnitude;
+   public Attack.ImpactMagnitude currentImpactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
 
@@ -221,7 +221,7 @@ public class SeaEntity : NetEntity
       }
 
       GenericSeaProjectile seaEntityProjectile = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);
-      seaEntityProjectile.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude, abilityData.abilityId);
+      seaEntityProjectile.init(startTime, endTime, startPos, endPos, this, abilityData.abilityId);
 
       AudioClipManager.AudioClipData audioClipData = AudioClipManager.self.getAudioClipData(abilityData.castSFXPath);
       if (audioClipData.audioPath.Length > 1) {
@@ -261,7 +261,7 @@ public class SeaEntity : NetEntity
 
       // TODO: Update and confirm if this system will be used
       D.editorLog("Update homing attack system!", Color.red);
-      ball.init(startTime, endTime, startPos, target.transform.position, this, currentImpactMagnitude, -1, target);
+      ball.init(startTime, endTime, startPos, target.transform.position, this, -1, target);
 
       // Play an appropriate sound
       playAttackSound();
@@ -307,6 +307,17 @@ public class SeaEntity : NetEntity
 
       // Play the damage sound
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowTerrainHit (Vector3 pos, Attack.ImpactMagnitude impactMagnitude) {
+      if (Util.hasLandTile(pos)) {
+         Instantiate(PrefabsManager.self.requestCannonSmokePrefab(impactMagnitude), pos, Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, pos);
+      } else {
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(impactMagnitude), pos + new Vector3(0f, -.1f), Quaternion.identity);
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, pos);
+      }
    }
 
    [ClientRpc]
@@ -424,7 +435,7 @@ public class SeaEntity : NetEntity
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
       // Have the server check for collisions after the attack reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true, 1f));
+      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true, 1f, currentImpactMagnitude));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -501,7 +512,7 @@ public class SeaEntity : NetEntity
       bool targetPlayersOnly = this is SeaMonsterEntity;
 
       spawnProjectileAndIndicatorsOnClients(spot, abilityId, spawnPosition, launchDelay + timeToReachTarget);
-      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f));
+      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f, currentImpactMagnitude));
    }
 
    [Server]
@@ -517,10 +528,11 @@ public class SeaEntity : NetEntity
 
    [Server]
    protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType, bool targetPlayersOnly,
-      float distanceModifier) {
+      float distanceModifier, Attack.ImpactMagnitude impactMagnitude) {
       // Wait until the cannon ball reaches the target
       yield return new WaitForSeconds(delay);
 
+      bool hitEnemy = false;
       List<NetEntity> enemyHitList = new List<NetEntity>();
       Collider2D[] getColliders = attackType == Attack.Type.Tentacle_Range ? getHitColliders(circleCenter, .1f) : getHitColliders(circleCenter);
       // Check for collisions inside the circle
@@ -545,6 +557,8 @@ public class SeaEntity : NetEntity
 
                // Make sure the target is in our same instance
                if (targetEntity.instanceId == this.instanceId) {
+                  hitEnemy = true;
+
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
@@ -614,6 +628,11 @@ public class SeaEntity : NetEntity
                }
             }
          }
+      }
+
+      // If we didn't hit an enemy, show an effect based on whether we hit land or water
+      if (!hitEnemy) {
+         Rpc_ShowTerrainHit(circleCenter, impactMagnitude);
       }
    }
 

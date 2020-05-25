@@ -580,7 +580,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void saveBugReport (NetEntity player, string subject, string bugReport) {
+   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps) {
 
    }
 

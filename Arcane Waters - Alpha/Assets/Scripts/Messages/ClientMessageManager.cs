@@ -229,6 +229,11 @@ public class ClientMessageManager : MonoBehaviour {
             }
             return;
 
+         case ConfirmMessage.Type.BugReport:
+            // Add the confirmation message in the chat panel
+            ChatManager.self.addChat("Your bug has been successfully submitted!", msg.timestamp, ChatInfo.Type.System);
+            return;
+
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();

@@ -166,7 +166,7 @@ public class SpotFader : ClientMonoBehaviour {
       spotMask.transform.position = Camera.main.WorldToScreenPoint(worldPosition);
       _currentSizeTween = spotMask.rectTransform.DOSizeDelta(Vector2.zero, effectTime);
 
-      while ((_currentSizeTween != null && _currentSizeTween.active && !hasCameraChanged()) || Time.time - _startTime < TIMEOUT_DURATION) {
+      while (((_currentSizeTween != null && _currentSizeTween.active) || !hasCameraChanged()) && Time.time - _startTime < TIMEOUT_DURATION) {
          yield return null;
       }
 

@@ -230,7 +230,7 @@ public class ShipEntity : SeaEntity
          attackType, AttackManager.self.getColorForDistance(normalizedDistance), shipData, normalizedDistance);
 
       // Have the server check for collisions after the AOE projectile reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier));
+      StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier, currentImpactMagnitude));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -264,7 +264,7 @@ public class ShipEntity : SeaEntity
 
       // Create a cannon ball
       GenericSeaProjectile ball = Instantiate(PrefabsManager.self.seaEntityProjectile, startPos, Quaternion.identity);
-      ball.init(startTime, endTime, startPos, endPos, this, currentImpactMagnitude, shipAbilityData.abilityId);
+      ball.init(startTime, endTime, startPos, endPos, this, shipAbilityData.abilityId);
 
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;

@@ -36,12 +36,10 @@ public class GenericSeaProjectile : MonoBehaviour {
       }
    }
 
-   public void init (float startTime, float endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, Attack.ImpactMagnitude impactMagnitude, int abilityId, GameObject targetObj = null) {
+   public void init (float startTime, float endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, int abilityId, GameObject targetObj = null) {
       if (targetObj != null) {
          _targetObject = targetObj;
       }
-
-      this._impactMagnitude = impactMagnitude;
 
       _startTime = startTime;
       _endTime = endTime;
@@ -114,74 +112,10 @@ public class GenericSeaProjectile : MonoBehaviour {
 
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this._endTime) {
-         bool hitEnemy = false;
-
-         // Create an explosion effect on the client if any targets were hit
-         if (Global.player != null) {
-            foreach (Collider2D hit in SeaEntity.getHitColliders(this.transform.position)) {
-               if (hit != null) {
-                  NetEntity entity = hit.GetComponent<NetEntity>();
-                  if (entity == null) {
-                     continue;
-                  }
-
-                  // Make sure we don't hit the creator of the cannon ball
-                  if (entity == _creator) {
-                     continue;
-                  }
-
-                  // Check if the creator and the target are allies
-                  if (_creator.isAllyOf(entity)) {
-                     continue;
-                  }
-
-                  // Make sure the target is in our same instance
-                  if (entity.instanceId == Global.player.instanceId) {
-                     hitEnemy = true;
-
-                     // If we hit a ship, show some flying particles
-                     if (entity is ShipEntity && attackType != Attack.Type.Ice) {
-                        switch (attackType) {
-                           case Attack.Type.Boulder:
-                           case Attack.Type.Mini_Boulder:
-                              ExplosionManager.createRockExplosion(entity.transform.position);
-                              break;
-                           case Attack.Type.Shock_Ball:
-                              EffectManager.self.create(Effect.Type.Shock_Collision, entity.transform.position);
-                              break;
-                           default:
-                              ExplosionManager.createExplosion(entity.transform.position);
-                              break;
-                        }
-                        SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
-                     }
-                     break;
-                  }
-
-                  Boss boss = hit.GetComponent<Boss>();
-                  if (boss != null) {
-                     hitEnemy = true;
-                  }
-               }
-            }
-         }
-
-         // If we didn't hit an enemy, then show an effect based on whether we hit land or water
-         if (!hitEnemy) {
-            // Was there a Land collider where the projectile hit?
-            if (Util.hasLandTile(_endPos)) {
-               Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), this.transform.position, Quaternion.identity);
-               SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
-            } else {
-               Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), this.transform.position + new Vector3(0f, -.1f), Quaternion.identity);
-               SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
-            }
-         }
-
-         // Detach the Trail Renderer so that it contains to show up a little while longer
-         TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
+         // Detach the trail so that it continues to show up a little while longer
+         ParticleSystem trail = this.gameObject.GetComponentInChildren<ParticleSystem>();
          trail.transform.parent = null;
-         trail.autodestruct = true;
+         trail.Stop();
 
          // Now destroy
          Destroy(this.gameObject);
@@ -208,9 +142,6 @@ public class GenericSeaProjectile : MonoBehaviour {
 
    // Our End Time
    protected float _endTime;
-
-   // Determines the impact level of this projectile
-   protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
 }

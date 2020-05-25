@@ -54,7 +54,7 @@ public class PingPanel : ClientMonoBehaviour {
       }
    }
 
-   public int getPing () {
+   public static int getPing () {
       // Check if we're connected to the network
       bool isConnected = NetworkManager.singleton != null && NetworkClient.active;
 

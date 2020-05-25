@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8416004951088158231}
   - component: {fileID: 3850557175012250955}
   - component: {fileID: -3043820012857982230}
+  - component: {fileID: 3549297326683795498}
   m_Layer: 0
   m_Name: Lillypad 4
   m_TagString: Untagged
@@ -47,6 +48,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -119,5 +121,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: -0.15
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
+--- !u!60 &3549297326683795498
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7387895447105368303}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.32, y: 0.32}
+    newSize: {x: 0.16, y: 0.16}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0.101940155, y: -0.108421326}
+      - {x: 0.13208961, y: -0.090547085}
+      - {x: 0.13154411, y: -0.07267666}
+      - {x: 0.099069595, y: -0.058870316}
+      - {x: 0.04100418, y: -0.05004692}
+      - {x: -0.040159225, y: -0.050047398}
+      - {x: -0.110687256, y: -0.059551716}
+      - {x: -0.12935448, y: -0.07274866}
+      - {x: -0.1295681, y: -0.089006424}
+      - {x: -0.100782394, y: -0.10461712}
+      - {x: -0.038331985, y: -0.119999886}
+      - {x: 0.041086197, y: -0.119999886}

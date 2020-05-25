@@ -65,10 +65,15 @@ public class Ledge : MonoBehaviour, IMapEditorDataReceiver {
          }
       }
 
+      // Set the collider sizes
       foreach (BoxCollider2D col in GetComponentsInChildren<BoxCollider2D>()) {
          col.size = new Vector2(w * 0.16f, h * 0.16f);
          col.offset = new Vector2(0, -h * 0.08f + 0.08f);
       }
+
+      // Offset the launch effector so it doesn't overlap the collider
+      GetComponent<BoxCollider2D>().offset += Vector2.up * 0.04f;
+      GetComponent<BoxCollider2D>().size += Vector2.left * 0.02f;
    }
 
    #region Private Variables
