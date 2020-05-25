@@ -84,6 +84,77 @@ public class PaletteSwapManager : MonoBehaviour {
       return tex;
    }
 
+   public static string getColorName (string paletteName) {
+      return "TEMP COLOR";
+   }
+
+   public static Color getRepresentingColor (string paletteName) {
+      string p = paletteName;
+      if (p == PaletteDef.Eyes.Black ) {
+         return Color.black;
+      } else if (p == PaletteDef.Eyes.Blue) {
+         return intToColor(0, 102, 255);
+      } else if (p == PaletteDef.Eyes.Brown) {
+         return intToColor(102, 51, 0);
+      } else if (p == PaletteDef.Eyes.Green) {
+         return intToColor(0, 153, 51);
+      } else if (p == PaletteDef.Eyes.Purple) {
+         return intToColor(102, 0, 255);
+      }
+
+      if (p == PaletteDef.Hair.Yellow) {
+         return intToColor(255, 204, 0);
+      } else if (p == PaletteDef.Hair.Red) {
+         return intToColor(179, 0, 0);
+      } else if (p == PaletteDef.Hair.Brown) {
+         return intToColor(102, 51, 0);
+      } else if (p == PaletteDef.Hair.Blue) {
+         return intToColor(0, 102, 255);
+      } else if (p == PaletteDef.Hair.Black) {
+         return Color.black;
+      } else if (p == PaletteDef.Hair.White) {
+         return Color.white;
+      }
+
+      if (p == PaletteDef.Armor1.Yellow) {
+         return intToColor(255, 204, 0);
+      } else if (p == PaletteDef.Armor1.Red) {
+         return intToColor(179, 0, 0);
+      } else if (p == PaletteDef.Armor1.Brown) {
+         return intToColor(102, 51, 0);
+      } else if (p == PaletteDef.Armor1.Blue) {
+         return intToColor(0, 102, 255);
+      } else if (p == PaletteDef.Armor1.Teal) {
+         return intToColor(102, 255, 255);
+      } else if (p == PaletteDef.Armor1.White) {
+         return Color.white;
+      } else if (p == PaletteDef.Armor1.Green) {
+         return intToColor(0, 153, 51);
+      }
+
+      if (p == PaletteDef.Armor2.Yellow) {
+         return intToColor(255, 204, 0);
+      } else if (p == PaletteDef.Armor2.Red) {
+         return intToColor(179, 0, 0);
+      } else if (p == PaletteDef.Armor2.Brown) {
+         return intToColor(102, 51, 0);
+      } else if (p == PaletteDef.Armor2.Blue) {
+         return intToColor(0, 102, 255);
+      } else if (p == PaletteDef.Armor2.Teal) {
+         return intToColor(102, 255, 255);
+      } else if (p == PaletteDef.Armor2.White) {
+         return Color.white;
+      } else if (p == PaletteDef.Armor2.Green) {
+         return intToColor(0, 153, 51);
+      }
+
+      return Color.magenta;
+   }
+
+   private static Color intToColor(int r, int g, int b) {
+      return new Color((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
+   }
+
    #region Private Variables
 
    // Cached data from database about created palettes

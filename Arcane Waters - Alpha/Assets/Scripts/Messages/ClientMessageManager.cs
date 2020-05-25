@@ -266,7 +266,7 @@ public class ClientMessageManager : MonoBehaviour {
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 
       // Pass the info along to the Character screen
-      CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.armorColors1, msg.armorColors2, msg.equipmentIds, msg.spriteIds, msg.materialTypes);
+      CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.armorPalettes1, msg.armorPalettes2, msg.equipmentIds, msg.spriteIds);
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {

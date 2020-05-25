@@ -41,8 +41,7 @@ public class AdventureItemRow : MonoBehaviour {
       goldAmount.text = item.getSellPrice() + "";
 
       // Recolor
-      ColorKey colorKey = item.getColorKey();
-      iconImage.GetComponent<RecoloredSprite>().recolor(colorKey, item.color1, item.color2);
+      iconImage.GetComponent<RecoloredSprite>().recolor(item.paletteName1, item.paletteName2);
 
       // Sets the tooltip when hovering the image
       tooltip.text = Item.isUsingEquipmentXML(item.category) ? item.itemDescription : item.getDescription();

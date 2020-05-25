@@ -117,28 +117,22 @@ public class ServerMessageManager : MonoBehaviour {
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
                // We have to deal with these separately because of a bug in Unity
-               int[] armorColors1 = new int[armorList.Count];
-               int[] armorColors2 = new int[armorList.Count];
+               string[] armorPalettes1 = new string[armorList.Count];
+               string[] armorPalettes2 = new string[armorList.Count];
 
                // Must be casted to items because data transfer using inherited variables loses its data
                List<Item> weaponItemList = new List<Item>();
                List<Item> amorItemList = new List<Item>();
 
-               MaterialType[] materialTypes = new MaterialType[armorList.Count];
                for (int i = 0; i < armorList.Count; i++) {
-                  armorColors1[i] = (int) armorList[i].color1;
-                  armorColors2[i] = (int) armorList[i].color2;
+                  armorPalettes1[i] = armorList[i].paletteName1;
+                  armorPalettes2[i] = armorList[i].paletteName2;
 
                   ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
-                  if (armorStat == null) {
-                     armorList[i].materialType = MaterialType.None;
+                  if (armorList[i].data != null) {
+                     armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
                   } else {
-                     armorList[i].materialType = armorStat.materialType;
-                     if (armorList[i].data != null) {
-                        armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
-                     } else {
-                        D.warning("There is no data for: " + armorList[i].itemTypeId);
-                     }
+                     D.warning("There is no data for: " + armorList[i].itemTypeId);
                   }
                   amorItemList.Add(armorList[i]);
                }
@@ -159,19 +153,17 @@ public class ServerMessageManager : MonoBehaviour {
                // Get the info of the starter armors
                List<int> startingEquipmentIds = new List<int>();
                List<int> startingSpriteIds = new List<int>();
-               List<MaterialType> startingMaterialTypes = new List<MaterialType>();
 
                if (armorList.Count < 1) {
                   for (int i = 1; i < 4; i++) {
                      ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(i);
                      startingEquipmentIds.Add(startArmorData.equipmentID);
                      startingSpriteIds.Add(startArmorData.armorType);
-                     startingMaterialTypes.Add(startArmorData.materialType);
                   }
                }
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorColors1, armorColors2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray(), startingMaterialTypes.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorPalettes1, armorPalettes2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -324,7 +316,7 @@ public class ServerMessageManager : MonoBehaviour {
    [ServerOnly]
    protected static void BKG_finishCreatingUser (CreateUserMessage msg, int accountId, UserInfo userInfo, NetworkConnection conn, Area area) {
       // Need to create their Armor first
-      int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorColor1, msg.armorColor2);
+      int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorPalette1, msg.armorPalette2);
 
       // Get search the database to determine whether or not the account has admin privileges
       int adminFlag = DB_Main.getUsrAdminFlag(accountId);

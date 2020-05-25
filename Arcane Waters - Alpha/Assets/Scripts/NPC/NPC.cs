@@ -34,6 +34,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    [SyncVar]
    public string spritePath;
 
+   // The sprite path of the npc icon
+   [SyncVar]
+   public string iconPath;
+
    [SyncVar]
    // The Type of NPC this is
    public Type npcType;
@@ -108,6 +112,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          if (_seeker == null) {
             D.error("There has to be a Seeker Script attached to the NPC Prefab");
          }
+
+         // Only use the graph in this area to calculate paths
+         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
+         _seeker.graphMask = GraphMask.FromGraph(graph);
+
          _seeker.pathCallback = setPath_Asynchronous;
 
          _startPosition = transform.position;
@@ -265,14 +274,17 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             case Panel.Type.Adventure:
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
                adventurePanel.shopName = shopName;
+               adventurePanel.headIconTexture = getHeadIconTexture();
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
                shipyardPanel.shopName = shopName;
+               shipyardPanel.headIconTexture = getHeadIconTexture();
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
                merchantPanel.shopName = shopName;
+               merchantPanel.headIconTexture = getHeadIconTexture();
                break;
          }
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
@@ -465,6 +477,16 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       return name;
    }
 
+   public Texture2D getHeadIconTexture () {
+      Texture2D texture = ImageManager.getTexture(iconPath, false);
+
+      if (texture == null || texture == ImageManager.self.blankTexture) {
+         texture = NPCManager.self.defaultNpcFaceSprite.texture;
+      }
+
+      return texture;
+   }
+
    protected void updateTradeGossip () {
       // TODO System is going to be removed soon
       tradeGossip = "I haven't heard anything recently.";
@@ -508,6 +530,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                if (spritePath != "") {
                   this.spritePath = spritePath;
                }
+               iconPath = npcData.iconPath;
 
                NPCManager.self.storeNPC(this);
             }

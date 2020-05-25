@@ -16,6 +16,9 @@ public class PaletteButtonRow : MonoBehaviour {
    // Holds reference to size UI Text (in texture height)
    public Text size;
 
+   // Holds reference to UI button allowing to duplicate palette
+   public Button duplicateButton;
+
    // Holds reference to UI button allowing to edit palette
    public Button editButton;
 

@@ -12,9 +12,6 @@ using MySql.Data.MySqlClient;
 public class Armor : EquippableItem {
    #region Public Variables
 
-   // The material type to be used on this equipment
-   public MaterialType materialType;
-
    #endregion
 
    public Armor () {
@@ -31,8 +28,8 @@ public class Armor : EquippableItem {
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
-      this.color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
+      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -51,23 +48,23 @@ public class Armor : EquippableItem {
 
    #endif
 
-   public Armor (int id, int armorType, ColorType color1, ColorType color2) {
+   public Armor (int id, int armorType, string paletteName1, string paletteName2) {
       this.category = Category.Armor;
       this.id = id;
       this.itemTypeId = armorType;
       this.count = 1;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = paletteName1;
+      this.paletteName2 = paletteName2;
       this.data = "";
    }
 
-   public Armor (int id, int itemTypeId, ColorType color1, ColorType color2, string data, int count = 1) {
+   public Armor (int id, int itemTypeId, string paletteName1, string paletteName2, string data, int count = 1) {
       this.category = Category.Armor;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = paletteName1;
+      this.paletteName2 = paletteName2;
       this.data = data;
    }
 
@@ -76,8 +73,8 @@ public class Armor : EquippableItem {
       this.id = id;
       this.count = 1;
       this.itemTypeId = armorType;
-      this.color1 = ColorType.None;
-      this.color2 = ColorType.None;
+      this.paletteName1 = "";
+      this.paletteName2 = "";
       this.data = "";
    }
 
@@ -94,7 +91,7 @@ public class Armor : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}\n\nArmor = <color=red>{5}</color>",
-         "#" + colorHex, getName(), color1, color2, getDescription(), getArmorValue());
+         "#" + colorHex, getName(), paletteName1, paletteName2, getDescription(), getArmorValue());
    }
 
    public override string getName () {
@@ -196,7 +193,7 @@ public class Armor : EquippableItem {
    }
 
    public static Armor getEmpty () {
-      return new Armor(0, 0, ColorType.None, ColorType.None);
+      return new Armor(0, 0, "", "");
    }
 
    public override string getIconPath () {
@@ -205,10 +202,6 @@ public class Armor : EquippableItem {
       }
 
       return getArmorData().equipmentIconPath;
-   }
-
-   public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, "armor_" + this.itemTypeId.ToString());
    }
 
    public static Armor generateRandom (int itemId, int armorType) {
@@ -228,7 +221,7 @@ public class Armor : EquippableItem {
 
       string data = string.Format("armor={0}, rarity={1}, price={2}", armorValue, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Armor armor = new Armor(itemId, armorType, ColorType.Black, ColorType.White, data, stockCount);
+      Armor armor = new Armor(itemId, armorType, PaletteDef.Armor.Black, PaletteDef.Armor.White, data, stockCount);
 
       return armor;
    }
@@ -242,8 +235,8 @@ public class Armor : EquippableItem {
          itemDescription = item.itemDescription,
          itemName = item.itemName,
          data = item.data,
-         color1 = item.color1,
-         color2 = item.color2
+         paletteName1 = item.paletteName1,
+         paletteName2 = item.paletteName2
       };
 
       return newArmor;

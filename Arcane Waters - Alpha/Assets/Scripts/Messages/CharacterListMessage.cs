@@ -17,17 +17,14 @@ public class CharacterListMessage : MessageBase {
    public Item[] weaponArray;
 
    // We have to deal with these separately because of a Unity bug
-   public int[] armorColors1;
-   public int[] armorColors2;
+   public string[] armorPalettes1;
+   public string[] armorPalettes2;
 
    // The equipment xml Id's of the starting armor
    public int[] equipmentIds;
 
    // The sprite Id's of the starting armor
    public int[] spriteIds;
-
-   // The material types of the starting armor
-   public MaterialType[] materialTypes;
 
    #endregion
 
@@ -37,15 +34,14 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2, int[] equipmentIds, int[] spriteIds, MaterialType[] materialTypes) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;
-      this.armorColors1 = armorColors1;
-      this.armorColors2 = armorColors2;
+      this.armorPalettes1 = armorPalettes1;
+      this.armorPalettes2 = armorPalettes2;
       this.equipmentIds = equipmentIds;
       this.spriteIds = spriteIds;
-      this.materialTypes = materialTypes;
    }
 }

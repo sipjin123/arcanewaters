@@ -16,6 +16,7 @@ using System.Xml.Serialization;
 using TMPro;
 using System.Text;
 using System.Xml;
+using System.Globalization;
 
 public class Util : MonoBehaviour {
    public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
@@ -913,6 +914,11 @@ public class Util : MonoBehaviour {
       } else {
          return addressA == addressB;
       }
+   }
+   
+   public static string toTitleCase(string s) {
+      // Capitalizes the first letter of each word
+      return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
    }
 
    // A Random instance we can use for generating random numbers

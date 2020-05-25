@@ -21,11 +21,11 @@ public class StoreHaircutBox : StoreItemBox {
          return;
       }
 
-      ColorType hairColor = ColorType.Yellow;
+      string hairColor = PaletteDef.Hair.Yellow;
 
       if (Global.player is BodyEntity) {
          BodyEntity body = (BodyEntity) Global.player;
-         hairColor = body.hairColor1;
+         hairColor = body.hairPalette1;
       }
 
       string gender = Global.player != null && Global.player.isMale() ? "Male" : "Female";
@@ -40,7 +40,7 @@ public class StoreHaircutBox : StoreItemBox {
          }
          image.sprite = sprites[8];
          image.material = new Material(this.imageIcon.material);
-         image.GetComponent<RecoloredSprite>().recolor(image.material, hairColor, hairColor);
+         image.GetComponent<RecoloredSprite>().recolor(hairColor, hairColor);
       }
    }
 

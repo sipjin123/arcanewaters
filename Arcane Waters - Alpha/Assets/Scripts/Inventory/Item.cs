@@ -20,11 +20,11 @@ public class Item {
    // The item type ID, which will be properly cast by subclasses
    public int itemTypeId;
 
-   // Our primary recolor id
-   public ColorType color1;
+   // Name of palette that changes color of item
+   public string paletteName1 = "";
 
-   // Our secondary recolor id
-   public ColorType color2;
+   // Name of palette that changes color of item
+   public string paletteName2 = "";
 
    // The item data string from the database
    public string data = "";
@@ -53,12 +53,12 @@ public class Item {
       this.iconPath = iconPath;
    }
 
-   public Item (int id, Category category, int itemTypeId, int count, ColorType color1, ColorType color2, string data) {
+   public Item (int id, Category category, int itemTypeId, int count, string paletteName1, string paletteName2, string data) {
       this.id = id;
       this.category = category;
       this.itemTypeId = itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = paletteName1;
+      this.paletteName2 = paletteName2;
       this.count = count;
       this.data = data;
    }
@@ -66,19 +66,19 @@ public class Item {
    public Item getCastItem () {
       switch (this.category) {
          case Category.Helm:
-            return new Armor(this.id, this.itemTypeId, color1, color2, data, count);
+            return new Armor(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Armor:
-            return new Armor(this.id, this.itemTypeId, color1, color2, data, count);
+            return new Armor(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Weapon:
-            return new Weapon(this.id, this.itemTypeId, color1, color2, data, count);
+            return new Weapon(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Usable:
-            return new UsableItem(this.id, category, this.itemTypeId, count, color1, color2, data);
+            return new UsableItem(this.id, category, this.itemTypeId, count, paletteName1, paletteName2, data);
          case Category.CraftingIngredients:
-            return new CraftingIngredients(this.id, this.itemTypeId, color1, color2, data, count);
+            return new CraftingIngredients(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Blueprint:
-            return new Blueprint(this.id, this.itemTypeId, color1, color2, data, count);
+            return new Blueprint(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Quest_Item:
-            return new QuestItem(this.id, this.itemTypeId, color1, color2, data, count);
+            return new QuestItem(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          default:
             D.warning("Unknown item category: " + category);
             return null;
@@ -197,11 +197,6 @@ public class Item {
    public virtual string getBorderlessIconPath () {
       // Subclasses will override this
       return getIconPath();
-   }
-
-   public virtual ColorKey getColorKey () {
-      // Subclasses will override this
-      return new ColorKey(Global.player.gender, "" + itemTypeId);
    }
 
    public static List<Item> unserializeAndCast (string[] itemArray) {

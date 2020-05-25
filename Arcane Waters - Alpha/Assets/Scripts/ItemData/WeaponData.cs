@@ -22,7 +22,7 @@ public class WeaponData : BattleItemData {
    }
 
    // Builder for the weapon data in item builder
-   public static WeaponData CreateInstance (BattleItemData basicData, Weapon.Class _classRequirement, ColorType _primaryC, ColorType _secondaryC, int damage) {
+   public static WeaponData CreateInstance (BattleItemData basicData, Weapon.Class _classRequirement, string _primaryPalette, string _secondaryPalette, int damage) {
       WeaponData data = new WeaponData();
 
       // Basic battle item data.
@@ -31,27 +31,27 @@ public class WeaponData : BattleItemData {
       data.setBaseBattleItemData(basicData);
 
       // Weapon Data
-      data.setPrimaryColor(_primaryC);
-      data.setSecondaryColor(_secondaryC);
+      data.setPrimaryColor(_primaryPalette);
+      data.setSecondaryColor(_secondaryPalette);
       data.setItemDamage(damage);
 
       return data;
    }
 
-   protected void setPrimaryColor (ColorType value) { _primaryColor = value; }
-   protected void setSecondaryColor (ColorType value) { _secondaryColor = value; }
+   protected void setPrimaryColor (string value) { _primaryPalette = value; }
+   protected void setSecondaryColor (string value) { _secondaryPalette = value; }
    protected void setItemDamage (int value) { _baseDamage = value; }
 
-   public ColorType getPrimaryColor { get { return _primaryColor; } }
-   public ColorType getSecondaryColor { get { return _secondaryColor; } }
+   public string getPrimaryColor { get { return _primaryPalette; } }
+   public string getSecondaryColor { get { return _secondaryPalette; } }
    public int getBaseDamage () { return _baseDamage; }
 
    #region Private Variables
 
    // Weapon data main colors that the weapon will have/has
 
-   [SerializeField] private ColorType _primaryColor;
-   [SerializeField] private ColorType _secondaryColor;
+   [SerializeField] private string _primaryPalette;
+   [SerializeField] private string _secondaryPalette;
    [SerializeField] private int _baseDamage;
 
    #endregion

@@ -16,6 +16,9 @@ public class MerchantScreen : Panel {
    // The container for our crop rows
    public GameObject cropRowsContainer;
 
+   // Our head animation
+   public SimpleAnimation headAnim;
+
    // The text we want to type out
    public TextMeshProUGUI greetingText;
 
@@ -35,6 +38,9 @@ public class MerchantScreen : Panel {
    // Name of the shop reference
    public string shopName = ShopManager.DEFAULT_SHOP_NAME;
 
+   // The texture of the animated head icon
+   public Texture2D headIconTexture = null;
+
    #endregion
 
    public override void Awake () {
@@ -52,6 +58,9 @@ public class MerchantScreen : Panel {
 
       // Show the correct offers based on our current area
       Global.player.rpc.Cmd_GetOffersForArea(shopName);
+
+      // Update the head icon image
+      headAnim.setNewTexture(headIconTexture);
 
       // Greeting message is decided from the XML Data of the Shop
       greetingText.text = "";

@@ -94,21 +94,20 @@ public class CharacterSpot : ClientMonoBehaviour {
       UserInfo userInfo = new UserInfo();
       userInfo.gender = Gender.Type.Female;
       userInfo.hairType = HairLayer.Type.Female_Hair_1;
-      userInfo.hairColor1 = ColorType.Red;
-      userInfo.hairColor2 = ColorType.Black;
+      userInfo.hairPalette1 = PaletteDef.Hair.Red;
+      userInfo.hairPalette2 = PaletteDef.Hair.Black;
       userInfo.eyesType = EyesLayer.Type.Female_Eyes_1;
-      userInfo.eyesColor1 = ColorType.Green;
-      userInfo.eyesColor2 = ColorType.Green;
+      userInfo.eyesPalette1 = PaletteDef.Eyes.Green;
+      userInfo.eyesPalette2 = PaletteDef.Eyes.Green;
       userInfo.bodyType = BodyLayer.Type.Female_Body_1;
       Weapon weapon = new Weapon();
       weapon.itemTypeId = 0;
       Armor armor = new Armor();
       armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
-      armor.color1 = ColorType.Brown;
-      armor.color2 = ColorType.Black;
-      armor.materialType = CharacterScreen.self.startingArmorData[0].materialType;
+      armor.paletteName1 = PaletteDef.Armor1.Brown;
+      armor.paletteName2 = PaletteDef.Armor2.Blue;
 
-      offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.color1, armor.color2);
+      offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.paletteName1, armor.paletteName2);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
          SpotFader.self.closeSpotTowardsPosition(offlineChar.transform.position);

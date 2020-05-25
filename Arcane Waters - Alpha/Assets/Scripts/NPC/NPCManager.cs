@@ -260,14 +260,14 @@ public class NPCManager : MonoBehaviour {
             
             // Compare the colors, if defined
             bool isColorMatch = true;
-            if (likedGift.color1 != ColorType.None) {
-               if (likedGift.color1 != gift.color1) {
+            if (likedGift.palette1 != "") {
+               if (likedGift.palette1 != gift.paletteName1) {
                   isColorMatch = false;
                }
             }
 
-            if (likedGift.color2 != ColorType.None) {
-               if (likedGift.color2 != gift.color2) {
+            if (likedGift.palette2 != "") {
+               if (likedGift.palette2 != gift.paletteName2) {
                   isColorMatch = false;
                }
             }

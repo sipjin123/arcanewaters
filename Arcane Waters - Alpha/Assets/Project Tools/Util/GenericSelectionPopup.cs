@@ -345,9 +345,9 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case selectionType.Color:
-            foreach (ColorType colorType in Enum.GetValues(typeof(ColorType))) {
-               createTextTemplate(colorType.ToString(), textUI, changeEvent);
-            }
+            //foreach (ColorType colorType in Enum.GetValues(typeof(ColorType))) {
+            //   createTextTemplate(colorType.ToString(), textUI, changeEvent);
+            //}
             break;
          case selectionType.ArmorType:
             foreach (ArmorStatData armorType in EquipmentXMLManager.self.armorStatList) {

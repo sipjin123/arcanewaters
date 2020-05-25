@@ -27,9 +27,6 @@ public class Weapon : EquippableItem {
    // The weapon Class
    public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
 
-   // The material type to be used on this equipment
-   public MaterialType materialType;
-
    #endregion
 
    public Weapon () {
@@ -45,8 +42,8 @@ public class Weapon : EquippableItem {
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
-      this.color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
+      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -65,33 +62,23 @@ public class Weapon : EquippableItem {
 
    #endif
 
-   public Weapon (int id, int weaponType, int primaryColorId, int secondaryColorId) {
+   public Weapon (int id, int weaponType, string palette1, string palette2) {
       this.category = Category.Weapon;
       this.id = id;
       this.itemTypeId = weaponType;
       this.count = 1;
-      this.color1 = (ColorType) primaryColorId;
-      this.color2 = (ColorType) secondaryColorId;
+      this.paletteName1 = palette1;
+      this.paletteName2 = palette2;
       this.data = "";
    }
 
-   public Weapon (int id, int weaponType, ColorType primaryColorId, ColorType secondaryColorId) {
-      this.category = Category.Weapon;
-      this.id = id;
-      this.itemTypeId = weaponType;
-      this.count = 1;
-      this.color1 = primaryColorId;
-      this.color2 = secondaryColorId;
-      this.data = "";
-   }
-
-   public Weapon (int id, int itemTypeId, ColorType color1, ColorType color2, string data, int count = 1) {
+   public Weapon (int id, int itemTypeId, string palette1, string palette2, string data, int count = 1) {
       this.category = Category.Weapon;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = palette1;
+      this.paletteName2 = palette2; ;
       this.data = data;
    }
 
@@ -100,8 +87,8 @@ public class Weapon : EquippableItem {
       this.id = id;
       this.count = 1;
       this.itemTypeId = weaponType;
-      this.color1 = ColorType.None;
-      this.color2 = ColorType.None;
+      this.paletteName1 = "";
+      this.paletteName2 = "";
       this.data = "";
    }
 
@@ -118,7 +105,7 @@ public class Weapon : EquippableItem {
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}\n\nDamage = <color=red>{5}</color>",
-         "#" +colorHex, getName(), color1, color2, getDescription(), getDamage());
+         "#" +colorHex, getName(), paletteName1, paletteName2, getDescription(), getDamage());
    }
 
    public override string getName () {
@@ -210,7 +197,7 @@ public class Weapon : EquippableItem {
    }
 
    public static Weapon getEmpty() {
-      return new Weapon(0, 0, ColorType.None, ColorType.None);
+      return new Weapon(0, 0, "", "");
    }
 
    public static Weapon generateRandom (int itemId, int weaponType) {
@@ -231,7 +218,7 @@ public class Weapon : EquippableItem {
 
       string data = string.Format("damage={0}, rarity={1}, price={2}", damage, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Weapon weapon = new Weapon(itemId, (int) weaponType, ColorType.Black, ColorType.White, data, stockCount);
+      Weapon weapon = new Weapon(itemId, (int) weaponType, "", "", data, stockCount);
 
       return weapon;
    }
@@ -252,10 +239,6 @@ public class Weapon : EquippableItem {
       return getWeaponData().equipmentIconPath;
    }
 
-   public override ColorKey getColorKey () {
-      return new ColorKey(Global.player.gender, this.itemTypeId, new Weapon());
-   }
-
    public static Weapon castItemToWeapon (Item item) {
       Weapon newWeapon = new Weapon {
          category = Category.Weapon,
@@ -265,8 +248,8 @@ public class Weapon : EquippableItem {
          itemDescription = item.itemDescription,
          itemName = item.itemName,
          data = item.data,
-         color1 = item.color1,
-         color2 = item.color2,
+         paletteName1 = item.paletteName1,
+         paletteName2 = item.paletteName2,
       };
 
       return newWeapon;

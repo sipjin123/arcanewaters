@@ -41,9 +41,6 @@ public class CharacterScreen : MonoBehaviour
 
       // The sprite index 
       public int spriteId;
-
-      // The material type
-      public MaterialType materialType;
    }
 
    #endregion
@@ -81,13 +78,12 @@ public class CharacterScreen : MonoBehaviour
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, int[] armorColors1, int[] armorColors2, int[] equipmentIds, int[] spriteIds, MaterialType[] materialTypes) {
+   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
       for (int i = 0; i < spriteIds.Length; i++) {
          StartingArmorData newData = new StartingArmorData {
             equipmentId = equipmentIds[i],
-            materialType = materialTypes[i],
             spriteId = spriteIds[i]
          };
          startingArmorData.Add(newData);
@@ -99,8 +95,8 @@ public class CharacterScreen : MonoBehaviour
       _armorArray = new Armor[armorArray.Length];
       for (int i = 0; i < armorArray.Length; i++) {
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
-         _armorArray[i].color1 = (ColorType) armorColors1[i];
-         _armorArray[i].color2 = (ColorType) armorColors2[i];
+         _armorArray[i].paletteName1 = armorPalettes1[i];
+         _armorArray[i].paletteName2 = armorPalettes2[i];
       }
 
       _weaponArray = new Weapon[weaponArray.Length];
@@ -125,7 +121,7 @@ public class CharacterScreen : MonoBehaviour
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], (ColorType) armorColors1[i], (ColorType) armorColors2[i]);
+            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], armorPalettes1[i], armorPalettes2[i]);
             spot.assignCharacter(offlineChar);
          }
       }

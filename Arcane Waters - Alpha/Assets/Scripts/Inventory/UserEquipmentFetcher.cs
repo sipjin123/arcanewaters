@@ -557,11 +557,11 @@ namespace OldEquipmentFetcher {
                username = xmlPairCollection["usrName"],
                bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]),
                hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]),
-               hairColor1 = (ColorType) int.Parse(xmlPairCollection["hairColor1"]),
-               hairColor2 = (ColorType) int.Parse(xmlPairCollection["hairColor2"]),
+               hairPalette1 = xmlPairCollection["hairPalette1"],
+               hairPalette2 = xmlPairCollection["hairPalette2"],
                eyesType = (EyesLayer.Type) int.Parse(xmlPairCollection["eyesType"]),
-               eyesColor1 = (ColorType) int.Parse(xmlPairCollection["eyesColor1"]),
-               eyesColor2 = (ColorType) int.Parse(xmlPairCollection["eyesColor2"]),
+               eyesPalette1 = xmlPairCollection["eyesPalette1"],
+               eyesPalette2 = xmlPairCollection["eyesPalette2"],
                weaponId = int.Parse(xmlPairCollection["wpnId"]),
                armorId = int.Parse(xmlPairCollection["armId"])
             };
@@ -582,11 +582,11 @@ namespace OldEquipmentFetcher {
 
             Item equippedWeapon = _itemList.Find(_ => _.id == _userInfo.weaponId);
             if (equippedWeapon == null) {
-               equippedWeapon = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
+               equippedWeapon = new Item { itemTypeId = 0, paletteName1 = "", paletteName2 = "" };
             }
             Item equippedArmor = _itemList.Find(_ => _.id == _userInfo.armorId);
             if (equippedArmor == null) {
-               equippedArmor = new Item { itemTypeId = 0, color1 = ColorType.None, color2 = ColorType.None };
+               equippedArmor = new Item { itemTypeId = 0, paletteName1 = "", paletteName2 = "" };
             }
             UserObjects userObjects = new UserObjects { userInfo = _userInfo, weapon = equippedWeapon, armor = equippedArmor };
 

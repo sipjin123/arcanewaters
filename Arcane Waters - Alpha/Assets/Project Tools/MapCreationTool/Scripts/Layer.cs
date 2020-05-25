@@ -13,9 +13,6 @@ namespace MapCreationTool
       public const string VINE_KEY = "vine";
       public const string STAIR_KEY = "stair";
       public const string RUG_KEY = "rug";
-      public const string DOCK_KEY = "dock";
-      public const string CEILING_KEY = "ceiling";
-      public const string DOORFRAME_KEY = "door-frame";
 
       public Layer[] subLayers { get; private set; }
 
@@ -346,18 +343,6 @@ namespace MapCreationTool
 
       public static bool isWater (string layer) {
          return layer.CompareTo(WATER_KEY) == 0;
-      }
-
-      public static bool isDock (string layer) {
-         return layer.CompareTo(DOCK_KEY) == 0;
-      }
-
-      public static bool isCeiling (string layer) {
-         return layer.CompareTo(CEILING_KEY) == 0;
-      }
-
-      public static bool isDoorframe (string layer) {
-         return layer.CompareTo(DOORFRAME_KEY) == 0;
       }
 
       public static bool isPath (string layer) {

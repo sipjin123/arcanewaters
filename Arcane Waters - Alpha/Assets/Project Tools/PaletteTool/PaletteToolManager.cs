@@ -27,6 +27,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Button saves progress in currently edited palette
    public Button savePaletteButton;
 
+   // Button which initiates resetting palette scene
+   public Button resetPaletteButton;
+
    [Header("Prefabs")]
    // Palette prefab which is present in the form of scrolldown list
    public GameObject paletteButtonRowPrefab;
@@ -79,6 +82,16 @@ public class PaletteToolManager : XmlDataToolManager {
    // Cancel deleting palette and back to list (without reloading data)
    public Button cancelDeletingButton;
 
+   [Header("Confirm resetting palette scene")]
+   // Object holds UI with confirm/cancel button
+   public GameObject confirmResettingPaletteScene;
+
+   // Confirm resetting palette and using colors from current sprite
+   public Button confirmResettingButton;
+
+   // Cancel resetting palette - nothing happends then
+   public Button cancelResettingButton;
+
    [Header("Size buttons")]
    public Button setSize8;
    public Button setSize16;
@@ -124,6 +137,18 @@ public class PaletteToolManager : XmlDataToolManager {
       Ship = 7,
       MAX = 8
    }
+
+   public static string[] paletteImageTypePaths = {
+      "",
+      "Assets/Sprites/Armor",
+      "Assets/Sprites/Weapons",
+      "Assets/Sprites/Hair",
+      "Assets/Sprites/Eyes",
+      "Assets/Sprites/Body",
+      "Assets/Sprites/NPCs",
+      "Assets/Sprites/Ships",
+      "",
+   };
 
    #endregion
 
@@ -177,6 +202,18 @@ public class PaletteToolManager : XmlDataToolManager {
          confirmDeletingPaletteScene.gameObject.SetActive(false);
       });
 
+      // Confirm or cancel resetting palette
+      resetPaletteButton.onClick.AddListener(() => {
+         confirmResettingPaletteScene.gameObject.SetActive(true);
+      });
+      confirmResettingButton.onClick.AddListener(() => {
+         fillColorBoxesWithSpriteColors();
+         confirmResettingPaletteScene.gameObject.SetActive(false);
+      });
+      cancelResettingButton.onClick.AddListener(() => {
+         confirmResettingPaletteScene.gameObject.SetActive(false);
+      });
+
       // Start picking color from current sprite preview
       pickColorButton.onClick.AddListener(() => {
          startPickingColorFromSprite();
@@ -209,11 +246,20 @@ public class PaletteToolManager : XmlDataToolManager {
          row.deleteButton.onClick.AddListener(() => {
             showDeleteConfirmation(row);
          });
+         row.duplicateButton.onClick.AddListener(() => {
+            duplicateSingleRow(row);
+         });
 
          row.gameObject.GetComponent<RectTransform>().SetParent(paletteRowParent);
          row.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
          row.gameObject.SetActive(true);
       }
+   }
+
+   private void duplicateSingleRow (PaletteButtonRow row) {
+      showSingleRowEditor(row);
+      _currentRow = null;
+      choosePaletteNameText.GetComponent<InputField>().text = "Choose name";
    }
 
    private void showDeleteConfirmation (PaletteButtonRow row) {
@@ -238,9 +284,9 @@ public class PaletteToolManager : XmlDataToolManager {
       string dropdownTextToFind = System.Enum.GetName(typeof(PaletteImageType), _paletteImageType);
       int paletteTypeIndex = dropdownPaletteType.options.FindIndex((TMPro.TMP_Dropdown.OptionData optionData) => optionData.text.Equals(dropdownTextToFind));
       if (paletteTypeIndex >= 0) {
-         dropdownPaletteType.SetValueWithoutNotify(paletteTypeIndex);
+         dropdownPaletteType.value = paletteTypeIndex;
       } else {
-         dropdownPaletteType.SetValueWithoutNotify(0);
+         dropdownPaletteType.value = 0;
       }
 
       // Present edit scene with downloaded data
@@ -374,7 +420,15 @@ public class PaletteToolManager : XmlDataToolManager {
          return;
       }
       PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst, (int) _paletteImageType);
-      saveXMLData(data, _currentRow == null ? -1 : _paletteDataList[_currentRow.dataIndex].paletteId);
+      saveXMLData(data, findPaletteId(data));
+   }
+
+   private int findPaletteId (PaletteToolData data) {
+      if (_currentRow == null) {
+         int index = _paletteDataList.FindIndex((PaletteDataPair paletteDataPair) => paletteDataPair.paletteData.paletteName == data.paletteName);
+         return (index != -1) ? _paletteDataList[index].paletteId : -1;
+      }
+      return _paletteDataList[_currentRow.dataIndex].paletteId;
    }
 
    private void showPalettePreview () {
@@ -439,7 +493,7 @@ public class PaletteToolManager : XmlDataToolManager {
          parent.gameObject.SetActive(true);
 
          GameObject srcPrefab = GameObject.Instantiate(singleColorPrefab);
-         srcPrefab.GetComponent<Image>().color = srcColors[i];
+         srcPrefab.GetComponent<Image>().color = new Color(srcColors[i].r, srcColors[i].g, srcColors[i].b);
          srcPrefab.GetComponent<Button>().onClick.AddListener(() => {
             activeColorPicker(srcPrefab.GetComponent<Button>());
          });
@@ -447,7 +501,7 @@ public class PaletteToolManager : XmlDataToolManager {
          _srcColors.Add(srcPrefab.GetComponent<Image>());
 
          GameObject dstPrefab = GameObject.Instantiate(singleColorPrefab);
-         dstPrefab.GetComponent<Image>().color = dstColors[i];
+         dstPrefab.GetComponent<Image>().color = new Color(dstColors[i].r, dstColors[i].g, dstColors[i].b);
          dstPrefab.GetComponent<Button>().onClick.AddListener(() => {
             activeColorPicker(dstPrefab.GetComponent<Button>());
          });
@@ -461,7 +515,7 @@ public class PaletteToolManager : XmlDataToolManager {
       _currentlyEditedElementInPalette = button;
       colorPicker.SetActive(true);
       colorPickerHideButton.SetActive(true);
-      colorPicker.GetComponent<ColorPicker>().CurrentColor = button.GetComponent<Image>().color;
+      colorPicker.GetComponent<ColorPicker>().CurrentColor = new Color(button.GetComponent<Image>().color.r, button.GetComponent<Image>().color.g, button.GetComponent<Image>().color.b);
 
       colorPicker.GetComponent<ColorPicker>().onValueChanged.AddListener((Color color) => {
          changeColorInPalette(color);
@@ -522,11 +576,14 @@ public class PaletteToolManager : XmlDataToolManager {
 
       dropdownPaletteType.onValueChanged.AddListener((int index) => {
          _paletteImageType = (PaletteImageType) (index + 1);
+         prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
       });
+      _paletteImageType = (PaletteImageType)1;
+      prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
    }
 
-   private void prepareSpriteChooseDropdown () {
-      const string spritePath = "Assets/Sprites";
+   private void prepareSpriteChooseDropdown (string path = "") {
+      string spritePath = (path != "") ? path : "Assets/Sprites";
       _cachedSpriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
       dropdownFileChoose.options.Clear();
 
@@ -535,14 +592,17 @@ public class PaletteToolManager : XmlDataToolManager {
          dropdownFileChoose.options.Add(optionData);
       }
 
+      dropdownFileChoose.onValueChanged.RemoveAllListeners();
+
       if (_cachedSpriteIconFiles.Count == 1) {
          choosePreviewSprite(0);
          dropdownFileChoose.value = 0;
       } else {
-         dropdownFileChoose.value = -1;
          dropdownFileChoose.onValueChanged.AddListener((int index) => {
             choosePreviewSprite(index);
          });
+         choosePreviewSprite(0);
+         dropdownFileChoose.value = 0;
       }
    }
 
@@ -566,33 +626,42 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Works only for "single sprite". We do not have enough information for slicing here
       previewSprite.sprite = _cachedSpriteIconFiles[dropdownIndex].sprite;
-      colorPresets.forceUpdateColors(generateMostCommonPixelsInSprite(previewSprite.sprite));
+      StartCoroutine(updateColorsPresets());
 
       // If preview changed for empty palette - fill with sprite colors
       if (isPaletteEmpty) {
-         List<Color> allColors = generateMostCommonPixelsInSprite(previewSprite.sprite, 0);
-         if (allColors.Count <= 8) {
-            changeArraySize(8);
-         } else if (allColors.Count <= 16) {
-            changeArraySize(16);
-         } else if (allColors.Count <= 32) {
-            changeArraySize(32);
-         } else if (allColors.Count <= 64) {
-            changeArraySize(64);
-         } else {
-            changeArraySize(128);
-         }
-
-         int count = _srcColors.Count;
-         if (allColors.Count < _srcColors.Count) {
-            count = allColors.Count;
-         }
-
-         for (int i = 0; i < count; i++) {
-            _srcColors[i].color = allColors[i];
-            _dstColors[i].color = allColors[i];
-         }
+         fillColorBoxesWithSpriteColors();
       }
+   }
+
+   private void fillColorBoxesWithSpriteColors () {
+      List<Color> allColors = generateMostCommonPixelsInSprite(previewSprite.sprite, 0);
+      if (allColors.Count <= 8) {
+         changeArraySize(8);
+      } else if (allColors.Count <= 16) {
+         changeArraySize(16);
+      } else if (allColors.Count <= 32) {
+         changeArraySize(32);
+      } else if (allColors.Count <= 64) {
+         changeArraySize(64);
+      } else {
+         changeArraySize(128);
+      }
+
+      int count = _srcColors.Count;
+      if (allColors.Count < _srcColors.Count) {
+         count = allColors.Count;
+      }
+
+      for (int i = 0; i < count; i++) {
+         _srcColors[i].color = allColors[i];
+         _dstColors[i].color = allColors[i];
+      }
+   }
+
+   private IEnumerator updateColorsPresets () {
+      yield return new WaitForSeconds(0.1f);
+      colorPresets.forceUpdateColors(generateMostCommonPixelsInSprite(previewSprite.sprite));
    }
 
    private Texture2D generateTexture2D () {

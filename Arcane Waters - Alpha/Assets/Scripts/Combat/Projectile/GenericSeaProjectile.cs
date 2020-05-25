@@ -137,16 +137,6 @@ public class GenericSeaProjectile : MonoBehaviour {
 
                   // Make sure the target is in our same instance
                   if (entity.instanceId == Global.player.instanceId) {
-                     // If we hit a ship, show some flying particles
-                     if (entity is ShipEntity && attackType != Attack.Type.Ice) {
-                        ExplosionManager.createExplosion(entity.transform.position);
-                     }
-
-                     break;
-                  }
-
-                  // Make sure the target is in our same instance
-                  if (entity != null && entity.instanceId == Global.player.instanceId) {
                      hitEnemy = true;
 
                      // If we hit a ship, show some flying particles

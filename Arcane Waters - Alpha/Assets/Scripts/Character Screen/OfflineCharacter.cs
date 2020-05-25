@@ -72,7 +72,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, ColorType armorColor1, ColorType armorColor2) {
+   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, string armorPalette1, string armorPalette2) {
       this.userId = userInfo.userId;
 
       setBodyLayers(userInfo);
@@ -80,11 +80,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
-         armorData.color1 = armorColor1;
-         armorData.color2 = armorColor2;
+         armorData.palette1 = armorPalette1;
+         armorData.palette2 = armorPalette2;
       }
 
-      setArmor(armorData.armorType, armorData.color1, armorData.color2, armorData.materialType);
+      setArmor(armorData.armorType, armorData.palette1, armorData.palette2);
       setWeapon(userInfo, weapon);
    }
 
@@ -106,13 +106,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
          hairLayer.setType(userInfo.hairType);
 
          // Update colors
-         ColorKey hairColorKey = new ColorKey(userInfo.gender, Layer.Hair);
-         hairLayer.recolor(hairColorKey, userInfo.hairColor1, userInfo.hairColor2);
+         hairLayer.recolor(userInfo.hairPalette1);
       }
 
       // Update colors
-      ColorKey eyeColorKey = new ColorKey(userInfo.gender, Layer.Eyes);
-      eyes.recolor(eyeColorKey, userInfo.eyesColor1, 0);
+      eyes.recolor(userInfo.eyesPalette1);
    }
 
    public void setWeapon (UserInfo userInfo, Item weapon) {
@@ -124,22 +122,16 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
-         ColorKey colorKey = new ColorKey(userInfo.gender, weaponData.weaponType, new Weapon());
-         weaponLayer.recolor(colorKey, weaponData.color1, weaponData.color2);
+         weaponLayer.recolor(weaponData.palette1, weaponData.palette2);
       }
    }
 
-   public void setArmor (int armorType, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None) {
+   public void setArmor (int armorType, string paletteName1, string paletteName2) {
       // Set the correct sheet for our gender and armor type
       armor.setType(this.genderType, armorType, true);
 
       // Update our Material
-      ColorKey colorKey = new ColorKey(this.genderType, "armor_" + armorType);
-      armor.recolor(colorKey, color1, color2);
-
-      if (materialType != MaterialType.None) {
-         armor.setNewMaterial(MaterialManager.self.translateMaterial(materialType));
-      }
+      armor.recolor(paletteName1, paletteName2);
    }
 
    public void cancelCreating () {
@@ -155,11 +147,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       info.username = CharacterCreationPanel.self.nameText.text;
       info.charSpot = spot.number;
       info.hairType = this.hairFront.getType();
-      info.hairColor1 = this.hairFront.getColor1();
-      info.hairColor2 = this.hairFront.getColor2();
+      info.hairPalette1 = this.hairFront.getPalette1();
+      info.hairPalette2 = this.hairFront.getPalette2();
       info.eyesType = this.eyes.getType();
-      info.eyesColor1 = this.eyes.getColor1();
-      info.eyesColor2 = this.eyes.getColor2();
+      info.eyesPalette1 = this.eyes.getPalette1();
+      info.eyesPalette2 = this.eyes.getPalette2();
       info.bodyType = this.body.getType();
       info.classType = this.classType;
       info.specialty = this.specialty;
@@ -171,8 +163,8 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public Armor getArmor() {
       Armor armor = new Armor();
       armor.itemTypeId = this.armor.getType();
-      armor.color1 = this.armor.getColor1();
-      armor.color2 = this.armor.getColor2();
+      armor.paletteName1 = this.armor.getPalette1();
+      armor.paletteName2 = this.armor.getPalette2();
 
       return armor;
    }

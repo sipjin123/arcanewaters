@@ -21,47 +21,51 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (ColorKey colorKey, ColorType color1, ColorType color2, MaterialType materialType = MaterialType.None, bool isGUI = false) {
-      _color1 = color1;
-      _color2 = color2;
-
-      // We get a different material for GUI Images
-      Material material = (_image != null) ?
-         MaterialManager.self.getGUIMaterial(colorKey) : MaterialManager.self.get(colorKey);
-
-      // Some layers, like the Body layer, aren't recolored
-      if (material == null && materialType == MaterialType.None) {
+   public void recolor (string paletteName1, string paletteName2) {
+      if (paletteName1 == "") {
+         recolor(paletteName2);
          return;
       }
-
-      // Assign the color associated with our color id from the database
-      if (!isGUI) {
-         Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateMaterial(materialType) : material;
-         setNewMaterial(newMaterial);
-      } else {
-         Material newMaterial = materialType != MaterialType.None ? MaterialManager.self.translateGUIMaterial(materialType) : material;
-         setNewMaterial(newMaterial);
+      if (paletteName2 == "") {
+         recolor(paletteName1);
+         return;
       }
+      // Two palettes should be probably used only for armor (or similar sprites which have "two parts")
+      _palette1 = paletteName1;
+      _palette2 = paletteName2;
+
+      checkMaterialAvailability();
+      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(paletteName1));
+      getMaterial().SetTexture("_Palette2", PaletteSwapManager.generateTexture2D(paletteName2));
+   }
+
+   public void recolor (string paletteName) {
+      _palette1 = paletteName;
+      checkMaterialAvailability();
+      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(paletteName));
    }
 
    public void setNewMaterial (Material oldMaterial) {
       Material newMaterial = new Material(oldMaterial);
+
+      if (_spriteRenderer == null && _image == null) {
+         _image = GetComponent<Image>();
+         _spriteRenderer = GetComponent<SpriteRenderer>();
+      }
 
       if (_spriteRenderer != null) {
          _spriteRenderer.material = newMaterial;
       } else if (_image != null) {
          _image.material = newMaterial;
       }
-
-      Color primaryColor = ColorDef.get(_color1).color;
-      Color secondaryColor = ColorDef.get(_color2).color;
-      newMaterial.SetColor("_NewColor", primaryColor);
-      newMaterial.SetColor("_NewColor2", secondaryColor);
-      newMaterial.SetFloat("_Range", oldMaterial.GetFloat("_Range"));
-      newMaterial.SetFloat("_Range2", oldMaterial.GetFloat("_Range2"));
    }
 
    public Material getMaterial () {
+      if (_spriteRenderer == null && _image == null) {
+         _image = GetComponent<Image>();
+         _spriteRenderer = GetComponent<SpriteRenderer>();
+      }
+
       if (_spriteRenderer != null) {
          return _spriteRenderer.material;
       } else if (_image != null) {
@@ -71,24 +75,23 @@ public class RecoloredSprite : MonoBehaviour {
       return null;
    }
 
-   public ColorType getColor1 () {
-      return _color1;
+   public string getPalette1 () {
+      return _palette1;
    }
 
-   public ColorType getColor2 () {
-      return _color2;
+   public string getPalette2 () {
+      return _palette2;
    }
 
-   public void recolor (ColorType newColor1, ColorType newColor2) {
-      recolor(getMaterial(), newColor1, newColor2);
-   }
+   private void checkMaterialAvailability () {
+      if (getMaterial() == null) {
+         // We get a different material for GUI Images
+         Material material = (_image != null) ?
+            MaterialManager.self.getGUIMaterial() : MaterialManager.self.get();
 
-   public void recolor (Material material, ColorType newColor1, ColorType newColor2) {
-      _color1 = newColor1;
-      _color2 = newColor2;
-      
-      material.SetColor("_NewColor", ColorDef.get(newColor1).color);
-      material.SetColor("_NewColor2", ColorDef.get(newColor2).color);
+         // Assign either GUI or standard material for palette swap
+         setNewMaterial(material);
+      }
    }
 
    #region Private Variables
@@ -97,8 +100,8 @@ public class RecoloredSprite : MonoBehaviour {
    protected Sprite _sprite;
 
    // Our colors
-   protected ColorType _color1;
-   protected ColorType _color2;
+   protected string _palette1 = "";
+   protected string _palette2 = "";
 
    // Our Sprite Renderer or Image, whichever we have
    protected SpriteRenderer _spriteRenderer;

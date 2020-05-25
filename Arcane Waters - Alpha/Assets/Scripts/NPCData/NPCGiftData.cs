@@ -24,24 +24,24 @@ public class NPCGiftData
 
    // The primary recolor id
    [XmlIgnore]
-   public ColorType color1 = ColorType.None;
+   public string palette1 = "";
 
    [XmlElement("color1")]
-   public int Color1Int
+   public string Color1Int
    {
-      get { return (int) color1; }
-      set { color1 = (ColorType) value; }
+      get { return palette1; }
+      set { palette1 = value; }
    }
 
    // The secondary recolor id
    [XmlIgnore]
-   public ColorType color2 = ColorType.None;
+   public string palette2 = "";
 
    [XmlElement("color2")]
-   public int Color2Int
+   public string Color2Int
    {
-      get { return (int) color2; }
-      set { color2 = (ColorType) value; }
+      get { return palette2; }
+      set { palette2 = value; }
    }
 
    // The amount of friendship that offering this gift rewards
@@ -53,11 +53,11 @@ public class NPCGiftData
 
    }
 
-   public NPCGiftData (Item.Category itemCategory, int itemTypeId, ColorType color1, ColorType color2, int rewardedFriendship) {
+   public NPCGiftData (Item.Category itemCategory, int itemTypeId, string palette1, string palette2, int rewardedFriendship) {
       this.itemCategory = itemCategory;
       this.itemTypeId = itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.palette1 = palette1;
+      this.palette2 = palette2;
       this.rewardedFriendship = rewardedFriendship;
    }
 

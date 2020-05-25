@@ -71,9 +71,9 @@ public class EquipmentToolPanel : MonoBehaviour {
          _weaponClassText.text = ((Weapon.Class)_).ToString();
       });
 
-      _materialType.maxValue = Enum.GetValues(typeof(MaterialType)).Length - 1;
+      _materialType.maxValue = 0;
       _materialType.onValueChanged.AddListener(_ => {
-         _materialTypeText.text = ((MaterialType) _).ToString();
+         _materialTypeText.text = "MATERIAL TYPE is no longer used. Please remove this from UI";
       });
 
       saveButton.onClick.AddListener(() => {
@@ -144,8 +144,8 @@ public class EquipmentToolPanel : MonoBehaviour {
       });
 
       _actionTypeButton.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponActionType, _actionType, changeActionTypeEvent));
-      _colorType1Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType1Text));
-      _colorType2Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _colorType2Text));
+      _paletteName1Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _paletteName1Text));
+      _paletteName2Button.onClick.AddListener(() => genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.Color, _paletteName2Text));
 
       changeActionTypeEvent.AddListener(() => updateActionValueEquivalent());
       _actionTypeValue.onValueChanged.AddListener(_ => updateActionValueEquivalent());
@@ -345,11 +345,11 @@ public class EquipmentToolPanel : MonoBehaviour {
       _canBeTrashed.isOn = equipmentData.canBeTrashed;
       _iconPath.text = equipmentData.equipmentIconPath;
 
-      _colorType1Text.text = equipmentData.color1.ToString();
-      _colorType2Text.text = equipmentData.color2.ToString();
+      _paletteName1Text.text = equipmentData.palette1.ToString();
+      _paletteName2Text.text = equipmentData.palette2.ToString();
 
-      _materialType.value = (int) equipmentData.materialType;
-      _materialTypeText.text = equipmentData.materialType.ToString();
+      _materialType.value = 0;
+      _materialTypeText.text = "MATERIAL TYPE is no longer used. Please remove this from UI";
       _declareAllColors.isOn = equipmentData.setAllColors;
 
       if (equipmentData.equipmentIconPath != "") {
@@ -481,10 +481,9 @@ public class EquipmentToolPanel : MonoBehaviour {
       equipmentData.equipmentIconPath = _iconPath.text;
 
       equipmentData.setAllColors = _declareAllColors.isOn;
-      equipmentData.materialType = (MaterialType) _materialType.value;
 
-      equipmentData.color1 = (ColorType) Enum.Parse(typeof(ColorType), _colorType1Text.text);
-      equipmentData.color2 = (ColorType) Enum.Parse(typeof(ColorType), _colorType2Text.text);
+      equipmentData.palette1 = _paletteName1Text.text;
+      equipmentData.palette2 = _paletteName2Text.text;
 
       equipmentData.rarityModifiers = getRarityModifiers();
       equipmentData.elementModifiers = getElementalModifiers();
@@ -604,11 +603,11 @@ public class EquipmentToolPanel : MonoBehaviour {
    [SerializeField]
    private Button _equipmentTypeButton;
 
-   // Color Type
+   // Palette names
    [SerializeField]
-   private Text _colorType1Text, _colorType2Text;
+   private Text _paletteName1Text, _paletteName2Text;
    [SerializeField]
-   private Button _colorType1Button, _colorType2Button;
+   private Button _paletteName1Button, _paletteName2Button;
 
    // Icon UI
    [SerializeField]

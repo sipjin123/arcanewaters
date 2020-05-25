@@ -42,8 +42,8 @@ public class CraftingIngredients : RecipeItem
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
-      this.color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
+      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -54,36 +54,25 @@ public class CraftingIngredients : RecipeItem
 
 #endif
 
-   public CraftingIngredients (int id, CraftingIngredients.Type recipeType, int primaryColorId, int secondaryColorId) {
+   public CraftingIngredients (int id, CraftingIngredients.Type recipeType, string newPalette1, string newPalette2) {
       this.category = Category.CraftingIngredients;
       this.id = id;
       this.type = recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
-      this.color1 = (ColorType) primaryColorId;
-      this.color2 = (ColorType) secondaryColorId;
+      this.paletteName1 = newPalette1;
+      this.paletteName2 = newPalette2;
       this.data = "";
    }
 
-   public CraftingIngredients (int id, CraftingIngredients.Type recipeType, ColorType primaryColorId, ColorType secondaryColorId) {
-      this.category = Category.CraftingIngredients;
-      this.id = id;
-      this.type = recipeType;
-      this.itemTypeId = (int) recipeType;
-      this.count = 1;
-      this.color1 = primaryColorId;
-      this.color2 = secondaryColorId;
-      this.data = "";
-   }
-
-   public CraftingIngredients (int id, int itemTypeId, ColorType color1, ColorType color2, string data, int count = 1) {
+   public CraftingIngredients (int id, int itemTypeId, string newPalette1, string newPalette2, string data, int count = 1) {
       this.category = Category.CraftingIngredients;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
       this.type = (Type) itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = newPalette1;
+      this.paletteName2 = newPalette2;
       this.data = data;
    }
 
@@ -214,7 +203,7 @@ public class CraftingIngredients : RecipeItem
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
       return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}",
-         "#" + colorHex, getName(), color1, color2, getDescription());
+         "#" + colorHex, getName(), paletteName1, paletteName2, getDescription());
    }
 
    public override string getName () {
@@ -344,7 +333,7 @@ public class CraftingIngredients : RecipeItem
    }
 
    public static CraftingIngredients getEmpty () {
-      return new CraftingIngredients(0, CraftingIngredients.Type.None, ColorType.None, ColorType.None);
+      return new CraftingIngredients(0, CraftingIngredients.Type.None, "", "");
    }
 
    public override bool canBeTrashed () {

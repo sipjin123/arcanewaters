@@ -48,23 +48,19 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public void setCellForItem (Item item, int count) {
       // Retrieve the icon sprite and coloring depending on the type
-      _colorKey = null;
       switch (item.category) {
          case Item.Category.Weapon:
             item = Weapon.castItemToWeapon(item);
             WeaponStatData weaponData = WeaponStatData.getStatData(item.data, item.itemTypeId);
             icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
-            _colorKey = new ColorKey(Global.player.gender, item.itemTypeId, new Weapon());
             break;
          case Item.Category.Armor:
             item = Armor.castItemToArmor(item);
             ArmorStatData armorData = ArmorStatData.getStatData(item.data, item.itemTypeId);
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
-            _colorKey = new ColorKey(Global.player.gender, item.itemTypeId, new Armor());
             break;
          case Item.Category.Helm:
             icon.sprite = ImageManager.getSprite(item.iconPath);
-            _colorKey = new ColorKey(Global.player.gender, item.itemTypeId, new Armor());
             break;
          case Item.Category.Potion:
             icon.sprite = foodIcon;
@@ -87,9 +83,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       iconShadow.sprite = icon.sprite;
 
       // Recolor
-      if (_colorKey != null) {
-         recoloredSprite.recolor(_colorKey, item.color1, item.color2);
-      }
+      recoloredSprite.recolor(item.paletteName1, item.paletteName2);
 
       // Show the item count when relevant
       if (count > 1 || item.category == Item.Category.CraftingIngredients) {
@@ -146,10 +140,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       return icon.sprite;
    }
 
-   public ColorKey getItemColorKey () {
-      return _colorKey;
-   }
-
    public void hideBackground () {
       backgroundImage.enabled = false;
    }
@@ -161,9 +151,6 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    // Gets set to true when the text must react to pointer events
    protected bool _interactable = true;
-
-   // The item color key
-   private ColorKey _colorKey = null;
 
    // The time since the last left click on this cell
    private float _lastClickTime = float.MinValue;

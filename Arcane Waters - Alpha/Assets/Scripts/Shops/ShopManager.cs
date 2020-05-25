@@ -109,8 +109,8 @@ public class ShopManager : MonoBehaviour {
                      itemTypeId = rawItemData.shopItemTypeIndex,
                      count = 99,
                      id = _itemId++,
-                     color1 = ColorType.Black,
-                     color2 = ColorType.Black,
+                     paletteName1 = "",
+                     paletteName2 = "",
                      data = ""
                   };
 
@@ -173,7 +173,7 @@ public class ShopManager : MonoBehaviour {
             attackRange = Util.roundToPrettyNumber(attackRange);
 
             ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
-               ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+               "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
             // We note the price separately, since it's only used in this context
             ship.price = price;
@@ -209,7 +209,7 @@ public class ShopManager : MonoBehaviour {
                   int price = UnityEngine.Random.Range(shopItem.shopItemCostMin, shopItem.shopItemCostMax);
 
                   ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
-                       ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+                       "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
                   // We note the price separately, since it's only used in this context
                   ship.price = price;

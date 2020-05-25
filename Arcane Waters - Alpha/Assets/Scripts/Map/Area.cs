@@ -144,14 +144,6 @@ public class Area : MonoBehaviour
       AreaManager.self.storeArea(this);
    }
 
-   public static bool isHouse (string areaKey) {
-      return areaKey.Contains("House");
-   }
-
-   public static bool isTown (string areaKey) {
-      return areaKey.Contains("Town");
-   }
-
    public List<TilemapLayer> getTilemapLayers () {
       return _tilemapLayers;
    }
@@ -177,6 +169,18 @@ public class Area : MonoBehaviour
       return _grid.WorldToCell(worldPos);
    }
 
+   public GridGraph getGraph () {
+      return _graph;
+   }
+
+   public static bool isHouse (string areaKey) {
+      return areaKey.Contains("House");
+   }
+
+   public static bool isTown (string areaKey) {
+      return areaKey.Contains("Town");
+   }
+
    public static string getName (string areaKey) {
       if (areaKey.Contains("Adventure")) {
          return "Adventure Shop";
@@ -186,7 +190,7 @@ public class Area : MonoBehaviour
          return "Shipyard";
       }
 
-      return areaKey;
+      return Util.toTitleCase(areaKey);
    }
 
    public static Biome.Type getBiome (string areaKey) {
@@ -250,16 +254,16 @@ public class Area : MonoBehaviour
    }
 
    private void configurePathfindingGraph () {
-      GridGraph graph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
-      graph.center = transform.position;
+      _graph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
+      _graph.center = transform.position;
       Tilemap firstTilemap = GetComponentInChildren<Tilemap>();
-      graph.SetDimensions(firstTilemap.size.x, firstTilemap.size.y, firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
-      graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
-      graph.collision.use2D = true;
-      graph.collision.Initialize(graph.transform, 1.0f);
-      graph.collision.type = ColliderType.Ray;
-      graph.collision.mask = LayerMask.GetMask("GridColliders");
-      graph.Scan();
+      _graph.SetDimensions(firstTilemap.size.x, firstTilemap.size.y, firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
+      _graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
+      _graph.collision.use2D = true;
+      _graph.collision.Initialize(_graph.transform, 1.0f);
+      _graph.collision.type = ColliderType.Ray;
+      _graph.collision.mask = LayerMask.GetMask("GridColliders");
+      _graph.Scan();
    }
 
    #region Private Variables
@@ -275,6 +279,9 @@ public class Area : MonoBehaviour
 
    // A reference to the tilemap grid
    protected Grid _grid = null;
+
+   // The grid graph of the area
+   protected GridGraph _graph = null;
 
    #endregion
 }

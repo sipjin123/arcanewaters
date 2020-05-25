@@ -196,25 +196,23 @@ public class Instance : NetworkBehaviour
             if (area.seaMonsterDataFields.Count > 0 && seaMonsterCount < 1) {
                foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-
                   SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
 
-                  if (SeaMonsterManager.self.getMonster(seaMonsterType) == null) {
-                     D.debug("Sea monster is null! " + seaMonsterType);
-                  } else {
-                     // Add it to the Instance
-                     SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
-                     seaMonster.monsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
-                     seaMonster.areaKey = area.areaKey;
+                  SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos);
 
-                     SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonster.monsterType);
+                  // Special case of the 'horror' boss
+                  if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
+                     seaMonster.isStationary = true;
 
-                     seaMonster.initData(seaMonsterData);
-                     seaMonster.facing = Direction.South;
+                     float distanceGap = .25f;
+                     float diagonalDistanceGap = .35f;
 
-                     InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
-                     seaMonster.transform.position = this.transform.position + targetLocalPos;
-                     NetworkServer.Spawn(seaMonster.gameObject);
+                     SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), seaMonster, 1, -1, 1);
+                     SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), seaMonster, -1, -1, 0);
+                     SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), seaMonster, 1, 1, 1);
+                     SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), seaMonster, -1, 1, 0);
+                     SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), seaMonster, -1, 0, 1);
+                     SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), seaMonster, 1, 0, 0);
                   }
                }
             }
@@ -385,6 +383,40 @@ public class Instance : NetworkBehaviour
             TreasureManager.self.createTreasureForInstance(this);
          }
       }
+   }
+
+   private SeaMonsterEntity spawnSeaMonster (SeaMonsterEntity.Type seaMonsterType, Vector3 localPos) {
+      if (SeaMonsterManager.self.getMonster(seaMonsterType) == null) {
+         D.debug("Sea monster is null! " + seaMonsterType);
+         return null;
+      }
+
+      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterType);
+
+      SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
+      seaMonster.monsterType = seaMonsterType;
+      seaMonster.areaKey = this.areaKey;
+      seaMonster.facing = Direction.South;
+
+      InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
+      seaMonster.transform.position = this.transform.position + localPos;
+
+      NetworkServer.Spawn(seaMonster.gameObject);
+
+      return seaMonster;
+   }
+
+   private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, int variety) {
+      SeaMonsterEntity childSeaMonster = spawnSeaMonster(seaMonsterType, localPos);
+
+      childSeaMonster.distanceFromSpawnPoint = new Vector2(xVal, yVal);
+      childSeaMonster.variety = (variety);
+
+      // Link the parent and child monsters
+      childSeaMonster.seaMonsterParentEntity = parentSeaMonster;
+      parentSeaMonster.seaMonsterChildrenList.Add(childSeaMonster);
+
+      return childSeaMonster;
    }
 
    #region Private Variables

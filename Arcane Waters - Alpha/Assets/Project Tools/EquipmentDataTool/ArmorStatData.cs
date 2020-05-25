@@ -33,7 +33,6 @@ public class ArmorStatData : EquipmentStatData
          itemDescription = armorData.equipmentDescription,
          category = Item.Category.Armor,
          iconPath = armorData.equipmentIconPath,
-         materialType = armorData.materialType,
          data = serializeArmorStatData(armorData)
       };
       return newArmor;
@@ -68,8 +67,8 @@ public class ArmorStatData : EquipmentStatData
    public static ArmorStatData getDefaultData () {
       return new ArmorStatData {
          armorType = 0,
-         color1 = ColorType.None,
-         color2 = ColorType.None,
+         palette1 = "",
+         palette2 = "",
       };
    }
 }

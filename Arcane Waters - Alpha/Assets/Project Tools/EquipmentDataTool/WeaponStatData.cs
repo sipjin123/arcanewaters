@@ -43,7 +43,6 @@ public class WeaponStatData : EquipmentStatData
          itemDescription = weaponData.equipmentDescription,
          category = Item.Category.Weapon,
          iconPath = weaponData.equipmentIconPath,
-         materialType = weaponData.materialType,
          actionTypeValue = weaponData.actionTypeValue,
          data = serializeWeaponStatData(weaponData)
       };
@@ -79,8 +78,8 @@ public class WeaponStatData : EquipmentStatData
    public static WeaponStatData getDefaultData () {
       return new WeaponStatData { 
          weaponType = 0,
-         color1 = ColorType.None,
-         color2 = ColorType.None,
+         palette1 = "",
+         palette2 = "",
          actionType = Weapon.ActionType.None,
       };
    }

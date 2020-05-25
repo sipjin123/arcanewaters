@@ -50,6 +50,9 @@ public class LoadingScreen : MonoBehaviour
    }
 
    private IEnumerator CO_Show () {
+      // Wait a few frames, so that the circle fader has time to start its animation
+      yield return new WaitForSeconds(0.1f);
+
       // If the circle fader is running, wait until its animation ends
       while (CircleFader.self != null && CircleFader.self.isAnimating()) {
          yield return null;

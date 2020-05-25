@@ -107,8 +107,6 @@ public class StoreScreen : Panel, IPointerClickHandler {
       this.gemsText.text = gems + "";
       this.nameText.text = userObjects.userInfo.username;
 
-      ColorKey colorKey = new ColorKey(Global.player.gender, Layer.Hair);
-
       if (!isShowing()) {
          PanelManager.self.pushPanel(Type.Store);
       }
@@ -117,7 +115,7 @@ public class StoreScreen : Panel, IPointerClickHandler {
          StoreItemBox storeItemBox = recoloredSprite.GetComponentInParent<StoreItemBox>();
          if (storeItemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) storeItemBox;
-            recoloredSprite.recolor(colorKey, hairBox.colorType, hairBox.colorType);
+            recoloredSprite.recolor(hairBox.paletteName, hairBox.paletteName);
          }
       }
 
@@ -175,10 +173,10 @@ public class StoreScreen : Panel, IPointerClickHandler {
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(_userObjects.userInfo.hairType, hairBox.colorType, _userObjects.userInfo.hairColor2);
+            characterStack.updateHair(_userObjects.userInfo.hairType, hairBox.paletteName, _userObjects.userInfo.hairPalette2);
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.hairType, _userObjects.userInfo.hairColor1, _userObjects.userInfo.hairColor2);
+            characterStack.updateHair(hairBox.hairType, _userObjects.userInfo.hairPalette1, _userObjects.userInfo.hairPalette2);
          }
       }
    }

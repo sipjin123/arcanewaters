@@ -78,10 +78,10 @@ public class ShipInfo {
    public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
 
    // Colors
-   public ColorType color1;
-   public ColorType color2;
-   public ColorType sailColor1;
-   public ColorType sailColor2;
+   public string palette1;
+   public string palette2;
+   public string sailPalette1;
+   public string sailPalette2;
 
    #endregion
 
@@ -114,10 +114,10 @@ public class ShipInfo {
       this.rarity = (Rarity.Type) DataUtil.getInt(dataReader, "rarity");
 
       // Colors
-      this.color1 = (ColorType) DataUtil.getInt(dataReader, "color1");
-      this.color2 = (ColorType) DataUtil.getInt(dataReader, "color2");
-      this.sailColor1 = (ColorType) DataUtil.getInt(dataReader, "sailColor1");
-      this.sailColor2 = (ColorType) DataUtil.getInt(dataReader, "sailColor2");
+      this.palette1 = DataUtil.getString(dataReader, "palette1");
+      this.palette2 = DataUtil.getString(dataReader, "palette1");
+      this.sailPalette1 = DataUtil.getString(dataReader, "sailPalette1");
+      this.sailPalette2 = DataUtil.getString(dataReader, "sailPalette2");
 
       this.shipAbilityXML = DataUtil.getString(dataReader, "shipAbilities");
 
@@ -130,7 +130,7 @@ public class ShipInfo {
    #endif
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType,Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
-      ColorType color1, ColorType color2, ColorType sailColor1, ColorType sailColor2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int damage,
+      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int damage,
       int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
       this.userId = userId;
@@ -139,10 +139,10 @@ public class ShipInfo {
       this.mastType = mastType;
       this.sailType = sailType;
       this.shipName = shipName;
-      this.color1 = color1;
-      this.color2 = color2;
-      this.sailColor1 = sailColor1;
-      this.sailColor2 = sailColor2;
+      this.palette1 = palette1;
+      this.palette2 = palette2;
+      this.sailPalette1 = sailPalette1;
+      this.sailPalette2 = sailPalette2;
       this.supplies = supplies;
       this.suppliesMax = suppliesMax;
       this.cargoMax = cargoMax;

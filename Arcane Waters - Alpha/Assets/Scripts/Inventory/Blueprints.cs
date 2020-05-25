@@ -47,8 +47,8 @@ public class Blueprint : RecipeItem
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.color1 = (ColorType) DataUtil.getInt(dataReader, "itmColor1");
-      this.color2 = (ColorType) DataUtil.getInt(dataReader, "itmColor2");
+      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
+      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -59,38 +59,28 @@ public class Blueprint : RecipeItem
 
 #endif
 
-   public Blueprint (int id, int recipeType, int primaryColorId, int secondaryColorId) {
+   public Blueprint (int id, int recipeType, string newPalette1, string newPalette2) {
       this.category = Category.Blueprint;
       this.id = id;
       this.itemTypeId = recipeType;
       this.count = 1;
-      this.color1 = (ColorType) primaryColorId;
-      this.color2 = (ColorType) secondaryColorId;
+      this.paletteName1 = newPalette1;
+      this.paletteName2 = newPalette2;
       this.data = "";
    }
 
-   public Blueprint (int id, int recipeType, ColorType primaryColorId, ColorType secondaryColorId) {
-      this.category = Category.Blueprint;
-      this.id = id;
-      this.itemTypeId = recipeType;
-      this.count = 1;
-      this.color1 = primaryColorId;
-      this.color2 = secondaryColorId;
-      this.data = "";
-   }
-
-   public Blueprint (int id, int itemTypeId, ColorType color1, ColorType color2, string data, int count = 1) {
+   public Blueprint (int id, int itemTypeId, string newPalette1, string newPalette2, string data, int count = 1) {
       this.category = Category.Blueprint;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = newPalette1;
+      this.paletteName2 = newPalette2;
       this.data = data;
    }
 
    public static Blueprint getEmpty () {
-      return new Blueprint(0, 1000, ColorType.None, ColorType.None);
+      return new Blueprint(0, 1000, "", "");
    }
 
    public static Item.Category getEquipmentType (string data) {

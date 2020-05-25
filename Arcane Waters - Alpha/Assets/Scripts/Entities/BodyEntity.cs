@@ -52,20 +52,19 @@ public class BodyEntity : NetEntity
    }
 
    public override Armor getArmorCharacteristics () {
-      return new Armor(0, armorManager.armorType, armorManager.color1, armorManager.color2);
+      return new Armor(0, armorManager.armorType, armorManager.palette1, armorManager.palette2);
    }
 
    public override Weapon getWeaponCharacteristics () {
-      return new Weapon(0, weaponManager.weaponType, weaponManager.color1, weaponManager.color2);
+      return new Weapon(0, weaponManager.weaponType, weaponManager.palette1, weaponManager.palette2);
    }
 
-   public void updateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {
+   public void updateHair (HairLayer.Type newHairType, string newHairPalette1, string newHairPalette2) {
       foreach (HairLayer hairLayer in _hairLayers) {
          hairLayer.setType(newHairType);
 
          // Update colors
-         ColorKey hairColorKey = new ColorKey(gender, Layer.Hair);
-         hairLayer.recolor(hairColorKey, newHairColor1, newHairColor2);
+         hairLayer.recolor(newHairPalette1, newHairPalette2);
       }
    }
 
@@ -79,13 +78,11 @@ public class BodyEntity : NetEntity
          hairLayer.setType(hairType);
 
          // Update colors
-         ColorKey hairColorKey = new ColorKey(gender, Layer.Hair);
-         hairLayer.recolor(hairColorKey, hairColor1, hairColor2);
+         hairLayer.recolor(hairPalette1);
       }
 
       // Update colors
-      ColorKey eyeColorKey = new ColorKey(gender, Layer.Eyes);
-      _eyesLayer.recolor(eyeColorKey, eyesColor1, 0);
+      _eyesLayer.recolor(eyesPalette1);
 
       if (!Util.isEmpty(this.entityName)) {
          this.nameText.text = this.entityName;
@@ -116,8 +113,8 @@ public class BodyEntity : NetEntity
       }
 
       updateBodySpriteSheets();
-      this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.color1, this.armorManager.color2);
-      this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.color1, this.weaponManager.color2);
+      this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palette1, this.armorManager.palette2);
+      this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.palette1, this.weaponManager.palette2);
    }
 
    protected IEnumerator CO_ShowFallEffect () {

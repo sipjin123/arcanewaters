@@ -285,9 +285,8 @@ public class BattleManager : MonoBehaviour {
       battler.bodyType = player.bodyType;
       battler.eyesType = player.eyesType;
       battler.hairType = player.hairType;
-      battler.hairColor1 = player.hairColor1;
-      battler.hairColor2 = player.hairColor2;
-      battler.eyesColor1 = player.eyesColor1;
+      battler.hairPalette1 = player.hairPalette1;
+      battler.eyesPalette1 = player.eyesPalette1;
 
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
@@ -302,15 +301,15 @@ public class BattleManager : MonoBehaviour {
       ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(player.armorManager.armorType);
       battler.armorManager.updateArmorSyncVars(ArmorStatData.translateDataToArmor(armorStatData));
       battler.armorManager.armorType = player.armorManager.armorType;
-      battler.armorManager.color1 = player.armorManager.color1;
-      battler.armorManager.color2 = player.armorManager.color2;
+      battler.armorManager.palette1 = player.armorManager.palette1;
+      battler.armorManager.palette2 = player.armorManager.palette2;
 
       // Copy the Weapon Info
       WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.weaponType);
       battler.weaponManager.updateWeaponSyncVars(WeaponStatData.translateDataToWeapon(weaponStatData));
       battler.weaponManager.weaponType = player.weaponManager.weaponType;
-      battler.weaponManager.color1 = player.weaponManager.color1;
-      battler.weaponManager.color2 = player.weaponManager.color2;
+      battler.weaponManager.palette1 = player.weaponManager.palette1;
+      battler.weaponManager.palette2 = player.weaponManager.palette2;
 
       return battler;
    }

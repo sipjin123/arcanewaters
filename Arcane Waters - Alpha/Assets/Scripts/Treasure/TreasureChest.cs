@@ -199,11 +199,11 @@ public class TreasureChest : NetworkBehaviour {
       if (Random.Range(0f, 1f) > .5f) {
          // TODO: This is a fixed loot, proposal: create a tool that will alter options of what loots to randomize
          int weaponID = EquipmentXMLManager.self.getWeaponData(3).weaponType;
-         Weapon weapon = new Weapon(0, weaponID, ColorType.DarkGreen, ColorType.DarkPurple, "");
+         Weapon weapon = new Weapon(0, weaponID, "", "", "");
 
          return weapon;
       } else {
-         Armor armor = new Armor(0, 1, ColorType.DarkGray, ColorType.DarkBlue, "");
+         Armor armor = new Armor(0, 1, "", "", "");
 
          return armor;
       }
@@ -280,12 +280,12 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // Create a new instance of the material we can use for recoloring
-      Material sourceMaterial = MaterialManager.self.getGUIMaterial(item.getColorKey());
+      Material sourceMaterial = MaterialManager.self.getGUIMaterial();
       if (sourceMaterial != null) {
          image.material = new Material(sourceMaterial);
 
          // Recolor
-         floatingIcon.GetComponentInChildren<RecoloredSprite>().recolor(item.getColorKey(), item.color1, item.color2);
+         floatingIcon.GetComponentInChildren<RecoloredSprite>().recolor(item.paletteName1, item.paletteName2);
       }
 
       // Set the name text

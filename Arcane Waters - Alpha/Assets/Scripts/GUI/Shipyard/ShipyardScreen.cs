@@ -14,6 +14,9 @@ public class ShipyardScreen : Panel {
    // The container for our rows
    public GameObject rowsContainer;
 
+   // Our head animation
+   public SimpleAnimation headAnim;
+
    // The text we want to type out
    public TextMeshProUGUI greetingText;
 
@@ -25,6 +28,9 @@ public class ShipyardScreen : Panel {
 
    // Name of the shop reference
    public string shopName = ShopManager.DEFAULT_SHOP_NAME;
+
+   // The texture of the animated head icon
+   public Texture2D headIconTexture = null;
 
    #endregion
 
@@ -39,6 +45,9 @@ public class ShipyardScreen : Panel {
 
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetShipsForArea(shopName);
+
+      // Update the head icon image
+      headAnim.setNewTexture(headIconTexture);
 
       // Greeting message is decided from the XML Data of the Shop
       greetingText.text = "";

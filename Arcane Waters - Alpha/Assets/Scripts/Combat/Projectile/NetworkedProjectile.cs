@@ -203,7 +203,7 @@ public class NetworkedProjectile : MonoBehaviour {
                ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Mini_Boulder);
 
                // Spawn Mini Boulders upon Collision
-               SeaManager.self.getEntity(_creatorUserId).fireMultiDirectionalProjectile(transform.position, shipAbilityData.abilityId);
+               SeaManager.self.getEntity(_creatorUserId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
                break;
             case Attack.Type.Venom:
                // Registers the poison action status to the achievementdata for recording

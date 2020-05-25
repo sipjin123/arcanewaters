@@ -174,7 +174,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Send the creation request to the server
       NetworkClient.Send(new CreateUserMessage(Global.netId,
-         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getColor1(), _char.armor.getColor2(), chosenAnswers));
+         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalette1(), _char.armor.getPalette2(), chosenAnswers));
    }
 
    public void onNextButtonClicked () {
@@ -377,12 +377,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          CharacterScreen.StartingArmorData armorData = CharacterScreen.self.startingArmorData[currentIndex];
 
          int armorSpriteId = armorData.spriteId;
-         MaterialType armorMaterialType = armorData.materialType;
          _char.armor.equipmentId = armorData.equipmentId;
-         _char.setArmor(armorSpriteId, armor.color1, armor.color2, armorMaterialType);
+         _char.setArmor(armorSpriteId, armor.paletteName1, armor.paletteName2);
       } else {
          armor.itemTypeId = list[currentIndex];
-         _char.setArmor(armor.itemTypeId, armor.color1, armor.color2);
+         _char.setArmor(armor.itemTypeId, armor.paletteName1, armor.paletteName2);
       }
    }
 
@@ -392,12 +391,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       // Figure out which ColorType that corresponds to
-      ColorType newColor1 = getSelected(hairGroup1);
-      ColorType newColor2 = getSelected(hairGroup2);
+      string palette1 = getSelected(hairGroup1);
+      //string palette2 = getSelected(hairGroup2);
 
       // Update the character stack image
-      _char.hairBack.recolor(newColor1, newColor2);
-      _char.hairFront.recolor(newColor1, newColor2);
+      _char.hairBack.recolor(palette1);
+      _char.hairFront.recolor(palette1);
    }
 
    public void onArmorColorChanged () {
@@ -406,11 +405,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       // Figure out which ColorType that corresponds to
-      ColorType newColor1 = getSelected(armorGroup1);
-      ColorType newColor2 = getSelected(armorGroup2);
+      string palette1 = getSelected(armorGroup1);
+      string palette2 = getSelected(armorGroup2);
 
       // Update the character stack image
-      _char.armor.recolor(newColor1, newColor2);
+      _char.armor.recolor(palette1, palette2);
    }
 
    public void onEyeColorChanged () {
@@ -419,29 +418,29 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       // Figure out which ColorType that corresponds to
-      ColorType newColor1 = getSelected(eyeGroup1);
+      string palette = getSelected(eyeGroup1);
 
       // Update the character stack image
-      _char.eyes.recolor(newColor1, newColor1);
+      _char.eyes.recolor(palette);
    }
 
    public void updateColorBoxes (Gender.Type genderType) {
       // Fill in the color boxes
-      fillInColorBoxes(eyeGroup1, _eyeColors);
-      fillInColorBoxes(hairGroup1, (genderType == Gender.Type.Male) ? _maleHairColors : _femaleHairColors);
-      fillInColorBoxes(hairGroup2, (genderType == Gender.Type.Male) ? _maleHairColors : _femaleHairColors);
-      fillInColorBoxes(armorGroup1, (genderType == Gender.Type.Male) ? _maleArmorColors1 : _femaleArmorColors1);
-      fillInColorBoxes(armorGroup2, (genderType == Gender.Type.Male) ? _maleArmorColors2 : _femaleArmorColors2);
+      fillInColorBoxes(eyeGroup1, _eyePalettes);
+      fillInColorBoxes(hairGroup1, (genderType == Gender.Type.Male) ? _maleHairPalettes : _femaleHairPalettes);
+      fillInColorBoxes(hairGroup2, (genderType == Gender.Type.Male) ? _maleHairPalettes : _femaleHairPalettes);
+      fillInColorBoxes(armorGroup1, (genderType == Gender.Type.Male) ? _maleArmorPalettes1 : _femaleArmorPalettes1);
+      fillInColorBoxes(armorGroup2, (genderType == Gender.Type.Male) ? _maleArmorPalettes2 : _femaleArmorPalettes2);
    }
 
-   protected ColorType getSelected (ToggleGroup toggleGroup) {
+   protected string getSelected (ToggleGroup toggleGroup) {
       foreach (Toggle toggle in toggleGroup.GetComponentsInChildren<Toggle>()) {
          if (toggle.isOn) {
-            return ColorManager.getColor(toggle.image.color);
+            return toggle.GetComponent<Text>().text;
          }
       }
 
-      return ColorType.None;
+      return "";
    }
 
    protected List<HairLayer.Type> getOrderedHairList () {
@@ -490,13 +489,17 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   protected void fillInColorBoxes (ToggleGroup toggleGroup, List<ColorType> colorTypeList) {
+   protected void fillInColorBoxes (ToggleGroup toggleGroup, List<string> paletteList) {
       int index = 0;
 
       foreach (Toggle toggle in toggleGroup.GetComponentsInChildren<Toggle>()) {
-         if (colorTypeList.Count > index) {
-            ColorType colorType = colorTypeList[index++];
-            toggle.image.color = ColorDef.get(colorType).color;
+         if (paletteList.Count > index) {
+            string paletteName = paletteList[index++];
+            toggle.image.color = PaletteSwapManager.getRepresentingColor(paletteName);
+
+            Text text = toggle.GetComponent<Text>() ? toggle.GetComponent<Text>() : toggle.gameObject.AddComponent<Text>();
+            text.enabled = false;
+            text.text = paletteName;
          }
       }
    }
@@ -509,13 +512,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    protected OfflineCharacter _char;
 
    // The allowed colors we can choose from
-   protected List<ColorType> _eyeColors = new List<ColorType>() { ColorType.Blue, ColorType.Brown, ColorType.GreenEyes, ColorType.PurpleEyes, ColorType.BlackEyes };
-   protected List<ColorType> _maleHairColors = new List<ColorType>() { ColorType.Brown, ColorType.Red, ColorType.Black, ColorType.Yellow, ColorType.White };
-   protected List<ColorType> _femaleHairColors = new List<ColorType>() { ColorType.Brown, ColorType.Red, ColorType.Black, ColorType.Yellow, ColorType.Blue };
-   protected List<ColorType> _maleArmorColors1 = new List<ColorType>() { ColorType.Brown, ColorType.Red, ColorType.Blue, ColorType.White, ColorType.Green };
-   protected List<ColorType> _maleArmorColors2 = new List<ColorType>() { ColorType.Brown, ColorType.White, ColorType.Blue, ColorType.Red, ColorType.Green };
-   protected List<ColorType> _femaleArmorColors1 = new List<ColorType>() { ColorType.Brown, ColorType.Red, ColorType.Yellow, ColorType.Blue, ColorType.Teal };
-   protected List<ColorType> _femaleArmorColors2 = new List<ColorType>() { ColorType.Brown, ColorType.White, ColorType.Yellow, ColorType.Blue, ColorType.Teal };
+   protected List<string> _eyePalettes = new List<string>() { PaletteDef.Eyes.Blue, PaletteDef.Eyes.Brown, PaletteDef.Eyes.Green, PaletteDef.Eyes.Purple, PaletteDef.Eyes.Black };
+   protected List<string> _maleHairPalettes = new List<string>() { PaletteDef.Hair.Brown, PaletteDef.Hair.Red, PaletteDef.Hair.Black, PaletteDef.Hair.Yellow, PaletteDef.Hair.White };
+   protected List<string> _femaleHairPalettes = new List<string>() { PaletteDef.Hair.Brown, PaletteDef.Hair.Red, PaletteDef.Hair.Black, PaletteDef.Hair.Yellow, PaletteDef.Hair.Blue };
+   protected List<string> _maleArmorPalettes1 = new List<string>() { PaletteDef.Armor1.Brown, PaletteDef.Armor1.Red, PaletteDef.Armor1.Blue, PaletteDef.Armor1.White, PaletteDef.Armor1.Green };
+   protected List<string> _maleArmorPalettes2 = new List<string>() { PaletteDef.Armor2.Brown, PaletteDef.Armor2.White, PaletteDef.Armor2.Blue, PaletteDef.Armor2.Red, PaletteDef.Armor2.Green };
+   protected List<string> _femaleArmorPalettes1 = new List<string>() { PaletteDef.Armor1.Brown, PaletteDef.Armor1.Red, PaletteDef.Armor1.Yellow, PaletteDef.Armor1.Blue, PaletteDef.Armor1.Teal };
+   protected List<string> _femaleArmorPalettes2 = new List<string>() { PaletteDef.Armor2.Brown, PaletteDef.Armor2.White, PaletteDef.Armor2.Yellow, PaletteDef.Armor2.Blue, PaletteDef.Armor2.Teal };
 
    // The DOTween Squence that animates the different panels
    private Sequence _currentSequence;

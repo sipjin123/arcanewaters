@@ -45,11 +45,11 @@ public class NetEntity : NetworkBehaviour {
 
    // Our colors
    [SyncVar]
-   public ColorType eyesColor1;
+   public string eyesPalette1;
    [SyncVar]
-   public ColorType hairColor1;
+   public string hairPalette1;
    [SyncVar]
-   public ColorType hairColor2;
+   public string hairPalette2;
 
    // The Name of this entity
    [SyncVar]
@@ -346,11 +346,11 @@ public class NetEntity : NetworkBehaviour {
 
       // Body
       this.gender = userInfo.gender;
-      this.hairColor1 = userInfo.hairColor1;
-      this.hairColor2 = userInfo.hairColor2;
+      this.hairPalette1 = userInfo.hairPalette1;
+      this.hairPalette2 = userInfo.hairPalette2;
       this.hairType = userInfo.hairType;
       this.eyesType = userInfo.eyesType;
-      this.eyesColor1 = userInfo.eyesColor1;
+      this.eyesPalette1 = userInfo.eyesPalette1;
       this.bodyType = userInfo.bodyType;
    }
 
@@ -1036,7 +1036,7 @@ public class NetEntity : NetworkBehaviour {
             Item item = JsonUtility.FromJson<Item>(completedStep.rawDataJson);
 
             if (item.category == Item.Category.Weapon) {
-               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, ColorType.White, ColorType.White);
+               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP);
             }
          }
          if (completedStep.actionType == ActionType.HarvestCrop) {

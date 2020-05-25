@@ -51,6 +51,11 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (_seeker == null) {
             D.error("There has to be a Seeker Script attached to the BotShipEntity Prefab");
          }
+
+         // Only use the graph in this area to calculate paths
+         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
+         _seeker.graphMask = GraphMask.FromGraph(graph);
+
          _seeker.pathCallback = setPath_Asynchronous;
 
          _treasureSitesInArea = new List<TreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<TreasureSite>());

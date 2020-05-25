@@ -17,14 +17,12 @@ public class GrabbedItem : MonoBehaviour
 
    #endregion
 
-   public void activate (Item item, Sprite itemSprite, ColorKey colorKey) {
+   public void activate (Item item, Sprite itemSprite) {
       gameObject.SetActive(true);
       icon.sprite = itemSprite;
 
       // Recolor
-      if (colorKey != null) {
-         recoloredSprite.recolor(colorKey, item.color1, item.color2);
-      }
+      recoloredSprite.recolor(item.paletteName1, item.paletteName2);
 
       // Place under the mouse
       transform.position = Input.mousePosition;

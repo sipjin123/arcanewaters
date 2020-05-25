@@ -590,7 +590,7 @@ public class AdminManager : NetworkBehaviour
 
          // Set up the Ship Info
          ShipInfo ship = new ShipInfo(0, _player.userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
-            ColorType.None, ColorType.None, ColorType.None, ColorType.None, suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+            "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
 
          // Create the ship in the database
          DB_Main.createShipFromShipyard(_player.userId, ship);
@@ -831,7 +831,7 @@ public class AdminManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Create the item object
-         Item item = new Item(-1, category, itemTypeId, count, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "");
+         Item item = new Item(-1, category, itemTypeId, count, "", "", "");
 
          // Write the item in the DB
          Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -938,7 +938,7 @@ public class AdminManager : NetworkBehaviour
 
       if (existingItem == null) {
          // If the item does not exist, create a new one
-         Item baseItem = new Item(-1, category, itemTypeId, count, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "").getCastItem();
+         Item baseItem = new Item(-1, category, itemTypeId, count, "", "", "").getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
       } else {
@@ -982,7 +982,7 @@ public class AdminManager : NetworkBehaviour
 
    private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
       // Create a base item
-      Item baseItem = new Item(-1, category, itemTypeId, 1, Util.randomEnum<ColorType>(), Util.randomEnum<ColorType>(), "");
+      Item baseItem = new Item(-1, category, itemTypeId, 1, "", "", "");
       baseItem = baseItem.getCastItem();
 
       // Get the item name in lower case

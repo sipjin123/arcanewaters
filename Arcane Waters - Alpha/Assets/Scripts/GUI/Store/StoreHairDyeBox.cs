@@ -8,7 +8,7 @@ public class StoreHairDyeBox : StoreItemBox {
    #region Public Variables
 
    // The recolor, if any
-   public ColorType colorType;
+   public string paletteName;
 
    #endregion
 
@@ -20,7 +20,7 @@ public class StoreHairDyeBox : StoreItemBox {
       }
       
       this.imageIcon.material = new Material(this.imageIcon.material);
-      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.colorType, this.colorType);
+      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.paletteName, this.paletteName);
    }
 
    #region Private Variables

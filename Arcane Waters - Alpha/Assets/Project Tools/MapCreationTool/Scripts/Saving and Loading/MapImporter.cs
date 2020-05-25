@@ -66,13 +66,7 @@ namespace MapCreationTool
          chunk.transform.localPosition = Vector3.zero;
          chunk.gameObject.name = "Grid " + bounds.xMin + " " + bounds.yMin;
 
-         // Add special case tiles if defined
-         ExportedLayer001 atc = exportedProject.additionalTileColliders;
-         IEnumerable<ExportedLayer001> layers = atc == null || atc.tiles == null || atc.tiles.Length == 0
-            ? exportedProject.layers
-            : exportedProject.layers.Union(Enumerable.Repeat(atc, 1));
-
-         foreach (ExportedLayer001 layer in layers) {
+         foreach (ExportedLayer001 layer in exportedProject.layers) {
             // Instantiate the layer 
             var colTilemap = UnityEngine.Object.Instantiate(AssetSerializationMaps.collisionTilemapTemplate, chunk.transform);
             colTilemap.transform.localPosition = Vector3.zero;

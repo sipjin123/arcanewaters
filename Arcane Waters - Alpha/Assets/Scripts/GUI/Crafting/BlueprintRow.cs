@@ -40,18 +40,14 @@ public class BlueprintRow : MonoBehaviour
       }
 
       // Retrieve the icon sprite and coloring depending on the type
-      ColorKey colorKey = null;
-
       if (resultItem.category == Item.Category.Weapon) {
          WeaponStatData weaponData = WeaponStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = weaponData.equipmentName;
          icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
-         colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Weapon());
       } else if (resultItem.category == Item.Category.Armor) {
          ArmorStatData armorData = ArmorStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = armorData.equipmentName;
          icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
-         colorKey = new ColorKey(Global.player.gender, resultItem.itemTypeId, new Armor());
       } else {
          icon.sprite = null;
       }
@@ -60,9 +56,7 @@ public class BlueprintRow : MonoBehaviour
       iconShadow.sprite = icon.sprite;
 
       // Recolor
-      if (colorKey != null) {
-         recoloredSprite.recolor(colorKey, resultItem.color1, resultItem.color2);
-      }
+      recoloredSprite.recolor(resultItem.paletteName1, resultItem.paletteName2);
       switch (status) {
          case Blueprint.Status.Craftable:
             canBeCraftedImage.enabled = true;

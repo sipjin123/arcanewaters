@@ -40,23 +40,24 @@ public class GemStoreManager : MonoBehaviour {
       return null;
    }
 
+   protected List<string> getHairStyleBoxesPaletteNames () {
+      List<string> toReturn = new List<string>();
+      return toReturn;
+   }
+
    protected void createHairStyleBoxes () {
       // Define the colors we want
-      List<ColorType> colors = new List<ColorType>() {
-         ColorType.LightGreen, ColorType.LightBlue, ColorType.LightPurple, ColorType.White,
-         ColorType.Teal, ColorType.Orange, ColorType.DarkPink, ColorType.LightYellow,
-         ColorType.DarkRed, ColorType.DarkBlue, ColorType.DarkGreen, ColorType.LightGray
-      };
+      List<string> paletteNames = getHairStyleBoxesPaletteNames();
 
       // Create an instance from the prefab for each
-      foreach (ColorType color in colors) {
+      foreach (string palette in paletteNames) {
          StoreHairDyeBox box = Instantiate(PrefabsManager.self.hairDyeBoxPrefab);
          box.transform.SetParent(this.transform);
          box.itemId = getNextId();
-         box.itemName = ColorDef.get(color).colorName;
+         box.itemName = PaletteSwapManager.getColorName(palette);
          box.itemCost = 15;
          box.itemDescription = "This dye will allow you to change your hair color!";
-         box.colorType = color;
+         box.paletteName = "";
       }
    }
 

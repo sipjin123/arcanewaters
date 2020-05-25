@@ -41,12 +41,8 @@ public class QuestRewardItem : QuestReward
 
    // Must be called from the background thread!
    public override Item giveRewardToUser (int npcId, int userId) {
-      // Generate random colors for the item
-      ColorType c1 = Util.randomEnum<ColorType>();
-      ColorType c2 = Util.randomEnum<ColorType>();
-
       // Create the item
-      Item item = new Item(-1, category, itemTypeId, count, c1, c2, "");
+      Item item = new Item(-1, category, itemTypeId, count, "", "", "");
 
       // Write the item in the database
       Item databaseItem = DB_Main.createItemOrUpdateItemCount(userId, item);

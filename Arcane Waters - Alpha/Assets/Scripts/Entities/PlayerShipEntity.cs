@@ -25,17 +25,17 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public int weaponType = 0;
    [SyncVar]
-   public ColorType weaponColor1 = ColorType.None;
+   public string weaponColor1;
    [SyncVar]
-   public ColorType weaponColor2 = ColorType.None;
+   public string weaponColor2;
 
    // The equipped armor characteristics
    [SyncVar]
    public int armorType = 0;
    [SyncVar]
-   public ColorType armorColor1 = ColorType.None;
+   public string armorColor1;
    [SyncVar]
-   public ColorType armorColor2 = ColorType.None;
+   public string armorColor2;
 
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffect;
@@ -215,11 +215,9 @@ public class PlayerShipEntity : ShipEntity {
 
       // Store the equipped items characteristics
       weaponType = weapon.itemTypeId;
-      weaponColor1 = weapon.color1;
-      weaponColor2 = weapon.color2;
       armorType = armor.itemTypeId;
-      armorColor1 = armor.color1;
-      armorColor2 = armor.color2;
+      armorColor1 = armor.paletteName1;
+      armorColor2 = armor.paletteName2;
    }
 
    public override Armor getArmorCharacteristics () {

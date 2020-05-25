@@ -426,7 +426,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          _grabbedItemCell.hide();
 
          // Initialize the common grabbed object
-         grabbedItem.activate(castedItem, itemCell.getItemSprite(), itemCell.getItemColorKey());
+         grabbedItem.activate(castedItem, itemCell.getItemSprite());
       }
    }
 

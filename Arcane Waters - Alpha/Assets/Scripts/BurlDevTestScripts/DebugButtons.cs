@@ -114,7 +114,7 @@ public class DebugButtons : NetworkBehaviour
          GUILayout.BeginVertical("box");
          {
             if (GUILayout.Button("GENERATE ITEM: " + categoryType.ToString(), GUILayout.Width(buttonSizeX), GUILayout.Height(buttonSizeY * 2))) {
-               Item newItem = new Item(0, categoryType, int.Parse(itemType), int.Parse(quantity), ColorType.Black, ColorType.BlackEyes, itemData);
+               Item newItem = new Item(0, categoryType, int.Parse(itemType), int.Parse(quantity), "", "", itemData);
                int newQuantity = int.Parse(quantity);
                newQuantity = Mathf.Clamp(newQuantity, 0, 100);
                newItem.count = newQuantity;

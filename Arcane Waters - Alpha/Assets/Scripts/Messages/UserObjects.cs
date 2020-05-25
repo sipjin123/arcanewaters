@@ -18,10 +18,10 @@ public class UserObjects {
    public Item weapon;
 
    // We have to send these separately because of a Unity serialization bug with class inheritance
-   public ColorType armorColor1;
-   public ColorType armorColor2;
-   public ColorType weaponColor1;
-   public ColorType weaponColor2;
+   public string armorPalette1;
+   public string armorPalette2;
+   public string weaponPalette1;
+   public string weaponPalette2;
 
    #endregion
 

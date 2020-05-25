@@ -62,19 +62,19 @@ public class UserInfo {
    public HairLayer.Type hairType;
 
    // The primary hair color id
-   public ColorType hairColor1;
+   public string hairPalette1 = "";
 
    // The secondary hair color id
-   public ColorType hairColor2;
+   public string hairPalette2 = "";
 
    // The eyes ID
    public EyesLayer.Type eyesType;
 
    // The primary eyes color id
-   public ColorType eyesColor1;
+   public string eyesPalette1 = "";
 
    // The secondary eyes color id
-   public ColorType eyesColor2;
+   public string eyesPalette2 = "";
 
    // The character spot on the character creation screen
    public int charSpot;
@@ -111,14 +111,14 @@ public class UserInfo {
       this.armorId = dataReader.GetInt32("armId");
       this.weaponId = dataReader.GetInt32("wpnId");
       this.hairType = (HairLayer.Type)dataReader.GetInt32("hairType");
-      this.hairColor1 = (ColorType) dataReader.GetInt32("hairColor1");
-      this.hairColor2 = (ColorType) dataReader.GetInt32("hairColor2");
+      this.hairPalette1 = dataReader.GetString("hairPalette1");
+      this.hairPalette2 = dataReader.GetString("hairPalette2");
       this.XP = dataReader.GetInt32("usrXP");
       this.gold = dataReader.GetInt32("usrGold");
       this.gems = dataReader.GetInt32("accGems");
       this.eyesType = (EyesLayer.Type)dataReader.GetInt32("eyesType");
-      this.eyesColor1 = (ColorType) dataReader.GetInt32("eyesColor1");
-      this.eyesColor2 = (ColorType) dataReader.GetInt32("eyesColor2");
+      this.eyesPalette1 = dataReader.GetString("eyesPalette1");
+      this.eyesPalette2 = dataReader.GetString("eyesPalette2");
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.classType = (Class.Type) dataReader.GetInt32("class");
@@ -158,11 +158,11 @@ public class UserInfo {
       serialized[11] = this.armorId;
       serialized[12] = this.weaponId;
       serialized[13] = this.hairType;
-      serialized[14] = this.hairColor1;
-      serialized[15] = this.hairColor2;
+      serialized[14] = this.hairPalette1;
+      serialized[15] = this.hairPalette2;
       serialized[16] = this.eyesType;
-      serialized[17] = this.eyesColor1;
-      serialized[18] = this.eyesColor2;
+      serialized[17] = this.eyesPalette1;
+      serialized[18] = this.eyesPalette2;
       serialized[19] = this.accountName;
       serialized[20] = this.flagshipId;
       serialized[21] = this.gems;
@@ -188,11 +188,11 @@ public class UserInfo {
       userInfo.armorId = (int) serialized[11];
       userInfo.weaponId = (int) serialized[12];
       userInfo.hairType = (HairLayer.Type) serialized[13];
-      userInfo.hairColor1 = (ColorType) serialized[14];
-      userInfo.hairColor2 = (ColorType) serialized[15];
+      userInfo.hairPalette1 = (string) serialized[14];
+      userInfo.hairPalette2 = (string) serialized[15];
       userInfo.eyesType = (EyesLayer.Type) serialized[16];
-      userInfo.eyesColor1 = (ColorType) serialized[17];
-      userInfo.eyesColor2 = (ColorType) serialized[18];
+      userInfo.eyesPalette1 = (string) serialized[17];
+      userInfo.eyesPalette2 = (string) serialized[18];
       userInfo.accountName = (string) serialized[19];
       userInfo.flagshipId = (int) serialized[20];
       userInfo.gems = (int) serialized[21];

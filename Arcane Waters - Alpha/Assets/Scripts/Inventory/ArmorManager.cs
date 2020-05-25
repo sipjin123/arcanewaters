@@ -13,19 +13,15 @@ public class ArmorManager : EquipmentManager {
    [SyncVar]
    public int equippedArmorId;
 
-   // The type of material the armor is using
-   [SyncVar]
-   public MaterialType materialType;
-
    // Armor Type
    [SyncVar]
    public int armorType = 0;
 
    // Armor colors
    [SyncVar]
-   public ColorType color1;
+   public string palette1;
    [SyncVar]
-   public ColorType color2;
+   public string palette2;
 
    #endregion
 
@@ -45,22 +41,21 @@ public class ArmorManager : EquipmentManager {
          return _armor;
       }
 
-      return new Armor(0, 0, ColorType.None, ColorType.None);
+      return new Armor(0, 0, "", "");
    }
 
    public void updateSprites () {
-      this.updateSprites(this.armorType, this.color1, this.color2);
+      this.updateSprites(this.armorType, this.palette1, this.palette2);
    }
 
-   public void updateSprites (int armorType, ColorType color1, ColorType color2, MaterialType overrideMaterialType = MaterialType.None) {
+   public void updateSprites (int armorType, string palette1, string palette2) {
       Gender.Type gender = getGender();
 
       // Set the correct sheet for our gender and armor type
       armorLayer.setType(gender, armorType);
 
       // Update our Material
-      ColorKey colorKey = new ColorKey(gender, "armor_" + armorType.ToString());
-      armorLayer.recolor(colorKey, color1, color2, overrideMaterialType != MaterialType.None ? overrideMaterialType : materialType);
+      armorLayer.recolor(palette1, palette2);
 
       // Sync up all our animations
       if (_body != null) {
@@ -69,14 +64,14 @@ public class ArmorManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipArmor (string rawArmorData, ColorType color1, ColorType color2) {
+   public void Rpc_EquipArmor (string rawArmorData, string palette1, string palette2) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
       _armor = newArmor;
 
       // Update the sprites for the new armor type
       int newType = newArmor == null ? 0 : newArmor.itemTypeId;
-      updateSprites(newType, color1, color2, newArmor.materialType);
+      updateSprites(newType, palette1, palette2);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -97,8 +92,6 @@ public class ArmorManager : EquipmentManager {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
       if (armorData != null) {
          armorData.itemSqlId = newArmor.id;
-         newArmor.materialType = armorData.materialType;
-         this.materialType = armorData.materialType;
       } else {
          armorData = ArmorStatData.getDefaultData();
       }
@@ -110,11 +103,11 @@ public class ArmorManager : EquipmentManager {
 
       // Set the Sync Vars so they get sent to the clients
       this.armorType = armorData.armorType;
-      this.color1 = newArmor.color1;
-      this.color2 = newArmor.color2;
+      this.palette1 = newArmor.paletteName1;
+      this.palette2 = newArmor.paletteName2;
 
       // Send the Info to all clients
-      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), newArmor.color1, newArmor.color2);
+      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), newArmor.paletteName1, newArmor.paletteName2);
    }
 
    #region Private Variables

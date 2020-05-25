@@ -75,17 +75,6 @@ public class SeaEntity : NetEntity
    protected override void Update () {
       base.Update();
 
-      if (NetworkServer.active && _projectileSched.Count > 0) {
-         // Avoid using foreach due to realtime changes in the list
-         for (int i = 0; i < _projectileSched.Count; i++) {
-            ProjectileSchedule sched = _projectileSched[i];
-            if (!sched.dispose && Util.netTime() > sched.projectileLaunchTime) {
-               serverFireProjectile(sched.targetLocation, sched.attackAbilityId, sched.spawnLocation, sched.impactTimestamp, sched.isMultipleProjectile);
-               sched.dispose = true;
-            }
-         }
-      }
-
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
          _outline.Hide();
@@ -409,8 +398,7 @@ public class SeaEntity : NetEntity
       updateSprites();
 
       // Recolor our flags based on our Nation
-      ColorKey colorKey = new ColorKey(Ship.Type.Type_1, Layer.Flags);
-      spritesContainer.GetComponent<RecoloredSprite>().recolor(colorKey, Nation.getColor1(nationType), Nation.getColor2(nationType));
+      spritesContainer.GetComponent<RecoloredSprite>().recolor(Nation.getPalette1(nationType), Nation.getPalette2(nationType));
 
       if (!Util.isEmpty(this.entityName)) {
          this.nameText.text = this.entityName;
@@ -443,96 +431,87 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public virtual void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2(), bool isLastProjectile = true, bool isMultipleProjectile = false) {
-      // Last projectile will only be false if it is a barrage of projectiles, a single projectile attack will always be a Last Projectile
-      if (isLastProjectile && (isDead() || !hasReloaded())) {
+   public void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
+      if (isDead() || !hasReloaded()) {
          return;
       }
 
       // Get the ability data
       ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
 
-      // Note the time at which we last successfully attacked
+      switch (shipAbility.selectedAttackType) {
+         case Attack.Type.Venom:
+         case Attack.Type.Boulder:
+            // Create networked projectile
+            fireTimedGenericProjectile(spawnPosition, spot, abilityId);
+            break;
+         case Attack.Type.Tentacle:
+         case Attack.Type.Mini_Boulder:
+            // Fire multiple projectiles around the entity
+            float offset = .2f;
+            float target = .5f;
+            float diagonalValue = offset;
+            float diagonalTargetValue = target;
+            Vector2 sourcePos = transform.position;
+
+            if (attackCounter % 2 == 0) {
+               // North East West South Attack Pattern
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(0, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, offset)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(0, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(0, -offset)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(offset, 0)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, 0), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, 0)));
+            } else {
+               // Diagonal Attack Pattern
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, offset)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(diagonalValue, -offset)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, diagonalValue)));
+               StartCoroutine(CO_FireAtSpotSingle(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, sourcePos + new Vector2(-offset, -diagonalValue)));
+            }
+
+            // The tentacle also fires a projectile directly on the target
+            if (shipAbility.selectedAttackType == Attack.Type.Tentacle) {
+               StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+            }
+            break;
+         default:
+            StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
+            break;
+      }
+
       _lastAttackTime = Time.time;
-
-      // Tell all clients to display an attack circle at that position
-      float distance = Vector2.Distance(this.transform.position, spot);
-      float delay = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
-
-      if (attackDelay <= 0) {
-         serverFireProjectile(spot, abilityId, spawnPosition, delay, isMultipleProjectile);
-      } else {
-         // Speed modifiers for the projectile types
-         delay /= Attack.getSpeedModifier(shipAbility.selectedAttackType);
-
-         registerProjectileSchedule(spot, spawnPosition, shipAbility.selectedAttackType, attackDelay, Util.netTime() + launchDelay, delay, abilityId, isLastProjectile, isMultipleProjectile);
-      }
-
-      if (isLastProjectile) {
-         attackCounter++;
-      }
-
-      if (shipAbility.selectedAttackType != Attack.Type.Venom && shipAbility.selectedAttackType != Attack.Type.Boulder) {
-         // Prevents sea monsters to damage other sea monsters
-         bool targetPlayersOnly = this is SeaMonsterEntity;
-
-         // Have the server check for collisions after the AOE projectile reaches the target
-         StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + delay, spot, shipAbility.selectedAttackType, targetPlayersOnly, 1f));
-      }
-
-      // Make note on the clients that the ship just attacked
+      attackCounter++;
+      Rpc_RegisterAttackTime(attackDelay);
       Rpc_NoteAttack();
    }
 
    [Server]
-   protected void registerProjectileSchedule (Vector2 targetposition, Vector2 spawnPosition, Attack.Type attackType, float animationTime, float projectileTime, float impactDelay, int abilityId, bool lastProjectile = true, bool isMultipleProjectile = false) {
-      _projectileSched.RemoveAll(item => item.dispose == true);
-      ProjectileSchedule newSched = new ProjectileSchedule {
-         attackAnimationTime = animationTime,
-         projectileLaunchTime = projectileTime,
-         attackType = attackType,
-         spawnLocation = spawnPosition,
-         targetLocation = targetposition,
-         impactTimestamp = impactDelay,
-         attackAbilityId = abilityId,
-         isMultipleProjectile = isMultipleProjectile
-      };
+   private IEnumerator CO_FireAtSpotSingle (Vector2 spot, int abilityId, Attack.Type attackType, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
+      float distance = Vector2.Distance(this.transform.position, spot);
+      float timeToReachTarget = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
 
-      // Registers attack for animation if the projectile is final in a list to avoid animating attack more than once / Defaults as final if single projectile
-      if (lastProjectile) {
-         Rpc_RegisterAttackTime(animationTime);
+      // Speed modifiers for the projectile types
+      timeToReachTarget /= Attack.getSpeedModifier(attackType);
+
+      // Wait for the attack delay if any
+      if (attackDelay > 0) {
+         yield return new WaitForSeconds(attackDelay);
       }
 
-      _projectileSched.Add(newSched);
+      // Prevent sea monsters from damaging other sea monsters
+      bool targetPlayersOnly = this is SeaMonsterEntity;
+
+      spawnProjectileAndIndicatorsOnClients(spot, abilityId, spawnPosition, launchDelay + timeToReachTarget);
+      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f));
    }
 
    [Server]
-   protected void serverFireProjectile (Vector2 spot, int abilityId, Vector2 spawnPosition, float delay, bool isMultipleProjectile) {
-      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
-
+   protected void spawnProjectileAndIndicatorsOnClients (Vector2 spot, int abilityId, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
       if (this is PlayerShipEntity) {
          Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
          Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, false);
       } else {
-         if (!isMultipleProjectile) {
-            switch (shipAbilityData.selectedAttackType) {
-               case Attack.Type.Venom:
-               case Attack.Type.Boulder:
-                  // Create network boulder projectile
-                  fireTimedGenericProjectile(spawnPosition, spot, abilityId);
-                  break;
-               case Attack.Type.Tentacle:
-                  // Create multiple tentacle projectile
-                  fireMultiDirectionalProjectile(transform.position, abilityId);
-                  break;
-               default:
-                  Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
-                  break;
-            }
-         } else {
-            Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
-         }
+         Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
       }
    }
 
@@ -638,30 +617,6 @@ public class SeaEntity : NetEntity
       }
    }
 
-   [Server]
-   public void fireMultiDirectionalProjectile (Vector2 sourcePos, int abilityId) {
-      float offset = .2f;
-      float target = .5f;
-      float diagonalValue = offset;
-      float diagonalTargetValue = target;
-      float launchDelay = .2f;
-      float launchCollision = .4f;
-
-      if (attackCounter % 2 == 0) {
-         // North East West South Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(0, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, offset), false, true);
-         fireAtSpot(sourcePos + new Vector2(0, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(0, -offset), false, true);
-         fireAtSpot(sourcePos + new Vector2(target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(offset, 0), false, true);
-         fireAtSpot(sourcePos + new Vector2(-target, 0), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, 0), true, true);
-      } else {
-         // Diagonal Attack Pattern
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, offset), false, true);
-         fireAtSpot(sourcePos + new Vector2(diagonalTargetValue, -target), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(diagonalValue, -offset), false, true);
-         fireAtSpot(sourcePos + new Vector2(-target, diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, diagonalValue), false, true);
-         fireAtSpot(sourcePos + new Vector2(-target, -diagonalTargetValue), abilityId, launchDelay, launchCollision, sourcePos + new Vector2(-offset, -diagonalValue), true, true);
-      }
-   }
-
    public static Collider2D[] getHitColliders (Vector2 circleCenter, float radius = .20f) {
       // Check for collisions inside the circle
       Collider2D[] hits = new Collider2D[16];
@@ -763,9 +718,6 @@ public class SeaEntity : NetEntity
 
    // How far back in time we check to see if this ship was recently involved in some combat action
    protected static float RECENT_COMBAT_COOLDOWN = 5f;
-
-   // The list of projectiles scheduled to launch
-   protected List<ProjectileSchedule> _projectileSched = new List<ProjectileSchedule>();
 
    // The time expected to play the animation
    protected float _attackStartAnimateTime = 100;

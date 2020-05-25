@@ -21,13 +21,13 @@ public class UsableItem : Item {
 
    #endregion
 
-   public UsableItem (int id, Category category, int itemTypeId, int count, ColorType color1, ColorType color2, string data) {
+   public UsableItem (int id, Category category, int itemTypeId, int count, string newPalette1, string newPalette2, string data) {
       this.id = id;
       this.category = category;
       this.itemTypeId = itemTypeId;
       this.itemType = (Type) itemTypeId;
-      this.color1 = color1;
-      this.color2 = color2;
+      this.paletteName1 = newPalette1;
+      this.paletteName2 = newPalette2;
       this.count = count;
       this.data = data;
    }
@@ -39,8 +39,7 @@ public class UsableItem : Item {
    public override string getName () {
       switch (itemType) {
          case Type.HairDye:
-            ColorDef colorDef = ColorDef.get(color1);
-            return "Hair Dye (" + colorDef.colorName + ")";
+            return "Hair Dye (" + PaletteSwapManager.getColorName(paletteName1) + ")";
          case Type.ShipSkin:
             string name = "Ship Skin (" + getSkinType() + ")";
             return name.Replace("_", " ");
@@ -54,8 +53,7 @@ public class UsableItem : Item {
    public override string getDescription () {
       switch (itemType) {
          case Type.HairDye:
-            ColorDef colorDef = ColorDef.get(color1);
-            return "This item allows you to change your hair color to " + colorDef.colorName + ".";
+            return "This item allows you to change your hair color to " + PaletteSwapManager.getColorName(paletteName1) + ".";
          case Type.Haircut:
             return "This item allows you to change your haircut.";
       }

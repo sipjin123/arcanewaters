@@ -11,7 +11,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    public enum Type
    {
-      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6
+      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6, Horror_Tentacle = 7
    }
 
    // List of children dependencies
@@ -73,6 +73,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Determines if this unit is logging info
    public bool isLoggingData;
+
+   // Gets set to true when the entity doesn't plan any move (or attack)
+   public bool isStationary = false;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -175,6 +178,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (_seeker == null) {
             D.error("There has to be a Seeker Script attached to the SeaMonsterEntity Prefab");
          }
+
+         // Only use the graph in this area to calculate paths
+         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
+         _seeker.graphMask = GraphMask.FromGraph(graph);
+
          _seeker.pathCallback = setPath_Asynchronous;
 
          planNextMove();
@@ -464,8 +472,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    private void planNextMove () {
-      // Minions cant decide for themselves
-      if (!isServer) {
+      if (!isServer || isStationary) {
          return;
       }
 
@@ -607,7 +614,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // Reduces the life of the parent entity if there is one
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         seaMonsterParentEntity.currentHealth -= 1;
+         seaMonsterParentEntity.currentHealth -= 1000;
       }
 
       if (seaMonsterData.roleType == RoleType.Master) {

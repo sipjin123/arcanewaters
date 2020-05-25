@@ -36,11 +36,11 @@ namespace NubisDataHandling {
          Gender.Type gender = (Gender.Type) int.Parse(xmlPairCollection["usrGender"]);
          BodyLayer.Type bodyType = (BodyLayer.Type) int.Parse(xmlPairCollection["bodyType"]);
          HairLayer.Type hairType = (HairLayer.Type) int.Parse(xmlPairCollection["hairType"]);
-         ColorType hairColor1 = (ColorType) int.Parse(xmlPairCollection["hairColor1"]);
-         ColorType hairColor2 = (ColorType) int.Parse(xmlPairCollection["hairColor2"]);
+         string hairPalette1 = xmlPairCollection["hairPalette1"];
+         string hairPalette2 = xmlPairCollection["hairPalette2"];
          EyesLayer.Type eyesType = (EyesLayer.Type) int.Parse(xmlPairCollection["eyesType"]);
-         ColorType eyesColor1 = (ColorType) int.Parse(xmlPairCollection["eyesColor1"]);
-         ColorType eyesColor2 = (ColorType) int.Parse(xmlPairCollection["eyesColor2"]);
+         string eyesPalette1 = xmlPairCollection["eyesPalette1"];
+         string eyesPalette2 = xmlPairCollection["eyesPalette2"];
          string userName = xmlPairCollection["usrName"];
          int weaponId = int.Parse(xmlPairCollection["wpnId"]);
          int armorId = int.Parse(xmlPairCollection["armId"]);
@@ -52,11 +52,11 @@ namespace NubisDataHandling {
             username = userName,
             bodyType = bodyType,
             hairType = hairType,
-            hairColor1 = hairColor1,
-            hairColor2 = hairColor2,
+            hairPalette1 = hairPalette1,
+            hairPalette2 = hairPalette2,
             eyesType = eyesType,
-            eyesColor1 = eyesColor1,
-            eyesColor2 = eyesColor2,
+            eyesPalette1 = eyesPalette1,
+            eyesPalette2 = eyesPalette2,
             weaponId = weaponId,
             armorId = armorId
          };

@@ -11,40 +11,25 @@ public class Nation : MonoBehaviour {
 
    #endregion
 
-   public static ColorType getColor1 (Type nationType) {
+   public static string getPalette1 (Type nationType) {
       switch (nationType) {
          case Type.Neutral:
-            return ColorType.FlagWhite;
+            return PaletteDef.Flag.White;
          case Type.Pirate:
-            return ColorType.FlagBlack;
+            return PaletteDef.Flag.Black;
          case Type.Noble:
-            return ColorType.FlagBlue;
+            return PaletteDef.Flag.Blue;
          case Type.Trader:
-            return ColorType.FlagYellow;
+            return PaletteDef.Flag.Yellow;
          case Type.Explorer:
-            return ColorType.DarkGreen;
+            return PaletteDef.Flag.DarkGreen;
          default:
-            return ColorType.FlagWhite;
+            return PaletteDef.Flag.White;
       }
    }
 
-   public static ColorType getColor2 (Type nationType) {
-      return ColorType.PureBlack;
-
-      /*switch (nationType) {
-         case Type.Neutral:
-            return ColorType.FlagBrown2;
-         case Type.Pirate:
-            return ColorType.White;
-         case Type.Noble:
-            return ColorType.White;
-         case Type.Trader:
-            return ColorType.FlagBrown2;
-         case Type.Explorer:
-            return ColorType.White;
-         default:
-            return ColorType.FlagBrown2;
-      }*/
+   public static string getPalette2 (Type nationType) {
+      return PaletteDef.Flag.PureBlack;
    }
 
    public static string getName (Type nationType) {

@@ -30,14 +30,14 @@ public class CharacterStack : MonoBehaviour {
 
       bodyLayer.setType(info.bodyType);
       eyesLayer.setType(info.eyesType);
-      eyesLayer.recolor(info.eyesColor1, info.eyesColor1);
-      updateHair(info.hairType, info.hairColor1, info.hairColor2);
+      eyesLayer.recolor(info.eyesPalette1, info.eyesPalette1);
+      updateHair(info.hairType, info.hairPalette1, info.hairPalette2);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (userObjects.armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
       }
-      updateArmor(info.gender, armorData.armorType, armorData.color1, armorData.color2);
+      updateArmor(info.gender, armorData.armorType, armorData.palette1, armorData.palette2);
 
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
       if (userObjects.weapon.data != "") {
@@ -48,7 +48,7 @@ public class CharacterStack : MonoBehaviour {
             D.editorLog(userObjects.weapon.data, Color.red);
          }
       }
-      updateWeapon(info.gender, weaponData.weaponType, weaponData.color1, weaponData.color2);
+      updateWeapon(info.gender, weaponData.weaponType, weaponData.palette1, weaponData.palette2);
    }
 
    public void updateLayers (NetEntity entity) {
@@ -57,40 +57,38 @@ public class CharacterStack : MonoBehaviour {
 
       bodyLayer.setType(entity.bodyType);
       eyesLayer.setType(entity.eyesType);
-      eyesLayer.recolor(entity.eyesColor1, entity.eyesColor1);
-      updateHair(entity.hairType, entity.hairColor1, entity.hairColor2);
-      updateArmor(entity.gender,  armor.itemTypeId, armor.color1, armor.color2);
-      updateWeapon(entity.gender, weapon.itemTypeId, weapon.color1, weapon.color2);
+      eyesLayer.recolor(entity.eyesPalette1, entity.eyesPalette1);
+      updateHair(entity.hairType, entity.hairPalette1, entity.hairPalette2);
+      updateArmor(entity.gender,  armor.itemTypeId, armor.paletteName1, armor.paletteName2);
+      updateWeapon(entity.gender, weapon.itemTypeId, weapon.paletteName1, weapon.paletteName2);
    }
 
-   public void updateWeapon (Gender.Type gender, int weaponType, ColorType color1, ColorType color2) {
+   public void updateWeapon (Gender.Type gender, int weaponType, string palette1, string palette2) {
       weaponBackLayer.setType(gender, weaponType);
-      weaponBackLayer.recolor(color1, color2);
+      weaponBackLayer.recolor(palette1, palette2);
       weaponFrontLayer.setType(gender, weaponType);
-      weaponFrontLayer.recolor(color1, color2);
+      weaponFrontLayer.recolor(palette1, palette2);
    }
 
-   public void updateArmor (Gender.Type gender, int armorType, ColorType color1, ColorType color2) {
+   public void updateArmor (Gender.Type gender, int armorType, string palette1, string palette2) {
       armorLayer.setType(gender, armorType);
-      armorLayer.recolor(color1, color2);
+      armorLayer.recolor(palette1, palette2);
 
       // Only process this when the user is in avatar mode and not in ship mode
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)
       if (Global.player is PlayerBodyEntity) {
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
-         ColorKey colorKey = new ColorKey(Global.player.gender, armorType, new Armor());
          PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
 
-         armorLayer.recolor(playerEntity.armorManager.color1, playerEntity.armorManager.color2);
-         armorLayer.recolor(colorKey, playerEntity.armorManager.color1, playerEntity.armorManager.color2, armorData.materialType, true);
+         armorLayer.recolor(playerEntity.armorManager.palette1, playerEntity.armorManager.palette2);
       }
    }
 
-   public void updateHair (HairLayer.Type hairType, ColorType color1, ColorType color2) {
+   public void updateHair (HairLayer.Type hairType, string palette1, string palette2) {
       hairBackLayer.setType(hairType);
-      hairBackLayer.recolor(color1, color2);
+      hairBackLayer.recolor(palette1, palette2);
       hairFrontLayer.setType(hairType);
-      hairFrontLayer.recolor(color1, color2);
+      hairFrontLayer.recolor(palette1, palette2);
    }
 
    public void rotateDirectionClockWise () {

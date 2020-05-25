@@ -27,9 +27,9 @@ public class WeaponManager : EquipmentManager {
 
    // Weapon colors
    [SyncVar]
-   public ColorType color1;
+   public string palette1;
    [SyncVar]
-   public ColorType color2;
+   public string palette2;
 
    // The type of action this weapon is associated with
    [SyncVar]
@@ -57,17 +57,16 @@ public class WeaponManager : EquipmentManager {
    }
 
    public void updateSprites () {
-      this.updateSprites(this.weaponType, this.color1, this.color2);
+      this.updateSprites(this.weaponType, this.palette1, this.palette2);
    }
 
-   public void updateSprites (int weaponType, ColorType color1, ColorType color2) {
+   public void updateSprites (int weaponType, string newPalette1, string newPalette2) {
       Gender.Type gender = getGender();
 
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
          weaponLayer.setType(gender, weaponType);
-         ColorKey colorKey = new ColorKey(gender, weaponType, new Weapon());
-         weaponLayer.recolor(colorKey, color1, color2);
+         weaponLayer.recolor(newPalette1, newPalette2);
       }
 
       // Sync up all our animations
@@ -85,12 +84,12 @@ public class WeaponManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipWeapon (string rawReaponData, ColorType color1, ColorType color2) {
+   public void Rpc_EquipWeapon (string rawReaponData, string newPalette1, string newPalette2) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawReaponData);
       Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
       _weapon = newWeapon;
 
-      updateSprites(newWeapon.itemTypeId, color1, color2);
+      updateSprites(newWeapon.itemTypeId, newPalette1, newPalette2);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -118,12 +117,12 @@ public class WeaponManager : EquipmentManager {
 
       // Set the Sync Vars so they get sent to the clients
       this.weaponType = weaponData.weaponType;
-      this.color1 = weapon.color1;
-      this.color2 = weapon.color2;
+      this.palette1 = weapon.paletteName1;
+      this.palette2 = weapon.paletteName2;
       this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
 
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), color1, color2);
+      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), palette1, palette2);
    }
 
    #region Private Variables

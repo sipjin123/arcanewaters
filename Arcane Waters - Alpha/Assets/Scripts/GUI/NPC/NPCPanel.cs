@@ -96,13 +96,8 @@ public class NPCPanel : Panel {
    public override void show () {
       base.show();
 
-      // Update the head image based on the type of NPC this is
-      string spritePath = "Faces/" + _npc.GetComponent<SpriteSwap>().newTexture.name + "_1";
-      Texture2D newTexture = ImageManager.getTexture(spritePath, false);
-      if (newTexture == ImageManager.self.blankTexture) {
-         newTexture = NPCManager.self.defaultNpcFaceSprite.texture;
-      }
-      headAnim.GetComponent<SimpleAnimation>().setNewTexture(newTexture);
+      // Get the head image from the npc and update it
+      headAnim.setNewTexture(_npc.getHeadIconTexture());
 
       // Start typing out our intro text
       AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);

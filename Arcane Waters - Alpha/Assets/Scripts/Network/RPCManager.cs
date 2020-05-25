@@ -89,10 +89,10 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   protected void Rpc_UpdateHair (HairLayer.Type newHairType, ColorType newHairColor1, ColorType newHairColor2) {
+   protected void Rpc_UpdateHair (HairLayer.Type newHairType, string newHairPalette1, string newHairPalette2) {
       if (_player is BodyEntity) {
          BodyEntity body = (BodyEntity) _player;
-         body.updateHair(newHairType, newHairColor1, newHairColor2);
+         body.updateHair(newHairType, newHairPalette1, newHairPalette2);
 
          // If the Inventory panel is showing, update it
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
@@ -1025,7 +1025,7 @@ public class RPCManager : NetworkBehaviour {
             // Insert the different item types here
             if (itemBox is StoreHairDyeBox) {
                StoreHairDyeBox dyeBox = (StoreHairDyeBox) itemBox;
-               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, dyeBox.colorType, dyeBox.colorType);
+               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, dyeBox.paletteName, dyeBox.paletteName);
             } else if (itemBox is StoreShipBox) {
                StoreShipBox box = (StoreShipBox) itemBox;
                DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.ShipSkin, box.skinType);
@@ -1070,7 +1070,7 @@ public class RPCManager : NetworkBehaviour {
             UsableItem usable = (UsableItem) item;
 
             if (usable.itemType == UsableItem.Type.HairDye) {
-               ColorType newColor = usable.color1;
+               string newPalette = usable.paletteName1;
 
                // The player shouldn't be on a ship
                if (body == null) {
@@ -1081,17 +1081,17 @@ public class RPCManager : NetworkBehaviour {
                }
 
                // Set the new hair color in the database
-               DB_Main.setHairColor(body.userId, newColor);
+               DB_Main.setHairColor(body.userId, newPalette);
 
                // Delete the item now that we've used it
                DB_Main.deleteItem(body.userId, itemId);
 
                // Back to Unity
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  body.hairColor1 = newColor;
+                  body.hairPalette1 = newPalette;
 
                   // Update the body sheets on all clients
-                  body.rpc.Rpc_UpdateHair(body.hairType, body.hairColor1, body.hairColor2);
+                  body.rpc.Rpc_UpdateHair(body.hairType, body.hairPalette1, body.hairPalette2);
 
                   // Let the client know the item was used
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, itemId + "");
@@ -1162,7 +1162,7 @@ public class RPCManager : NetworkBehaviour {
                   body.hairType = newHairType;
 
                   // Update the ship on all clients
-                  body.rpc.Rpc_UpdateHair(newHairType, body.hairColor1, body.hairColor2);
+                  body.rpc.Rpc_UpdateHair(newHairType, body.hairPalette1, body.hairPalette2);
 
                   // Let the client know the item was used
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHaircut, _player, itemId + "");
@@ -2347,9 +2347,9 @@ public class RPCManager : NetworkBehaviour {
          // Blueprint ID is now same to a craftable equipment ID
          resultItem.itemTypeId = blueprint.itemTypeId;
 
-         // Randomize the colors
-         resultItem.color1 = Util.randomEnum<ColorType>();
-         resultItem.color2 = Util.randomEnum<ColorType>();
+         // Initialize pallete names to empty string
+         resultItem.paletteName1 = "";
+         resultItem.paletteName2 = "";
 
          // Get the crafting requirement data
          CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
@@ -3261,14 +3261,14 @@ public class RPCManager : NetworkBehaviour {
       float diagonalDistanceGap = .35f;
       uint parentID = bot.netIdent.netId;
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, SeaMonsterEntity.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, SeaMonsterEntity.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, SeaMonsterEntity.Type.Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, SeaMonsterEntity.Type.Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, SeaMonsterEntity.Type.Horror_Tentacle);
    }
 
    [Command]
