@@ -1,0 +1,1052 @@
+fileFormatVersion: 2
+guid: e16a563db73c56b4cb211a69ba300a04
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8909731471559437014
+    second: elemental_ranged_0
+  - first:
+      213: -8544124700742737708
+    second: elemental_ranged_1
+  - first:
+      213: 2819378256502200981
+    second: elemental_ranged_2
+  - first:
+      213: -2825124312959820567
+    second: elemental_ranged_3
+  - first:
+      213: 1542212680577604377
+    second: elemental_ranged_4
+  - first:
+      213: -7865288643743830929
+    second: elemental_ranged_5
+  - first:
+      213: 7629437170316120367
+    second: elemental_ranged_6
+  - first:
+      213: -3383526919311730649
+    second: elemental_ranged_7
+  - first:
+      213: 3150702057492100319
+    second: elemental_ranged_8
+  - first:
+      213: 4601068920878885604
+    second: elemental_ranged_9
+  - first:
+      213: 5755188663332448637
+    second: elemental_ranged_10
+  - first:
+      213: 725672588074004035
+    second: elemental_ranged_11
+  - first:
+      213: 6704874958182227321
+    second: elemental_ranged_12
+  - first:
+      213: 1256892922257950224
+    second: elemental_ranged_13
+  - first:
+      213: -169959238625057900
+    second: elemental_ranged_14
+  - first:
+      213: 7883275694062421545
+    second: elemental_ranged_15
+  - first:
+      213: -5682533210291163449
+    second: elemental_ranged_16
+  - first:
+      213: 4944413562104423679
+    second: elemental_ranged_17
+  - first:
+      213: 5938910902072648422
+    second: elemental_ranged_18
+  - first:
+      213: 500521923793487079
+    second: elemental_ranged_19
+  - first:
+      213: -1662176582047276013
+    second: elemental_ranged_20
+  - first:
+      213: -2643504731807602640
+    second: elemental_ranged_21
+  - first:
+      213: -788167717699083691
+    second: elemental_ranged_22
+  - first:
+      213: 2524186053812992247
+    second: elemental_ranged_23
+  - first:
+      213: -8214737836240806394
+    second: elemental_ranged_24
+  - first:
+      213: -6956516085860102202
+    second: elemental_ranged_25
+  - first:
+      213: -5070661847166060267
+    second: elemental_ranged_26
+  - first:
+      213: -33845758252448215
+    second: elemental_ranged_27
+  - first:
+      213: -7916926850023215154
+    second: elemental_ranged_28
+  - first:
+      213: -3486665523186269458
+    second: elemental_ranged_29
+  - first:
+      213: -2290700757439737616
+    second: elemental_ranged_30
+  - first:
+      213: -5926045576122801195
+    second: elemental_ranged_31
+  - first:
+      213: -8325687192519487798
+    second: elemental_ranged_32
+  - first:
+      213: 2909843885980461164
+    second: elemental_ranged_33
+  - first:
+      213: 3206330922542851010
+    second: elemental_ranged_34
+  - first:
+      213: 8269842100458194217
+    second: elemental_ranged_35
+  - first:
+      213: -3623582093392467176
+    second: elemental_ranged_36
+  - first:
+      213: -3902807097391485362
+    second: elemental_ranged_37
+  - first:
+      213: 536589806384126975
+    second: elemental_ranged_38
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: elemental_ranged_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6da2b6e4199b5ab70800000000000000
+      internalID: 8909731471559437014
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d0a6977adb2d6980800000000000000
+      internalID: -8544124700742737708
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59a164a2691702720800000000000000
+      internalID: 2819378256502200981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ecd5bfc7642bc8d0800000000000000
+      internalID: -2825124312959820567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91b5ee1134a076510800000000000000
+      internalID: 1542212680577604377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6c2cbd86a1e8d290800000000000000
+      internalID: -7865288643743830929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f219ad41fa431e960800000000000000
+      internalID: 7629437170316120367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 728d37e813c4b01d0800000000000000
+      internalID: -3383526919311730649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd4b8e104da89bb20800000000000000
+      internalID: 3150702057492100319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ea63185ec74adf30800000000000000
+      internalID: 4601068920878885604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d792945d8998edf40800000000000000
+      internalID: 5755188663332448637
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 34ea363cf5b121a00800000000000000
+      internalID: 725672588074004035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97d1dd120408c0d50800000000000000
+      internalID: 6704874958182227321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01643e71471617110800000000000000
+      internalID: 1256892922257950224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 493257319fe24adf0800000000000000
+      internalID: -169959238625057900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 926cf03f975076d60800000000000000
+      internalID: 7883275694062421545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7ce2c3017269321b0800000000000000
+      internalID: -5682533210291163449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ff4abd720f51e9440800000000000000
+      internalID: 4944413562104423679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e22cbeefff3b6250800000000000000
+      internalID: 5938910902072648422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e4810ea90632f600800000000000000
+      internalID: 500521923793487079
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31469198433cee8e0800000000000000
+      internalID: -1662176582047276013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0382b8ac372605bd0800000000000000
+      internalID: -2643504731807602640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 552ad1bf2addf05f0800000000000000
+      internalID: -788167717699083691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f8b48c97d5b70320800000000000000
+      internalID: 2524186053812992247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60ed7e326736ffd80800000000000000
+      internalID: -8214737836240806394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cf84042a7d757f90800000000000000
+      internalID: -6956516085860102202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5197a8f5ae361a9b0800000000000000
+      internalID: -5070661847166060267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_27
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 92685325671c78ff0800000000000000
+      internalID: -33845758252448215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_28
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecf2d9fb9fc612290800000000000000
+      internalID: -7916926850023215154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_29
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee281e70e20ec9fc0800000000000000
+      internalID: -3486665523186269458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_30
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f0161a3ccbc530e0800000000000000
+      internalID: -2290700757439737616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_31
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d3ec6032f472cda0800000000000000
+      internalID: -5926045576122801195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 171.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ace4bda1c97357c80800000000000000
+      internalID: -8325687192519487798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_33
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c6825b7e897d16820800000000000000
+      internalID: 2909843885980461164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_34
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c364867cfc2f7c20800000000000000
+      internalID: 3206330922542851010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_35
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 925816a239164c270800000000000000
+      internalID: 8269842100458194217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_36
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81b20ecd84376bdc0800000000000000
+      internalID: -3623582093392467176
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_37
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4e6b157f9176d9c0800000000000000
+      internalID: -3902807097391485362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_ranged_38
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffb1f9ff599527700800000000000000
+      internalID: 536589806384126975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

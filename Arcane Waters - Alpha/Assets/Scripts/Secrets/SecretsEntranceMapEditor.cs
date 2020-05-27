@@ -47,8 +47,12 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
          spriteOutline.Regenerate();
          spriteOutline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
       } else if (field.k.CompareTo(DataField.SECRETS_INTERACT_SPRITE) == 0) {
-         _secretEntrance.subSprite = ImageManager.getSprites(field.v)[0];
-         _secretEntrance.subSpriteRenderer.sprite = _secretEntrance.subSprite;
+         try {
+            _secretEntrance.subSprite = ImageManager.getSprites(field.v)[0];
+            _secretEntrance.subSpriteRenderer.sprite = _secretEntrance.subSprite;
+         } catch (System.Exception ex) {
+            Debug.LogWarning("Caught exception when changing secret sprite:\n" + ex);
+         }
       }
    }
 

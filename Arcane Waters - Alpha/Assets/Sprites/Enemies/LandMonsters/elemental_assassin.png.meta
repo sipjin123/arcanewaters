@@ -1,0 +1,1265 @@
+fileFormatVersion: 2
+guid: 35e88db35e9531a4da2d20ca083d03ab
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5607910683112323297
+    second: elemental_assassin_0
+  - first:
+      213: -3266724150380475099
+    second: elemental_assassin_1
+  - first:
+      213: -2697797675211149076
+    second: elemental_assassin_2
+  - first:
+      213: -3320382381790728636
+    second: elemental_assassin_3
+  - first:
+      213: 246833260759528733
+    second: elemental_assassin_4
+  - first:
+      213: -1028308167345161220
+    second: elemental_assassin_5
+  - first:
+      213: -4103624143763271619
+    second: elemental_assassin_6
+  - first:
+      213: 6738731478501456338
+    second: elemental_assassin_7
+  - first:
+      213: -8761481270395605583
+    second: elemental_assassin_8
+  - first:
+      213: 2192260342766915934
+    second: elemental_assassin_9
+  - first:
+      213: 2962182426521472128
+    second: elemental_assassin_10
+  - first:
+      213: -172942788784133759
+    second: elemental_assassin_11
+  - first:
+      213: 884064031869039606
+    second: elemental_assassin_12
+  - first:
+      213: 6003581615257551954
+    second: elemental_assassin_13
+  - first:
+      213: 586629317700596641
+    second: elemental_assassin_14
+  - first:
+      213: -7378784345133809786
+    second: elemental_assassin_15
+  - first:
+      213: -3331383169706572139
+    second: elemental_assassin_16
+  - first:
+      213: 4946970209431735228
+    second: elemental_assassin_17
+  - first:
+      213: 672460160592591220
+    second: elemental_assassin_18
+  - first:
+      213: -3614273608482107223
+    second: elemental_assassin_19
+  - first:
+      213: 7389277548440119285
+    second: elemental_assassin_20
+  - first:
+      213: 6507957113250114587
+    second: elemental_assassin_21
+  - first:
+      213: 4742273195088002615
+    second: elemental_assassin_22
+  - first:
+      213: 1826717576379779824
+    second: elemental_assassin_23
+  - first:
+      213: -294332637840608806
+    second: elemental_assassin_24
+  - first:
+      213: -2497553506562939420
+    second: elemental_assassin_25
+  - first:
+      213: 6324175086690177346
+    second: elemental_assassin_26
+  - first:
+      213: -6868242524352681450
+    second: elemental_assassin_27
+  - first:
+      213: -7497271003460364544
+    second: elemental_assassin_28
+  - first:
+      213: -8551819242802111113
+    second: elemental_assassin_29
+  - first:
+      213: 2160647716868348216
+    second: elemental_assassin_30
+  - first:
+      213: 6012685854087389053
+    second: elemental_assassin_31
+  - first:
+      213: 2006123352863044429
+    second: elemental_assassin_32
+  - first:
+      213: -123761920038223681
+    second: elemental_assassin_33
+  - first:
+      213: 7945381521673900759
+    second: elemental_assassin_34
+  - first:
+      213: -9119178183907968057
+    second: elemental_assassin_35
+  - first:
+      213: 8326019451620860718
+    second: elemental_assassin_36
+  - first:
+      213: -1383360152833149845
+    second: elemental_assassin_37
+  - first:
+      213: -4766424405246066613
+    second: elemental_assassin_38
+  - first:
+      213: 6210277967937262136
+    second: elemental_assassin_39
+  - first:
+      213: 2711529344125774939
+    second: elemental_assassin_40
+  - first:
+      213: -5933389378089661259
+    second: elemental_assassin_41
+  - first:
+      213: -7029385851541072896
+    second: elemental_assassin_42
+  - first:
+      213: 3834044290170312092
+    second: elemental_assassin_43
+  - first:
+      213: -9074361459090186268
+    second: elemental_assassin_44
+  - first:
+      213: 427360414630029525
+    second: elemental_assassin_45
+  - first:
+      213: 819438653733197431
+    second: elemental_assassin_46
+  - first:
+      213: 2284380014632687370
+    second: elemental_assassin_47
+  - first:
+      213: -8187319703028063328
+    second: elemental_assassin_48
+  - first:
+      213: -8475110673710414121
+    second: elemental_assassin_49
+  - first:
+      213: -4286792454580054653
+    second: elemental_assassin_50
+  - first:
+      213: 1515819690978858424
+    second: elemental_assassin_51
+  - first:
+      213: 1640079535235101615
+    second: elemental_assassin_52
+  - first:
+      213: -1613455668538845330
+    second: elemental_assassin_53
+  - first:
+      213: 4678484187709092458
+    second: elemental_assassin_54
+  - first:
+      213: 2322259164466363126
+    second: elemental_assassin_55
+  - first:
+      213: -4493650744002297197
+    second: elemental_assassin_56
+  - first:
+      213: -6133627248060607372
+    second: elemental_assassin_57
+  - first:
+      213: 1743509140473946973
+    second: elemental_assassin_58
+  - first:
+      213: -4696385014899375561
+    second: elemental_assassin_59
+  - first:
+      213: -9178449148178606115
+    second: elemental_assassin_60
+  - first:
+      213: -6791661945197951148
+    second: elemental_assassin_61
+  - first:
+      213: -7344036816430367651
+    second: elemental_assassin_62
+  - first:
+      213: -2011471661738811111
+    second: elemental_assassin_63
+  - first:
+      213: -6424020089529867940
+    second: elemental_assassin_64
+  - first:
+      213: -2322106380885875213
+    second: elemental_assassin_65
+  - first:
+      213: -5914516187992201924
+    second: elemental_assassin_66
+  - first:
+      213: 1740841104980781393
+    second: elemental_assassin_67
+  - first:
+      213: -2438037607765199687
+    second: elemental_assassin_68
+  - first:
+      213: 6397066338350253060
+    second: elemental_assassin_69
+  - first:
+      213: 6796488126927946490
+    second: elemental_assassin_70
+  - first:
+      213: 8796653514664543848
+    second: elemental_assassin_71
+  - first:
+      213: -3991076319812241585
+    second: elemental_assassin_72
+  - first:
+      213: -8848877354519916197
+    second: elemental_assassin_73
+  - first:
+      213: -510135192541785124
+    second: elemental_assassin_74
+  - first:
+      213: 996085334041151009
+    second: elemental_assassin_75
+  - first:
+      213: -5788425161328206604
+    second: elemental_assassin_76
+  - first:
+      213: 3775168573662490349
+    second: elemental_assassin_77
+  - first:
+      213: -6922849690545479778
+    second: elemental_assassin_78
+  - first:
+      213: -122880512734972753
+    second: elemental_assassin_79
+  - first:
+      213: -4066692282394720648
+    second: elemental_assassin_80
+  - first:
+      213: 43640668631264808
+    second: elemental_assassin_81
+  - first:
+      213: 1216588819088617390
+    second: elemental_assassin_82
+  - first:
+      213: -8059343956365804800
+    second: elemental_assassin_83
+  - first:
+      213: -6724328607327485221
+    second: elemental_assassin_84
+  - first:
+      213: 6454468049520990584
+    second: elemental_assassin_85
+  - first:
+      213: 3189203641083638213
+    second: elemental_assassin_86
+  - first:
+      213: 572390317487872053
+    second: elemental_assassin_87
+  - first:
+      213: -4458502080007722748
+    second: elemental_assassin_88
+  - first:
+      213: 2362554929125800188
+    second: elemental_assassin_89
+  - first:
+      213: 2730962606565720133
+    second: elemental_assassin_90
+  - first:
+      213: -3034000570826575832
+    second: elemental_assassin_91
+  - first:
+      213: 5293603353613602126
+    second: elemental_assassin_92
+  - first:
+      213: -1731711092752342496
+    second: elemental_assassin_93
+  - first:
+      213: -914178426874067434
+    second: elemental_assassin_94
+  - first:
+      213: 9134705798812749108
+    second: elemental_assassin_95
+  - first:
+      213: -3239148818923712687
+    second: elemental_assassin_96
+  - first:
+      213: -8724167638301982044
+    second: elemental_assassin_97
+  - first:
+      213: -5035812082111551193
+    second: elemental_assassin_98
+  - first:
+      213: 5553061980876517999
+    second: elemental_assassin_99
+  - first:
+      213: -5261413989631758246
+    second: elemental_assassin_100
+  - first:
+      213: 2672019742760765140
+    second: elemental_assassin_101
+  - first:
+      213: 3836378519753634531
+    second: elemental_assassin_102
+  - first:
+      213: -3142708131813872713
+    second: elemental_assassin_103
+  - first:
+      213: 5377783042979839574
+    second: elemental_assassin_104
+  - first:
+      213: -807976777867751395
+    second: elemental_assassin_105
+  - first:
+      213: 5141742726637508726
+    second: elemental_assassin_106
+  - first:
+      213: -3262755385203659016
+    second: elemental_assassin_107
+  - first:
+      213: 321033659630568571
+    second: elemental_assassin_108
+  - first:
+      213: -1143694147551977943
+    second: elemental_assassin_109
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: elemental_assassin_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f17c8f812f2bc22b0800000000000000
+      internalID: -5607910683112323297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52dc16d61b34aa2d0800000000000000
+      internalID: -3266724150380475099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce03a25de4f7f8ad0800000000000000
+      internalID: -2697797675211149076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44ee5eed0d1abe1d0800000000000000
+      internalID: -3320382381790728636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d15b25afa8dec6300800000000000000
+      internalID: 246833260759528733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cfb32c58b27bab1f0800000000000000
+      internalID: -1028308167345161220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d30164b459ffc07c0800000000000000
+      internalID: -4103624143763271619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2d972dc8398c48d50800000000000000
+      internalID: 6738731478501456338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bde4d37437f86680800000000000000
+      internalID: -8761481270395605583
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e515cc9aa297c6e10800000000000000
+      internalID: 2192260342766915934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08c87bcf839cb1920800000000000000
+      internalID: 2962182426521472128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1896e0c2375999df0800000000000000
+      internalID: -172942788784133759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f3f0429d83d44c00800000000000000
+      internalID: 884064031869039606
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2540e75bba1015350800000000000000
+      internalID: 6003581615257551954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a3bf50a140242800800000000000000
+      internalID: 586629317700596641
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68ff51a8bba499990800000000000000
+      internalID: -7378784345133809786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 596cce658ac84c1d0800000000000000
+      internalID: -3331383169706572139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbb4e9ff13b27a440800000000000000
+      internalID: 4946970209431735228
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 47939b504fe055900800000000000000
+      internalID: 672460160592591220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a0da556d4587ddc0800000000000000
+      internalID: -3614273608482107223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f7ea8db7ccfb8660800000000000000
+      internalID: 7389277548440119285
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b1cefbc8388e05a50800000000000000
+      internalID: 6507957113250114587
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 73eb3156850ffc140800000000000000
+      internalID: 4742273195088002615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fa441515fdc95910800000000000000
+      internalID: 1826717576379779824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad1f4bb76025aebf0800000000000000
+      internalID: -294332637840608806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4e5e8c18158e65dd0800000000000000
+      internalID: -2497553506562939420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2411b830cbbf3c750800000000000000
+      internalID: 6324175086690177346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_27
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61ae9b840d91fa0a0800000000000000
+      internalID: -6868242524352681450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_28
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00798ed9eb754f790800000000000000
+      internalID: -7497271003460364544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_29
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77d1e6945b5d15980800000000000000
+      internalID: -8551819242802111113
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_30
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83952b0a6a92cfd10800000000000000
+      internalID: 2160647716868348216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_31
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7f15ee7de9517350800000000000000
+      internalID: 6012685854087389053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 171.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d43740f7f8e27db10800000000000000
+      internalID: 2006123352863044429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_33
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fb0c66f703f484ef0800000000000000
+      internalID: -123761920038223681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_34
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d25354c56aa34e60800000000000000
+      internalID: 7945381521673900759
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_35
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7cb7ca8d1cb227180800000000000000
+      internalID: -9119178183907968057
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_36
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e23aadef396fb8370800000000000000
+      internalID: 8326019451620860718
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_37
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6433f535415dcce0800000000000000
+      internalID: -1383360152833149845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_assassin_38
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b404e8cc1424addb0800000000000000
+      internalID: -4766424405246066613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

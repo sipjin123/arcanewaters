@@ -1,0 +1,1052 @@
+fileFormatVersion: 2
+guid: 407c4fa7b44718b4d9408f873c972d54
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5896688005283128207
+    second: elemental_tank_0
+  - first:
+      213: 8132320741958709130
+    second: elemental_tank_1
+  - first:
+      213: 4058091686868753479
+    second: elemental_tank_2
+  - first:
+      213: -9150522117588042276
+    second: elemental_tank_3
+  - first:
+      213: -9163401211671166064
+    second: elemental_tank_4
+  - first:
+      213: -5046514578625177539
+    second: elemental_tank_5
+  - first:
+      213: -634029349772085464
+    second: elemental_tank_6
+  - first:
+      213: -3708113796353875238
+    second: elemental_tank_7
+  - first:
+      213: -7410208008688031016
+    second: elemental_tank_8
+  - first:
+      213: 5256582529066836944
+    second: elemental_tank_9
+  - first:
+      213: -5508603536389504472
+    second: elemental_tank_10
+  - first:
+      213: 9201210800662060942
+    second: elemental_tank_11
+  - first:
+      213: 8603289020356241473
+    second: elemental_tank_12
+  - first:
+      213: 156960141394419350
+    second: elemental_tank_13
+  - first:
+      213: -5842880062677855440
+    second: elemental_tank_14
+  - first:
+      213: 5901183519065161036
+    second: elemental_tank_15
+  - first:
+      213: -4133235944537652945
+    second: elemental_tank_16
+  - first:
+      213: -8486282639772637712
+    second: elemental_tank_17
+  - first:
+      213: -8873594717094806221
+    second: elemental_tank_18
+  - first:
+      213: -411763301163799507
+    second: elemental_tank_19
+  - first:
+      213: 8241349015888584671
+    second: elemental_tank_20
+  - first:
+      213: -4358744003190019277
+    second: elemental_tank_21
+  - first:
+      213: -2663109748121565290
+    second: elemental_tank_22
+  - first:
+      213: -22232535416133717
+    second: elemental_tank_23
+  - first:
+      213: 2107348221285396745
+    second: elemental_tank_24
+  - first:
+      213: 8161026067580947876
+    second: elemental_tank_25
+  - first:
+      213: -486076336298650084
+    second: elemental_tank_26
+  - first:
+      213: -2871816666732130418
+    second: elemental_tank_27
+  - first:
+      213: -7972149192646238249
+    second: elemental_tank_28
+  - first:
+      213: -8897431180200680227
+    second: elemental_tank_29
+  - first:
+      213: -8062594156477988006
+    second: elemental_tank_30
+  - first:
+      213: -7203326474611854129
+    second: elemental_tank_31
+  - first:
+      213: 1715330443496253474
+    second: elemental_tank_32
+  - first:
+      213: -2425726938810154772
+    second: elemental_tank_33
+  - first:
+      213: -2530530022234843907
+    second: elemental_tank_34
+  - first:
+      213: -180723712919550074
+    second: elemental_tank_35
+  - first:
+      213: -111032338492611251
+    second: elemental_tank_36
+  - first:
+      213: -4695749140393180920
+    second: elemental_tank_37
+  - first:
+      213: -4243115168581527099
+    second: elemental_tank_38
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: elemental_tank_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 17cdacd4081ca2ea0800000000000000
+      internalID: -5896688005283128207
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8f6dffb0aecbd070800000000000000
+      internalID: 8132320741958709130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74c17c573ec315830800000000000000
+      internalID: 4058091686868753479
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdd3fc79d90d20180800000000000000
+      internalID: -9150522117588042276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 093c4f3d52f05d080800000000000000
+      internalID: -9163401211671166064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3857337abd27f9b0800000000000000
+      internalID: -5046514578625177539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 827b9a56aa97337f0800000000000000
+      internalID: -634029349772085464
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ad22a9d06222a8cc0800000000000000
+      internalID: -3708113796353875238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8da256ab317a92990800000000000000
+      internalID: -7410208008688031016
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d3ad89a5f123f840800000000000000
+      internalID: 5256582529066836944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8220b0df4428d83b0800000000000000
+      internalID: -5508603536389504472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 426.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8f13fc197441bf70800000000000000
+      internalID: 9201210800662060942
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1482a5628c5056770800000000000000
+      internalID: 8603289020356241473
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69e95bfba62ad2200800000000000000
+      internalID: 156960141394419350
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 033dfd63a8be9eea0800000000000000
+      internalID: -5842880062677855440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4db440152735e150800000000000000
+      internalID: 5901183519065161036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f2105f8aecbc3a6c0800000000000000
+      internalID: -4133235944537652945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f5a9c0c6eaaa3a80800000000000000
+      internalID: -8486282639772637712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33df7ce7e98aad480800000000000000
+      internalID: -8873594717094806221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2ce69e857f194af0800000000000000
+      internalID: -411763301163799507
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fdfdd02f3472f5270800000000000000
+      internalID: 8241349015888584671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33baef63c61a283c0800000000000000
+      internalID: -4358744003190019277
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69785593bcbba0bd0800000000000000
+      internalID: -2663109748121565290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 341.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba7a01870a301bff0800000000000000
+      internalID: -22232535416133717
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90174c3ca0ece3d10800000000000000
+      internalID: 2107348221285396745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ad8dd038f9c14170800000000000000
+      internalID: 8161026067580947876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c161231c52c1149f0800000000000000
+      internalID: -486076336298650084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_27
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e8f826705f14528d0800000000000000
+      internalID: -2871816666732130418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_28
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7df57eb2c8c3d5190800000000000000
+      internalID: -7972149192646238249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_29
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dd467a27b79f58480800000000000000
+      internalID: -8897431180200680227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_30
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a534df60559eb1090800000000000000
+      internalID: -8062594156477988006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_31
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 256.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fc4f7977cb4a80c90800000000000000
+      internalID: -7203326474611854129
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 171.66666
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 228e10d33f31ec710800000000000000
+      internalID: 1715330443496253474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_33
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce000228336165ed0800000000000000
+      internalID: -2425726938810154772
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_34
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: df41b332a50c1ecd0800000000000000
+      internalID: -2530530022234843907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_35
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 687c0f89db0fd7df0800000000000000
+      internalID: -180723712919550074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_36
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4521992da8857ef0800000000000000
+      internalID: -111032338492611251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_37
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 801c484390955deb0800000000000000
+      internalID: -4695749140393180920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: elemental_tank_38
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 86.666664
+        width: 85.333336
+        height: 85.333336
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c950a33c3d6d15c0800000000000000
+      internalID: -4243115168581527099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -56,6 +56,13 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void addNewCloudData (CloudBuildData cloudData) {
+   }
+
+   public static CloudBuildData getCloudData () {
+      return new CloudBuildData();
+   }
+
    public static void writeZipData (byte[] bytes) { 
    }
 
@@ -580,7 +587,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps) {
+   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes) {
 
    }
 

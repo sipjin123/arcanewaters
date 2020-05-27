@@ -697,6 +697,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -828,10 +829,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 922ac0649ae1bbc449edd21453929d3a, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -959,10 +961,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5ad21bcd005af6b4ba99bf5ff6a23562, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1030,6 +1033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3415edd38e1d39948828aab52b453b4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  equipmentId: 0
 --- !u!114 &7134304087456090919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1091,10 +1095,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bd519cd89f961b842beea3e8355bc1c1, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1294,10 +1299,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: bd519cd89f961b842beea3e8355bc1c1, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1427,10 +1433,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c7596435bcf618a4890487acb6deafd7, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1559,10 +1566,11 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c7596435bcf618a4890487acb6deafd7, type: 2}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1706,9 +1714,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
 --- !u!114 &6527673179465098255
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1726,6 +1734,7 @@ MonoBehaviour:
   battlerType: 2
   mainSpriteRenderer: {fileID: 6527673177897736797}
   userId: 0
+  companionId: -1
   battleId: 0
   biomeType: 0
   teamType: 0
@@ -1762,14 +1771,15 @@ MonoBehaviour:
   bodyType: 0
   eyesType: 0
   hairType: 0
-  eyesColor1: 0
-  hairColor1: 0
-  hairColor2: 0
+  eyesPalette1: 
+  hairPalette1: 
   lastDamagedTime: -3.4028235e+38
   clickBox: {fileID: 6527673178364909065}
   armorManager: {fileID: 6527673179465098355}
   weaponManager: {fileID: 6527673179465098356}
-  battlerBar: {fileID: 4897325508947964398}
+  selectedBattleBar: {fileID: 0}
+  minionBattleBar: {fileID: 0}
+  bossBattleBar: {fileID: 0}
   onBattlerSelect:
     m_PersistentCalls:
       m_Calls: []
@@ -1783,6 +1793,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   battlerAbilitiesInitialized: 0
+  targetUISnapLocation: {fileID: 0}
+  isBossType: 0
   _battlerBasicAbilities: []
   _alteredBattlerData:
     enemyName: unknown
@@ -1800,12 +1812,9 @@ MonoBehaviour:
     defensePerLevel: 0
     healthPerlevel: 0
     battlerAbilities:
-      basicAbilityDataList: []
-      basicAbilityRawData: []
-      attackAbilityDataList: []
-      attackAbilityRawData: []
-      buffAbilityDataList: []
-      buffAbilityRawData: []
+      basicAbilityDataList: 
+      attackAbilityDataList: 
+      buffAbilityDataList: 
     serializedBattlerAbilities: 
     battlerLootData:
       lootList: []
@@ -1813,8 +1822,8 @@ MonoBehaviour:
         category: 0
         id: 0
         itemTypeId: 0
-        color1: 0
-        color2: 0
+        paletteName1: 
+        paletteName2: 
         data: 
         count: 1
         itemName: 
@@ -1854,6 +1863,7 @@ MonoBehaviour:
     jumpSoundEffectId: -1
     preContactLength: 0
     preMagicLength: 0
+    isBossType: 0
     elementalWeakness: 
     elementalResistance: 
 --- !u!114 &6527673179465098354
@@ -1888,10 +1898,9 @@ MonoBehaviour:
   bodySprite: {fileID: 6527673177897736797}
   armorLayer: {fileID: 6527673178321755515}
   equippedArmorId: 0
-  materialType: 0
   armorType: 0
-  color1: 0
-  color2: 0
+  palette1: 
+  palette2: 
 --- !u!114 &6527673179465098356
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1914,9 +1923,10 @@ MonoBehaviour:
   equippedWeaponId: 0
   weaponType: 0
   equipmentDataID: 0
-  color1: 0
-  color2: 0
+  palette1: 
+  palette2: 
   actionType: 0
+  actionTypeValue: 0
 --- !u!114 &6527673179465098357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1930,6 +1940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 4265433390411446657}
 --- !u!114 &490268956526336228
@@ -1977,6 +1988,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -2225,6 +2237,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
