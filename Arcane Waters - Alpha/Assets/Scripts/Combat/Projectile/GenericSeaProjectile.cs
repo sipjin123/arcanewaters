@@ -19,8 +19,11 @@ public class GenericSeaProjectile : MonoBehaviour {
    // How high the projectile should arch upwards
    public float archHeight = .20f;
 
-   // Reference to the trail of the projectile
-   public TrailRenderer trail;
+   // Reference to the trail of the projectile (as trailrenderer)
+   public TrailRenderer trailRenderer;
+
+   // Reference to the trail of the projectile (as particle system)
+   public ParticleSystem particleSystemTrail;
 
    // Projectile Sprite
    public SpriteRenderer[] staticSprites;
@@ -29,12 +32,6 @@ public class GenericSeaProjectile : MonoBehaviour {
    public SpriteRenderer[] animatedSprites;
 
    #endregion
-
-   private void Start () {
-      if (shipAbilitydata.hasTrail) {
-         trail.enabled = true;
-      }
-   }
 
    public void init (float startTime, float endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, int abilityId, GameObject targetObj = null) {
       if (targetObj != null) {
@@ -77,6 +74,15 @@ public class GenericSeaProjectile : MonoBehaviour {
             }
          }
       }
+
+      trailRenderer.enabled = false;
+      particleSystemTrail.Stop();
+
+      if (attackType == Attack.Type.Cannon) {
+         particleSystemTrail.Play();
+      } else if (shipAbilitydata.hasTrail) {
+         trailRenderer.enabled = true;
+      }
    }
 
    public void setDirection (Direction direction) {
@@ -112,10 +118,16 @@ public class GenericSeaProjectile : MonoBehaviour {
 
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this._endTime) {
-         // Detach the trail so that it continues to show up a little while longer
-         ParticleSystem trail = this.gameObject.GetComponentInChildren<ParticleSystem>();
-         trail.transform.parent = null;
-         trail.Stop();
+         // Detach the trails so that they continue to show up a little while longer
+         if (particleSystemTrail != null && particleSystemTrail.isPlaying) {
+            particleSystemTrail.transform.parent = null;
+            particleSystemTrail.Stop();
+         }
+
+         if (trailRenderer != null && trailRenderer.enabled) {
+            trailRenderer.transform.parent = null;
+            trailRenderer.autodestruct = true;
+         }
 
          // Now destroy
          Destroy(this.gameObject);

@@ -20,6 +20,10 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    private void Update () {
+      if (bookId == 0) {
+         return;
+      }
+
       _isMouseOver = MouseManager.self.isHoveringOver(_clickableBox);
 
       handleSpriteOutline();

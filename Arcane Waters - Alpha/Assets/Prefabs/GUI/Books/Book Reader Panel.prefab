@@ -171,7 +171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1003224845566656191
 RectTransform:
   m_ObjectHideFlags: 0
@@ -268,6 +268,7 @@ MonoBehaviour:
   leftArrow: {fileID: 8492945146104332339}
   rightArrow: {fileID: 2816684311527771554}
   _animator: {fileID: 6973425690236964549}
+  _currentPageIndex: 0
 --- !u!95 &6973425690236964549
 Animator:
   serializedVersion: 3
@@ -339,6 +340,7 @@ MonoBehaviour:
   isLeftPage: 0
   contentText: {fileID: 1003224846744359259}
   pageNumberText: {fileID: 1003224846172403441}
+  previousFirstVisibleCharacter: 0
 --- !u!1 &1003224846172403443
 GameObject:
   m_ObjectHideFlags: 0
@@ -542,6 +544,7 @@ MonoBehaviour:
   isLeftPage: 0
   contentText: {fileID: 1003224847491560438}
   pageNumberText: {fileID: 1003224845549143705}
+  previousFirstVisibleCharacter: 0
 --- !u!1 &1003224846744359253
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,7 +639,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: e6972bb3c3bc06c4292458462ed565f2, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 70a0ff1a186ac0d46b12bcd5c22c3b5c, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -798,7 +801,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: e6972bb3c3bc06c4292458462ed565f2, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: 70a0ff1a186ac0d46b12bcd5c22c3b5c, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901

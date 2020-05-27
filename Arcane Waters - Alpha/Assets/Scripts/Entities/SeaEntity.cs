@@ -303,10 +303,15 @@ public class SeaEntity : NetEntity
          // Show the damage text
          ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
          damageText.setDamage(damage);
+
+         // Play the damage sound
+         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
       }
 
-      // Play the damage sound
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
+      // If it was our ship, shake the camera
+      if (isLocalPlayer) {
+         CameraManager.shakeCamera();
+      }
    }
 
    [ClientRpc]
@@ -328,31 +333,6 @@ public class SeaEntity : NetEntity
       if (attackType == Attack.Type.Venom) {
          GameObject stickyInstance = Instantiate(PrefabsManager.self.venomStickyPrefab, targetTransform);
          stickyInstance.transform.localPosition = Vector3.zero;
-      }
-   }
-
-   [ClientRpc]
-   public void Rpc_ShowDamageText (int damage, int attackerId, Attack.Type attackType) {
-      _lastDamagedTime = Time.time;
-
-      // Note the attacker
-      SeaEntity attacker = SeaManager.self.getEntity(attackerId);
-      _attackers[attacker.netId] = TimeManager.self.getSyncedTime();
-
-      // Show some visual effects when the damage occurs
-      List<Effect.Type> effectTypes = EffectManager.getEffects(attackType);
-      EffectManager.show(effectTypes, this.transform.position);
-
-      // Show the damage text
-      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), this.transform.position, Quaternion.identity);
-      damageText.setDamage(damage);
-
-      // Play the damage sound
-      SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_1, this.transform.position);
-
-      // If it was our ship, shake the camera
-      if (isLocalPlayer) {
-         CameraManager.shakeCamera();
       }
    }
 
@@ -599,14 +579,13 @@ public class SeaEntity : NetEntity
                      }
 
                      targetEntity.currentHealth -= damage;
-                     targetEntity.Rpc_ShowDamageText(damage, attacker.userId, attackType);
-                     targetEntity.Rpc_ShowExplosion(targetEntity.transform.position, damage, attackType);
+                     targetEntity.Rpc_ShowExplosion(circleCenter, damage, attackType);
 
                      if (attackType == Attack.Type.Shock_Ball) {
                         chainLightning(targetEntity.transform.position, targetEntity.userId);
                      }
                   } else {
-                     targetEntity.Rpc_ShowExplosion(targetEntity.transform.position, damage, Attack.Type.None);
+                     targetEntity.Rpc_ShowExplosion(circleCenter, damage, Attack.Type.None);
                   }
                   targetEntity.noteAttacker(attacker);
 

@@ -1308,30 +1308,61 @@ MonoBehaviour:
     sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
     sprites:
-    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -2434995272506181264, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5040375706913360352, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -5894425961036811378, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5040375706913360352, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 1814198793275410985, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+  - imageName: Book-Images-Spritesheet
+    imagePath: Assets/Sprites/BookImages/Book-Images-Spritesheet.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Book-Images-Spritesheet
+    texture2D: {fileID: 2800000, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+    sprites:
+    - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2434995272506181264, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5040375706913360352, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -5894425961036811378, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1814198793275410985, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
   - imageName: Border Design v1
     imagePath: Assets/Sprites/Battle Boards/Border Design v1.png
     imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v1
@@ -5060,6 +5091,52 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 372f663fb49e39d4d8f2e2d638eaa6b2, type: 3}
     sprites:
     - {fileID: 21300000, guid: 372f663fb49e39d4d8f2e2d638eaa6b2, type: 3}
+  - imageName: elemental_assassin
+    imagePath: Assets/Sprites/Enemies/LandMonsters/elemental_assassin.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/elemental_assassin
+    texture2D: {fileID: 2800000, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    sprite: {fileID: -5607910683112323297, guid: 35e88db35e9531a4da2d20ca083d03ab,
+      type: 3}
+    sprites:
+    - {fileID: -5607910683112323297, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -3266724150380475099, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -2697797675211149076, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -3320382381790728636, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 246833260759528733, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -1028308167345161220, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -4103624143763271619, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 6738731478501456338, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -8761481270395605583, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 2192260342766915934, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 2962182426521472128, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -172942788784133759, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 884064031869039606, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 6003581615257551954, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 586629317700596641, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -7378784345133809786, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -3331383169706572139, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 4946970209431735228, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 672460160592591220, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -3614273608482107223, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 7389277548440119285, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 6507957113250114587, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 4742273195088002615, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 1826717576379779824, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -294332637840608806, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -2497553506562939420, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 6324175086690177346, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -6868242524352681450, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -7497271003460364544, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -8551819242802111113, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 2160647716868348216, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 6012685854087389053, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 2006123352863044429, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -123761920038223681, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 7945381521673900759, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -9119178183907968057, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: 8326019451620860718, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -1383360152833149845, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
+    - {fileID: -4766424405246066613, guid: 35e88db35e9531a4da2d20ca083d03ab, type: 3}
   - imageName: elemental_base
     imagePath: Assets/Sprites/Enemies/LandMonsters/elemental_base.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/elemental_base
@@ -5106,6 +5183,144 @@ MonoBehaviour:
     - {fileID: 2684409797191228047, guid: f161e9fb44ee5624bb5ec89d9f99967f, type: 3}
     - {fileID: -6062131839219703209, guid: f161e9fb44ee5624bb5ec89d9f99967f, type: 3}
     - {fileID: 4625367596109549490, guid: f161e9fb44ee5624bb5ec89d9f99967f, type: 3}
+  - imageName: elemental_healer
+    imagePath: Assets/Sprites/Enemies/LandMonsters/elemental_healer.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/elemental_healer
+    texture2D: {fileID: 2800000, guid: f361b92430117a0499128b191690378a, type: 3}
+    sprite: {fileID: -8743351566098656872, guid: f361b92430117a0499128b191690378a,
+      type: 3}
+    sprites:
+    - {fileID: -8743351566098656872, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 3522451628177812647, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -4596515463117979994, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3687539114777649681, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 5596325052326787242, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -1488181592953067994, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3833904109650720072, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -5351462900138395555, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -600971067020129769, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 5085501118437726443, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3688255100247462559, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -1747208775965266891, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3527799666733450787, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 2477993772588204240, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -5302251803510869019, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 4309465148701946316, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -2944280032596395648, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 6760927621965341201, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3037799817671917949, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -6771639148715803332, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -8569756094454909208, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -9161184390711142391, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -7427550327208251410, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 2905744104500317845, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -6150331236317473131, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -7426502844163935383, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 675070520561811624, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 2806432176212653328, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 540180252093430418, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -558173728172725650, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -117975414437215564, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -7597244480666335397, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -7339199092430412026, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 577540356829100203, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -6507770257079805707, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -5872346961322565511, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -8226048825756256571, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: 7203897140631333894, guid: f361b92430117a0499128b191690378a, type: 3}
+    - {fileID: -3168813852649553618, guid: f361b92430117a0499128b191690378a, type: 3}
+  - imageName: elemental_ranged
+    imagePath: Assets/Sprites/Enemies/LandMonsters/elemental_ranged.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/elemental_ranged
+    texture2D: {fileID: 2800000, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    sprite: {fileID: 8909731471559437014, guid: e16a563db73c56b4cb211a69ba300a04,
+      type: 3}
+    sprites:
+    - {fileID: 8909731471559437014, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -8544124700742737708, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 2819378256502200981, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -2825124312959820567, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 1542212680577604377, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -7865288643743830929, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 7629437170316120367, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -3383526919311730649, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 3150702057492100319, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 4601068920878885604, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 5755188663332448637, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 725672588074004035, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 6704874958182227321, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 1256892922257950224, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -169959238625057900, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 7883275694062421545, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -5682533210291163449, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 4944413562104423679, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 5938910902072648422, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 500521923793487079, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -1662176582047276013, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -2643504731807602640, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -788167717699083691, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 2524186053812992247, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -8214737836240806394, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -6956516085860102202, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -5070661847166060267, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -33845758252448215, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -7916926850023215154, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -3486665523186269458, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -2290700757439737616, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -5926045576122801195, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -8325687192519487798, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 2909843885980461164, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 3206330922542851010, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 8269842100458194217, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -3623582093392467176, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: -3902807097391485362, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+    - {fileID: 536589806384126975, guid: e16a563db73c56b4cb211a69ba300a04, type: 3}
+  - imageName: elemental_tank
+    imagePath: Assets/Sprites/Enemies/LandMonsters/elemental_tank.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/elemental_tank
+    texture2D: {fileID: 2800000, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    sprite: {fileID: -5896688005283128207, guid: 407c4fa7b44718b4d9408f873c972d54,
+      type: 3}
+    sprites:
+    - {fileID: -5896688005283128207, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 8132320741958709130, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 4058091686868753479, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -9150522117588042276, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -9163401211671166064, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -5046514578625177539, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -634029349772085464, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -3708113796353875238, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -7410208008688031016, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 5256582529066836944, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -5508603536389504472, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 9201210800662060942, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 8603289020356241473, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 156960141394419350, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -5842880062677855440, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 5901183519065161036, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -4133235944537652945, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -8486282639772637712, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -8873594717094806221, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -411763301163799507, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 8241349015888584671, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -4358744003190019277, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -2663109748121565290, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -22232535416133717, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 2107348221285396745, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 8161026067580947876, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -486076336298650084, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -2871816666732130418, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -7972149192646238249, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -8897431180200680227, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -8062594156477988006, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -7203326474611854129, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: 1715330443496253474, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -2425726938810154772, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -2530530022234843907, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -180723712919550074, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -111032338492611251, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -4695749140393180920, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
+    - {fileID: -4243115168581527099, guid: 407c4fa7b44718b4d9408f873c972d54, type: 3}
   - imageName: empty_layer
     imagePath: Assets/Sprites/empty_layer.png
     imagePathWithoutExtension: Assets/Sprites/empty_layer
@@ -10353,8 +10568,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon

@@ -10,6 +10,9 @@ public class BugReportManager : MonoBehaviour {
    // Self
    public static BugReportManager self;
 
+   // Reference to main canvas
+   public Canvas canvasGUI;
+
    #endregion
 
    public void Awake () {
@@ -17,7 +20,7 @@ public class BugReportManager : MonoBehaviour {
    }
 
    [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps) {
+   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes) {
       // Check when they last submitted a bug report
       if (_lastBugReportTime.ContainsKey(player.userId)) {
          float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
@@ -37,9 +40,11 @@ public class BugReportManager : MonoBehaviour {
       // Keep track of the time they last submitted a bug report
       _lastBugReportTime[player.userId] = Time.time;
 
+      string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
+
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message, ping, fps);
+         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -101,8 +106,51 @@ public class BugReportManager : MonoBehaviour {
       }
       int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
 
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps);
+      byte[] screenshotBytes = takeScreenshot().EncodeToPNG();
+
+      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes);
       _lastBugReportTime[Global.player.userId] = Time.time;
+   }
+
+   private Texture2D takeScreenshot () {
+      // Prepare data
+      int resWidth = Screen.width;
+      int resHeight = Screen.height;
+      Camera camera = Camera.main;
+      RenderTexture savedCameraRT = camera.targetTexture;
+      RenderTexture savedActiveRT = RenderTexture.active;
+      RenderMode cameraRenderMode = canvasGUI.renderMode;
+      Camera canvasWorldCamera = canvasGUI.worldCamera;
+      float planeDistance = canvasGUI.planeDistance;
+
+      // Temporary change render mode of Canvas to "Screen Space - Camera" to enable UI capture in screenshot
+      if (cameraRenderMode != RenderMode.ScreenSpaceCamera) {
+         canvasGUI.renderMode = RenderMode.ScreenSpaceCamera;
+         canvasGUI.worldCamera = camera;
+         canvasGUI.planeDistance = 1;
+      }
+
+      // Create render texture, assign and render to it
+      RenderTexture rt = new RenderTexture(resWidth, resHeight, 24);
+      camera.targetTexture = rt;
+      Texture2D screenShot = new Texture2D(resWidth, resHeight, TextureFormat.RGB24, false);
+      camera.Render();
+
+      // Revert changes in Canvas
+      canvasGUI.renderMode = cameraRenderMode;
+      canvasGUI.worldCamera = canvasWorldCamera;
+      canvasGUI.planeDistance = planeDistance;
+
+      // Read pixels to Texture2D
+      RenderTexture.active = rt;
+      screenShot.ReadPixels(new Rect(0, 0, resWidth, resHeight), 0, 0);
+
+      // Cleanup
+      camera.targetTexture = savedCameraRT;
+      RenderTexture.active = savedActiveRT;
+      Destroy(rt);
+
+      return screenShot;
    }
 
    #region Private Variables

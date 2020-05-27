@@ -3817,10 +3817,10 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps) {
+   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, bugSubject, bugLog, ping, fps) VALUES(@usrId, @bugSubject, @bugLog, @ping, @fps)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG) VALUES(@usrId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -3829,6 +3829,8 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@bugLog", bugReport);
             cmd.Parameters.AddWithValue("@ping", ping);
             cmd.Parameters.AddWithValue("@fps", fps);
+            cmd.Parameters.AddWithValue("@playerPosition", playerPosition);
+            cmd.Parameters.AddWithValue("@screenshotPNG", screenshotBytes);
             cmd.Parameters.AddWithValue("@status", "Unassigned");
 
             // Execute the command

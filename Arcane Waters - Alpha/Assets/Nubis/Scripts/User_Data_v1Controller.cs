@@ -27,11 +27,11 @@ namespace NubisTranslator {
                         string usrName = reader.GetString("usrName");
                         int bodyType = reader.GetInt32("bodyType");
                         int hairType = reader.GetInt32("hairType");
-                        int hairColor1 = reader.GetString("hairPalette1");
-                        int hairColor2 = reader.GetString("hairPalette2");
+                        string hairColor1 = reader.GetString("hairPalette1");
+                        string hairColor2 = reader.GetString("hairPalette2");
                         int eyesType = reader.GetInt32("eyesType");
-                        int eyesColor1 = reader.GetString("eyesPalette1");
-                        int eyesColor2 = reader.GetString("eyesPalette2");
+                        string eyesColor1 = reader.GetString("eyesPalette1");
+                        string eyesColor2 = reader.GetString("eyesPalette2");
                         int wpnId = reader.GetInt32("wpnId");
                         int armId = reader.GetInt32("armId");
                         string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairColor1:{hairColor1}[space]hairColor2:{hairColor2}[space]eyesType:{eyesType}[space]eyesColor1:{eyesColor1}[space]eyesColor2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}\n";
