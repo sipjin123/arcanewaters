@@ -13,6 +13,10 @@ public class DB_MainStub : MonoBehaviour {
    #endregion
 
    #region NUBIS data fetching
+   
+   public static string nubisFetchInventoryCount (string rawUserId) {
+      return "";
+   }
 
    public static string nubisFetchUserData (string rawUserId) {
       return "";
@@ -214,8 +218,8 @@ public class DB_MainStub : MonoBehaviour {
    public static void updatePerksXML (string xmlContent, int perkId) {
    }
 
-   public static List<string> getPerksXML () {
-      return new List<string>();
+   public static List<PerkData> getPerksXML () {
+      return new List<PerkData>();
    }
 
    public static void deletePerkXML (int xmlId) {

@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using NubisDataHandling;
+using NubisTranslator;
+using UnityEngine;
 
 public class NubisDataFetchTest : MonoBehaviour
 {
@@ -10,11 +13,6 @@ public class NubisDataFetchTest : MonoBehaviour
    #endregion
 
    private void Awake () {
-      if (SystemInfo.deviceName == DEVICE_NAME) {
-         string testmap = "Shroom+Ruins";
-         testmap = testmap.Replace("+", " ");
-         D.debug(testmap);
-      }
    }
 
    private void Update () {
@@ -50,10 +48,58 @@ public class NubisDataFetchTest : MonoBehaviour
             nubisXmlVer();
          }
 
+         if (Input.GetKeyDown(KeyCode.V)) {
+            D.editorLog("Fetch cxml");
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string result = DB_Main.nubisFetchXmlVersion("777");
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+            
+            //nubisMap2();
+         }
+         if (Input.GetKeyDown(KeyCode.Z)) {
+            string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string result = DB_Main.nubisFetchInventory(call);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
          if (Input.GetKeyDown(KeyCode.X)) {
-            nubisMap2();
+            string call = "745" + NubisDataFetcher.SPACER + "1" + NubisDataFetcher.SPACER + "0";
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string result = DB_Main.nubisFetchInventory(call);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
+         if (Input.GetKeyDown(KeyCode.C)) {
+            string call = "745" + NubisDataFetcher.SPACER + "2" + NubisDataFetcher.SPACER + "0";
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string result = DB_Main.nubisFetchInventory(call);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
+         if (Input.GetKeyDown(KeyCode.M)) {
+            nubisTotalItems();
          }
       }
+   }
+
+   private async void nubisTotalItems () {
+      D.debug("ASync start");
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), "745");
+      D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisUserData () {
@@ -88,7 +134,9 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisInventory () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), "745_space_1"); 
+      string call = "745_space_1_0";
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), call);
+
       D.debug("ASync start: " + returnCode);
    }
 

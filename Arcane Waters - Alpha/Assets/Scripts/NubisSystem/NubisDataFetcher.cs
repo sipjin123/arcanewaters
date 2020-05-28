@@ -31,6 +31,9 @@ namespace NubisDataHandling {
       // The xml version event 
       public XmlVersionEvent xmlVersionEvent = new XmlVersionEvent();
 
+      // Space syntax for data sending
+      public static string SPACER = "_space_";
+
       #endregion
 
       private void Awake () {
@@ -123,15 +126,16 @@ namespace NubisDataHandling {
          craftingPanel.updatePanelWithBlueprintList(craftableItems.ToArray(), blueprintStatus.ToArray(), pageIndex, itemsPerPage);
       }
 
-      public void fetchEquipmentData (int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
+      public void fetchEquipmentData (int pageIndex = 1, int itemsPerPage = 42, Item.Category[] categoryFilter = null) {
          if (itemsPerPage > 200) {
             D.warning("Requesting too many items per page.");
             return;
          }
+
          processUserInventory(pageIndex, itemsPerPage, categoryFilter);
       }
 
-      private async void processUserInventory (int pageIndex = 0, int itemsPerPage = 0, Item.Category[] categoryFilter = null) {
+      private async void processUserInventory (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
          int userId = Global.player == null ? 0 : Global.player.userId;
          UserInfo newUserInfo = new UserInfo();
          List<Item> userInventory = new List<Item>();
@@ -140,6 +144,15 @@ namespace NubisDataHandling {
          this.pageIndex = pageIndex;
          this.itemsPerPage = itemsPerPage;
 
+         string itemCountResponse = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), userId.ToString() + SPACER + this.categoryFilter);
+         int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
+
+         try {
+            totalItemCount = int.Parse(itemCountResponse);
+         } catch {
+            D.editorLog("Failed to parse: " + itemCountResponse);
+         }
+
          string userRawData = await NubisClient.call(nameof(DB_Main.nubisFetchUserData), userId.ToString());
          if (userRawData.Length < 10) {
             D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
@@ -147,42 +160,15 @@ namespace NubisDataHandling {
          }
          newUserInfo = UserInfoData.processUserInfo(userRawData);
 
-         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.None) {
-            string weaponRawData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + "_space_1");
-            List<Item> weaponList = UserInventory.processUserInventory(weaponRawData, EquipmentType.Weapon);
-            foreach (Item weapon in weaponList) {
-               if (weapon.id != newUserInfo.weaponId) {
-                  userInventory.Add(weapon);
+         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
+            string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString());
+            List<Item> itemList = UserInventory.processUserInventory(inventoryData);
+            foreach (Item item in itemList) {
+               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {
+                  userInventory.Add(item);
                }
             }
          }
-
-         if (this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.None) {
-            string armorRawData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + "_space_2");
-            List<Item> armorList = UserInventory.processUserInventory(armorRawData, EquipmentType.Armor);
-            foreach (Item armor in armorList) {
-               if (armor.id != newUserInfo.armorId) {
-                  userInventory.Add(armor);
-               }
-            }
-         }
-
-         if (this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string craftingIngredientRawData = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), userId.ToString());
-            List<Item> ingredientList = CraftingIngredients.processCraftingIngredients(craftingIngredientRawData);
-            foreach (Item ingredientItem in ingredientList) {
-               userInventory.Add(ingredientItem);
-            }
-         }
-
-         // Calculate the maximum page number
-         int maxPage = Mathf.CeilToInt((float) userInventory.Count / itemsPerPage);
-         if (maxPage == 0) {
-            maxPage = 1;
-         }
-
-         // Clamp the requested page number to the max page - the number of items could have changed
-         pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
 
          // Process user equipped items
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), userId.ToString());
@@ -205,7 +191,7 @@ namespace NubisDataHandling {
          }
 
          UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor };
-         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex);
+         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount);
       }
    }
 }

@@ -75,9 +75,12 @@ public class SteamManager : MonoBehaviour
 #if !CLOUD_BUILD
       Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
 #endif
-
 #if CLOUD_BUILD
       Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
+#endif
+
+#if !UNITY_EDITOR && !IS_SERVER_BUILD
+      Debug.Log("STEAM :: Initializing Steam");
       if (!Packsize.Test()) {
 			Debug.LogError("[Steamworks.NET] Packsize Test returned false, the wrong version of Steamworks.NET is being run in this platform.", this);
 		}

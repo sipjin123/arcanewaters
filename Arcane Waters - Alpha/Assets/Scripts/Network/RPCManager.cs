@@ -720,7 +720,7 @@ public class RPCManager : NetworkBehaviour {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
 
          // TODO: Do not Remove until this issue is completely fixed
-         D.debug("Map Log: Creating Map data from Map Cache Data");
+         D.editorLog("Map Log: Creating Map using Map Data Cache", Color.cyan);
 
          MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
          return;

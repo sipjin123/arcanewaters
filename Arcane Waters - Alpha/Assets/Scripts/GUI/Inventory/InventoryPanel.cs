@@ -114,7 +114,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
-   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex) {
+   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
       _equippedWeaponId = userObjects.weapon.id;
       _equippedArmorId = userObjects.armor.id;
 
@@ -122,10 +122,11 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       _currentPage = pageIndex;
 
       // Calculate the maximum page number
-      _maxPage = Mathf.CeilToInt((float) itemArray.Length / ITEMS_PER_PAGE);
+      // TODO: Confirm max page alteration
+      _maxPage = Mathf.CeilToInt((float) totalItems / ITEMS_PER_PAGE);
 
       // Update the current page text
-      pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+      pageNumberText.text = "Page " + (_currentPage + 1).ToString() + " of " + _maxPage.ToString();
 
       // Update the navigation buttons
       updateNavigationButtons();
@@ -289,28 +290,28 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public void onAllTabButtonPress () {
       _categoryFilters.Clear();
       _categoryFilters.Add(Item.Category.None);
-      _currentPage = 1;
+      _currentPage = 0;
       refreshPanel();
    }
 
    public void onWeaponTabButtonPress () {
       _categoryFilters.Clear();
       _categoryFilters.Add(Item.Category.Weapon);
-      _currentPage = 1;
+      _currentPage = 0;
       refreshPanel();
    }
 
    public void onArmorTabButtonPress () {
       _categoryFilters.Clear();
       _categoryFilters.Add(Item.Category.Armor);
-      _currentPage = 1;
+      _currentPage = 0;
       refreshPanel();
    }
 
    public void onIngredientsTabButtonPress () {
       _categoryFilters.Clear();
       _categoryFilters.Add(Item.Category.CraftingIngredients);
-      _currentPage = 1;
+      _currentPage = 0;
       refreshPanel();
    }
 
@@ -321,7 +322,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          _categoryFilters.Add(c);
       }
 
-      _currentPage = 1;
+      _currentPage = 0;
       refreshPanel();
    }
 
@@ -548,7 +549,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
    
    public void previousPage () {
-      if (_currentPage > 1) {
+      if (_currentPage > 0) {
          _currentPage--;
          refreshPanel();
       }
@@ -559,7 +560,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       previousPageButton.enabled = true;
       nextPageButton.enabled = true;
 
-      if (_currentPage <= 1) {
+      if (_currentPage <= 0) {
          previousPageButton.enabled = false;
       }
 
@@ -590,10 +591,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    #region Private Variables
 
    // The index of the current page
-   private int _currentPage = 1;
+   private int _currentPage = 0;
 
    // The maximum page index (starting at 1)
-   private int _maxPage = 1;
+   private int _maxPage = 3;
 
    // The category used to filter the displayed items
    private List<Item.Category> _categoryFilters = new List<Item.Category> { Item.Category.None };

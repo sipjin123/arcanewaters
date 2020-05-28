@@ -42,12 +42,12 @@ namespace NubisDataHandling {
          string hairPalette1 = PaletteDef.Hair.Yellow;
          string hairPalette2 = PaletteDef.Hair.Yellow;
          try {
-            hairPalette1 = xmlPairCollection["hairPalette1"];
+            hairPalette1 = xmlPairCollection["hairColor1"];
          } catch {
             D.debug("Hair palette 1 fetch Issue for user: " + userName);
          }
          try {
-            hairPalette2 = xmlPairCollection["hairPalette2"];
+            hairPalette2 = xmlPairCollection["hairColor2"];
          } catch {
             D.debug("Hair palette 2 fetch Issue for user: " + userName);
          }
@@ -57,12 +57,12 @@ namespace NubisDataHandling {
          string eyesPalette1 = PaletteDef.Eyes.Blue;
          string eyesPalette2 = PaletteDef.Eyes.Blue;
          try {
-            eyesPalette1 = xmlPairCollection["eyesPalette1"];
+            eyesPalette1 = xmlPairCollection["eyesColor1"];
          } catch {
             D.debug("Eye palette 1 fetch Issue for user: " + userName);
          }
          try {
-            eyesPalette2 = xmlPairCollection["eyesPalette2"];
+            eyesPalette2 = xmlPairCollection["eyesColor2"];
          } catch {
             D.debug("Eye palette 2 fetch Issue for user: " + userName);
          }

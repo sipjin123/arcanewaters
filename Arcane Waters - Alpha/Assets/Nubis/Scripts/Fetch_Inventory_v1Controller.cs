@@ -7,42 +7,96 @@ using MySql.Data.MySqlClient;
 
 namespace NubisTranslator {
    public class Fetch_Inventory_v1Controller {
-      public static string userInventory (int usrId, int equipType) {
-#if NUBIS
+      public static string userInventory (int usrId, int currentPage, int category) {
+         int offset = currentPage * InventoryPanel.ITEMS_PER_PAGE;
+         bool hasItemFilter = category != 0;
+         string itemFilterContent = "and (itmCategory = " + category+")";
+         if (!hasItemFilter) {
+            itemFilterContent = "and (itmCategory = 1 or itmCategory = 2 or itmCategory = 6)";
+         }
+
+         #if NUBIS
          try {
-            string equipmentTable = "";
-            int equipmentCategory = equipType;
-            switch (equipType) {
-               case 1:
-                  equipmentTable = "equipment_weapon_xml_v3";
-                  break;
-               case 2:
-                  equipmentTable = "equipment_armor_xml_v3";
-                  break;
-            }
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-               "SELECT xmlContent, itmId FROM items left join " + equipmentTable + " on itmType = xml_id where itmCategory = " + equipmentCategory + " and usrId = @usrId", connection)) {
+               "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId "+ itemFilterContent + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder stringBuilder = new StringBuilder();
                   using (MySqlDataReader reader = command.ExecuteReader()) {
                      while (reader.Read()) {
-                        string xmlData = reader.GetString("xmlContent");
                         int itmId = reader.GetInt32("itmId");
-                        string result = $"[next]{xmlData}[space]{itmId}";
+                        int itmCategory = reader.GetInt32("itmCategory");
+                        int itmType = reader.GetInt32("itmType");
+                        int itmCount = reader.GetInt32("itmCount");
+                        string itmData = ""; 
+                        string itmPalette1 = ""; 
+                        string itmPalette2 = "";
+
+                        try {
+                           itmData = reader.GetString("itmData");
+                        } catch {
+                           D.editorLog("Blank item data");
+                        }
+                        try {
+                           itmPalette1 = reader.GetString("itmPalette1");
+                        } catch {
+                           D.editorLog("Blank Palette 1");
+                        }
+                        try {
+                           itmPalette2 = reader.GetString("itmPalette2");
+                        } catch {
+                           D.editorLog("Blank Palette 2");
+                        }
+
+                        string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalette1}[space]{itmPalette2}";
+                        //D.editorLog("REsult fetch was: " + result);
                         stringBuilder.AppendLine(result);
                      }
                   }
                   return stringBuilder.ToString();
                }
             }
-         } catch {
-            return "Failed to Query";
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
          }
-#endif
-         return "";
+         #endif
+         return "Failed to Query";
+      }
+
+      public static string userInventoryCount (int usrId, int categoryFilter) {
+         bool hasItemFilter = categoryFilter != 0;
+         string itemFilterContent = "and (itmCategory = " + categoryFilter + ")";
+         if (!hasItemFilter) {
+            itemFilterContent = "and (itmCategory = 1 or itmCategory = 2 or itmCategory = 6)";
+         }
+
+         #if NUBIS
+         try {
+            using (MySqlConnection connection = DB_Main.getConnection()) {
+               connection.Open();
+
+               using (MySqlCommand command = new MySqlCommand("SELECT COUNT(*) as itemCount FROM arcane.items where (usrId = @usrId " + itemFilterContent + ")", connection)) {
+                  command.Parameters.AddWithValue("@usrId", usrId);
+
+                  StringBuilder stringBuilder = new StringBuilder();
+                  using (MySqlDataReader reader = command.ExecuteReader()) {
+                     while (reader.Read()) {
+                        int itmCount = reader.GetInt32("itemCount");
+
+                        return itmCount.ToString();
+                     }
+                  }
+                  return stringBuilder.ToString();
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+            return "0";
+         }
+         #endif
+         return "0";
       }
    }
 }

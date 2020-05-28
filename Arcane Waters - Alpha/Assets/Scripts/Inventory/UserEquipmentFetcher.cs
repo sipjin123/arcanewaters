@@ -599,7 +599,7 @@ namespace OldEquipmentFetcher {
             // Clamp the requested page number to the max page - the number of items could have changed
             pageIndex = Mathf.Clamp(pageIndex, 1, maxPage);
 
-            panel.receiveItemForDisplay(_itemList.ToArray(), userObjects, categoryFilter, pageIndex);
+            panel.receiveItemForDisplay(_itemList.ToArray(), userObjects, categoryFilter, pageIndex, InventoryPanel.ITEMS_PER_PAGE);
          }
       }
 

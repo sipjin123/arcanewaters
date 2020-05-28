@@ -89,6 +89,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      #if IS_SERVER_BUILD && CLOUD_BUILD
+      forceDisable = false;
+      #endif
+      
       // Make sure this directory exists
       if (!Directory.Exists(XML_TEXT_DIRECTORY)) {
          Directory.CreateDirectory(XML_TEXT_DIRECTORY);

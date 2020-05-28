@@ -82,6 +82,15 @@ public class DB_Main : DB_MainStub {
 
    #region NUBIS data fetching
 
+   public static new string nubisFetchInventoryCount (string rawUserId) {
+      string splitter = "_space_";
+      string[] rawItemGroup = rawUserId.Split(new string[] { splitter }, StringSplitOptions.None);
+
+      int userId = int.Parse(rawItemGroup[0]);
+      int categoryFilter = int.Parse(rawItemGroup[1]);
+      return NubisTranslator.Fetch_Inventory_v1Controller.userInventoryCount(userId, categoryFilter);
+   }
+
    public static new string nubisFetchUserData (string rawUserId) {
       int userId = int.Parse(rawUserId);
       return NubisTranslator.User_Data_v1Controller.userData(userId);
@@ -130,8 +139,10 @@ public class DB_Main : DB_MainStub {
       string[] rawItemGroup = rawContent.Split(new string[] { splitter }, StringSplitOptions.None);
 
       int userId = int.Parse(rawItemGroup[0]);
-      int equipmentType = int.Parse(rawItemGroup[1]);
-      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, equipmentType);
+      int inventoryPage = int.Parse(rawItemGroup[1]);
+      int category = int.Parse(rawItemGroup[2]);
+
+      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category);
    }
 
    public static new string nubisFetchMapData (string rawMapName) {

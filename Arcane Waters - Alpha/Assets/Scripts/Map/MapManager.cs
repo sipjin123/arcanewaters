@@ -86,7 +86,7 @@ public class MapManager : MonoBehaviour
             int baseMapId = DB_Main.getMapId(mapInfo.mapName);
             customizationData = DB_Main.getMapCustomizationData(baseMapId, ownerId);
          }
-         D.debug("Try to create map for: " + areaKey);
+         D.editorLog("Map Log: Creating map for: " + areaKey, Color.cyan);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -226,9 +226,6 @@ public class MapManager : MonoBehaviour
 
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
-         // TODO: Do not Remove until this issue is completely fixed
-         D.debug("Map Log: Creating Map data from OnAreaCreationFinished");
-
          createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData);
          _nextAreaKey = null;
       }
@@ -289,7 +286,7 @@ public class MapManager : MonoBehaviour
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // TODO: Do not Remove until this issue is completely fixed
-         D.debug("Map Log: Creating Map data from DownloadAndCreateMap");
+         D.editorLog("Map Log: Download and Create Map", Color.cyan);
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);
