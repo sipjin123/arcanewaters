@@ -4,48 +4,55 @@ public class NubisDataFetchTest : MonoBehaviour
 {
    #region Public Variables
 
+   // Only run this script for this device
+   public static string DEVICE_NAME = "DESKTOP-7UVTQ74";
+
    #endregion
 
    private void Awake () {
-      string testmap = "Shroom+Ruins";
-      testmap = testmap.Replace("+", " ");
-      D.debug(testmap);
+      if (SystemInfo.deviceName == DEVICE_NAME) {
+         string testmap = "Shroom+Ruins";
+         testmap = testmap.Replace("+", " ");
+         D.debug(testmap);
+      }
    }
 
    private void Update () {
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
-         nubisUserData();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha2)) {
-         nubisWeapons();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha3)) {
-         nubisArmors();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha4)) {
-         nubisIngredients();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha5)) {
-         nubisEquippedItems();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha6)) {
-         nubisInventory();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha7)) {
-         nubisMap();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha8)) {
-         nubisSingleBP();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha9)) {
-         nubisXMLBytes();
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha0)) {
-         nubisXmlVer();
-      }
+      if (SystemInfo.deviceName == DEVICE_NAME) {
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            nubisUserData();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            nubisWeapons();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            nubisArmors();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            nubisIngredients();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            nubisEquippedItems();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            nubisInventory();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha7)) {
+            nubisMap();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha8)) {
+            nubisSingleBP();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha9)) {
+            nubisXMLBytes();
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha0)) {
+            nubisXmlVer();
+         }
 
-      if (Input.GetKeyDown(KeyCode.X)) {
-         nubisMap2();
+         if (Input.GetKeyDown(KeyCode.X)) {
+            nubisMap2();
+         }
       }
    }
 

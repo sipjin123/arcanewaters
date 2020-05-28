@@ -1,19 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
-namespace CloudBuildDataFetch
-{
-   public class CloudFetchtester : MonoBehaviour
-   {
+namespace CloudBuildDataFetch {
+   public class CloudBuildDataFetcher : MonoBehaviour {
       #region Public Variables
 
-      // Data saving values
-      public static string DIRECTORY = "C:/CloudDataFiles";
-      public static string FILE_NAME = "buildList.txt";
+      // Self
+      public static CloudBuildDataFetcher self;
 
       // User auth key for cloud build data request
       public static string USER_AUTH_KEY = "d437a754dc5d7c76979dea90a0049425";
@@ -26,7 +23,7 @@ namespace CloudBuildDataFetch
       public static int BUILD_FETCH_COUNT = 1;
 
       // How frequent the system checks for updates
-      public static int CHECK_REPEAT_DELAY = 60;
+      public static int CHECK_REPEAT_DELAY = 300;
 
       // Request parameters
       public static string DEFAULT_REQUEST_URL = "https://build-api.cloud.unity3d.com/api/v1/orgs/";
@@ -34,25 +31,25 @@ namespace CloudBuildDataFetch
       public static string PROJECT_ID = "0ea8276a-68a2-46b7-b2d9-8c33417a2770";
       public static string BUILD_TARGET = "windows-desktop-64-bit-client";
 
+      // If data should be added to the logs
+      public bool isLoggingData = false;
+
       #endregion
 
       private void Awake () {
-         if (!Directory.Exists(DIRECTORY)) {
-            Directory.CreateDirectory(DIRECTORY);
-         }
-
-         string fileDirectory = DIRECTORY + "/" + FILE_NAME + ".txt";
-         if (!System.IO.File.Exists(fileDirectory)) {
-            System.IO.File.Create(fileDirectory).Close();
-         }
+         // Only start the process if this is a cloud build server
+         self = this;
       }
 
       private void Start () {
+         // Only start the process if this is a cloud build server
+         #if CLOUD_BUILD && IS_SERVER_BUILD
          InvokeRepeating("triggerCloudChecker", 3, CHECK_REPEAT_DELAY);
+         #endif
       }
 
       private void triggerCloudChecker () {
-         Debug.Log("Triggered Cloud checker");
+         D.log("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
          StartCoroutine(getBuildList());
       }
 
@@ -60,15 +57,19 @@ namespace CloudBuildDataFetch
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             cloudData = DB_Main.getCloudData();
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Debug.Log("Done Fetching Database Cloud Data");
-               crossCheckBuildData();
+               if (cloudData == null) {
+                  D.log("CloudDataLogger: Fetched cloud data is null, try again later");
+               } else {
+                  logData("CloudDataLogger: Done Fetching Database Cloud Data");
+                  crossCheckBuildData();
+               }
             });
          });
       }
 
       private void crossCheckBuildData () {
          if (cloudData.buildId < rootList[0].build) {
-            Debug.Log("Cloud database is outdated, now updating: " + cloudData.buildId + " to " + rootList[0].build);
+            logData("CloudDataLogger: Cloud database is outdated, now updating: " + cloudData.buildId + " to " + rootList[0].build);
 
             CloudBuildData newCloudBuildData = new CloudBuildData();
             newCloudBuildData.buildId = rootList[0].build;
@@ -80,39 +81,28 @@ namespace CloudBuildDataFetch
             newCloudBuildData.buildMessage = compiledCommitMessage;
             newCloudBuildData.buildDateTime = rootList[0].finished;
 
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.addNewCloudData(newCloudBuildData);
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Done");
+            if (newCloudBuildData.buildId > 0 && newCloudBuildData.buildMessage.Length > 0) {
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.addNewCloudData(newCloudBuildData);
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     logData("CloudDataLogger: Done");
+                  });
                });
-            });
+            } else {
+               D.log("CloudDataLogger: Prevent creating data, please check database for trash entry");
+            }
          } else {
-            Debug.Log("Cloud is up to date: " + cloudData.buildId);
+            logData("CloudDataLogger: Cloud is up to date: " + cloudData.buildId);
          }
       }
 
-      private void OnGUI () {
-         if (GUILayout.Button("Get Auti Log")) {
-            StartCoroutine(CO_GetAuditLog());
-         }
-         if (GUILayout.Button("Get Build List")) {
-            StartCoroutine(getBuildList());
-         }
-         if (GUILayout.Button("Get Build Info")) {
-            StartCoroutine(CO_GetBuildLog(511));
-         }
-         if (GUILayout.Button("Get Database Info")) {
-            D.editorLog("Start Calling");
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               cloudData = DB_Main.getCloudData();
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Done");
-               });
-            });
+      private void logData (string message) {
+         if (isLoggingData) {
+            D.log(message);
          }
       }
 
-      IEnumerator CO_GetAuditLog () {
+      private IEnumerator CO_GetAuditLog () {
          string webPage = DEFAULT_REQUEST_URL + ORG_ID + "/projects/" + PROJECT_ID + "/buildtargets/" + BUILD_TARGET + "/auditlog";
          Dictionary<string, string> headers = new Dictionary<string, string>();
          headers.Add("Authorization", "basic " + USER_AUTH_KEY);
@@ -122,7 +112,7 @@ namespace CloudBuildDataFetch
          Debug.LogError(www.text);
       }
 
-      IEnumerator CO_GetBuildLog (int buildId) {
+      private IEnumerator CO_GetBuildLog (int buildId) {
          string webPage = DEFAULT_REQUEST_URL + ORG_ID + "/projects/" + PROJECT_ID + "/buildtargets/" + BUILD_TARGET + "/builds/" + buildId + "/";
          Dictionary<string, string> headers = new Dictionary<string, string>();
          headers.Add("Authorization", "basic " + USER_AUTH_KEY);
@@ -132,7 +122,7 @@ namespace CloudBuildDataFetch
          Debug.LogError(www.text);
       }
 
-      IEnumerator getBuildList () {
+      private IEnumerator getBuildList () {
          yield return new WaitForSeconds(3);
 
          string requestPage = DEFAULT_REQUEST_URL + ORG_ID + "/projects/" + PROJECT_ID + "/buildtargets/" + BUILD_TARGET + "/builds?per_page=" + BUILD_FETCH_COUNT;
@@ -141,10 +131,6 @@ namespace CloudBuildDataFetch
          WWW www = new WWW(requestPage, null, headers);
          yield return www;
 
-         // Write file to data for review
-         string fileDirectory = DIRECTORY + "/" + FILE_NAME + ".txt";
-         System.IO.File.WriteAllText(fileDirectory, www.text);
-
          // Data translation and extraction
          JArray newArray = (JArray) JsonConvert.DeserializeObject(www.text);
          for (int i = 0; i < newArray.Count; i++) {
@@ -152,7 +138,7 @@ namespace CloudBuildDataFetch
             rootList.Add(contentRoot);
          }
 
-         Debug.Log("Done Fetching Unity Cloud Data");
+         logData("CloudDataLogger: Done Fetching Unity Cloud Data");
          processDatabaseBuild();
       }
 

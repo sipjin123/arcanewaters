@@ -30,75 +30,79 @@ public class SteamTester : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      m_GetAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(OnAuthSessionTickerResponse);
-      //m_GetAuthSessionstatus = Callback<SteamNetAuthenticationStatus_t>.Create(OnSteamNetAuthenticationStatus); 
-      OnEncryptedAppTicketResponseCallResult = CallResult<EncryptedAppTicketResponse_t>.Create(OnEncryptedAppTicketResponse);
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+         m_GetAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(OnAuthSessionTickerResponse);
+         //m_GetAuthSessionstatus = Callback<SteamNetAuthenticationStatus_t>.Create(OnSteamNetAuthenticationStatus); 
+         OnEncryptedAppTicketResponseCallResult = CallResult<EncryptedAppTicketResponse_t>.Create(OnEncryptedAppTicketResponse);
+      }
    }
    
    private void OnGUI () {
-      if (GUILayout.Button("Check my Friends")) {
-         int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
-         Debug.LogError("[STEAM-FRIENDS] Listing " + friendCount + " Friends.");
-         for (int i = 0; i < friendCount; ++i) {
-            CSteamID friendSteamId = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
-            string friendName = SteamFriends.GetFriendPersonaName(friendSteamId);
-            EPersonaState friendState = SteamFriends.GetFriendPersonaState(friendSteamId);
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+         if (GUILayout.Button("Check my Friends")) {
+            int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
+            Debug.LogError("[STEAM-FRIENDS] Listing " + friendCount + " Friends.");
+            for (int i = 0; i < friendCount; ++i) {
+               CSteamID friendSteamId = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
+               string friendName = SteamFriends.GetFriendPersonaName(friendSteamId);
+               EPersonaState friendState = SteamFriends.GetFriendPersonaState(friendSteamId);
 
-            Debug.LogError(friendName + " is " + friendState);
-         }
-      }
-
-      if (GUILayout.Button("Check my Steam ID")) {
-         CSteamID steamId = SteamUser.GetSteamID();
-         string steamName = SteamFriends.GetFriendPersonaName(steamId);
-         Debug.LogError(steamId + " : "+ steamName);
-      }
-
-      GUILayout.Space(20);
-
-
-      if (GUILayout.Button("ForceAuth Auth")) {
-         byte[] k_unSecretData = System.BitConverter.GetBytes(0x5444);
-         SteamAPICall_t handle = SteamUser.RequestEncryptedAppTicket(k_unSecretData, sizeof(uint));
-         OnEncryptedAppTicketResponseCallResult.Set(handle);
-      }
-
-      if (GUILayout.Button("Get Auth")) {
-
-         m_Ticket = new byte[1024];
-         m_HAuthTicket = SteamUser.GetAuthSessionTicket(m_Ticket, 1024, out m_pcbTicket);
-         //StartCoroutine(CO_ProcessClientData());
-      }
-
-      if (GUILayout.Button("Begin Auth")) {
-         D.editorLog(m_Ticket.Length.ToString(), Color.red);
-         foreach (var temp in m_Ticket) {
-           // D.editorLog(temp.ToString(), Color.cyan);
-         }
-
-         char[] cArray = Encoding.ASCII.GetString(m_Ticket).ToCharArray();
-
-         int coutner = 0;
-         string stringTally = "";
-         foreach (var temp in cArray) {
-            if (coutner > 20) {
-               coutner = 0;
-               wordList.Add(stringTally);
-               D.editorLog("Added new word: "+stringTally, Color.yellow);
-               stringTally = "";
+               Debug.LogError(friendName + " is " + friendState);
             }
-            stringTally += temp.ToString();
-            coutner++;
          }
 
+         if (GUILayout.Button("Check my Steam ID")) {
+            CSteamID steamId = SteamUser.GetSteamID();
+            string steamName = SteamFriends.GetFriendPersonaName(steamId);
+            Debug.LogError(steamId + " : " + steamName);
+         }
 
-         D.editorLog(m_HAuthTicket.ToString(), Color.red);
-         EBeginAuthSessionResult ret = SteamUser.BeginAuthSession(m_Ticket, (int) m_pcbTicket, SteamUser.GetSteamID());
-         
-      }
+         GUILayout.Space(20);
 
-      if (GUILayout.Button("Corout")) {
-         StartCoroutine(CO_ProcessClientData());
+
+         if (GUILayout.Button("ForceAuth Auth")) {
+            byte[] k_unSecretData = System.BitConverter.GetBytes(0x5444);
+            SteamAPICall_t handle = SteamUser.RequestEncryptedAppTicket(k_unSecretData, sizeof(uint));
+            OnEncryptedAppTicketResponseCallResult.Set(handle);
+         }
+
+         if (GUILayout.Button("Get Auth")) {
+
+            m_Ticket = new byte[1024];
+            m_HAuthTicket = SteamUser.GetAuthSessionTicket(m_Ticket, 1024, out m_pcbTicket);
+            //StartCoroutine(CO_ProcessClientData());
+         }
+
+         if (GUILayout.Button("Begin Auth")) {
+            D.editorLog(m_Ticket.Length.ToString(), Color.red);
+            foreach (var temp in m_Ticket) {
+               // D.editorLog(temp.ToString(), Color.cyan);
+            }
+
+            char[] cArray = Encoding.ASCII.GetString(m_Ticket).ToCharArray();
+
+            int coutner = 0;
+            string stringTally = "";
+            foreach (var temp in cArray) {
+               if (coutner > 20) {
+                  coutner = 0;
+                  wordList.Add(stringTally);
+                  D.editorLog("Added new word: " + stringTally, Color.yellow);
+                  stringTally = "";
+               }
+               stringTally += temp.ToString();
+               coutner++;
+            }
+
+
+            D.editorLog(m_HAuthTicket.ToString(), Color.red);
+            EBeginAuthSessionResult ret = SteamUser.BeginAuthSession(m_Ticket, (int) m_pcbTicket, SteamUser.GetSteamID());
+
+         }
+
+         if (GUILayout.Button("Corout")) {
+            StartCoroutine(CO_ProcessClientData());
+         }
       }
    }
 

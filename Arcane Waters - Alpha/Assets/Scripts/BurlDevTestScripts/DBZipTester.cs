@@ -20,74 +20,75 @@ public class DBZipTester : MonoBehaviour {
    #endregion
 
    private void Update () {
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+         if (Input.GetKeyDown(KeyCode.Alpha5)) {
+            byte[] rawdata = File.ReadAllBytes(ServerDataZip);
+            string base64 = Convert.ToBase64String(rawdata);
+            byte[] bytes = Convert.FromBase64String(base64);
+            File.WriteAllBytes(NewServerDataZip, bytes);
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            byte[] rawdata = File.ReadAllBytes(ServerDataZip);
+            string base64 = Convert.ToBase64String(rawdata);
+            byte[] bytes = Convert.FromBase64String(base64);
+         }
 
-      if (Input.GetKeyDown(KeyCode.Alpha5)) {
-         byte[] rawdata = File.ReadAllBytes(ServerDataZip);
-         string base64 = Convert.ToBase64String(rawdata);
-         byte[] bytes = Convert.FromBase64String(base64);
-         File.WriteAllBytes(NewServerDataZip, bytes);
-      }
-      if (Input.GetKeyDown(KeyCode.Alpha6)) {
-         byte[] rawdata = File.ReadAllBytes(ServerDataZip);
-         string base64 = Convert.ToBase64String(rawdata);
-         byte[] bytes = Convert.FromBase64String(base64);
-      }
-
-      if (Input.GetKeyDown(KeyCode.Alpha1)) {
-         D.editorLog("Writing using Server", Color.green);
-         byte[] rawdata = File.ReadAllBytes(ServerDataZip);
-         File.WriteAllBytes(ServerDataText, rawdata);
-
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            DB_Main.writeZipData(rawdata);
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            D.editorLog("Writing using Server", Color.green);
+            byte[] rawdata = File.ReadAllBytes(ServerDataZip);
+            File.WriteAllBytes(ServerDataText, rawdata);
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               D.editorLog("DONE: " + rawdata.Length, Color.green);
+               DB_Main.writeZipData(rawdata);
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  D.editorLog("DONE: " + rawdata.Length, Color.green);
+               });
             });
-         });
-      }
+         }
 
-      if (Input.GetKeyDown(KeyCode.Alpha2)) {
-         D.editorLog("Fetching using Client", Color.green);
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            /*
-            string byteContent = Nubis.Controllers.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
-
-            //string base64 = Convert.ToBase64String(rawdata);
-            byte[] bytes = Convert.FromBase64String(byteContent);
-
-            File.WriteAllBytes(ClientDataText, bytes);
-
+         if (Input.GetKeyDown(KeyCode.Alpha2)) {
+            D.editorLog("Fetching using Client", Color.green);
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               D.editorLog("DONE: "+ byteContent.Length , Color.green);
-            });*/
-         });
-      }
+               /*
+               string byteContent = Nubis.Controllers.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
 
-      //===============================================
-      if (Input.GetKeyDown(KeyCode.Alpha3)) {
-         D.editorLog("Zipping bytes using Client", Color.green);
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            byte[] newdata = File.ReadAllBytes(ClientDataText);
-            File.WriteAllBytes(ClientDataZip, newdata);
+               //string base64 = Convert.ToBase64String(rawdata);
+               byte[] bytes = Convert.FromBase64String(byteContent);
 
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               D.editorLog("DONE: " + newdata.Length, Color.green);
+               File.WriteAllBytes(ClientDataText, bytes);
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  D.editorLog("DONE: "+ byteContent.Length , Color.green);
+               });*/
             });
-         });
-      }
-      /*
-      if (Input.GetKeyDown(KeyCode.Alpha4)) {
-         D.editorLog("Zipping bytes using Server", Color.green);
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            byte[] newdata = File.ReadAllBytes(ServerDataText);
-            File.WriteAllBytes(NewServerDataZip, newdata);
+         }
 
+         //===============================================
+         if (Input.GetKeyDown(KeyCode.Alpha3)) {
+            D.editorLog("Zipping bytes using Client", Color.green);
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               D.editorLog("DONE: " + newdata.Length, Color.green);
+               byte[] newdata = File.ReadAllBytes(ClientDataText);
+               File.WriteAllBytes(ClientDataZip, newdata);
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  D.editorLog("DONE: " + newdata.Length, Color.green);
+               });
             });
-         });
-      }*/
+         }
+         /*
+         if (Input.GetKeyDown(KeyCode.Alpha4)) {
+            D.editorLog("Zipping bytes using Server", Color.green);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               byte[] newdata = File.ReadAllBytes(ServerDataText);
+               File.WriteAllBytes(NewServerDataZip, newdata);
+
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  D.editorLog("DONE: " + newdata.Length, Color.green);
+               });
+            });
+         }*/
+      }
    }
 
    #region Private Variables
