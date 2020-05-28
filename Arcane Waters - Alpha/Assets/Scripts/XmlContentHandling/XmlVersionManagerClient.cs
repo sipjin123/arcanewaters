@@ -165,7 +165,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Shop));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Ship));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.ShipAbility));
+
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Background));
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.Perks));
    }
 
    private IEnumerator CO_ExtractXmlData (EditorToolType xmlType) {
@@ -223,11 +225,15 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.Shop:
             path = TEXT_PATH + XmlVersionManagerServer.SHOP_FILE + ".txt";
             break;
+
          case EditorToolType.Background:
             path = TEXT_PATH + XmlVersionManagerServer.BACKGROUND_DATA_FILE + ".txt";
             break;
+         case EditorToolType.Perks:
+            path = TEXT_PATH + XmlVersionManagerServer.PERKS_FILE + ".txt";
+            break;
       }
-
+            
       // Read the text from directly from the txt file
       StreamReader reader = new StreamReader(path);
       content = reader.ReadToEnd();
@@ -374,7 +380,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          #endregion
 
-         #region Group 3 (Class/Faction/Job/Specialty/SeaMonster)
+         #region Group 3 (Class/Faction/Job/Specialty/SeaMonster/Perks)
          case EditorToolType.PlayerClass:
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
@@ -443,6 +449,22 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             SeaMonsterManager.self.receiveListFromZipData(seaMonsterDataList.ToArray());
+            break;
+
+         case EditorToolType.Perks:
+            List<PerkData> perkDataList = new List<PerkData>();
+            foreach (string subGroup in xmlGroup) {               
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               if (xmlSubGroup.Length == 2) {
+                  int perkId = int.Parse(xmlSubGroup[0]);
+                  PerkData data = Util.xmlLoad<PerkData>(xmlSubGroup[1]);
+                  data.perkId = perkId;
+                  perkDataList.Add(data);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            PerkManager.self.receiveListFromZipData(perkDataList);
             break;
             #endregion
 

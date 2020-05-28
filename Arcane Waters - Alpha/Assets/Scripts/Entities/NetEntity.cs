@@ -220,6 +220,9 @@ public class NetEntity : NetworkBehaviour {
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
 
+         // Fetch the perk points for this user
+         Global.player.rpc.Cmd_FetchPerkPointsForUser();
+
          // TODO: Display tutorial notice screen
       }
 
@@ -431,7 +434,8 @@ public class NetEntity : NetworkBehaviour {
          moveSpeedModifier = 2;
       }
 
-      return (baseSpeed * modifier) * moveSpeedModifier;
+      float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Type.Movement);
+      return (baseSpeed * modifier) * moveSpeedModifier * perkMultiplier;
    }
 
    public virtual void handleSpriteOutline () {

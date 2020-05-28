@@ -13,6 +13,9 @@ public class Area : MonoBehaviour
 {
    #region Public Variables
 
+   // The special type of the area
+   public enum SpecialType { None = 0, Voyage = 1 }
+
    // Hardcoded area keys
    public static string FARM = "Farm";
    public static string HOUSE = "House";

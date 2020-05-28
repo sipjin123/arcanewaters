@@ -13,6 +13,7 @@ namespace MapCreationTool.Serialization
       public string notes { get; set; }
       public EditorType editorType { get; set; }
       public Biome.Type biome { get; set; }
+      public Area.SpecialType specialType { get; set; }
 
       public string creatorName { get; set; }
    }

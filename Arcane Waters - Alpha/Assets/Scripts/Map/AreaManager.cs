@@ -83,6 +83,14 @@ public class AreaManager : MonoBehaviour
       }
    }
 
+   public Area.SpecialType getAreaSpecialType (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.specialType;
+      }
+
+      return Area.SpecialType.None;
+   }
+
    public bool isSeaArea (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).isSea;

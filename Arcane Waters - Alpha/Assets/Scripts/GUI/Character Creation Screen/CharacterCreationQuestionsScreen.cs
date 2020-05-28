@@ -68,9 +68,9 @@ public class CharacterCreationQuestionsScreen : MonoBehaviour
             CharacterCreationQuestion question = questions[i];
             CharacterCreationQuestionOption option = question.options[answerIndex];
 
-            results.Add(new Perk(option.perkType, option.perkPoints));
+            results.Add(new Perk(option.perkId, option.perkPoints));
          } else {
-            results.Add(new Perk(Perk.Type.None, 1));
+            results.Add(new Perk(Perk.UNASSIGNED_ID, 1));
          }
       }
 
@@ -203,6 +203,9 @@ public struct CharacterCreationQuestionOption
 
    // The perk this option gives
    public Perk.Type perkType;
+
+   // The unique ID of the perk
+   public int perkId;
 
    // How many perk points this option gives
    public int perkPoints;

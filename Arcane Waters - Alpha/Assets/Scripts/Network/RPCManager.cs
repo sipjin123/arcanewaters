@@ -633,7 +633,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes) {
+   public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       // We need a player object
       if (_player == null) {
          D.warning("Received bug report from sender with no PlayerController.");
@@ -641,7 +641,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass things along to the Bug Report Manager to handle
-      BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes);
+      BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem);
    }
 
    [Command]
@@ -4090,6 +4090,22 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_CachePaletteData (PaletteToolData[] paletteData) {
       PaletteSwapManager.self.storePaletteData(paletteData);
+   }
+
+   [Command]
+   public void Cmd_FetchPerkPointsForUser () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+         });
+      });
+   }
+
+   [TargetRpc]
+   private void Target_SetPerkPoints (NetworkConnection conn, Perk[] perks) {
+      PerkManager.self.setPlayerPerkPoints(perks);
    }
 
    #region Private Variables

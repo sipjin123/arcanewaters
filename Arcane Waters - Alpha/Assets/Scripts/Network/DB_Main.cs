@@ -1319,7 +1319,7 @@ public class DB_Main : DB_MainStub {
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, accName " +
+      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName " +
          "FROM maps_v2 " +
             "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
          "ORDER BY name;";
@@ -1343,7 +1343,8 @@ public class DB_Main : DB_MainStub {
                   sourceMapId = dataReader.GetInt32("sourceMapId"),
                   notes = dataReader.GetString("notes"),
                   editorType = (EditorType) dataReader.GetInt32("editorType"),
-                  biome = (Biome.Type) dataReader.GetInt32("biome")
+                  biome = (Biome.Type) dataReader.GetInt32("biome"),
+                  specialType = (Area.SpecialType) dataReader.GetInt32("specialType")
                });
             }
          }
@@ -1571,7 +1572,7 @@ public class DB_Main : DB_MainStub {
 
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE maps_v2 " +
-         "SET name = @name, sourceMapId = @sourceId, notes = @notes " +
+         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType " +
          "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -1582,6 +1583,7 @@ public class DB_Main : DB_MainStub {
          cmd.Parameters.AddWithValue("@name", map.name);
          cmd.Parameters.AddWithValue("@sourceId", map.sourceMapId);
          cmd.Parameters.AddWithValue("@notes", map.notes);
+         cmd.Parameters.AddWithValue("@specialType", map.specialType);
 
          // Execute the command
          cmd.ExecuteNonQuery();
@@ -2140,18 +2142,18 @@ public class DB_Main : DB_MainStub {
       return points;
    }
 
-   public static new void addPerkPointsForUser (int usrId, int perkTypeId, int perkPoints) {
+   public static new void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO arcane.perks (usrId, perkTypeId, perkPoints) " +
-            "VALUES(@usrId, @perkTypeId, @perkPoints) " +
+            "INSERT INTO arcane.perks (usrId, perkId, perkTypeId, perkPoints) " +
+            "VALUES(@usrId, @perkId, @perkTypeId, @perkPoints) " +
             "ON DUPLICATE KEY UPDATE perkPoints = perkPoints + @perkPoints", conn)) {
 
             conn.Open();
 
             cmd.Parameters.AddWithValue("@usrId", usrId);
-            cmd.Parameters.AddWithValue("@perkTypeId", perkTypeId);
+            cmd.Parameters.AddWithValue("@perkId", perkId);
             cmd.Parameters.AddWithValue("@perkPoints", perkPoints);
 
             cmd.Prepare();
@@ -2164,15 +2166,15 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new void addPerkPointsForUser (int usrId, List<Perk> perks) {
-      StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.perks (usrId, perkTypeId, perkPoints) VALUES ");
+      StringBuilder cmdText = new StringBuilder("INSERT INTO arcane.perks (usrId, perkId, perkPoints) VALUES ");
       int i = 0;
 
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText.ToString(), conn)) {
          foreach (Perk perk in perks) {
-            cmdText.Append($"(@usrId{i}, @perkTypeId{i}, @perkPoints{i})");
+            cmdText.Append($"(@usrId{i}, @perkId{i}, @perkPoints{i})");
             cmd.Parameters.AddWithValue($"@usrId{i}", usrId);
-            cmd.Parameters.AddWithValue($"@perkTypeId{i}", perk.perkTypeId);
+            cmd.Parameters.AddWithValue($"@perkId{i}", perk.perkId);
             cmd.Parameters.AddWithValue($"@perkPoints{i}", perk.points);
 
             i++;
@@ -2189,6 +2191,69 @@ public class DB_Main : DB_MainStub {
          cmd.CommandType = System.Data.CommandType.Text;
          cmd.Prepare();
          cmd.ExecuteNonQuery();
+      }
+   }
+
+   public static new void updatePerksXML (string rawData, int perkId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
+            "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xml_id", perkId);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<PerkData> getPerksXML () {
+      List<PerkData> perkDataList = new List<PerkData>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.perks_config_xml", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  perkDataList.Add(new PerkData(dataReader));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<PerkData>(perkDataList);
+   }
+
+   public static new void deletePerkXML (int xmlId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM perks_config_xml WHERE xml_id=@xml_id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xml_id", xmlId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
       }
    }
 
@@ -3871,10 +3936,10 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes) {
+   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG) VALUES(@usrId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG, screenResolution, operatingSystem) VALUES(@usrId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG, @screenResolution, @operatingSystem)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -3885,6 +3950,8 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@fps", fps);
             cmd.Parameters.AddWithValue("@playerPosition", playerPosition);
             cmd.Parameters.AddWithValue("@screenshotPNG", screenshotBytes);
+            cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
+            cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", "Unassigned");
 
             // Execute the command

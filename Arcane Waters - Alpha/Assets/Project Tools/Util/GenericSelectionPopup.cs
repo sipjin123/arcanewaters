@@ -55,6 +55,7 @@ public class GenericSelectionPopup : MonoBehaviour
    public Dictionary<string, Sprite> shopIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> cropIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> discoveriesSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> perkIconSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -100,7 +101,8 @@ public class GenericSelectionPopup : MonoBehaviour
       WeaponActionType = 39,
       CropsIcon = 40,
       DiscoverySprites = 41,
-      AchievementItemCategory = 42
+      AchievementItemCategory = 42,
+      PerkIcon = 43
    }
 
    #endregion
@@ -171,6 +173,9 @@ public class GenericSelectionPopup : MonoBehaviour
 
       string discoverySpritesPath = "Assets/Sprites/Discoveries/";
       setupSpriteContent(discoveriesSpriteList, discoverySpritesPath);
+
+      string perkSpritePath = "Assets/Sprites/Icons/Perks/";
+      setupSpriteContent(perkIconSpriteList, perkSpritePath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -296,6 +301,12 @@ public class GenericSelectionPopup : MonoBehaviour
          }
       } else if (popupType == selectionType.DiscoverySprites) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in discoveriesSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
+      } else if (popupType == selectionType.PerkIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in perkIconSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);

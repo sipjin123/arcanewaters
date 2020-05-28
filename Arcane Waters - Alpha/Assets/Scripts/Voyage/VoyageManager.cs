@@ -116,7 +116,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public List<string> getVoyageAreaKeys () {
-      return AreaManager.self.getSeaAreaKeys();
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }
 
    public static bool isInVoyage (NetEntity entity) {

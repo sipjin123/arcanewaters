@@ -10192,24 +10192,15 @@ MonoBehaviour:
     options:
     - option: Brandish a sword and get ready to fight!
       perkType: 3
+      perkId: 2
       perkPoints: 1
-    - option: Fire a warning shot with my blunderbuss
-      perkType: 2
-      perkPoints: 1
-    - option: Offer to bandage their wounds if they leave you alone
-      perkType: 1
-      perkPoints: 3
-  - question: If another group of pirates surrounded you and demanded you hand over
-      your gold, would you...
-    options:
-    - option: Brandish a sword and get ready to fight!
-      perkType: 3
-      perkPoints: 1
-    - option: Fire a warning shot with my blunderbuss
-      perkType: 2
+    - option: Run!
+      perkType: 4
+      perkId: 1
       perkPoints: 1
     - option: Offer to bandage their wounds if they leave you alone
       perkType: 1
+      perkId: 4
       perkPoints: 3
   chosenAnswers: 
   _questionTemplate: {fileID: 1075997611069483000, guid: 5ad4d175e47af3747acf4ee83fea9588,

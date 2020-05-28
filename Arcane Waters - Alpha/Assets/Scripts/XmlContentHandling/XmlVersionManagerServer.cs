@@ -47,6 +47,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
    public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
 
+   public static string PERKS_DATA_TABLE = "perks_config_xml";
+
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
    public static string ABILITIES_FILE = "abilities";
@@ -68,6 +70,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string TUTORIAL_FILE = "tutorials";
    public static string SHIP_ABILITY_FILE = "ships_abilities";
    public static string BACKGROUND_DATA_FILE = "battle_bg_data";
+
+   public static string PERKS_FILE = "perks";
 
    // Progress indicators
    public int targetProgress;
@@ -114,6 +118,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(SHIP_ABILITY_FILE);
       confirmTextFile(BACKGROUND_DATA_FILE);
 
+      confirmTextFile(PERKS_FILE);
+
       self = this;
    }
 
@@ -157,6 +163,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Armor);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Weapon);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Helm);
+
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Perks);
 
          databaseVersion = DB_Main.getLatestXmlVersion();
 
@@ -255,6 +263,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string shipAbilityData = DB_Main.getXmlContent(SHIP_ABILITY_TABLE);
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 
+         string perkData = DB_Main.getXmlContent(PERKS_DATA_TABLE);
+
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
@@ -275,6 +285,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_FILE + ".txt", shipData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_ABILITY_FILE + ".txt", shipAbilityData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);
+
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + PERKS_FILE + ".txt", perkData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectoryFile = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

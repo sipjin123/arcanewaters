@@ -1308,6 +1308,7 @@ MonoBehaviour:
     sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
     sprites:
+    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
@@ -1324,38 +1325,6 @@ MonoBehaviour:
     - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 1814198793275410985, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-  - imageName: Book-Images-Spritesheet
-    imagePath: Assets/Sprites/BookImages/Book-Images-Spritesheet.png
-    imagePathWithoutExtension: Assets/Sprites/BookImages/Book-Images-Spritesheet
-    texture2D: {fileID: 2800000, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
-      type: 3}
-    sprites:
-    - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -2434995272506181264, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5040375706913360352, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -5894425961036811378, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
@@ -5549,12 +5518,26 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 7c6e3f75ba8ae6446a661ae4ca8ba583, type: 3}
   - imageName: faction_builders
+    imagePath: Assets/Sprites/Icons/Perks/faction_builders.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_builders
+    texture2D: {fileID: 2800000, guid: 36e7c07bf28d050448c45c1ca248c3c4, type: 3}
+    sprite: {fileID: 21300000, guid: 36e7c07bf28d050448c45c1ca248c3c4, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 36e7c07bf28d050448c45c1ca248c3c4, type: 3}
+  - imageName: faction_builders
     imagePath: Assets/Sprites/Icons/Factions/faction_builders.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_builders
     texture2D: {fileID: 2800000, guid: be42465ef44824248a9922b613ad6c84, type: 3}
     sprite: {fileID: 21300000, guid: be42465ef44824248a9922b613ad6c84, type: 3}
     sprites:
     - {fileID: 21300000, guid: be42465ef44824248a9922b613ad6c84, type: 3}
+  - imageName: faction_cartographers
+    imagePath: Assets/Sprites/Icons/Perks/faction_cartographers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_cartographers
+    texture2D: {fileID: 2800000, guid: 75569730c240e364dafee00eecf055b0, type: 3}
+    sprite: {fileID: 21300000, guid: 75569730c240e364dafee00eecf055b0, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 75569730c240e364dafee00eecf055b0, type: 3}
   - imageName: faction_cartographers
     imagePath: Assets/Sprites/Icons/Factions/faction_cartographers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_cartographers
@@ -5563,6 +5546,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 2784c92d039d0ad48ae43a0d6f211f55, type: 3}
   - imageName: faction_merchants
+    imagePath: Assets/Sprites/Icons/Perks/faction_merchants.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_merchants
+    texture2D: {fileID: 2800000, guid: 9066b1aba99c18b4faa0f1dce20cec34, type: 3}
+    sprite: {fileID: 21300000, guid: 9066b1aba99c18b4faa0f1dce20cec34, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9066b1aba99c18b4faa0f1dce20cec34, type: 3}
+  - imageName: faction_merchants
     imagePath: Assets/Sprites/Icons/Factions/faction_merchants.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_merchants
     texture2D: {fileID: 2800000, guid: d8e857d0c267f0647985f6e6a05673a4, type: 3}
@@ -5570,12 +5560,26 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: d8e857d0c267f0647985f6e6a05673a4, type: 3}
   - imageName: faction_naturalists
+    imagePath: Assets/Sprites/Icons/Perks/faction_naturalists.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_naturalists
+    texture2D: {fileID: 2800000, guid: d5f4d0c3594c0ea45872004855869026, type: 3}
+    sprite: {fileID: 21300000, guid: d5f4d0c3594c0ea45872004855869026, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d5f4d0c3594c0ea45872004855869026, type: 3}
+  - imageName: faction_naturalists
     imagePath: Assets/Sprites/Icons/Factions/faction_naturalists.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_naturalists
     texture2D: {fileID: 2800000, guid: 5d32226ce86c0334b9616b421fd66833, type: 3}
     sprite: {fileID: 21300000, guid: 5d32226ce86c0334b9616b421fd66833, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5d32226ce86c0334b9616b421fd66833, type: 3}
+  - imageName: faction_neutral
+    imagePath: Assets/Sprites/Icons/Perks/faction_neutral.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_neutral
+    texture2D: {fileID: 2800000, guid: a41e0cacd0646834ca70501e4b30ca83, type: 3}
+    sprite: {fileID: 21300000, guid: a41e0cacd0646834ca70501e4b30ca83, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a41e0cacd0646834ca70501e4b30ca83, type: 3}
   - imageName: faction_neutral
     imagePath: Assets/Sprites/Icons/Factions/faction_neutral.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_neutral
@@ -5590,6 +5594,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d5d67735b917c334fb7a82581587bfab, type: 3}
     sprites:
     - {fileID: 21300000, guid: d5d67735b917c334fb7a82581587bfab, type: 3}
+  - imageName: faction_none
+    imagePath: Assets/Sprites/Icons/Perks/faction_none.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_none
+    texture2D: {fileID: 2800000, guid: fb51712008ca04346b22e8832900b824, type: 3}
+    sprite: {fileID: 21300000, guid: fb51712008ca04346b22e8832900b824, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fb51712008ca04346b22e8832900b824, type: 3}
   - imageName: faction_pillagers
     imagePath: Assets/Sprites/Icons/Factions/faction_pillagers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_pillagers
@@ -5597,6 +5608,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 38ec0f6c2ce608444bdc23f8a240f91c, type: 3}
     sprites:
     - {fileID: 21300000, guid: 38ec0f6c2ce608444bdc23f8a240f91c, type: 3}
+  - imageName: faction_pillagers
+    imagePath: Assets/Sprites/Icons/Perks/faction_pillagers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_pillagers
+    texture2D: {fileID: 2800000, guid: da52463a2bcd5cb40b411a361828fde6, type: 3}
+    sprite: {fileID: 21300000, guid: da52463a2bcd5cb40b411a361828fde6, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: da52463a2bcd5cb40b411a361828fde6, type: 3}
+  - imageName: faction_pirates
+    imagePath: Assets/Sprites/Icons/Perks/faction_pirates.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_pirates
+    texture2D: {fileID: 2800000, guid: 19cb56784eac6db41b140df998ec9493, type: 3}
+    sprite: {fileID: 21300000, guid: 19cb56784eac6db41b140df998ec9493, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 19cb56784eac6db41b140df998ec9493, type: 3}
   - imageName: faction_pirates
     imagePath: Assets/Sprites/Icons/Factions/faction_pirates.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_pirates
@@ -5604,6 +5629,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7e1523b0cef371544b05bbdd903be658, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7e1523b0cef371544b05bbdd903be658, type: 3}
+  - imageName: faction_privateers
+    imagePath: Assets/Sprites/Icons/Perks/faction_privateers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/faction_privateers
+    texture2D: {fileID: 2800000, guid: 67c93c5ebcb3bad488d7703d8d2c854c, type: 3}
+    sprite: {fileID: 21300000, guid: 67c93c5ebcb3bad488d7703d8d2c854c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 67c93c5ebcb3bad488d7703d8d2c854c, type: 3}
   - imageName: faction_privateers
     imagePath: Assets/Sprites/Icons/Factions/faction_privateers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/faction_privateers
@@ -5618,6 +5650,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 59991b511799f3d4ca03bbf7058a0eab, type: 3}
     sprites:
     - {fileID: 21300000, guid: 59991b511799f3d4ca03bbf7058a0eab, type: 3}
+  - imageName: faction_ship_builders
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_builders.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_builders
+    texture2D: {fileID: 2800000, guid: 9deaa65124f11854db54a10132a2e66f, type: 3}
+    sprite: {fileID: 21300000, guid: 9deaa65124f11854db54a10132a2e66f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9deaa65124f11854db54a10132a2e66f, type: 3}
   - imageName: faction_ship_cartographers
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_cartographers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_cartographers
@@ -5625,6 +5664,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 104cb5f63c7df694aaa9d8f2c4466600, type: 3}
     sprites:
     - {fileID: 21300000, guid: 104cb5f63c7df694aaa9d8f2c4466600, type: 3}
+  - imageName: faction_ship_cartographers
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_cartographers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_cartographers
+    texture2D: {fileID: 2800000, guid: 49ddff4b2a7e82a40a8b899a4a85495f, type: 3}
+    sprite: {fileID: 21300000, guid: 49ddff4b2a7e82a40a8b899a4a85495f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 49ddff4b2a7e82a40a8b899a4a85495f, type: 3}
+  - imageName: faction_ship_merchants
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_merchants.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_merchants
+    texture2D: {fileID: 2800000, guid: 533bdf8050a51e4488a8b7e2ce670fd8, type: 3}
+    sprite: {fileID: 21300000, guid: 533bdf8050a51e4488a8b7e2ce670fd8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 533bdf8050a51e4488a8b7e2ce670fd8, type: 3}
   - imageName: faction_ship_merchants
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_merchants.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_merchants
@@ -5633,6 +5686,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: e7750a7d479d4bc46b12d1302b38b74d, type: 3}
   - imageName: faction_ship_naturalists
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_naturalists.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_naturalists
+    texture2D: {fileID: 2800000, guid: f4e5be145ed6dd54f91826cf8c542d7a, type: 3}
+    sprite: {fileID: 21300000, guid: f4e5be145ed6dd54f91826cf8c542d7a, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f4e5be145ed6dd54f91826cf8c542d7a, type: 3}
+  - imageName: faction_ship_naturalists
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_naturalists.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_naturalists
     texture2D: {fileID: 2800000, guid: 7662506157e2ac64b9a7982a62e7ae66, type: 3}
@@ -5640,12 +5700,26 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 7662506157e2ac64b9a7982a62e7ae66, type: 3}
   - imageName: faction_ship_neutral
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_neutral.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_neutral
+    texture2D: {fileID: 2800000, guid: 46c4632e3862ab04db37ee671c355894, type: 3}
+    sprite: {fileID: 21300000, guid: 46c4632e3862ab04db37ee671c355894, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 46c4632e3862ab04db37ee671c355894, type: 3}
+  - imageName: faction_ship_neutral
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_neutral.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_neutral
     texture2D: {fileID: 2800000, guid: 1c57834278b364a4f83762efe5b6e45b, type: 3}
     sprite: {fileID: 21300000, guid: 1c57834278b364a4f83762efe5b6e45b, type: 3}
     sprites:
     - {fileID: 21300000, guid: 1c57834278b364a4f83762efe5b6e45b, type: 3}
+  - imageName: faction_ship_pillagers
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_pillagers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_pillagers
+    texture2D: {fileID: 2800000, guid: 005b6841c91928048948b7acd0705ada, type: 3}
+    sprite: {fileID: 21300000, guid: 005b6841c91928048948b7acd0705ada, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 005b6841c91928048948b7acd0705ada, type: 3}
   - imageName: faction_ship_pillagers
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_pillagers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_pillagers
@@ -5660,6 +5734,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: c51b3c84d824c24449ba64b94588ed27, type: 3}
     sprites:
     - {fileID: 21300000, guid: c51b3c84d824c24449ba64b94588ed27, type: 3}
+  - imageName: faction_ship_pirates
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_pirates.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_pirates
+    texture2D: {fileID: 2800000, guid: 2cab3c413e55c754f984c0b916e7802f, type: 3}
+    sprite: {fileID: 21300000, guid: 2cab3c413e55c754f984c0b916e7802f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2cab3c413e55c754f984c0b916e7802f, type: 3}
   - imageName: faction_ship_privateers
     imagePath: Assets/Sprites/Icons/Factions/Ships/faction_ship_privateers.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Factions/Ships/faction_ship_privateers
@@ -5667,6 +5748,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5c9a38690df5e02409d8cabb7b62022e, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5c9a38690df5e02409d8cabb7b62022e, type: 3}
+  - imageName: faction_ship_privateers
+    imagePath: Assets/Sprites/Icons/Perks/Ships/faction_ship_privateers.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/Ships/faction_ship_privateers
+    texture2D: {fileID: 2800000, guid: 6eaf01ec7a6bfe548b4e260159142462, type: 3}
+    sprite: {fileID: 21300000, guid: 6eaf01ec7a6bfe548b4e260159142462, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 6eaf01ec7a6bfe548b4e260159142462, type: 3}
   - imageName: factions_select_trough_1x
     imagePath: Assets/Sprites/GUI/Leader Boards/factions_select_trough_1x.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Leader Boards/factions_select_trough_1x
@@ -10568,8 +10656,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon

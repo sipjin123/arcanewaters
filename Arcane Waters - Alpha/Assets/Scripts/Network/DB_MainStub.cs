@@ -211,6 +211,16 @@ public class DB_MainStub : MonoBehaviour {
    public static void addPerkPointsForUser (int usrId, List<Perk> perks) {
    }
 
+   public static void updatePerksXML (string xmlContent, int perkId) {
+   }
+
+   public static List<string> getPerksXML () {
+      return new List<string>();
+   }
+
+   public static void deletePerkXML (int xmlId) {
+   }
+
    public static void upsertBook (string content, string title, int bookId) {
    }
 
@@ -587,7 +597,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes) {
+   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
 
    }
 

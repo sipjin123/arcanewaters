@@ -20,7 +20,7 @@ public class BugReportManager : MonoBehaviour {
    }
 
    [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes) {
+   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       // Check when they last submitted a bug report
       if (_lastBugReportTime.ContainsKey(player.userId)) {
          float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
@@ -44,7 +44,7 @@ public class BugReportManager : MonoBehaviour {
 
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes);
+         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -107,8 +107,10 @@ public class BugReportManager : MonoBehaviour {
       int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
 
       byte[] screenshotBytes = takeScreenshot().EncodeToPNG();
+      string screenResolution = Screen.currentResolution.ToString();
+      string operatingSystem = SystemInfo.operatingSystem;
 
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes);
+      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 

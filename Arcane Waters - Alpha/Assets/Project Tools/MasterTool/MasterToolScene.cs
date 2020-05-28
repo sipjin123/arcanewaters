@@ -35,6 +35,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string discoveriesToolScene = "Discoveries Tool";
    public const string paletteToolScene = "Palette Tool";
    public const string newTutorialToolScene = "New Tutorial Tool";
+   public const string perksToolScene = "Perk Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -73,6 +74,7 @@ public class MasterToolScene : MonoBehaviour {
       clickDiscoveriesToolScene,
       clickPaletteToolScene,
       clickNewTutorialToolScene,
+      clickPerkToolScene,
       exitButton;
 
    #endregion
@@ -153,6 +155,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickNewTutorialToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(newTutorialToolScene);
+      });
+      clickPerkToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(perksToolScene);
       });
 
       if (MasterToolAccountManager.self == null) {

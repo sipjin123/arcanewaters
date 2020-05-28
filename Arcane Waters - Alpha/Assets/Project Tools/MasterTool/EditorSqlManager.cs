@@ -36,7 +36,8 @@ public class EditorSQLManager {
       Equipment_Weapon = 21,
       Equipment_Armor = 22,
       Equipment_Helm = 23,
-      NewTutorial = 24
+      NewTutorial = 24,
+      Perks = 25
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -81,6 +82,8 @@ public class EditorSQLManager {
             return "crops_xml_v1";
          case EditorToolType.Background:
             return "background_xml_v2";
+         case EditorToolType.Perks:
+            return "perks_config_xml";
       }
       return "";
    }
@@ -120,6 +123,8 @@ public class EditorSQLManager {
             return "sea_monster_xml_v2";
          case EditorToolType.Ship:
             return "ship_xml_v2";
+         case EditorToolType.Perks:
+            return "perks_config_xml";
       }
       return "";
    }
