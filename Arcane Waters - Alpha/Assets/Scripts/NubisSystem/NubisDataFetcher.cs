@@ -144,7 +144,7 @@ namespace NubisDataHandling {
          this.pageIndex = pageIndex;
          this.itemsPerPage = itemsPerPage;
 
-         string itemCountResponse = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), userId.ToString() + SPACER + this.categoryFilter);
+         string itemCountResponse = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), userId.ToString() + SPACER + (int)this.categoryFilter);
          int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
 
          try {
@@ -153,22 +153,13 @@ namespace NubisDataHandling {
             D.editorLog("Failed to parse: " + itemCountResponse);
          }
 
+         // Process user info
          string userRawData = await NubisClient.call(nameof(DB_Main.nubisFetchUserData), userId.ToString());
          if (userRawData.Length < 10) {
             D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
             D.editorLog("Content: " + userRawData, Color.red);
          }
          newUserInfo = UserInfoData.processUserInfo(userRawData);
-
-         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString());
-            List<Item> itemList = UserInventory.processUserInventory(inventoryData);
-            foreach (Item item in itemList) {
-               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {
-                  userInventory.Add(item);
-               }
-            }
-         }
 
          // Process user equipped items
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), userId.ToString());
@@ -180,6 +171,18 @@ namespace NubisDataHandling {
          equippedArmor = equippedItemData.armorItem;
          userInventory.Add(equippedWeapon);
          userInventory.Add(equippedArmor);
+
+         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
+            string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString() + SPACER + equippedItemData.weaponItem.id + SPACER + equippedItemData.armorItem.id);
+            List<Item> itemList = UserInventory.processUserInventory(inventoryData);
+            foreach (Item item in itemList) {
+               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {
+                  userInventory.Add(item);
+               } else {
+                  D.editorLog("Fetched an equipped item: " + newUserInfo.weaponId + " : " + newUserInfo.armorId, Color.green);
+               }
+            }
+         }
 
          // Get the inventory panel
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);

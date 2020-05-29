@@ -456,7 +456,9 @@ public class BattleUIManager : MonoBehaviour {
 
       // Remove world space local battler canvas
       GameObject playerCanvas = playerBattler.GetComponentInChildren<Canvas>().gameObject;
-      Destroy(playerCanvas);
+      if (playerCanvas != null) {
+         Destroy(playerCanvas);
+      }
 
       playerHealthBar.maxValue = playerBattler.getStartingHealth();
 

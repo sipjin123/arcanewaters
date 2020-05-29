@@ -141,8 +141,21 @@ public class DB_Main : DB_MainStub {
       int userId = int.Parse(rawItemGroup[0]);
       int inventoryPage = int.Parse(rawItemGroup[1]);
       int category = int.Parse(rawItemGroup[2]);
+      int weaponId = 0; 
+      int armorId = 0;
 
-      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category);
+      try {
+         weaponId = int.Parse(rawItemGroup[3]);
+      } catch {
+         // No weapon equipped
+      }
+      try {
+         armorId = int.Parse(rawItemGroup[4]);
+      } catch {
+         // No armor equipped
+      }
+
+      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category, weaponId, armorId);
    }
 
    public static new string nubisFetchMapData (string rawMapName) {

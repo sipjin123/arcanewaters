@@ -122,16 +122,16 @@ public class PlayerShipEntity : ShipEntity {
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
-            Cmd_UpdateSpeedupDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+            Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
             isSpeedingUp = false;
-            Cmd_UpdateSpeedupDisplay(speedMeter, false, false, true);
+            Cmd_UpdateSpeedupDisplay(false);
          }
       } else {
          // Only notify other clients once if disabling
          if (isSpeedingUp) {
-            Cmd_UpdateSpeedupDisplay(speedMeter, false, false, true);
+            Cmd_UpdateSpeedupDisplay(false);
             isSpeedingUp = false;
          }
 
@@ -181,13 +181,13 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    [Command]
-   void Cmd_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup, bool forceDisable) {
-      Rpc_UpdateSpeedupDisplay(speedMeter, isOn, isReadySpeedup, forceDisable);
+   void Cmd_UpdateSpeedupDisplay (bool isOn) {
+      Rpc_UpdateSpeedupDisplay(isOn);
    }
 
    [ClientRpc]
-   public void Rpc_UpdateSpeedupDisplay (float speedMeter, bool isOn, bool isReadySpeedup, bool forceDisable) {
-      updateSpeedUpDisplay(speedMeter, isOn, isReadySpeedup, forceDisable);
+   public void Rpc_UpdateSpeedupDisplay (bool isOn) {
+      updateSpeedUpDisplay(0, isOn, false, true);
    }
 
    [ServerOnly]

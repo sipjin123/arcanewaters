@@ -316,7 +316,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private void Update () {
       // Handle the drawing or hiding of our outline
-      handleSpriteOutline();
+      if (!Util.isBatch() && !NetworkServer.active) {
+         handleSpriteOutline();
+      }
    }
 
    // Basic method that will handle the functionality for whenever we click on this battler
@@ -352,7 +354,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                Sprite fetchSprite = ImageManager.getSprite(battlerData.imagePath);
                if (fetchSprite != null) {
                   mainSpriteRenderer.sprite = fetchSprite;
-               } 
+               }
 
                // Offset sprite for large monsters
                if (fetchSprite.rect.height >= LARGE_MONSTER_SIZE) {
@@ -380,6 +382,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = Util.netTime() + 5f;
+         } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
+            if (userId != Global.player.userId) {
+               selectedBattleBar = minionBattleBar;
+               //selectedBattleBar.nameText.enabled = false;
+               selectedBattleBar.gameObject.SetActive(true);
+            }
          }
 
          updateAnimGroup(battlerData.animGroup);
@@ -569,10 +577,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       _outline.setVisibility(isMouseHovering() && !isDead());
 
       // Hide or show battler Name
-      if (battlerType.Equals(BattlerType.PlayerControlled)) {
+      if (battlerType.Equals(BattlerType.PlayerControlled) && userId == Global.player.userId) {
          BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
       } else {
-         selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
+         if (selectedBattleBar != null) {
+            selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
+         }
       }
 
       // Any time out sprite changes, we need to regenerate our outline
@@ -991,14 +1001,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             #region Display Block
 
-            // Note that the contact is happening right now
-            BattleUIManager.self.showDamageText(action, targetBattler);
-
             // Play the sound associated for hit
             attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
 
-            // Move the sprite back and forward to simulate knockback
-            targetBattler.StartCoroutine(targetBattler.animateKnockback());
+            // Simulate the collision effect of the attack towards the target battler
+            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // If the action was blocked, animate that
             if (action.wasBlocked) {
@@ -1126,21 +1133,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Make the target sprite display its "Hit" animation
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
-            // If this magic ability has knockup, then start it now
-            if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
-               targetBattler.StartCoroutine(targetBattler.animateKnockup());
-               yield return new WaitForSeconds(KNOCKUP_LENGTH);
-            } else if (abilityDataReference.hasShake) {
-               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
-               yield return new WaitForSeconds(SHAKE_LENGTH);
-               targetBattler.StopCoroutine(shakeCoroutine);
-               targetBattler.playAnim(Anim.Type.Battle_East);
-            } else if (abilityDataReference.hasKnockBack) {
-               // Move the sprite back and forward to simulate knockback
-               targetBattler.StartCoroutine(targetBattler.animateKnockback());
-               yield return new WaitForSeconds(KNOCKBACK_LENGTH);
-            }
-            BattleUIManager.self.showDamageText(action, targetBattler);
+            // Simulate the collision effect of the attack towards the target battler
+            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1234,21 +1228,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Make the target sprite display its "Hit" animation
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
-            // If this magic ability has knockup, then start it now
-            if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
-               targetBattler.StartCoroutine(targetBattler.animateKnockup());
-               yield return new WaitForSeconds(KNOCKUP_LENGTH);
-            } else if (abilityDataReference.hasShake) {
-               Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
-               yield return new WaitForSeconds(SHAKE_LENGTH);
-               targetBattler.StopCoroutine(shakeCoroutine);
-               targetBattler.playAnim(Anim.Type.Battle_East);
-            } else if (abilityDataReference.hasKnockBack) {
-               // Move the sprite back and forward to simulate knockback
-               targetBattler.StartCoroutine(targetBattler.animateKnockback());
-               yield return new WaitForSeconds(KNOCKBACK_LENGTH);
-            }
-            BattleUIManager.self.showDamageText(action, targetBattler);
+            // Simulate the collision effect of the attack towards the target battler
+            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1310,6 +1291,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
+   }
+
+   private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action) {
+      if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
+         // If this magic ability has knockup, then start it now
+         targetBattler.StartCoroutine(targetBattler.animateKnockup());
+         yield return new WaitForSeconds(KNOCKUP_LENGTH);
+      } else if (abilityDataReference.hasShake) {
+         // If the ability magnitude will shake the screen to simulate impact
+         Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+         yield return new WaitForSeconds(SHAKE_LENGTH);
+         targetBattler.StopCoroutine(shakeCoroutine);
+         targetBattler.playAnim(Anim.Type.Battle_East);
+      } else if (abilityDataReference.hasKnockBack) {
+         // Move the sprite back and forward to simulate knockback
+         targetBattler.StartCoroutine(targetBattler.animateKnockback());
+         yield return new WaitForSeconds(KNOCKBACK_LENGTH);
+      }
+
+      // Note that the contact is happening right now
+      BattleUIManager.self.showDamageText(action, targetBattler);
    }
 
    private IEnumerator animateKnockback () {

@@ -27,14 +27,14 @@ namespace NubisTranslator {
                         string usrName = reader.GetString("usrName");
                         int bodyType = reader.GetInt32("bodyType");
                         int hairType = reader.GetInt32("hairType");
-                        string hairColor1 = reader.GetString("hairPalette1");
-                        string hairColor2 = reader.GetString("hairPalette2");
+                        string hairPalette1 = reader.GetString("hairPalette1");
+                        string hairPalette2 = reader.GetString("hairPalette2");
                         int eyesType = reader.GetInt32("eyesType");
                         string eyesColor1 = reader.GetString("eyesPalette1");
                         string eyesColor2 = reader.GetString("eyesPalette2");
                         int wpnId = reader.GetInt32("wpnId");
                         int armId = reader.GetInt32("armId");
-                        string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairColor1:{hairColor1}[space]hairColor2:{hairColor2}[space]eyesType:{eyesType}[space]eyesColor1:{eyesColor1}[space]eyesColor2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}\n";
+                        string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairPalette1:{hairPalette1}[space]hairPalette2:{hairPalette2}[space]eyesType:{eyesType}[space]eyesPalette1:{eyesColor1}[space]eyesPalette2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}\n";
                         return result;
                      }
                   }

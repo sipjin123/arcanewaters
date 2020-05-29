@@ -1778,8 +1778,8 @@ MonoBehaviour:
   armorManager: {fileID: 6527673179465098355}
   weaponManager: {fileID: 6527673179465098356}
   selectedBattleBar: {fileID: 0}
-  minionBattleBar: {fileID: 0}
-  bossBattleBar: {fileID: 0}
+  minionBattleBar: {fileID: 4897325508947964398}
+  bossBattleBar: {fileID: 4897325508947964398}
   onBattlerSelect:
     m_PersistentCalls:
       m_Calls: []

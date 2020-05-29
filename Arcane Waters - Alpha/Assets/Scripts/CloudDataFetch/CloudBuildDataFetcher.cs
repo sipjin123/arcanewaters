@@ -37,7 +37,6 @@ namespace CloudBuildDataFetch {
       #endregion
 
       private void Awake () {
-         // Only start the process if this is a cloud build server
          self = this;
       }
 
@@ -50,7 +49,7 @@ namespace CloudBuildDataFetch {
 
       private void triggerCloudChecker () {
          D.log("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
-         StartCoroutine(getBuildList());
+         StartCoroutine(CO_GetBuildList());
       }
 
       private void processDatabaseBuild () {
@@ -122,7 +121,7 @@ namespace CloudBuildDataFetch {
          Debug.LogError(www.text);
       }
 
-      private IEnumerator getBuildList () {
+      private IEnumerator CO_GetBuildList () {
          yield return new WaitForSeconds(3);
 
          string requestPage = DEFAULT_REQUEST_URL + ORG_ID + "/projects/" + PROJECT_ID + "/buildtargets/" + BUILD_TARGET + "/builds?per_page=" + BUILD_FETCH_COUNT;

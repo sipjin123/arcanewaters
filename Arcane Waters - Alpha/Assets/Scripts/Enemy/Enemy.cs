@@ -14,7 +14,13 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Plant = 100, Golem = 101, Slime = 102, Golem_Boss = 103, Lizard_King = 104,
       Coralbow = 200, Entarcher = 201, Flower = 202, Muckspirit = 203, Treeman = 204,
       Lizard = 205, Shroom = 206, Wisp = 207, Lizard_Armored = 208, Lizard_Shaman = 209, Lizard_Wizard = 210,
-      Lizard_Sword = 211, Lizard_Captain = 212, Lizard_Champion = 213, PlayerBattler = 305
+      Lizard_Sword = 211, Lizard_Captain = 212, Lizard_Champion = 213, 
+      Wisp_Armored = 214, Wisp_Healer = 215, Wisp_Inferno = 216, Wisp_Purple = 217, Wisp_Yokai = 218,
+      Snake_Base = 219, Snake_Assassin = 220, Snake_Healer = 221, Snake_Ranged = 222, Snake_Tank = 223,
+      Shroom_Luminous = 224, Shroom_Old = 225, Shroom_Toxic = 226, Shroom_Warrior = 227,
+      Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232,
+      Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237,
+      PlayerBattler = 305,
    }
 
    // The Type of animation the Enemy is associated with

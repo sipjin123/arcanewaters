@@ -98,7 +98,7 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisTotalItems () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), "745");
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), "745"+NubisDataFetcher.SPACER+"0");
       D.debug("ASync start: " + returnCode);
    }
 

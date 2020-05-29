@@ -63,6 +63,7 @@ public class AbilityPanel : Panel {
 
    public void receiveDataFromServer (AbilitySQLData[] abilityList) {
       canvasBlocker.SetActive(false);
+      scroller.enabled = true;
 
       // Clear all the rows and slots
       abilityRowsContainer.DestroyChildren();

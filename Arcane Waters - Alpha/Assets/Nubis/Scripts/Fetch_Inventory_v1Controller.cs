@@ -7,12 +7,21 @@ using MySql.Data.MySqlClient;
 
 namespace NubisTranslator {
    public class Fetch_Inventory_v1Controller {
-      public static string userInventory (int usrId, int currentPage, int category) {
+      public static string userInventory (int usrId, int currentPage, int category, int weaponId, int armorId) {
          int offset = currentPage * InventoryPanel.ITEMS_PER_PAGE;
          bool hasItemFilter = category != 0;
          string itemFilterContent = "and (itmCategory = " + category+")";
          if (!hasItemFilter) {
-            itemFilterContent = "and (itmCategory = 1 or itmCategory = 2 or itmCategory = 6)";
+            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + " or itmCategory = " + (int) Item.Category.Armor + " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
+         }
+
+         string weaponFilter = "";
+         string armorFilter = "";
+         if (weaponId > 0) {
+            weaponFilter = " and itmId != " + weaponId;
+         }
+         if (armorId > 0) {
+            armorFilter = " and itmId != " + armorId;
          }
 
          #if NUBIS
@@ -20,7 +29,7 @@ namespace NubisTranslator {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId "+ itemFilterContent + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
+               "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId "+ itemFilterContent + weaponFilter + armorFilter + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder stringBuilder = new StringBuilder();
@@ -51,7 +60,6 @@ namespace NubisTranslator {
                         }
 
                         string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalette1}[space]{itmPalette2}";
-                        //D.editorLog("REsult fetch was: " + result);
                         stringBuilder.AppendLine(result);
                      }
                   }
@@ -69,7 +77,7 @@ namespace NubisTranslator {
          bool hasItemFilter = categoryFilter != 0;
          string itemFilterContent = "and (itmCategory = " + categoryFilter + ")";
          if (!hasItemFilter) {
-            itemFilterContent = "and (itmCategory = 1 or itmCategory = 2 or itmCategory = 6)";
+            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + " or itmCategory = " + (int) Item.Category.Armor + " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
          }
 
          #if NUBIS

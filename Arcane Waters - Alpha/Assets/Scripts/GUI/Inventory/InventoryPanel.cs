@@ -542,7 +542,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void nextPage () {
-      if (_currentPage < _maxPage) {
+      if (_currentPage < _maxPage - 1) {
          _currentPage++;
          refreshPanel();
       }
@@ -564,7 +564,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          previousPageButton.enabled = false;
       }
 
-      if (_currentPage >= _maxPage) {
+      if (_currentPage >= _maxPage - 1) {
          nextPageButton.enabled = false;
       }
    }
