@@ -326,26 +326,18 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          return;
       }
 
-      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, seaMonsterData.detectRadius);
+      int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, seaMonsterData.detectRadius, _hits,
+         LayerMask.GetMask(LayerUtil.SHIPS));
 
-      int currentCount = 0;
-      if (hits.Length > 0) {
-         foreach (Collider2D hit in hits) {
-            if (currentCount > MAX_COLLISION_COUNT) {
-               // Avoid stack overflow
-               break;
-            }
-            currentCount++;
-            if (hit == null) {
-               continue;
-            }
+      for (int i = 0; i < hitCount; i++) {
+         if (_hits[i] == null) {
+            continue;
+         }
 
-            ShipEntity ship = hit.GetComponent<ShipEntity>();
-            if (ship != null) {
-               if (!_attackers.ContainsKey(ship.netId) && !ship.isDead()) {
-                  noteAttacker(ship);
-               }
-            }
+         ShipEntity ship = _hits[i].GetComponent<ShipEntity>();
+         if (ship != null && ship.instanceId == instanceId && !_attackers.ContainsKey(ship.netId) &&
+            !ship.isDead()) {
+            noteAttacker(ship);
          }
       }
    }
@@ -811,6 +803,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Keeps reference to the recent coroutine so that it can be manually stopped
    private Coroutine _analysisCoroutine = null;
+
+   // A working array to use with OverlapCircle
+   private Collider2D[] _hits = new Collider2D[MAX_COLLISION_COUNT];
 
    #endregion
 }

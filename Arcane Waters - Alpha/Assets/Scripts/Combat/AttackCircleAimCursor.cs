@@ -26,7 +26,7 @@ public class AttackCircleAimCursor : MonoBehaviour
       // Check if the other object is a Net Entity
       NetEntity hitEntity = other.GetComponent<NetEntity>();
 
-      if (hitEntity != null) {
+      if (hitEntity != null && Global.player != null && Global.player.instanceId == hitEntity.instanceId) {
          // Add the entity to the entities under the cursor
          _entitiesUnderCursor.Add(hitEntity);
       }

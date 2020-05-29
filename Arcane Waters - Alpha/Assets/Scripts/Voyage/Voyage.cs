@@ -11,7 +11,7 @@ public class Voyage
    #region Public Variables
 
    // The number of voyage instances that must always be available to join
-   public static int OPEN_VOYAGE_INSTANCES = 6;
+   public static int OPEN_VOYAGE_INSTANCES = 3;
 
    // The time interval since the voyage creation during which new groups can join
    public static float INSTANCE_OPEN_DURATION = 20 * 60;

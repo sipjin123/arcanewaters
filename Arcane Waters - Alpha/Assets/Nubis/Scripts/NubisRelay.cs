@@ -12,20 +12,23 @@ public class NubisRelay
    private static string getFunctionNameFromUri (Uri uri) {
       if (uri == null) return string.Empty;
       if (uri.Segments == null || uri.Segments.Length < 3) return string.Empty;
-      return uri.Segments[2].Replace("/", "");
+      string funcName =  uri.Segments[2].Replace("/", "");
+      return System.Net.WebUtility.UrlDecode(funcName);
    }
 
    private static Dictionary<string, string> getArgumentsFromUri (Uri uri) {
       if (uri == null) return new Dictionary<string, string>();
       if (string.IsNullOrEmpty(uri.Query)) return new Dictionary<string, string>();
-      string[] queryParts = uri.Query.Substring(1).Split(new[] { '&' });
+      string[] keyValuePairs = uri.Query.Substring(1).Split(new[] { '&' });
       Dictionary<string, string> arguments = new Dictionary<string, string>();
-      foreach (string part in queryParts) {
-         if (string.IsNullOrEmpty(part)) continue;
-         string[] keyValue = part.Split(new[] { '=' });
+      foreach (string keyValuePair in keyValuePairs) {
+         if (string.IsNullOrEmpty(keyValuePair)) continue;
+         string[] keyValue = keyValuePair.Split(new[] { '=' });
          if (keyValue == null || keyValue.Length < 2) continue;
          string key = keyValue[0];
          string value = keyValue[1];
+         key = System.Net.WebUtility.UrlDecode(key);
+         value = System.Net.WebUtility.UrlDecode(value);
          arguments.Add(key, value);
       }
       return arguments;

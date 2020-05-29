@@ -617,8 +617,8 @@ public class SeaEntity : NetEntity
 
    public static Collider2D[] getHitColliders (Vector2 circleCenter, float radius = .20f) {
       // Check for collisions inside the circle
-      Collider2D[] hits = new Collider2D[16];
-      Physics2D.OverlapCircleNonAlloc(circleCenter, radius, hits);
+      Collider2D[] hits = new Collider2D[40];
+      Physics2D.OverlapCircleNonAlloc(circleCenter, radius, hits, LayerMask.GetMask(LayerUtil.SHIPS, LayerUtil.SEA_MONSTERS));
 
       return hits;
    }

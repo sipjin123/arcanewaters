@@ -42,6 +42,10 @@ public class WaterTrailCreator : ClientMonoBehaviour {
    }
 
    protected void createParticle () {
+      if (Global.player == null || Global.player.instanceId != _entity.instanceId) {
+         return;
+      }
+
       // We only create particles if we're in water
       if (_entity.waterChecker != null && !_entity.waterChecker.isInFullWater) {
          return;

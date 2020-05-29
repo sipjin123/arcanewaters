@@ -202,7 +202,7 @@ GameObject:
   - component: {fileID: 114502046227778398}
   - component: {fileID: 20651762200388567}
   - component: {fileID: 6174198582837861343}
-  m_Layer: 8
+  m_Layer: 16
   m_Name: GenericSeaMonsterEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388,6 +388,7 @@ MonoBehaviour:
   corpseHolder: {fileID: 1428648646478705256}
   isLoggingData: 0
   isStationary: 0
+  isVisibleInHost: 1
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4

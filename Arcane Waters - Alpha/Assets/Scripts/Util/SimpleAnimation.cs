@@ -164,10 +164,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       // If we hit the end, check if we need to pause for a bit
       if (_index == (_sprites.Length - 1) && timeSinceLastFrameChange < loopDelay) {
-         setEnabled(false);
+         setVisible(false);
          return;
       } else {
-         setEnabled(true);
+         setVisible(true);
       }
 
       // Update the index
@@ -208,13 +208,16 @@ public class SimpleAnimation : ClientMonoBehaviour {
       }
    }
 
-   protected void setEnabled (bool isEnabled) {
+   protected void setVisible (bool isVisible) {
+      // Use the alpha to show or hide, since the renderer 'enabled' property could be controlled by an Observer Manager
       if (_renderer != null) {
-         _renderer.enabled = isEnabled;
+         Color color = _renderer.color;
+         color.a = isVisible ? 1f : 0f;
+         _renderer.color = color;
       }
 
       if (_image != null) {
-         _image.enabled = isEnabled;
+         _image.enabled = isVisible;
       }
    }
 

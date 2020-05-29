@@ -224,10 +224,9 @@ public class NubisManager : MonoBehaviour
 
    // Reference to the current instance of the configuration.
    private NubisConfiguration configuration;
+   
    // Reference to the webServer the butler is listening with.
    private HttpListener httpServer;
-   //// List of the processes that have been run.
-   //private List<ProcessInfo> spawnedProcesses = new List<ProcessInfo>();
    // Reference to the current status of the Butler.
    public NubisStatus Status { get; private set; } = NubisStatus.Idle;
 
