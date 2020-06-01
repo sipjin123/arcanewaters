@@ -58,6 +58,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // The spot this character is in
    public CharacterSpot spot;
 
+   // The content holder showing the character and the loading indicator
+   public GameObject contentHolder, contentLoader;
+
    #endregion
 
    private void Start () {
@@ -73,15 +76,25 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, string armorPalette1, string armorPalette2) {
-      this.userId = userInfo.userId;
+      if (PaletteSwapManager.self.hasInitialized) {
+         setInternalDataAndLayers(userInfo, weapon, armor, armorPalette1, armorPalette2);
+      } else {
+         PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
+            setInternalDataAndLayers(userInfo, weapon, armor, armorPalette1, armorPalette2);
+         });
+      }
+   }
 
+   private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, string armorPalette1, string armorPalette2) {
+      contentHolder.SetActive(true);
+      contentLoader.SetActive(false);
+
+      this.userId = userInfo.userId;
       setBodyLayers(userInfo);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
-         armorData.palette1 = armorPalette1;
-         armorData.palette2 = armorPalette2;
       }
 
       setArmor(armorData.armorType, armorData.palette1, armorData.palette2);

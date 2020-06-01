@@ -3710,10 +3710,10 @@ MonoBehaviour:
   _materialTypeText: {fileID: 1887432437}
   _equipmentTypeText: {fileID: 6904470103860139205}
   _equipmentTypeButton: {fileID: 4827268605559551881}
-  _colorType1Text: {fileID: 583463206}
-  _colorType2Text: {fileID: 235986702}
-  _colorType1Button: {fileID: 1795949313}
-  _colorType2Button: {fileID: 19780199}
+  _paletteName1Text: {fileID: 583463206}
+  _paletteName2Text: {fileID: 235986702}
+  _paletteName1Button: {fileID: 1795949313}
+  _paletteName2Button: {fileID: 19780199}
   _iconPath: {fileID: 858783625}
   _changeIconPathButton: {fileID: 1339574891}
   _icon: {fileID: 1339574889}
@@ -11322,8 +11322,8 @@ MonoBehaviour:
   cachedGiftData:
     itemCategory: 0
     itemTypeId: 0
-    color1: 0
-    color2: 0
+    palette1: 
+    palette2: 
     rewardedFriendship: 0
   cachedGiftList: []
   npcEditScreen: {fileID: 0}
@@ -17296,8 +17296,8 @@ MonoBehaviour:
   cachedGiftData:
     itemCategory: 0
     itemTypeId: 0
-    color1: 0
-    color2: 0
+    palette1: 
+    palette2: 
     rewardedFriendship: 0
   cachedGiftList: []
   npcEditScreen: {fileID: 0}

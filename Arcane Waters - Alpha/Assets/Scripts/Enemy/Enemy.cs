@@ -18,7 +18,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Wisp_Armored = 214, Wisp_Healer = 215, Wisp_Inferno = 216, Wisp_Purple = 217, Wisp_Yokai = 218,
       Snake_Base = 219, Snake_Assassin = 220, Snake_Healer = 221, Snake_Ranged = 222, Snake_Tank = 223,
       Shroom_Luminous = 224, Shroom_Old = 225, Shroom_Toxic = 226, Shroom_Warrior = 227,
-      Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232,
+      Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232, Pirate_Berzerker = 238,
       Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237,
       PlayerBattler = 305,
    }

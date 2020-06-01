@@ -3,12 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Events;
 
 public class PaletteSwapManager : MonoBehaviour {
    #region Public Variables
 
    // Singleton reference
    public static PaletteSwapManager self;
+
+   // Event that is called after data is setup
+   public UnityEvent paletteCompleteEvent = new UnityEvent();
+
+   // If the palette data was set
+   public bool hasInitialized;
 
    #endregion
 
@@ -29,6 +36,8 @@ public class PaletteSwapManager : MonoBehaviour {
       foreach (PaletteToolData data in paletteData) {
          _paletteDataList.Add(data);
       }
+      paletteCompleteEvent.Invoke();
+      hasInitialized = true;
    }
 
    public void fetchPaletteData () {

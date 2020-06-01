@@ -190,28 +190,38 @@ public class DB_Main : DB_MainStub {
    public static new string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {
       string content = "";
       string addedFields = "";
+      string contentToFetch = "xml_id, xmlContent ";
       if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
          addedFields = ", ability_type";
+      }
+      if (toolType == EditorSQLManager.EditorToolType.Palette) {
+         contentToFetch = "paletteId, xml_content ";
       }
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT xml_id, xmlContent "+ addedFields + " FROM arcane."+ tableName, conn)) {
+            "SELECT "+ contentToFetch + addedFields + " FROM arcane."+ tableName, conn)) {
 
-            
             conn.Open();
             cmd.Prepare();
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  string xmlContent = dataReader.GetString("xmlContent");
-                  int xmlId = dataReader.GetInt32("xml_id");
-
+                  string xmlContent = "";
+                  int xmlId = 0;
                   string addedContent = "";
+
                   if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
                      addedContent = dataReader.GetInt32("ability_type") + "[space]";
+                  }
+                  if (toolType == EditorSQLManager.EditorToolType.Palette) {
+                     xmlId = dataReader.GetInt32("paletteId");
+                     xmlContent = dataReader.GetString("xml_content"); 
+                  } else {
+                     xmlId = dataReader.GetInt32("xml_id");
+                     xmlContent = dataReader.GetString("xmlContent"); ;
                   }
 
                   content += xmlId + "[space]" + addedContent + xmlContent + "[next]\n";
@@ -219,7 +229,7 @@ public class DB_Main : DB_MainStub {
             }
          }
       } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
+         D.error("MySQL Error: " + toolType + " : " + tableName + " : " + e.ToString());
       }
 
       return content;

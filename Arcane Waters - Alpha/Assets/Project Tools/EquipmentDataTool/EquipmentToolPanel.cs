@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using static EquipmentToolManager;
 using UnityEngine.Events;
+using System.Linq;
 
 public class EquipmentToolPanel : MonoBehaviour {
    #region Public Variables
@@ -135,11 +136,13 @@ public class EquipmentToolPanel : MonoBehaviour {
                _weaponSpriteImage.sprite = sprites[spriteIndex];
             }
          } else {
-            try {
-               _armorSpriteImage.sprite = sprites[spriteIndex];
-            } catch {
-               _armorSpriteImage.sprite = sprites[0];
-            }
+            if (sprites.Length > 0) {
+               try {
+                  _armorSpriteImage.sprite = sprites[spriteIndex];
+               } catch {
+                  _armorSpriteImage.sprite = sprites[0];
+               }
+            } 
          }
       });
 

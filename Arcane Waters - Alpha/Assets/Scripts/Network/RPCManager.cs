@@ -4087,11 +4087,6 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
-   [TargetRpc]
-   public void Target_CachePaletteData (PaletteToolData[] paletteData) {
-      PaletteSwapManager.self.storePaletteData(paletteData);
-   }
-
    [Command]
    public void Cmd_FetchPerkPointsForUser () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

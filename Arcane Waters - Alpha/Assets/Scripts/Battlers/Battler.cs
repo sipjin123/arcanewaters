@@ -316,7 +316,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private void Update () {
       // Handle the drawing or hiding of our outline
-      if (!Util.isBatch() && !NetworkServer.active) {
+      if (!Util.isBatch()) {
          handleSpriteOutline();
       }
    }
@@ -385,8 +385,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
-               //selectedBattleBar.nameText.enabled = false;
-               selectedBattleBar.gameObject.SetActive(true);
+               selectedBattleBar.nameText.enabled = true;
+               selectedBattleBar.gameObject.SetActive(false);
             }
          }
 
@@ -575,13 +575,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Color color = battlerType.Equals(BattlerType.AIEnemyControlled) ? Color.red : Color.green;
       _outline.setNewColor(color);
       _outline.setVisibility(isMouseHovering() && !isDead());
-
+      
       // Hide or show battler Name
-      if (battlerType.Equals(BattlerType.PlayerControlled) && userId == Global.player.userId) {
-         BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
+      if (battlerType.Equals(BattlerType.PlayerControlled) && Global.player != null) {
+         if (userId == Global.player.userId) {
+            BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
+         } else {
+            selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
+         }
       } else {
          if (selectedBattleBar != null) {
-            selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
+            selectedBattleBar.gameObject.SetActive(isMouseHovering());
          }
       }
 

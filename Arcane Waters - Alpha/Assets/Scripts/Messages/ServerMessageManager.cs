@@ -125,12 +125,12 @@ public class ServerMessageManager : MonoBehaviour {
                List<Item> amorItemList = new List<Item>();
 
                for (int i = 0; i < armorList.Count; i++) {
-                  armorPalettes1[i] = armorList[i].paletteName1;
-                  armorPalettes2[i] = armorList[i].paletteName2;
 
                   ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
                   if (armorList[i].data != null) {
                      armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+                     armorPalettes1[i] = armorStat.palette1;
+                     armorPalettes2[i] = armorStat.palette2;
                   } else {
                      D.warning("There is no data for: " + armorList[i].itemTypeId);
                   }

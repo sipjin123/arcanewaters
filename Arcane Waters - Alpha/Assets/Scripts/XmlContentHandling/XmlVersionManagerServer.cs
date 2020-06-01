@@ -48,6 +48,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
 
    public static string PERKS_DATA_TABLE = "perks_config_xml";
+   public static string PALETTE_DATA_TABLE = "palette";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -72,6 +73,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string BACKGROUND_DATA_FILE = "battle_bg_data";
 
    public static string PERKS_FILE = "perks";
+   public static string PALETTE_FILE = "palettes";
 
    // Progress indicators
    public int targetProgress;
@@ -123,6 +125,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(BACKGROUND_DATA_FILE);
 
       confirmTextFile(PERKS_FILE);
+      confirmTextFile(PALETTE_FILE);
 
       self = this;
    }
@@ -169,6 +172,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Helm);
 
          compiledData += DB_Main.getLastUpdate(EditorToolType.Perks);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Palette);
 
          databaseVersion = DB_Main.getLatestXmlVersion();
 
@@ -268,7 +272,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 
          string perkData = DB_Main.getXmlContent(PERKS_DATA_TABLE);
-
+         string paletteData = DB_Main.getXmlContent(PALETTE_DATA_TABLE, EditorToolType.Palette);
+         
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
@@ -291,6 +296,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + BACKGROUND_DATA_FILE + ".txt", battleBGData);
 
          writeAndCache(XML_TEXT_DIRECTORY + "/" + PERKS_FILE + ".txt", perkData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + PALETTE_FILE + ".txt", paletteData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectoryFile = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

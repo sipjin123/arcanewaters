@@ -19257,6 +19257,52 @@ MonoBehaviour:
     - {fileID: -1234551371873967225, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -6566102766581992683, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -3477680857878064121, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
+  - imageName: pirate_berzerker
+    imagePath: Assets/Sprites/Enemies/LandMonsters/pirate_berzerker.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/pirate_berzerker
+    texture2D: {fileID: 2800000, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    sprite: {fileID: 7891615572512326176, guid: c7b22e3b963ac19409f44d2a87a62056,
+      type: 3}
+    sprites:
+    - {fileID: 7891615572512326176, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -4222984219008010749, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3844070844375486532, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -9215007488999202964, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -8603979857557402802, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 3054997714667509837, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 6606235902184392093, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 5024185173368651233, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 3779798445021863818, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -5094036904097432156, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -46279522825266137, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -4168350644868333135, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 8748166628077619874, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3609996988296352157, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 1206353450763454075, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -2528851116042498408, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3522435453027059138, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -8704916561021038771, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -5053774315015928376, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 2276003597373796966, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 3106617572445821686, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 2342250355776110850, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3056280852638336752, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 7299707789195074776, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 4079280636684653805, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -1825629909353227485, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3738840421339500322, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 2578703119020164924, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 8416362757744378081, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 2119724371423475449, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -465316247230491512, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 419359691519992015, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 2465397724732464497, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -3296404726899846981, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -708809809818955509, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: -1924975456000116281, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 4860329974186665544, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 1506241491568455397, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
+    - {fileID: 7011873801781584038, guid: c7b22e3b963ac19409f44d2a87a62056, type: 3}
   - imageName: pirate_healer
     imagePath: Assets/Sprites/Enemies/LandMonsters/pirate_healer.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/pirate_healer

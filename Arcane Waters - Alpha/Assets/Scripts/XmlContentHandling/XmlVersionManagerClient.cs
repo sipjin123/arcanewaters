@@ -168,6 +168,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Background));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Perks));
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.Palette));
    }
 
    private IEnumerator CO_ExtractXmlData (EditorToolType xmlType) {
@@ -231,6 +232,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Perks:
             path = TEXT_PATH + XmlVersionManagerServer.PERKS_FILE + ".txt";
+            break;
+         case EditorToolType.Palette:
+            path = TEXT_PATH + XmlVersionManagerServer.PALETTE_FILE + ".txt";
             break;
       }
             
@@ -540,6 +544,24 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             BackgroundGameManager.self.receiveNewContent(bgContentDataList.ToArray());
+            break;
+         case EditorToolType.Palette:
+            List<PaletteToolData> paletteData = new List<PaletteToolData>();
+
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  PaletteToolData actualData = Util.xmlLoad<PaletteToolData>(xmlSubGroup[1]);
+                  paletteData.Add(actualData);
+
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+
+            PaletteSwapManager.self.storePaletteData(paletteData.ToArray());
             break;
       }
 

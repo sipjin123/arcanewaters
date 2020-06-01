@@ -34,8 +34,7 @@ public class CharacterScreen : MonoBehaviour
    // The MyCamera component
    public MyCamera myCamera;
 
-   public class StartingArmorData
-   {
+   public class StartingArmorData {
       // The sql id 
       public int equipmentId;
 

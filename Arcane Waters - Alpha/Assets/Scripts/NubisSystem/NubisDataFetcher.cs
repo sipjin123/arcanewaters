@@ -176,10 +176,19 @@ namespace NubisDataHandling {
             string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString() + SPACER + equippedItemData.weaponItem.id + SPACER + equippedItemData.armorItem.id);
             List<Item> itemList = UserInventory.processUserInventory(inventoryData);
             foreach (Item item in itemList) {
+               if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
+                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+                  item.paletteName1 = weaponData.palette1;
+                  item.paletteName2 = weaponData.palette2;
+               }
+               if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+                  item.paletteName1 = armorData.palette1;
+                  item.paletteName2 = armorData.palette2;
+               }
+
                if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {
                   userInventory.Add(item);
-               } else {
-                  D.editorLog("Fetched an equipped item: " + newUserInfo.weaponId + " : " + newUserInfo.armorId, Color.green);
                }
             }
          }

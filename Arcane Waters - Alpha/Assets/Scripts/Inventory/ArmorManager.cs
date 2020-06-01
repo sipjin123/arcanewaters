@@ -103,11 +103,13 @@ public class ArmorManager : EquipmentManager {
 
       // Set the Sync Vars so they get sent to the clients
       this.armorType = armorData.armorType;
-      this.palette1 = newArmor.paletteName1;
-      this.palette2 = newArmor.paletteName2;
+      this.palette1 = armorData.palette1;
+      this.palette2 = armorData.palette2;
+      newArmor.paletteName1 = armorData.palette1;
+      newArmor.paletteName2 = armorData.palette2;
 
       // Send the Info to all clients
-      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), newArmor.paletteName1, newArmor.paletteName2);
+      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), armorData.palette1, armorData.palette2);
    }
 
    #region Private Variables
