@@ -322,8 +322,6 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
-  monsterBehavior: 0
-  isEngaging: 0
   targetEntity: {fileID: 0}
   monsterName: 
   hasDied: 0
@@ -388,7 +386,6 @@ MonoBehaviour:
   corpseHolder: {fileID: 1428648646478705256}
   isLoggingData: 0
   isStationary: 0
-  isVisibleInHost: 1
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4
@@ -1648,7 +1645,8 @@ GameObject:
   - component: {fileID: 3303167935170134755}
   - component: {fileID: 6938392427603369774}
   - component: {fileID: 8970447706355690644}
-  m_Layer: 11
+  - component: {fileID: 1481618208884450300}
+  m_Layer: 16
   m_Name: Combat Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1707,6 +1705,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6633da4ec98858449cf92d95520d592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &1481618208884450300
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997201932719016179}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &6096960523088756304
 GameObject:
   m_ObjectHideFlags: 0

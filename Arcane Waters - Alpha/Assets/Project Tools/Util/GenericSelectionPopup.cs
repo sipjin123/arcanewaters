@@ -102,7 +102,7 @@ public class GenericSelectionPopup : MonoBehaviour
       CropsIcon = 40,
       DiscoverySprites = 41,
       AchievementItemCategory = 42,
-      PerkIcon = 43
+      PerkIcon = 43,
    }
 
    #endregion
@@ -352,7 +352,7 @@ public class GenericSelectionPopup : MonoBehaviour
          case selectionType.WeaponType:
             for (int weaponType = 1; weaponType < MAX_OPTIONS; weaponType++) {
                string spritePath = "Assets/Sprites/Weapons/" + Gender.Type.Female + "/" + "weapon_" + weaponType + "_front";
-               createTextTemplate(weaponType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.WEAPON_SPRITE_INDEX);
+               createTextTemplate(weaponType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
             }
             break;
          case selectionType.Color:
@@ -375,8 +375,9 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case selectionType.HelmType:
-            foreach (Helm.Type helmType in Enum.GetValues(typeof(Helm.Type))) {
-               createTextTemplate(helmType.ToString(), textUI, changeEvent);
+            for (int helmType = 1; helmType < MAX_OPTIONS; helmType++) {
+               string spritePath = "Assets/Sprites/Headgear/" + Gender.Type.Female + "/" + Gender.Type.Female.ToString().ToLower() + "_helm_" + helmType;
+               createTextTemplate(helmType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
             }
             break;
          case selectionType.UsableItemType:

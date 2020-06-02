@@ -104,7 +104,6 @@ public class EquipmentToolManager : XmlDataToolManager {
       using (var writer = XmlWriter.Create(sb)) {
          ser.Serialize(writer, data);
       }
-
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled);

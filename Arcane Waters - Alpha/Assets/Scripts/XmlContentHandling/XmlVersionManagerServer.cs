@@ -32,7 +32,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string ARMOR_TABLE = "equipment_armor_xml_v3";
    public static string WEAPON_TABLE = "equipment_weapon_xml_v3";
-   public static string HELM_TABLE = "equipment_helm_xml_v2";
+   public static string HELM_TABLE = "equipment_helm_xml_v3";
    public static string LAND_MONSTER_TABLE = "land_monster_xml_v3";
    public static string NPC_TABLE = "npc_xml";
 

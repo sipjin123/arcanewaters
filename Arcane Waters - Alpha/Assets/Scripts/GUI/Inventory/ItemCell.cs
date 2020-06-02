@@ -60,6 +60,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
          case Item.Category.Helm:
+            item = Helm.castItemToHelm(item);
             icon.sprite = ImageManager.getSprite(item.iconPath);
             break;
          case Item.Category.Potion:

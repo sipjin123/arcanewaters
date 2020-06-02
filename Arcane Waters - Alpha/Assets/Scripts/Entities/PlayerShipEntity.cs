@@ -37,6 +37,14 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public string armorColor2;
 
+   // The equipped helm characteristics
+   [SyncVar]
+   public int helmType = 0;
+   [SyncVar]
+   public string helmColor1;
+   [SyncVar]
+   public string helmColor2;
+
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffect;
    public Canvas speedupGUI;
@@ -162,7 +170,7 @@ public class PlayerShipEntity : ShipEntity {
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
       // Handle GUI
-      if (!forceDisable && (isOn || meter < SPEEDUP_METER_MAX)) {
+      if (!forceDisable && (meter < SPEEDUP_METER_MAX)) {
          speedupGUI.enabled = true;
          speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
       } else {
@@ -210,8 +218,8 @@ public class PlayerShipEntity : ShipEntity {
       StartCoroutine(CO_FireTimedCannonBall(startTime, velocity));
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, ShipInfo shipInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, shipInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item helm, ShipInfo shipInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, helm, shipInfo);
 
       // Ship stuff
       initialize(shipInfo);
@@ -221,6 +229,7 @@ public class PlayerShipEntity : ShipEntity {
       // Store the equipped items characteristics
       weaponType = weapon.itemTypeId;
       armorType = armor.itemTypeId;
+      helmType = helm.itemTypeId;
       armorColor1 = armor.paletteName1;
       armorColor2 = armor.paletteName2;
    }

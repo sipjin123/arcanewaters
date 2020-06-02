@@ -340,14 +340,18 @@ public class XmlVersionManagerClient : MonoBehaviour {
             List<HelmStatData> helmList = new List<HelmStatData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  HelmStatData actualData = Util.xmlLoad<HelmStatData>(xmlSubGroup[1]);
-                  actualData.equipmentID = dataId;
-                  helmList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.helmType;
+               try {
+                  // Extract the segregated data and assign to the xml manager
+                  if (xmlSubGroup.Length == 2) {
+                     int dataId = int.Parse(xmlSubGroup[0]);
+                     HelmStatData actualData = Util.xmlLoad<HelmStatData>(xmlSubGroup[1]);
+                     actualData.equipmentID = dataId;
+                     actualData.itemSqlId = dataId;
+                     helmList.Add(actualData);
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.helmType;
+                  }
+               } catch {
+                  D.editorLog("Cant process helm data: " + xmlSubGroup[0] + " : " + xmlSubGroup[1] + " : ", Color.yellow);
                }
             }
             EquipmentXMLManager.self.receiveHelmFromZipData(helmList);

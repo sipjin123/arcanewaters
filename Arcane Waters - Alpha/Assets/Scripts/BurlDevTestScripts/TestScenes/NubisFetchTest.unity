@@ -150,24 +150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23373662ca0d67419354c7cd44d3a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ingredients: []
-  itemId: 
-  nubisUserInfoEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  nubisInventoryEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  nubisCraftingIngredientEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  nubisEquippedItemEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  nubisCraftableItemEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  webDirectory: 
 --- !u!4 &867523886
 Transform:
   m_ObjectHideFlags: 0

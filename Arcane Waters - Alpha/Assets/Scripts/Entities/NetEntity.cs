@@ -338,7 +338,7 @@ public class NetEntity : NetworkBehaviour {
       }
    }
 
-   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon,
+   public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item helm,
       ShipInfo shipInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;

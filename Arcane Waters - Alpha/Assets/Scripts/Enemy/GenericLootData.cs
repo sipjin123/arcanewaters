@@ -77,7 +77,11 @@ public class RawGenericLootData
 
       // If there are no item that passed their chance ratio, an optional default value can be set
       if (lootList.Length == 0) {
-         newLootList.Add(new LootInfo { lootType = new Item { category = Item.Category.None, itemTypeId = 0 }, quantity = 1 });
+         if (defaultLoot.category != Item.Category.None && defaultLoot.itemTypeId != 0) {
+            newLootList.Add(new LootInfo { lootType = new Item { category = defaultLoot.category, itemTypeId = defaultLoot.itemTypeId }, quantity = 1 });
+         } else {
+            newLootList.Add(new LootInfo { lootType = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int)CraftingIngredients.Type.Wood }, quantity = 1 });
+         }
          return newLootList;
       }
 

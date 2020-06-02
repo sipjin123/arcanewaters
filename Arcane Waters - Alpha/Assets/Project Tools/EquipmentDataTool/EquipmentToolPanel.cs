@@ -24,7 +24,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    public Button createElementalModifierButton, createRarityModifierButton;
 
    // The sprite that the weapon will preview
-   public static int WEAPON_SPRITE_INDEX = 47;
+   public static int EQUIPMENT_SPRITE_INDEX = 47;
 
    public enum ModifierType
    {
@@ -49,7 +49,7 @@ public class EquipmentToolPanel : MonoBehaviour {
    public int currentXmlId;
 
    // Event to notify if the equipment ID has been modified
-   public UnityEvent changeIconEvent = new UnityEvent();
+   public UnityEvent changeSpriteDisplayEvent = new UnityEvent();
 
    // Event to notify if the action type has been modified
    public UnityEvent changeActionTypeEvent = new UnityEvent();
@@ -116,26 +116,25 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       _equipmentTypeButton.onClick.AddListener(() => {
          if (equipmentType == EquipmentType.Weapon) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText, changeIconEvent);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText, changeSpriteDisplayEvent);
          } else if (equipmentType == EquipmentType.Armor) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorTypeSprites, _equipmentTypeText, changeIconEvent);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorTypeSprites, _equipmentTypeText, changeSpriteDisplayEvent);
          } else if (equipmentType == EquipmentType.Helm) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText);
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText, changeSpriteDisplayEvent);
          }
       });
 
-      changeIconEvent.AddListener(() => {
+      changeSpriteDisplayEvent.AddListener(() => {
          int spriteIndex = 0;
          string path = getInGameSprite(int.Parse(_equipmentTypeText.text));
          Sprite[] sprites = ImageManager.getSprites(path);
-
          if (equipmentType == EquipmentType.Weapon) {
-            int targetWeaponIndex = WEAPON_SPRITE_INDEX;
+            int targetWeaponIndex = EQUIPMENT_SPRITE_INDEX;
             if (sprites.Length-1 >= targetWeaponIndex) {
                spriteIndex = targetWeaponIndex;
                _weaponSpriteImage.sprite = sprites[spriteIndex];
             }
-         } else {
+         } else if (equipmentType == EquipmentType.Armor) {
             if (sprites.Length > 0) {
                try {
                   _armorSpriteImage.sprite = sprites[spriteIndex];
@@ -143,6 +142,14 @@ public class EquipmentToolPanel : MonoBehaviour {
                   _armorSpriteImage.sprite = sprites[0];
                }
             } 
+         } else {
+            if (sprites.Length > 0) {
+               try {
+                  _helmSpriteImage.sprite = sprites[spriteIndex];
+               } catch {
+                  _helmSpriteImage.sprite = sprites[0];
+               }
+            }
          }
       });
 
@@ -303,7 +310,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       string path = getInGameSprite(statData.weaponType);
       Sprite[] sprites = ImageManager.getSprites(path);
 
-      int targetWeaponIndex = WEAPON_SPRITE_INDEX;
+      int targetWeaponIndex = EQUIPMENT_SPRITE_INDEX;
       if (sprites.Length - 1 >= targetWeaponIndex) {
          spriteIndex = targetWeaponIndex;
          _weaponSpriteImage.sprite = sprites[spriteIndex];
@@ -333,6 +340,9 @@ public class EquipmentToolPanel : MonoBehaviour {
       _equipmentTypeText.text = statData.helmType.ToString();
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
+
+      string path = getInGameSprite(statData.helmType);
+      _helmSpriteImage.sprite = ImageManager.getSprite(path);
    }
 
    private void loadEquipmentData (EquipmentStatData equipmentData) {
@@ -469,7 +479,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       helmStatData.earthResist = int.Parse(_attributeEarth.text);
       helmStatData.fireResist = int.Parse(_attributeFire.text);
       helmStatData.airResist = int.Parse(_attributeAir.text);
-      helmStatData.helmType = (Helm.Type) Enum.Parse(typeof(Helm.Type), _equipmentTypeText.text);
+      helmStatData.helmType = int.Parse(_equipmentTypeText.text);
 
       return helmStatData;
    }
@@ -534,6 +544,8 @@ public class EquipmentToolPanel : MonoBehaviour {
             spritePath = "Assets/Sprites/Weapons/" + genderType + "/" + "weapon_" + equipmentID +"_front";
             break;
          case EquipmentType.Helm:
+            spritePath = "Assets/Sprites/Headgear/" + genderType + "/" + genderType.ToString().ToLower() + "_helm_" + equipmentID;
+            break;
          case EquipmentType.Armor:
             spritePath = "Assets/Sprites/Armor/" + genderType + "/" + genderType.ToString().ToLower() + "_armor_" + equipmentID;
             break;
@@ -648,7 +660,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
    // The preview of how the item looks like
    [SerializeField]
-   private Image _armorSpriteImage, _weaponSpriteImage;
+   private Image _armorSpriteImage, _weaponSpriteImage, _helmSpriteImage;
 #pragma warning restore 0649
    #endregion
 }

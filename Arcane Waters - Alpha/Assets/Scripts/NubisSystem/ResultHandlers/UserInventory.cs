@@ -82,6 +82,26 @@ namespace NubisDataHandling {
                         D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData, Color.red);
                      }
                      break;
+                  case Item.Category.Helm:
+                     HelmStatData helmData = EquipmentXMLManager.self.getHelmData(itmType);
+                     if (helmData != null) {
+                        Item helmItem = new Item {
+                           category = Item.Category.Helm,
+                           itemTypeId = itmType,
+                           id = itmId,
+                           itemDescription = helmData.equipmentDescription,
+                           itemName = helmData.equipmentName,
+                           iconPath = helmData.equipmentIconPath,
+                           data = HelmStatData.serializeHelmStatData(helmData),
+                           paletteName1 = itmPalette1,
+                           paletteName2 = itmPalette2
+                        };
+
+                        newItemList.Add(helmItem);
+                     } else {
+                        D.editorLog("Failed to process data of Helmet: " + itmType, Color.red);
+                     }
+                     break;
                   case Item.Category.CraftingIngredients:
                      Item craftingIngredient = new Item {
                         category = categoryType,

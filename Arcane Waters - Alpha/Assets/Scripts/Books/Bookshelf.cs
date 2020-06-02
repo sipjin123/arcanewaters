@@ -20,7 +20,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    }
 
    private void Update () {
-      if (bookId == 0) {
+      if (bookId == 0 || PanelManager.self.get(Panel.Type.BookReader).isShowing()) {
          return;
       }
 

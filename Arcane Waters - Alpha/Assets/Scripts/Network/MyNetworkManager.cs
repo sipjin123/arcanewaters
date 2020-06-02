@@ -289,7 +289,7 @@ public class MyNetworkManager : NetworkManager
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
             ServerCommunicationHandler.self.addPlayer(player.userId);
 
-            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, shipInfo);
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.helm, shipInfo);
 
             // Keep track
             _players[conn.connectionId] = player;
