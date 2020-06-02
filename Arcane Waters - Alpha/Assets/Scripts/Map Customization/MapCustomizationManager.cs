@@ -46,7 +46,8 @@ namespace MapCustomization
          }
 
          currentArea = areaName;
-         currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(areaName);
+         int userId = OwnedMapManager.isUserSpecificAreaKey(areaName) ? OwnedMapManager.getUserId(areaName) : Global.player.userId;
+         currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(userId);
          areaOwnerId = OwnedMapManager.getUserId(areaName);
 
          CustomizationUI.show();

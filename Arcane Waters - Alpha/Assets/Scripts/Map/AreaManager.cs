@@ -198,7 +198,7 @@ public class AreaManager : MonoBehaviour
    protected List<string> _seaAreaKeys = new List<string>();
 
    // Managers of owned maps
-   protected OwnedMapManager[] _ownedMapManagers = new OwnedMapManager[] { new PlayerOwnedHouseManager() };
+   protected OwnedMapManager[] _ownedMapManagers = new OwnedMapManager[] { new PlayerOwnedHouseManager(), new POFarmManager() };
 
    #endregion
 }

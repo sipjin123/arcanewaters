@@ -12,6 +12,7 @@ public class PlayerOwnedHouseManager : OwnedMapManager
    #endregion
 
    public override string mapTypeAreaKey => "poh";
+   public override string typeDisplayName => "House";
 
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {
       // Check if user is trying to warp into his house
@@ -30,7 +31,7 @@ public class PlayerOwnedHouseManager : OwnedMapManager
       }
    }
 
-   public override string getBaseMapAreaKey (string userSpecificAreaKey) {
+   public override string getBaseMapAreaKey (int userId) {
       // TODO: find out on which base map is the user's house based
 
       // For testing, return a hard-coded map

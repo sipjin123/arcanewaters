@@ -249,10 +249,9 @@ public class MyNetworkManager : NetworkManager
 
             if (AreaManager.self.tryGetOwnedMapManager(previousAreaKey, out OwnedMapManager ownedMapManager)) {
                // Get base map area key for owned maps, for others keep it the same as area key
-               baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(previousAreaKey);
-
                if (OwnedMapManager.isUserSpecificAreaKey(previousAreaKey)) {
                   mapOwnerId = OwnedMapManager.getUserId(previousAreaKey);
+                  baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(mapOwnerId);
                }
             }
 

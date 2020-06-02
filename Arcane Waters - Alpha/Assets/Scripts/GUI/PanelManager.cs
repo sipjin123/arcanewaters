@@ -111,6 +111,10 @@ public class PanelManager : MonoBehaviour {
       return _panels[panelType];
    }
 
+   public T get<T> (Panel.Type panelType) where T : Panel {
+      return get(panelType) as T;
+   }
+
    public Panel pushPanel (Panel.Type panelType) {
       // Hide any currently showing panels
       hidePanels();

@@ -670,7 +670,8 @@ public class AdminManager : NetworkBehaviour
       } else {
          // Try to find an owned map of this key
          if (AreaManager.self.tryGetOwnedMapManager(partialAreaKey, out OwnedMapManager ownedMapManager)) {
-            baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(partialAreaKey);
+            int userId = OwnedMapManager.isUserSpecificAreaKey(partialAreaKey) ? OwnedMapManager.getUserId(partialAreaKey) : _player.userId;
+            baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(userId);
             closestAreaKey = partialAreaKey;
          } else {
             // Try to select area keys whose beginning match exactly with the user input

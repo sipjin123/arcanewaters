@@ -6851,6 +6851,11 @@ PrefabInstance:
       propertyPath: m_FontData.m_Alignment
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6142740159613178769, guid: f1b2245835840ea43ab819d94bc9e657,
+        type: 3}
+      propertyPath: m_FontData.m_LineSpacing
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6142740159682607842, guid: f1b2245835840ea43ab819d94bc9e657,
         type: 3}
       propertyPath: m_FontData.m_Alignment
