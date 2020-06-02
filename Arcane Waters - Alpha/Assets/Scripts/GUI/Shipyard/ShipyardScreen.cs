@@ -61,7 +61,7 @@ public class ShipyardScreen : Panel {
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => buyButtonConfirmed(shipId));
 
       // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Do you want to buy the " + shipInfo.shipType + "?");
+      PanelManager.self.confirmScreen.show("Do you want to buy the " + shipInfo.shipName + "?");
    }
 
    protected void buyButtonConfirmed (int shipId) {

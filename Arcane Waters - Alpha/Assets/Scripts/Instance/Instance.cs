@@ -213,6 +213,13 @@ public class Instance : NetworkBehaviour
                      SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), seaMonster, -1, 1, 0);
                      SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), seaMonster, -1, 0, 1);
                      SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), seaMonster, 1, 0, 0);
+
+                     childSeaMonster1.isStationary = true;
+                     childSeaMonster2.isStationary = true;
+                     childSeaMonster3.isStationary = true;
+                     childSeaMonster4.isStationary = true;
+                     childSeaMonster5.isStationary = true;
+                     childSeaMonster6.isStationary = true;
                   }
                }
             }

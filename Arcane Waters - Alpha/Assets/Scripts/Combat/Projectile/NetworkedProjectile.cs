@@ -164,7 +164,7 @@ public class NetworkedProjectile : MonoBehaviour {
                if (!hitLand) {
                   SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
                   GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
-                  sourceEntity.Rpc_SpawnVenomResidue(_creatorUserId, circleCollider.transform.position);
+                  sourceEntity.Rpc_SpawnVenomResidue(sourceEntity.netId, circleCollider.transform.position);
                }
             }
             break;
@@ -217,7 +217,7 @@ public class NetworkedProjectile : MonoBehaviour {
          hitEntity.Rpc_NetworkProjectileDamage(_creatorUserId, attackType, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(hitEntity.transform.position, damage, attackType);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, damage, attackType);
       }
       _hasCollided = true;
 

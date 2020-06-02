@@ -60,11 +60,12 @@ public class SeaEntity : NetEntity
       // Keep track in our Sea Manager
       SeaManager.self.storeEntity(this);
 
+      // Removed to improve performance. If used again, add a kinematic rigidbody2D.
       // Make sea entities clickable on the client
-      if (isClient) {
-         ClickTrigger clickTrigger = Instantiate(PrefabsManager.self.clickTriggerPrefab);
-         clickTrigger.transform.SetParent(this.transform);
-      }
+      //if (isClient) {
+      //   ClickTrigger clickTrigger = Instantiate(PrefabsManager.self.clickTriggerPrefab);
+      //   clickTrigger.transform.SetParent(this.transform);
+      //}
 
       // Set our sprite sheets according to our types
       if (!Util.isBatch()) {
@@ -143,7 +144,7 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public void chainLightning (Vector2 sourcePos, int primaryTargetID) {
+   public void chainLightning (uint attackerNetId, Vector2 sourcePos, int primaryTargetID) {
       Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, 1);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
       List<int> targetIDList = new List<int>();
@@ -156,7 +157,7 @@ public class SeaEntity : NetEntity
 
                   SeaEntity entity = collidedEntity.GetComponent<SeaEntity>();
                   entity.currentHealth -= damage;
-                  entity.Rpc_ShowExplosion(collidedEntity.transform.position, damage, Attack.Type.None);
+                  entity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
                   AchievementManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
@@ -172,9 +173,9 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_SpawnVenomResidue (int creatorID, Vector3 location) {
+   public void Rpc_SpawnVenomResidue (uint creatorNetId, Vector3 location) {
       GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
-      venomResidue.GetComponent<VenomResidue>().creatorUserId = creatorID;
+      venomResidue.GetComponent<VenomResidue>().creatorNetId = creatorNetId;
       ExplosionManager.createSlimeExplosion(location);
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
@@ -268,7 +269,7 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_ShowExplosion (Vector2 pos, int damage, Attack.Type attackType) {
+   public void Rpc_ShowExplosion (uint attackerNetId, Vector2 pos, int damage, Attack.Type attackType) {
       _lastDamagedTime = Time.time;
 
       if (attackType == Attack.Type.None) {
@@ -303,6 +304,8 @@ public class SeaEntity : NetEntity
          // Show the damage text
          ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
          damageText.setDamage(damage);
+
+         noteAttacker(attackerNetId);
 
          // Play the damage sound
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Hit_2, pos);
@@ -366,8 +369,17 @@ public class SeaEntity : NetEntity
       return _lastAttackTime;
    }
 
+   [ClientRpc]
+   public void Rpc_NoteAttacker (uint netId) {
+      noteAttacker(netId);
+   }
+
    public virtual void noteAttacker (NetEntity entity) {
-      _attackers[entity.netId] = TimeManager.self.getSyncedTime();
+      noteAttacker(entity.netId);
+   }
+
+   public virtual void noteAttacker (uint netId) {
+      _attackers[netId] = TimeManager.self.getSyncedTime();
    }
 
    public bool hasReloaded () {
@@ -579,13 +591,13 @@ public class SeaEntity : NetEntity
                      }
 
                      targetEntity.currentHealth -= damage;
-                     targetEntity.Rpc_ShowExplosion(circleCenter, damage, attackType);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType);
 
                      if (attackType == Attack.Type.Shock_Ball) {
-                        chainLightning(targetEntity.transform.position, targetEntity.userId);
+                        chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.userId);
                      }
                   } else {
-                     targetEntity.Rpc_ShowExplosion(circleCenter, damage, Attack.Type.None);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, Attack.Type.None);
                   }
                   targetEntity.noteAttacker(attacker);
 

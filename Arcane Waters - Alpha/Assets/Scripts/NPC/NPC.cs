@@ -184,9 +184,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInStack());
       }
 
-      // Only show our outline when the mouse is over us
-      handleSpriteOutline();
-
       if (isServer) {
          Vector2 direction;
          if (_currentPathIndex < _currentPath.Count) {

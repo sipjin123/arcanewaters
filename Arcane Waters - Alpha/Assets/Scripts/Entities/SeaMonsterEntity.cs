@@ -20,14 +20,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The parent entity of this sea monster
    public SeaMonsterEntity seaMonsterParentEntity;
 
-   // Determines the current behavior of the monster
-   public MonsterBehavior monsterBehavior;
-
-   // Determines if this monster is engaging a ship
-   public bool isEngaging = false;
-
    // Current target entity
-   public NetEntity targetEntity;
+   public NetEntity targetEntity = null;
 
    // The Name of the NPC Seamonster
    [SyncVar]
@@ -92,10 +86,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public enum MonsterBehavior
    {
       Idle = 0,
-      MoveAround = 1,
-      MoveToTarget = 2,
-      AttackTarget = 3,
-      Die = 4
+      MoveToPosition = 1,
+      MoveToAttackPosition = 2,
+      Attack = 3,
    }
 
    #endregion
@@ -185,7 +178,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
          _seeker.pathCallback = setPath_Asynchronous;
 
-         planNextMove();
+         startAnalysis();
       }
 
       // Note our spawn position
@@ -229,6 +222,30 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             isMinionPlanning = false;
          }
       }
+
+      if (!isServer) {
+         return;
+      }
+
+      // Sets up where this unit is facing
+      if (seaMonsterData.roleType != RoleType.Minion) {
+         if (targetEntity != null && _currentPathIndex >= _currentPath.Count) {
+            // Look at target entity
+            this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, transform.position);
+         } else if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
+            // Update our facing direction
+            faceVelocityDirection();
+         }
+      } else {
+         // Forces minions to look at direction in relation to the parent
+         if (distanceFromSpawnPoint.x < 0) {
+            facing = Direction.West;
+         } else if (distanceFromSpawnPoint.x == 0) {
+            facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
+         } else {
+            facing = Direction.East;
+         }
+      }
    }
 
    protected override void FixedUpdate () {
@@ -244,66 +261,38 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          return;
       }
 
-      // Sets up where this unit is facing
-      if (seaMonsterData.roleType != RoleType.Minion) {
-         handleFaceDirection();
-      } else {
-         // Forces minions to look at direction in relation to the parent
-         if (distanceFromSpawnPoint.x < 0) {
-            facing = Direction.West;
-         } else if (distanceFromSpawnPoint.x == 0) {
-            facing = distanceFromSpawnPoint.y == 1 ? Direction.East : Direction.West;
-         } else {
-            facing = Direction.East;
-         }
+      if (isStationary) {
+         return;
       }
 
       // If this entity is a Minion, snap to its parent
-      if (seaMonsterData.roleType == RoleType.Minion) {
-         if (!isMinionPlanning) {
-            isMinionPlanning = true;
-            planNextMove();
+      if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
+         Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
+         Vector2 waypointDirection = (targetLocation - (Vector2) transform.position).normalized;
+
+         // Teleports the Minions if too far away from Parent
+         if (Vector2.SqrMagnitude(transform.position - seaMonsterParentEntity.transform.position) > 2 * 2) {
+            _body.MovePosition(targetLocation);
          }
-         if (seaMonsterParentEntity != null) {
-            Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
-            Vector2 waypointDirection = (targetLocation - (Vector2) transform.position).normalized;
 
-            // Teleports the Minions if too far away from Parent
-            if (Vector3.Distance(transform.position, seaMonsterParentEntity.transform.position) > 2) {
-               transform.position = targetLocation;
-            }
-
-            float distanceToWaypoint = Vector2.Distance(targetLocation, transform.position);
-            if (distanceToWaypoint > .05f) {
-               _body.AddForce(waypointDirection.normalized * (getMoveSpeed() / 1.75f));
-            }
+         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(targetLocation - (Vector2)transform.position);
+         if (sqrDistanceToWaypoint > .025f) {
+            _body.AddForce(waypointDirection.normalized * (getMoveSpeed() / 1.75f));
          }
          return;
       }
 
-      // Process movement towards route
-      if (monsterBehavior == MonsterBehavior.MoveAround || monsterBehavior == MonsterBehavior.MoveToTarget) {
-         if (seaMonsterData.roleType != RoleType.Minion && (isEnemyWithinRangedAttackDistance() || (!isEnemyWithinTerritory() && monsterBehavior == MonsterBehavior.MoveToTarget))) {
-            stopMoving();
-         }
+      if (_currentPathIndex < _currentPath.Count) {
+         // Move towards our current waypoint
+         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized;
 
-         if (_currentPathIndex < _currentPath.Count) {
-            // Move towards our current waypoint
-            Vector2 waypointDirection = ((Vector2)_currentPath[_currentPathIndex] - (Vector2)transform.position).normalized;
+         _body.AddForce(waypointDirection * getMoveSpeed());
+         _lastMoveChangeTime = Time.time;
 
-            _body.AddForce(waypointDirection * getMoveSpeed());
-            _lastMoveChangeTime = Time.time;
-
-            // Clears a node as the unit passes by
-            float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
-            if (distanceToWaypoint < .1f) {
-               commandMinions();
-               ++_currentPathIndex;
-            }
-         } else {
-            // Path complete, plan the next move
-            monsterBehavior = MonsterBehavior.Idle;
-            planNextMove();
+         // Clears a node as the unit passes by
+         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - transform.position);
+         if (sqrDistanceToWaypoint < .01f) {
+            ++_currentPathIndex;
          }
       }
    }
@@ -312,12 +301,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    #region External Entity Related Functions
 
-   public override void noteAttacker (NetEntity attacker) {
-      if (!(attacker is SeaMonsterEntity)) {
-         base.noteAttacker(attacker);
-         if (seaMonsterParentEntity != null) {
-            seaMonsterParentEntity.noteAttacker(attacker);
-         }
+   public override void noteAttacker (uint netId) {
+      base.noteAttacker(netId);
+      if (seaMonsterParentEntity != null) {
+         seaMonsterParentEntity.noteAttacker(netId);
       }
    }
 
@@ -338,60 +325,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          if (ship != null && ship.instanceId == instanceId && !_attackers.ContainsKey(ship.netId) &&
             !ship.isDead()) {
             noteAttacker(ship);
+            Rpc_NoteAttacker(ship.netId);
          }
       }
-   }
-
-   protected void attackTarget () {
-      if (isDead() || !isServer) {
-         return;
-      }
-
-      // If we haven't reloaded, we can't attack
-      if (!hasReloaded()) {
-         planNextMove();
-         return;
-      }
-
-      // Check if any of our attackers are within range
-      if (targetEntity == null || targetEntity.isDead() || targetEntity == this || targetEntity is SeaMonsterEntity) {
-         return;
-      }
-
-      // Check where the attacker currently is
-      Vector2 spot = targetEntity.transform.position;
-
-      // TODO: Setup a more efficient method for attack type setup
-      if (seaMonsterData.skillIdList.Count > 0) {
-         ShipAbilityData seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
-         if (seaEntityAbilityData != null) {
-            seaMonsterData.attackType = seaEntityAbilityData.selectedAttackType;
-         }
-      }
-
-      if (seaMonsterData.attackType != Attack.Type.None) {
-         if (seaMonsterData.isMelee && isEnemyWithinMeleeAttackDistance()) {
-            meleeAtSpot(spot, seaMonsterData.attackType);
-            monsterBehavior = MonsterBehavior.AttackTarget;
-
-            planNextMove();
-         } else {
-            if (seaMonsterData.isRanged) {
-               int abilityId = -1;
-               if (seaMonsterData.skillIdList.Count > 0) {
-                  ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
-                  abilityId = shipAbility.abilityId;
-               }
-
-               launchProjectile(spot, targetEntity.GetComponent<SeaEntity>(), abilityId, .2f, .4f);
-               monsterBehavior = MonsterBehavior.AttackTarget;
-            }
-         }
-      } else {
-         isEngaging = true;
-      }
-
-      planNextMove();
    }
 
    protected NetEntity getNearestTarget () {
@@ -400,15 +336,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       foreach (uint attackerId in _attackers.Keys) {
          NetEntity attacker = MyNetworkManager.fetchEntityFromNetId<NetEntity>(attackerId);
-         if (attacker == null) {
+         if (attacker == null || attacker == this || attacker.isDead() || (attacker is SeaMonsterEntity)) {
             continue;
          }
 
-         if (attacker.isDead() || (attacker is SeaMonsterEntity)) {
-            continue;
-         }
-
-         float newDistanceGap = Vector2.Distance(attacker.transform.position, transform.position);
+         float newDistanceGap = Vector2.SqrMagnitude(attacker.transform.position - transform.position);
 
          if (newDistanceGap < oldDistanceGap) {
             oldDistanceGap = newDistanceGap;
@@ -421,113 +353,151 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    #endregion
 
-   #region Minion / Master Related Functions
+   #region Behavior functions
 
-   public void moveToParentDestination (Vector3 newTarget) {
-      if (!isServer) {
-         return;
+   private void startAnalysis () {
+      switch (seaMonsterData.roleType) {
+         case RoleType.Standalone:
+         case RoleType.Master:
+            InvokeRepeating(nameof(standaloneBehavior), Random.Range(0f, 1f), 0.5f);
+            break;
+         case RoleType.Minion:
+            InvokeRepeating(nameof(minionBehavior), Random.Range(0f, 1f), 0.5f);
+            break;
+         default:
+            break;
       }
+   }
 
-      if (seaMonsterParentEntity != null && seaMonsterData != null) {
-         if (seaMonsterData.roleType == RoleType.Minion) {
-            findAndSetPath_Asynchronous(newTarget);
+   private void standaloneBehavior () {
+      if (_currentBehavior == MonsterBehavior.Idle) {
+         // Continue attacking the current target
+         if (canCurrentTargetBeAttacked()) {
+            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
+            return;
+         }
+
+         // Check if there are targets around
+         scanTargetsInArea();
+         targetEntity = getNearestTarget();
+
+         if (canCurrentTargetBeAttacked()) {
+            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
+         } else if (targetEntity != null && !targetEntity.isDead() && isWithinMoveDistance(targetEntity) && isWithinTerritory(targetEntity)) {
+            _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
+               (Vector2)targetEntity.transform.position + Random.insideUnitCircle * 0.5f, 0.1f,
+               MonsterBehavior.MoveToAttackPosition));
+         } else {
+            _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
+               _spawnPos + Random.insideUnitCircle * 0.5f, seaMonsterData.moveFrequency,
+               MonsterBehavior.MoveToPosition));
+         }
+      } else if (_currentBehavior == MonsterBehavior.MoveToPosition) {
+         // Check if there are targets around
+         scanTargetsInArea();
+         targetEntity = getNearestTarget();
+
+         if (targetEntity != null && !targetEntity.isDead() && isWithinMoveDistance(targetEntity) && isWithinTerritory(targetEntity)) {
+            // Interrupt the move around behavior
+            StopCoroutine(_currentBehaviorCoroutine);
+            _currentPathIndex = _currentPath.Count;
+            _currentBehavior = MonsterBehavior.Idle;
          }
       }
    }
 
-   private void commandMinions () {
-      if (seaMonsterData.roleType == RoleType.Master && seaMonsterChildrenList.Count > 0 && _currentPathIndex < _currentPath.Count) {
-         foreach (SeaMonsterEntity childEntity in seaMonsterChildrenList) {
-            if (!childEntity.isDead()) {
-               childEntity.stopMoving();
-               childEntity.moveToParentDestination(_currentPath[_currentPath.Count - 1]);
-            }
+   private void minionBehavior () {
+      if (_currentBehavior == MonsterBehavior.Idle) {
+         // Continue attacking the current target
+         if (canCurrentTargetBeAttacked()) {
+            _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
+            return;
+         }
+
+         // Verify if there are targets around
+         scanTargetsInArea();
+         targetEntity = getNearestTarget();
+      }
+   }
+
+   private IEnumerator CO_MoveToPosition (Vector2 pos, float endDelay, MonsterBehavior behavior) {
+      _currentBehavior = behavior;
+
+      yield return findAndSetPath_Asynchronous(pos);
+
+      // The movement is performed in FixedUpdate
+      while (_currentPathIndex < _currentPath.Count) {
+         yield return new WaitForSeconds(0.1f);
+      }
+
+      if (endDelay >= 0) {
+         yield return new WaitForSeconds(endDelay);
+      }
+
+      _currentBehavior = MonsterBehavior.Idle;
+   }
+
+   private IEnumerator CO_AttackTargetOnce () {
+      _currentBehavior = MonsterBehavior.Attack;
+
+      // Wait for the reload to finish
+      if (!hasReloaded() || !canAttack()) {
+         yield return null;
+      }
+
+      // If the target is no more valid, stop here
+      if (!canCurrentTargetBeAttacked()) {
+         _currentBehavior = MonsterBehavior.Idle;
+         yield break;
+      }
+
+      // TODO: Setup a more efficient method for attack type setup
+      Attack.Type attackType = Attack.Type.None;
+      if (seaMonsterData.skillIdList.Count > 0) {
+         ShipAbilityData seaEntityAbilityData = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+         if (seaEntityAbilityData != null) {
+            attackType = seaEntityAbilityData.selectedAttackType;
          }
       }
+
+      // Attack
+      if (attackType != Attack.Type.None) {
+         if (seaMonsterData.isMelee) {
+            meleeAtSpot(targetEntity.transform.position, seaMonsterData.attackType);
+         } else if (seaMonsterData.isRanged) {
+            int abilityId = -1;
+            if (seaMonsterData.skillIdList.Count > 0) {
+               ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(seaMonsterData.skillIdList[0]);
+               abilityId = shipAbility.abilityId;
+            }
+
+            launchProjectile(targetEntity.transform.position, targetEntity.GetComponent<SeaEntity>(), abilityId, .2f, .4f);
+         }
+      }
+
+      _currentBehavior = MonsterBehavior.Idle;
+   }
+
+   private bool canCurrentTargetBeAttacked () {
+      if (targetEntity == null || targetEntity.isDead() || !isWithinTerritory(targetEntity)) {
+         return false;
+      }
+
+      float sqrDistanceToTarget = Vector2.SqrMagnitude((Vector2) transform.position - (Vector2) targetEntity.transform.position);
+      if ((seaMonsterData.isMelee && !isWithinMeleeAttackDistance(sqrDistanceToTarget)) ||
+            (seaMonsterData.isRanged && !isWithinRangedAttackDistance(sqrDistanceToTarget))) {
+         return false;
+      }
+
+      return true;
+   }
+
+   public bool canAttack () {
+      float timeSinceAttack = Time.time - _lastAttackTime;
+      return timeSinceAttack > seaMonsterData.attackFrequency;
    }
 
    #endregion
-
-   public void stopMoving () {
-      if (seaMonsterData == null) {
-         return;
-      }
-
-      // Stops current route and plans a new move
-      if (monsterBehavior == MonsterBehavior.MoveAround || monsterBehavior == MonsterBehavior.MoveToTarget) {
-         _currentPath.Clear();
-
-         monsterBehavior = MonsterBehavior.Idle;
-
-         planNextMove();
-      }
-   }
-
-   private void planNextMove () {
-      if (!isServer || isStationary) {
-         return;
-      }
-
-      if (_analysisCoroutine != null) {
-         StopCoroutine(_analysisCoroutine);
-      }
-      _analysisCoroutine = StartCoroutine(CO_ProcessNextMove());
-   }
-
-   private IEnumerator CO_ProcessNextMove () {
-      yield return new WaitForSeconds(.1f);
-
-      // Checks if there are enemies nearby
-      scanTargetsInArea();
-
-      // Gets the nearest target if there is
-      yield return targetEntity = getNearestTarget();
-
-      if (seaMonsterData.roleType == RoleType.Minion) {
-         if (targetEntity != null) {
-            if (isEnemyWithinRangedAttackDistance() && hasReloaded()) {
-               attackTarget();
-            } else {
-               isMinionPlanning = false;
-            }
-         } else {
-            isMinionPlanning = false;
-         }
-      } else {
-         if (targetEntity != null && isEnemyWithinTerritory()) {
-            // If there is a target, calculate if
-            if (isEnemyWithinMoveDistance()) {
-               if (isEnemyWithinRangedAttackDistance() && seaMonsterData.roleType != RoleType.Master) {
-                  if (hasReloaded()) {
-                     attackTarget();
-                  } else {
-                     yield return new WaitForSeconds(seaMonsterData.attackFrequency);
-                     planNextMove();
-                  }
-               } else {
-                  yield return new WaitForSeconds(seaMonsterData.moveFrequency * .5f);
-                  if (targetEntity != null) {
-                     findAndSetPath_Asynchronous(targetEntity.transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
-                     monsterBehavior = MonsterBehavior.MoveToTarget;
-                  } else {
-                     findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
-                     monsterBehavior = MonsterBehavior.MoveAround;
-                  }
-               }
-            } else {
-               // Enemy is too far, keep moving around
-               yield return new WaitForSeconds(seaMonsterData.moveFrequency);
-               findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
-               monsterBehavior = MonsterBehavior.MoveAround;
-            }
-         } else {
-            // No enemy, keep moving around
-            yield return new WaitForSeconds(seaMonsterData.moveFrequency);
-            findAndSetPath_Asynchronous(transform.position + Random.insideUnitCircle.ToVector3() * 0.5f);
-            monsterBehavior = MonsterBehavior.MoveAround;
-         }
-      }
-   }
 
    private void handleAnimations () {
       if (hasDied) {
@@ -577,27 +547,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
-   private void handleFaceDirection () {
-      if (getVelocity().magnitude < MIN_MOVEMENT_MAGNITUDE && targetEntity != null) {
-         if (Vector2.Distance(transform.position, _spawnPos) > seaMonsterData.territoryRadius) {
-            // Forget target because it is beyond territory radius
-            targetEntity = null;
-            isEngaging = false;
-         }
-
-         if (isEngaging) {
-            // Look at target entity
-            this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, transform.position);
-         }
-      } else {
-         if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
-            // Update our facing direction
-            faceVelocityDirection();
-         }
-      }
-   }
-
    protected virtual void killUnit () {
+      if (_currentBehaviorCoroutine != null) {
+         StopCoroutine(_currentBehaviorCoroutine);
+      }
+
       hasDied = true;
       handleAnimations();
 
@@ -668,6 +622,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          targetLoc = spot;
       }
 
+      // Clamp the target to the monster's range radius
+      if ((targetLoc - (Vector2) transform.position).magnitude > seaMonsterData.maxProjectileDistanceGap) {
+         targetLoc = ((targetLoc - (Vector2) transform.position).normalized * seaMonsterData.maxProjectileDistanceGap) + (Vector2) transform.position;
+      }
+
       Vector2 spawnPosition = new Vector2(0, 0);
       // Determines the origin of the projectile
       if (projectileSpawnLocations == null || projectileSpawnLocations.Count < 1) {
@@ -679,27 +638,23 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
       fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
-
-      isEngaging = true;
-
-      monsterBehavior = MonsterBehavior.Idle;
-
-      planNextMove();
    }
 
-   private void findAndSetPath_Asynchronous (Vector3 targetPosition) {
+   private IEnumerator findAndSetPath_Asynchronous (Vector3 targetPosition) {
       if (!_seeker.IsDone()) {
          _seeker.CancelCurrentPathRequest();
       }
       _seeker.StartPath(transform.position, targetPosition);
+
+      while (!_seeker.IsDone()) {
+         yield return null;
+      }
    }
 
    private void setPath_Asynchronous (Path newPath) {
       _currentPath = newPath.vectorPath;
       _currentPathIndex = 0;
       _seeker.CancelCurrentPathRequest(true);
-
-      commandMinions();
    }
 
    #region Utilities
@@ -741,42 +696,22 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
    }
 
-   protected bool isEnemyWithinMoveDistance () {
-      if (targetEntity != null) {
-         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap < seaMonsterData.maxDistanceGap) {
-            return true;
-         }
-      }
-      return false;
+   protected bool isWithinMoveDistance (NetEntity entity) {
+      float sqrDistance = Vector2.SqrMagnitude(entity.transform.position - transform.position);
+      return sqrDistance < seaMonsterData.maxDistanceGap * seaMonsterData.maxDistanceGap;
    }
 
-   protected bool isEnemyWithinTerritory () {
-      float distanceGap = Vector2.Distance(_spawnPos, transform.position);
-      if (distanceGap < seaMonsterData.territoryRadius) {
-         return true;
-      }
-      return false;
+   protected bool isWithinTerritory (NetEntity entity) {
+      float sqrDistance = Vector2.SqrMagnitude(_spawnPos - (Vector2) entity.transform.position);
+      return sqrDistance < seaMonsterData.territoryRadius * seaMonsterData.territoryRadius;
    }
 
-   protected bool isEnemyWithinRangedAttackDistance () {
-      if (targetEntity != null) {
-         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap < seaMonsterData.maxProjectileDistanceGap) {
-            return true;
-         }
-      }
-      return false;
+   protected bool isWithinRangedAttackDistance (float sqrDistance) {
+      return sqrDistance < seaMonsterData.maxProjectileDistanceGap * seaMonsterData.maxProjectileDistanceGap;
    }
 
-   protected bool isEnemyWithinMeleeAttackDistance () {
-      if (targetEntity != null) {
-         float distanceGap = Vector2.Distance(targetEntity.transform.position, transform.position);
-         if (distanceGap < seaMonsterData.maxMeleeDistanceGap) {
-            return true;
-         }
-      }
-      return false;
+   protected bool isWithinMeleeAttackDistance (float sqrDistance) {
+      return sqrDistance < seaMonsterData.maxMeleeDistanceGap * seaMonsterData.maxMeleeDistanceGap;
    }
 
    #endregion
@@ -801,11 +736,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The current Point Index of the path
    private int _currentPathIndex;
 
-   // Keeps reference to the recent coroutine so that it can be manually stopped
-   private Coroutine _analysisCoroutine = null;
+   // Keeps reference to the behavior coroutine so that it can be manually stopped
+   private Coroutine _currentBehaviorCoroutine = null;
 
    // A working array to use with OverlapCircle
    private Collider2D[] _hits = new Collider2D[MAX_COLLISION_COUNT];
+
+   // The current behavior
+   private MonsterBehavior _currentBehavior = MonsterBehavior.Idle;
 
    #endregion
 }

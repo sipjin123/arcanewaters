@@ -1020,7 +1020,7 @@ public class DB_MainStub : MonoBehaviour {
       return false;
    }
 
-   public static void updatePaletteXML (string rawData, string name, int xmlId) {
+   public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
 
    }
 
@@ -1032,7 +1032,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<XMLPair> getPaletteXML () {
+   public static List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       return new List<XMLPair>();
    }
 

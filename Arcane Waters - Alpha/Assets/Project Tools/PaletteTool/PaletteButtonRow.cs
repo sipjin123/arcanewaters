@@ -25,6 +25,12 @@ public class PaletteButtonRow : MonoBehaviour {
    // Holds reference to UI button allowing to delete palette
    public Button deleteButton;
 
+   // Holds reference to UI button enabling/disabling palette
+   public Button enableButton;
+
+   // Determines whether palette is currently active
+   public bool paletteEnabled;
+
    // Index of local cached data about all palettes
    [HideInInspector]
    public int dataIndex;

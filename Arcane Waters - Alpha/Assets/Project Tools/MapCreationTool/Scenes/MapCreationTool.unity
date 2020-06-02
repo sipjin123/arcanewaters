@@ -16686,6 +16686,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6142740160576753809, guid: f1b2245835840ea43ab819d94bc9e657,
+        type: 3}
+      propertyPath: m_CharacterLimit
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 6142740160576753811, guid: f1b2245835840ea43ab819d94bc9e657,
         type: 3}
       propertyPath: m_Name

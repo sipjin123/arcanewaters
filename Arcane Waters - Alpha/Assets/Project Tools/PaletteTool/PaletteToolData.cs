@@ -20,6 +20,9 @@ public class PaletteToolData
    // Right side color - destination colors
    public string[] dstColor;
 
+   // Check if color can be changed by hue shift
+   public bool[] staticColor;
+
    // Type of palette e.g. hair/eyes/weapon
    public int paletteType;
 
@@ -27,22 +30,13 @@ public class PaletteToolData
 
    public PaletteToolData () { }
 
-   public PaletteToolData (string paletteName, int size, string[] srcColor, string[] dstColor, int paletteType) {
+   public PaletteToolData (string paletteName, int size, string[] srcColor, string[] dstColor, int paletteType, bool[] staticColor) {
       this.paletteName = paletteName;
       this.size = size;
       this.srcColor = srcColor;
       this.dstColor = dstColor;
       this.paletteType = paletteType;
-   }
-
-   public static PaletteToolData CreateAchievementData (PaletteToolData copy) {
-      PaletteToolData newData = new PaletteToolData();
-      newData.paletteName = copy.paletteName;
-      newData.size = copy.size;
-      newData.srcColor = copy.srcColor;
-      newData.dstColor = copy.dstColor;
-      newData.paletteType = copy.paletteType;
-      return newData;
+      this.staticColor = staticColor;
    }
  
    #region Private Variables

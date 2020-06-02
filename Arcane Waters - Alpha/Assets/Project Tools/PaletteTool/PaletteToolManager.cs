@@ -40,6 +40,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Contains pair of source and destination square to allow grouping in UI
    public GameObject horizontalColorHolderPrefab;
 
+   // Button which indicates whether box color is static in regard to hue shift
+   public GameObject staticColorButtonPrefab;
+
    [Header("Containers")]
    // Container for single pixel in palette (source - destination)
    public RectTransform colorsContainer;
@@ -71,6 +74,12 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Sprite preview using SpriteRender to allow using color picking
    public SpriteRenderer spritePreviewForColorPicker;
+
+   // Slider which allows to do hue shift on all colors
+   public Slider hueSlider;
+
+   // Text presenting current hue shift
+   public Text hueValueText;
 
    [Header("Confirm deleting palette scene")]
    // Object holds UI with confirm/cancel button
@@ -114,6 +123,9 @@ public class PaletteToolManager : XmlDataToolManager {
       // The userID of the content creator
       public int creatorID;
 
+      // Determines if palette is enabled
+      public bool isEnabled;
+
       // Data of the palette
       public PaletteToolData paletteData;
    }
@@ -124,6 +136,19 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Dropdown element to populate with palette types to choose from
    public TMPro.TMP_Dropdown dropdownPaletteType;
+
+   [Header("Sprite references")]
+   // Checkbox checked sprite for enabled palette
+   public Sprite checkboxCheckedPaletteSprite;
+
+   // Checkbox unchecked sprite for disabled palette
+   public Sprite checkboxUncheckedPaletteSprite;
+
+   // Checkbox checked sprite for static color box
+   public Sprite checkboxCheckedBoxSprite;
+
+   // Checkbox unchecked sprite for not static color box
+   public Sprite checkboxUncheckedBoxSprite;
 
    public enum PaletteImageType
    {
@@ -144,7 +169,7 @@ public class PaletteToolManager : XmlDataToolManager {
       "Assets/Sprites/Weapons",
       "Assets/Sprites/Hair",
       "Assets/Sprites/Eyes",
-      "Assets/Sprites/Body",
+      "Assets/Sprites/Bodies",
       "Assets/Sprites/NPCs",
       "Assets/Sprites/Ships",
       "",
@@ -161,6 +186,7 @@ public class PaletteToolManager : XmlDataToolManager {
          savePalette();
       });
       backToListButton.onClick.AddListener(() => {
+         _isEditingRow = false;
          changePaletteScene.gameObject.SetActive(false);
          loadXMLData();
       });
@@ -178,19 +204,24 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Changing size of currently edited palette (available in edit scene)
       setSize8.onClick.AddListener(() => {
-         changeArraySize(8);
+         changeArraySize(8, false);
       });
       setSize16.onClick.AddListener(() => {
-         changeArraySize(16);
+         changeArraySize(16, false);
       });
       setSize32.onClick.AddListener(() => {
-         changeArraySize(32);
+         changeArraySize(32, false);
       });
       setSize64.onClick.AddListener(() => {
-         changeArraySize(64);
+         changeArraySize(64, false);
       });
       setSize128.onClick.AddListener(() => {
-         changeArraySize(128);
+         changeArraySize(128, false);
+      });
+
+      // Call function when changing hue slider value
+      hueSlider.onValueChanged.AddListener((float val) => {
+         changeColorsWithHueShift((int) val);
       });
 
       // Confirm or cancel deleting palette (available in cofirm delete scene)
@@ -249,7 +280,16 @@ public class PaletteToolManager : XmlDataToolManager {
          row.duplicateButton.onClick.AddListener(() => {
             duplicateSingleRow(row);
          });
+         row.enableButton.onClick.AddListener(() => {
+            if (row.enableButton.image.sprite == checkboxCheckedPaletteSprite) {
+               row.enableButton.image.sprite = checkboxUncheckedPaletteSprite;
+            } else {
+               row.enableButton.image.sprite = checkboxCheckedPaletteSprite;
+            }
+            enableSingleRow(row);
+         });
 
+         row.enableButton.image.sprite = data.isEnabled ? checkboxCheckedPaletteSprite : checkboxUncheckedPaletteSprite;
          row.gameObject.GetComponent<RectTransform>().SetParent(paletteRowParent);
          row.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
          row.gameObject.SetActive(true);
@@ -259,7 +299,13 @@ public class PaletteToolManager : XmlDataToolManager {
    private void duplicateSingleRow (PaletteButtonRow row) {
       showSingleRowEditor(row);
       _currentRow = null;
-      choosePaletteNameText.GetComponent<InputField>().text = "Choose name";
+      choosePaletteNameText.GetComponent<InputField>().text = _initialPaletteName;
+      _isEditingRow = true;
+   }
+
+   private void enableSingleRow (PaletteButtonRow row) {
+      PaletteToolData data = _paletteDataList[row.dataIndex].paletteData;
+      saveXMLData(data, findPaletteId(data), (isPaletteEnabled(data) + 1) % 2);
    }
 
    private void showDeleteConfirmation (PaletteButtonRow row) {
@@ -268,6 +314,7 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void showSingleRowEditor (PaletteButtonRow row) {
+      hueSlider.value = hueSlider.minValue;
       changePaletteScene.gameObject.SetActive(true);
 
       // Convert data from string (hex format RRGGBB) to Unity.Color
@@ -291,22 +338,32 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Present edit scene with downloaded data
       _currentRow = row;
-      generatePaletteColorImages(src, dst, data.size);
+      generatePaletteColorImages(src, dst, data.size, data.staticColor);
       showPalettePreview();
       choosePaletteNameText.GetComponent<InputField>().text = data.paletteName;
+
+      _isEditingRow = true;
    }
 
-   private void changeArraySize (int size) {
+   private void changeArraySize (int size, bool clearColors) {
       // Get current colors and pass to function generating new scene
-      List<Color> src = new List<Color>();
-      List<Color> dst = new List<Color>();
-      for (int i = 0; i < _srcColors.Count; i++) {
-         src.Add(_srcColors[i].color);
+      if (!clearColors) {
+         List<Color> src = new List<Color>();
+         List<Color> dst = new List<Color>();
+         bool[] isStatic = new bool[_staticColors.Count];
+         for (int i = 0; i < _srcColors.Count; i++) {
+            src.Add(_srcColors[i].color);
+         }
+         for (int i = 0; i < _dstColors.Count; i++) {
+            dst.Add(_dstColors[i].color);
+         }
+         for (int i = 0; i < _staticColors.Count; i++) {
+            isStatic[i] = _staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? true : false;
+         }
+         generatePaletteColorImages(src, dst, size, isStatic);
+      } else {
+         generatePaletteColorImages(null, null, size, null);
       }
-      for (int i = 0; i < _dstColors.Count; i++) {
-         dst.Add(_dstColors[i].color);
-      }
-      generatePaletteColorImages(src, dst, size);
    }
 
    public void deleteXMLData (int xmlID) {
@@ -319,7 +376,7 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveXMLData (PaletteToolData data, int xmlID) {
+   public void saveXMLData (PaletteToolData data, int xmlID, int isEnabled) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -328,7 +385,7 @@ public class PaletteToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => { 
-         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID);
+         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -346,7 +403,7 @@ public class PaletteToolManager : XmlDataToolManager {
 
       XmlLoadingPanel.self.startLoading();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML();
+         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
@@ -357,7 +414,8 @@ public class PaletteToolManager : XmlDataToolManager {
                PaletteDataPair newDataPair = new PaletteDataPair {
                   paletteData = paletteData,
                   creatorID = xmlPair.xmlOwnerId,
-                  paletteId = xmlPair.xmlId
+                  paletteId = xmlPair.xmlId,
+                  isEnabled = xmlPair.isEnabled
                };
                _paletteDataList.Add(newDataPair);
             }
@@ -419,8 +477,13 @@ public class PaletteToolManager : XmlDataToolManager {
          D.error("Source and destination color palette sizes are different. Cannot save palette in database!");
          return;
       }
-      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst, (int) _paletteImageType);
-      saveXMLData(data, findPaletteId(data));
+      bool[] isStatic = new bool[_srcColors.Count];
+      for (int i = 0; i < _srcColors.Count; i++) {
+         isStatic[i] = (_staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite) ? true : false;
+      }
+
+      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst, (int) _paletteImageType, isStatic);
+      saveXMLData(data, findPaletteId(data), isPaletteEnabled(data));
    }
 
    private int findPaletteId (PaletteToolData data) {
@@ -431,18 +494,28 @@ public class PaletteToolManager : XmlDataToolManager {
       return _paletteDataList[_currentRow.dataIndex].paletteId;
    }
 
+   private int isPaletteEnabled (PaletteToolData data) {
+      if (_currentRow == null) {
+         int index = _paletteDataList.FindIndex((PaletteDataPair paletteDataPair) => paletteDataPair.paletteData.paletteName == data.paletteName);
+         return (index != -1) ? (_paletteDataList[index].isEnabled ? 1 : 0) : 1;
+      }
+      return _paletteDataList[_currentRow.dataIndex].isEnabled ? 1 : 0;
+   }
+
    private void showPalettePreview () {
       previewSprite.material.SetTexture("_Palette", generateTexture2D());
    }
 
    private void createNewPalette (int size) {
+      _isEditingRow = true;
       _currentRow = null;
-      generatePaletteColorImages(null, null, size);
+      hueSlider.value = hueSlider.minValue;
+      generatePaletteColorImages(null, null, size, null);
       showPalettePreview();
-      choosePaletteNameText.GetComponent<InputField>().text = "Choose name";
+      choosePaletteNameText.GetComponent<InputField>().text = _initialPaletteName;
    }
 
-   private void generatePaletteColorImages (List<Color> srcColors, List<Color> dstColors, int size) {
+   private void generatePaletteColorImages (List<Color> srcColors, List<Color> dstColors, int size, bool[] isStatic) {
       // Genereate most often occurring colors and present as presets in Color Picker
       colorPicker.GetComponent<ColorPicker>().Setup.DefaultPresetColors = generateMostCommonPixelsInSprite(previewSprite.sprite).ToArray();
 
@@ -454,6 +527,7 @@ public class PaletteToolManager : XmlDataToolManager {
       // Clear cached colors
       _srcColors.Clear();
       _dstColors.Clear();
+      _staticColors.Clear();
 
       if (srcColors == null) {
          srcColors = new List<Color>();
@@ -486,12 +560,14 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       singleColorPrefab.gameObject.SetActive(true);
+      staticColorButtonPrefab.gameObject.SetActive(true);
       for (int i = 0; i < size; i++) {
          // Create horizontal prefab which is holding source and destination pixels
          RectTransform parent = GameObject.Instantiate(horizontalColorHolderPrefab).GetComponent<RectTransform>();
          parent.GetComponent<RectTransform>().SetParent(colorsContainer);
          parent.gameObject.SetActive(true);
 
+         // Source colors
          GameObject srcPrefab = GameObject.Instantiate(singleColorPrefab);
          srcPrefab.GetComponent<Image>().color = new Color(srcColors[i].r, srcColors[i].g, srcColors[i].b);
          srcPrefab.GetComponent<Button>().onClick.AddListener(() => {
@@ -500,6 +576,7 @@ public class PaletteToolManager : XmlDataToolManager {
          srcPrefab.GetComponent<RectTransform>().SetParent(parent);
          _srcColors.Add(srcPrefab.GetComponent<Image>());
 
+         // Destination colors
          GameObject dstPrefab = GameObject.Instantiate(singleColorPrefab);
          dstPrefab.GetComponent<Image>().color = new Color(dstColors[i].r, dstColors[i].g, dstColors[i].b);
          dstPrefab.GetComponent<Button>().onClick.AddListener(() => {
@@ -507,8 +584,18 @@ public class PaletteToolManager : XmlDataToolManager {
          });
          dstPrefab.GetComponent<RectTransform>().SetParent(parent);
          _dstColors.Add(dstPrefab.GetComponent<Image>());
+
+         // Static colors
+         GameObject staticPrefab = GameObject.Instantiate(staticColorButtonPrefab);
+         staticPrefab.GetComponent<Image>().sprite = (isStatic != null && isStatic.Length > i && isStatic[i] == true ? checkboxCheckedBoxSprite : checkboxUncheckedBoxSprite);
+         staticPrefab.GetComponent<Button>().onClick.AddListener(() => {
+            staticPrefab.GetComponent<Image>().sprite = (staticPrefab.GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? checkboxUncheckedBoxSprite : checkboxCheckedBoxSprite);
+         });
+         staticPrefab.GetComponent<RectTransform>().SetParent(parent);
+         _staticColors.Add(staticPrefab);
       }
       singleColorPrefab.gameObject.SetActive(false);
+      staticColorButtonPrefab.gameObject.SetActive(false);
    }
 
    private void activeColorPicker (Button button) {
@@ -527,6 +614,28 @@ public class PaletteToolManager : XmlDataToolManager {
          _currentlyEditedElementInPalette.GetComponent<Image>().color = color;
          showPalettePreview();
       }
+   }
+
+   private void changeColorsWithHueShift (int newHueShift) {
+      hueValueText.text = newHueShift.ToString();
+      float diff = (newHueShift - _hueShiftValue) / 255.0f;
+
+      for (int i = 0; i < _dstColors.Count; i++) {
+         if (_staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite) {
+            continue;
+         }
+
+         Image image = _dstColors[i];
+         Color.RGBToHSV(image.color, out float H, out float S, out float V);
+         H += diff;
+         H %= 1.0f;
+         if (H < 0.0f) {
+            H += 1.0f;
+         }
+         image.color = Color.HSVToRGB(H, S, V, false);
+      }
+      _hueShiftValue = newHueShift;
+      showPalettePreview();
    }
 
    private void startPickingColorFromSprite () {
@@ -635,17 +744,32 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void fillColorBoxesWithSpriteColors () {
-      List<Color> allColors = generateMostCommonPixelsInSprite(previewSprite.sprite, 0);
+      if (!_isEditingRow) {
+         return;
+      }
+      _staticColors.Clear();
+      
+      HashSet<Color> allColors = new HashSet<Color>();
+      string path = paletteImageTypePaths[(int) _paletteImageType];
+      string spritePath = (path != "") ? path : "Assets/Sprites";
+      List<ImageManager.ImageData> allImages = ImageManager.getSpritesInDirectory(spritePath);
+
+      for (int i = 0; i < allImages.Count; i++) {
+         List<Color> colors = generateMostCommonPixelsInSprite(allImages[i].sprite, 0);
+         foreach (Color color in colors) {
+            allColors.Add(color);
+         }
+      }
       if (allColors.Count <= 8) {
-         changeArraySize(8);
+         changeArraySize(8, true);
       } else if (allColors.Count <= 16) {
-         changeArraySize(16);
+         changeArraySize(16, true);
       } else if (allColors.Count <= 32) {
-         changeArraySize(32);
+         changeArraySize(32, true);
       } else if (allColors.Count <= 64) {
-         changeArraySize(64);
+         changeArraySize(64, true);
       } else {
-         changeArraySize(128);
+         changeArraySize(128, true);
       }
 
       int count = _srcColors.Count;
@@ -653,10 +777,26 @@ public class PaletteToolManager : XmlDataToolManager {
          count = allColors.Count;
       }
 
-      for (int i = 0; i < count; i++) {
-         _srcColors[i].color = allColors[i];
-         _dstColors[i].color = allColors[i];
+      int colorIndex = 0;
+      foreach (Color color in allColors) {
+         Color colorA = new Color(color.r, color.g, color.b, 1.0f);
+         _srcColors[colorIndex].color = colorA;
+         _dstColors[colorIndex].color = colorA;
+         colorIndex++;
+         if (colorIndex >= _srcColors.Count) {
+            if (allColors.Count > 128) {
+               D.warning("User is trying to generate palette of size " + allColors.Count + ". Maximum palette size allowed is 128");
+            }
+            break;
+         }
       }
+
+      _hueShiftValue = 0;
+      hueSlider.value = Random.Range((int) hueSlider.minValue, (int) hueSlider.maxValue);
+      if (choosePaletteNameText.GetComponent<InputField>().text == _initialPaletteName) {
+         choosePaletteNameText.GetComponent<InputField>().text = "Palette #" + (_paletteDataList[_paletteDataList.Count - 1].paletteId + 1);
+      }
+      savePalette();
    }
 
    private IEnumerator updateColorsPresets () {
@@ -994,6 +1134,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Cached destination colors which are currently edited
    private List<Image> _dstColors = new List<Image>();
 
+   // Cached buttons checking if color is static
+   private List<GameObject> _staticColors = new List<GameObject>();
+
    // Currently edited row of data
    private PaletteButtonRow _currentRow;
 
@@ -1002,6 +1145,15 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Current palette image type
    private PaletteImageType _paletteImageType;
+
+   // Value of hue shift in current palette;
+   private int _hueShiftValue;
+
+   // Checking if user is browsing list or editing single row
+   private bool _isEditingRow = false;
+
+   // Initial name of palette which can be changed by user
+   private static string _initialPaletteName = "Choose name";
 
    #endregion
 }

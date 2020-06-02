@@ -47,50 +47,35 @@ public class TooltipManager : ClientMonoBehaviour {
    }
 
    public string getRelevantTooltip () {
-      // Look through everything at the current mouse position
-      foreach (RaycastResult result in raycastMouse()) {
-         // Only inspect results that hit something and are on the top layer
-         if (result.isValid && result.index == 0) {
-            // Check if there's a tooltipped gameobject at the mouse position
-            Tooltipped tooltipped = result.gameObject.GetComponent<Tooltipped>();
+      GameObject gameObjectUnderMouse = StandaloneInputModuleV2.self.getGameObjectUnderPointer();
+      if (gameObjectUnderMouse == null) {
+         return "";
+      }
 
-            // If there is a tooltipped gameObject, returns its tooltip
-            if (tooltipped != null) {
-               return tooltipped.text;
-            }
+      // Check if there's a tooltipped gameobject at the mouse position
+      Tooltipped tooltipped = gameObjectUnderMouse.GetComponent<Tooltipped>();
 
-            // Check if there's an image at the mouse position
-            Image image = result.gameObject.GetComponent<Image>();
+      // If there is a tooltipped gameObject, returns its tooltip
+      if (tooltipped != null) {
+         return tooltipped.text;
+      }
 
-            // If there was an image, look up the text that's associated with it
-            if (image != null && image.sprite != null) {
+      // Check if there's an image at the mouse position
+      Image image = gameObjectUnderMouse.GetComponent<Image>();
+
+      // If there was an image, look up the text that's associated with it
+      if (image != null && image.sprite != null) {
                
-               // Get a generic tooltip based on the image name
-               string tooltip = getTooltip(image.sprite.name, image.gameObject);
+         // Get a generic tooltip based on the image name
+         string tooltip = getTooltip(image.sprite.name, image.gameObject);
 
-               // If we found an image that has a tooltip defined, then we're done
-               if (!Util.isEmpty(tooltip)) {
-                  return tooltip;
-               }
-            }
+         // If we found an image that has a tooltip defined, then we're done
+         if (!Util.isEmpty(tooltip)) {
+            return tooltip;
          }
       }
 
       return "";
-   }
-
-   public List<RaycastResult> raycastMouse () {
-      // Set up a mouse pointer data for the current mouse position
-      PointerEventData pointerData = new PointerEventData(EventSystem.current) {
-         pointerId = -1,
-      };
-      pointerData.position = Input.mousePosition;
-
-      // Get a list of raycast results at the current mouse position
-      List<RaycastResult> results = new List<RaycastResult>();
-      EventSystem.current.RaycastAll(pointerData, results);
-
-      return results;
    }
 
    public static string getTooltip (string imageName, GameObject gameObject) {

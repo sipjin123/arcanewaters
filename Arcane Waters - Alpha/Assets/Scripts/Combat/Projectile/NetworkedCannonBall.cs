@@ -37,13 +37,12 @@ public class NetworkedCannonBall : NetworkedProjectile
       if (NetworkServer.active) {
          int damage = (int) (sourceEntity.damage / 3f);
          hitEntity.currentHealth -= damage;
-         hitEntity.noteAttacker(sourceEntity);
 
          // Apply the status effect
          StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(circleCollider.transform.position, damage, Attack.Type.Cannon);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon);
       }
 
       processDestruction();

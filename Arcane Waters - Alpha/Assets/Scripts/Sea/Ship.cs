@@ -106,4 +106,29 @@ public class Ship : SeaEntity {
 
       return basePath + shipType + "_ripples";
    }
+
+   public static string getDisplayName (Type shipType) {
+      switch (shipType) {
+         case Type.None:
+            return "None";
+         case Type.Type_1:
+            return "Caravel";
+         case Type.Type_2:
+            return "Brigantine";
+         case Type.Type_3:
+            return "Nao";
+         case Type.Type_4:
+            return "Carrack";
+         case Type.Type_5:
+            return "Cutter";
+         case Type.Type_6:
+            return "Galleon";
+         case Type.Type_7:
+            return "Buss";
+         case Type.Type_8:
+            return "Barge";
+         default:
+            return "none";
+      }
+   }
 }

@@ -92,14 +92,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      // Update the voyage status
-      mapNameText.text = Area.getName(instance.areaKey);
-      statsPlaqueImage.sprite = ImageManager.getSprite(VoyageMapCell.SEA_MAP_PATH + "plaque_" + VoyageMapCell.getFrameName(instance.difficulty));
-      pvpPveText.text = instance.isPvP ? "PvP" : "PvE";
-      pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
-      playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
-      timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
-
       // Set the treasure site count
       if (instance.treasureSiteCount == 0) {
          // If the number of sites is 0, the area has not yet been instantiated on the server
@@ -131,6 +123,19 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             }
             break;
       }
+
+      // If the panel is collapsed, there is no need to update the rest
+      if (!collapsingContainer.activeSelf) {
+         return;
+      }
+
+      // Update the voyage status
+      //mapNameText.text = Area.getName(instance.areaKey);
+      statsPlaqueImage.sprite = ImageManager.getSprite(VoyageMapCell.SEA_MAP_PATH + "plaque_" + VoyageMapCell.getFrameName(instance.difficulty));
+      pvpPveText.text = instance.isPvP ? "PvP" : "PvE";
+      pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
+      playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
+      timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
    }
 
    private void setDefaultStatus () {

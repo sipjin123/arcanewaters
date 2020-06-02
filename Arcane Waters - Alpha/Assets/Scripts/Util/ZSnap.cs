@@ -63,7 +63,7 @@ public class ZSnap : MonoBehaviour {
          Util.Truncate(this.transform.position.y));
    }
 
-   void FixedUpdate () {
+   void Update () {
       if (_firstFrame) {
          snapZ();
          _firstFrame = false;

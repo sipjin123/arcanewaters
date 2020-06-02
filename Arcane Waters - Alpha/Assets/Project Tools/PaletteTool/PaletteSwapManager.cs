@@ -42,7 +42,7 @@ public class PaletteSwapManager : MonoBehaviour {
 
    public void fetchPaletteData () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML();
+         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(true);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {

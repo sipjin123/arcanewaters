@@ -2761,7 +2761,7 @@ public class DB_Main : DB_MainStub {
 
    #region Palette XML Data
 
-   public static new void updatePaletteXML (string rawData, string name, int xmlId) {
+   public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
       string xml_id_key = "paletteId, ";
       string xml_id_value = "@paletteId, ";
 
@@ -2775,9 +2775,9 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate) " +
-            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW()) " +
-            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW()", conn)) {
+            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate, isEnabled) " +
+            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW(), @isEnabled) " +
+            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW(), isEnabled = @isEnabled", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2786,6 +2786,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@palette_name", name);
             cmd.Parameters.AddWithValue("@xml_content", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self ? MasterToolAccountManager.self.currentAccountID : 0);
+            cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2827,12 +2828,12 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new List<XMLPair> getPaletteXML () {
+   public static new List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette", conn)) {
+            "SELECT * FROM arcane.palette" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2841,7 +2842,7 @@ public class DB_Main : DB_MainStub {
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXML = new XMLPair {
-                     isEnabled = true,
+                     isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xml_content"),
                      xmlId = dataReader.GetInt32("paletteId"),
                      xmlOwnerId = dataReader.GetInt32("creator_userID"),
@@ -4516,7 +4517,7 @@ public class DB_Main : DB_MainStub {
 
    public static new ShipInfo createStartingShip (int userId) {
       Ship.Type shipType = Ship.Type.Type_1;
-      ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, shipType + "",
+      ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
             PaletteDef.ShipHull.Brown, PaletteDef.ShipHull.Brown, PaletteDef.ShipSail.White, PaletteDef.ShipSail.White, 100, 100, 20,
             80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
       shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
@@ -4544,7 +4545,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@palette2", shipInfo.palette2);
             cmd.Parameters.AddWithValue("@mastType", (int) shipInfo.mastType);
             cmd.Parameters.AddWithValue("@sailType", (int) shipInfo.sailType);
-            cmd.Parameters.AddWithValue("@shipName", shipInfo.shipType + "");
+            cmd.Parameters.AddWithValue("@shipName", shipInfo.shipName);
             cmd.Parameters.AddWithValue("@sailPalette1", shipInfo.sailPalette1);
             cmd.Parameters.AddWithValue("@sailPalette2", shipInfo.sailPalette2);
             cmd.Parameters.AddWithValue("@supplies", shipInfo.supplies);
@@ -4611,7 +4612,7 @@ public class DB_Main : DB_MainStub {
             cmd.Parameters.AddWithValue("@palette2", shipyardInfo.palette2);
             cmd.Parameters.AddWithValue("@mastType", (int) shipyardInfo.mastType);
             cmd.Parameters.AddWithValue("@sailType", (int) shipyardInfo.sailType);
-            cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipType + "");
+            cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipName);
             cmd.Parameters.AddWithValue("@sailPalette1", shipyardInfo.sailPalette1);
             cmd.Parameters.AddWithValue("@sailPalette2", shipyardInfo.sailPalette2);
             cmd.Parameters.AddWithValue("@supplies", shipyardInfo.supplies);

@@ -42,7 +42,7 @@ public class ShipyardRow : MonoBehaviour {
       
       Sprite[] sprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
       iconImage.sprite = sprites[4];
-      itemName.text = "" + shipInfo.shipType;
+      itemName.text = shipInfo.shipName;
       itemName.color = Rarity.getColor(shipInfo.rarity);
       goldAmount.text = shipInfo.price + "";
 

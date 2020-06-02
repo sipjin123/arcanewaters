@@ -11,7 +11,7 @@ public class VenomResidue : MonoBehaviour {
    public List<SeaEntity> targetEntities = new List<SeaEntity>();
 
    // The source of this attack
-   public int creatorUserId;
+   public uint creatorNetId;
 
    // The damage to the ships per second
    public int damagePerSec = 5;
@@ -31,7 +31,7 @@ public class VenomResidue : MonoBehaviour {
          if (targetEntities.Count > 0) {
             foreach (SeaEntity seaEntity in targetEntities) {
                seaEntity.currentHealth -= damagePerSec;
-               seaEntity.Rpc_ShowExplosion(seaEntity.transform.position, damagePerSec, Attack.Type.Venom);
+               seaEntity.Rpc_ShowExplosion(creatorNetId, seaEntity.transform.position, damagePerSec, Attack.Type.Venom);
                seaEntity.Rpc_AttachEffect(damagePerSec, Attack.Type.Venom);
             }
          }

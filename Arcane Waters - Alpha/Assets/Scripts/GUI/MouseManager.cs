@@ -51,58 +51,42 @@ public class MouseManager : ClientMonoBehaviour
    }
 
    public bool isMouseOverSomething () {
-      // Clear out the old list of boxes being hovered over
-      _boxesBeingHovered.Clear();
+      _boxBeingHovered = null;
+      GameObject gameObjectUnderMouse = StandaloneInputModuleV2.self.getGameObjectUnderPointer();
+      if (gameObjectUnderMouse == null) {
+         return false;
+      }
 
-      // Cycle over all of the things that mouse is over
-      foreach (RaycastResult result in raycastMouse()) {
-         if (result.isValid) {
-            // Only consider clickable boxes if no panel is opened
-            if (!PanelManager.self.hasPanelInStack()) {
-               // Check if we're hovering over a clickable box
-               ClickableBox clickableBox = result.gameObject.GetComponent<ClickableBox>();
+      // Only consider clickable boxes if no panel is opened
+      if (!PanelManager.self.hasPanelInStack()) {
+         // Check if we're hovering over a clickable box
+         _boxBeingHovered = gameObjectUnderMouse.GetComponent<ClickableBox>();
 
-               // If so, keep track of it
-               if (clickableBox != null) {
-                  _boxesBeingHovered.Add(clickableBox);
-                  return true;
-               }
-            }
-
-            // Otherwise, check if we're  hoving over a selectable, toggle or slider
-            Selectable selectable = result.gameObject.GetComponent<Selectable>();
-            Toggle toggle = result.gameObject.GetComponentInParent<Toggle>();
-            Slider slider = result.gameObject.GetComponentInParent<Slider>();
-
-            if (selectable != null || toggle != null || slider != null) {
-               return true;
-            }
+         if (_boxBeingHovered != null) {
+            return true;
          }
+      }
+
+      // Otherwise, check if we're  hoving over a selectable, toggle or slider
+      Selectable selectable = gameObjectUnderMouse.GetComponent<Selectable>();
+      Toggle toggle = gameObjectUnderMouse.GetComponentInParent<Toggle>();
+      Slider slider = gameObjectUnderMouse.GetComponentInParent<Slider>();
+
+      if (selectable != null || toggle != null || slider != null) {
+         return true;
       }
 
       return false;
    }
 
-   public List<RaycastResult> raycastMouse () {
-      PointerEventData pointerData = new PointerEventData(EventSystem.current) {
-         pointerId = -1,
-      };
-      pointerData.position = Input.mousePosition;
-
-      List<RaycastResult> results = new List<RaycastResult>();
-      EventSystem.current.RaycastAll(pointerData, results);
-
-      return results;
-   }
-
    public bool isHoveringOver (ClickableBox box) {
-      return _boxesBeingHovered.Contains(box);
+      return _boxBeingHovered == box;
    }
 
    #region Private Variables
 
-   // The List of Clickable Boxes that we're currently hovering over
-   protected List<ClickableBox> _boxesBeingHovered = new List<ClickableBox>();
+   // The clickable box that we're currently hovering over
+   protected ClickableBox _boxBeingHovered = null;
 
    #endregion
 }

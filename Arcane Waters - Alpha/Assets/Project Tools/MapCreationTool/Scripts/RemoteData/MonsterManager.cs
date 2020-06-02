@@ -63,7 +63,7 @@ namespace MapCreationTool
       }
 
       public SelectOption[] formSeaMonsterSelectionOptions () {
-         return seaMonsters.Select(n => new SelectOption(
+         return seaMonsters.Where(sm => sm.seaMonsterData.roleType != RoleType.Minion).Select(n => new SelectOption(
             ((int) n.seaMonsterData.seaMonsterType).ToString(),
             (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName)
          ).ToArray();

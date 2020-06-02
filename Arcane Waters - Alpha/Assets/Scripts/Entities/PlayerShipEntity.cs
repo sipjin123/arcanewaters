@@ -348,7 +348,7 @@ public class PlayerShipEntity : ShipEntity {
 
       // Apply the damage
       target.currentHealth -= damage;
-      target.Rpc_ShowExplosion(target.transform.position, damage, attackType);
+      target.Rpc_ShowExplosion(source.netId, target.transform.position, damage, attackType);
       target.noteAttacker(source);
    }
 

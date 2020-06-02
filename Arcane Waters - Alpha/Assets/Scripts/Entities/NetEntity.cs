@@ -443,33 +443,45 @@ public class NetEntity : NetworkBehaviour {
          return;
       }
 
+      _outline.enabled = false;
+
       if (Global.player == this) {
          _outline.setNewColor(Color.white);
-         _outline.setVisibility((isMouseOver() || isAttackCursorOver()) && !isDead());
+         _outline.enabled = (isMouseOver() || isAttackCursorOver()) && !isDead();
+         _outline.setVisibility(_outline.enabled);
+         return;
+      }
+
+      if (Global.player.instanceId != this.instanceId) {
          return;
       }
 
       if (isAttackCursorOver()) {
          // If the attack cursor is over us, draw a yellow outline
          _outline.setNewColor(Color.yellow);
+         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (isEnemyOf(Global.player)) {
          // Draw a red outline around enemies of the Player
          _outline.setNewColor(Color.red);
+         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (isAllyOf(Global.player)) {
          // Draw a green outline around allies of the Player
          _outline.setNewColor(Color.green);
+         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (hasAttackers()) {
          // If we've been attacked by someone, we get an orange outline
          _outline.setNewColor(Util.getColor(255, 187, 51));
+         _outline.enabled = true;
          _outline.setVisibility(true);
       } else {
          // Only show our outline when the mouse is over us
          Color color = this is Enemy ? Color.red : Color.white;
          _outline.setNewColor(color);
-         _outline.setVisibility(isMouseOver() && !isDead());
+         _outline.enabled = isMouseOver() && !isDead();
+         _outline.setVisibility(_outline.enabled);
       }
    }
 
@@ -591,7 +603,7 @@ public class NetEntity : NetworkBehaviour {
          return false;
       }
 
-      return _attackers.ContainsKey(otherEntity.netId);
+      return hasAttackers() && _attackers.ContainsKey(otherEntity.netId);
    }
 
    public bool isEnemyOf (NetEntity otherEntity) {
