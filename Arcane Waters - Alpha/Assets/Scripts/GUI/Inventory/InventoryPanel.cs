@@ -499,14 +499,14 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
-      } else if (_selectedItem is Helm) {
+      } else if (_selectedItem is Hats) {
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
 
-         D.editorLog("Equip Helmet", Color.magenta);
+         D.editorLog("Equip Hat", Color.magenta);
          // Equip or unequip the item
-         // TODO: Create rpc equip helmet 
-         //Global.player.rpc.Cmd_RequestSetHelmId(itemIdToSend);
+         // TODO: Create rpc equip Hat 
+         //Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
       }
    }
 

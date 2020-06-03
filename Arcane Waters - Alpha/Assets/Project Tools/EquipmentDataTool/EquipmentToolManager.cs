@@ -45,7 +45,7 @@ public class EquipmentToolManager : XmlDataToolManager {
          case EquipmentType.Armor:
             sqlEntry = armorUserID.Find(_ => _.xmlID == entryID);
             break;
-         case EquipmentType.Helm:
+         case EquipmentType.Hat:
             sqlEntry = helmUserID.Find(_ => _.xmlID == entryID);
             break;
       }
@@ -97,7 +97,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveHelm (HelmStatData data, int xml_id, bool isEnabled) {
+   public void saveHelm (HatStatData data, int xml_id, bool isEnabled) {
       data.equipmentID = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
@@ -106,7 +106,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       }
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Helm, data.equipmentName, isEnabled);
+         DB_Main.updateEquipmentXML(longString, xml_id, EquipmentType.Hat, data.equipmentName, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -140,7 +140,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
    public void deleteHelm (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Helm);
+         DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Hat);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -190,8 +190,8 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void duplicateHelm (HelmStatData data) {
-      data.helmType = 0;
+   public void duplicateHelm (HatStatData data) {
+      data.hatType = 0;
       data.equipmentName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
@@ -201,7 +201,7 @@ public class EquipmentToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Helm, data.equipmentName, false);
+         DB_Main.updateEquipmentXML(longString, -1, EquipmentType.Hat, data.equipmentName, false);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -281,28 +281,28 @@ public class EquipmentToolManager : XmlDataToolManager {
    }
 
    private void loadHelms () {
-      _helmStatData = new List<HelmXMLContent>();
+      _hatStatData = new List<HatXmlContent>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Helm);
-         helmUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Helm);
+         List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Hat);
+         helmUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Hat);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
-               rawData.equipmentID = (int) rawData.helmType;
+               HatStatData rawData = Util.xmlLoad<HatStatData>(newTextAsset);
+               rawData.equipmentID = (int) rawData.hatType;
 
                // Save the data in the memory cache
-               if (!_helmStatData.Exists(_=>_.xml_id == xmlPair.xmlId)) {
-                  HelmXMLContent newXML = new HelmXMLContent {
+               if (!_hatStatData.Exists(_=>_.xml_id == xmlPair.xmlId)) {
+                  HatXmlContent newXML = new HatXmlContent {
                      xml_id = xmlPair.xmlId,
-                     helmStatData = rawData,
+                     hatStatData = rawData,
                      isEnabled = xmlPair.isEnabled
                   };
-                  _helmStatData.Add(newXML);
+                  _hatStatData.Add(newXML);
                }
             }
-            equipmentDataScene.loadHelmData(_helmStatData);
+            equipmentDataScene.loadHelmData(_hatStatData);
             finishLoading();
          });
       });
@@ -315,7 +315,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             // Provide data to generic selection manager
             List<WeaponStatData> weaponStatDataList = new List<WeaponStatData>();
             List<ArmorStatData> armorStatDataList = new List<ArmorStatData>();
-            List<HelmStatData> helmStatDataList = new List<HelmStatData>();
+            List<HatStatData> hatStatDataList = new List<HatStatData>();
 
             foreach (WeaponXMLContent weaponContent in _weaponStatData) {
                weaponStatDataList.Add(weaponContent.weaponStatData);
@@ -323,14 +323,14 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (ArmorXMLContent armorContent in _armorStatData) {
                armorStatDataList.Add(armorContent.armorStatData);
             }
-            foreach (HelmXMLContent helmContent in _helmStatData) {
-               helmStatDataList.Add(helmContent.helmStatData);
+            foreach (HatXmlContent helmContent in _hatStatData) {
+               hatStatDataList.Add(helmContent.hatStatData);
             }
 
             EquipmentXMLManager.self.resetAllData();
             EquipmentXMLManager.self.receiveWeaponDataFromZipData(weaponStatDataList);
             EquipmentXMLManager.self.receiveArmorDataFromZipData(armorStatDataList);
-            EquipmentXMLManager.self.receiveHelmFromZipData(helmStatDataList);
+            EquipmentXMLManager.self.receiveHatFromZipData(hatStatDataList);
          }
 
          XmlLoadingPanel.self.finishLoading();
@@ -349,7 +349,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    private List<ArmorXMLContent> _armorStatData = new List<ArmorXMLContent>();
 
    // Holds the list of loaded helm data
-   private List<HelmXMLContent> _helmStatData = new List<HelmXMLContent>();
+   private List<HatXmlContent> _hatStatData = new List<HatXmlContent>();
 
    // Counts how many equipment set has been loaded
    private float loadCounter = 0;
@@ -379,13 +379,13 @@ public class ArmorXMLContent
    // Determines if the entry is enabled in the sql database
    public bool isEnabled;
 }
-public class HelmXMLContent
+public class HatXmlContent
 {
    // Id of the xml entry
    public int xml_id;
 
-   // Data of the helm content
-   public HelmStatData helmStatData;
+   // Data of the hat content
+   public HatStatData hatStatData;
 
    // Determines if the entry is enabled in the sql database
    public bool isEnabled;

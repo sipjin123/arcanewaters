@@ -124,7 +124,7 @@ public class QuestObjectiveDeliver : QuestObjective
          case Item.Category.Armor:
             builder.Append(Armor.getName(itemTypeId));
             break;
-         case Item.Category.Helm:
+         case Item.Category.Hats:
             builder.Append(Armor.getName(itemTypeId));
             break;
          case Item.Category.Potion:

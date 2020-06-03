@@ -11,7 +11,7 @@ public enum EquipmentType
    None = 0,
    Weapon = 1,
    Armor = 2,
-   Helm = 3,
+   Hat = 3,
 }
 
 namespace NubisDataHandling {
@@ -82,24 +82,24 @@ namespace NubisDataHandling {
                         D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData, Color.red);
                      }
                      break;
-                  case Item.Category.Helm:
-                     HelmStatData helmData = EquipmentXMLManager.self.getHelmData(itmType);
-                     if (helmData != null) {
-                        Item helmItem = new Item {
-                           category = Item.Category.Helm,
+                  case Item.Category.Hats:
+                     HatStatData hatData = EquipmentXMLManager.self.getHatData(itmType);
+                     if (hatData != null) {
+                        Item hatItem = new Item {
+                           category = Item.Category.Hats,
                            itemTypeId = itmType,
                            id = itmId,
-                           itemDescription = helmData.equipmentDescription,
-                           itemName = helmData.equipmentName,
-                           iconPath = helmData.equipmentIconPath,
-                           data = HelmStatData.serializeHelmStatData(helmData),
+                           itemDescription = hatData.equipmentDescription,
+                           itemName = hatData.equipmentName,
+                           iconPath = hatData.equipmentIconPath,
+                           data = HatStatData.serializeHatStatData(hatData),
                            paletteName1 = itmPalette1,
                            paletteName2 = itmPalette2
                         };
 
-                        newItemList.Add(helmItem);
+                        newItemList.Add(hatItem);
                      } else {
-                        D.editorLog("Failed to process data of Helmet: " + itmType, Color.red);
+                        D.editorLog("Failed to process data of Hat: " + itmType, Color.red);
                      }
                      break;
                   case Item.Category.CraftingIngredients:

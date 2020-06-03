@@ -172,7 +172,7 @@ namespace NubisDataHandling {
          userInventory.Add(equippedWeapon);
          userInventory.Add(equippedArmor);
 
-         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Helm || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
+         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
             string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString() + SPACER + equippedItemData.weaponItem.id + SPACER + equippedItemData.armorItem.id);
             List<Item> itemList = UserInventory.processUserInventory(inventoryData);
             foreach (Item item in itemList) {
@@ -186,10 +186,10 @@ namespace NubisDataHandling {
                   item.paletteName1 = armorData.palette1;
                   item.paletteName2 = armorData.palette2;
                }
-               if (item.category == Item.Category.Helm) {
-                  HelmStatData helmData = EquipmentXMLManager.self.getHelmData(item.itemTypeId);
-                  item.paletteName1 = helmData.palette1;
-                  item.paletteName2 = helmData.palette2;
+               if (item.category == Item.Category.Hats) {
+                  HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+                  item.paletteName1 = hatData.palette1;
+                  item.paletteName2 = hatData.palette2;
                }
 
                if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {

@@ -589,7 +589,7 @@ public class MonsterDataPanel : MonoBehaviour
       itemCategoryParent.gameObject.DestroyChildren();
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Helm) {
+         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Hats) {
             GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
             ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
             categoryTemp.itemCategoryText.text = category.ToString();
@@ -624,9 +624,9 @@ public class MonsterDataPanel : MonoBehaviour
                string fetchedArmorSprite = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedArmorSprite);
                break;
-            case Item.Category.Helm:
-               string fetchedHelmSprite = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHelmSprite);
+            case Item.Category.Hats:
+               string fetchedHatSprite = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
+               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHatSprite);
                break;
             case Item.Category.Weapon:
                string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;

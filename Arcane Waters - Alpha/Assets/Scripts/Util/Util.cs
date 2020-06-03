@@ -67,8 +67,8 @@ public class Util : MonoBehaviour {
          case Item.Category.Usable:
             itemTypeName = ((UsableItem.Type) typeID).ToString();
             break;
-         case Item.Category.Helm:
-            itemTypeName = EquipmentXMLManager.self.getHelmData(typeID).equipmentName;
+         case Item.Category.Hats:
+            itemTypeName = EquipmentXMLManager.self.getHatData(typeID).equipmentName;
             break;
          case Item.Category.Quest_Item:
             itemTypeName = ((QuestItem.Type) typeID).ToString();
@@ -87,7 +87,7 @@ public class Util : MonoBehaviour {
             // TODO: Clearly wipe out potential scripts that may call this
             UnityEngine.Debug.LogWarning("Deprecated Call: " + category);
             break;
-         case Item.Category.Helm:
+         case Item.Category.Hats:
             // TODO: Clearly wipe out potential scripts that may call this
             UnityEngine.Debug.LogWarning("Deprecated Call: " + category);
             break;

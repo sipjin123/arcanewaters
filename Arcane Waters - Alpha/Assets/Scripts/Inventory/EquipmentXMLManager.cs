@@ -20,13 +20,13 @@ public class EquipmentXMLManager : MonoBehaviour {
    // References to all the armor data
    public List<ArmorStatData> armorStatList { get { return _armorStatList.Values.ToList(); } }
 
-   // References to all the helm data
-   public List<HelmStatData> helmStatList { get { return _helmStatList.Values.ToList(); } }
+   // References to all the hat data
+   public List<HatStatData> hatStatList { get { return _hatStatList.Values.ToList(); } }
 
    // Display list for editor reviewing
    public List<WeaponStatData> weaponStatData = new List<WeaponStatData>();
    public List<ArmorStatData> armorStatData = new List<ArmorStatData>();
-   public List<HelmStatData> helmStatData = new List<HelmStatData>();
+   public List<HatStatData> hatStatData = new List<HatStatData>();
 
    // Determines how many equipment set has been loaded
    public int equipmentLoadCounter = 0;
@@ -61,13 +61,13 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
-   public HelmStatData getHelmData (int helmType) {
-      if (_helmStatList == null) {
+   public HatStatData getHatData (int hatType) {
+      if (_hatStatList == null) {
          return null;
       }
-      HelmStatData helmDataFetched = _helmStatList.Values.ToList().Find(_ => _.equipmentID == helmType);
-      if (helmDataFetched != null) {
-         return helmDataFetched;
+      HatStatData hatDataFetched = _hatStatList.Values.ToList().Find(_ => _.equipmentID == hatType);
+      if (hatDataFetched != null) {
+         return hatDataFetched;
       }
       return null;
    }
@@ -84,7 +84,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       equipmentLoadCounter = 0;
       _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
-      _helmStatList = new Dictionary<int, HelmStatData>();
+      _hatStatList = new Dictionary<int, HatStatData>();
 
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
@@ -116,17 +116,17 @@ public class EquipmentXMLManager : MonoBehaviour {
          }
       }
 
-      List<XMLPair> rawHelmXml = DB_Main.getEquipmentXML(EquipmentType.Helm);
-      foreach (XMLPair xmlPair in rawHelmXml) {
+      List<XMLPair> rawHatXml = DB_Main.getEquipmentXML(EquipmentType.Hat);
+      foreach (XMLPair xmlPair in rawHatXml) {
          if (xmlPair.isEnabled) {
             TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-            HelmStatData rawData = Util.xmlLoad<HelmStatData>(newTextAsset);
-            int uniqueID = rawData.helmType;
+            HatStatData rawData = Util.xmlLoad<HatStatData>(newTextAsset);
+            int uniqueID = rawData.hatType;
 
             // Save the data in the memory cache
-            if (!_helmStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
-               _helmStatList.Add(uniqueID, rawData);
-               helmStatData.Add(rawData);
+            if (!_hatStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
+               _hatStatList.Add(uniqueID, rawData);
+               hatStatData.Add(rawData);
             }
          }
       }
@@ -158,14 +158,14 @@ public class EquipmentXMLManager : MonoBehaviour {
       finishedLoading();
    }
 
-   public void receiveHelmFromZipData (List<HelmStatData> statData) {
-      _helmStatList = new Dictionary<int, HelmStatData>();
-      foreach (HelmStatData rawData in statData) {
-         int uniqueID = rawData.helmType;
+   public void receiveHatFromZipData (List<HatStatData> statData) {
+      _hatStatList = new Dictionary<int, HatStatData>();
+      foreach (HatStatData rawData in statData) {
+         int uniqueID = rawData.hatType;
          // Save the data in the memory cache
-         if (!_helmStatList.ContainsKey(uniqueID)) {
-            _helmStatList.Add(uniqueID, rawData);
-            helmStatData.Add(rawData);
+         if (!_hatStatList.ContainsKey(uniqueID)) {
+            _hatStatList.Add(uniqueID, rawData);
+            hatStatData.Add(rawData);
          }
       }
       finishedLoading();
@@ -174,11 +174,11 @@ public class EquipmentXMLManager : MonoBehaviour {
    public void resetAllData () {
       _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
-      _helmStatList = new Dictionary<int, HelmStatData>();
+      _hatStatList = new Dictionary<int, HatStatData>();
 
       weaponStatData.Clear();
       armorStatData.Clear();
-      helmStatData.Clear();
+      hatStatData.Clear();
    }
 
    public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
@@ -205,16 +205,16 @@ public class EquipmentXMLManager : MonoBehaviour {
       return returnArmorList;
    }
 
-   public List<HelmStatData> requestHelmList (List<int> xmlIDList) {
-      List<HelmStatData> returnHelmStatList = new List<HelmStatData>();
+   public List<HatStatData> requestHatList (List<int> xmlIDList) {
+      List<HatStatData> returnHatStatList = new List<HatStatData>();
       foreach (int index in xmlIDList) {
-         HelmStatData searchData = _helmStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         HatStatData searchData = _hatStatList.Values.ToList().Find(_ => _.equipmentID == index);
          if (searchData != null) {
-            returnHelmStatList.Add(searchData);
+            returnHatStatList.Add(searchData);
          }
       }
 
-      return returnHelmStatList;
+      return returnHatStatList;
    }
 
    public static List<Item> setEquipmentData (List<Item> itemData) {
@@ -254,15 +254,15 @@ public class EquipmentXMLManager : MonoBehaviour {
                   Debug.LogError("There is no weapon data for: " + dataItem.id + " - " + dataItem.itemTypeId);
                }
                break;
-            case Item.Category.Helm:
+            case Item.Category.Hats:
                // Basic Info Setup
-               HelmStatData helmStatData = self.getHelmData(dataItem.itemTypeId);
-               itemName = helmStatData.equipmentName;
-               itemDesc = helmStatData.equipmentDescription;
-               itemPath = helmStatData.equipmentIconPath;
+               HatStatData hatStatData = self.getHatData(dataItem.itemTypeId);
+               itemName = hatStatData.equipmentName;
+               itemDesc = hatStatData.equipmentDescription;
+               itemPath = hatStatData.equipmentIconPath;
 
                // Data Setup
-               data = string.Format("armor={0}, rarity={1}", helmStatData.helmBaseDefense, (int) Rarity.Type.Common);
+               data = string.Format("armor={0}, rarity={1}", hatStatData.hatBaseDefense, (int) Rarity.Type.Common);
                dataItem.data = data;
 
                dataItem.setBasicInfo(itemName, itemDesc, itemPath);
@@ -281,8 +281,8 @@ public class EquipmentXMLManager : MonoBehaviour {
    // Stores the list of all armor data
    private Dictionary<int, ArmorStatData> _armorStatList = new Dictionary<int, ArmorStatData>();
 
-   // Stores the list of all helm data
-   private Dictionary<int, HelmStatData> _helmStatList = new Dictionary<int, HelmStatData>();
+   // Stores the list of all hat data
+   private Dictionary<int, HatStatData> _hatStatList = new Dictionary<int, HatStatData>();
 
    #endregion
 }

@@ -152,7 +152,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Armor));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Weapon));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Helm));
+      StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Hat));
 
       StartCoroutine(CO_ExtractXmlData(EditorToolType.LandMonster));
       StartCoroutine(CO_ExtractXmlData(EditorToolType.SeaMonster));
@@ -191,8 +191,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
          case EditorToolType.Equipment_Weapon:
             path = TEXT_PATH + XmlVersionManagerServer.WEAPON_FILE + ".txt";
             break;
-         case EditorToolType.Equipment_Helm:
-            path = TEXT_PATH + XmlVersionManagerServer.HELM_FILE + ".txt";
+         case EditorToolType.Equipment_Hat:
+            path = TEXT_PATH + XmlVersionManagerServer.HAT_FILE + ".txt";
             break;
          case EditorToolType.LandMonster:
             path = TEXT_PATH + XmlVersionManagerServer.LAND_MONSTER_FILE + ".txt";
@@ -303,7 +303,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          #endregion
 
-         #region Group 2 (Armor/Weapon/Helm/LandMonster/Npc)
+         #region Group 2 (Armor/Weapon/Hats/LandMonster/Npc)
          case EditorToolType.Equipment_Armor:
             List<ArmorStatData> armorList = new List<ArmorStatData>();
             foreach (string subGroup in xmlGroup) {
@@ -336,25 +336,25 @@ public class XmlVersionManagerClient : MonoBehaviour {
             }
             EquipmentXMLManager.self.receiveWeaponDataFromZipData(weaponList);
             break;
-         case EditorToolType.Equipment_Helm:
-            List<HelmStatData> helmList = new List<HelmStatData>();
+         case EditorToolType.Equipment_Hat:
+            List<HatStatData> hatList = new List<HatStatData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
                try {
                   // Extract the segregated data and assign to the xml manager
                   if (xmlSubGroup.Length == 2) {
                      int dataId = int.Parse(xmlSubGroup[0]);
-                     HelmStatData actualData = Util.xmlLoad<HelmStatData>(xmlSubGroup[1]);
+                     HatStatData actualData = Util.xmlLoad<HatStatData>(xmlSubGroup[1]);
                      actualData.equipmentID = dataId;
                      actualData.itemSqlId = dataId;
-                     helmList.Add(actualData);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.helmType;
+                     hatList.Add(actualData);
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.hatType;
                   }
                } catch {
-                  D.editorLog("Cant process helm data: " + xmlSubGroup[0] + " : " + xmlSubGroup[1] + " : ", Color.yellow);
+                  D.editorLog("Cant process hat data: " + xmlSubGroup[0] + " : " + xmlSubGroup[1] + " : ", Color.yellow);
                }
             }
-            EquipmentXMLManager.self.receiveHelmFromZipData(helmList);
+            EquipmentXMLManager.self.receiveHatFromZipData(hatList);
             break;
          case EditorToolType.NPC:
             List<NPCData> npcList = new List<NPCData>();

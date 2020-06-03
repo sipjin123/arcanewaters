@@ -569,8 +569,8 @@ public class NPCEditScreen : MonoBehaviour
    }
 
    private void setupSpriteIcon (Image imageSprite, Item.Category category, int itemID, string data) {
-      if (category == Item.Category.Helm) {
-         string spritePath = EquipmentXMLManager.self.getHelmData(itemID).equipmentIconPath;
+      if (category == Item.Category.Hats) {
+         string spritePath = EquipmentXMLManager.self.getHatData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Weapon) {
          string spritePath = EquipmentXMLManager.self.getWeaponData(itemID).equipmentIconPath;

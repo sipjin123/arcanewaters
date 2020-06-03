@@ -131,11 +131,11 @@ public class EquipmentToolScene : MonoBehaviour {
    }
 
    private void createHelmTemplate () {
-      HelmStatData helmData = new HelmStatData();
+      HatStatData helmData = new HatStatData();
       helmData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-      template.setData(helmData.equipmentName, EquipmentType.Helm, -1);
+      template.setData(helmData.equipmentName, EquipmentType.Hat, -1);
 
       template.editButton.onClick.AddListener(() => {
          equipmentDataPanel.loadHelmData(helmData, template.xmlId, false);
@@ -162,16 +162,16 @@ public class EquipmentToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadHelmData (List<HelmXMLContent> helmStats) {
+   public void loadHelmData (List<HatXmlContent> helmStats) {
       helmTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
-      foreach (HelmXMLContent xmlData in helmStats) {
-         HelmStatData helmData = xmlData.helmStatData;
+      foreach (HatXmlContent xmlData in helmStats) {
+         HatStatData helmData = xmlData.hatStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-         template.setData(helmData.equipmentName, EquipmentType.Helm, xmlData.xml_id);
+         template.setData(helmData.equipmentName, EquipmentType.Hat, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
-         template.spriteID.text = ((int)helmData.helmType).ToString();
+         template.spriteID.text = ((int)helmData.hatType).ToString();
 
          template.editButton.onClick.AddListener(() => {
             equipmentDataPanel.loadHelmData(helmData, template.xmlId, xmlData.isEnabled);

@@ -2167,7 +2167,7 @@ public class RPCManager : NetworkBehaviour {
             if (shopItem.category == Item.Category.Armor) {
                AchievementManager.registerUserAchievement(_player.userId, ActionType.ArmorBuy);
             }
-            if (shopItem.category == Item.Category.Helm) {
+            if (shopItem.category == Item.Category.Hats) {
                AchievementManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
             }
 

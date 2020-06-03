@@ -64,11 +64,11 @@ public class GenericItemRow : MonoBehaviour {
                itemIcon.sprite = ImageManager.getSprite(spritePath);
             }
          }
-      } else if (category == Item.Category.Helm) {
+      } else if (category == Item.Category.Hats) {
          itemCategoryName.text = category.ToString();
          itemTypeName.text = Util.getItemName(category, itemTypeID);
 
-         string spritePath = EquipmentXMLManager.self.getHelmData(itemTypeID).equipmentIconPath;
+         string spritePath = EquipmentXMLManager.self.getHatData(itemTypeID).equipmentIconPath;
          itemIcon.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Armor) {
          itemCategoryName.text = category.ToString();

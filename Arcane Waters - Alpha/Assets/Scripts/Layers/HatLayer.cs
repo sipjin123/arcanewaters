@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class HelmLayer : SpriteLayer
+public class HatLayer : SpriteLayer
 {
    #region Public Variables
 
-   // The equipment id of the helm
+   // The equipment id of the hat
    public int equipmentId = 0;
 
    #endregion
@@ -17,7 +17,7 @@ public class HelmLayer : SpriteLayer
       _type = newType;
 
       // Update our Animated Sprite
-      string path = (newType == 0) ? "Empty_Layer" : "Headgear/" + gender + "/" + gender + "_helm_" + (int) newType;
+      string path = (newType == 0) ? "Empty_Layer" : "Hats/" + gender + "/" + gender + "_hat_" + (int) newType;
       Texture2D result = ImageManager.getTexture(path);
 
       if (immediate) {

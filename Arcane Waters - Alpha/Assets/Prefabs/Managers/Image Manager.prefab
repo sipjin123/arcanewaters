@@ -9072,9 +9072,9 @@ MonoBehaviour:
     - {fileID: 4845443152691718963, guid: cd1d6a0cceb6648448fa1a659c4fb02d, type: 3}
     - {fileID: 3951723972231881445, guid: cd1d6a0cceb6648448fa1a659c4fb02d, type: 3}
     - {fileID: 4026748625373645999, guid: cd1d6a0cceb6648448fa1a659c4fb02d, type: 3}
-  - imageName: female_helm_1
-    imagePath: Assets/Sprites/Headgear/Female/female_helm_1.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Female/female_helm_1
+  - imageName: female_hat_1
+    imagePath: Assets/Sprites/Hats/Female/female_hat_1.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Female/female_hat_1
     texture2D: {fileID: 2800000, guid: fbef99ee698a76542b4b099fed7e0c63, type: 3}
     sprite: {fileID: 1699320393275558422, guid: fbef99ee698a76542b4b099fed7e0c63,
       type: 3}
@@ -9133,9 +9133,9 @@ MonoBehaviour:
     - {fileID: 1825681090766818290, guid: fbef99ee698a76542b4b099fed7e0c63, type: 3}
     - {fileID: -244966658723173436, guid: fbef99ee698a76542b4b099fed7e0c63, type: 3}
     - {fileID: -3706283606454441821, guid: fbef99ee698a76542b4b099fed7e0c63, type: 3}
-  - imageName: female_helm_2
-    imagePath: Assets/Sprites/Headgear/Female/female_helm_2.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Female/female_helm_2
+  - imageName: female_hat_2
+    imagePath: Assets/Sprites/Hats/Female/female_hat_2.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Female/female_hat_2
     texture2D: {fileID: 2800000, guid: 0ac8812fb738d8b46921c99d4eded9d7, type: 3}
     sprite: {fileID: 1699320393275558422, guid: 0ac8812fb738d8b46921c99d4eded9d7,
       type: 3}
@@ -9194,9 +9194,9 @@ MonoBehaviour:
     - {fileID: 1825681090766818290, guid: 0ac8812fb738d8b46921c99d4eded9d7, type: 3}
     - {fileID: -244966658723173436, guid: 0ac8812fb738d8b46921c99d4eded9d7, type: 3}
     - {fileID: -3706283606454441821, guid: 0ac8812fb738d8b46921c99d4eded9d7, type: 3}
-  - imageName: female_helm_3
-    imagePath: Assets/Sprites/Headgear/Female/female_helm_3.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Female/female_helm_3
+  - imageName: female_hat_3
+    imagePath: Assets/Sprites/Hats/Female/female_hat_3.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Female/female_hat_3
     texture2D: {fileID: 2800000, guid: 0f379cced12067048ad92d47474db71c, type: 3}
     sprite: {fileID: 1699320393275558422, guid: 0f379cced12067048ad92d47474db71c,
       type: 3}
@@ -17132,9 +17132,9 @@ MonoBehaviour:
     - {fileID: 8089071622594183152, guid: a485ba12d652e3849a2a7a22e175d216, type: 3}
     - {fileID: 820079669339683835, guid: a485ba12d652e3849a2a7a22e175d216, type: 3}
     - {fileID: -5119851056558993677, guid: a485ba12d652e3849a2a7a22e175d216, type: 3}
-  - imageName: male_helm_1
-    imagePath: Assets/Sprites/Headgear/Male/male_helm_1.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Male/male_helm_1
+  - imageName: male_hat_1
+    imagePath: Assets/Sprites/Hats/Male/male_hat_1.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Male/male_hat_1
     texture2D: {fileID: 2800000, guid: e901321be8b05ea4189288cdb136a3d9, type: 3}
     sprite: {fileID: 2013487104606224771, guid: e901321be8b05ea4189288cdb136a3d9,
       type: 3}
@@ -17193,9 +17193,9 @@ MonoBehaviour:
     - {fileID: 6268782895369777706, guid: e901321be8b05ea4189288cdb136a3d9, type: 3}
     - {fileID: -2935397632430253665, guid: e901321be8b05ea4189288cdb136a3d9, type: 3}
     - {fileID: -1925181838562497832, guid: e901321be8b05ea4189288cdb136a3d9, type: 3}
-  - imageName: male_helm_2
-    imagePath: Assets/Sprites/Headgear/Male/male_helm_2.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Male/male_helm_2
+  - imageName: male_hat_2
+    imagePath: Assets/Sprites/Hats/Male/male_hat_2.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Male/male_hat_2
     texture2D: {fileID: 2800000, guid: 1e9ab71730add7c4786998b6746babad, type: 3}
     sprite: {fileID: 2013487104606224771, guid: 1e9ab71730add7c4786998b6746babad,
       type: 3}
@@ -17254,9 +17254,9 @@ MonoBehaviour:
     - {fileID: 6268782895369777706, guid: 1e9ab71730add7c4786998b6746babad, type: 3}
     - {fileID: -2935397632430253665, guid: 1e9ab71730add7c4786998b6746babad, type: 3}
     - {fileID: -1925181838562497832, guid: 1e9ab71730add7c4786998b6746babad, type: 3}
-  - imageName: male_helm_3
-    imagePath: Assets/Sprites/Headgear/Male/male_helm_3.png
-    imagePathWithoutExtension: Assets/Sprites/Headgear/Male/male_helm_3
+  - imageName: male_hat_3
+    imagePath: Assets/Sprites/Hats/Male/male_hat_3.png
+    imagePathWithoutExtension: Assets/Sprites/Hats/Male/male_hat_3
     texture2D: {fileID: 2800000, guid: 523a3826c980ad64392817efaab24260, type: 3}
     sprite: {fileID: 2013487104606224771, guid: 523a3826c980ad64392817efaab24260,
       type: 3}

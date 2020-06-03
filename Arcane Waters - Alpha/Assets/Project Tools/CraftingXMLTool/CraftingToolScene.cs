@@ -60,8 +60,8 @@ public class CraftingToolScene : MonoBehaviour {
          toolManager.deleteCraftingDataFile(template.xmlID);
       });
 
-      if (requirementData.resultItem.category == Item.Category.Helm) {
-         string helmSprite = EquipmentXMLManager.self.getHelmData(requirementData.resultItem.itemTypeId).equipmentIconPath;
+      if (requirementData.resultItem.category == Item.Category.Hats) {
+         string helmSprite = EquipmentXMLManager.self.getHatData(requirementData.resultItem.itemTypeId).equipmentIconPath;
          template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
       } else {
          template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
@@ -116,8 +116,8 @@ public class CraftingToolScene : MonoBehaviour {
             imagePath = EquipmentXMLManager.self.getArmorData(resultType).equipmentIconPath;
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
-         case Item.Category.Helm:
-            imagePath = EquipmentXMLManager.self.getHelmData(resultType).equipmentIconPath;
+         case Item.Category.Hats:
+            imagePath = EquipmentXMLManager.self.getHatData(resultType).equipmentIconPath;
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          default:

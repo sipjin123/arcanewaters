@@ -32,7 +32,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string ARMOR_TABLE = "equipment_armor_xml_v3";
    public static string WEAPON_TABLE = "equipment_weapon_xml_v3";
-   public static string HELM_TABLE = "equipment_helm_xml_v3";
+   public static string HAT_TABLE = "equipment_helm_xml_v4";
    public static string LAND_MONSTER_TABLE = "land_monster_xml_v3";
    public static string NPC_TABLE = "npc_xml";
 
@@ -56,7 +56,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string ARMOR_FILE = "equipment_armor";
    public static string WEAPON_FILE = "equipment_weapon";
-   public static string HELM_FILE = "equipment_helm";
+   public static string HAT_FILE = "equipment_helm";
    public static string LAND_MONSTER_FILE = "land_monsters";
    public static string NPC_FILE = "npc";
 
@@ -108,7 +108,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
       confirmTextFile(ARMOR_FILE);
       confirmTextFile(WEAPON_FILE);
-      confirmTextFile(HELM_FILE);
+      confirmTextFile(HAT_FILE);
       confirmTextFile(LAND_MONSTER_FILE);
       confirmTextFile(NPC_FILE);
 
@@ -169,7 +169,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Crafting);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Armor);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Weapon);
-         compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Helm);
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Equipment_Hat);
 
          compiledData += DB_Main.getLastUpdate(EditorToolType.Perks);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Palette);
@@ -264,7 +264,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
          string armorData = DB_Main.getXmlContent(ARMOR_TABLE);
          string weaponData = DB_Main.getXmlContent(WEAPON_TABLE);
-         string helmData = DB_Main.getXmlContent(HELM_TABLE);
+         string hatData = DB_Main.getXmlContent(HAT_TABLE);
 
          string shopData = DB_Main.getXmlContent(SHOP_TABLE);
          string shipData = DB_Main.getXmlContent(SHIP_TABLE);
@@ -288,7 +288,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ARMOR_FILE + ".txt", armorData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + WEAPON_FILE + ".txt", weaponData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + HELM_FILE + ".txt", helmData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + HAT_FILE + ".txt", hatData);
 
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHOP_FILE + ".txt", shopData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SHIP_FILE + ".txt", shipData);

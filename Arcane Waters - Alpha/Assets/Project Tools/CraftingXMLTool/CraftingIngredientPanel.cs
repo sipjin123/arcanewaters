@@ -169,11 +169,11 @@ public class CraftingIngredientPanel : MonoBehaviour {
                itemNameList.Add(newVal, armorStat.equipmentName.ToString());
             } 
          }
-      } else if (selectedCategory == Item.Category.Helm) {
-         foreach (HelmStatData helmStat in EquipmentXMLManager.self.helmStatList) {
-            int newVal = (int) helmStat.helmType;
+      } else if (selectedCategory == Item.Category.Hats) {
+         foreach (HatStatData hatStat in EquipmentXMLManager.self.hatStatList) {
+            int newVal = (int) hatStat.hatType;
             if (!itemNameList.ContainsKey(newVal)) {
-               itemNameList.Add(newVal, helmStat.equipmentName.ToString());
+               itemNameList.Add(newVal, hatStat.equipmentName.ToString());
             }
          }
       } else if (selectedCategory == Item.Category.Weapon) {
@@ -202,8 +202,8 @@ public class CraftingIngredientPanel : MonoBehaviour {
             itemTemp.itemTypeText.text = item.Value.ToString();
             itemTemp.itemIndexText.text = "" + item.Key;
 
-            if (selectedCategory == Item.Category.Helm) {
-               string imagePath = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+            if (selectedCategory == Item.Category.Hats) {
+               string imagePath = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else if (selectedCategory == Item.Category.Armor) {
                string imagePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;

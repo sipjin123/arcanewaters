@@ -3201,8 +3201,8 @@ public class DB_Main : DB_MainStub {
          case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentType.Helm:
-            tableName = "equipment_helm_xml_v3";
+         case EquipmentType.Hat:
+            tableName = "equipment_helm_xml_v4";
             break;
       }
 
@@ -3241,8 +3241,8 @@ public class DB_Main : DB_MainStub {
          case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentType.Helm:
-            tableName = "equipment_helm_xml_v3";
+         case EquipmentType.Hat:
+            tableName = "equipment_helm_xml_v4";
             break;
       }
 
@@ -3270,8 +3270,8 @@ public class DB_Main : DB_MainStub {
          case EquipmentType.Armor:
             tableName = "equipment_armor_xml_v3";
             break;
-         case EquipmentType.Helm:
-            tableName = "equipment_helm_xml_v3";
+         case EquipmentType.Hat:
+            tableName = "equipment_helm_xml_v4";
             break;
       }
 
@@ -4223,7 +4223,7 @@ public class DB_Main : DB_MainStub {
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
-                     userObjects.helm = getHelm(dataReader);
+                     userObjects.hat = getHelm(dataReader);
                      userObjects.armorPalette1 = userObjects.armor.paletteName1;
                      userObjects.armorPalette2 = userObjects.armor.paletteName2;
                      userObjects.weaponPalette1 = userObjects.weapon.paletteName1;
@@ -6969,7 +6969,7 @@ public class DB_Main : DB_MainStub {
       return new Weapon(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
-   protected static Helm getHelm (MySqlDataReader dataReader) {
+   protected static Hats getHelm (MySqlDataReader dataReader) {
       int itemId = 0;
       int itemTypeId = 0;
       string palette1 = "";
@@ -7002,7 +7002,7 @@ public class DB_Main : DB_MainStub {
          D.editorLog("Issue with data: data", Color.red);
       }
 
-      return new Helm(itemId, itemTypeId, palette1, palette2, itemData);
+      return new Hats(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
    public static new int getUsrAdminFlag (int accountId) {

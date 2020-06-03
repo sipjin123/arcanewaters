@@ -73,8 +73,8 @@ public class ItemRequirementRow : MonoBehaviour {
             case Item.Category.Armor:
                iconPath = EquipmentXMLManager.self.getArmorData(currentType).equipmentIconPath;
                break;
-            case Item.Category.Helm:
-               iconPath = EquipmentXMLManager.self.getHelmData(currentType).equipmentIconPath;
+            case Item.Category.Hats:
+               iconPath = EquipmentXMLManager.self.getHatData(currentType).equipmentIconPath;
                break;
          }
          itemIcon.sprite = ImageManager.getSprite(iconPath);

@@ -35,7 +35,7 @@ public class EditorSQLManager {
       Background = 20,
       Equipment_Weapon = 21,
       Equipment_Armor = 22,
-      Equipment_Helm = 23,
+      Equipment_Hat = 23,
       NewTutorial = 24,
       Perks = 25,
       Palette = 26
@@ -54,7 +54,7 @@ public class EditorSQLManager {
                editorType = EditorToolType.Equipment;
                subType = 2;
                break;
-            case EditorToolType.Equipment_Helm:
+            case EditorToolType.Equipment_Hat:
                editorType = EditorToolType.Equipment;
                subType = 3;
                break;
@@ -99,8 +99,8 @@ public class EditorSQLManager {
                   return "equipment_weapon_xml_v3";
                case EquipmentType.Armor:
                   return "equipment_armor_xml_v3";
-               case EquipmentType.Helm:
-                  return "equipment_helm_xml_v3";
+               case EquipmentType.Hat:
+                  return "equipment_helm_xml_v4";
                default:
                   return "";
             }

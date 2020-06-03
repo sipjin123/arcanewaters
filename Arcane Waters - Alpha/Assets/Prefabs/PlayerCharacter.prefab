@@ -1796,7 +1796,7 @@ MonoBehaviour:
   interactingAnimation: 0
   armorManager: {fileID: 114737132631157730}
   weaponManager: {fileID: 114313576142768070}
-  helmManager: {fileID: 4764568349769096776}
+  hatsManager: {fileID: 4764568349769096776}
   farmingTrigger: {fileID: 4476756568812448969}
   miningTrigger: {fileID: 541427491548626559}
 --- !u!58 &58574232978621698
@@ -2097,9 +2097,9 @@ MonoBehaviour:
   syncInterval: 0.1
   bodyLayer: {fileID: 114534913220400350}
   bodySprite: {fileID: 212650187686467114}
-  headGearLayer: {fileID: 734617877097875443}
-  equippedHelmId: 0
-  headgearType: 0
+  hatLayer: {fileID: 7860016345186855112}
+  equippedHatId: 0
+  hatType: 0
   palette1: 
   palette2: 
 --- !u!1 &1765715922958734
@@ -7827,7 +7827,7 @@ GameObject:
   - component: {fileID: 1560188136588726768}
   - component: {fileID: 793720829138034202}
   - component: {fileID: 1319876026774409502}
-  - component: {fileID: 734617877097875443}
+  - component: {fileID: 7860016345186855112}
   m_Layer: 9
   m_Name: Headgear
   m_TagString: Untagged
@@ -7932,7 +7932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newTexture: {fileID: 0}
---- !u!114 &734617877097875443
+--- !u!114 &7860016345186855112
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

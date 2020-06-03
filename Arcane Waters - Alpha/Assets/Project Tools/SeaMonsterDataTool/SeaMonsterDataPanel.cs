@@ -461,7 +461,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
       foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
          if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint 
-            || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Helm) {
+            || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Hats) {
             GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
             ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
             categoryTemp.itemCategoryText.text = category.ToString();
@@ -491,8 +491,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
          itemTemp.itemIndexText.text = "" + item.Key;
 
          switch (selectedCategory) {
-            case Item.Category.Helm:
-               string spritePath = EquipmentXMLManager.self.getHelmData(item.Key).equipmentIconPath;
+            case Item.Category.Hats:
+               string spritePath = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
                break;
             case Item.Category.Armor:

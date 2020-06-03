@@ -16,7 +16,7 @@ public class UserObjects {
    public ShipInfo shipInfo;
    public Item armor;
    public Item weapon;
-   public Item helm;
+   public Item hat;
 
    // We have to send these separately because of a Unity serialization bug with class inheritance
    public string armorPalette1;

@@ -288,7 +288,7 @@ public class MyNetworkManager : NetworkManager
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
             ServerCommunicationHandler.self.addPlayer(player.userId);
 
-            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.helm, shipInfo);
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo);
 
             // Keep track
             _players[conn.connectionId] = player;

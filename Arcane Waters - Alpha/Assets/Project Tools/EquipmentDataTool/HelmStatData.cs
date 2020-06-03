@@ -7,16 +7,17 @@ using System.Xml.Serialization;
 using System;
 
 [Serializable]
-public class HelmStatData : EquipmentStatData
+public class HatStatData : EquipmentStatData
 {
-   // Helm Type
-   [XmlElement(Namespace = "HelmType")]
-   public int helmType = 0;
+   // Hats Type
+   [XmlElement(Namespace = "equipmentType")]
+   public int hatType = 0;
 
-   // The defense of the helm
-   public int helmBaseDefense;
+   // The defense of the hat
+   [XmlElement(Namespace = "DefenseValue")]
+   public int hatBaseDefense;
 
-   // The elemental resistance of the helm
+   // The elemental resistance of the hat
    public int fireResist;
    public int waterResist;
    public int airResist;
@@ -25,30 +26,30 @@ public class HelmStatData : EquipmentStatData
    // Item sql id assigned from the database
    public int itemSqlId = 0;
 
-   public static Helm translateDataToHelm (HelmStatData helmStatData) {
-      Helm newHeadgear = new Helm {
-         id = helmStatData.itemSqlId,
-         itemTypeId = helmStatData.helmType,
-         itemName = helmStatData.equipmentName,
-         itemDescription = helmStatData.equipmentDescription,
-         category = Item.Category.Helm,
-         iconPath = helmStatData.equipmentIconPath,
-         data = serializeHelmStatData(helmStatData)
+   public static Hats translateDataToHat (HatStatData hatStatData) {
+      Hats newHat = new Hats {
+         id = hatStatData.itemSqlId,
+         itemTypeId = hatStatData.hatType,
+         itemName = hatStatData.equipmentName,
+         itemDescription = hatStatData.equipmentDescription,
+         category = Item.Category.Hats,
+         iconPath = hatStatData.equipmentIconPath,
+         data = serializeHatStatData(hatStatData)
       };
-      return newHeadgear;
+      return newHat;
    }
 
-   public static string serializeHelmStatData (HelmStatData data) {
-      XmlSerializer helmSerializer = new XmlSerializer(data.GetType());
+   public static string serializeHatStatData (HatStatData data) {
+      XmlSerializer hatSerializer = new XmlSerializer(data.GetType());
       var sb = new System.Text.StringBuilder();
       using (var writer = System.Xml.XmlWriter.Create(sb)) {
-         helmSerializer.Serialize(writer, data);
+         hatSerializer.Serialize(writer, data);
       }
-      string helmDataXML = sb.ToString();
-      return helmDataXML;
+      string hatData = sb.ToString();
+      return hatData;
    }
 
-   public static HelmStatData getStatData (string data, int itemTypeId) {
+   public static HatStatData getStatData (string data, int itemTypeId) {
       TextAsset newTextAsset = new TextAsset(data);
 
       if (data == "") {
@@ -56,17 +57,17 @@ public class HelmStatData : EquipmentStatData
       }
 
       try {
-         HelmStatData castedData = Util.xmlLoad<HelmStatData>(newTextAsset);
+         HatStatData castedData = Util.xmlLoad<HatStatData>(newTextAsset);
          return castedData;
       } catch {
-         Debug.LogWarning("There is no Helm Data for: " + itemTypeId);
+         Debug.LogWarning("There is no Hat Data for: " + itemTypeId);
          return null;
       }
    }
 
-   public static HelmStatData getDefaultData () {
-      return new HelmStatData {
-         helmType = 0,
+   public static HatStatData getDefaultData () {
+      return new HatStatData {
+         hatType = 0,
          palette1 = "",
          palette2 = "",
       };

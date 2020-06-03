@@ -42,7 +42,7 @@ public class GenericSelectionPopup : MonoBehaviour
    public Dictionary<string, Sprite> shipWakeSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> weaponSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> armorSpriteList = new Dictionary<string, Sprite>();
-   public Dictionary<string, Sprite> helmSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> hatSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> usableItemSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerClassSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerFactionSpriteList = new Dictionary<string, Sprite>();
@@ -71,9 +71,9 @@ public class GenericSelectionPopup : MonoBehaviour
       Color = 9,
       WeaponIcon = 10,
       ArmorIcon = 11,
-      HelmIcon = 12,
+      HatIcon = 12,
       ArmorType = 13,
-      HelmType = 14,
+      HatType = 14,
       UsableItemType = 15,
       UsableItemIcon = 16,
       ActionType = 17,
@@ -117,8 +117,8 @@ public class GenericSelectionPopup : MonoBehaviour
    }
 
    private void initializeSpriteDictionary () {
-      string helmSpritePath = "Assets/Sprites/Icons/Helm/";
-      setupSpriteContent(helmSpriteList, helmSpritePath);
+      string hatSpritePath = "Assets/Sprites/Icons/Helm/";
+      setupSpriteContent(hatSpriteList, hatSpritePath);
 
       string armorSpritePath = "Assets/Sprites/Icons/Armor/";
       setupSpriteContent(armorSpriteList, armorSpritePath);
@@ -221,11 +221,11 @@ public class GenericSelectionPopup : MonoBehaviour
             Sprite armorSprite = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, armorSprite, imageIcon, textUI);
          }
-      } else if (popupType == selectionType.HelmIcon) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in helmSpriteList) {
+      } else if (popupType == selectionType.HatIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in hatSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite helmSprite = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, helmSprite, imageIcon, textUI);
+            Sprite hatSprite = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, hatSprite, imageIcon, textUI);
          }
       } else if (popupType == selectionType.UsableItemIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in usableItemSpriteList) {
@@ -374,15 +374,15 @@ public class GenericSelectionPopup : MonoBehaviour
                createTextTemplate(armorType.ToString(), textUI, changeEvent);
             }
             break;
-         case selectionType.HelmType:
-            for (int helmType = 1; helmType < MAX_OPTIONS; helmType++) {
-               string spritePath = "Assets/Sprites/Headgear/" + Gender.Type.Female + "/" + Gender.Type.Female.ToString().ToLower() + "_helm_" + helmType;
-               createTextTemplate(helmType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
+         case selectionType.HatType:
+            for (int hatType = 1; hatType < MAX_OPTIONS; hatType++) {
+               string spritePath = "Assets/Sprites/Hats/" + Gender.Type.Female + "/" + Gender.Type.Female.ToString().ToLower() + "_hat_" + hatType;
+               createTextTemplate(hatType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
             }
             break;
          case selectionType.UsableItemType:
-            foreach (UsableItem.Type helmType in Enum.GetValues(typeof(UsableItem.Type))) {
-               createTextTemplate(helmType.ToString(), textUI, changeEvent);
+            foreach (UsableItem.Type hatType in Enum.GetValues(typeof(UsableItem.Type))) {
+               createTextTemplate(hatType.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.ActionType:
@@ -470,12 +470,12 @@ public class GenericSelectionPopup : MonoBehaviour
                }
             }
             break;
-         case Item.Category.Helm: {
-               foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
-                  if (helmData != null) {
-                     string iconPath = helmData.equipmentIconPath;
-                     string equipmentName = helmData.equipmentName;
-                     createItemTextTemplate(equipmentName, helmData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+         case Item.Category.Hats: {
+               foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
+                  if (hatData != null) {
+                     string iconPath = hatData.equipmentIconPath;
+                     string equipmentName = hatData.equipmentName;
+                     createItemTextTemplate(equipmentName, hatData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
                }
             }
@@ -637,9 +637,9 @@ public class GenericSelectionPopup : MonoBehaviour
                }
             }
             break;
-         case Item.Category.Helm:
-            foreach (HelmStatData helmData in EquipmentXMLManager.self.helmStatList) {
-               itemNameList.Add((int) helmData.helmType, new Item { itemName = helmData.equipmentName });
+         case Item.Category.Hats:
+            foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
+               itemNameList.Add((int) hatData.hatType, new Item { itemName = hatData.equipmentName });
             }
             break;
          case Item.Category.Armor:

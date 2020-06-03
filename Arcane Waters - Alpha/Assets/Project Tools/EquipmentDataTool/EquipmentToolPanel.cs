@@ -90,8 +90,8 @@ public class EquipmentToolPanel : MonoBehaviour {
                equipmentToolManager.saveArmor(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
-         } else if (equipmentType == EquipmentType.Helm) {
-            HelmStatData newStatData = getHelmStatData();
+         } else if (equipmentType == EquipmentType.Hat) {
+            HatStatData newStatData = getHatStatData();
             if (newStatData != null) {
                equipmentToolManager.saveHelm(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
@@ -109,8 +109,8 @@ public class EquipmentToolPanel : MonoBehaviour {
             genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponIcon, _icon, _iconPath);
          } else if (equipmentType == EquipmentType.Armor) {
             genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorIcon, _icon, _iconPath);
-         } else if (equipmentType == EquipmentType.Helm) {
-            genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.HelmIcon, _icon, _iconPath);
+         } else if (equipmentType == EquipmentType.Hat) {
+            genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.HatIcon, _icon, _iconPath);
          }
       });
 
@@ -119,8 +119,8 @@ public class EquipmentToolPanel : MonoBehaviour {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.WeaponType, _equipmentTypeText, changeSpriteDisplayEvent);
          } else if (equipmentType == EquipmentType.Armor) {
             genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ArmorTypeSprites, _equipmentTypeText, changeSpriteDisplayEvent);
-         } else if (equipmentType == EquipmentType.Helm) {
-            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HelmType, _equipmentTypeText, changeSpriteDisplayEvent);
+         } else if (equipmentType == EquipmentType.Hat) {
+            genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.HatType, _equipmentTypeText, changeSpriteDisplayEvent);
          }
       });
 
@@ -245,7 +245,7 @@ public class EquipmentToolPanel : MonoBehaviour {
          _toolTipValue.message = "The defense of the armor";
          _itemRawValue.text = "Base Defense";
          _damageClassObj.SetActive(false);
-      } else if (equipmentType == EquipmentType.Helm) {
+      } else if (equipmentType == EquipmentType.Hat) {
          _itemTypeValue.text = "Helm Type:";
          _titleTabValue.text = "Helm Stats";
          _toolTipValue.message = "The defense of the helmet";
@@ -319,10 +319,10 @@ public class EquipmentToolPanel : MonoBehaviour {
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
 
-   public void loadHelmData (HelmStatData statData, int template_id, bool isEnabled) {
+   public void loadHelmData (HatStatData statData, int template_id, bool isEnabled) {
       currentXmlId = template_id;
-      startingType = (int) statData.helmType;
-      equipmentType = EquipmentType.Helm;
+      startingType = (int) statData.hatType;
+      equipmentType = EquipmentType.Hat;
       _isEnabled.isOn = isEnabled;
 
       foreach (GameObject obj in _actionTypeGroup) {
@@ -332,16 +332,16 @@ public class EquipmentToolPanel : MonoBehaviour {
       loadGenericInfo();
       loadEquipmentData(statData);
 
-      _attributePhysical.text = statData.helmBaseDefense.ToString();
+      _attributePhysical.text = statData.hatBaseDefense.ToString();
       _attributeFire.text = statData.fireResist.ToString();
       _attributeWater.text = statData.waterResist.ToString();
       _attributeAir.text = statData.airResist.ToString();
       _attributeEarth.text = statData.earthResist.ToString();
-      _equipmentTypeText.text = statData.helmType.ToString();
+      _equipmentTypeText.text = statData.hatType.ToString();
 
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
 
-      string path = getInGameSprite(statData.helmType);
+      string path = getInGameSprite(statData.hatType);
       _helmSpriteImage.sprite = ImageManager.getSprite(path);
    }
 
@@ -469,19 +469,19 @@ public class EquipmentToolPanel : MonoBehaviour {
       return armorStatData;
    }
 
-   public HelmStatData getHelmStatData () {
-      HelmStatData helmStatData = new HelmStatData();
-      setEquipmentStatData(helmStatData);
+   public HatStatData getHatStatData () {
+      HatStatData hatStatData = new HatStatData();
+      setEquipmentStatData(hatStatData);
 
       // Setup special data
-      helmStatData.helmBaseDefense = int.Parse(_attributePhysical.text);
-      helmStatData.waterResist = int.Parse(_attributeWater.text);
-      helmStatData.earthResist = int.Parse(_attributeEarth.text);
-      helmStatData.fireResist = int.Parse(_attributeFire.text);
-      helmStatData.airResist = int.Parse(_attributeAir.text);
-      helmStatData.helmType = int.Parse(_equipmentTypeText.text);
+      hatStatData.hatBaseDefense = int.Parse(_attributePhysical.text);
+      hatStatData.waterResist = int.Parse(_attributeWater.text);
+      hatStatData.earthResist = int.Parse(_attributeEarth.text);
+      hatStatData.fireResist = int.Parse(_attributeFire.text);
+      hatStatData.airResist = int.Parse(_attributeAir.text);
+      hatStatData.hatType = int.Parse(_equipmentTypeText.text);
 
-      return helmStatData;
+      return hatStatData;
    }
 
    private void setEquipmentStatData (EquipmentStatData equipmentData) {
@@ -543,8 +543,8 @@ public class EquipmentToolPanel : MonoBehaviour {
          case EquipmentType.Weapon:
             spritePath = "Assets/Sprites/Weapons/" + genderType + "/" + "weapon_" + equipmentID +"_front";
             break;
-         case EquipmentType.Helm:
-            spritePath = "Assets/Sprites/Headgear/" + genderType + "/" + genderType.ToString().ToLower() + "_helm_" + equipmentID;
+         case EquipmentType.Hat:
+            spritePath = "Assets/Sprites/Hats/" + genderType + "/" + genderType.ToString().ToLower() + "_hat_" + equipmentID;
             break;
          case EquipmentType.Armor:
             spritePath = "Assets/Sprites/Armor/" + genderType + "/" + genderType.ToString().ToLower() + "_armor_" + equipmentID;

@@ -91,7 +91,7 @@ public class NubisDataFetchTest : MonoBehaviour
             });
          }
          if (Input.GetKeyDown(KeyCode.V)) {
-            D.editorLog("Fetching Helm", Color.green);
+            D.editorLog("Fetching Hat", Color.green);
             string call = "745" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0";
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = NubisTranslator.Fetch_Inventory_v1Controller.userInventory(745, 0, 3, 0, 0);
@@ -102,7 +102,7 @@ public class NubisDataFetchTest : MonoBehaviour
             });
          }
          if (Input.GetKeyDown(KeyCode.K)) {
-            nubisHelm();
+            nubisHat();
          }
          if (Input.GetKeyDown(KeyCode.M)) {
             nubisTotalItems();
@@ -110,7 +110,7 @@ public class NubisDataFetchTest : MonoBehaviour
       }
    }
 
-   private async void nubisHelm () {
+   private async void nubisHat () {
       D.debug("ASync start");
       string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
       D.editorLog("The call is: " + call, Color.green);

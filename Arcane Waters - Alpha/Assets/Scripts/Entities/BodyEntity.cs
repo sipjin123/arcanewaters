@@ -11,7 +11,7 @@ public class BodyEntity : NetEntity
    // Our Item Managers
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
-   public HelmManager helmManager;
+   public HatManager hatsManager;
 
    #endregion
 
@@ -21,7 +21,7 @@ public class BodyEntity : NetEntity
       _bodyLayer = GetComponentInChildren<BodyLayer>();
       _eyesLayer = GetComponentInChildren<EyesLayer>();
       _armorLayer = GetComponentInChildren<ArmorLayer>();
-      _helmLayer = GetComponentInChildren<HelmLayer>();
+      _hatLater = GetComponentInChildren<HatLayer>();
       _hairLayers = GetComponentsInChildren<HairLayer>();
       _waterChecker = GetComponentInChildren<WaterChecker>();
    }
@@ -46,11 +46,11 @@ public class BodyEntity : NetEntity
       checkFallDirection();
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item headgear, ShipInfo shipInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, headgear, shipInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo);
       this.armorManager.updateArmorSyncVars(Armor.castItemToArmor(armor));
       this.weaponManager.updateWeaponSyncVars(Weapon.castItemToWeapon(weapon));
-      this.helmManager.updateHelmSyncVars(Helm.castItemToHelm(headgear));
+      this.hatsManager.updateHatSyncVars(Hats.castItemToHat(hat));
    }
 
    public override Armor getArmorCharacteristics () {
@@ -142,7 +142,7 @@ public class BodyEntity : NetEntity
    protected BodyLayer _bodyLayer;
    protected EyesLayer _eyesLayer;
    protected ArmorLayer _armorLayer;
-   protected HelmLayer _helmLayer;
+   protected HatLayer _hatLater;
    protected HairLayer[] _hairLayers;
 
    // Our Water Checker

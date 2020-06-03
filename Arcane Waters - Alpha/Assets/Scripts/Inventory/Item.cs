@@ -9,7 +9,7 @@ public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Helm = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9 }
 
    // The category of item this is
    public Category category;
@@ -65,8 +65,8 @@ public class Item {
 
    public Item getCastItem () {
       switch (this.category) {
-         case Category.Helm:
-            return new Helm(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+         case Category.Hats:
+            return new Hats(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Armor:
             return new Armor(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Weapon:
@@ -225,7 +225,7 @@ public class Item {
    }
 
    public static bool isUsingEquipmentXML (Item.Category category) {
-      if (category == Category.Armor || category == Category.Weapon || category == Category.Helm) {
+      if (category == Category.Armor || category == Category.Weapon || category == Category.Hats) {
          return true;
       }
 
