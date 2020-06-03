@@ -17,6 +17,9 @@ public class EquipMessage : MessageBase {
    // The new weapon id
    public int newWeaponId;
 
+   // The new hat id
+   public int newHatId;
+
    #endregion
 
    public EquipMessage () { }
@@ -25,9 +28,10 @@ public class EquipMessage : MessageBase {
       this.netId = netId;
    }
 
-   public EquipMessage (uint netId, int newArmorId, int newWeaponId) {
+   public EquipMessage (uint netId, int newArmorId, int newWeaponId, int newHatId) {
       this.netId = netId;
       this.newArmorId = newArmorId;
       this.newWeaponId = newWeaponId;
+      this.newHatId = newHatId;
    }
 }

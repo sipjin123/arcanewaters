@@ -102,6 +102,14 @@ public class WeaponManager : EquipmentManager {
          return;
       }
 
+      if (weapon.itemTypeId == 0) {
+         // No weapon to equip
+         equippedWeaponId = 0;
+         weaponType = 0;
+         updateSprites(0, "", "");
+         return;
+      }
+
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
       if (weaponData != null) {
          weaponData.itemSqlId = weapon.id;

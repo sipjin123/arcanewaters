@@ -21,6 +21,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    // The cell containers for the equipped items
    public GameObject equippedWeaponCellContainer;
    public GameObject equippedArmorCellContainer;
+   public GameObject equippedHatCellContainer;
 
    // Our character stack
    public CharacterStack characterStack;
@@ -117,6 +118,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
       _equippedWeaponId = userObjects.weapon.id;
       _equippedArmorId = userObjects.armor.id;
+      _equippedHatId = userObjects.hat.id;
 
       // Update the current page number
       _currentPage = pageIndex;
@@ -157,32 +159,40 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       itemCellsContainer.DestroyChildren();
       equippedWeaponCellContainer.DestroyChildren();
       equippedArmorCellContainer.DestroyChildren();
+      equippedHatCellContainer.DestroyChildren();
 
       // Create the item cells
       foreach (Item item in itemArray) {
-         if (item.category != Item.Category.Blueprint) {
-            // Instantiates the cell
-            ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
+         if (item.itemTypeId != 0) {
+            if (item.category != Item.Category.Blueprint) {
+               // Instantiates the cell
+               ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
 
-            // Initializes the cell, cast if it is ingredient type
-            cell.setCellForItem(item.category == Item.Category.CraftingIngredients ? item.getCastItem() : item);
+               // Initializes the cell, cast if it is ingredient type
+               cell.setCellForItem(item.category == Item.Category.CraftingIngredients ? item.getCastItem() : item);
 
-            // If the item is equipped, place the item cell in the equipped slots
-            if (item.id == _equippedWeaponId && item.id != 0) {
-               cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-               refreshStats(Weapon.castItemToWeapon(item));
-            } else if (item.id == _equippedArmorId && item.id != 0) {
-               cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-               refreshStats(Armor.castItemToArmor(item));
+               // If the item is equipped, place the item cell in the equipped slots
+               if (item.id == _equippedWeaponId && item.id != 0) {
+                  cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
+                  refreshStats(Weapon.castItemToWeapon(item));
+               } else if (item.id == _equippedArmorId && item.id != 0) {
+                  cell.transform.SetParent(equippedArmorCellContainer.transform, false);
+                  refreshStats(Armor.castItemToArmor(item));
+               } else if (item.id == _equippedHatId && item.id != 0) {
+                  cell.transform.SetParent(equippedHatCellContainer.transform, false);
+                  refreshStats(Hats.castItemToHat(item));
+               }
+
+               // Set the cell click events
+               cell.leftClickEvent.RemoveAllListeners();
+               cell.rightClickEvent.RemoveAllListeners();
+               cell.doubleClickEvent.RemoveAllListeners();
+               cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+               cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
+            } else {
+               D.editorLog("Warning, Item Type is 0", Color.red);
             }
-
-            // Set the cell click events
-            cell.leftClickEvent.RemoveAllListeners();
-            cell.rightClickEvent.RemoveAllListeners();
-            cell.doubleClickEvent.RemoveAllListeners();
-            cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-            cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
-         }
+         } 
       }
    }
 
@@ -334,6 +344,14 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       waterStatRow.setEquippedWeapon(equippedWeapon);
    }
 
+   public void refreshStats (Hats equippedHat) {
+      physicalStatRow.setEquippedHat(equippedHat);
+      fireStatRow.setEquippedHat(equippedHat);
+      earthStatRow.setEquippedHat(equippedHat);
+      airStatRow.setEquippedHat(equippedHat);
+      waterStatRow.setEquippedHat(equippedHat);
+   }
+
    public void refreshStats (Armor equippedArmor) {
       physicalStatRow.setEquippedArmor(equippedArmor);
       fireStatRow.setEquippedArmor(equippedArmor);
@@ -348,7 +366,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          return;
       }
 
-      if (item.id == _equippedArmorId || item.id == _equippedWeaponId) {
+      if (item.id == _equippedArmorId || item.id == _equippedWeaponId || item.id == _equippedHatId) {
          return;
       }
 
@@ -503,10 +521,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
 
-         D.editorLog("Equip Hat", Color.magenta);
          // Equip or unequip the item
-         // TODO: Create rpc equip Hat 
-         //Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
+         Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
       }
    }
 
@@ -589,7 +605,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          return false;
       }
 
-      if (itemId == _equippedArmorId || itemId == _equippedWeaponId) {
+      if (itemId == _equippedArmorId || itemId == _equippedWeaponId || itemId == _equippedHatId) {
          return true;
       }
 
@@ -622,5 +638,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    // The current equipped weapon id
    protected static int _equippedWeaponId;
 
+   // The current equipped hat id
+   protected static int _equippedHatId;
+   
    #endregion
 }

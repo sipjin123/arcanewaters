@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NubisDataHandling;
 using NubisTranslator;
 using UnityEngine;
@@ -13,6 +14,23 @@ public class NubisDataFetchTest : MonoBehaviour
    #endregion
 
    private void Awake () {
+   }
+
+   private void OnGUI () {
+      if (SystemInfo.deviceName == DEVICE_NAME) {
+         if (GUILayout.Button("User Data")) {
+            nubisUserData();
+         }
+         if (GUILayout.Button("Equipped Items")) {
+            nubisEquippedItems();
+         }
+         if (GUILayout.Button("Inventory Count")) {
+            nubisTotalItems();
+         }
+         if (GUILayout.Button("Inventory Data")) {
+            nubisInventory();
+         }
+      }
    }
 
    private void Update () {
@@ -61,7 +79,7 @@ public class NubisDataFetchTest : MonoBehaviour
             //nubisMap2();
          }
          if (Input.GetKeyDown(KeyCode.Z)) {
-            string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
+            string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = DB_Main.nubisFetchInventory(call);
 
@@ -71,7 +89,7 @@ public class NubisDataFetchTest : MonoBehaviour
             });
          }
          if (Input.GetKeyDown(KeyCode.X)) {
-            string call = "745" + NubisDataFetcher.SPACER + "1" + NubisDataFetcher.SPACER + "0";
+            string call = "745" + NubisDataFetcher.SPACER + "1" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = DB_Main.nubisFetchInventory(call);
 
@@ -81,7 +99,7 @@ public class NubisDataFetchTest : MonoBehaviour
             });
          }
          if (Input.GetKeyDown(KeyCode.C)) {
-            string call = "745" + NubisDataFetcher.SPACER + "2" + NubisDataFetcher.SPACER + "0";
+            string call = "745" + NubisDataFetcher.SPACER + "2" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = DB_Main.nubisFetchInventory(call);
 
@@ -94,7 +112,7 @@ public class NubisDataFetchTest : MonoBehaviour
             D.editorLog("Fetching Hat", Color.green);
             string call = "745" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0";
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = NubisTranslator.Fetch_Inventory_v1Controller.userInventory(745, 0, 3, 0, 0);
+               string result = NubisTranslator.Fetch_Inventory_v1Controller.userInventory(745, 0, 3, 0, 0, 0);
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   D.editorLog("Thred: " + result);
@@ -112,7 +130,7 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisHat () {
       D.debug("ASync start");
-      string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
+      string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
       D.editorLog("The call is: " + call, Color.green);
       DB_Main.nubisFetchInventory(call);
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), call);
@@ -121,13 +139,13 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private async void nubisTotalItems () {
-      D.debug("ASync start");
+      D.debug("Get Total items");
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), "745"+NubisDataFetcher.SPACER+"0");
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisUserData () {
-      D.debug("ASync start");
+      D.debug("Getting UserData");
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchUserData), "745"); 
       D.debug("ASync start: "+ returnCode); 
    }
@@ -151,16 +169,17 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private async void nubisEquippedItems () {
-      D.debug("ASync start");
+      D.debug("Get Equipped Items");
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisInventory () {
-      D.debug("ASync start");
-      string call = "745_space_1_0";
+      D.debug("Get Inventory");
+      string call = "745_space_0_space_0_space_0_space_0_space_0";
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), call);
-
+      List<Item> itemList = UserInventory.processUserInventory(returnCode);
+      D.editorLog("Fetched a total inventory of: " + itemList.Count);
       D.debug("ASync start: " + returnCode);
    }
 

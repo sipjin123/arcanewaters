@@ -49,6 +49,11 @@ public class InventoryStatRow : MonoBehaviour
       defenseText.text = _equippedDefenseValue.ToString();
    }
 
+   public void setEquippedHat (Hats hat) {
+      _equippedDefenseValue = hat.getDefense(element);
+      defenseText.text = _equippedDefenseValue.ToString();
+   }
+
    public void setStatModifiersForWeapon (Weapon weapon) {
       // Enable the modifier text object
       attackModText.gameObject.SetActive(true);

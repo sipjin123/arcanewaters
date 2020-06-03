@@ -165,15 +165,18 @@ namespace NubisDataHandling {
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), userId.ToString());
          Item equippedWeapon = new Item();
          Item equippedArmor = new Item();
+         Item equippedHat = new Item(); 
 
          EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
          equippedWeapon = equippedItemData.weaponItem;
          equippedArmor = equippedItemData.armorItem;
+         equippedHat = equippedItemData.hatItem;
          userInventory.Add(equippedWeapon);
          userInventory.Add(equippedArmor);
+         userInventory.Add(equippedHat);
 
          if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString() + SPACER + equippedItemData.weaponItem.id + SPACER + equippedItemData.armorItem.id);
+            string inventoryData = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), userId.ToString() + SPACER + pageIndex + SPACER + ((int) this.categoryFilter).ToString() + SPACER + equippedItemData.weaponItem.id + SPACER + equippedItemData.armorItem.id + SPACER + equippedItemData.hatItem.id);
             List<Item> itemList = UserInventory.processUserInventory(inventoryData);
             foreach (Item item in itemList) {
                if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
@@ -191,8 +194,7 @@ namespace NubisDataHandling {
                   item.paletteName1 = hatData.palette1;
                   item.paletteName2 = hatData.palette2;
                }
-
-               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId) {
+               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId && item.id != newUserInfo.hatId) {
                   userInventory.Add(item);
                }
             }
@@ -207,7 +209,7 @@ namespace NubisDataHandling {
             PanelManager.self.pushPanel(Panel.Type.Inventory);
          }
 
-         UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor };
+         UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor, hat = equippedHat };
          inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount);
       }
    }

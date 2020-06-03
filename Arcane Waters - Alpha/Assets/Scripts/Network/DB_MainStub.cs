@@ -561,6 +561,11 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
+   public static void setHatId (int userId, int newHatId) { 
+
+   }
+
+
    public static void setArmorId (int userId, int newArmorId) {
 
    }

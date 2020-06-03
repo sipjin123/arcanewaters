@@ -17,12 +17,14 @@ namespace NubisTranslator {
                   "CASE " +
                   "WHEN itmCategory = 1 THEN arcane.equipment_weapon_xml_v3.xmlContent " +
                   "WHEN itmCategory = 2 THEN arcane.equipment_armor_xml_v3.xmlContent " +
+                  "WHEN itmCategory = 3 THEN arcane.equipment_helm_xml_v4.xmlContent " +
                   "END AS equipmentXML " +
                   "FROM arcane.items " +
                   "left join arcane.equipment_weapon_xml_v3 on(itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.equipmentTypeID) " +
                   "left join arcane.equipment_armor_xml_v3 on(itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.equipmentTypeID) " +
-                  "left join arcane.users on armId = itmId or wpnId = itmId " +
-                  "where(armId = itmId or wpnId = itmId) and items.usrId = @usrId",
+                  "left join arcane.equipment_helm_xml_v4 on(itmCategory = 3 and itmType = arcane.equipment_helm_xml_v4.xml_id) " +
+                  "left join arcane.users on armId = itmId or wpnId = itmId or helmId = itmId " +
+                  "where(armId = itmId or wpnId = itmId or helmId = itmId) and items.usrId = @usrId",
                   connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);
 

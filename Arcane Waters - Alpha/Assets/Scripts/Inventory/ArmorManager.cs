@@ -86,6 +86,9 @@ public class ArmorManager : EquipmentManager {
 
       if (newArmor.itemTypeId == 0) {
          // No armor to equip
+         equippedArmorId = 0;
+         armorType = 0;
+         updateSprites(0, "", "");
          return;
       }
 

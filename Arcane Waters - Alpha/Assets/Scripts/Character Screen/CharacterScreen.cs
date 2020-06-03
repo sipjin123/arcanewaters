@@ -98,6 +98,12 @@ public class CharacterScreen : MonoBehaviour
          _armorArray[i].paletteName2 = armorPalettes2[i];
       }
 
+      if (_armorArray.Length == 0) {
+         Armor emptyArmor = new Armor { category = Item.Category.Armor, id = 0, itemTypeId = 0 };
+         _armorArray = new Armor[3] { emptyArmor, emptyArmor, emptyArmor };
+         armorArray = _armorArray;
+      }
+
       _weaponArray = new Weapon[weaponArray.Length];
       for (int i = 0; i < weaponArray.Length; i++) {
          _weaponArray[i] = Weapon.castItemToWeapon(weaponArray[i]);

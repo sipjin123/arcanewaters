@@ -943,6 +943,11 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_RequestSetHatId (int hatId) {
+      requestSetHatId(hatId);
+   }
+   
+   [Command]
    public void Cmd_DeleteItem (int itemId) {
       if (_player == null) {
          D.warning("No player object found.");
@@ -3849,7 +3854,7 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
-
+   
    [Server]
    protected void requestSetArmorId (int armorId) {
       // They may be in an island scene, or at sea
@@ -3869,7 +3874,40 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Let the client know that we're done
-            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id);
+            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
+            NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
+         });
+      });
+   }
+
+   [Server]
+   protected void requestSetHatId (int hatId) {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setHatId(_player.userId, hatId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            processUserData();
+         });
+      });
+   }
+
+   private void processUserData () {
+      // They may be in an island scene, or at sea
+      BodyEntity body = _player.GetComponent<BodyEntity>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Hats hat = Hats.castItemToHat(userObjects.hat);
+            if (body != null) {
+               body.hatsManager.updateHatSyncVars(hat);
+            }
+
+            // Let the client know that we're done
+            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
             NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
          });
       });
@@ -3895,7 +3933,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Let the client know that we're done
-            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id);
+            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
             NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
          });
       });

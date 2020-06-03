@@ -125,16 +125,17 @@ public class ServerMessageManager : MonoBehaviour {
                List<Item> amorItemList = new List<Item>();
 
                for (int i = 0; i < armorList.Count; i++) {
-
-                  ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
-                  if (armorList[i].data != null) {
-                     armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
-                     armorPalettes1[i] = armorStat.palette1;
-                     armorPalettes2[i] = armorStat.palette2;
-                  } else {
-                     D.warning("There is no data for: " + armorList[i].itemTypeId);
+                  if (armorList[i].itemTypeId != 0) {
+                     ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
+                     if (armorList[i].data != null) {
+                        armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+                        armorPalettes1[i] = armorStat.palette1;
+                        armorPalettes2[i] = armorStat.palette2;
+                     } else {
+                        D.warning("There is no data for: " + armorList[i].itemTypeId);
+                     }
+                     amorItemList.Add(armorList[i]);
                   }
-                  amorItemList.Add(armorList[i]);
                }
 
                // Assign the appropriate data for the weapons using the weapon type id

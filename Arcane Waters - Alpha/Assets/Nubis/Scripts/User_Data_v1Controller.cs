@@ -11,7 +11,7 @@ namespace NubisTranslator {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-                  "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, wpnId, armId " +
+                  "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, wpnId, armId, helmId " +
                   "FROM users " +
                   "JOIN accounts " +
                   "USING (accId) " +
@@ -34,7 +34,8 @@ namespace NubisTranslator {
                         string eyesColor2 = reader.GetString("eyesPalette2");
                         int wpnId = reader.GetInt32("wpnId");
                         int armId = reader.GetInt32("armId");
-                        string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairPalette1:{hairPalette1}[space]hairPalette2:{hairPalette2}[space]eyesType:{eyesType}[space]eyesPalette1:{eyesColor1}[space]eyesPalette2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}\n";
+                        int helmId = reader.GetInt32("helmId"); 
+                        string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairPalette1:{hairPalette1}[space]hairPalette2:{hairPalette2}[space]eyesType:{eyesType}[space]eyesPalette1:{eyesColor1}[space]eyesPalette2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}[space]helmId:{helmId}\n";
                         return result;
                      }
                   }

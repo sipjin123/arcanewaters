@@ -7,7 +7,7 @@ using MySql.Data.MySqlClient;
 
 namespace NubisTranslator {
    public class Fetch_Inventory_v1Controller {
-      public static string userInventory (int usrId, int currentPage, int category, int weaponId, int armorId) {
+      public static string userInventory (int usrId, int currentPage, int category, int weaponId, int armorId, int hatId) {
          int offset = currentPage * InventoryPanel.ITEMS_PER_PAGE;
          bool hasItemFilter = category != 0;
          string itemFilterContent = "and (itmCategory = " + category+")";
@@ -17,11 +17,15 @@ namespace NubisTranslator {
 
          string weaponFilter = "";
          string armorFilter = "";
+         string hatFilter = "";
          if (weaponId > 0) {
             weaponFilter = " and itmId != " + weaponId;
          }
          if (armorId > 0) {
             armorFilter = " and itmId != " + armorId;
+         }
+         if (hatId > 0) {
+            hatFilter = " and itmId != " + hatId;
          }
 
          #if NUBIS
@@ -29,7 +33,7 @@ namespace NubisTranslator {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId "+ itemFilterContent + weaponFilter + armorFilter + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
+               "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId "+ itemFilterContent + weaponFilter + armorFilter + hatFilter +") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);
 
                   StringBuilder stringBuilder = new StringBuilder();

@@ -58,6 +58,9 @@ public class UserInfo {
    // The weapon ID
    public int weaponId;
 
+   // The hat ID
+   public int hatId;
+
    // The hair type
    public HairLayer.Type hairType;
 

@@ -70,6 +70,12 @@ namespace NubisDataHandling {
          // Equipped item setup
          int weaponId = int.Parse(xmlPairCollection["wpnId"]);
          int armorId = int.Parse(xmlPairCollection["armId"]);
+         int hatId = 0;
+         try {
+            hatId = int.Parse(xmlPairCollection["helmId"]);
+         } catch {
+            D.debug("Hat fetch Issue for user: " + userName);
+         }
 
          UserInfo newInfo = new UserInfo {
             gold = gold,
@@ -84,7 +90,8 @@ namespace NubisDataHandling {
             eyesPalette1 = eyesPalette1,
             eyesPalette2 = eyesPalette2,
             weaponId = weaponId,
-            armorId = armorId
+            armorId = armorId,
+            hatId = hatId
          };
 
          return newInfo;

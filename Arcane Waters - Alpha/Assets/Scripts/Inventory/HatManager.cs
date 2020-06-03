@@ -86,6 +86,9 @@ public class HatManager : EquipmentManager {
 
       if (newHat.itemTypeId == 0) {
          // No Hat to equip
+         equippedHatId = 0;
+         hatType = 0;
+         updateSprites(0, "", "");
          return;
       }
 

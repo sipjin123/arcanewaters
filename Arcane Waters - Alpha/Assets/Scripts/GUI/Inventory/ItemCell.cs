@@ -61,7 +61,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             break;
          case Item.Category.Hats:
             item = Hats.castItemToHat(item);
-            icon.sprite = ImageManager.getSprite(item.iconPath);
+            HatStatData hatData = HatStatData.getStatData(item.data, item.itemTypeId);
+            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
             break;
          case Item.Category.Potion:
             icon.sprite = foodIcon;
@@ -76,6 +77,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = ImageManager.getSprite(item.getIconPath());
             break;
          default:
+            D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);
             icon.sprite = defaultItemIcon;
             break;
       }

@@ -85,6 +85,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       _weaponStatList = new Dictionary<int, WeaponStatData>();
       _armorStatList = new Dictionary<int, ArmorStatData>();
       _hatStatList = new Dictionary<int, HatStatData>();
+      hatStatData = new List<HatStatData>();
 
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
@@ -160,6 +161,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveHatFromZipData (List<HatStatData> statData) {
       _hatStatList = new Dictionary<int, HatStatData>();
+      hatStatData = new List<HatStatData>(); 
       foreach (HatStatData rawData in statData) {
          int uniqueID = rawData.hatType;
          // Save the data in the memory cache

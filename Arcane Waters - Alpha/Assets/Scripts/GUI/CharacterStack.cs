@@ -15,6 +15,7 @@ public class CharacterStack : MonoBehaviour {
    public ArmorLayer armorLayer;
    public HairLayer hairFrontLayer;
    public WeaponLayer weaponFrontLayer;
+   public HatLayer hatLayer;
 
    #endregion
 
@@ -49,6 +50,17 @@ public class CharacterStack : MonoBehaviour {
          }
       }
       updateWeapon(info.gender, weaponData.weaponType, weaponData.palette1, weaponData.palette2);
+
+      HatStatData hatData = HatStatData.getDefaultData();
+      if (userObjects.hat.data != "") {
+         try {
+            hatData = Util.xmlLoad<HatStatData>(userObjects.hat.data);
+         } catch {
+            D.editorLog("Failed to translate xml data!", Color.red);
+            D.editorLog(userObjects.hat.data, Color.red);
+         }
+      }
+      updateHats(info.gender, hatData.hatType, hatData.palette1, hatData.palette2);
    }
 
    public void updateLayers (NetEntity entity) {
@@ -68,6 +80,15 @@ public class CharacterStack : MonoBehaviour {
       weaponBackLayer.recolor(palette1, palette2);
       weaponFrontLayer.setType(gender, weaponType);
       weaponFrontLayer.recolor(palette1, palette2);
+   }
+
+   public void updateHats (Gender.Type gender, int hatType, string palette1, string palette2) {
+      if (hatLayer != null) {
+         hatLayer.setType(gender, hatType);
+         hatLayer.recolor(palette1, palette2);
+      } else {
+         D.editorLog("Hat Layer is not set!", Color.red);
+      }
    }
 
    public void updateArmor (Gender.Type gender, int armorType, string palette1, string palette2) {

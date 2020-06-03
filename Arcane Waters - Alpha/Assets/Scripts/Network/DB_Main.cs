@@ -143,6 +143,7 @@ public class DB_Main : DB_MainStub {
       int category = int.Parse(rawItemGroup[2]);
       int weaponId = 0; 
       int armorId = 0;
+      int hatId = 0;
 
       try {
          weaponId = int.Parse(rawItemGroup[3]);
@@ -154,8 +155,13 @@ public class DB_Main : DB_MainStub {
       } catch {
          // No armor equipped
       }
+      try {
+         hatId = int.Parse(rawItemGroup[5]);
+      } catch {
+         // No hat equipped
+      }
 
-      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category, weaponId, armorId);
+      return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category, weaponId, armorId, hatId);
    }
 
    public static new string nubisFetchMapData (string rawMapName) {
@@ -3742,6 +3748,34 @@ public class DB_Main : DB_MainStub {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@wpnId", newWeaponId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setHatId (int userId, int newHatId) {
+      if (newHatId != 0 && !hasItem(userId, newHatId, (int) Item.Category.Hats)) {
+         D.warning(string.Format("User {0} does not have hat {1} to equip.", userId, newHatId));
+         return;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET helmId=@helmId WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@helmId", newHatId);
             cmd.Parameters.AddWithValue("@usrId", userId);
 
             // Execute the command

@@ -11,8 +11,11 @@ namespace NubisDataHandling {
       // The current weapon of the player
       public Item weaponItem;
 
-      // The current armor  of the player
+      // The current armor of the player
       public Item armorItem;
+
+      // The current hat of the player
+      public Item hatItem;
    }
 
    [Serializable]
@@ -25,6 +28,7 @@ namespace NubisDataHandling {
          EquippedItemData equippedItemData = new EquippedItemData();
          Item weaponItem = new Item();
          Item armorItem = new Item();
+         Item hatItem = new Item();
 
          string splitter = "[next]";
          string[] rawItemGroup = contentData.Split(new string[] { splitter }, StringSplitOptions.None);
@@ -58,6 +62,14 @@ namespace NubisDataHandling {
                            data = dataGroup[3]
                         };
                         break;
+                     case Item.Category.Hats:
+                        hatItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Hats,
+                           itemTypeId = itemTypeID,
+                           data = dataGroup[3]
+                        };
+                        break;
                   }
                }
             }
@@ -65,6 +77,7 @@ namespace NubisDataHandling {
 
          equippedItemData.weaponItem = weaponItem;
          equippedItemData.armorItem = armorItem;
+         equippedItemData.hatItem = hatItem;
 
          return equippedItemData;
       }
