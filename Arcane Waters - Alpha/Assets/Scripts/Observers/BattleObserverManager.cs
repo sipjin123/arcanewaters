@@ -4,7 +4,8 @@ using UnityEngine;
 using Mirror;
 
 [RequireComponent(typeof(NetworkIdentity))]
-public class BattleObserverManager : NetworkBehaviour {
+public class BattleObserverManager : NetworkVisibility
+{
    #region Public Variables
 
    #endregion
@@ -19,7 +20,7 @@ public class BattleObserverManager : NetworkBehaviour {
       return false;
    }
 
-   public override bool OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
+   public override void OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
@@ -28,8 +29,6 @@ public class BattleObserverManager : NetworkBehaviour {
             connectionsToObserve.Add(battler.player.connectionToClient);
          }
       }
-
-      return true;
    }
 
    // Called hiding and showing objects on the host

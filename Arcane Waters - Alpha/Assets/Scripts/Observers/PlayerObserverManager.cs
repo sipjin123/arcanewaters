@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class PlayerObserverManager : NetworkBehaviour {
+public class PlayerObserverManager : NetworkVisibility
+{
    #region Public Variables
 
    #endregion
@@ -18,7 +19,7 @@ public class PlayerObserverManager : NetworkBehaviour {
       return false;
    }
 
-   public override bool OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
+   public override void OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
@@ -26,7 +27,7 @@ public class PlayerObserverManager : NetworkBehaviour {
       Instance instance = InstanceManager.self.getInstance(getInstanceId());
 
       if (instance == null) {
-         return true;
+         return;
       }
 
       // Ensure that the player can still see themself
@@ -40,8 +41,6 @@ public class PlayerObserverManager : NetworkBehaviour {
             connectionsToObserve.Add(existingEntity.connectionToClient);
          }
       }
-
-      return true;
    }
 
    // Called hiding and showing objects on the host

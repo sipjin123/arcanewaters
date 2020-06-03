@@ -822,6 +822,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2469707579499435752}
     m_Modifications:
+    - target: {fileID: 698161293891613684, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 48552bb98a2ed9040a098607153711b8, type: 2}
+    - target: {fileID: 698179674597659080, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 48552bb98a2ed9040a098607153711b8, type: 2}
+    - target: {fileID: 702035446122251180, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 48552bb98a2ed9040a098607153711b8, type: 2}
     - target: {fileID: 3792861629774918177, guid: 4bc53f6d1c2dbe444ba4d9cd276b0a23,
         type: 3}
       propertyPath: m_AnchorMin.y

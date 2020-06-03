@@ -18,7 +18,7 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.RegisterHandler<LogInCompleteMessage>(ClientMessageManager.On_LoginIsComplete);
       NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
       NetworkClient.RegisterHandler<EquipMessage>(ClientMessageManager.On_Equip);
-      NetworkClient.RegisterHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
+      NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
    }
 
    public static void registerServerHandlers () {

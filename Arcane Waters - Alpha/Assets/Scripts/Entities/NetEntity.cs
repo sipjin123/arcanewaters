@@ -1024,13 +1024,13 @@ public class NetEntity : NetworkBehaviour {
             // Remove the player from the current instance
             InstanceManager.self.removeEntityFromInstance(this);
 
-            // Destroy the old Player object
-            NetworkServer.DestroyPlayerForConnection(connectionToClient);
-            NetworkServer.Destroy(entityObject);
-
             // Send a Redirect message to the client
             RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.port);
             this.connectionToClient.Send(redirectMessage);
+
+            // Destroy the old Player object
+            NetworkServer.DestroyPlayerForConnection(connectionToClient);
+            NetworkServer.Destroy(entityObject);
          });
       });
    }

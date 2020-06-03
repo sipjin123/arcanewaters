@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
-public class CannonObserverManager : NetworkBehaviour {
+public class CannonObserverManager : NetworkVisibility
+{
    #region Public Variables
 
    #endregion
@@ -18,7 +19,7 @@ public class CannonObserverManager : NetworkBehaviour {
       return false;
    }
 
-   public override bool OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
+   public override void OnRebuildObservers (HashSet<NetworkConnection> connectionsToObserve, bool initial) {
       // It seems this has to be cleared out at the start, or else it can contain unwanted connections
       connectionsToObserve.Clear();
 
@@ -30,8 +31,6 @@ public class CannonObserverManager : NetworkBehaviour {
             connectionsToObserve.Add(entity.connectionToClient);
          }
       }
-
-      return true;
    }
 
    // Called hiding and showing objects on the host
