@@ -4012,7 +4012,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestEnterMapCustomization (int customizerId, string areaKey, string baseMapAreaKey, int areaOwnerId) {
+   public void Cmd_RequestEnterMapCustomization (int customizerId, string areaKey, int baseMapId, int areaOwnerId) {
       // Find the player
       NetEntity player = EntityManager.self.getEntity(customizerId);
       if (player == null) {
@@ -4069,7 +4069,48 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, string baseMapAreaKey, PrefabState changes) {
+   public void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool _warpIntoAfterSetting) {
+      // Check if this is a custom map key
+      if (!AreaManager.self.tryGetCustomMapManager(customMapKey, out CustomMapManager manager)) {
+         return;
+      }
+
+      // Check if this type of custom map has this base map
+      if (!manager.getAllBaseMapKeys().Contains(AreaManager.self.getAreaName(baseMapId))) {
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         if (manager is CustomHouseManager) {
+            DB_Main.setCustomHouseBase(_player.userId, baseMapId);
+            _player.customHouseBaseId = baseMapId;
+         } else if (manager is CustomFarmManager) {
+            DB_Main.setCustomFarmBase(_player.userId, baseMapId);
+            _player.customFarmBaseId = baseMapId;
+         } else {
+            D.error("Unrecoginzed custom map manager");
+            return;
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (_warpIntoAfterSetting) {
+               string baseArea = AreaManager.self.getAreaName(baseMapId);
+               Vector2 pos = SpawnManager.self.getDefaultSpawnLocalPosition(baseArea);
+               _player.spawnInNewMap(customMapKey, pos, Direction.South);
+            }
+
+            Target_BaseMapUpdated(customMapKey, baseMapId);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_BaseMapUpdated (string customMapKey, int baseMapId) {
+      PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).baseMapUpdated(customMapKey, baseMapId);
+   }
+
+   [Command]
+   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, int baseMapId, PrefabState changes) {
       // Check if changes are valid
       if (MapCustomizationManager.validatePrefabChanges(areaKey, changes, out string errorMessage)) {
          // Set changes in the server
@@ -4080,8 +4121,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Set changes in the database
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            int mapId = DB_Main.getMapId(baseMapAreaKey);
-            MapCustomizationData data = DB_Main.getMapCustomizationData(mapId, areaOwnerId) ?? new MapCustomizationData() { userId = areaOwnerId, mapId = mapId };
+            MapCustomizationData data = DB_Main.getMapCustomizationData(baseMapId, areaOwnerId) ?? new MapCustomizationData() { userId = areaOwnerId, mapId = baseMapId };
             data.add(changes);
             DB_Main.setMapCustomizationData(data);
          });

@@ -63,6 +63,14 @@ public class AreaManager : MonoBehaviour
       return areaId.ToString();
    }
 
+   public int getAreaId (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.id;
+      }
+
+      return -1;
+   }
+
    public Biome.Type getAreaBiome (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).biome;
@@ -162,10 +170,10 @@ public class AreaManager : MonoBehaviour
       EnemyManager.self.removeSpawners(areaKey);
    }
 
-   public bool tryGetOwnedMapManager (string areaKey, out OwnedMapManager manager) {
-      foreach (OwnedMapManager ownedMapManager in _ownedMapManagers) {
-         if (ownedMapManager.associatedWithAreaKey(areaKey)) {
-            manager = ownedMapManager;
+   public bool tryGetCustomMapManager (string areaKey, out CustomMapManager manager) {
+      foreach (CustomMapManager cmm in _customMapManagers) {
+         if (cmm.associatedWithAreaKey(areaKey)) {
+            manager = cmm;
             return true;
          }
       }
@@ -198,7 +206,7 @@ public class AreaManager : MonoBehaviour
    protected List<string> _seaAreaKeys = new List<string>();
 
    // Managers of owned maps
-   protected OwnedMapManager[] _ownedMapManagers = new OwnedMapManager[] { new PlayerOwnedHouseManager(), new POFarmManager() };
+   protected CustomMapManager[] _customMapManagers = new CustomMapManager[] { new CustomHouseManager(), new CustomFarmManager() };
 
    #endregion
 }

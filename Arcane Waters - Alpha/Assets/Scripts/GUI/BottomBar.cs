@@ -23,7 +23,7 @@ public class BottomBar : MonoBehaviour {
       }
 
       mapCustomizationButton.gameObject.SetActive(
-         OwnedMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
+         CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
          !MapCustomizationManager.isCustomizing);
 
       // Disable the bottom bar buttons when the area is being loaded

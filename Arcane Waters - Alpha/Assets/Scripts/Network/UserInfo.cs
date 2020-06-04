@@ -94,6 +94,12 @@ public class UserInfo {
    // The Guild we're in
    public int guildId;
 
+   // The house layout map we've chosen
+   public int customHouseBaseId;
+
+   // The farm layout map we've chosen
+   public int customFarmBaseId;
+
    #endregion
 
    public UserInfo () { }
@@ -128,6 +134,8 @@ public class UserInfo {
       this.specialty = (Specialty.Type) dataReader.GetInt32("specialty");
       this.faction = (Faction.Type) dataReader.GetInt32("faction");
       this.guildId = dataReader.GetInt32("gldId");
+      this.customHouseBaseId = dataReader.GetInt32("customHouseBase");
+      this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
    }
 
    #endif

@@ -668,10 +668,25 @@ public class AdminManager : NetworkBehaviour
          string[] testAreaKeys = { "Snow Town Lite", "Far Sands", "Starting Treasure Site" };
          closestAreaKey = testAreaKeys[UnityEngine.Random.Range(0, testAreaKeys.Count())];
       } else {
-         // Try to find an owned map of this key
-         if (AreaManager.self.tryGetOwnedMapManager(partialAreaKey, out OwnedMapManager ownedMapManager)) {
-            int userId = OwnedMapManager.isUserSpecificAreaKey(partialAreaKey) ? OwnedMapManager.getUserId(partialAreaKey) : _player.userId;
-            baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(userId);
+         // Try to find a custom map of this key
+         if (AreaManager.self.tryGetCustomMapManager(partialAreaKey, out CustomMapManager customMapManager)) {
+            // Check if user is allowed to access this map
+            if (!customMapManager.canUserWarpInto(_player, partialAreaKey, out Action<NetEntity> denyHandler)) {
+               denyHandler?.Invoke(_player);
+               return;
+            }
+
+            int userId = CustomMapManager.isUserSpecificAreaKey(partialAreaKey) ? CustomMapManager.getUserId(partialAreaKey) : _player.userId;
+            NetEntity entity = EntityManager.self.getEntity(userId);
+
+            // Owner of the target map has to be in the server
+            // TODO: remove this constraint
+            if (entity == null) {
+               D.log("Owner of the map is not currently in the server.");
+               return;
+            }
+
+            baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(entity));
             closestAreaKey = partialAreaKey;
          } else {
             // Try to select area keys whose beginning match exactly with the user input

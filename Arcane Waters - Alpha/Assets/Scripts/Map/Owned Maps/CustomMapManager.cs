@@ -2,7 +2,7 @@
 using System.Linq;
 using MapCustomization;
 
-public abstract class OwnedMapManager
+public abstract class CustomMapManager
 {
    // Area key, shared by all maps of this owned map group
    public abstract string mapTypeAreaKey { get; }
@@ -14,8 +14,9 @@ public abstract class OwnedMapManager
    // Returns 'denyWarpHandler' actions which should be executed when denying the warp for the user
    public abstract bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler);
 
-   // Given a user id, get the area key for the base map of this map
-   public abstract string getBaseMapAreaKey (int userId);
+   // Get the base map id, that is selected by the user
+   public abstract int getBaseMapId (NetEntity user);
+   public abstract int getBaseMapId (UserInfo userInfo);
 
    // Area key, that is set for a specific instance of a map of this map group
    public string getUserSpecificAreaKey (int userId) {
@@ -48,7 +49,7 @@ public abstract class OwnedMapManager
    }
 
    // Extracts the display name from the base map area key
-   public string getBaseMapName (string baseMapAreaKey) {
+   public string getBaseMapDisplayName (string baseMapAreaKey) {
       return baseMapAreaKey.Replace(mapTypeAreaKey, "").Replace("base", "").Replace("_", "");
    }
 }

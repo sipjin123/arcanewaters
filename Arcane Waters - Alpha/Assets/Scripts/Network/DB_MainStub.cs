@@ -303,12 +303,12 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void setOwnedMapBase (int userId, string ownedMapType, int baseMapId) {
+   public static void setCustomHouseBase (int userId, int baseMapId) {
 
    }
 
-   public static int getOwnedMapBase (int userId, string ownedMapType) {
-      return -1;
+   public static void setCustomFarmBase (int userId, int baseMapId) {
+
    }
 
    public static MapCustomizationData getMapCustomizationData (int mapId, int userId) {

@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
-public class OwnedMapsPanel : Panel
+public class CustomMapsPanel : Panel
 {
    #region Public Variables
 
@@ -22,7 +23,7 @@ public class OwnedMapsPanel : Panel
 
    #endregion
 
-   public void displayFor (OwnedMapManager manager, bool warpAfterSelecting = false) {
+   public void displayFor (CustomMapManager manager, bool warpAfterSelecting = false) {
       // Show panel if it is not showing already
       PanelManager.self.pushIfNotShowing(type);
 
@@ -38,30 +39,33 @@ public class OwnedMapsPanel : Panel
       // Create base map entries
       foreach (string baseMapKey in manager.getAllBaseMapKeys()) {
          BaseMapEntry cell = Instantiate(baseMapEntryPref, mapBaseContainer.transform, false);
-         cell.setData(manager.getBaseMapName(baseMapKey), () => selectBaseMap(baseMapKey));
+         cell.setData(manager.getBaseMapDisplayName(baseMapKey), () => selectBaseMap(AreaManager.self.getAreaId(baseMapKey)));
       }
 
       // TODO: highlight the entry, which is owned by user
    }
 
-   public void selectBaseMap (string baseMapKey) {
-      // TODO: save in db which base map is selected by the user
+   public void selectBaseMap (int baseMapId) {
+      Global.player.rpc.Cmd_SetCustomMapBaseMap(_poManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
+   }
 
-      // For testing, set base map as selected
-      if (_poManager is POFarmManager) {
-         (_poManager as POFarmManager).testSelected = true;
+   public void baseMapUpdated (string customMapKey, int baseMapId) {
+      // Ensure we are showing the panel and we are targeting a custom map type that was updated
+      if (!isShowing() || !customMapKey.Equals(_poManager?.mapTypeAreaKey)) {
+         return;
       }
 
       if (_warpAfterSelecting) {
          PanelManager.self.popPanel();
-         Global.player.Cmd_SpawnInNewMap(_poManager.mapTypeAreaKey, string.Empty, Direction.South);
+      } else {
+         // TODO: update UI to show selected map
       }
    }
 
    #region Private Variables
 
    // Player owned map manager that we are currently showing for
-   private OwnedMapManager _poManager;
+   private CustomMapManager _poManager;
 
    // Should we warp into the base map after selecting it
    private bool _warpAfterSelecting;

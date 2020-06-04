@@ -221,10 +221,15 @@ public class MyNetworkManager : NetworkManager
          // Get the voyage id, if any
          int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
 
+         string previousAreaKey = userInfo.areaKey;
+
+         // Get information about owned map
+         string baseMapAreaKey = previousAreaKey;
+         int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
+         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfo(mapOwnerId));
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            string previousAreaKey = userInfo.areaKey;
-
             // Check if we need to redirect to a different server
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
@@ -243,15 +248,15 @@ public class MyNetworkManager : NetworkManager
             // Manage the voyage groups on user connection
             VoyageManager.self.onUserConnectsToServer(userInfo.userId);
 
-            // Get information about owned map
-            string baseMapAreaKey = previousAreaKey;
-            int mapOwnerId = -1;
+            // Create the Player object
+            GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
+            GameObject playerObject = Instantiate(prefab);
+            NetEntity player = playerObject.GetComponent<NetEntity>();
 
-            if (AreaManager.self.tryGetOwnedMapManager(previousAreaKey, out OwnedMapManager ownedMapManager)) {
-               // Get base map area key for owned maps, for others keep it the same as area key
-               if (OwnedMapManager.isUserSpecificAreaKey(previousAreaKey)) {
-                  mapOwnerId = OwnedMapManager.getUserId(previousAreaKey);
-                  baseMapAreaKey = ownedMapManager.getBaseMapAreaKey(mapOwnerId);
+            // If this is a custom map, get the base key
+            if (ownerInfo != null) {
+               if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
+                  baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
                }
             }
 
@@ -272,10 +277,8 @@ public class MyNetworkManager : NetworkManager
             // Note where we're going to create the player
             Vector3 playerCreationPos = mapPosition + userInfo.localPos;
 
-            // Create the Player object
-            GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
-            GameObject playerObject = Instantiate(prefab, playerCreationPos, Quaternion.identity);
-            NetEntity player = playerObject.GetComponent<NetEntity>();
+            // Set information for the player
+            player.transform.position = playerCreationPos;
             player.isSinglePlayer = userObjects.isSinglePlayer;
             player.areaKey = previousAreaKey;
             player.userId = userInfo.userId;

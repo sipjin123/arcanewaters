@@ -67,9 +67,9 @@ public class MapManager : MonoBehaviour
       // Find out if we are creating an owned map, if so, get owner id
       int ownerId = -1;
       if (!areaKey.Equals(mapInfo.mapName)) {
-         if (AreaManager.self.tryGetOwnedMapManager(areaKey, out OwnedMapManager ownedMapManager)) {
-            if (OwnedMapManager.isUserSpecificAreaKey(areaKey)) {
-               ownerId = OwnedMapManager.getUserId(areaKey);
+         if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+            if (CustomMapManager.isUserSpecificAreaKey(areaKey)) {
+               ownerId = CustomMapManager.getUserId(areaKey);
             }
          }
       }

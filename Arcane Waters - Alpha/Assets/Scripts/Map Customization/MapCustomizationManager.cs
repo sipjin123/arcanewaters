@@ -16,7 +16,7 @@ namespace MapCustomization
 
       // Current area that is being customized, null if customization is not active currently
       public static string currentArea { get; private set; }
-      public static string currentAreaBaseMap { get; private set; }
+      public static int currentAreaBaseMapId { get; private set; }
 
       // Owner userId of the current area
       public static int areaOwnerId { get; private set; }
@@ -35,20 +35,29 @@ namespace MapCustomization
             return;
          }
 
-         if (!AreaManager.self.tryGetOwnedMapManager(areaName, out OwnedMapManager ownedMapManager)) {
+         if (!AreaManager.self.tryGetCustomMapManager(areaName, out CustomMapManager customMapManager)) {
             D.error("Trying to customize a map that is not an owned map: " + areaName);
             return;
          }
 
-         if (!OwnedMapManager.isUserSpecificAreaKey(areaName)) {
+         if (!CustomMapManager.isUserSpecificAreaKey(areaName)) {
             D.error("Trying to customize a map by a key that is not user-specific: " + areaName);
             return;
          }
 
          currentArea = areaName;
-         int userId = OwnedMapManager.isUserSpecificAreaKey(areaName) ? OwnedMapManager.getUserId(areaName) : Global.player.userId;
-         currentAreaBaseMap = ownedMapManager.getBaseMapAreaKey(userId);
-         areaOwnerId = OwnedMapManager.getUserId(areaName);
+         int userId = CustomMapManager.isUserSpecificAreaKey(areaName) ? CustomMapManager.getUserId(areaName) : Global.player.userId;
+         NetEntity entity = EntityManager.self.getEntity(userId);
+
+         // Owner of the target map has to be in the server
+         // TODO: remove this constraint
+         if (entity == null) {
+            D.log("Owner of the map is not currently in the server.");
+            return;
+         }
+
+         currentAreaBaseMapId = customMapManager.getBaseMapId(entity);
+         areaOwnerId = CustomMapManager.getUserId(areaName);
 
          CustomizationUI.show();
          CustomizationUI.setLoading(true);
@@ -59,7 +68,7 @@ namespace MapCustomization
       private static IEnumerator enterCustomizationRoutine () {
          // Fetch customization data that is saved for this map
          _waitingServerResponse = true;
-         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMap, areaOwnerId);
+         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMapId, areaOwnerId);
          yield return new WaitWhile(() => _waitingServerResponse);
 
          // Gather prefabs from the scene that can be customized
@@ -126,7 +135,7 @@ namespace MapCustomization
       public static void pointerUp (Vector2 worldPosition) {
          if (_selectedPrefab != null) {
             if (_selectedPrefab.anyUnappliedState()) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea, currentAreaBaseMap, _selectedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea, currentAreaBaseMapId, _selectedPrefab.unappliedChanges);
                _selectedPrefab.submitUnappliedChanges();
             }
          }

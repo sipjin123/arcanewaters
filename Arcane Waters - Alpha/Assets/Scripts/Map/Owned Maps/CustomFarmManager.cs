@@ -5,30 +5,27 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-public class POFarmManager : OwnedMapManager
+public class CustomFarmManager : CustomMapManager
 {
    #region Public Variables
 
-   // For testing, set if map was selected
-   public bool testSelected;
-
    #endregion
 
-   public override string mapTypeAreaKey => "pofarm";
+   public override string mapTypeAreaKey => "customfarm";
    public override string typeDisplayName => "Farm";
 
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {
       // Check if user is trying to warp into his farm
       if (areaKey.Equals(mapTypeAreaKey) || areaKey.Equals(getUserSpecificAreaKey(user.userId))) {
-         // TODO: check if user has a farm, respond appropriately (buy a farm panel, etc.)
-
-         if (!testSelected) {
-            denyWarpHandler = (player) => PanelManager.self.get<OwnedMapsPanel>(Panel.Type.OwnedMaps).displayFor(this, true);
-            return false;
+         // If user has a layout for farm, return it's id
+         if (user.customFarmBaseId > 0) {
+            denyWarpHandler = null;
+            return true;
          }
 
-         denyWarpHandler = null;
-         return true;
+         // Otherwise, show panel for selecting the layout
+         denyWarpHandler = (player) => PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).displayFor(this, true);
+         return false;
       } else {
          // User is trying to warp into someone else's farm
          // if user should be allowed to warp into someone else's farm, handle appropriately
@@ -38,11 +35,12 @@ public class POFarmManager : OwnedMapManager
       }
    }
 
-   public override string getBaseMapAreaKey (int userId) {
-      // TODO: find out on which base map is the user's farm based
+   public override int getBaseMapId (NetEntity user) {
+      return user.customFarmBaseId;
+   }
 
-      // For testing, return a hardcoded key
-      return "pofarm_base some name 1";
+   public override int getBaseMapId (UserInfo userInfo) {
+      return userInfo.customFarmBaseId;
    }
 
    #region Private Variables

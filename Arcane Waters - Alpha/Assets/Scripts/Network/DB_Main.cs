@@ -1295,15 +1295,13 @@ public class DB_Main : DB_MainStub {
 
    #endregion
 
-   #region Owned Maps
+   #region Custom Maps
 
-   public static new void setOwnedMapBase(int userId, string ownedMapType, int baseMapId) {
-      string cmdText = "INSERT INTO owned_maps(userId, mapType, ownedBaseId) Values(@userId, @mapType, @ownedBaseId) " +
-         "ON DUPLICATE KEY UPDATE ownedBaseId = @ownedBaseId;";
+   public static new void setCustomHouseBase (int userId, int baseMapId) {
+      string cmdText = "UPDATE users SET customHouseBase = @baseMapId WHERE usrId = @userId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@userId", userId);
-         cmd.Parameters.AddWithValue("@ownedMapType", ownedMapType);
          cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
          conn.Open();
          cmd.Prepare();
@@ -1312,23 +1310,17 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new int getOwnedMapBase (int userId, string ownedMapType) {
-      string cmdText = "SELECT FROM owned_maps WHERE userId = @userId AND mapType @mapType;";
+   public static new void setCustomFarmBase (int userId, int baseMapId) {
+      string cmdText = "UPDATE users SET customFarmBase = @baseMapId WHERE usrId = @userId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@userId", userId);
-         cmd.Parameters.AddWithValue("@ownedMapType", ownedMapType);
+         cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
          conn.Open();
          cmd.Prepare();
 
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            if (dataReader.Read()) {
-               return dataReader.GetInt32("baseMapId");
-            }
-         }
+         cmd.ExecuteNonQuery();
       }
-
-      return -1;
    }
 
    #endregion

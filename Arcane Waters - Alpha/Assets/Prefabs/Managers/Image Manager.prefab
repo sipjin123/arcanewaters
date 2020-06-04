@@ -1332,6 +1332,37 @@ MonoBehaviour:
     - {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+  - imageName: Book-Images-Spritesheet
+    imagePath: Assets/Sprites/BookImages/Book-Images-Spritesheet.png
+    imagePathWithoutExtension: Assets/Sprites/BookImages/Book-Images-Spritesheet
+    texture2D: {fileID: 2800000, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
+      type: 3}
+    sprites:
+    - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2434995272506181264, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1721623004347349377, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -2061607768087564823, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5040375706913360352, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 752899332120568913, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7668651126283048510, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 6881099103547005729, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6708834595854665298, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -5894425961036811378, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 373538379674318949, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 1814198793275410985, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 7038889133911777677, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: -6341793325149322918, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
+    - {fileID: 4779734361057495426, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
   - imageName: Border Design v1
     imagePath: Assets/Sprites/Battle Boards/Border Design v1.png
     imagePathWithoutExtension: Assets/Sprites/Battle Boards/Border Design v1
@@ -10832,6 +10863,15 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 2442321492bddb744a5a6482641b329a, type: 3}
     sprites:
     - {fileID: 21300000, guid: 2442321492bddb744a5a6482641b329a, type: 3}
+  - imageName: gold_frame_tall_box_1x
+    imagePath: Assets/Sprites/GUI/Leader Boards/gold_frame_tall_box_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Leader Boards/gold_frame_tall_box_1x
+    texture2D: {fileID: 2800000, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
+      type: 3}
+    sprites:
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_frame_tall_box_1x
     imagePath: Assets/Sprites/GUI/Leader Boards/gold_frame_tall_box_1x.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Leader Boards/gold_frame_tall_box_1x
