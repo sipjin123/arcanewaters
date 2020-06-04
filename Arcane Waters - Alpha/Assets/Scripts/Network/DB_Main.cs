@@ -3208,7 +3208,7 @@ public class DB_Main : DB_MainStub {
             tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_helm_xml_v4";
+            tableName = "equipment_hat_xml_v1";
             break;
       }
 
@@ -3248,7 +3248,7 @@ public class DB_Main : DB_MainStub {
             tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_helm_xml_v4";
+            tableName = "equipment_hat_xml_v1";
             break;
       }
 
@@ -3277,7 +3277,7 @@ public class DB_Main : DB_MainStub {
             tableName = "equipment_armor_xml_v3";
             break;
          case EquipmentType.Hat:
-            tableName = "equipment_helm_xml_v4";
+            tableName = "equipment_hat_xml_v1";
             break;
       }
 
@@ -3772,10 +3772,10 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET helmId=@helmId WHERE usrId=@usrId", conn)) {
+            "UPDATE users SET hatId=@hatId WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@helmId", newHatId);
+            cmd.Parameters.AddWithValue("@hatId", newHatId);
             cmd.Parameters.AddWithValue("@usrId", userId);
 
             // Execute the command
@@ -4232,11 +4232,11 @@ public class DB_Main : DB_MainStub {
             "SELECT *, " +
             "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmPalette1 AS armorPalette1, armor.itmPalette2 AS armorPalette2, armor.itmData AS armorData, " +
             "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmPalette1 AS weaponPalette1, weapon.itmPalette2 AS weaponPalette2, weapon.itmData AS weaponData, " +
-            "helm.itmId AS helmId, helm.itmType AS helmType, helm.itmPalette1 AS helmPalette1, helm.itmPalette2 AS helmPalette2, helm.itmData AS helmData " +
+            "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalette1 AS hatPalette1, hat.itmPalette2 AS hatPalette2, hat.itmData AS hatData " +
             "FROM users JOIN accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN items AS armor ON(users.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
-            "LEFT JOIN items AS helm ON(users.helmId = helm.itmId) " +
+            "LEFT JOIN items AS hat ON(users.hatId = hat.itmId) " +
             "WHERE users.usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
@@ -4257,7 +4257,7 @@ public class DB_Main : DB_MainStub {
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
-                     userObjects.hat = getHelm(dataReader);
+                     userObjects.hat = getHat(dataReader);
                      userObjects.armorPalette1 = userObjects.armor.paletteName1;
                      userObjects.armorPalette2 = userObjects.armor.paletteName2;
                      userObjects.weaponPalette1 = userObjects.weapon.paletteName1;
@@ -7003,7 +7003,7 @@ public class DB_Main : DB_MainStub {
       return new Weapon(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
-   protected static Hats getHelm (MySqlDataReader dataReader) {
+   protected static Hats getHat (MySqlDataReader dataReader) {
       int itemId = 0;
       int itemTypeId = 0;
       string palette1 = "";
@@ -7012,26 +7012,26 @@ public class DB_Main : DB_MainStub {
 
       // TODO: Make sure the errors in the catch blocks will no longer occur
       try {
-         itemId = DataUtil.getInt(dataReader, "helmId");
+         itemId = DataUtil.getInt(dataReader, "hatId");
       } catch {
          D.editorLog("Issue with data: id", Color.red);
       }
 
       try {
-         itemTypeId = DataUtil.getInt(dataReader, "helmType");
+         itemTypeId = DataUtil.getInt(dataReader, "hatType");
       } catch {
          D.editorLog("Issue with data: type", Color.red);
       }
 
       try {
-         palette1 = DataUtil.getString(dataReader, "helmPalette1");
-         palette2 = DataUtil.getString(dataReader, "helmPalette2");
+         palette1 = DataUtil.getString(dataReader, "hatPalette1");
+         palette2 = DataUtil.getString(dataReader, "hatPalette2");
       } catch {
          D.editorLog("Issue with data: palettes", Color.red);
       }
 
       try {
-         itemData = DataUtil.getString(dataReader, "helmData");
+         itemData = DataUtil.getString(dataReader, "hatData");
       } catch {
          D.editorLog("Issue with data: data", Color.red);
       }

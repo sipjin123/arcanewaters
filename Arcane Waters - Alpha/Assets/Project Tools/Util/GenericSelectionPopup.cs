@@ -117,7 +117,7 @@ public class GenericSelectionPopup : MonoBehaviour
    }
 
    private void initializeSpriteDictionary () {
-      string hatSpritePath = "Assets/Sprites/Icons/Helm/";
+      string hatSpritePath = "Assets/Sprites/Icons/Hat/";
       setupSpriteContent(hatSpriteList, hatSpritePath);
 
       string armorSpritePath = "Assets/Sprites/Icons/Armor/";

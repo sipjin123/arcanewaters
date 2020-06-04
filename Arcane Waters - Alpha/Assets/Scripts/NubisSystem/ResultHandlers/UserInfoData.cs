@@ -72,7 +72,7 @@ namespace NubisDataHandling {
          int armorId = int.Parse(xmlPairCollection["armId"]);
          int hatId = 0;
          try {
-            hatId = int.Parse(xmlPairCollection["helmId"]);
+            hatId = int.Parse(xmlPairCollection["hatId"]);
          } catch {
             D.debug("Hat fetch Issue for user: " + userName);
          }

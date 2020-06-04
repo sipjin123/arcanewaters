@@ -15,15 +15,10 @@ public class EquipmentToolManager : XmlDataToolManager {
    // Holds the main scene for the equipment data
    public EquipmentToolScene equipmentDataScene;
 
-   // Holds the path of the folder
-   public const string FOLDER_PATH_WEAPON = "EquipmentStats/Weapons";
-   public const string FOLDER_PATH_ARMOR = "EquipmentStats/Armors";
-   public const string FOLDER_PATH_HELM = "EquipmentStats/Helms";
-
    // Holds the collection of user id that created the data entry
    public List<SQLEntryIDClass> weaponUserID = new List<SQLEntryIDClass>();
    public List<SQLEntryIDClass> armorUserID = new List<SQLEntryIDClass>();
-   public List<SQLEntryIDClass> helmUserID = new List<SQLEntryIDClass>();
+   public List<SQLEntryIDClass> hatUserID = new List<SQLEntryIDClass>();
 
    // Self reference to the specific tool
    public static EquipmentToolManager equipmentToolSelf;
@@ -46,7 +41,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             sqlEntry = armorUserID.Find(_ => _.xmlID == entryID);
             break;
          case EquipmentType.Hat:
-            sqlEntry = helmUserID.Find(_ => _.xmlID == entryID);
+            sqlEntry = hatUserID.Find(_ => _.xmlID == entryID);
             break;
       }
 
@@ -97,7 +92,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveHelm (HatStatData data, int xml_id, bool isEnabled) {
+   public void saveHat (HatStatData data, int xml_id, bool isEnabled) {
       data.equipmentID = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
@@ -138,7 +133,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void deleteHelm (int xml_id) {
+   public void deleteHat (int xml_id) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deleteEquipmentXML(xml_id, EquipmentType.Hat);
 
@@ -190,7 +185,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   public void duplicateHelm (HatStatData data) {
+   public void duplicateHat (HatStatData data) {
       data.hatType = 0;
       data.equipmentName = MasterToolScene.UNDEFINED;
       XmlSerializer ser = new XmlSerializer(data.GetType());
@@ -219,7 +214,7 @@ public class EquipmentToolManager : XmlDataToolManager {
       XmlLoadingPanel.self.startLoading();
       loadWeapons();
       loadArmors();
-      loadHelms();
+      loadHats();
    }
 
    private void loadWeapons () {
@@ -280,11 +275,11 @@ public class EquipmentToolManager : XmlDataToolManager {
       });
    }
 
-   private void loadHelms () {
+   private void loadHats () {
       _hatStatData = new List<HatXmlContent>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getEquipmentXML(EquipmentType.Hat);
-         helmUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Hat);
+         hatUserID = DB_Main.getSQLDataByID(editorToolType, EquipmentType.Hat);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
@@ -302,7 +297,7 @@ public class EquipmentToolManager : XmlDataToolManager {
                   _hatStatData.Add(newXML);
                }
             }
-            equipmentDataScene.loadHelmData(_hatStatData);
+            equipmentDataScene.loadHatData(_hatStatData);
             finishLoading();
          });
       });
@@ -323,8 +318,8 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (ArmorXMLContent armorContent in _armorStatData) {
                armorStatDataList.Add(armorContent.armorStatData);
             }
-            foreach (HatXmlContent helmContent in _hatStatData) {
-               hatStatDataList.Add(helmContent.hatStatData);
+            foreach (HatXmlContent hatContent in _hatStatData) {
+               hatStatDataList.Add(hatContent.hatStatData);
             }
 
             EquipmentXMLManager.self.resetAllData();

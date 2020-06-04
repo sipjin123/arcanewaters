@@ -969,8 +969,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: acf63d3bc673a0544998ad257205a243, type: 3}
   - imageName: berret
-    imagePath: Assets/Sprites/Icons/Helm/berret.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Helm/berret
+    imagePath: Assets/Sprites/Icons/Hat/berret.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Hat/berret
     texture2D: {fileID: 2800000, guid: 10488329d911adf45ac8ed6e0f8c0701, type: 3}
     sprite: {fileID: 21300000, guid: 10488329d911adf45ac8ed6e0f8c0701, type: 3}
     sprites:
@@ -2397,8 +2397,8 @@ MonoBehaviour:
     - {fileID: -9189793603273116629, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
     - {fileID: -992297166567905070, guid: 99ffeb3171dc89443aeb38468cf96686, type: 3}
   - imageName: cap
-    imagePath: Assets/Sprites/Icons/Helm/cap.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Helm/cap
+    imagePath: Assets/Sprites/Icons/Hat/cap.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Hat/cap
     texture2D: {fileID: 2800000, guid: 83d7fcf5676ddfc4f93885c5216e0c98, type: 3}
     sprite: {fileID: 21300000, guid: 83d7fcf5676ddfc4f93885c5216e0c98, type: 3}
     sprites:
@@ -3136,8 +3136,8 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 3d5a608f5647a964ba10450a5d762e90, type: 3}
   - imageName: cowboyhat
-    imagePath: Assets/Sprites/Icons/Helm/cowboyhat.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Helm/cowboyhat
+    imagePath: Assets/Sprites/Icons/Hat/cowboyhat.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Hat/cowboyhat
     texture2D: {fileID: 2800000, guid: 28626dabe7e83fa43b9ce69cac4ae8a4, type: 3}
     sprite: {fileID: 21300000, guid: 28626dabe7e83fa43b9ce69cac4ae8a4, type: 3}
     sprites:
@@ -11519,8 +11519,8 @@ MonoBehaviour:
     - {fileID: 21300012, guid: a7bd0565bebfef44dae7ba315eac000a, type: 3}
     - {fileID: 21300014, guid: a7bd0565bebfef44dae7ba315eac000a, type: 3}
   - imageName: hoodie
-    imagePath: Assets/Sprites/Icons/Helm/hoodie.png
-    imagePathWithoutExtension: Assets/Sprites/Icons/Helm/hoodie
+    imagePath: Assets/Sprites/Icons/Hat/hoodie.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Hat/hoodie
     texture2D: {fileID: 2800000, guid: c612a0cbe30daed40a3e43aa461fb7d1, type: 3}
     sprite: {fileID: 21300000, guid: c612a0cbe30daed40a3e43aa461fb7d1, type: 3}
     sprites:

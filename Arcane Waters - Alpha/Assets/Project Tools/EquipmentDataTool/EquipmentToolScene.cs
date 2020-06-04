@@ -131,28 +131,28 @@ public class EquipmentToolScene : MonoBehaviour {
    }
 
    private void createHelmTemplate () {
-      HatStatData helmData = new HatStatData();
-      helmData.equipmentName = "Undefined";
+      HatStatData hatData = new HatStatData();
+      hatData.equipmentName = "Undefined";
 
       EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-      template.setData(helmData.equipmentName, EquipmentType.Hat, -1);
+      template.setData(hatData.equipmentName, EquipmentType.Hat, -1);
 
       template.editButton.onClick.AddListener(() => {
-         equipmentDataPanel.loadHelmData(helmData, template.xmlId, false);
+         equipmentDataPanel.loadHatData(hatData, template.xmlId, false);
          equipmentDataPanel.gameObject.SetActive(true);
       });
 
       template.deleteButton.onClick.AddListener(() => {
          Destroy(template.gameObject, .5f);
-         equipmentToolManager.deleteHelm(template.xmlId);
+         equipmentToolManager.deleteHat(template.xmlId);
       });
 
       template.duplicateButton.onClick.AddListener(() => {
-         equipmentToolManager.duplicateHelm(helmData);
+         equipmentToolManager.duplicateHat(hatData);
       });
 
       try {
-         Sprite iconSprite = ImageManager.getSprite(helmData.equipmentIconPath);
+         Sprite iconSprite = ImageManager.getSprite(hatData.equipmentIconPath);
          template.itemIcon.sprite = iconSprite;
       } catch {
          template.itemIcon.sprite = emptySprite;
@@ -162,33 +162,33 @@ public class EquipmentToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   public void loadHelmData (List<HatXmlContent> helmStats) {
+   public void loadHatData (List<HatXmlContent> hatStats) {
       helmTemplateParent.gameObject.DestroyChildren();
 
       // Create a row for each weapon data element
-      foreach (HatXmlContent xmlData in helmStats) {
-         HatStatData helmData = xmlData.hatStatData;
+      foreach (HatXmlContent xmlData in hatStats) {
+         HatStatData hatData = xmlData.hatStatData;
          EquipmentDataTemplate template = GenericEntryTemplate.createGenericTemplate(helmTemplatePrefab.gameObject, equipmentToolManager, helmTemplateParent.transform).GetComponent<EquipmentDataTemplate>();
-         template.setData(helmData.equipmentName, EquipmentType.Hat, xmlData.xml_id);
+         template.setData(hatData.equipmentName, EquipmentType.Hat, xmlData.xml_id);
          template.isEnabledIndicator.SetActive(xmlData.isEnabled);
-         template.spriteID.text = ((int)helmData.hatType).ToString();
+         template.spriteID.text = ((int)hatData.hatType).ToString();
 
          template.editButton.onClick.AddListener(() => {
-            equipmentDataPanel.loadHelmData(helmData, template.xmlId, xmlData.isEnabled);
+            equipmentDataPanel.loadHatData(hatData, template.xmlId, xmlData.isEnabled);
             equipmentDataPanel.gameObject.SetActive(true);
          });
 
          template.deleteButton.onClick.AddListener(() => {
             Destroy(template.gameObject, .5f);
-            equipmentToolManager.deleteHelm(template.xmlId);
+            equipmentToolManager.deleteHat(template.xmlId);
          });
 
          template.duplicateButton.onClick.AddListener(() => {
-            equipmentToolManager.duplicateHelm(helmData);
+            equipmentToolManager.duplicateHat(hatData);
          });
 
          try {
-            Sprite iconSprite = ImageManager.getSprite(helmData.equipmentIconPath);
+            Sprite iconSprite = ImageManager.getSprite(hatData.equipmentIconPath);
             template.itemIcon.sprite = iconSprite;
          } catch {
             template.itemIcon.sprite = emptySprite;

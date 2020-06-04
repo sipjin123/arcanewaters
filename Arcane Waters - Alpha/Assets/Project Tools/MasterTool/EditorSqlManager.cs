@@ -100,7 +100,7 @@ public class EditorSQLManager {
                case EquipmentType.Armor:
                   return "equipment_armor_xml_v3";
                case EquipmentType.Hat:
-                  return "equipment_helm_xml_v4";
+                  return "equipment_hat_xml_v1";
                default:
                   return "";
             }

@@ -61,8 +61,8 @@ public class CraftingToolScene : MonoBehaviour {
       });
 
       if (requirementData.resultItem.category == Item.Category.Hats) {
-         string helmSprite = EquipmentXMLManager.self.getHatData(requirementData.resultItem.itemTypeId).equipmentIconPath;
-         template.itemIcon.sprite = ImageManager.getSprite(helmSprite);
+         string hatSprite = EquipmentXMLManager.self.getHatData(requirementData.resultItem.itemTypeId).equipmentIconPath;
+         template.itemIcon.sprite = ImageManager.getSprite(hatSprite);
       } else {
          template.itemIcon.sprite = Util.getRawSpriteIcon(requirementData.resultItem.category, requirementData.resultItem.itemTypeId);
       }

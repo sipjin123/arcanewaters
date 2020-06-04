@@ -93,7 +93,7 @@ public class EquipmentToolPanel : MonoBehaviour {
          } else if (equipmentType == EquipmentType.Hat) {
             HatStatData newStatData = getHatStatData();
             if (newStatData != null) {
-               equipmentToolManager.saveHelm(newStatData, currentXmlId, _isEnabled.isOn);
+               equipmentToolManager.saveHat(newStatData, currentXmlId, _isEnabled.isOn);
                gameObject.SetActive(false);
             }
          }
@@ -319,7 +319,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       _weaponClass.onValueChanged.Invoke(_weaponClass.value);
    }
 
-   public void loadHelmData (HatStatData statData, int template_id, bool isEnabled) {
+   public void loadHatData (HatStatData statData, int template_id, bool isEnabled) {
       currentXmlId = template_id;
       startingType = (int) statData.hatType;
       equipmentType = EquipmentType.Hat;
