@@ -9,19 +9,19 @@ using MySql.Data.MySqlClient;
 #endif
 
 [Serializable]
-public class Hats : EquippableItem
+public class Hat : EquippableItem
 {
    #region Public Variables
 
    #endregion
 
-   public Hats () {
+   public Hat () {
       this.itemTypeId = 0;
    }
 
 #if IS_SERVER_BUILD
 
-   public Hats (MySqlDataReader dataReader) {
+   public Hat (MySqlDataReader dataReader) {
       this.itemTypeId = DataUtil.getInt(dataReader, "itmType");
       this.id = DataUtil.getInt(dataReader, "itmId");
       this.category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
@@ -49,7 +49,7 @@ public class Hats : EquippableItem
 
 #endif
 
-   public Hats (int id, int hatType, string paletteName1, string paletteName2) {
+   public Hat (int id, int hatType, string paletteName1, string paletteName2) {
       this.category = Category.Hats;
       this.id = id;
       this.itemTypeId = hatType;
@@ -59,7 +59,7 @@ public class Hats : EquippableItem
       this.data = "";
    }
 
-   public Hats (int id, int itemTypeId, string paletteName1, string paletteName2, string data, int count = 1) {
+   public Hat (int id, int itemTypeId, string paletteName1, string paletteName2, string data, int count = 1) {
       this.category = Category.Hats;
       this.id = id;
       this.count = count;
@@ -69,7 +69,7 @@ public class Hats : EquippableItem
       this.data = data;
    }
 
-   public Hats (int id, int hatType) {
+   public Hat (int id, int hatType) {
       this.category = Category.Hats;
       this.id = id;
       this.count = 1;
@@ -193,8 +193,8 @@ public class Hats : EquippableItem
       return list;
    }
 
-   public static Hats getEmpty () {
-      return new Hats(0, 0, "", "");
+   public static Hat getEmpty () {
+      return new Hat(0, 0, "", "");
    }
 
    public override string getIconPath () {
@@ -205,7 +205,7 @@ public class Hats : EquippableItem
       return getHatData().equipmentIconPath;
    }
 
-   public static Hats generateRandom (int itemId, int hatType) {
+   public static Hat generateRandom (int itemId, int hatType) {
       // Decide what the rarity should be
       Rarity.Type rarity = Rarity.getRandom();
 
@@ -222,13 +222,13 @@ public class Hats : EquippableItem
 
       string data = string.Format("hat={0}, rarity={1}, price={2}", defenseValue, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Hats hat = new Hats(itemId, hatType, PaletteDef.Armor.Black, PaletteDef.Armor.White, data, stockCount);
+      Hat hat = new Hat(itemId, hatType, PaletteDef.Armor.Black, PaletteDef.Armor.White, data, stockCount);
 
       return hat;
    }
 
-   public static Hats castItemToHat (Item item) {
-      Hats newHat = new Hats {
+   public static Hat castItemToHat (Item item) {
+      Hat newHat = new Hat {
          category = Category.Hats,
          itemTypeId = item.itemTypeId,
          id = item.id,

@@ -185,6 +185,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Our Item Managers
    public ArmorManager armorManager;
    public WeaponManager weaponManager;
+   public HatManager hatManager;
 
    // Holds the reference to the battler bar
    public BattleBars selectedBattleBar, minionBattleBar, bossBattleBar;
@@ -556,12 +557,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             hairLayer.recolor(hairPalette1);
          }
 
-         // Update the Armor and Weapon
+         // Update the Armor, hat and Weapon
          if (armorManager.hasArmor()) {
             armorManager.updateSprites();
          }
          if (weaponManager.hasWeapon()) {
             weaponManager.updateSprites();
+         }
+         if (hatManager.hasHat()) {
+            hatManager.updateSprites();
          }
       }
    }
@@ -1565,6 +1569,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Add our armor's defense value, if we have any
       if (armorManager.hasArmor()) {
          defense += armorManager.getArmor().getDefense(element);
+      }
+
+      if (hatManager.hasHat()) {
+         defense += hatManager.getHat().getDefense(element);
       }
 
       float elementalMultiplier = 1;

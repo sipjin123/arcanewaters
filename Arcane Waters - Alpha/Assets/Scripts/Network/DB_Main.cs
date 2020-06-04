@@ -129,6 +129,15 @@ public class DB_Main : DB_MainStub {
       return NubisTranslator.Fetch_Craftable_Weapons_v4Controller.fetchCraftableWeapons(userId);
    }
 
+   public static new string nubisTestFetch (string test1, string test2) {
+      return test1 + " : " + test2;
+   }
+
+   public static new string nubisFetchCraftableHats (string rawUserId) {
+      int userId = int.Parse(rawUserId);
+      return NubisTranslator.Fetch_Craftable_Hats_v1Controller.fetchCraftableHats(userId);
+   }
+
    public static new string nubisFetchCraftableArmors (string rawUserId) {
       int userId = int.Parse(rawUserId);
       return NubisTranslator.Fetch_Craftable_Armors_v4Controller.fetchCraftableArmors(userId);
@@ -3677,6 +3686,33 @@ public class DB_Main : DB_MainStub {
       return weaponList;
    }
 
+   public static new List<Hat> getHatsForAccount (int accId, int userId = 0) {
+      List<Hat> hatList = new List<Hat>();
+      string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users LEFT JOIN items ON (users.hatId=items.itmId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  Hat hat = new Hat(dataReader);
+                  hatList.Add(hat);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return hatList;
+   }
+
    public static new List<Weapon> getWeaponsForUser (int userId) {
       List<Weapon> weaponList = new List<Weapon>();
 
@@ -6995,7 +7031,7 @@ public class DB_Main : DB_MainStub {
       return new Weapon(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
-   protected static Hats getHat (MySqlDataReader dataReader) {
+   protected static Hat getHat (MySqlDataReader dataReader) {
       int itemId = 0;
       int itemTypeId = 0;
       string palette1 = "";
@@ -7028,7 +7064,7 @@ public class DB_Main : DB_MainStub {
          D.editorLog("Issue with data: data", Color.red);
       }
 
-      return new Hats(itemId, itemTypeId, palette1, palette2, itemData);
+      return new Hat(itemId, itemTypeId, palette1, palette2, itemData);
    }
 
    public static new int getUsrAdminFlag (int accountId) {

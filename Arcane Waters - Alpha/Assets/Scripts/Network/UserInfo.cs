@@ -119,6 +119,7 @@ public class UserInfo {
       this.adminFlag = dataReader.GetInt32("usrAdminFlag");
       this.armorId = dataReader.GetInt32("armId");
       this.weaponId = dataReader.GetInt32("wpnId");
+      this.hatId = dataReader.GetInt32("hatId");
       this.hairType = (HairLayer.Type)dataReader.GetInt32("hairType");
       this.hairPalette1 = dataReader.GetString("hairPalette1");
       this.hairPalette2 = dataReader.GetString("hairPalette2");

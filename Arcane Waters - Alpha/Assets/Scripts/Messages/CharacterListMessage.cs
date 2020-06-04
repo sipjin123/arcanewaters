@@ -15,6 +15,7 @@ public class CharacterListMessage : MessageBase {
    public UserInfo[] userArray;
    public Item[] armorArray;
    public Item[] weaponArray;
+   public Item[] hatArray;
 
    // We have to deal with these separately because of a Unity bug
    public string[] armorPalettes1;
@@ -34,7 +35,7 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;
@@ -43,5 +44,6 @@ public class CharacterListMessage : MessageBase {
       this.armorPalettes2 = armorPalettes2;
       this.equipmentIds = equipmentIds;
       this.spriteIds = spriteIds;
+      this.hatArray = hatArray;
    }
 }

@@ -529,6 +529,10 @@ public class NetEntity : NetworkBehaviour {
       return new Weapon(0, 0);
    }
 
+   public virtual Hat getHatCharacteristics () {
+      return new Hat(0, 0);
+   }
+
    public Instance getInstance () {
       // Check if the last requested instance is the one where we are located
       if (_lastInstance != null && _lastInstance.id == instanceId) {

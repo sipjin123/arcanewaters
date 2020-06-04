@@ -106,8 +106,9 @@ public class CharacterSpot : ClientMonoBehaviour {
       armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
       armor.paletteName1 = PaletteDef.Armor1.Brown;
       armor.paletteName2 = PaletteDef.Armor2.Blue;
+      Hat hat = new Hat();
 
-      offlineChar.setDataAndLayers(userInfo, weapon, armor, armor.paletteName1, armor.paletteName2);
+      offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteName1, armor.paletteName2);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
          SpotFader.self.closeSpotTowardsPosition(offlineChar.transform.position);

@@ -311,6 +311,17 @@ public class BattleManager : MonoBehaviour {
       battler.weaponManager.palette1 = player.weaponManager.palette1;
       battler.weaponManager.palette2 = player.weaponManager.palette2;
 
+      // Copy the Hat Info
+      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(player.hatsManager.hatType);
+      if (hatStatData == null) {
+         battler.hatManager.updateHatSyncVars(new Hat { category = Item.Category.Hats, itemTypeId = 0, id = 0 });
+      } else {
+         battler.hatManager.updateHatSyncVars(HatStatData.translateDataToHat(hatStatData));
+      }
+      battler.hatManager.hatType = player.hatsManager.hatType;
+      battler.hatManager.palette1 = player.hatsManager.palette1;
+      battler.hatManager.palette2 = player.hatsManager.palette2;
+
       return battler;
    }
 

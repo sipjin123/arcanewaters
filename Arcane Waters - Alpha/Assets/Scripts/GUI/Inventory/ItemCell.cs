@@ -60,7 +60,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
          case Item.Category.Hats:
-            item = Hats.castItemToHat(item);
+            item = Hat.castItemToHat(item);
             HatStatData hatData = HatStatData.getStatData(item.data, item.itemTypeId);
             icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
             break;

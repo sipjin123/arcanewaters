@@ -50,7 +50,7 @@ public class BodyEntity : NetEntity
       base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo);
       this.armorManager.updateArmorSyncVars(Armor.castItemToArmor(armor));
       this.weaponManager.updateWeaponSyncVars(Weapon.castItemToWeapon(weapon));
-      this.hatsManager.updateHatSyncVars(Hats.castItemToHat(hat));
+      this.hatsManager.updateHatSyncVars(Hat.castItemToHat(hat));
    }
 
    public override Armor getArmorCharacteristics () {
@@ -59,6 +59,10 @@ public class BodyEntity : NetEntity
 
    public override Weapon getWeaponCharacteristics () {
       return new Weapon(0, weaponManager.weaponType, weaponManager.palette1, weaponManager.palette2);
+   }
+
+   public override Hat getHatCharacteristics () {
+      return new Hat(0, hatsManager.hatType, hatsManager.palette1, hatsManager.palette2);
    }
 
    public void updateHair (HairLayer.Type newHairType, string newHairPalette1, string newHairPalette2) {
@@ -117,6 +121,7 @@ public class BodyEntity : NetEntity
       updateBodySpriteSheets();
       this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palette1, this.armorManager.palette2);
       this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.palette1, this.weaponManager.palette2);
+      this.hatsManager.updateSprites(this.hatsManager.hatType, this.hatsManager.palette1, this.hatsManager.palette2);
    }
 
    protected IEnumerator CO_ShowFallEffect () {

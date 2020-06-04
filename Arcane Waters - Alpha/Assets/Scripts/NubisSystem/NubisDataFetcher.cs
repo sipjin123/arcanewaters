@@ -101,10 +101,12 @@ namespace NubisDataHandling {
          string craftingIngredientXml = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), userId.ToString());
          string armorFetch = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableArmors), userId.ToString());
          string weaponFetch = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableWeapons), userId.ToString());
+         string hatFetch = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableHats), userId.ToString());
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients);
          List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients);
+         List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients);
 
          foreach (CraftableItemData weaponData in weaponCraftables) {
             craftableItems.Add(weaponData.craftableItem);
@@ -113,6 +115,10 @@ namespace NubisDataHandling {
          foreach (CraftableItemData armorData in armorCraftables) {
             craftableItems.Add(armorData.craftableItem);
             blueprintStatus.Add(armorData.craftingStatus);
+         }
+         foreach (CraftableItemData hatData in hatCraftables) {
+            craftableItems.Add(hatData.craftableItem);
+            blueprintStatus.Add(hatData.craftingStatus);
          }
 
          // Get the panel

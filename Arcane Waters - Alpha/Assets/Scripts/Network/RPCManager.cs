@@ -3901,7 +3901,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Hats hat = Hats.castItemToHat(userObjects.hat);
+            Hat hat = Hat.castItemToHat(userObjects.hat);
             if (body != null) {
                body.hatsManager.updateHatSyncVars(hat);
             }

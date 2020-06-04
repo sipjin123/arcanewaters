@@ -64,6 +64,14 @@ namespace NubisDataHandling {
                         itemIconPath = armorData.equipmentIconPath;
                      }
 
+                     // Process the item as a hat and extract the hat data
+                     if (craftableRequirements.resultItem.category == Item.Category.Hats) {
+                        HatStatData hatData = Util.xmlLoad<HatStatData>(dataGroup[4]);
+                        itemName = hatData.equipmentName;
+                        itemDesc = hatData.equipmentDescription;
+                        itemIconPath = hatData.equipmentIconPath;
+                     }
+
                      // Create the item
                      Item item = craftableRequirements.resultItem;
                      item.id = itemID;

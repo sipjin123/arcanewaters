@@ -25,12 +25,15 @@ public class Blueprint : RecipeItem
    // Prefixes for ID
    public const string WEAPON_ID_PREFIX = "100";
    public const string ARMOR_ID_PREFIX = "200";
+   public const string HAT_ID_PREFIX = "300";
    public const string WEAPON_DATA_PREFIX = "blueprintType=weapon";
    public const string ARMOR_DATA_PREFIX = "blueprintType=armor";
+   public const string HAT_DATA_PREFIX = "blueprintType=hat";
 
    // Set a generic blueprint icon 
    public const string BLUEPRINT_WEAPON_ICON = "Assets/Sprites/Icons/Blueprint/WeaponBP.png";
    public const string BLUEPRINT_ARMOR_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
+   public const string BLUEPRINT_HAT_ICON = "Assets/Sprites/Icons/Blueprint/ArmorBP.png";
 
    #endregion Public Variables
 

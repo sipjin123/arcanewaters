@@ -21,6 +21,15 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("User Data")) {
             nubisUserData();
          }
+         if (GUILayout.Button("User Data Directly")) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string result = User_Data_v1Controller.userData(745);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
          if (GUILayout.Button("Equipped Items")) {
             nubisEquippedItems();
          }

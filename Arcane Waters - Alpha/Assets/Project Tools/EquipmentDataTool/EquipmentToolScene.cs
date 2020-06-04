@@ -57,7 +57,7 @@ public class EquipmentToolScene : MonoBehaviour {
          createArmorTemplate();
       });
       createHelmButton.onClick.AddListener(() => {
-         createHelmTemplate();
+         createHatTemplate();
       });
 
       mainMenuButton.onClick.AddListener(() => {
@@ -130,7 +130,7 @@ public class EquipmentToolScene : MonoBehaviour {
       template.gameObject.SetActive(true);
    }
 
-   private void createHelmTemplate () {
+   private void createHatTemplate () {
       HatStatData hatData = new HatStatData();
       hatData.equipmentName = "Undefined";
 

@@ -23,6 +23,7 @@ namespace NubisDataHandling {
             string itemGroup = rawItemGroup[i];
             string subSplitter = ":";
             string[] dataGroup = itemGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
+
             if (dataGroup.Length > 1) {
                xmlPairCollection.Add(dataGroup[0], dataGroup[1]);
             } else {

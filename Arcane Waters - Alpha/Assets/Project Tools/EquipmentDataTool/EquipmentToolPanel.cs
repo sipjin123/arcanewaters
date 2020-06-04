@@ -246,9 +246,9 @@ public class EquipmentToolPanel : MonoBehaviour {
          _itemRawValue.text = "Base Defense";
          _damageClassObj.SetActive(false);
       } else if (equipmentType == EquipmentType.Hat) {
-         _itemTypeValue.text = "Helm Type:";
-         _titleTabValue.text = "Helm Stats";
-         _toolTipValue.message = "The defense of the helmet";
+         _itemTypeValue.text = "Hat Type:";
+         _titleTabValue.text = "Hat Stats";
+         _toolTipValue.message = "The defense of the hat";
          _itemRawValue.text = "Base Defense";
          _damageClassObj.SetActive(false);
       }

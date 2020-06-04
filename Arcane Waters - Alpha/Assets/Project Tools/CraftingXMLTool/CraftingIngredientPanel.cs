@@ -284,7 +284,6 @@ public class CraftingIngredientPanel : MonoBehaviour {
          selectedTypeID = currData.resultItem.itemTypeId;
          updateMainItemDisplay();
       }
-
       currentCombinationData = currData;
    }
 

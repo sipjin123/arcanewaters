@@ -343,7 +343,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    // Holds the list of loaded armor data
    private List<ArmorXMLContent> _armorStatData = new List<ArmorXMLContent>();
 
-   // Holds the list of loaded helm data
+   // Holds the list of loaded hat data
    private List<HatXmlContent> _hatStatData = new List<HatXmlContent>();
 
    // Counts how many equipment set has been loaded

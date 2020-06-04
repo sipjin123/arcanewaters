@@ -49,7 +49,7 @@ public class InventoryStatRow : MonoBehaviour
       defenseText.text = _equippedDefenseValue.ToString();
    }
 
-   public void setEquippedHat (Hats hat) {
+   public void setEquippedHat (Hat hat) {
       _equippedDefenseValue = hat.getDefense(element);
       defenseText.text = _equippedDefenseValue.ToString();
    }

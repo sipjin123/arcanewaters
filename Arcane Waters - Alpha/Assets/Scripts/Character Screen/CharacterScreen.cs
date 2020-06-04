@@ -77,7 +77,7 @@ public class CharacterScreen : MonoBehaviour
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
+   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
       for (int i = 0; i < spriteIds.Length; i++) {
@@ -91,6 +91,7 @@ public class CharacterScreen : MonoBehaviour
       // Store the data we receive for later reference
       _userArray = userArray;
 
+      // Armor Setup
       _armorArray = new Armor[armorArray.Length];
       for (int i = 0; i < armorArray.Length; i++) {
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
@@ -102,6 +103,23 @@ public class CharacterScreen : MonoBehaviour
          Armor emptyArmor = new Armor { category = Item.Category.Armor, id = 0, itemTypeId = 0 };
          _armorArray = new Armor[3] { emptyArmor, emptyArmor, emptyArmor };
          armorArray = _armorArray;
+      }
+
+      // Hat Setup
+      _hatArray = new Hat[hatArray.Length];
+      for (int i = 0; i < hatArray.Length; i++) {
+         _hatArray[i] = Hat.castItemToHat(armorArray[i]);
+
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(_hatArray[i].itemTypeId);
+         if (hatData != null) {
+            _hatArray[i].paletteName1 = hatData.palette1;
+            _hatArray[i].paletteName2 = hatData.palette2;
+         }
+      }
+      if (_hatArray.Length == 0) {
+         Hat emptyHat = new Hat { category = Item.Category.Hats, id = 0, itemTypeId = 0 };
+         _hatArray = new Hat[3] { emptyHat, emptyHat, emptyHat };
+         hatArray = _hatArray;
       }
 
       _weaponArray = new Weapon[weaponArray.Length];
@@ -126,7 +144,7 @@ public class CharacterScreen : MonoBehaviour
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], armorPalettes1[i], armorPalettes2[i]);
+            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes1[i], armorPalettes2[i]);
             spot.assignCharacter(offlineChar);
          }
       }
@@ -146,6 +164,9 @@ public class CharacterScreen : MonoBehaviour
 
    // The array of Armor we received
    protected Armor[] _armorArray;
+
+   // The array of hat we received
+   protected Hat[] _hatArray;
 
    // The array of Weapons we received
    protected Weapon[] _weaponArray;

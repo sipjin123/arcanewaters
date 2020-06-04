@@ -42,11 +42,19 @@ public class DB_MainStub : MonoBehaviour {
       return "";
    }
 
+   public static string nubisTestFetch (string test1, string test2) {
+      return "";
+   }
+
    public static string nubisFetchCraftableWeapons (string rawUserId) {
       return "";
    }
 
    public static string nubisFetchCraftableArmors (string rawUserId) {
+      return "";
+   }
+
+   public static string nubisFetchCraftableHats (string rawUserId) {
       return "";
    }
 
@@ -543,6 +551,10 @@ public class DB_MainStub : MonoBehaviour {
 
    public static List<Weapon> getWeaponsForAccount (int accId, int userId = 0) {
       return null;
+   }
+
+   public static List<Hat> getHatsForAccount (int accId, int userId = 0) {
+      return new List<Hat>();
    }
 
    public static List<Weapon> getWeaponsForUser (int userId) {

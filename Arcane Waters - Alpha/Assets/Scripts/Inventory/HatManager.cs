@@ -36,12 +36,12 @@ public class HatManager : EquipmentManager {
       return (hatType != 0);
    }
 
-   public Hats getHat () {
+   public Hat getHat () {
       if (_hat != null) {
          return _hat;
       }
 
-      return new Hats(0, 0, "", "");
+      return new Hat(0, 0, "", "");
    }
 
    public void updateSprites () {
@@ -66,7 +66,7 @@ public class HatManager : EquipmentManager {
    [ClientRpc]
    public void Rpc_EquipHat (string rawHatData, string palette1, string palette2) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
-      Hats newHat = HatStatData.translateDataToHat(hatData);
+      Hat newHat = HatStatData.translateDataToHat(hatData);
       _hat = newHat;
 
       // Update the sprites for the new hat type
@@ -78,7 +78,7 @@ public class HatManager : EquipmentManager {
    }
 
    [Server]
-   public void updateHatSyncVars (Hats newHat) {
+   public void updateHatSyncVars (Hat newHat) {
       if (newHat == null) {
          D.debug("Hat is null");
          return;
@@ -118,7 +118,7 @@ public class HatManager : EquipmentManager {
    #region Private Variables
 
    // The equipped hat, if any
-   protected Hats _hat = new Hats(0, 0);
+   protected Hat _hat = new Hat(0, 0);
 
    #endregion
 }

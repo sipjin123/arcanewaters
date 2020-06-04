@@ -38,6 +38,7 @@ public class ServerMessageManager : MonoBehaviour {
          List<UserInfo> users = new List<UserInfo>();
          List<Armor> armorList = new List<Armor>();
          List<Weapon> weaponList = new List<Weapon>();
+         List<Hat> hatList = new List<Hat>();
 
          int accountId = 0;
          bool isUnauthenticatedSteamUser = logInUserMessage.accountName == "" && logInUserMessage.accountPassword == "";
@@ -71,6 +72,7 @@ public class ServerMessageManager : MonoBehaviour {
             users = DB_Main.getUsersForAccount(accountId, selectedUserId);
             armorList = DB_Main.getArmorForAccount(accountId, selectedUserId);
             weaponList = DB_Main.getWeaponsForAccount(accountId, selectedUserId);
+            hatList = DB_Main.getHatsForAccount(accountId, selectedUserId);
             DB_Main.updateAccountMode(accountId, logInUserMessage.isSinglePlayer);
          } else {
             // Create an account for this new steam user after it is authorized
@@ -123,7 +125,9 @@ public class ServerMessageManager : MonoBehaviour {
                // Must be casted to items because data transfer using inherited variables loses its data
                List<Item> weaponItemList = new List<Item>();
                List<Item> amorItemList = new List<Item>();
+               List<Item> hatItemList = new List<Item>();
 
+               // Assign the appropriate data for the armors using the armor type id
                for (int i = 0; i < armorList.Count; i++) {
                   if (armorList[i].itemTypeId != 0) {
                      ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
@@ -151,6 +155,19 @@ public class ServerMessageManager : MonoBehaviour {
                   weaponItemList.Add(weapon);
                }
 
+               // Assign the appropriate data for the hats using the hat type id
+               foreach (Hat hat in hatList) {
+                  if (hat.itemTypeId > 0) {
+                     HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+                     if (hatData != null) {
+                        hat.data = HatStatData.serializeHatStatData(hatData);
+                     } else {
+                        D.warning("There is no data for: " + hat.itemTypeId);
+                     }
+                  }
+                  hatItemList.Add(hat);
+               }
+
                // Get the info of the starter armors
                List<int> startingEquipmentIds = new List<int>();
                List<int> startingSpriteIds = new List<int>();
@@ -164,7 +181,7 @@ public class ServerMessageManager : MonoBehaviour {
                }
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), armorPalettes1, armorPalettes2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes1, armorPalettes2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

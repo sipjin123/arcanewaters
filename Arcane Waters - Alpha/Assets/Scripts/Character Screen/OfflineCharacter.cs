@@ -21,6 +21,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public ArmorLayer armor;
    public HairLayer hairFront;
    public WeaponLayer weaponFront;
+   public HatLayer hatLayer;
 
    // The hair layers
    public List<HairLayer> hairLayers;
@@ -75,20 +76,20 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, string armorPalette1, string armorPalette2) {
+   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {
       if (PaletteSwapManager.self.hasInitialized) {
-         setInternalDataAndLayers(userInfo, weapon, armor, armorPalette1, armorPalette2);
+         setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalette1, armorPalette2);
       } else {
          PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
-            setInternalDataAndLayers(userInfo, weapon, armor, armorPalette1, armorPalette2);
+            setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalette1, armorPalette2);
          });
       }
    }
 
-   private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, string armorPalette1, string armorPalette2) {
+   private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {
       contentHolder.SetActive(true);
       contentLoader.SetActive(false);
-
+    
       this.userId = userInfo.userId;
       setBodyLayers(userInfo);
 
@@ -97,7 +98,13 @@ public class OfflineCharacter : ClientMonoBehaviour {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
       }
 
+      HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+      if (hatData == null) {
+         hatData = HatStatData.getDefaultData();
+      }
+
       setArmor(armorData.armorType, armorData.palette1, armorData.palette2);
+      setHat(hatData.hatType, hatData.palette1, hatData.palette2);
       setWeapon(userInfo, weapon);
    }
 
@@ -137,6 +144,14 @@ public class OfflineCharacter : ClientMonoBehaviour {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
          weaponLayer.recolor(weaponData.palette1, weaponData.palette2);
       }
+   }
+
+   public void setHat (int hatType, string paletteName1, string paletteName2) {
+      // Set the correct sheet for our gender and hat type
+      hatLayer.setType(this.genderType, hatType, true);
+
+      // Update our Material
+      hatLayer.recolor(paletteName1, paletteName2);
    }
 
    public void setArmor (int armorType, string paletteName1, string paletteName2) {

@@ -66,7 +66,7 @@ public class Item {
    public Item getCastItem () {
       switch (this.category) {
          case Category.Hats:
-            return new Hats(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new Hat(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Armor:
             return new Armor(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Weapon:

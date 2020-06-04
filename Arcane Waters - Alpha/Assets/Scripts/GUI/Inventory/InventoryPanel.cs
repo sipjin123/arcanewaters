@@ -23,6 +23,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public GameObject equippedArmorCellContainer;
    public GameObject equippedHatCellContainer;
 
+   // Load Blocker when data is fetching
+   public GameObject loadBlocker;
+
    // Our character stack
    public CharacterStack characterStack;
 
@@ -112,10 +115,12 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void refreshPanel () {
+      loadBlocker.SetActive(true);
       NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
+      loadBlocker.SetActive(false);
       _equippedWeaponId = userObjects.weapon.id;
       _equippedArmorId = userObjects.armor.id;
       _equippedHatId = userObjects.hat.id;
@@ -180,7 +185,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
                   refreshStats(Armor.castItemToArmor(item));
                } else if (item.id == _equippedHatId && item.id != 0) {
                   cell.transform.SetParent(equippedHatCellContainer.transform, false);
-                  refreshStats(Hats.castItemToHat(item));
+                  refreshStats(Hat.castItemToHat(item));
                }
 
                // Set the cell click events
@@ -344,7 +349,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       waterStatRow.setEquippedWeapon(equippedWeapon);
    }
 
-   public void refreshStats (Hats equippedHat) {
+   public void refreshStats (Hat equippedHat) {
       physicalStatRow.setEquippedHat(equippedHat);
       fireStatRow.setEquippedHat(equippedHat);
       earthStatRow.setEquippedHat(equippedHat);
@@ -506,18 +511,24 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public void equipOrUnequipSelected () {
       // Check which type of item we requested to equip/unequip
       if (_selectedItem is Weapon) {
+         loadBlocker.SetActive(true);
+
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
       } else if (_selectedItem is Armor) {
+         loadBlocker.SetActive(true);
+
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
-      } else if (_selectedItem is Hats) {
+      } else if (_selectedItem is Hat) {
+         loadBlocker.SetActive(true);
+
          // Check if it's currently equipped or not
          int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
 
