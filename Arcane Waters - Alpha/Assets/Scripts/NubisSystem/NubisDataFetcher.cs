@@ -85,6 +85,7 @@ namespace NubisDataHandling {
          List<Item> equippedItems = new List<Item>();
          equippedItems.Add(equippedItemData.weaponItem);
          equippedItems.Add(equippedItemData.armorItem);
+         equippedItems.Add(equippedItemData.hatItem);
          craftingPanel.updatePanelWithSingleBlueprintWebRequest(craftableItems[0].craftableItem, equippedItems, craftingIngredients, craftableItems[0].craftableRequirements.combinationRequirements);
       }
 

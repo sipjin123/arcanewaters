@@ -33,8 +33,14 @@ public class CraftingPanel : Panel
    // The prefab we use for creating blueprint rows
    public BlueprintRow blueprintRowPrefab;
 
+   // List of created blueprint rows
+   public List<BlueprintRow> blueprintRowList;
+
    // The prefab we use for creating ingredient cells
    public ItemCellIngredient ingredientCellPrefab;
+
+   // The blockers that will popup when fetching data
+   public GameObject loadBlockerList, loadBlockerContent, loadBlockerIngredients;
 
    // The prefab we use for creating item cells
    public ItemCell itemCellPrefab;
@@ -75,15 +81,26 @@ public class CraftingPanel : Panel
    }
 
    public void refreshBlueprintList () {
+      toggleBlockers(true);
       NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
    }
 
    public void displayBlueprint (int itemId) {
+      toggleBlockers(true);
       NubisDataFetcher.self.checkCraftingInfo(itemId);
    }
 
    public void refreshCurrentlySelectedBlueprint () {
+      toggleBlockers(true);
       NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
+   }
+
+   private void toggleBlockers (bool isActive) {
+      nextPageButton.interactable = !isActive;
+      previousPageButton.interactable = !isActive;
+      loadBlockerList.SetActive(isActive);
+      loadBlockerContent.SetActive(isActive);
+      loadBlockerIngredients.SetActive(isActive);
    }
 
    public void clearSelectedBlueprint () {
@@ -109,14 +126,18 @@ public class CraftingPanel : Panel
 
       // Clear out any items in the list
       blueprintRowsContainer.DestroyChildren();
+      blueprintRowList = new List<BlueprintRow>();
 
       // Create the blueprint rows
       for (int i = 0; i < blueprintArray.Length; i++) {
-         // Instantiates the row
-         BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
+         if (i < ROWS_PER_PAGE) {
+            // Instantiates the row
+            BlueprintRow row = Instantiate(blueprintRowPrefab, blueprintRowsContainer.transform, false);
 
-         // Initializes the row
-         row.setRowForBlueprint(blueprintArray[i], _selectedBlueprintId == blueprintArray[i].id, blueprintStatusesArray[i]);
+            // Initializes the row
+            row.setRowForBlueprint(blueprintArray[i], _selectedBlueprintId == blueprintArray[i].id, blueprintStatusesArray[i]);
+            blueprintRowList.Add(row);
+         }
       }
 
       // Update the craft button
@@ -126,6 +147,7 @@ public class CraftingPanel : Panel
       if (_currentMode == Mode.None) {
          configurePanelForMode(Mode.NoBlueprintSelected);
       }
+      toggleBlockers(false);
    }
    
    public void updatePanelWithSingleBlueprintWebRequest (Item resultItem, List<Item> equippedItems,
@@ -135,14 +157,28 @@ public class CraftingPanel : Panel
       // Configure the panel
       configurePanelForMode(Mode.BlueprintSelected);
 
+      // Disables highlighted templates
+      foreach (BlueprintRow bpRow in blueprintRowList) {
+         bpRow.highlightTemplate(false);
+      }
+
+      // Highlights the currently selected template
+      BlueprintRow blueprintRow = blueprintRowList.Find(_ => _.blueprintItemId == _selectedBlueprintId);
+      if (blueprintRow != null) {
+         blueprintRow.highlightTemplate(true);
+      }
+
       // Keep track of the equipped weapon and armor
       _equippedArmor = null;
       _equippedWeapon = null;
+      _equippedHat = null;
       foreach (Item equippedItem in equippedItems) {
          if (equippedItem.category == Item.Category.Weapon) {
             _equippedWeapon = Weapon.castItemToWeapon(equippedItem);
          } else if (equippedItem.category == Item.Category.Armor) {
             _equippedArmor = Armor.castItemToArmor(equippedItem);
+         } else if (equippedItem.category == Item.Category.Hats) {
+            _equippedHat = Hat.castItemToHat(equippedItem);
          }
       }
 
@@ -190,6 +226,14 @@ public class CraftingPanel : Panel
          earthStatColumn.setColumnForArmor(armor, _equippedArmor);
          airStatColumn.setColumnForArmor(armor, _equippedArmor);
          waterStatColumn.setColumnForArmor(armor, _equippedArmor);
+      } else if (resultItem.category == Item.Category.Hats) {
+         Hat hat = Hat.castItemToHat(resultItem);
+
+         physicalStatColumn.setColumnForHat(hat, _equippedHat);
+         fireStatColumn.setColumnForHat(hat, _equippedHat);
+         earthStatColumn.setColumnForHat(hat, _equippedHat);
+         airStatColumn.setColumnForHat(hat, _equippedHat);
+         waterStatColumn.setColumnForHat(hat, _equippedHat);
       }
 
       // Clear all existing ingredients
@@ -232,9 +276,7 @@ public class CraftingPanel : Panel
 
       // Update the craft button
       updateCraftButton();
-
-      // Refresh the blueprint list
-      refreshBlueprintList();
+      toggleBlockers(false);
    }
 
    public void craft () {
@@ -283,19 +325,22 @@ public class CraftingPanel : Panel
 
    private void updateNavigationButtons () {
       // Activate or deactivate the navigation buttons if we reached a limit
-      previousPageButton.enabled = true;
-      nextPageButton.enabled = true;
+      previousPageButton.interactable = true;
+      nextPageButton.interactable = true;
 
       if (_currentPage <= 1) {
-         previousPageButton.enabled = false;
+         previousPageButton.interactable = false;
       }
 
       if (_currentPage >= _maxPage) {
-         nextPageButton.enabled = false;
+         nextPageButton.interactable = false;
       }
    }
 
    #region Private Variables
+
+   // The hat currently equipped by the player
+   private Hat _equippedHat;
 
    // The weapon currently equipped by the player
    private Weapon _equippedWeapon;

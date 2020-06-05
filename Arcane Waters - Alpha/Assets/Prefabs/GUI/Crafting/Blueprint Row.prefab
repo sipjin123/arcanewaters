@@ -456,7 +456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 0eab68af10de4c043ba3df4633dd52dc, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
@@ -868,6 +868,9 @@ MonoBehaviour:
   itemNameText: {fileID: 9062378318900080128}
   blueprintSelectedSprite: {fileID: 21300000, guid: c29030b78b3e9014e8f28f22926dddc2,
     type: 3}
+  defaultSelectionSprite: {fileID: 21300000, guid: b594455ecf36db24b94597b072070c1f,
+    type: 3}
   rowImage: {fileID: 9062378319804212038}
   canBeCraftedImage: {fileID: 9133072779031661622}
   rowButton: {fileID: 6982503194836074000}
+  blueprintItemId: 0

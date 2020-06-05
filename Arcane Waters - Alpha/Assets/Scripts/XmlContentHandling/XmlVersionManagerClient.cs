@@ -329,7 +329,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   WeaponStatData actualData = Util.xmlLoad<WeaponStatData>(xmlSubGroup[1]);
-                  actualData.equipmentID = dataId;
+                  actualData.itemSqlId = dataId;
                   weaponList.Add(actualData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.weaponType;
                }

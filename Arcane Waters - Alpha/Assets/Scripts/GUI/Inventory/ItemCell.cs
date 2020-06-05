@@ -40,6 +40,12 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public UnityEvent rightClickEvent;
    public UnityEvent doubleClickEvent;
 
+   // Item type id
+   public int itemTypeId;
+
+   // Item sprite id
+   public int itemSpriteId;
+
    #endregion
 
    public void setCellForItem (Item item) {
@@ -50,9 +56,14 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       // Retrieve the icon sprite and coloring depending on the type
       switch (item.category) {
          case Item.Category.Weapon:
-            item = Weapon.castItemToWeapon(item);
-            WeaponStatData weaponData = WeaponStatData.getStatData(item.data, item.itemTypeId);
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+            Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+            newWeapon.id = item.id;
+            item = newWeapon;
+
             icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+            itemSpriteId = weaponData.weaponType;
+            itemTypeId = item.itemTypeId;
             break;
          case Item.Category.Armor:
             item = Armor.castItemToArmor(item);

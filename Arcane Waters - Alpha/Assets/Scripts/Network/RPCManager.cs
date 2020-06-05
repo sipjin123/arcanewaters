@@ -563,25 +563,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveBlueprintList (NetworkConnection connection,
-      Item[] blueprintArray, Blueprint.Status[] blueprintStatusesArray, int pageNumber, int totalBlueprintCount) {
-
-      // Get the panel
-      CraftingPanel craftingPanel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-      // Get the reward panel
-      RewardScreen rewardScreen = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
-
-      // Show the crafting panel, except if the reward panel is showing
-      if (!craftingPanel.isShowing() && !rewardScreen.isShowing()) {
-         PanelManager.self.pushPanel(craftingPanel.type);
-      }
-
-      // Pass the data to the panel
-      craftingPanel.updatePanelWithBlueprintList(blueprintArray, blueprintStatusesArray, pageNumber, totalBlueprintCount);
-   }
-
-   [TargetRpc]
    public void Target_RefreshCraftingPanel (NetworkConnection connection) {
       // Get the crafting panel
       CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);

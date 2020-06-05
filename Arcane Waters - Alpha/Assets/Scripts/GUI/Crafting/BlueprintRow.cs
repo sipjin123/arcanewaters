@@ -18,7 +18,7 @@ public class BlueprintRow : MonoBehaviour
    public Text itemNameText;
 
    // The row sprite to use when the blueprint is selected
-   public Sprite blueprintSelectedSprite;
+   public Sprite blueprintSelectedSprite, defaultSelectionSprite;
 
    // The row image
    public Image rowImage;
@@ -29,10 +29,21 @@ public class BlueprintRow : MonoBehaviour
    // The button of the row
    public Button rowButton;
 
+   // The ID of the blueprint being displayed
+   public int blueprintItemId;
+
    #endregion Public Variables
 
+   public void highlightTemplate (bool isHighlighted) {
+      if (isHighlighted) {
+         rowImage.sprite = blueprintSelectedSprite;
+      } else {
+         rowImage.sprite = defaultSelectionSprite;
+      }
+   }
+
    public void setRowForBlueprint (Item resultItem, bool isSelected, Blueprint.Status status) {
-      _blueprintItemId = resultItem.id;
+      blueprintItemId = resultItem.id;
 
       // Set the 'blueprint selected' background
       if (isSelected) {
@@ -48,6 +59,10 @@ public class BlueprintRow : MonoBehaviour
          ArmorStatData armorData = ArmorStatData.getStatData(resultItem.data, resultItem.itemTypeId);
          itemNameText.text = armorData.equipmentName;
          icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+      } else if (resultItem.category == Item.Category.Hats) {
+         HatStatData hatData = HatStatData.getStatData(resultItem.data, resultItem.itemTypeId);
+         itemNameText.text = hatData.equipmentName;
+         icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
       } else {
          icon.sprite = null;
       }
@@ -74,13 +89,10 @@ public class BlueprintRow : MonoBehaviour
    }
 
    public void onRowButtonPress () {
-      CraftingPanel.self.displayBlueprint(_blueprintItemId);
+      CraftingPanel.self.displayBlueprint(blueprintItemId);
    }
 
    #region Private Variables
-
-   // The ID of the blueprint being displayed
-   private int _blueprintItemId;
 
    #endregion
 }

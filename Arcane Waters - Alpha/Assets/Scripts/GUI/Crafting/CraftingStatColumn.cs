@@ -67,6 +67,20 @@ public class CraftingStatColumn : MonoBehaviour
       setStat(itemStat, difference);
    }
 
+   public void setColumnForHat (Hat hat, Hat equippedHat) {
+      // Calculate the defense numbers
+      float itemStat = hat.getDefense(element);
+      float difference = 0;
+      if (equippedHat != null) {
+         difference = itemStat - equippedHat.getDefense(element);
+      } else {
+         difference = itemStat;
+      }
+
+      // Set the values
+      setStat(itemStat, difference);
+   }
+
    private void setStat(float itemStat, float difference) {
       // Set the stat value
       statText.text = itemStat.ToString();

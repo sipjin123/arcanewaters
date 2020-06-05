@@ -21,6 +21,15 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("User Data")) {
             nubisUserData();
          }
+         if (GUILayout.Button("Fetch DB_Main")) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               var result = DB_Main.getArmor(745);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
          if (GUILayout.Button("User Data Directly")) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = User_Data_v1Controller.userData(745);
@@ -39,102 +48,45 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("Inventory Data")) {
             nubisInventory();
          }
+         if (GUILayout.Button("Fetch Single Blueprint")) {
+            nubisSingleBP();
+         }
+         if (GUILayout.Button("Fetch Craftable Hats")) {
+            nubisHats();
+         }
+         if (GUILayout.Button("Fetch Xml Zip Data")) {
+            nubisXMLBytes();
+         }
+         if (GUILayout.Button("Get DB_Main get monster data")) {
+            D.editorLog("Fetching Land Monster Xml");
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               List<XMLPair> landMonsterData = DB_Main.getLandMonsterXML();
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + landMonsterData.Count);
+               });
+            });
+         }
+         if (GUILayout.Button("Force update player pref xml version")) {
+            int forcedVersion = 178;
+            PlayerPrefs.SetInt(XmlVersionManagerClient.XML_VERSION, forcedVersion);
+            D.editorLog("Finished");
+         }
+         if (GUILayout.Button("Directly Fetch Xml Data")) {
+            directFetchXmlData();
+         }
       }
    }
 
-   private void Update () {
-      if (SystemInfo.deviceName == DEVICE_NAME) {
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            nubisUserData();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            nubisWeapons();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            nubisArmors();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            nubisIngredients();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            nubisEquippedItems();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            nubisInventory();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha7)) {
-            nubisMap();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha8)) {
-            nubisSingleBP();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha9)) {
-            nubisXMLBytes();
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha0)) {
-            nubisXmlVer();
-         }
+   private void directFetchXmlData () {
+      D.debug("Get Xml Bytes");
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string returnCode = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
 
-         if (Input.GetKeyDown(KeyCode.B)) {
-            D.editorLog("Fetch cxml");
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = DB_Main.nubisFetchXmlVersion("777");
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Thred: " + result);
-               });
-            });
-            
-            //nubisMap2();
-         }
-         if (Input.GetKeyDown(KeyCode.Z)) {
-            string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = DB_Main.nubisFetchInventory(call);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Thred: " + result);
-               });
-            });
-         }
-         if (Input.GetKeyDown(KeyCode.X)) {
-            string call = "745" + NubisDataFetcher.SPACER + "1" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = DB_Main.nubisFetchInventory(call);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Thred: " + result);
-               });
-            });
-         }
-         if (Input.GetKeyDown(KeyCode.C)) {
-            string call = "745" + NubisDataFetcher.SPACER + "2" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = DB_Main.nubisFetchInventory(call);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Thred: " + result);
-               });
-            });
-         }
-         if (Input.GetKeyDown(KeyCode.V)) {
-            D.editorLog("Fetching Hat", Color.green);
-            string call = "745" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0";
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = NubisTranslator.Fetch_Inventory_v1Controller.userInventory(745, 0, 3, 0, 0, 0);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Thred: " + result);
-               });
-            });
-         }
-         if (Input.GetKeyDown(KeyCode.K)) {
-            nubisHat();
-         }
-         if (Input.GetKeyDown(KeyCode.M)) {
-            nubisTotalItems();
-         }
-      }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Result: " + returnCode);
+         });
+      });
    }
 
    private async void nubisHat () {
@@ -168,6 +120,12 @@ public class NubisDataFetchTest : MonoBehaviour
    private async void nubisArmors () {
       D.debug("ASync start");
       var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableArmors), "745"); 
+      D.debug("ASync start: " + returnCode);
+   }
+
+   private async void nubisHats () {
+      D.debug("Fetch Craftable Hats");
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableHats), "745");
       D.debug("ASync start: " + returnCode);
    }
 
@@ -205,9 +163,10 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private async void nubisSingleBP () {
-      D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchSingleBlueprint), "5998_space_745"); 
-      D.debug("ASync start: " + returnCode);
+      D.debug("Fetching Single Bp");
+      string itemId = "5767";
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchSingleBlueprint), itemId+"_space_745"); 
+      D.debug("Result: " + returnCode);
    }
 
    private async void nubisXmlVer () {
@@ -217,9 +176,9 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private async void nubisXMLBytes () {
-      D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchXmlZipBytes), "745"); 
-      D.debug("ASync start: " + returnCode);
+      D.debug("Fetching xml zip");
+      string returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchXmlZipBytes), "745"); 
+      D.debug("Result: " + returnCode.Length);
    }
 
    #region Private Variables

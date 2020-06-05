@@ -137,7 +137,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveWeaponDataFromZipData (List<WeaponStatData> statData) {
       foreach (WeaponStatData rawData in statData) {
-         int uniqueID = rawData.weaponType;
+         int uniqueID = rawData.itemSqlId;
          // Save the data in the memory cache
          if (!_weaponStatList.ContainsKey(uniqueID)) {
             _weaponStatList.Add(uniqueID, rawData);
