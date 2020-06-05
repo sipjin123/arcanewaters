@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
+using System;
 
 public class CharacterCreationPanel : ClientMonoBehaviour
 {
@@ -156,11 +157,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void submitCharacterCreation (bool ignorePerkQuestions = false) {
-      questionsScreen.gameObject.SetActive(false);
-      hide();
+      canvasGroup.interactable = false;
 
-      SpotFader.self.doCircleFade(_char.transform.position, Color.black, true, -1, true);
-            
       List<int> chosenAnswers = questionsScreen.chosenAnswers;
 
       // If the perk questions are skipped, send a list with "unassigned perk" values
@@ -175,6 +173,22 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       // Send the creation request to the server
       NetworkClient.Send(new CreateUserMessage(Global.netId,
          _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalette1(), _char.armor.getPalette2(), chosenAnswers));
+   }
+
+   public void onCharacterCreationValid () {
+      questionsScreen.gameObject.SetActive(false);
+      hide();
+
+      SpotFader.self.fadeBackgroundColor(Color.black, 0.25f);
+      SpotFader.self.closeSpot();
+      PanelManager.self.loadingScreen.show();
+
+      // Return camera to its original position
+      CharacterScreen.self.myCamera.setDefaultSettings();
+   }
+
+   public void onCharacterCreationFailed () {
+      canvasGroup.interactable = true;
    }
 
    public void onNextButtonClicked () {

@@ -217,6 +217,13 @@ public class DB_MainStub : MonoBehaviour {
       return new List<Perk>();
    }
 
+   public static void assignPerkPoint (int usrId, int perkId) {
+   }
+
+   public static int getUnassignedPerkPoints (int usrId) {
+      return 0;
+   }
+
    public static void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
    }
 

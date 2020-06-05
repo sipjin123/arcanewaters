@@ -333,6 +333,11 @@ public class ServerMessageManager : MonoBehaviour {
 
    [ServerOnly]
    protected static void BKG_finishCreatingUser (CreateUserMessage msg, int accountId, UserInfo userInfo, NetworkConnection conn, Area area) {
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         CharacterCreationValidMessage characterValidMessage = new CharacterCreationValidMessage();
+         conn.Send(characterValidMessage);
+      });
+
       // Need to create their Armor first
       int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorPalette1, msg.armorPalette2);
 

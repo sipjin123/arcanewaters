@@ -27,7 +27,7 @@ public class CustomMapsPanel : Panel
       // Show panel if it is not showing already
       PanelManager.self.pushIfNotShowing(type);
 
-      _poManager = manager;
+      _customMapManager = manager;
       _warpAfterSelecting = warpAfterSelecting;
 
       // Clear out any old info
@@ -46,12 +46,12 @@ public class CustomMapsPanel : Panel
    }
 
    public void selectBaseMap (int baseMapId) {
-      Global.player.rpc.Cmd_SetCustomMapBaseMap(_poManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
+      Global.player.rpc.Cmd_SetCustomMapBaseMap(_customMapManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
    }
 
    public void baseMapUpdated (string customMapKey, int baseMapId) {
       // Ensure we are showing the panel and we are targeting a custom map type that was updated
-      if (!isShowing() || !customMapKey.Equals(_poManager?.mapTypeAreaKey)) {
+      if (!isShowing() || !customMapKey.Equals(_customMapManager?.mapTypeAreaKey)) {
          return;
       }
 
@@ -64,8 +64,8 @@ public class CustomMapsPanel : Panel
 
    #region Private Variables
 
-   // Player owned map manager that we are currently showing for
-   private CustomMapManager _poManager;
+   // Custom map manager that we are currently showing for
+   private CustomMapManager _customMapManager;
 
    // Should we warp into the base map after selecting it
    private bool _warpAfterSelecting;

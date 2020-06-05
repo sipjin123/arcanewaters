@@ -32,7 +32,7 @@ public class NewTutorialPanel : Panel {
          }
 
          row.warpButton.onClick.AddListener(() => {
-            Global.player.Cmd_SpawnInNewMap(tutorial.tutorialAreaKey, string.Empty, Direction.South);
+            Global.player.Cmd_SpawnInNewMap(tutorial.tutorialAreaKey);
             hide();
          });
 

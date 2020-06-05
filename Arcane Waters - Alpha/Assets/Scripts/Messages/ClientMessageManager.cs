@@ -44,6 +44,10 @@ public class ClientMessageManager : MonoBehaviour {
       }
    }
 
+   public static void On_CharacterCreationValid (NetworkConnection conn, CharacterCreationValidMessage msg) {
+      CharacterCreationPanel.self.onCharacterCreationValid();
+   }
+
    public static void On_ErrorMessage (NetworkConnection conn, ErrorMessage msg) {
       if (msg.errorType == ErrorMessage.Type.None) {
          return;
@@ -63,9 +67,11 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ErrorMessage.Type.NameTaken:
             PanelManager.self.noticeScreen.show("The selected username is already taken.");
+            CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.InvalidUsername:
             PanelManager.self.noticeScreen.show("That is not a valid username.");
+            CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.NoCropsOfThatType:
             PanelManager.self.noticeScreen.show("You don't have any of those crops to sell!");
@@ -281,8 +287,8 @@ public class ClientMessageManager : MonoBehaviour {
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
 
       // Do a circle fader when the user first logs in
-      if (CircleFader.self != null && !Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
-         CircleFader.self.doCircleFade(CharacterScreen.self.virtualCam.transform.position);
+      if (PanelManager.self.loadingScreen != null && !Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
+         PanelManager.self.loadingScreen.show();
       }
 
       // Send the account name and password to the server

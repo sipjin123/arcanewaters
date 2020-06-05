@@ -49,7 +49,7 @@ public class PerkToolScene : MonoBehaviour
       data.name = "Unnamed Perk";
       data.description = "";
       data.perkId = 0;
-      data.perkTypeId = 1;
+      data.perkCategoryId = 1;
       data.boostFactor = 0;
       data.iconPath = "";
 
@@ -75,7 +75,7 @@ public class PerkToolScene : MonoBehaviour
    public void loadPerkData (Dictionary<int, PerkData> data) {
       itemTemplateParent.gameObject.DestroyChildren();
 
-      List<PerkData> sortedList = data.Values.ToList().OrderBy(w => w.perkTypeId).ToList();
+      List<PerkData> sortedList = data.Values.ToList().OrderBy(w => w.perkCategoryId).ToList();
 
       // Create a row for each perk element
       foreach (PerkData perkData in sortedList) {

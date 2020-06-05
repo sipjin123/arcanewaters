@@ -20,7 +20,7 @@ public class QuestionOptionTemplate : MonoBehaviour {
    #endregion
 
    public void setQuestionOption (CharacterCreationQuestionOption option, int index) {
-      string text = $"{option.option} <color=\"yellow\">(+{option.perkPoints} {option.perkType.ToString()})";
+      string text = $"{option.option} <color=\"yellow\">(+{option.perkPoints} {option.perkCategory.ToString()})";
       _questionText.SetText(text);
       optionIndex = index;
    }

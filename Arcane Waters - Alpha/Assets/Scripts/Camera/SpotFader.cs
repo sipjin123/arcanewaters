@@ -25,11 +25,11 @@ public class SpotFader : ClientMonoBehaviour {
 
       self = this;
       _canvasGroup = GetComponent<CanvasGroup>();
+
+      Util.disableCanvasGroup(_canvasGroup);
    }
 
    private void Start () {
-      disableCanvasGroup();
-
       MAX_SPOT_SIZE = new Vector2(Screen.width * MAX_SIZE_MULTIPLIER, Screen.width * MAX_SIZE_MULTIPLIER);
       spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
    }
@@ -43,34 +43,6 @@ public class SpotFader : ClientMonoBehaviour {
       _currentColorTween = backgroundImage.DOColor(color, time >= 0 ? time : _totalEffectTime * 0.5f);
    }
 
-   public void doCircleFade (Vector3 worldPosition, Color color, bool fadeColor = false, float fadeColorTime = -1, bool useGlobalPlayerPositionForFadeIn = false) {
-      if (self == null) {
-         return;
-      }
-
-      if (fadeColor) {
-         fadeBackgroundColor(color, fadeColorTime);
-      } else {
-         setColor(color);
-      }
-
-      StartCoroutine(CO_doCircleFade(worldPosition, useGlobalPlayerPositionForFadeIn));
-   }
-
-   public void doCircleFade (Color color) {
-      // NetEntity calls this method OnDestroy, which is fine most of the times, except when quitting the game/exiting play mode. That causes a NullReferenceException.
-      if (self == null) {
-         return;
-      }
-
-      setColor(color);
-      StartCoroutine(CO_doCircleFade());
-   }
-
-   public void doCircleFade () {
-      doCircleFade(_defaultColor);
-   }
-
    public void openSpotToMaxSize () {
       if (self == null) {
          return;
@@ -79,11 +51,21 @@ public class SpotFader : ClientMonoBehaviour {
       _currentSizeTween?.Kill();
       setFadeInitialValues();
       _currentSizeTween = spotMask.rectTransform.DOSizeDelta(MAX_SPOT_SIZE, _totalEffectTime * 0.5f).OnComplete(() => {
-         disableCanvasGroup();
+         Util.disableCanvasGroup(_canvasGroup);
       });
    }
 
-   public void closeSpotTowardsPosition (Vector3 worldPosition) {
+   public void openSpotToMaxSize (Vector3 worldPosition) {
+      spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition);
+      openSpotToMaxSize();
+   }
+
+   public void openSpotToMaxSize (Transform transform) {
+      StartCoroutine(CO_OpenSpotWhenPositionIsValid(transform));
+   }
+
+
+   public void closeTowardsOfflineChar (Vector3 worldPosition) {
       if (self == null) {
          return;
       }
@@ -95,16 +77,29 @@ public class SpotFader : ClientMonoBehaviour {
       _currentSizeTween = spotMask.rectTransform.DOSizeDelta(_highlightPlayerSpotSize, _totalEffectTime * 0.5f);
    }
 
-   public void openSpotAtPosition (Vector3 worldPosition) {
-      if (self == null) {
-         return;
-      }
+   public void closeSpot () {
+      closeSpotInternal(spotMask.rectTransform.position);
+   }
 
-      _currentSizeTween?.Kill(); 
+   public void closeSpotTowardsCenter () {
+      closeSpotInternal(Camera.main.ViewportToScreenPoint(new Vector3(0.5f, 0.5f)));
+   }
+
+   public void closeSpot (Vector3 worldPosition) {
+      Camera cam = Camera.main;
+
+      if (cam != null) {
+         closeSpotInternal(Camera.main.WorldToScreenPoint(worldPosition));
+      }
+   }
+
+   private void closeSpotInternal (Vector3 screenPosition) {
       setFadeInitialValues();
-      spotMask.rectTransform.sizeDelta = Vector2.zero;
-      spotMask.transform.position = Camera.main.WorldToScreenPoint(worldPosition);
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(_highlightPlayerSpotSize, _totalEffectTime * 0.5f);
+      _currentSizeTween?.Kill();
+            
+      spotMask.rectTransform.position = screenPosition;
+      
+      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(Vector2.zero, _totalEffectTime * 0.5f);
    }
 
    public void setColor (Color color) {
@@ -119,94 +114,40 @@ public class SpotFader : ClientMonoBehaviour {
    private void setFadeInitialValues () {
       MAX_SPOT_SIZE = new Vector2(Screen.width * MAX_SIZE_MULTIPLIER, Screen.width * MAX_SIZE_MULTIPLIER);
 
-      _startTime = Time.time;
-      _startingCamera = getActiveCamera();
-      _canvasGroup.blocksRaycasts = true;
-      _canvasGroup.alpha = 1;
+      Util.enableCanvasGroup(_canvasGroup);
    }
 
-   private void disableCanvasGroup () {
-      _canvasGroup.blocksRaycasts = false;
-      _canvasGroup.interactable = false;
-      _canvasGroup.alpha = 0;
+   public bool isAnimatingAny () {
+      return isAnimatingSize() || isAnimatingColor();
    }
 
-   private IEnumerator CO_doCircleFade () {
-      _currentSizeTween?.Kill();
+   public bool isAnimatingSize () {
+      return _currentSizeTween != null && (_currentSizeTween.active && !_currentSizeTween.IsComplete());
+   }
 
-      float effectTime = _totalEffectTime * 0.5f;
+   public bool isAnimatingColor () {
+      return _currentColorTween != null && _currentColorTween.active && _currentColorTween.IsPlaying();
+   }
 
-      setFadeInitialValues();
-
-      spotMask.transform.position = Camera.main.WorldToScreenPoint(Global.player.transform.position);
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(Vector2.zero, effectTime);
-
-      while ((_currentSizeTween != null && _currentSizeTween.active && !hasCameraChanged()) || Time.time - _startTime < TIMEOUT_DURATION) {
+   private IEnumerator CO_OpenSpotWhenPositionIsValid (Transform transform) {
+      Camera cam = Camera.main;
+      Vector3 position = cam.WorldToScreenPoint(transform.position);
+      
+      while (position.x < 0 || position.x > Screen.width || position.y < 0 || position.y > Screen.height) {
+         position = cam.WorldToScreenPoint(transform.position);
          yield return null;
       }
 
-      while(Global.player == null) {
-         yield return null;
-      }
-
-      spotMask.transform.position = Camera.main.WorldToScreenPoint(Global.player.transform.position);
-
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(MAX_SPOT_SIZE, effectTime).OnComplete(() => {
-         disableCanvasGroup();
-      });
-   }
-
-   private IEnumerator CO_doCircleFade (Vector3 worldPosition, bool useGlobalPlayerPositionForFadeIn = false) {
-      _currentSizeTween?.Kill();
-
-      float effectTime = _totalEffectTime * 0.5f;
-
-      setFadeInitialValues();
-
-      spotMask.transform.position = Camera.main.WorldToScreenPoint(worldPosition);
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(Vector2.zero, effectTime);
-
-      while (((_currentSizeTween != null && _currentSizeTween.active) || !hasCameraChanged()) && Time.time - _startTime < TIMEOUT_DURATION) {
-         yield return null;
-      }
-
-      if (useGlobalPlayerPositionForFadeIn) {
-         while (Global.player == null) {
-            yield return null;
-         }
-
-         // We need to wait two frames until the camera is moved to the player's position so WorldToScreenPoint returns an accurate position
-         yield return null;
-         yield return null;
-
-         spotMask.transform.position = Camera.main.WorldToScreenPoint(Global.player.transform.position);
-      }
-
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(MAX_SPOT_SIZE, effectTime).OnComplete(() => {
-         disableCanvasGroup();
-      });
-   }
-
-   protected bool hasCameraChanged () {
-      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey)) {
-         return false;
-      }
-
-      return _startingCamera != getActiveCamera();
-   }
-
-   protected ICinemachineCamera getActiveCamera () {
-      if (Camera.main == null) {
-         return null;
-      }
-
-      return Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera;
+      openSpotToMaxSize(transform.position);
    }
 
    private void OnDestroy () {
-      _currentColorTween?.Kill();
-      _currentSizeTween?.Kill();
       StopAllCoroutines();
+
+      if (isAnimatingAny()) {
+         _currentColorTween?.Kill();
+         _currentSizeTween?.Kill();
+      }
    }
 
    #region Private Variables
@@ -231,15 +172,6 @@ public class SpotFader : ClientMonoBehaviour {
 
    // The canvas group
    private CanvasGroup _canvasGroup;
-
-   // The time at which the effect start
-   protected float _startTime;
-
-   // The camera that was active initially
-   protected ICinemachineCamera _startingCamera;
-
-   // The amount of time we wait for an area change, before giving up
-   protected static float TIMEOUT_DURATION = 5f;
 
    // The max spot size, enough to go become invisible 
    private static Vector2 MAX_SPOT_SIZE;

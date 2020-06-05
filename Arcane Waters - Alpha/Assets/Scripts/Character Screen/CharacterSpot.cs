@@ -57,8 +57,8 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    public void selectButtonWasPressed () {
-      // Temporarily turn off the buttons
-      StartCoroutine(CO_temporarilyDisableInput());
+      // Turn off buttons until we receive a response from the server
+      CharacterScreen.self.canvasGroup.interactable = false;
 
       // Update our currently selected user ID
       Global.currentlySelectedUserId = character.userId;
@@ -68,8 +68,8 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    public void deleteButtonWasPressed () {
-      // Temporarily turn off the buttons
-      StartCoroutine(CO_temporarilyDisableInput());
+      // Turn off buttons until we receive a response from the server
+      CharacterScreen.self.canvasGroup.interactable = false;
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
@@ -111,26 +111,21 @@ public class CharacterSpot : ClientMonoBehaviour {
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteName1, armor.paletteName2);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
-         SpotFader.self.closeSpotTowardsPosition(offlineChar.transform.position);
+         SpotFader.self.closeTowardsOfflineChar(offlineChar.transform.position);
       });
 
       this.assignCharacter(offlineChar);
    }
 
    protected void sendDeleteUserRequest (int userId) {
+      // Disable the canvas group
+      Util.disableCanvasGroup(CharacterScreen.self.canvasGroup);
+
       // Disable the buttons on the confirmation panel while we're doing stuff
       PanelManager.self.confirmScreen.canvasGroup.interactable = false;
 
       // Send off the request
       NetworkClient.Send(new DeleteUserMessage(Global.netId, userId));
-   }
-
-   protected IEnumerator CO_temporarilyDisableInput () {
-      CharacterScreen.self.canvasGroup.interactable = false;
-
-      yield return new WaitForSeconds(1.25f);
-
-      CharacterScreen.self.canvasGroup.interactable = true;
    }
 
    #region Private Variables

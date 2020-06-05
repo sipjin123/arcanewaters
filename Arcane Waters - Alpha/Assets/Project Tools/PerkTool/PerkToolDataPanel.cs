@@ -46,7 +46,7 @@ public class PerkToolDataPanel : MonoBehaviour
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.PerkIcon, _iconImage, _iconPath);
       });
 
-      populatePerkTypeDropdown();
+      populatePerkCategoryDropdown();
 
       // Only enable the "save" button for valid values
       _perkTypeIdDropdown.onValueChanged.AddListener((x) => updateSaveButton());
@@ -69,28 +69,28 @@ public class PerkToolDataPanel : MonoBehaviour
       return true;
    }
 
-   private void populatePerkTypeDropdown () {
-      List<TMP_Dropdown.OptionData> perkTypeOptions = new List<TMP_Dropdown.OptionData>();
-      Perk.Type[] perkTypes = Enum.GetValues(typeof(Perk.Type)) as Perk.Type[];
+   private void populatePerkCategoryDropdown () {
+      List<TMP_Dropdown.OptionData> perkCategoryOptions = new List<TMP_Dropdown.OptionData>();
+      Perk.Category[] categories = Enum.GetValues(typeof(Perk.Category)) as Perk.Category[];
 
-      foreach (Perk.Type type in perkTypes) {
+      foreach (Perk.Category category in categories) {
          // Don't show the "None" type since we use it for saving unassigned points
-         if (type != Perk.Type.None) {
-            perkTypeOptions.Add(new TMP_Dropdown.OptionData(type.ToString()));
+         if (category != Perk.Category.None) {
+            perkCategoryOptions.Add(new TMP_Dropdown.OptionData(category.ToString()));
          } else {
-            perkTypeOptions.Add(new TMP_Dropdown.OptionData("<color=red>Please assign the type of this perk"));
+            perkCategoryOptions.Add(new TMP_Dropdown.OptionData("<color=red>Please assign the type of this perk"));
          }
       }
 
       _perkTypeIdDropdown.ClearOptions();
-      _perkTypeIdDropdown.AddOptions(perkTypeOptions);
+      _perkTypeIdDropdown.AddOptions(perkCategoryOptions);
    }
 
    private PerkData getPerkData () {
       PerkData perkData = new PerkData();
 
       perkData.perkId = _currentPerkId;
-      perkData.perkTypeId = _perkTypeIdDropdown.value;
+      perkData.perkCategoryId = _perkTypeIdDropdown.value;
       perkData.name = _perkName.text;
       perkData.description = _perkDescription.text;
       perkData.boostFactor = int.Parse(_boostFactor.text) / 100.0f;
@@ -102,7 +102,7 @@ public class PerkToolDataPanel : MonoBehaviour
    public void loadData (PerkData data) {
       _perkName.text = data.name;
       _perkDescription.text = data.description;
-      _perkTypeIdDropdown.value = data.perkTypeId;
+      _perkTypeIdDropdown.value = data.perkCategoryId;
       _boostFactor.text = (data.boostFactor * 100.0f).ToString();
       _currentPerkId = data.perkId;
       _iconImage.sprite = string.IsNullOrEmpty(data.iconPath) ? selectionPopup.emptySprite : ImageManager.getSprite(data.iconPath);

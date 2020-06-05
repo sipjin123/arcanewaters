@@ -2221,6 +2221,55 @@ public class DB_Main : DB_MainStub {
       return points;
    }
 
+   public static new void assignPerkPoint (int usrId, int perkId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO arcane.perks (usrId, perkId, perkPoints) " +
+            "VALUES(@usrId, @perkId, @perkPoints) " +
+            "ON DUPLICATE KEY UPDATE perkPoints = perkPoints + @perkPoints;" +
+            "UPDATE arcane.perks SET perkPoints = perkPoints - 1 WHERE usrId = @usrId AND perkId = 0;", conn)) {
+
+            conn.Open();
+
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@perkId", perkId);
+            cmd.Parameters.AddWithValue("@perkPoints", 1);
+
+            cmd.Prepare();
+
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getUnassignedPerkPoints (int usrId) {
+      int points = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.perks WHERE usrId = @usrId AND perkId = 0", conn)) {
+
+            conn.Open();
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  points = dataReader.GetInt32("perkPoints");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return points;
+   }
+
    public static new void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
       try {
          using (MySqlConnection conn = getConnection())

@@ -17,7 +17,7 @@ public class PerkData
    public int perkId;
 
    // The type of the perk
-   public int perkTypeId;
+   public int perkCategoryId;
 
    // The name of the perk
    public string name;
@@ -40,7 +40,7 @@ public class PerkData
    public PerkData (MySqlDataReader dataReader) {
       PerkData xml = Util.xmlLoad<PerkData>(dataReader.GetString("xmlContent"));
       this.perkId = dataReader.GetInt32("xml_id");
-      this.perkTypeId = xml.perkTypeId;
+      this.perkCategoryId = xml.perkCategoryId;
       this.name = xml.name;
       this.description = xml.description;
       this.iconPath = xml.iconPath;

@@ -297,7 +297,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveCharacterInfo (NetworkConnection connection, UserObjects userObjects, Stats stats, Jobs jobs, string guildName) {
+   public void Target_ReceiveCharacterInfo (NetworkConnection connection, UserObjects userObjects, Stats stats, Jobs jobs, string guildName, Perk[] perks) {
       // Make sure the panel is showing
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
 
@@ -306,7 +306,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Update the Inventory Panel with the items we received from the server
-      panel.receiveDataFromServer(userObjects, stats, jobs, guildName);
+      panel.receiveDataFromServer(userObjects, stats, jobs, guildName, perks);
    }
 
    [TargetRpc]
@@ -724,10 +724,11 @@ public class RPCManager : NetworkBehaviour {
          UserObjects userObjects = DB_Main.getUserObjects(userId);
          UserInfo userInfo = userObjects.userInfo;
          GuildInfo guildInfo = DB_Main.getGuildInfo(userInfo.guildId);
+         Perk[] perks = DB_Main.getPerkPointsForUser(userId).ToArray();
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveCharacterInfo(_player.connectionToClient, userObjects, stats, jobs, guildInfo.guildName);
+            _player.rpc.Target_ReceiveCharacterInfo(_player.connectionToClient, userObjects, stats, jobs, guildInfo.guildName, perks);
          });
       });
    }
@@ -2844,9 +2845,7 @@ public class RPCManager : NetworkBehaviour {
 
             // If the player is in a voyage area, warp him to the starting town
             if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
-               SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-               Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
-               _player.spawnInNewMap(Area.STARTING_TOWN, localPos, Direction.South);
+               _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
             }
          });
       });
@@ -2910,9 +2909,7 @@ public class RPCManager : NetworkBehaviour {
             // Check if both the voyage group and voyage exist
             if (voyageGroup == null || voyage == null) {
                // Redirect the user to the starting town
-               SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-               Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
-               _player.spawnInNewMap(Area.STARTING_TOWN, localPos, Direction.South);
+               _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
             }
          });
       });
@@ -3993,7 +3990,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestEnterMapCustomization (int customizerId, string areaKey, int baseMapId, int areaOwnerId) {
+   public void Cmd_RequestEnterMapCustomization (int customizerId, string areaKey) {
       // Find the player
       NetEntity player = EntityManager.self.getEntity(customizerId);
       if (player == null) {
@@ -4050,7 +4047,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool _warpIntoAfterSetting) {
+   public void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
       // Check if this is a custom map key
       if (!AreaManager.self.tryGetCustomMapManager(customMapKey, out CustomMapManager manager)) {
          return;
@@ -4074,10 +4071,8 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (_warpIntoAfterSetting) {
-               string baseArea = AreaManager.self.getAreaName(baseMapId);
-               Vector2 pos = SpawnManager.self.getDefaultSpawnLocalPosition(baseArea);
-               _player.spawnInNewMap(customMapKey, pos, Direction.South);
+            if (warpIntoAfterSetting) {
+               _player.spawnInNewMap(customMapKey);
             }
 
             Target_BaseMapUpdated(customMapKey, baseMapId);
@@ -4091,7 +4086,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, int baseMapId, PrefabState changes) {
+   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
       // Check if changes are valid
       if (MapCustomizationManager.validatePrefabChanges(areaKey, changes, out string errorMessage)) {
          // Set changes in the server
@@ -4099,6 +4094,11 @@ public class RPCManager : NetworkBehaviour {
 
          // Notify all clients about them
          Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
+
+         // Figure out the base map of area
+         AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
+         NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
+         int baseMapId = customMapManager.getBaseMapId(areaOwner);
 
          // Set changes in the database
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -4160,6 +4160,24 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    private void Target_SetPerkPoints (NetworkConnection conn, Perk[] perks) {
       PerkManager.self.setPlayerPerkPoints(perks);
+   }
+
+   [Command]
+   public void Cmd_AssignPerkPoint (int perkId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int availablePoints = DB_Main.getUnassignedPerkPoints(_player.userId);
+
+         if (availablePoints > 0) {
+            DB_Main.assignPerkPoint(_player.userId, perkId);
+         }
+
+         // Refresh player's perk points
+         List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+         });
+      });
    }
 
    #region Private Variables

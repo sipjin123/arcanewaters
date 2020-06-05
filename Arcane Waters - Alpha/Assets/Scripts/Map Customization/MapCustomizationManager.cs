@@ -16,7 +16,6 @@ namespace MapCustomization
 
       // Current area that is being customized, null if customization is not active currently
       public static string currentArea { get; private set; }
-      public static int currentAreaBaseMapId { get; private set; }
 
       // Owner userId of the current area
       public static int areaOwnerId { get; private set; }
@@ -56,7 +55,6 @@ namespace MapCustomization
             return;
          }
 
-         currentAreaBaseMapId = customMapManager.getBaseMapId(entity);
          areaOwnerId = CustomMapManager.getUserId(areaName);
 
          CustomizationUI.show();
@@ -68,7 +66,7 @@ namespace MapCustomization
       private static IEnumerator enterCustomizationRoutine () {
          // Fetch customization data that is saved for this map
          _waitingServerResponse = true;
-         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea, currentAreaBaseMapId, areaOwnerId);
+         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea);
          yield return new WaitWhile(() => _waitingServerResponse);
 
          // Gather prefabs from the scene that can be customized
@@ -135,7 +133,7 @@ namespace MapCustomization
       public static void pointerUp (Vector2 worldPosition) {
          if (_selectedPrefab != null) {
             if (_selectedPrefab.anyUnappliedState()) {
-               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea, currentAreaBaseMapId, _selectedPrefab.unappliedChanges);
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea, _selectedPrefab.unappliedChanges);
                _selectedPrefab.submitUnappliedChanges();
             }
          }

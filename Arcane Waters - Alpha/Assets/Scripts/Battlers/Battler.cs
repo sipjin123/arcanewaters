@@ -712,14 +712,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          } else {
             // Player battler
-            Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-
             if (isLocalBattler()) {
                // If they're still connected, we can warp them directly
                if (player != null && player.connectionToClient != null) {
-                  player.spawnInNewMap(spawn.AreaKey, spawn, Direction.North);
+                  player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                } else {
                   // The user might be offline, in which case we need to modify their position in the DB
+                  Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
                   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                      DB_Main.setNewLocalPosition(userId, spawn.transform.localPosition, Direction.North, spawn.AreaKey);
                   });

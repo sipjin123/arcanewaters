@@ -702,6 +702,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Get the default spawn for the destination area
+      // TODO: better checking for if destination exists
       Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(baseMapAreaKey ?? closestAreaKey);
 
       if (spawnLocalPos == Vector2.zero) {
@@ -709,7 +710,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      _player.spawnInNewMap(closestAreaKey, spawnLocalPos, Direction.South);
+      _player.spawnInNewMap(closestAreaKey);
    }
 
    [Command]

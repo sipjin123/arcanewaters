@@ -155,6 +155,9 @@ public class CharacterScreen : MonoBehaviour
       } else if (Global.isFastLogin && Global.fastLoginCharacterSpotIndex != -1) {
          _spots[Global.fastLoginCharacterSpotIndex].selectButtonWasPressed();
       }
+
+      // Enable character buttons
+      Util.enableCanvasGroup(canvasGroup);
    }
 
    #region Private Variables

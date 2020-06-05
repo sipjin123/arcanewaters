@@ -14,13 +14,23 @@ public class Perk
    // The ID for unassigned perk points
    public const int UNASSIGNED_ID = 0;
 
-   public enum Type
+   public enum Category
    {
       None = 0,
       Healing = 1,
       Gun = 2,
       Sword = 3,
-      Movement = 4,
+      WalkingSpeed = 4,
+      MeleeDamage = 5,
+      RangedDamage = 6,
+      Health = 7,
+      CropGrowthSpeed = 8,
+      ShipMovementSpeed = 9,
+      ShipDamage = 10,
+      ShipHealth = 11,
+      ShopPriceReduction = 12,
+      ExperienceGain = 13,
+      ItemDropChances = 14
    }
 
    // The unique ID of the perk using the points
@@ -36,12 +46,30 @@ public class Perk
       this.points = points;
    }
 
-   public static Perk.Type getType (int perkTypeId) {
-      return (Perk.Type) perkTypeId;
+   public string getCategoryDisplayName () {
+      PerkData data = PerkManager.self.getPerkData(perkId);
+      Perk.Category category = getCategory(data.perkCategoryId);
+
+      return getCategoryDisplayName(category);
    }
 
-   public static int getTypeId (Perk.Type perkType) {
-      return (int) perkType;
+   public static Perk.Category getCategory (int categoryId) {
+      return (Perk.Category) categoryId;
+   }
+
+   public static int getCategoryId (Perk.Category category) {
+      return (int) category;
+   }
+
+   public static string getCategoryDisplayName (Perk.Category category) {
+      // Display names only need to be overridden if adding spaces to the camelCase name doesn't apply
+      switch (category) {
+         case Category.None:
+            return "Unassigned";
+
+         default:
+            return category.ToString().SplitCamelCase();
+      }
    }
 
 #if IS_SERVER_BUILD

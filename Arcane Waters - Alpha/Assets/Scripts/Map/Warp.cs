@@ -53,9 +53,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
       // If a player entered this warp on the server, move them
       if (player.isServer && player.connectionToClient != null && canPlayerUseWarp(player)) {
-         SpawnID spawnID = new SpawnID(areaTarget, spawnTarget);
-         Vector2 localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
-         player.spawnInNewMap(areaTarget, localPos, newFacingDirection);
+         player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
 
          warpEvent.Invoke(player);
       }

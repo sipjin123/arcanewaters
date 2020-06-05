@@ -140,7 +140,7 @@ MonoBehaviour:
   spotMask: {fileID: 802755961768482728}
   _highlightPlayerSpotSize: {x: 400, y: 400}
   _defaultColor: {r: 0, g: 0, b: 0, a: 1}
-  _totalEffectTime: 0.5
+  _totalEffectTime: 1
 --- !u!1 &802755961768482710
 GameObject:
   m_ObjectHideFlags: 0

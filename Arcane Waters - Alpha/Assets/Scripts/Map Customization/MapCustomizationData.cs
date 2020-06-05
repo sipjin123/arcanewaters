@@ -42,7 +42,7 @@ namespace MapCustomization
       public void add (PrefabState newChanges) {
          for (int i = 0; i < prefabChanges.Length; i++) {
             if (prefabChanges[i].id == newChanges.id) {
-               prefabChanges[i].add(newChanges);
+               prefabChanges[i] = prefabChanges[i].add(newChanges);
                return;
             }
          }

@@ -202,7 +202,7 @@ public struct CharacterCreationQuestionOption
    public string option;
 
    // The perk this option gives
-   public Perk.Type perkType;
+   public Perk.Category perkCategory;
 
    // The unique ID of the perk
    public int perkId;

@@ -59,11 +59,6 @@ public class MapManager : MonoBehaviour
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
 
-      // Show the loading screen on clients or host mode
-      if (!Util.isServerNonHost()) {
-         PanelManager.self.loadingScreen.show();
-      }
-
       // Find out if we are creating an owned map, if so, get owner id
       int ownerId = -1;
       if (!areaKey.Equals(mapInfo.mapName)) {

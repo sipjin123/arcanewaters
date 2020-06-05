@@ -11,6 +11,9 @@ public class TooltipManager : ClientMonoBehaviour {
    // The tooltip object we manage
    public Tooltip tooltip;
 
+   // Whether or not to show tooltips automatically
+   public bool isAutomaticTooltipEnabled = true;
+
    // Self
    public static TooltipManager self;
 
@@ -32,18 +35,37 @@ public class TooltipManager : ClientMonoBehaviour {
       
       // Keep the tooltip at the mouse hotspot
       Util.setXY(tooltip.transform, pos);
+            
+      if (isAutomaticTooltipEnabled) {
+         // Check if there's any text to show based on where the mouse currently is
+         string tooltipText = getRelevantTooltip();
 
-      // Check if there's any text to show based on where the mouse currently is
-      string tooltipText = getRelevantTooltip();
+         // Decide whether the tooltip should be visible
+         bool shouldTooltipShow = !Util.isEmpty(tooltipText);
 
-      // Decide whether the tooltip should be visible
-      bool shouldTooltipShow = !Util.isEmpty(tooltipText);
+         // Toggle visibility
+         tooltip.gameObject.SetActive(shouldTooltipShow);
 
-      // Toggle visibility
-      tooltip.gameObject.SetActive(shouldTooltipShow);
+         // Sets the text in the component
+         tooltip.text.SetText(tooltipText);
+      }
+   }
 
-      // Sets the text in the component
-      tooltip.text.SetText(tooltipText);
+   public void showTooltip (string text, bool disableAutomaticTooltip = false) {
+      tooltip.gameObject.SetActive(true);
+      tooltip.text.SetText(text);
+
+      if (disableAutomaticTooltip) {
+         isAutomaticTooltipEnabled = false;
+      }
+   }
+
+   public void hideTooltip (bool enableAutomaticTooltip = false) {
+      tooltip.gameObject.SetActive(false);
+
+      if (enableAutomaticTooltip) {
+         isAutomaticTooltipEnabled = true;
+      }
    }
 
    public string getRelevantTooltip () {

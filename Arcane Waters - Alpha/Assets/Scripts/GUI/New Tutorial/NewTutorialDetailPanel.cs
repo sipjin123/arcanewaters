@@ -18,7 +18,7 @@ public class NewTutorialDetailPanel : Panel {
       });
 
       _backButton.onClick.AddListener(() => {
-         Global.player.Cmd_SpawnInNewMap(Area.STARTING_TOWN, string.Empty, Direction.South);
+         Global.player.Cmd_SpawnInNewMap(Area.STARTING_TOWN);
          hide();
       });
    }

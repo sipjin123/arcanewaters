@@ -70,7 +70,7 @@ public class PerkToolManager : XmlDataToolManager
    public void duplicatePerkData (PerkData perk) {
       PerkData duplicate = new PerkData();
       duplicate.perkId = 0;
-      duplicate.perkTypeId = perk.perkTypeId;
+      duplicate.perkCategoryId = perk.perkCategoryId;
       duplicate.name = "[Copy] " + perk.name;
       duplicate.description = perk.description;
       duplicate.iconPath = perk.iconPath;

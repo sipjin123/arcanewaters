@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using TMPro;
 using Mirror;
 using System.Text;
+using Cinemachine;
+using DG.Tweening;
 
 public class LoadingScreen : MonoBehaviour
 {
@@ -21,6 +23,14 @@ public class LoadingScreen : MonoBehaviour
    #endregion
 
    public void show () {
+      // Don't show again if the process already started
+      if (_isPreparingToShow || isShowing()) {
+         return;
+      }
+
+      _startingCamera = getActiveCamera();
+      _isPreparingToShow = true;
+
       this.gameObject.SetActive(true);
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
@@ -35,10 +45,13 @@ public class LoadingScreen : MonoBehaviour
 
    public void hide () {
       StopAllCoroutines();
-      this.canvasGroup.alpha = 0f;
+      this.canvasGroup.alpha = 0;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
       loadingFinishedMessage.enabled = false;
+      _isPreparingToShow = false;
+
+      SpotFader.self.openSpotToMaxSize(Global.player.transform);
    }
 
    public bool isShowing () {
@@ -50,49 +63,111 @@ public class LoadingScreen : MonoBehaviour
    }
 
    private IEnumerator CO_Show () {
-      // Wait a few frames, so that the circle fader has time to start its animation
-      yield return new WaitForSeconds(0.1f);
-
       // If the circle fader is running, wait until its animation ends
-      while (CircleFader.self != null && CircleFader.self.isAnimating()) {
+      if (SpotFader.self != null) {
+         // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
+         if (Global.player != null) {
+            SpotFader.self.closeSpot(Global.player.transform.position);
+         } else {
+            SpotFader.self.closeSpotTowardsCenter();
+         }
+
+         // Wait a frame so the tween starts
+         yield return null;
+
+         while (SpotFader.self.isAnimatingSize()) {
+            yield return null;
+         }
+      }
+
+      float waitTime = 0.0f;
+
+      // Show a empty (black) screen for a short time
+      while (waitTime < MIN_TIME_BEFORE_SHOWING_BAR) {
+         // If at this point the loading is finished, don't show the progress bar at all
+         if (_percentage >= 1f || hasCameraChanged()) {
+            hide();
+            yield break;
+         }
+
+         waitTime += Time.deltaTime;
          yield return null;
       }
 
-      // Show a empty (black) screen for a short time
-      yield return new WaitForSeconds(0.2f);
-
-      // If at this point the loading is finished, don't show the loading bar at all
-      if (_percentage >= 1f) {
-         hide();
-         yield break;
-      }
-
-      this.canvasGroup.alpha = 1f;
+      this.canvasGroup.DOFade(1, 0.25f);
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
 
       // Show the loading bar at 0 percent for a short time
       barImage.fillAmount = 0;
-      yield return new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(0.25f);
+
+      waitTime = 0.0f;
 
       // Show the correct percentage
       while (_percentage < 1f) {
+         if (hasCameraChanged() && Global.player != null) {
+            _percentage = 1f;
+            break;
+         }
+
          barImage.fillAmount = _percentage;
+         waitTime += Time.deltaTime;
+
+         if (waitTime > LOADING_TIMEOUT) {
+            D.editorLog("The maximum loading time was exceeded.");
+            break;
+         }
+
+         yield return null;
+      }
+
+      while (!hasCameraChanged()) {
          yield return null;
       }
 
       // Show the loading bar at 100 percent for a short time
       barImage.fillAmount = 1f;
       loadingFinishedMessage.enabled = true;
-      yield return new WaitForSeconds(0.5f);
+      this.canvasGroup.DOFade(0, 0.2f);
+
+      yield return new WaitForSeconds(0.25f);
 
       hide();
+   }
+
+   protected bool hasCameraChanged () {
+      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey)) {
+         return false;
+      }
+
+      return _startingCamera != getActiveCamera();
+   }
+
+   protected ICinemachineCamera getActiveCamera () {
+      if (Camera.main == null) {
+         return null;
+      }
+
+      return Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera;
    }
 
    #region Private Variables
 
    // The percentage of loading
    private float _percentage;
+
+   // The active camera when started showing the loading screen
+   private ICinemachineCamera _startingCamera;
+
+   // True while the screen is being or about to be shown
+   private bool _isPreparingToShow = false;
+
+   // How much time should pass before showing the progress bar
+   private const float MIN_TIME_BEFORE_SHOWING_BAR = 1f;
+
+   // A timeout in case the loading screen gets frozen
+   private const float LOADING_TIMEOUT = 15.0f;
 
    #endregion
 }

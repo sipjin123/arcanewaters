@@ -150,11 +150,9 @@ public class NetEntity : NetworkBehaviour {
    public int voyageGroupId = -1;
 
    // The house layout for this user, if chosen
-   [SyncVar]
    public int customHouseBaseId;
 
    // The farm layout for this user, if chosen
-   [SyncVar]
    public int customFarmBaseId;
 
    // Gets set to true on the server when we're about to execute a warp
@@ -334,7 +332,11 @@ public class NetEntity : NetworkBehaviour {
       Vector3 localPos = this.transform.localPosition;
 
       if (isLocalPlayer && !TitleScreen.self.isShowing()) {
-         CircleFader.self.doCircleFade();
+         // Show the loading screen
+         if (PanelManager.self.loadingScreen != null) {
+            PanelManager.self.loadingScreen.show();
+         }
+
          if (LocationBanner.self != null) {
             LocationBanner.self.hide();
          }
@@ -444,7 +446,7 @@ public class NetEntity : NetworkBehaviour {
          moveSpeedModifier = 2;
       }
 
-      float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Type.Movement);
+      float perkMultiplier = PerkManager.self.getPerkMultiplier(Perk.Category.WalkingSpeed);
       return (baseSpeed * modifier) * moveSpeedModifier * perkMultiplier;
    }
 
@@ -970,20 +972,26 @@ public class NetEntity : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SpawnInNewMap (string newArea, string spawnKey, Direction newFacingDirection) {
-      Spawn spawn = SpawnManager.self.getSpawn(newArea, spawnKey);
+   public void Cmd_SpawnInNewMap (string areaKey) {
+      spawnInNewMap(areaKey);
+   }
 
-      spawnInNewMap(newArea, spawn.transform.localPosition, newFacingDirection);
+   [Command]
+   public void Cmd_SpawnInNewMapSpawn (string newArea, string spawn, Direction newFacingDirection) {
+      spawnInNewMap(newArea, spawn, newFacingDirection);
    }
 
    [Server]
-   public void spawnInNewMap (string newArea, Spawn spawn, Direction newFacingDirection) {
-      spawnInNewMap(newArea, spawn.transform.localPosition, newFacingDirection);
+   public void spawnInNewMap (string areaKey) {
+      spawnInNewMap(areaKey, null, Direction.South);
    }
 
    [Server]
-   public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
-      // Check if area is an owned area type
+   public void spawnInNewMap (string newArea, string spawn, Direction newFacingDirection) {
+      // Local position in the target map that we should be arriving in
+      Vector2 targetLocalPos = Vector2.zero;
+
+      // Check if this is a custom map
       if (AreaManager.self.tryGetCustomMapManager(newArea, out CustomMapManager customMapManager)) {
          // Check if user is not able to warp into owned area
          if (!customMapManager.canUserWarpInto(this, newArea, out System.Action<NetEntity> denyWarphandler)) {
@@ -996,8 +1004,28 @@ public class NetEntity : NetworkBehaviour {
          if (!CustomMapManager.isUserSpecificAreaKey(newArea)) {
             newArea = customMapManager.getUserSpecificAreaKey(userId);
          }
+
+         // Get the owner of the target map
+         int targetUserId = CustomMapManager.getUserId(newArea);
+         NetEntity owner = EntityManager.self.getEntity(targetUserId);
+
+         // Get the base map
+         string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(owner));
+
+         targetLocalPos = spawn == null
+            ? SpawnManager.self.getDefaultSpawnLocalPosition(baseMapKey)
+            : SpawnManager.self.getSpawnLocalPosition(new SpawnID(baseMapKey, spawn));
+      } else {
+         targetLocalPos = spawn == null
+            ? SpawnManager.self.getDefaultSpawnLocalPosition(newArea)
+            : SpawnManager.self.getSpawnLocalPosition(new SpawnID(newArea, spawn));
       }
 
+      spawnInNewMap(newArea, targetLocalPos, newFacingDirection);
+   }
+
+   [Server]
+   public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
