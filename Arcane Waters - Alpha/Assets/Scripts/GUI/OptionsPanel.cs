@@ -184,16 +184,8 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();
 
-      // Stop any client or server that may have been running
-      MyNetworkManager.self.StopHost();
-
-      // Activate the Title Screen camera
-      Util.activateVirtualCamera(TitleScreen.self.virtualCamera);
-
-      // Clear out our saved data
-      Global.lastUsedAccountName = "";
-      Global.lastUserAccountPassword = "";
-      Global.currentlySelectedUserId = 0;
+      // Return to the title screen
+      Util.stopHostAndReturnToTitleScreen();
 
       // Close this panel
       if (isShowing()) {

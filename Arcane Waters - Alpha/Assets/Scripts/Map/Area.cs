@@ -201,24 +201,44 @@ public class Area : MonoBehaviour
    }
 
    public static SoundManager.Type getBackgroundMusic (string areaKey) {
-      switch (areaKey) {
-         case "House":
-         case "Farm":
-         case "StartingTown":
-            return SoundManager.Type.Town_Forest;
-         case "Ocean1":
-         case "SeaBottom":
-            return SoundManager.Type.Sea_Forest;
-         case "SeaMiddle":
-            return SoundManager.Type.Sea_Desert;
-         case "DesertTown":
-            return SoundManager.Type.Town_Desert;
-         case "SeaTop":
-            return SoundManager.Type.Sea_Pine;
-         case "TreasurePine":
-            return SoundManager.Type.Town_Pine;
-         default:
-            return SoundManager.Type.None;
+      Biome.Type biome = getBiome(areaKey);
+
+      if (AreaManager.self.isInteriorArea(areaKey)) {
+         return SoundManager.Type.None;
+      } else if (AreaManager.self.isSeaArea(areaKey)) {
+         switch (biome) {
+            case Biome.Type.Forest:
+               return SoundManager.Type.Sea_Forest;
+            case Biome.Type.Desert:
+               return SoundManager.Type.Sea_Desert;
+            case Biome.Type.Pine:
+               return SoundManager.Type.Sea_Pine;
+            case Biome.Type.Snow:
+               return SoundManager.Type.Sea_Snow;
+            case Biome.Type.Lava:
+               return SoundManager.Type.Sea_Lava;
+            case Biome.Type.Mushroom:
+               return SoundManager.Type.Sea_Mushroom;
+            default:
+               return SoundManager.Type.None;
+         }
+      } else {
+         switch (biome) {
+            case Biome.Type.Forest:
+               return SoundManager.Type.Town_Forest;
+            case Biome.Type.Desert:
+               return SoundManager.Type.Town_Desert;
+            case Biome.Type.Pine:
+               return SoundManager.Type.Town_Pine;
+            case Biome.Type.Snow:
+               return SoundManager.Type.Town_Snow;
+            case Biome.Type.Lava:
+               return SoundManager.Type.Town_Lava;
+            case Biome.Type.Mushroom:
+               return SoundManager.Type.Town_Mushroom;
+            default:
+               return SoundManager.Type.None;
+         }
       }
    }
 
@@ -265,6 +285,8 @@ public class Area : MonoBehaviour
       _graph.collision.use2D = true;
       _graph.collision.Initialize(_graph.transform, 1.0f);
       _graph.collision.type = ColliderType.Ray;
+      _graph.collision.type = ColliderType.Sphere;
+      _graph.collision.diameter = 2.5f;
       _graph.collision.mask = LayerMask.GetMask("GridColliders");
       _graph.Scan();
    }

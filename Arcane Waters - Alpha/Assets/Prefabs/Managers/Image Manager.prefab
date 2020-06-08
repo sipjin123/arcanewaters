@@ -18176,6 +18176,45 @@ MonoBehaviour:
     - {fileID: 21300002, guid: 2c9453c26ac4d544da77faa9006690ef, type: 3}
     - {fileID: 21300004, guid: 2c9453c26ac4d544da77faa9006690ef, type: 3}
     - {fileID: 21300006, guid: 2c9453c26ac4d544da77faa9006690ef, type: 3}
+  - imageName: ocean_currents_alldir
+    imagePath: Assets/Sprites/Map/ocean_currents_alldir.png
+    imagePathWithoutExtension: Assets/Sprites/Map/ocean_currents_alldir
+    texture2D: {fileID: 2800000, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    sprite: {fileID: -7239619613758289895, guid: 7a44bb395aa628c42836fa19a2af555e,
+      type: 3}
+    sprites:
+    - {fileID: -7239619613758289895, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -5457556602965509368, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -7146423859043844104, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 4704907916876943783, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -3652778826761303346, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 2309206073311205213, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -5834203374229188370, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -3699460685454291143, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -9172655831684585261, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -6904307205452854081, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -676079099548030800, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 1875239679653658758, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -7918630617697491052, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 359511861503283649, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -8153699574850186907, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -3351188643728560559, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -7633327868643610413, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 7304980858168336884, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 3984719903744461519, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -2501200156217457728, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 4948590376352436024, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 7941046269399777849, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 3561822848922711260, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -6118920594021290983, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -8887593259753311663, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 5340659493058728863, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 5757427269448046973, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 3748740375589341992, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -8186281722752651334, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -4983984947677120321, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: 4298561114893816537, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+    - {fileID: -8332833000935887005, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
   - imageName: ocean_whirlpool
     imagePath: Assets/Sprites/Map/ocean_whirlpool.png
     imagePathWithoutExtension: Assets/Sprites/Map/ocean_whirlpool

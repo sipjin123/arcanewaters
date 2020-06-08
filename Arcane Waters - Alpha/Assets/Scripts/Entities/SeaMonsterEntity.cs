@@ -182,7 +182,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Note our spawn position
-      _spawnPos = transform.position;
+      _spawnPos = sortPoint.transform.position;
 
       _simpleAnim.playAnimation(Anim.Type.Idle_North);
    }
@@ -231,7 +231,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       if (seaMonsterData.roleType != RoleType.Minion) {
          if (targetEntity != null && _currentPathIndex >= _currentPath.Count) {
             // Look at target entity
-            this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, transform.position);
+            this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(targetEntity, sortPoint.transform.position);
          } else if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
             // Update our facing direction
             faceVelocityDirection();
@@ -268,14 +268,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
          Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
-         Vector2 waypointDirection = (targetLocation - (Vector2) transform.position).normalized;
+         Vector2 waypointDirection = (targetLocation - (Vector2) sortPoint.transform.position).normalized;
 
          // Teleports the Minions if too far away from Parent
-         if (Vector2.SqrMagnitude(transform.position - seaMonsterParentEntity.transform.position) > 2 * 2) {
+         if (Vector2.SqrMagnitude(sortPoint.transform.position - seaMonsterParentEntity.transform.position) > 2 * 2) {
             _body.MovePosition(targetLocation);
          }
 
-         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(targetLocation - (Vector2)transform.position);
+         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(targetLocation - (Vector2)sortPoint.transform.position);
          if (sqrDistanceToWaypoint > .025f) {
             _body.AddForce(waypointDirection.normalized * (getMoveSpeed() / 1.75f));
          }
@@ -284,13 +284,13 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       if (_currentPathIndex < _currentPath.Count) {
          // Move towards our current waypoint
-         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized;
+         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2)sortPoint.transform.position).normalized;
 
          _body.AddForce(waypointDirection * getMoveSpeed());
          _lastMoveChangeTime = Time.time;
 
          // Clears a node as the unit passes by
-         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - transform.position);
+         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - sortPoint.transform.position);
          if (sqrDistanceToWaypoint < .01f) {
             ++_currentPathIndex;
          }
@@ -313,7 +313,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          return;
       }
 
-      int hitCount = Physics2D.OverlapCircleNonAlloc(transform.position, seaMonsterData.detectRadius, _hits,
+      int hitCount = Physics2D.OverlapCircleNonAlloc(sortPoint.transform.position, seaMonsterData.detectRadius, _hits,
          LayerMask.GetMask(LayerUtil.SHIPS));
 
       for (int i = 0; i < hitCount; i++) {
@@ -340,7 +340,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             continue;
          }
 
-         float newDistanceGap = Vector2.SqrMagnitude(attacker.transform.position - transform.position);
+         float newDistanceGap = Vector2.SqrMagnitude(attacker.transform.position - sortPoint.transform.position);
 
          if (newDistanceGap < oldDistanceGap) {
             oldDistanceGap = newDistanceGap;
@@ -483,7 +483,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          return false;
       }
 
-      float sqrDistanceToTarget = Vector2.SqrMagnitude((Vector2) transform.position - (Vector2) targetEntity.transform.position);
+      float sqrDistanceToTarget = Vector2.SqrMagnitude(sortPoint.transform.position - targetEntity.transform.position);
       if ((seaMonsterData.isMelee && !isWithinMeleeAttackDistance(sqrDistanceToTarget)) ||
             (seaMonsterData.isRanged && !isWithinRangedAttackDistance(sqrDistanceToTarget))) {
          return false;
@@ -599,7 +599,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    [Server]
    protected void spawnChest () {
       Instance currentInstance = InstanceManager.self.getInstance(this.instanceId);
-      TreasureManager.self.createSeaMonsterChest(currentInstance, transform.position, seaMonsterData.seaMonsterType);
+      TreasureManager.self.createSeaMonsterChest(currentInstance, sortPoint.transform.position, seaMonsterData.seaMonsterType);
    }
 
    [Server]
@@ -612,7 +612,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    [Server]
    protected void launchProjectile (Vector2 spot, SeaEntity attacker, int abilityId, float attackDelay, float launchDelay) {
-      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker, transform.position);
+      this.facing = (Direction) SeaMonsterUtility.getDirectionToFace(attacker, sortPoint.transform.position);
 
       int accuracy = Random.Range(1, 4);
       Vector2 targetLoc = new Vector2(0, 0);
@@ -623,8 +623,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Clamp the target to the monster's range radius
-      if ((targetLoc - (Vector2) transform.position).magnitude > seaMonsterData.maxProjectileDistanceGap) {
-         targetLoc = ((targetLoc - (Vector2) transform.position).normalized * seaMonsterData.maxProjectileDistanceGap) + (Vector2) transform.position;
+      if ((targetLoc - (Vector2) sortPoint.transform.position).magnitude > seaMonsterData.maxProjectileDistanceGap) {
+         targetLoc = ((targetLoc - (Vector2) sortPoint.transform.position).normalized * seaMonsterData.maxProjectileDistanceGap) + (Vector2) sortPoint.transform.position;
       }
 
       Vector2 spawnPosition = new Vector2(0, 0);
@@ -644,7 +644,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       if (!_seeker.IsDone()) {
          _seeker.CancelCurrentPathRequest();
       }
-      _seeker.StartPath(transform.position, targetPosition);
+      _seeker.StartPath(sortPoint.transform.position, targetPosition);
 
       while (!_seeker.IsDone()) {
          yield return null;
@@ -677,27 +677,27 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          // Draws the range of the monsters search radius
          Gizmos.color = Color.red;
          sizex = seaMonsterData.detectRadius;
-         Gizmos.DrawWireSphere(transform.position, sizex);
+         Gizmos.DrawWireSphere(sortPoint.transform.position, sizex);
 
          // Draws the range of the monsters search radius
          Gizmos.color = Color.red;
          sizex = seaMonsterData.maxMeleeDistanceGap;
-         Gizmos.DrawWireSphere(transform.position, sizex);
+         Gizmos.DrawWireSphere(sortPoint.transform.position, sizex);
 
          // Draws the range of the monsters follow radius
          Gizmos.color = Color.blue;
          sizex = seaMonsterData.maxDistanceGap;
-         Gizmos.DrawWireSphere(transform.position, sizex);
+         Gizmos.DrawWireSphere(sortPoint.transform.position, sizex);
 
          // Draws the range of the monsters attack radius
          Gizmos.color = Color.black;
          sizex = seaMonsterData.maxProjectileDistanceGap;
-         Gizmos.DrawWireSphere(transform.position, sizex);
+         Gizmos.DrawWireSphere(sortPoint.transform.position, sizex);
       }
    }
 
    protected bool isWithinMoveDistance (NetEntity entity) {
-      float sqrDistance = Vector2.SqrMagnitude(entity.transform.position - transform.position);
+      float sqrDistance = Vector2.SqrMagnitude(entity.transform.position - sortPoint.transform.position);
       return sqrDistance < seaMonsterData.maxDistanceGap * seaMonsterData.maxDistanceGap;
    }
 

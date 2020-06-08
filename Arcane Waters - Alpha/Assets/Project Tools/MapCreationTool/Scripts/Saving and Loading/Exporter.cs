@@ -210,6 +210,12 @@ namespace MapCreationTool.Serialization
 
                   if (Layer.isWater(columns[i, j].tiles[z].layer) && columns[i, j].tiles[z].sublayer == 5) {
                      columns[i, j].hasWater5 = true;
+
+                     foreach(Direction dir in Enum.GetValues(typeof(Direction))) {
+                        if(columns[i, j].tiles[z].tileBase.name.EndsWith(dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
+                           columns[i, j].currentDirection = dir;
+                        }
+                     }
                   }
 
                   if (Layer.isRug(columns[i, j].tiles[z].layer)) {
@@ -281,7 +287,16 @@ namespace MapCreationTool.Serialization
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(SpecialTileChunk.Type.Stair, (c) => c.hasStair);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(SpecialTileChunk.Type.Waterfall, (c) => c.hasWater4 && editorType == EditorType.Area);
          IEnumerable<SpecialTileChunk> vines = formSquareChunks(SpecialTileChunk.Type.Vine, (c) => c.hasVine);
-         IEnumerable<SpecialTileChunk> currents = formWaterCurrentChunks();
+
+         IEnumerable<SpecialTileChunk> currents = Enumerable.Empty<SpecialTileChunk>();
+
+         if (editorType == EditorType.Area) {
+            currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater4 || cell.hasWater5, Direction.South));
+         } else if (editorType == EditorType.Sea) {
+            foreach(Direction dir in Enum.GetValues(typeof(Direction))) {
+               currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater5 && cell.currentDirection == dir, dir));
+            }
+         }
 
          Dictionary<TileBase, int> tileToRug = Palette.instance.paletteData.tileToRugType;
 
@@ -294,18 +309,14 @@ namespace MapCreationTool.Serialization
          return stairs.Union(waterfalls).Union(vines).Union(currents).Union(rugs).ToArray();
       }
 
-      private IEnumerable<SpecialTileChunk> formWaterCurrentChunks () {
-         if (editorType != EditorType.Area) {
-            yield break;
-         }
-
+      private IEnumerable<SpecialTileChunk> formWaterCurrentChunk (Func<BoardCell, bool> columnSelector, Direction dir) {
          bool[,] matrix = new bool[editorSize.x, editorSize.y];
          List<(int, int)> currentIndexes = new List<(int, int)>();
 
          // Find all current and waterfall tiles and set them in the matrix
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
-               if (cellMatrix[i, j].hasWater4 || cellMatrix[i, j].hasWater5) {
+               if (columnSelector(cellMatrix[i, j])) {
                   matrix[i, j] = true;
                   currentIndexes.Add((i, j));
                }
@@ -394,7 +405,8 @@ namespace MapCreationTool.Serialization
          yield return new SpecialTileChunk {
             type = SpecialTileChunk.Type.Current,
             position = Vector2.zero,
-            paths = paths
+            paths = paths,
+            effectorDirection = dir
          };
       }
 
@@ -507,6 +519,7 @@ namespace MapCreationTool.Serialization
          public bool hasRug { get; set; }
          public bool hasWater4 { get; set; }
          public bool hasWater5 { get; set; }
+         public Direction currentDirection { get; set; }
 
          public TileInLayer getTileFromTop (string layer) {
             for (int i = tiles.Length - 1; i >= 0; i--) {
@@ -589,6 +602,7 @@ namespace MapCreationTool.Serialization
       public Vector2 position;
       public Vector2 size;
       public PointPath[] paths;
+      public Direction effectorDirection = Direction.South;
 
       public enum Type
       {

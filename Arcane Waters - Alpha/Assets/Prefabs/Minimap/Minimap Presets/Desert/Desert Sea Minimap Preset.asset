@@ -454,4 +454,28 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
-  _tileIconLayers: []
+  _tileIconLayers:
+  - iconLayerName: TreasureSite
+    spriteIcon: {fileID: 21300000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
+    offset: {x: -3, y: -2}
+    usePrefab: 0
+    useAreaEffector2D: 0
+    useCollider2D: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    subLayerSprites: []
+    limitSpawnCount: 0
+    spawnGridSize: {x: 0, y: 0}
+    minDistanceManhattan: 0
+  - iconLayerName: Warp
+    spriteIcon: {fileID: 21300000, guid: 65542fb74953e324dbbb76af955a4b17, type: 3}
+    offset: {x: -4, y: -3}
+    usePrefab: 1
+    useAreaEffector2D: 0
+    useCollider2D: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    subLayerSprites: []
+    limitSpawnCount: 0
+    spawnGridSize: {x: 0, y: 0}
+    minDistanceManhattan: 0

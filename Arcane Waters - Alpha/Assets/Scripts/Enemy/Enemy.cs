@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
+using Pathfinding;
 
 public class Enemy : NetEntity, IMapEditorDataReceiver {
    #region Public Variables
@@ -30,10 +31,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // The Type of Enemy
    [SyncVar]
    public Type enemyType;
-
-   // Our current target
-   [SyncVar]
-   public int targetUserId;
 
    // Gets set to true after we've been defeated
    [SyncVar]
@@ -77,7 +74,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       this.name = "Enemy - " + this.enemyType;
 
       // Make note of where we start at
-      _startPos = this.transform.position;
+      _startPos = this.sortPoint.transform.position;
 
       // Update our sprite
       if (this.enemyType != Type.None && ImageManager.self.imageDataList.Count > 0) {
@@ -91,13 +88,19 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
       }
 
-      // Choose a random desired position every few seconds
       if (isServer) {
-         InvokeRepeating("chooseRandomDesiredPosition", 3f, 3f);
-      }
+         _seeker = GetComponent<Seeker>();
+         if (_seeker == null) {
+            D.error("There has to be a Seeker Script attached to the Enemy Prefab");
+         }
 
-      if (AreaManager.self.getArea(areaKey) != null) {
-         transform.SetParent(AreaManager.self.getArea(areaKey).enemyParent);
+         // Only use the graph in this area to calculate paths
+         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
+         _seeker.graphMask = GraphMask.FromGraph(graph);
+
+         _seeker.pathCallback = setPath_Asynchronous;
+
+         InvokeRepeating(nameof(landMonsterBehavior), Random.Range(0f, 1f), 1f);
       }
    }
 
@@ -117,6 +120,18 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
             circleCollider.enabled = false;
          }
       }
+
+      if (!this.isServer || isDefeated) {
+         return;
+      }
+
+      // Calculate the new facing direction based on our velocity direction vector
+      Direction newFacingDirection = DirectionUtil.getBodyDirectionForVelocity(this);
+
+      // Only touch the Sync Var if it's actually changed
+      if (this.facing != newFacingDirection) {
+         this.facing = newFacingDirection;
+      }
    }
 
    protected override void FixedUpdate () {
@@ -135,25 +150,22 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return;
       }
 
-      // If we're close to our move target, we don't need to do anything
-      if (Vector2.Distance(this.transform.position, desiredPosition) < .1f) {
-         return;
+      if (_currentPathIndex < _currentPath.Count) {
+         // Move towards our current waypoint
+         Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2) sortPoint.transform.position).normalized;
+
+         _body.AddForce(waypointDirection * 50f);
+         _lastMoveChangeTime = Time.time;
+
+         // Clears a node as the unit passes by
+         float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - sortPoint.transform.position);
+         if (sqrDistanceToWaypoint < .01f) {
+            ++_currentPathIndex;
+         }
+
+         // Make note of the time
+         _lastMoveChangeTime = Time.time;
       }
-
-      // Figure out the direction of our movement
-      Vector2 direction = this.desiredPosition - (Vector2) this.transform.position;
-      _body.AddForce(direction.normalized * 50f);
-
-      // Calculate the new facing direction based on our velocity direction vector
-      Direction newFacingDirection = DirectionUtil.getBodyDirectionForVelocity(this);
-
-      // Only touch the Sync Var if it's actually changed
-      if (this.facing != newFacingDirection) {
-         this.facing = newFacingDirection;
-      }
-
-      // Make note of the time
-      _lastMoveChangeTime = Time.time;
    }
 
    public void clientClickedMe () {
@@ -228,24 +240,58 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       this.facing = directionToFace;
    }
 
-   protected void chooseRandomDesiredPosition () {
-      // Only the Server does this
-      if (!this.isServer) {
+   [Server]
+   private void setPath_Asynchronous (Path newPath) {
+      _currentPath = newPath.vectorPath;
+      _currentPathIndex = 0;
+      _seeker.CancelCurrentPathRequest(true);
+   }
+
+   [Server]
+   private void landMonsterBehavior () {
+      // Skip in certain situations
+      if (isInBattle() || isDefeated || isBossType) {
          return;
       }
 
-      // Don't do this while we have a target or we're in a battle
-      if (targetUserId > 0 || isInBattle() || isDefeated || isBossType) {
+      // Wait until the previous action finishes
+      if (_isMovingAround) {
          return;
       }
 
-      // Have a chance of not moving
-      if (Random.Range(0f, 1f) <= .60f) {
-         return;
+      // Choose a new random position and move towards it
+      StartCoroutine(CO_MoveToPosition(
+         _startPos + Random.insideUnitCircle * 0.5f, Random.Range(3f, 9f)));
+   }
+
+   [Server]
+   private IEnumerator CO_MoveToPosition (Vector2 pos, float endDelay) {
+      _isMovingAround = true;
+
+      yield return findAndSetPath_Asynchronous(pos);
+
+      // The movement is performed in FixedUpdate
+      while (_currentPathIndex < _currentPath.Count) {
+         yield return new WaitForSeconds(0.1f);
       }
 
-      // Set a new desired position within +- 1 units
-      this.desiredPosition = _startPos + new Vector2(Random.Range(-.5f, .5f), Random.Range(-.5f, .5f));
+      if (endDelay >= 0) {
+         yield return new WaitForSeconds(endDelay);
+      }
+
+      _isMovingAround = false;
+   }
+
+   [Server]
+   private IEnumerator findAndSetPath_Asynchronous (Vector3 targetPosition) {
+      if (!_seeker.IsDone()) {
+         _seeker.CancelCurrentPathRequest();
+      }
+      _seeker.StartPath(transform.position, targetPosition);
+
+      while (!_seeker.IsDone()) {
+         yield return null;
+      }
    }
 
    protected bool shouldDisableColliderOnDeath () {
@@ -287,6 +333,18 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // The position we were created at
    protected Vector2 _startPos = Vector2.negativeInfinity;
+
+   // The Seeker that handles Pathfinding
+   protected Seeker _seeker;
+
+   // The current waypoint List
+   protected List<Vector3> _currentPath = new List<Vector3>();
+
+   // The current Point Index of the path
+   private int _currentPathIndex;
+
+   // Gets set to true when the moving around behavior is running
+   private bool _isMovingAround = false;
 
    #endregion
 }

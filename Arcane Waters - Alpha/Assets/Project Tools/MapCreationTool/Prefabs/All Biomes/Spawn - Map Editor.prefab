@@ -363,11 +363,11 @@ MonoBehaviour:
     toolTip: Name of Spawn, Unique in the Map That It Is Placed
     type: 2
   - name: width
-    defaultValue: 4
+    defaultValue: 1
     toolTip: Width of Bounds, In Which a Random Point Is Chosen For the Player Spawn
     type: 1
   - name: height
-    defaultValue: 2
+    defaultValue: 1
     toolTip: Height of Bounds, In Which a Random Point Is Chosen For the Player Spawn
     type: 1
   selectDataFields: []

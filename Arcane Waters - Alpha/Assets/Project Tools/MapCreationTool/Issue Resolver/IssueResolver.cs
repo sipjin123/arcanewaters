@@ -70,7 +70,7 @@ namespace MapCreationTool.IssueResolving
          UI.loadingPanel.display("Resolving Issues");
 
          Utilities.doBackgroundTask(
-            () => maps = DB_Main.getMaps().ToList(),
+            () => maps = DB_Main.getMaps().Where(m => m.editorType == EditorType.Sea).ToList(),
             receivedMaps,
             encounteredError
          );

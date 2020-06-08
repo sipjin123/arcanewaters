@@ -1083,6 +1083,8 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  customHouseBaseId: 0
+  customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   damage: 25
@@ -1117,6 +1119,9 @@ MonoBehaviour:
   armorType: 0
   armorColor1: 0
   armorColor2: 0
+  hatType: 0
+  hatColor1: 
+  hatColor2: 
   speedUpEffect: {fileID: 2561641298807088738}
   speedupGUI: {fileID: 8875239540421010013}
   speedupEffectPivot: {fileID: 775350005804660030}
@@ -1292,6 +1297,7 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   m_AssetId: 
+  hasSpawned: 0
 --- !u!114 &25910
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1338,8 +1344,9 @@ MonoBehaviour:
   isVelocityCompressed: 0
   isAngularVelocityCompressed: 0
   isSmoothingAuthorityChanges: 0
+  transformSource: 0
   whenToUpdateTransform: 1
-  sendRate: 30
+  sendRate: 4
   networkChannel: 1
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0

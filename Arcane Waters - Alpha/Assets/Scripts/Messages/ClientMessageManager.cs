@@ -287,7 +287,7 @@ public class ClientMessageManager : MonoBehaviour {
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
 
       // Do a circle fader when the user first logs in
-      if (PanelManager.self.loadingScreen != null && !Util.isServerNonHost() && !TitleScreen.self.isShowing()) {
+      if (PanelManager.self.loadingScreen != null && !Util.isServerNonHost() && !TitleScreen.self.isActive()) {
          PanelManager.self.loadingScreen.show();
       }
 
@@ -307,7 +307,7 @@ public class ClientMessageManager : MonoBehaviour {
       }
 
       PanelManager.self.noticeScreen.show("Could not connect to server.");
-      MyNetworkManager.self.StopClient();
+      Util.stopHostAndReturnToTitleScreen();
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {

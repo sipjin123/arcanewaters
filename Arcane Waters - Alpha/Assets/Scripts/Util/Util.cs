@@ -921,6 +921,19 @@ public class Util : MonoBehaviour {
       return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
    }
 
+   public static void stopHostAndReturnToTitleScreen () {
+      // Stop any client or server that may have been running
+      MyNetworkManager.self.StopHost();
+
+      // Activate the Title Screen camera
+      Util.activateVirtualCamera(TitleScreen.self.virtualCamera);
+
+      // Clear out our saved data
+      Global.lastUsedAccountName = "";
+      Global.lastUserAccountPassword = "";
+      Global.currentlySelectedUserId = 0;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 }

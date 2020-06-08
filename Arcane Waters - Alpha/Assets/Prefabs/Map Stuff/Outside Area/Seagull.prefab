@@ -54,6 +54,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -141,9 +142,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneId: 0
   serverOnly: 0
   m_AssetId: 
-  m_SceneId: 0
+  hasSpawned: 0
 --- !u!114 &2440619335860885179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,9 +168,9 @@ MonoBehaviour:
   bodyType: 0
   eyesType: 0
   hairType: 0
-  eyesColor1: 0
-  hairColor1: 0
-  hairColor2: 0
+  eyesPalette1: 
+  hairPalette1: 
+  hairPalette2: 
   entityName: Seagull
   nationType: 0
   currentHealth: 1000
@@ -188,20 +190,26 @@ MonoBehaviour:
   hasDiagonals: 0
   fallDirection: 0
   adminFlag: 0
+  shipSpeedupFlag: 0
   classType: 0
   specialty: 0
   faction: 0
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  customHouseBaseId: 0
+  customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  spritePath: 
+  iconPath: 
   npcType: 17
-  moveTarget: {x: 0, y: 0}
-  moveSpeed: 8
+  shopName: None
+  shopPanelType: 0
   npcId: 0
   tradeGossip: 
   isDebug: 0
+  isShopNpc: 0
 --- !u!114 &7924207350990887012
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 7076503049519936733}
 --- !u!114 &3261320227793016746
@@ -276,8 +285,9 @@ MonoBehaviour:
   isVelocityCompressed: 0
   isAngularVelocityCompressed: 0
   isSmoothingAuthorityChanges: 0
+  transformSource: 0
   whenToUpdateTransform: 1
-  sendRate: 30
+  sendRate: 4
   networkChannel: 1
   childObjectToSync: {fileID: 0}
   setVelocityInsteadOfPositionOnNonOwners: 0
@@ -330,6 +340,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:

@@ -50,7 +50,7 @@ public class TitleScreen : MonoBehaviour {
       }
 
       // Make the canvas disabled while the client is running
-      bool disabled = NetworkClient.active || NetworkServer.active || Global.isRedirecting || CharacterScreen.self.isShowing();
+      bool disabled = !isActive();
       _canvasGroup.interactable = !disabled;
       _canvasGroup.blocksRaycasts = !disabled;
 
@@ -83,6 +83,10 @@ public class TitleScreen : MonoBehaviour {
       }
 
       return _canvasGroup.alpha != 0f;
+   }
+
+   public bool isActive () {
+      return !NetworkClient.active && !NetworkServer.active && !Global.isRedirecting && !CharacterScreen.self.isShowing();
    }
 
    public void displayError (ErrorMessage.Type errorType) {

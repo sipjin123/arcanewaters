@@ -117,7 +117,6 @@ public class MyNetworkManager : NetworkManager
    }
 
    public override void OnClientDisconnect (NetworkConnection conn) {
-      NetworkServer.RemovePlayerForConnection(conn, false);
    }
 
    #endregion

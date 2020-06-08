@@ -1177,7 +1177,14 @@ public class Minimap : ClientMonoBehaviour {
             }
 
             foreach (var icon in _tileIconLayers) {
-               if (icon.useAreaEffector2D) {
+               if (area.isSea && icon.iconLayerName == _treasureSiteIconName) {
+                  Transform[] treasureSites = area.gameObject.transform.Find("Treasure Sites") ? area.gameObject.transform.Find("Treasure Sites").GetComponentsInChildren<Transform>() : new Transform[0];
+                  foreach (var treasureSite in treasureSites) {
+                     if (treasureSite.GetComponent<SpriteRenderer>() && treasureSite.GetComponent<SpriteRenderer>().enabled) {
+                        addIconToTexture(layerSizeY, layerSizeX, area, treasureSite.transform, icon, ref textureList);
+                     }
+                  }
+               } else if (icon.useAreaEffector2D) {
                   foreach (var areaEffector2D in areaEffectors2D) {
                      if (areaEffector2D.forceAngle == 90) {
                         Texture2D map = new Texture2D(layerSizeX, layerSizeY);
@@ -1221,8 +1228,8 @@ public class Minimap : ClientMonoBehaviour {
                                  (int) sprite.textureRect.width,
                                  (int) sprite.textureRect.height);
 
-                           int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-layerSizeX / 2), 0, map.width - (int)sprite.textureRect.width);
-                           int ySetPixel = Mathf.Clamp(layerSizeY + icon.offset.y - (collider2DCellPosition.y - (-layerSizeY / 2)), 0, map.height - (int)sprite.textureRect.height);
+                           int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-layerSizeX / 2), 0, map.width - (int) sprite.textureRect.width);
+                           int ySetPixel = Mathf.Clamp(layerSizeY + icon.offset.y - (collider2DCellPosition.y - (-layerSizeY / 2)), 0, map.height - (int) sprite.textureRect.height);
 
                            map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
 
@@ -1235,6 +1242,13 @@ public class Minimap : ClientMonoBehaviour {
                } else if (icon.usePrefab) {
                   foreach (var pref in prefabs) {
                      if (pref.name.StartsWith(icon.iconLayerName)) {
+                        // Special case of prefab icon - warps
+                        if (icon.iconLayerName == _warpIconName) {
+                           if (area.isSea && Area.isTown(pref.GetComponent<Warp>().areaTarget)) {
+                              addIconToTexture(layerSizeY, layerSizeX, area, pref.transform, icon, ref textureList);
+                           }
+                           break;
+                        }
                         Texture2D map = new Texture2D(layerSizeX, layerSizeY);
                         MakeTextureTransparent(map);
 
@@ -1281,7 +1295,7 @@ public class Minimap : ClientMonoBehaviour {
                                  if (!createdPrefabIcons.ContainsKey(icon.iconLayerName)) {
                                     createdPrefabIcons.Add(icon.iconLayerName, new List<Vector2Int>());
                                  }
-                                 createdPrefabIcons[icon.iconLayerName].Add(new Vector2Int(xSetPixel, ySetPixel));                                 
+                                 createdPrefabIcons[icon.iconLayerName].Add(new Vector2Int(xSetPixel, ySetPixel));
                               }
 
                               map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
@@ -1345,6 +1359,31 @@ public class Minimap : ClientMonoBehaviour {
 
       _tileLayer = new TileLayer[0];
       _tileIconLayers = new TileIcon[0];
+   }
+
+   private void addIconToTexture (int mapHeight, int mapWidth, Area area, Transform transform, TileIcon icon, ref List<Texture2D> textureList) {
+      Texture2D map = new Texture2D(mapHeight, mapWidth);
+      MakeTextureTransparent(map);
+
+      GridLayout gridLayout = area.GetComponentInChildren<GridLayout>();
+      Vector2Int collider2DCellPosition = new Vector2Int(gridLayout.WorldToCell(transform.position).x, -gridLayout.WorldToCell(transform.position).y);
+
+      var sprite = icon.spriteIcon;
+
+      if (sprite) {
+         var pixels = sprite.texture.GetPixels((int) sprite.textureRect.x,
+               (int) sprite.textureRect.y,
+               (int) sprite.textureRect.width,
+               (int) sprite.textureRect.height);
+
+         int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-mapWidth / 2), 0, map.width - (int) sprite.textureRect.width);
+         int ySetPixel = Mathf.Clamp(mapHeight + icon.offset.y - (collider2DCellPosition.y - (-mapHeight / 2)), 0, map.height - (int) sprite.textureRect.height);
+
+         map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
+
+         map.Apply();
+         textureList.Add(map);
+      }
    }
 
    /// <summary>
@@ -1454,6 +1493,10 @@ public class Minimap : ClientMonoBehaviour {
    private string _shopShipyardIconPath = "Minimap/sign_shipyard";
    private string _shopTraderIconPath = "Minimap/sign_trader";
    private string _shopWeaponsIconPath = "Minimap/sign_weapons";
+
+   // Name of special case icon layers
+   private string _treasureSiteIconName = "TreasureSite";
+   private string _warpIconName = "Warp";
 
    #endregion
 }
