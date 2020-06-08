@@ -55,6 +55,12 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Determines if this is initialized
    public bool isInitialized;
 
+   // Event that notifies if streaming asset files are complete of not
+   public Util.BoolEvent finishedCheckingStreamingAsset = new Util.BoolEvent();
+
+   // Event that notifies if streaming asset files are complete of not
+   public UnityEvent initializeLoadingXmlData = new UnityEvent();
+
    #endregion
 
    private void Awake () {
@@ -80,14 +86,71 @@ public class XmlVersionManagerClient : MonoBehaviour {
       int clientXmlVersion = PlayerPrefs.GetInt(XML_VERSION, 0);
       string clientMessage = "";
 
-      if (serverVersion > clientXmlVersion) {
-         clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
-         D.debug(clientMessage);
-         downloadClientData(serverVersion);
-      } else {
-         clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
-         D.debug(clientMessage);
-         processClientXml();
+      finishedCheckingStreamingAsset.AddListener(isCompleteData => {
+         if (!isCompleteData) {
+            clientMessage = "Missing Files! Initialize Redownload";
+            D.debug(clientMessage);
+
+            // Reset version cache since file integrity might be compromised
+            PlayerPrefs.SetInt(XML_VERSION, 0);
+
+            // Force redownload zip data due to possible missing files
+            downloadClientData(serverVersion);
+         } else {
+            clientMessage = "All files are existing, continue version checking";
+            D.debug(clientMessage);
+
+            if (serverVersion > clientXmlVersion) {
+               clientMessage = "Client is outdated ver: " + clientXmlVersion + ", downloading new version: " + serverVersion;
+               D.debug(clientMessage);
+               downloadClientData(serverVersion);
+            } else {
+               clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
+               D.debug(clientMessage);
+               processClientXml();
+            }
+         }
+         finishedCheckingStreamingAsset.RemoveAllListeners();
+      });
+      confirmStreamingAssets();
+   }
+
+   private void confirmStreamingAssets () {
+      checkStreamingAssetFile(XmlVersionManagerServer.CROPS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.ABILITIES_FILE);
+
+      checkStreamingAssetFile(XmlVersionManagerServer.ARMOR_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.WEAPON_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.HAT_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.LAND_MONSTER_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.NPC_FILE);
+
+      checkStreamingAssetFile(XmlVersionManagerServer.CLASS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.FACTION_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.JOB_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SPECIALTY_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SEA_MONSTER_FILE);
+
+      checkStreamingAssetFile(XmlVersionManagerServer.SHIP_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SHOP_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.SHIP_ABILITY_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.BACKGROUND_DATA_FILE);
+
+      checkStreamingAssetFile(XmlVersionManagerServer.PERKS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
+   }
+
+   private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
+      string fileDirectory = TEXT_PATH + fileName + ".txt";
+      if (!File.Exists(fileDirectory)) {
+         D.error("Missing file! Creating now: " + fileDirectory);
+         File.Create(fileDirectory).Close();
+         finishedCheckingStreamingAsset.Invoke(false);
+      }
+
+      if (isLastEntry) {
+         finishedCheckingStreamingAsset.Invoke(true);
       }
    }
 
@@ -139,40 +202,48 @@ public class XmlVersionManagerClient : MonoBehaviour {
          }
       }
 
-      debugLog("Finished Extracting Zip");
+      D.editorLog("Finished Extracting Zip", Color.green);
       processClientXml();
    }
 
    private void processClientXml () {
-      debugLog("Initializing Text Extraction");
       targetProgress = 0;
       currentProgress = 0;
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Crops));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.BattlerAbility));
 
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Armor));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Weapon));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Equipment_Hat));
+      extractXmlType(EditorToolType.Crops);
+      extractXmlType(EditorToolType.BattlerAbility);
 
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.LandMonster));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.SeaMonster));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.NPC));
+      extractXmlType(EditorToolType.Equipment_Armor);
+      extractXmlType(EditorToolType.Equipment_Weapon);
+      extractXmlType(EditorToolType.Equipment_Hat);
 
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerClass));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerFaction));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.PlayerSpecialty));
+      extractXmlType(EditorToolType.LandMonster);
+      extractXmlType(EditorToolType.SeaMonster);
+      extractXmlType(EditorToolType.NPC);
 
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Shop));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Ship));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.ShipAbility));
+      extractXmlType(EditorToolType.PlayerClass);
+      extractXmlType(EditorToolType.PlayerFaction);
+      extractXmlType(EditorToolType.PlayerSpecialty);
 
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Background));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Perks));
-      StartCoroutine(CO_ExtractXmlData(EditorToolType.Palette));
+      extractXmlType(EditorToolType.Shop);
+      extractXmlType(EditorToolType.Ship);
+      extractXmlType(EditorToolType.ShipAbility);
+
+      extractXmlType(EditorToolType.Background);
+      extractXmlType(EditorToolType.Perks);
+      extractXmlType(EditorToolType.Palette);
+
+      initializeLoadingXmlData.Invoke();
+   }
+
+   private void extractXmlType (EditorToolType toolType) {
+      targetProgress++;
+      initializeLoadingXmlData.AddListener(() => {
+         StartCoroutine(CO_ExtractXmlData(toolType));
+      });
    }
 
    private IEnumerator CO_ExtractXmlData (EditorToolType xmlType) {
-      targetProgress++;
       yield return new WaitForSeconds(.25f);
 
       string content = "";

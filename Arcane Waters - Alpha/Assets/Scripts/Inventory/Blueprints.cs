@@ -114,10 +114,10 @@ public class Blueprint : RecipeItem
             modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
          } else if (typeID.ToString().StartsWith(WEAPON_ID_PREFIX)) {
             modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.WEAPON_ID_PREFIX, ""));
+         } else if (typeID.ToString().StartsWith(HAT_ID_PREFIX)) {
+            modifiedID = int.Parse(typeID.ToString().Replace(Blueprint.HAT_ID_PREFIX, ""));
          }
-      } else {
-         Debug.LogWarning("Invalid Category: " + resultCategory);
-      }
+      } 
       return modifiedID;
    }
 

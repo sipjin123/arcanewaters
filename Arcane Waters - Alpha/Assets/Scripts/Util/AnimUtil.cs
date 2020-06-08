@@ -183,45 +183,94 @@ public class AnimUtil : MonoBehaviour {
             }
             break;
 
-            case Anim.Group.Golem:
-               switch (animType) {
-                  case Anim.Type.Idle_East:
-                     return new AnimInfo(animType, 0, 2);
-                  case Anim.Type.Idle_North:
-                     return new AnimInfo(animType, 3, 5);
-                  case Anim.Type.Idle_South:
-                     return new AnimInfo(animType, 6, 8);
+         case Anim.Group.Pirate:
+         case Anim.Group.Wisp:
+         case Anim.Group.Snake:
+         case Anim.Group.Elemental:
+         case Anim.Group.Shroom:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 8, 11);
 
-                  case Anim.Type.Run_East:
-                     return new AnimInfo(animType, 9, 14);
-                  case Anim.Type.Run_North:
-                     return new AnimInfo(animType, 15, 20);
-                  case Anim.Type.Run_South:
-                     return new AnimInfo(animType, 21, 26);
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 12, 15);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 16, 19);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 20, 23);
 
-                  case Anim.Type.Attack_East:
-                     return new AnimInfo(animType, 27, 34);
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 24, 31);
 
-                  case Anim.Type.Hurt_East:
-                     return new AnimInfo(animType, 35, 35);
+               case Anim.Type.Ready_Attack:
+                  return new AnimInfo(animType, 24, 27);
 
-                  case Anim.Type.Death_East:
-                     return new AnimInfo(animType, 36, 39);
+               case Anim.Type.Finish_Attack:
+                  return new AnimInfo(animType, 28, 31);
 
-                  case Anim.Type.Battle_East:
-                     return new AnimInfo(animType, 0, 2);
-                  case Anim.Type.Battle_North:
-                     return new AnimInfo(animType, 3, 5);
-                  case Anim.Type.Battle_South:
-                     return new AnimInfo(animType, 6, 8);
+               case Anim.Type.Hurt_East:
+                  return new AnimInfo(animType, 32, 32);
 
-                  case Anim.Type.Block_East:
-                     return new AnimInfo(animType, 0, 0);
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 33, 38);
 
-                  case Anim.Type.Jump_East:
-                     return new AnimInfo(animType, 11, 11);
-               }
+               case Anim.Type.Battle_East:
+                  return new AnimInfo(animType, 0, 3);
+               case Anim.Type.Battle_North:
+                  return new AnimInfo(animType, 4, 7);
+               case Anim.Type.Battle_South:
+                  return new AnimInfo(animType, 8, 11);
+
+               case Anim.Type.Block_East:
+                  return new AnimInfo(animType, 0, 0);
+
+               case Anim.Type.Jump_East:
+                  return new AnimInfo(animType, 14, 14);
+            }
             break;
+         case Anim.Group.Golem:
+            switch (animType) {
+               case Anim.Type.Idle_East:
+                  return new AnimInfo(animType, 0, 2);
+               case Anim.Type.Idle_North:
+                  return new AnimInfo(animType, 3, 5);
+               case Anim.Type.Idle_South:
+                  return new AnimInfo(animType, 6, 8);
+
+               case Anim.Type.Run_East:
+                  return new AnimInfo(animType, 9, 14);
+               case Anim.Type.Run_North:
+                  return new AnimInfo(animType, 15, 20);
+               case Anim.Type.Run_South:
+                  return new AnimInfo(animType, 21, 26);
+
+               case Anim.Type.Attack_East:
+                  return new AnimInfo(animType, 27, 34);
+
+               case Anim.Type.Hurt_East:
+                  return new AnimInfo(animType, 35, 35);
+
+               case Anim.Type.Death_East:
+                  return new AnimInfo(animType, 36, 39);
+
+               case Anim.Type.Battle_East:
+                  return new AnimInfo(animType, 0, 2);
+               case Anim.Type.Battle_North:
+                  return new AnimInfo(animType, 3, 5);
+               case Anim.Type.Battle_South:
+                  return new AnimInfo(animType, 6, 8);
+
+               case Anim.Type.Block_East:
+                  return new AnimInfo(animType, 0, 0);
+
+               case Anim.Type.Jump_East:
+                  return new AnimInfo(animType, 11, 11);
+            }
+         break;
 
          case Anim.Group.Golem_Boss:
             switch (animType) {

@@ -776,6 +776,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          // Wait a little bit for it to finish
          yield return new WaitForSeconds(.25f);
 
+         // Hide this unit when it dies
+         if (_alteredBattlerData.disableOnDeath) {
+            mainSpriteRenderer.enabled = false;
+         }
+
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
       }

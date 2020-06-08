@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 using static EditorSQLManager;
 using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
-using System.IO.Compression;
 using System;
 using System.Text;
 
@@ -102,7 +101,11 @@ public class XmlVersionManagerServer : MonoBehaviour {
       if (!Directory.Exists(SERVER_ZIP_DIRECTORY)) {
          Directory.CreateDirectory(SERVER_ZIP_DIRECTORY);
       }
+      confirmTextFiles();
+      self = this;
+   }
 
+   public void confirmTextFiles () {
       confirmTextFile(CROPS_FILE);
       confirmTextFile(ABILITIES_FILE);
 
@@ -126,8 +129,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
       confirmTextFile(PERKS_FILE);
       confirmTextFile(PALETTE_FILE);
-
-      self = this;
    }
 
    private void confirmTextFile (string fileName) {

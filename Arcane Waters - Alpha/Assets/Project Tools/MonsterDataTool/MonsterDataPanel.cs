@@ -336,6 +336,8 @@ public class MonsterDataPanel : MonoBehaviour
 
       _name.text = newBattleData.enemyName;
 
+      _disableOnDeath.isOn = newBattleData.disableOnDeath;
+
       loadLootTemplates(newBattleData);
       loadSkillTemplates(newBattleData);
    }
@@ -411,6 +413,8 @@ public class MonsterDataPanel : MonoBehaviour
          buffAbilityDataList = buffAbilityList.ToArray()
       };
 
+      newBattData.disableOnDeath = _disableOnDeath.isOn;
+
       return newBattData;
    }
 
@@ -443,7 +447,6 @@ public class MonsterDataPanel : MonoBehaviour
 
       foreach (MonsterLootRow lootRow in monsterLootList) {
          LootInfo newLootInfo = new LootInfo();
-
          int modifiedId = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
          newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedId, data = lootRow.itemData };
          newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
@@ -764,6 +767,9 @@ public class MonsterDataPanel : MonoBehaviour
 #pragma warning disable 0649 
    // Main parameters
    [SerializeField] private InputField _name;
+
+   // Toggle variables
+   [SerializeField] private Toggle _disableOnDeath;
 
    // Base battler parameters
    [SerializeField] private InputField _preContactLength;

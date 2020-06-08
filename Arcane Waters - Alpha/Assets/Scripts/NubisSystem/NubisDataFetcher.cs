@@ -143,6 +143,16 @@ namespace NubisDataHandling {
       }
 
       private async void processUserInventory (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
+         // Get the inventory panel
+         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+         // Show the inventory panel
+         // Make sure the inventory panel is showing
+         if (!inventoryPanel.isShowing()) {
+            PanelManager.self.pushPanel(Panel.Type.Inventory);
+         }
+         inventoryPanel.clearPanel();
+
          int userId = Global.player == null ? 0 : Global.player.userId;
          UserInfo newUserInfo = new UserInfo();
          List<Item> userInventory = new List<Item>();
@@ -205,15 +215,6 @@ namespace NubisDataHandling {
                   userInventory.Add(item);
                }
             }
-         }
-
-         // Get the inventory panel
-         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-
-         // Show the inventory panel
-         // Make sure the inventory panel is showing
-         if (!inventoryPanel.isShowing()) {
-            PanelManager.self.pushPanel(Panel.Type.Inventory);
          }
 
          UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor, hat = equippedHat };

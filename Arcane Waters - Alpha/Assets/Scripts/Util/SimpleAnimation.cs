@@ -198,7 +198,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
       _lastFrameChangeTime = Time.time;
 
       // Check if we need to pause
-      if (Anim.pausesAtEnd(this.currentAnimation) && _index == maxIndex) {
+      if (Anim.pausesAtEnd(this.currentAnimation) && _index >= maxIndex) {
          this.isPaused = true;
       }
 
@@ -258,6 +258,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
    protected Sprite[] _sprites;
 
    // Our current sprite index
+   [SerializeField]
    protected int _index;
 
    // The time at which we last changed frames

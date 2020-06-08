@@ -57,6 +57,9 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("Fetch Xml Zip Data")) {
             nubisXMLBytes();
          }
+         if (GUILayout.Button("TestCall")) {
+            testNubisCall();
+         }
          if (GUILayout.Button("Get DB_Main get monster data")) {
             D.editorLog("Fetching Land Monster Xml");
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -76,6 +79,12 @@ public class NubisDataFetchTest : MonoBehaviour
             directFetchXmlData();
          }
       }
+   }
+
+   private async void testNubisCall () {
+      D.debug("Nubis Call Start");
+      var returnCode = await NubisClient.call(nameof(DB_Main.nubisTestFetch), "message1", "message2");
+      D.debug("Result: " + returnCode);
    }
 
    private void directFetchXmlData () {

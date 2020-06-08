@@ -66,6 +66,9 @@ public class BattlerData {
    // Determines if this battler is a boss
    public bool isBossType;
 
+   // Determines if this unit should be set to inactive when it dies in battle
+   public bool disableOnDeath;
+
    // Contains the elemental resistance and weakness
    [XmlIgnore] public Element[] elementalWeakness;
    [XmlIgnore] public Element[] elementalResistance;
@@ -128,7 +131,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath) {
 
       BattlerData data = new BattlerData();
 
@@ -136,7 +139,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup);
+       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup, disableOnDeath);
 
       return data;
    }
@@ -198,6 +201,7 @@ public class BattlerData {
       preMagicLength = datacopy.preMagicLength;
 
       imagePath = datacopy.imagePath;
+      disableOnDeath = datacopy.disableOnDeath;
    }
 
    protected void setAllBattlerData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
@@ -205,7 +209,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;
@@ -246,6 +250,8 @@ public class BattlerData {
       this.preContactLength = preContactLength;
       this.preMagicLength = preMagicLength;
       this.imagePath = imagePath;
+
+      this.disableOnDeath = disableOnDeath;
    }
 
    #region Helper Class

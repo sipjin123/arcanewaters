@@ -119,6 +119,21 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
    }
 
+   public void clearPanel () {
+      // Clear out any current items
+      itemCellsContainer.DestroyChildren();
+      equippedWeaponCellContainer.DestroyChildren();
+      equippedArmorCellContainer.DestroyChildren();
+      equippedHatCellContainer.DestroyChildren();
+      characterStack.gameObject.SetActive(false);
+
+      if (Global.player != null) {
+         characterNameText.text = Global.player.entityName;
+         goldText.text = "";
+         gemsText.text = "";
+      }
+   }
+
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
       loadBlocker.SetActive(false);
       _equippedWeaponId = userObjects.weapon.id;
@@ -143,6 +158,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       gemsText.text = string.Format("{0:n0}", userObjects.userInfo.gems);
 
       // Update the character preview
+      characterStack.gameObject.SetActive(true);
       characterStack.updateLayers(userObjects);
 
       // Insert the player's name

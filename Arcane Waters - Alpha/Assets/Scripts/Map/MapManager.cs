@@ -81,7 +81,7 @@ public class MapManager : MonoBehaviour
             int baseMapId = DB_Main.getMapId(mapInfo.mapName);
             customizationData = DB_Main.getMapCustomizationData(baseMapId, ownerId);
          }
-         D.editorLog("Map Log: Creating map for: " + areaKey, Color.cyan);
+         D.editorLog("Map Log: Creating map for: " + areaKey, Color.green);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -281,7 +281,7 @@ public class MapManager : MonoBehaviour
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // TODO: Do not Remove until this issue is completely fixed
-         D.editorLog("Map Log: Download and Create Map", Color.cyan);
+         D.editorLog("Map Log: Download and Create Map", Color.green);
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);

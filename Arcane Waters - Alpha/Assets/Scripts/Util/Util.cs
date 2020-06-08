@@ -17,6 +17,7 @@ using TMPro;
 using System.Text;
 using System.Xml;
 using System.Globalization;
+using UnityEngine.Events;
 
 public class Util : MonoBehaviour {
    public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
@@ -28,6 +29,8 @@ public class Util : MonoBehaviour {
 
       return null;
    }
+
+   public class BoolEvent : UnityEvent<bool> { }
 
    public static Sprite switchSpriteBiome (Sprite sprite, Biome.Type from, Biome.Type to) {
       try {

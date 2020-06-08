@@ -119,6 +119,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          if (shouldDisableColliderOnDeath()) {
             circleCollider.enabled = false;
          }
+         if (MonsterManager.self.getBattler(this.enemyType).disableOnDeath) {
+            bodyAnim.gameObject.SetActive(false);
+         }
       }
 
       if (!this.isServer || isDefeated) {
