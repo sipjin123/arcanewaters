@@ -81,18 +81,17 @@ public class MapManager : MonoBehaviour
             int baseMapId = DB_Main.getMapId(mapInfo.mapName);
             customizationData = DB_Main.getMapCustomizationData(baseMapId, ownerId);
          }
-         D.editorLog("Map Log: Creating map for: " + areaKey, Color.green);
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Deserialize the map
-            ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo);
+            ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
             int mapVersion = 0;
             try {
                mapVersion = mapInfo.version;
             } catch {
-               D.debug("Map info does not Exist!! Failed to fetch using DBMain: " + mapInfo);
+               D.debug("Map info does not Exist!! Failed to fetch using DBMain for area: " + areaKey);
                return;
             }
 
@@ -275,7 +274,7 @@ public class MapManager : MonoBehaviour
       // Request the map from Nubis Cloud
       try {
          // Grab the map data from the request
-         string mapData = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), baseMapAreaKey);
+         string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey);
 
          // Store it for later reference
          MapCache.storeMapData(baseMapAreaKey, version, mapData);

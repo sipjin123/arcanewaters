@@ -61,6 +61,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Event that notifies if streaming asset files are complete of not
    public UnityEvent initializeLoadingXmlData = new UnityEvent();
 
+   // Popup notice if nubis failed to return zip file data
+   public GameObject failedToFetchDataPanel;
+   public Button exitButton;
+
    #endregion
 
    private void Awake () {
@@ -73,6 +77,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
          PlayerPrefs.SetInt(XML_VERSION, 0);
       }
       loadBlocker.SetActive(true);
+
+      initializeLoadingXmlData.RemoveAllListeners();
+      finishedCheckingStreamingAsset.RemoveAllListeners();
+      finishedLoadingXmlData.RemoveAllListeners();
 
       NubisDataFetcher.self.xmlVersionEvent.AddListener(_ => {
          processClientData(_);
@@ -155,24 +163,32 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
 
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(DB_Main.nubisFetchXmlZipBytes), "1");
-      try {
-         byte[] bytes = Convert.FromBase64String(zipDataRequest);
-         File.WriteAllBytes(ZIP_PATH, bytes);
-      } catch {
-         D.editorLog("Failed to convert bytes:", Color.red);
+      string zipDataRequest = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), "1");
+      if (zipDataRequest.Length < 10) {
+         // If the result string is less than expected, the zip blob download has failed then call out the error panel which contains an exit button
+         loadBlocker.SetActive(true);
+         failedToFetchDataPanel.SetActive(true);
+         exitButton.onClick.AddListener(() => Application.Quit());
+         return;
+      } else {
+         try {
+            byte[] bytes = Convert.FromBase64String(zipDataRequest);
+            File.WriteAllBytes(ZIP_PATH, bytes);
+         } catch {
+            D.editorLog("Failed to convert bytes:", Color.red);
 
-         if (!Directory.Exists(ERROR_DIRECTORY)) {
-            Directory.CreateDirectory(ERROR_DIRECTORY);
+            if (!Directory.Exists(ERROR_DIRECTORY)) {
+               Directory.CreateDirectory(ERROR_DIRECTORY);
+            }
+            if (!File.Exists(ERROR_DIRECTORY + ERROR_FILENAME)) {
+               File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
+            }
+            File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipDataRequest);
          }
-         if (!File.Exists(ERROR_DIRECTORY + ERROR_FILENAME)) {
-            File.Create(ERROR_DIRECTORY + ERROR_FILENAME).Close();
-         }
-         File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipDataRequest);
+
+         StartCoroutine(CO_ExtractTextFiles());
+         PlayerPrefs.SetInt(XML_VERSION, targetVersion);
       }
-
-      StartCoroutine(CO_ExtractTextFiles());
-      PlayerPrefs.SetInt(XML_VERSION, targetVersion);
    }
 
    private IEnumerator CO_ExtractTextFiles () {

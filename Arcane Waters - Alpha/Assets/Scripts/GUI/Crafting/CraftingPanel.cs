@@ -80,6 +80,22 @@ public class CraftingPanel : Panel
       self = this;
    }
 
+   public void clearContent () {
+      toggleBlockers(true);
+      blueprintRowsContainer.DestroyChildren();
+      resultItemContainer.DestroyChildren();
+      ingredientCellsContainer.DestroyChildren();
+
+      physicalStatColumn.clear();
+      fireStatColumn.clear();
+      earthStatColumn.clear();
+      airStatColumn.clear();
+      waterStatColumn.clear();
+
+      descriptionText.text = "";
+      itemNameText.text = "";
+   }
+
    public void refreshBlueprintList () {
       toggleBlockers(true);
       NubisDataFetcher.self.fetchCraftableData(_currentPage, ROWS_PER_PAGE);
@@ -95,7 +111,7 @@ public class CraftingPanel : Panel
       NubisDataFetcher.self.checkCraftingInfo(_selectedBlueprintId);
    }
 
-   private void toggleBlockers (bool isActive) {
+   public void toggleBlockers (bool isActive) {
       nextPageButton.interactable = !isActive;
       previousPageButton.interactable = !isActive;
       loadBlockerList.SetActive(isActive);
@@ -119,7 +135,7 @@ public class CraftingPanel : Panel
       }
 
       // Update the current page text
-      pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+      pageNumberText.text = "Page " + (_currentPage + 1).ToString() + " of " + _maxPage.ToString();
 
       // Update the navigation buttons
       updateNavigationButtons();

@@ -586,7 +586,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Page 1 of 3
+  m_Text: Page 1 of 1
 --- !u!114 &6334231986317890480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3311,6 +3311,7 @@ MonoBehaviour:
   resultItemContainer: {fileID: 5236730944815560035}
   blueprintRowPrefab: {fileID: 6197042897174037416, guid: 34a50f041b91d95479e1eb28b448e0ee,
     type: 3}
+  blueprintRowList: []
   ingredientCellPrefab: {fileID: 4689217583007890285, guid: 3c0f3330333896a45a0b604f3ce7fc38,
     type: 3}
   loadBlockerList: {fileID: 3955220183154489970}

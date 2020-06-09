@@ -1,4 +1,5 @@
 ﻿using MapCustomization;
+using NubisDataHandling;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -154,7 +155,7 @@ public class BottomBar : MonoBehaviour {
       AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestAbility();
+         NubisDataFetcher.self.fetchUserAbilities();
       } else {
          PanelManager.self.togglePanel(Panel.Type.Ability_Panel);
       }

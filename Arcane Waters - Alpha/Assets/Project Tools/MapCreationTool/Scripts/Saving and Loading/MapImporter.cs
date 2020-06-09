@@ -10,11 +10,11 @@ namespace MapCreationTool
 {
    public class MapImporter
    {
-      public static ExportedProject001 deserializeMapData (MapInfo mapInfo) {
+      public static ExportedProject001 deserializeMapData (MapInfo mapInfo, string areaKey) {
          try {
             return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
          } catch {
-            D.editorLog("Failed to deserialize Map data for: " + mapInfo, Color.red);
+            D.editorLog("Failed to deserialize Map data for: " + areaKey, Color.red);
             return new ExportedProject001();
          }
       }

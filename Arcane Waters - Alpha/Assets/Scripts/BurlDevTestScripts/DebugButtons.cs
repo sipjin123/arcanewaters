@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using NubisDataHandling;
 #if IS_SERVER_BUILD
 using Mirror;
 public class DebugButtons : NetworkBehaviour
@@ -33,26 +34,6 @@ public class DebugButtons : NetworkBehaviour
    private void simulateAbilityData () {
       GUILayout.BeginHorizontal("box");
       {
-         if (GUILayout.Button("Create Skill List")) {
-            List<AbilitySQLData> sqlList = new List<AbilitySQLData>();
-
-            for (int i = 0; i < 5; i++) {
-               AbilitySQLData newSQL = new AbilitySQLData();
-               newSQL.abilityID = i;
-               newSQL.name = "Name: " + Random.Range(0, 100);
-               newSQL.description = "test desc";
-               newSQL.equipSlotIndex = i;
-               newSQL.abilityLevel = 1;
-
-               sqlList.Add(newSQL);
-            }
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               foreach (AbilitySQLData sqlDat in sqlList) {
-                  DB_Main.updateAbilitiesData(Global.player.userId, sqlDat);
-               }
-            });
-         }
-         
          if (GUILayout.Button("Load All Skill List")) {
             List<AbilitySQLData> newID = DB_Main.getAllAbilities(Global.player.userId);
 
@@ -63,32 +44,13 @@ public class DebugButtons : NetworkBehaviour
 
          if (GUILayout.Button("Open Crafting")) {
             // Get the crafting panel
-            PanelManager.self.selectedPanel = Panel.Type.Craft;
-            CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-            // If the panel is not showing, send a request to the server to get the crafting data
-            if (!panel.isShowing()) {
-               panel.clearSelectedBlueprint();
-               panel.refreshBlueprintList();
-            }
+            NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);
          }
 
          if (GUILayout.Button("Open Recruitment")) {
             Global.player.rpc.Cmd_RequestCompanionData();
          }
 
-         if (GUILayout.Button("Update Skill")) {
-            AbilitySQLData newSQL = new AbilitySQLData();
-            newSQL.abilityID = int.Parse( abilityIDData );
-            newSQL.name = "new name";
-            newSQL.description = "new desc";
-            newSQL.abilityLevel = 2;
-            newSQL.equipSlotIndex = 99;
-
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.updateAbilitiesData(Global.player.userId, newSQL);
-            });
-         }
          GUILayout.BeginHorizontal();
          GUILayout.Box("ItemSkill: ", GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));
          abilityIDData = GUILayout.TextField(abilityIDData, GUILayout.Width(buttonSizeX / 2), GUILayout.Height(buttonSizeY));

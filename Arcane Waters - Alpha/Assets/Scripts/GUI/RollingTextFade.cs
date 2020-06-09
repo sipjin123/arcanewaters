@@ -47,7 +47,9 @@ public class RollingTextFade : ClientMonoBehaviour {
       _textComponent.color = new Color(_originalColor.r, _originalColor.g, _originalColor.b, 0f);
 
       // Start the coroutine to fade in the text
-      _changeTextCoroutine = StartCoroutine (AnimateVertexColors());
+      if (_textComponent.gameObject.activeInHierarchy) {
+         _changeTextCoroutine = StartCoroutine(AnimateVertexColors());
+      }
    }
 
    /// <summary>
@@ -57,83 +59,85 @@ public class RollingTextFade : ClientMonoBehaviour {
    IEnumerator AnimateVertexColors () {
       this.isDone = false;
 
-      // Need to force the text object to be generated so we have valid data to work with right from the start.
-      _textComponent.ForceMeshUpdate();
-      yield return null;
-      _textComponent.ForceMeshUpdate();
+      if (_textComponent.gameObject.activeInHierarchy) {
+         // Need to force the text object to be generated so we have valid data to work with right from the start.
+         _textComponent.ForceMeshUpdate();
+         yield return null;
+         _textComponent.ForceMeshUpdate();
 
-      // Store our text info and vertex colors
-      TMP_TextInfo textInfo = _textComponent.textInfo;
-      Color32[] newVertexColors;
+         // Store our text info and vertex colors
+         TMP_TextInfo textInfo = _textComponent.textInfo;
+         Color32[] newVertexColors;
 
-      int currentCharacter = 0;
-      int startingCharacterRange = currentCharacter;
-      bool isRangeMax = false;
+         int currentCharacter = 0;
+         int startingCharacterRange = currentCharacter;
+         bool isRangeMax = false;
 
-      while (!isRangeMax) {
-         int characterCount = textInfo.characterCount;
+         while (!isRangeMax && _textComponent.gameObject.activeInHierarchy) {
+            int characterCount = textInfo.characterCount;
 
-         for (int i = startingCharacterRange; i < currentCharacter + 1; i++) {
-            // Skip characters that are not visible
-            if (!textInfo.characterInfo[i].isVisible) {
-               continue;
+            for (int i = startingCharacterRange; i < currentCharacter + 1; i++) {
+               // Skip characters that are not visible
+               if (!textInfo.characterInfo[i].isVisible) {
+                  continue;
+               }
+
+               // Get the index of the material used by the current character.
+               int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
+
+               // Get the vertex colors of the mesh used by this text element (character or sprite).
+               newVertexColors = textInfo.meshInfo[materialIndex].colors32;
+
+               // Get the index of the first vertex used by this text element.
+               int vertexIndex = textInfo.characterInfo[i].vertexIndex;
+
+               // Set new alpha values.
+               newVertexColors[vertexIndex + 0].a = 255;
+               newVertexColors[vertexIndex + 1].a = 255;
+               newVertexColors[vertexIndex + 2].a = 255;
+               newVertexColors[vertexIndex + 3].a = 255;
+
+               // Set new alpha values
+               newVertexColors[vertexIndex + 0] = newVertexColors[vertexIndex + 0];
+               newVertexColors[vertexIndex + 1] = newVertexColors[vertexIndex + 1];
+               newVertexColors[vertexIndex + 2] = newVertexColors[vertexIndex + 2];
+               newVertexColors[vertexIndex + 3] = newVertexColors[vertexIndex + 3];
+
+               startingCharacterRange += 1;
+
+               // Play a sound
+               SoundManager.play2DClip(SoundManager.Type.Blip_2);
+
+               if (startingCharacterRange == characterCount) {
+                  // Update mesh vertex data one last time.
+                  _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
+
+                  // Note that we're done now
+                  this.isDone = true;
+
+                  yield return new WaitForSeconds(1.0f);
+
+                  // Reset the text object back to original state.
+                  _textComponent.color = _originalColor;
+                  _textComponent.ForceMeshUpdate();
+
+                  yield return new WaitForSeconds(1.0f);
+
+                  // Reset our counters.
+                  currentCharacter = 0;
+                  startingCharacterRange = 0;
+                  isRangeMax = true; // End the coroutine.
+               }
             }
 
-            // Get the index of the material used by the current character.
-            int materialIndex = textInfo.characterInfo[i].materialReferenceIndex;
+            // Upload the changed vertex colors to the Mesh.
+            _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
-            // Get the vertex colors of the mesh used by this text element (character or sprite).
-            newVertexColors = textInfo.meshInfo[materialIndex].colors32;
+            if (currentCharacter + 1 < characterCount) currentCharacter += 1;
 
-            // Get the index of the first vertex used by this text element.
-            int vertexIndex = textInfo.characterInfo[i].vertexIndex;
-
-            // Set new alpha values.
-            newVertexColors[vertexIndex + 0].a = 255;
-            newVertexColors[vertexIndex + 1].a = 255;
-            newVertexColors[vertexIndex + 2].a = 255;
-            newVertexColors[vertexIndex + 3].a = 255;
-
-            // Set new alpha values
-            newVertexColors[vertexIndex + 0] = newVertexColors[vertexIndex + 0];
-            newVertexColors[vertexIndex + 1] = newVertexColors[vertexIndex + 1];
-            newVertexColors[vertexIndex + 2] = newVertexColors[vertexIndex + 2];
-            newVertexColors[vertexIndex + 3] = newVertexColors[vertexIndex + 3];
-
-            startingCharacterRange += 1;
-
-            // Play a sound
-            SoundManager.play2DClip(SoundManager.Type.Blip_2);
-
-            if (startingCharacterRange == characterCount) {
-               // Update mesh vertex data one last time.
-               _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-
-               // Note that we're done now
-               this.isDone = true;
-
-               yield return new WaitForSeconds(1.0f);
-
-               // Reset the text object back to original state.
-               _textComponent.color = _originalColor;
-               _textComponent.ForceMeshUpdate();
-
-               yield return new WaitForSeconds(1.0f);
-
-               // Reset our counters.
-               currentCharacter = 0;
-               startingCharacterRange = 0;
-               isRangeMax = true; // End the coroutine.
+            if (_delayPerCharacter > 0f) {
+               yield return new WaitForSeconds(_delayPerCharacter);
             }
-         }
-
-         // Upload the changed vertex colors to the Mesh.
-         _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
-
-         if (currentCharacter + 1 < characterCount) currentCharacter += 1;
-
-         if (_delayPerCharacter > 0f) {
-            yield return new WaitForSeconds(_delayPerCharacter);
          }
       }
    }

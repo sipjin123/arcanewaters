@@ -50,8 +50,11 @@ public class LoadingScreen : MonoBehaviour
       this.canvasGroup.interactable = false;
       loadingFinishedMessage.enabled = false;
       _isPreparingToShow = false;
-
-      SpotFader.self.openSpotToMaxSize(Global.player.transform);
+      try {
+         SpotFader.self.openSpotToMaxSize(Global.player.transform);
+      } catch {
+         D.error("Issue with Spot Fader");
+      }
    }
 
    public bool isShowing () {

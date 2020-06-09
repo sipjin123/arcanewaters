@@ -63,6 +63,14 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Update our currently selected user ID
       Global.currentlySelectedUserId = character.userId;
 
+      // Cache the user info
+      Global.userObjects = new UserObjects {
+         userInfo = character.getUserInfo(),
+         weapon = character.getWeapon(),
+         armor = character.getArmor(),
+         hat = character.getHat()
+      };
+
       // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
       ClientManager.sendAccountNameAndUserId();
    }

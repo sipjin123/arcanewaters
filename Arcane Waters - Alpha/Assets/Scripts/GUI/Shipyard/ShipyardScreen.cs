@@ -32,6 +32,9 @@ public class ShipyardScreen : Panel {
    // The texture of the animated head icon
    public Texture2D headIconTexture = null;
 
+   // An indicator that the data is being fetched
+   public GameObject loadBlocker;
+
    #endregion
 
    public override void Awake () {
@@ -45,6 +48,12 @@ public class ShipyardScreen : Panel {
 
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetShipsForArea(shopName);
+
+      // Clear out any old info
+      rowsContainer.DestroyChildren();
+
+      // Create a blank template showing the loading icon
+      Instantiate(loadBlocker, rowsContainer.transform);
 
       // Update the head icon image
       headAnim.setNewTexture(headIconTexture);

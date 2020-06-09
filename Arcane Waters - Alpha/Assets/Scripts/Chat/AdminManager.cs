@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using System;
 using MapCreationTool.Serialization;
+using NubisDataHandling;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -44,6 +45,7 @@ public class AdminManager : NetworkBehaviour
    protected static string NPC = "test_npc";
    protected static string GET_ITEM = "get_item";
    protected static string GET_ALL_ITEMS = "get_all_items";
+   protected static string INTERACT_ANVIL = "interact_anvil";
    protected static string SCHEDULE_SERVER_RESTART = "restart";
    protected static string CANCEL_SERVER_RESTART = "cancel";
 
@@ -134,11 +136,17 @@ public class AdminManager : NetworkBehaviour
          requestShipSpeedup();
       } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
          requestGetAllItems(parameters);
+      } else if (INTERACT_ANVIL.Equals(adminCommand)) {
+         interactAnvil();
       } else if (SCHEDULE_SERVER_RESTART.Equals(adminCommand)) {
          requestScheduleServerRestart(parameters);
       } else if (CANCEL_SERVER_RESTART.Equals(adminCommand)) {
          Cmd_CancelServerRestart();
       }
+   }
+
+   private void interactAnvil () {
+      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);
    }
 
    public void cycleCommandHistory (int amount) {

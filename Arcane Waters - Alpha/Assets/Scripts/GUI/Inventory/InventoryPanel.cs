@@ -125,12 +125,57 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       equippedWeaponCellContainer.DestroyChildren();
       equippedArmorCellContainer.DestroyChildren();
       equippedHatCellContainer.DestroyChildren();
-      characterStack.gameObject.SetActive(false);
+      characterStack.gameObject.SetActive(true);
 
       if (Global.player != null) {
          characterNameText.text = Global.player.entityName;
          goldText.text = "";
          gemsText.text = "";
+      }
+
+      // Load the character stack using the cached user info
+      if (Global.userObjects != null) {
+         characterStack.updateLayers(Global.userObjects);
+
+         // Clear old data
+         equippedWeaponCellContainer.DestroyChildren();
+         equippedArmorCellContainer.DestroyChildren();
+         equippedHatCellContainer.DestroyChildren();
+
+         // Quick load the cached equipment
+         loadCachedEquipment(Global.userObjects.weapon);
+         loadCachedEquipment(Global.userObjects.armor);
+         loadCachedEquipment(Global.userObjects.hat);
+      }
+   }
+
+   private void loadCachedEquipment (Item item) {
+      // Instantiates the cell
+      ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
+      try {
+         // If the item is equipped, place the item cell in the equipped slots
+         if (item.category == Item.Category.Weapon) {
+            WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(item.data);
+            Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+            newWeapon.itemTypeId = weaponData.equipmentID;
+
+            cell.setCellForItem(newWeapon);
+            cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
+            refreshStats(newWeapon);
+         } else if (item.category == Item.Category.Armor) {
+            ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(item.data);
+            Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
+
+            cell.setCellForItem(newArmor);
+            cell.transform.SetParent(equippedArmorCellContainer.transform, false);
+            refreshStats(Armor.castItemToArmor(newArmor));
+         } else if (item.category == Item.Category.Hats) {
+            cell.setCellForItem(item);
+            cell.transform.SetParent(equippedHatCellContainer.transform, false);
+            refreshStats(Hat.castItemToHat(item));
+         }
+      } catch {
+         D.editorLog("Failed to process item: " + item.data, Color.red);
       }
    }
 
@@ -160,6 +205,11 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Update the character preview
       characterStack.gameObject.SetActive(true);
       characterStack.updateLayers(userObjects);
+
+      // Update cached user object equipment
+      Global.userObjects.weapon = userObjects.weapon;
+      Global.userObjects.armor = userObjects.armor;
+      Global.userObjects.hat = userObjects.hat;
 
       // Insert the player's name
       if (Global.player != null) {

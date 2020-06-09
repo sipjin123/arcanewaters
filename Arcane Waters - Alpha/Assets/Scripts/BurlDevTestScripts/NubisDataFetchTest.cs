@@ -78,12 +78,30 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("Directly Fetch Xml Data")) {
             directFetchXmlData();
          }
+         if (GUILayout.Button("Fetch Abilities")) {
+            //nubisFetchAbilities();
+            
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string abilityContent = Fetch_Abilities_v1Controller.userAbilities(745);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  List<AbilitySQLData> abilityList = UserAbilities.processUserAbilities(abilityContent);
+                  D.editorLog("Result: " + abilityContent);
+               });
+            });
+         }
       }
+   }
+
+   private async void nubisFetchAbilities () {
+      D.debug("Nubis Call Start");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchUserAbilities), "745");
+      D.debug("Result: " + returnCode);
    }
 
    private async void testNubisCall () {
       D.debug("Nubis Call Start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisTestFetch), "message1", "message2");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisTestFetch), "message1", "message2");
       D.debug("Result: " + returnCode);
    }
 
@@ -102,58 +120,58 @@ public class NubisDataFetchTest : MonoBehaviour
       D.debug("ASync start");
       string call = "745" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "3" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0" + NubisDataFetcher.SPACER + "0";
       D.editorLog("The call is: " + call, Color.green);
-      DB_Main.nubisFetchInventory(call);
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), call);
+      NubisRequestHandler.nubisFetchInventory(call);
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchInventory), call);
 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisTotalItems () {
       D.debug("Get Total items");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventoryCount), "745"+NubisDataFetcher.SPACER+"0");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchInventoryCount), "745"+NubisDataFetcher.SPACER+"0");
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisUserData () {
       D.debug("Getting UserData");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchUserData), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchUserData), "745"); 
       D.debug("ASync start: "+ returnCode); 
    }
 
    private async void nubisWeapons () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableWeapons), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchCraftableWeapons), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisArmors () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableArmors), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchCraftableArmors), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisHats () {
       D.debug("Fetch Craftable Hats");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftableHats), "745");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchCraftableHats), "745");
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisIngredients () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchCraftingIngredients), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchCraftingIngredients), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisEquippedItems () {
       D.debug("Get Equipped Items");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchEquippedItems), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchEquippedItems), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisInventory () {
       D.debug("Get Inventory");
       string call = "745_space_0_space_0_space_0_space_0_space_0";
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchInventory), call);
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchInventory), call);
       List<Item> itemList = UserInventory.processUserInventory(returnCode);
       D.editorLog("Fetched a total inventory of: " + itemList.Count);
       D.debug("ASync start: " + returnCode);
@@ -161,32 +179,32 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisMap () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), "burl_farm"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "burl_farm"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisMap2 () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchMapData), "Shroom Ruins");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "Shroom Ruins");
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisSingleBP () {
       D.debug("Fetching Single Bp");
       string itemId = "5767";
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchSingleBlueprint), itemId+"_space_745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchSingleBlueprint), itemId+"_space_745"); 
       D.debug("Result: " + returnCode);
    }
 
    private async void nubisXmlVer () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchXmlVersion), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), "745"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisXMLBytes () {
       D.debug("Fetching xml zip");
-      string returnCode = await NubisClient.call(nameof(DB_Main.nubisFetchXmlZipBytes), "745"); 
+      string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), "745"); 
       D.debug("Result: " + returnCode.Length);
    }
 

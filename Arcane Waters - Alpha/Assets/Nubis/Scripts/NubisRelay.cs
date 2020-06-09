@@ -40,7 +40,7 @@ public class NubisRelay
       try {
          System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
          if (assembly == null) return string.Empty;
-         Type db_main_type = assembly.GetType("DB_Main");
+         Type db_main_type = assembly.GetType("NubisRequestHandler");
          if (db_main_type == null) return string.Empty;
          System.Reflection.MethodInfo methodInfo = db_main_type.GetMethod(function);
          object result = methodInfo.Invoke(null, args);

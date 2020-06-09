@@ -48,10 +48,13 @@ public class AbilityPanel : Panel {
    public List<ItemDropZone> equipmentDropZone;
 
    // Holds the canvas blocker 
-   public GameObject canvasBlocker;
+   public GameObject[] canvasBlockers;
 
    // The scroller holding the abilities
    public ScrollRect scroller;
+
+   // The object containing all the info of the ability
+   public GameObject skillInfoHolder;
 
    #endregion
 
@@ -59,10 +62,26 @@ public class AbilityPanel : Panel {
       canvas = transform.parent.GetComponent<Canvas>();
       base.Awake();
       self = this;
+      abilityRowsContainer.DestroyChildren();
+      abilitySlotsContainer.DestroyChildren();
    }
 
+   public void clearContent () {
+      toggleBlockers(true);
+      descriptionText.text = "";
+      descriptionIcon.sprite = ImageManager.self.blankSprite;
+      descriptionName.text = "";
+      skillInfoHolder.SetActive(false);
+   }
+
+   private void toggleBlockers (bool isActive) {
+      foreach (GameObject blocker in canvasBlockers) {
+         blocker.SetActive(isActive);
+      }
+   }
+   
    public void receiveDataFromServer (AbilitySQLData[] abilityList) {
-      canvasBlocker.SetActive(false);
+      toggleBlockers(false);
       scroller.enabled = true;
 
       // Clear all the rows and slots
@@ -106,6 +125,7 @@ public class AbilityPanel : Panel {
             cachedAbilityList.Add(basicAbilityData);
          } 
       }
+      skillInfoHolder.SetActive(true);
    }
 
    public void displayDescription(Sprite iconSprite, string name, string description) {
@@ -123,7 +143,7 @@ public class AbilityPanel : Panel {
    }
 
    public void unequipAbility (int abilityId) {
-      canvasBlocker.SetActive(true);
+      toggleBlockers(true);
       Global.player.rpc.Cmd_UpdateAbility(abilityId, -1);
    }
 
@@ -196,7 +216,7 @@ public class AbilityPanel : Panel {
 
          // Ability can be dragged from the equipment slots to the inventory or vice-versa
          if (droppedInEquipmentSlots && !droppedInInventory && droppedSlot.isFree()) {
-            canvasBlocker.SetActive(true);
+            toggleBlockers(true);
 
             int abilityIDCache = _cachedAbility.itemID;
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
@@ -223,14 +243,14 @@ public class AbilityPanel : Panel {
          }
 
          if (droppedInInventory) {
-            canvasBlocker.SetActive(true);
+            toggleBlockers(true);
 
             int abilityIDCache = _cachedAbility.itemID;
             unequipAbility(abilityIDCache);
 
             _draggableAbility.deactivate();
          } else if (droppedInEquipmentSlots && droppedSlot != _sourceAbilitySlot) {
-            canvasBlocker.SetActive(true);
+            toggleBlockers(true);
 
             int abilityIDCache = _cachedAbility.itemID;
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);

@@ -24,12 +24,16 @@ public class NewTutorialManager : MonoBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string key in _tutorialAreaKeys) {
-               _areaKeyTutorialIdDictionary.Add(key, _tutorialList.SingleOrDefault(x => x.tutorialAreaKey == key).tutorialId);
+               if (!_areaKeyTutorialIdDictionary.ContainsKey(key)) {
+                  _areaKeyTutorialIdDictionary.Add(key, _tutorialList.SingleOrDefault(x => x.tutorialAreaKey == key).tutorialId);
+               }
             }
 
             foreach (NewTutorialData data in _tutorialList) {
-               _tutorialDataByIdDictionary.Add(data.tutorialId, data);
-               _tutorialViewModelList.Add(new TutorialViewModel(data));
+               if (!_tutorialDataByIdDictionary.ContainsKey(data.tutorialId)) {
+                  _tutorialDataByIdDictionary.Add(data.tutorialId, data);
+                  _tutorialViewModelList.Add(new TutorialViewModel(data));
+               }
             }
          });
       });
@@ -67,6 +71,7 @@ public class NewTutorialManager : MonoBehaviour {
    private Dictionary<int, NewTutorialData> _tutorialDataByIdDictionary = new Dictionary<int, NewTutorialData>();
 
    // The list containing the tutorials mapped to view models for use in clients
+   [SerializeField]
    private List<TutorialViewModel> _tutorialViewModelList = new List<TutorialViewModel>();
 
    #endregion

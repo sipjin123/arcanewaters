@@ -11,6 +11,7 @@ using BackgroundTool;
 using Random = UnityEngine.Random;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
+using NubisDataHandling;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -704,9 +705,6 @@ public class RPCManager : NetworkBehaviour {
       // Check if we have stored map data for that area and version
       if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
-
-         // TODO: Do not Remove until this issue is completely fixed
-         D.editorLog("Map Log: Creating Map using Map Data Cache", Color.green);
 
          MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
          return;
@@ -3489,20 +3487,12 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_UpdateAbility (int abilityID, int equipSlot) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetch abilities of the user from the database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
+         // Update the slot number of the specific ability
+         DB_Main.updateAbilitySlot(_player.userId, abilityID, equipSlot);
 
-         // Checks if the user actually has the ability
-         if (abilityDataList.Exists(_ => _.abilityID == abilityID)) {
-            AbilitySQLData sqlData = abilityDataList.Find(_ => _.abilityID == abilityID);
-
-            // Modifies equipment slot of the ability (Slots 0 -> 4 are Equipped and Slots -1 are Unequipped)
-            sqlData.equipSlotIndex = equipSlot;
-
-            // Make sure that the requested ability update is saved
-            DB_Main.updateAbilitiesData(_player.userId, sqlData);
-         }
-         fetchAbilitiesForUIPanel();
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_FinishedUpdatingAbility(_player.connectionToClient);
+         });
       });
    }
 
@@ -3513,14 +3503,9 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.updateAbilitiesData(_player.userId, ability);
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            fetchAbilitiesForUIPanel();
+            Target_FinishedUpdatingAbility(_player.connectionToClient);
          });
       });
-   }
-
-   [Command]
-   public void Cmd_RequestAbility () {
-      fetchAbilitiesForUIPanel();
    }
 
    [Server]
@@ -3562,30 +3547,9 @@ public class RPCManager : NetworkBehaviour {
       return basicAbilityList;
    }
 
-   [Server]
-   public void fetchAbilitiesForUIPanel () {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieves skill list from database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(_player.userId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Provides skill panel with all the abilities of the player 
-            Target_ReceiveSkillsForSkillPanel(_player.connectionToClient, abilityDataList.ToArray());
-         });
-      });
-   }
-
    [TargetRpc]
-   public void Target_ReceiveSkillsForSkillPanel (NetworkConnection connection, AbilitySQLData[] abilityList) {
-      // Make sure the panel is showing
-      AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
-
-      if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.Ability_Panel);
-      }
-
-      // Update the Skill Panel with the abilities we received from the server
-      panel.receiveDataFromServer(abilityList);
+   public void Target_FinishedUpdatingAbility (NetworkConnection connection) {
+      NubisDataFetcher.self.fetchUserAbilities();
    }
 
    [TargetRpc]

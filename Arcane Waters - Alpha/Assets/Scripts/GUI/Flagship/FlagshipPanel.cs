@@ -21,9 +21,6 @@ public class FlagshipPanel : Panel, IPointerClickHandler {
 
    public override void show () {
       base.show();
-
-      // Show the list of ships we own
-      Global.player.rpc.Cmd_RequestShipsFromServer();
    }
 
    public void OnPointerClick (PointerEventData eventData) {

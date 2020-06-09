@@ -12,62 +12,6 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   #region NUBIS data fetching
-   
-   public static string nubisFetchInventoryCount (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchUserData (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchCraftingIngredients (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchXmlZipBytes (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchXmlVersion (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchSingleBlueprint (string rawContent) {
-      return "";
-   }
-
-   public static string nubisFetchEquippedItems (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisTestFetch (string test1, string test2) {
-      return "";
-   }
-
-   public static string nubisFetchCraftableWeapons (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchCraftableArmors (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchCraftableHats (string rawUserId) {
-      return "";
-   }
-
-   public static string nubisFetchInventory (string rawContent) {
-      return "";
-   }
-
-   public static string nubisFetchMapData (string rawMapName) {
-      return "";
-   }
-
-   #endregion
-
    public static void addNewCloudData (CloudBuildData cloudData) {
    }
 
@@ -445,6 +389,10 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void updateAbilitiesData (int userID, AbilitySQLData abilityData) {
+
+   }
+
+   public static void updateAbilitySlot (int userID, int abilityId, int slotNumber) {
 
    }
 

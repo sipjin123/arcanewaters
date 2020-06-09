@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using NubisDataHandling;
 
 public class CraftingAnvil : MonoBehaviour
 {
@@ -52,15 +53,7 @@ public class CraftingAnvil : MonoBehaviour
          return;
       }
 
-      // Get the crafting panel
-      PanelManager.self.selectedPanel = Panel.Type.Craft;
-      CraftingPanel panel = (CraftingPanel) PanelManager.self.get(Panel.Type.Craft);
-
-      // If the panel is not showing, send a request to the server to get the crafting data
-      if (!panel.isShowing()) {
-         panel.clearSelectedBlueprint();
-         panel.refreshBlueprintList();
-      }
+      NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);
    }
 
    public void handleSpriteOutline () {

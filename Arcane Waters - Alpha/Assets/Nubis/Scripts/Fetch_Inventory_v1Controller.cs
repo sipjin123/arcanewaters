@@ -92,15 +92,12 @@ namespace NubisTranslator {
                using (MySqlCommand command = new MySqlCommand("SELECT COUNT(*) as itemCount FROM arcane.items where (usrId = @usrId " + itemFilterContent + ")", connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);
 
-                  StringBuilder stringBuilder = new StringBuilder();
                   using (MySqlDataReader reader = command.ExecuteReader()) {
                      while (reader.Read()) {
                         int itmCount = reader.GetInt32("itemCount");
-
                         return itmCount.ToString();
                      }
                   }
-                  return stringBuilder.ToString();
                }
             }
          } catch (Exception e) {

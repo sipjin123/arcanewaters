@@ -86,6 +86,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
       }
    }
 
+   private void OnDestroy () {
+      PaletteSwapManager.self.paletteCompleteEvent.RemoveAllListeners();
+   }
+
    private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {
       contentHolder.SetActive(true);
       contentLoader.SetActive(false);
@@ -103,8 +107,8 @@ public class OfflineCharacter : ClientMonoBehaviour {
          hatData = HatStatData.getDefaultData();
       }
 
-      setArmor(armorData.armorType, armorData.palette1, armorData.palette2);
-      setHat(hatData.hatType, hatData.palette1, hatData.palette2);
+      setArmor(armorData.armorType, armorData.palette1, armorData.palette2, ArmorStatData.serializeArmorStatData(armorData));
+      setHat(hatData.hatType, hatData.palette1, hatData.palette2, HatStatData.serializeHatStatData(hatData));
       setWeapon(userInfo, weapon);
    }
 
@@ -139,6 +143,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
          weaponData = Util.xmlLoad<WeaponStatData>(weapon.data);
       }
 
+      // Cache string data
+      _weaponData = WeaponStatData.serializeWeaponStatData(weaponData);
+
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
@@ -146,17 +153,23 @@ public class OfflineCharacter : ClientMonoBehaviour {
       }
    }
 
-   public void setHat (int hatType, string paletteName1, string paletteName2) {
+   public void setHat (int hatType, string paletteName1, string paletteName2, string data = "") {
       // Set the correct sheet for our gender and hat type
       hatLayer.setType(this.genderType, hatType, true);
+
+      // Cache string data
+      _hatData = data;
 
       // Update our Material
       hatLayer.recolor(paletteName1, paletteName2);
    }
 
-   public void setArmor (int armorType, string paletteName1, string paletteName2) {
+   public void setArmor (int armorType, string paletteName1, string paletteName2, string data = "") {
       // Set the correct sheet for our gender and armor type
       armor.setType(this.genderType, armorType, true);
+
+      // Cache string data
+      _armorData = data;
 
       // Update our Material
       armor.recolor(paletteName1, paletteName2);
@@ -193,11 +206,41 @@ public class OfflineCharacter : ClientMonoBehaviour {
       armor.itemTypeId = this.armor.getType();
       armor.paletteName1 = this.armor.getPalette1();
       armor.paletteName2 = this.armor.getPalette2();
+      armor.category = Item.Category.Armor;
+      armor.count = 1;
+      armor.data = _armorData;
 
       return armor;
    }
 
+   public Weapon getWeapon () {
+      Weapon weapon = new Weapon();
+      weapon.itemTypeId = this.weaponFront.getType();
+      weapon.paletteName1 = this.weaponFront.getPalette1();
+      weapon.paletteName2 = this.weaponFront.getPalette2();
+      weapon.category = Item.Category.Weapon;
+      weapon.count = 1;
+      weapon.data = _weaponData;
+
+      return weapon;
+   }
+
+   public Hat getHat () {
+      Hat hat = new Hat();
+      hat.itemTypeId = this.hatLayer.getType();
+      hat.paletteName1 = this.hatLayer.getPalette1();
+      hat.paletteName2 = this.hatLayer.getPalette2();
+      hat.category = Item.Category.Hats;
+      hat.count = 1;
+      hat.data = _hatData;
+
+      return hat;
+   }
+
    #region Private Variables
+
+   // The cached string data of each equipment
+   private string _armorData, _weaponData, _hatData;
 
    #endregion
 }
