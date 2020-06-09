@@ -305,6 +305,11 @@ public class RPCManager : NetworkBehaviour {
          PanelManager.self.pushPanel(Panel.Type.CharacterInfo);
       }
 
+      // If this is the local player, update perk points in the perk manager
+      if (Global.player != null && userObjects.userInfo.userId == Global.player.userId) {
+         PerkManager.self.setPlayerPerkPoints(perks);
+      }
+
       // Update the Inventory Panel with the items we received from the server
       panel.receiveDataFromServer(userObjects, stats, jobs, guildName, perks);
    }

@@ -1352,15 +1352,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 10
+    m_Left: 20
     m_Right: 0
-    m_Top: 8
+    m_Top: 18
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 50, y: 50}
-  m_Spacing: {x: 10, y: 10}
+  m_CellSize: {x: 30, y: 30}
+  m_Spacing: {x: 20, y: 20}
   m_Constraint: 0
   m_ConstraintCount: 2
 --- !u!1 &8488960046229302058
@@ -2254,6 +2254,10 @@ MonoBehaviour:
   perkContainer: {fileID: 7472356832629316723}
   perksGridLayoutGroup: {fileID: 3828879549256582994}
   unassignedPerkPointsText: {fileID: 3454283616015902899}
+  perkIconBorders:
+  - {fileID: -4320443390831369303, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
+  - {fileID: 3467695358377983143, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
+  - {fileID: -4200307411854785145, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
 --- !u!114 &8488960046460102506
 MonoBehaviour:
   m_ObjectHideFlags: 0

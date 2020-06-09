@@ -8,6 +8,7 @@ using TMPro;
 using System.Linq;
 
 public class CharacterInfoPanel : Panel, IPointerClickHandler {
+
    #region Public Variables
 
    // Our character stack
@@ -39,6 +40,9 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
    // The unassigned perk points text
    public TextMeshProUGUI unassignedPerkPointsText;
 
+   // The perk icon sprite borders
+   public List<Sprite> perkIconBorders;
+
    // Self
    public static CharacterInfoPanel self;
 
@@ -48,6 +52,11 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
       base.Awake();
 
       self = this;
+   }
+
+   public override void Start () {
+      base.Start();
+      Util.disableCanvasGroup(canvasGroup);
    }
 
    public void receivePerkData (List<PerkData> perkDataList) {

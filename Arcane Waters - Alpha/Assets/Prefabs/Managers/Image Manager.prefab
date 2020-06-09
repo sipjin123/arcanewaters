@@ -2809,6 +2809,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4be632d3393f5f943b9340d4c735f3fd, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4be632d3393f5f943b9340d4c735f3fd, type: 3}
+  - imageName: class_fighter
+    imagePath: Assets/Sprites/Icons/Perks/class_fighter.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/class_fighter
+    texture2D: {fileID: 2800000, guid: 4bc96b440e5fc3b4c99b7bbc743271dd, type: 3}
+    sprite: {fileID: 21300000, guid: 4bc96b440e5fc3b4c99b7bbc743271dd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 4bc96b440e5fc3b4c99b7bbc743271dd, type: 3}
+  - imageName: class_healer
+    imagePath: Assets/Sprites/Icons/Perks/class_healer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/class_healer
+    texture2D: {fileID: 2800000, guid: 613dd397b74c5e64988b3ef506344090, type: 3}
+    sprite: {fileID: 21300000, guid: 613dd397b74c5e64988b3ef506344090, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 613dd397b74c5e64988b3ef506344090, type: 3}
   - imageName: class_healer
     imagePath: Assets/Sprites/Icons/Classes/class_healer.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Classes/class_healer
@@ -2816,6 +2830,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 860967e758504b848aaa330d34382b28, type: 3}
     sprites:
     - {fileID: 21300000, guid: 860967e758504b848aaa330d34382b28, type: 3}
+  - imageName: class_marksman
+    imagePath: Assets/Sprites/Icons/Perks/class_marksman.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/class_marksman
+    texture2D: {fileID: 2800000, guid: 604861e25d38e644d87112bb27cb1b1d, type: 3}
+    sprite: {fileID: 21300000, guid: 604861e25d38e644d87112bb27cb1b1d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 604861e25d38e644d87112bb27cb1b1d, type: 3}
   - imageName: class_marksman
     imagePath: Assets/Sprites/Icons/Classes/class_marksman.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Classes/class_marksman
@@ -2830,6 +2851,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: e6d21eb86135b4b48bda955552b25c01, type: 3}
     sprites:
     - {fileID: 21300000, guid: e6d21eb86135b4b48bda955552b25c01, type: 3}
+  - imageName: class_mystic
+    imagePath: Assets/Sprites/Icons/Perks/class_mystic.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/class_mystic
+    texture2D: {fileID: 2800000, guid: 6846344750a1b564999070f519c91bb7, type: 3}
+    sprite: {fileID: 21300000, guid: 6846344750a1b564999070f519c91bb7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 6846344750a1b564999070f519c91bb7, type: 3}
   - imageName: clear_button_default
     imagePath: Assets/Sprites/CraftingUI/Buttons/clear_button_default.png
     imagePathWithoutExtension: Assets/Sprites/CraftingUI/Buttons/clear_button_default
@@ -23446,6 +23474,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 0b5a93bdf6975e34490269c7fbf7afc7, type: 3}
   - imageName: specialty_adventurer
+    imagePath: Assets/Sprites/Icons/Perks/specialty_adventurer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_adventurer
+    texture2D: {fileID: 2800000, guid: fac829a804687ec4aaeb197d2c188cac, type: 3}
+    sprite: {fileID: 21300000, guid: fac829a804687ec4aaeb197d2c188cac, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fac829a804687ec4aaeb197d2c188cac, type: 3}
+  - imageName: specialty_adventurer
     imagePath: Assets/Sprites/Icons/Jobs/specialty_adventurer.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Jobs/specialty_adventurer
     texture2D: {fileID: 2800000, guid: 9caaa7b9ae731c14b8ceacb1fc56533e, type: 3}
@@ -23467,6 +23502,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: a12a80b2a35fe9e468f184e010b334a3, type: 3}
   - imageName: specialty_brawler
+    imagePath: Assets/Sprites/Icons/Perks/specialty_brawler.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_brawler
+    texture2D: {fileID: 2800000, guid: 3dc5e9f101b53c34093d10999a51c765, type: 3}
+    sprite: {fileID: 21300000, guid: 3dc5e9f101b53c34093d10999a51c765, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 3dc5e9f101b53c34093d10999a51c765, type: 3}
+  - imageName: specialty_brawler
     imagePath: Assets/Sprites/Icons/Specialties/specialty_brawler.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Specialties/specialty_brawler
     texture2D: {fileID: 2800000, guid: 3e1123f86071b3b48bbf07a77529d876, type: 3}
@@ -23487,6 +23529,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 399886e3dc9b11b43871a24f7b7acf28, type: 3}
     sprites:
     - {fileID: 21300000, guid: 399886e3dc9b11b43871a24f7b7acf28, type: 3}
+  - imageName: specialty_cannoneer
+    imagePath: Assets/Sprites/Icons/Perks/specialty_cannoneer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_cannoneer
+    texture2D: {fileID: 2800000, guid: 99b624cbaad82574f9ad085db250ca94, type: 3}
+    sprite: {fileID: 21300000, guid: 99b624cbaad82574f9ad085db250ca94, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 99b624cbaad82574f9ad085db250ca94, type: 3}
+  - imageName: specialty_crafter
+    imagePath: Assets/Sprites/Icons/Perks/specialty_crafter.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_crafter
+    texture2D: {fileID: 2800000, guid: e53ec296b4ecf8044a7f0c8c0822b4b8, type: 3}
+    sprite: {fileID: 21300000, guid: e53ec296b4ecf8044a7f0c8c0822b4b8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: e53ec296b4ecf8044a7f0c8c0822b4b8, type: 3}
   - imageName: specialty_crafter
     imagePath: Assets/Sprites/Icons/Specialties/specialty_crafter.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Specialties/specialty_crafter
@@ -23509,6 +23565,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 3071884f8b2e99d49bdcba409de9c5fb, type: 3}
   - imageName: specialty_farmer
+    imagePath: Assets/Sprites/Icons/Perks/specialty_farmer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_farmer
+    texture2D: {fileID: 2800000, guid: b3269e655f0d8e04982ec6a3a2828c54, type: 3}
+    sprite: {fileID: 21300000, guid: b3269e655f0d8e04982ec6a3a2828c54, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b3269e655f0d8e04982ec6a3a2828c54, type: 3}
+  - imageName: specialty_farmer
     imagePath: Assets/Sprites/Icons/Specialties/specialty_farmer.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Specialties/specialty_farmer
     texture2D: {fileID: 2800000, guid: ddfdfe5e4732052449b4b5e390fba477, type: 3}
@@ -23523,12 +23586,26 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 80281ad74fba29047a806d82514319ca, type: 3}
   - imageName: specialty_fencer
+    imagePath: Assets/Sprites/Icons/Perks/specialty_fencer.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_fencer
+    texture2D: {fileID: 2800000, guid: b74c88edb813b3e48ac3b9ebb9cb8ee7, type: 3}
+    sprite: {fileID: 21300000, guid: b74c88edb813b3e48ac3b9ebb9cb8ee7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b74c88edb813b3e48ac3b9ebb9cb8ee7, type: 3}
+  - imageName: specialty_fencer
     imagePath: Assets/Sprites/Icons/Specialties/specialty_fencer.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Specialties/specialty_fencer
     texture2D: {fileID: 2800000, guid: eb7f5ba2a6d012341aa6836f55ce7030, type: 3}
     sprite: {fileID: 21300000, guid: eb7f5ba2a6d012341aa6836f55ce7030, type: 3}
     sprites:
     - {fileID: 21300000, guid: eb7f5ba2a6d012341aa6836f55ce7030, type: 3}
+  - imageName: specialty_merchant
+    imagePath: Assets/Sprites/Icons/Perks/specialty_merchant.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_merchant
+    texture2D: {fileID: 2800000, guid: f003d959c1bc4b64ebea59a12bbf4f4f, type: 3}
+    sprite: {fileID: 21300000, guid: f003d959c1bc4b64ebea59a12bbf4f4f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: f003d959c1bc4b64ebea59a12bbf4f4f, type: 3}
   - imageName: specialty_merchant
     imagePath: Assets/Sprites/Icons/Jobs/specialty_merchant.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Jobs/specialty_merchant
@@ -23544,6 +23621,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: cb113d6ad200218428d5c2c9e37b4ef7, type: 3}
   - imageName: specialty_sailor
+    imagePath: Assets/Sprites/Icons/Perks/specialty_sailor.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_sailor
+    texture2D: {fileID: 2800000, guid: 50f0397f52bd9f94c8a4f55afe290ef9, type: 3}
+    sprite: {fileID: 21300000, guid: 50f0397f52bd9f94c8a4f55afe290ef9, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 50f0397f52bd9f94c8a4f55afe290ef9, type: 3}
+  - imageName: specialty_sailor
     imagePath: Assets/Sprites/Icons/Jobs/specialty_sailor.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Jobs/specialty_sailor
     texture2D: {fileID: 2800000, guid: e4ba337e3ea8f2c4ba24d1a9c2d43680, type: 3}
@@ -23558,6 +23642,13 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 0cf3f5a5877e3f64da7ff9bbb8bb7bef, type: 3}
   - imageName: specialty_sharpshooter
+    imagePath: Assets/Sprites/Icons/Perks/specialty_sharpshooter.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_sharpshooter
+    texture2D: {fileID: 2800000, guid: 7689ece816fa97449bd26ec691c0d854, type: 3}
+    sprite: {fileID: 21300000, guid: 7689ece816fa97449bd26ec691c0d854, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7689ece816fa97449bd26ec691c0d854, type: 3}
+  - imageName: specialty_sharpshooter
     imagePath: Assets/Sprites/Icons/Jobs/specialty_sharpshooter.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Jobs/specialty_sharpshooter
     texture2D: {fileID: 2800000, guid: 0902dfdc0422ffb41ac2f2bbb364b127, type: 3}
@@ -23571,6 +23662,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3a3f7091e7eb1424d92a4281eb55e0ae, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3a3f7091e7eb1424d92a4281eb55e0ae, type: 3}
+  - imageName: specialty_treasure
+    imagePath: Assets/Sprites/Icons/Perks/specialty_treasure.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/specialty_treasure
+    texture2D: {fileID: 2800000, guid: 4026f1e2f098b0040ac107e3437771e5, type: 3}
+    sprite: {fileID: 21300000, guid: 4026f1e2f098b0040ac107e3437771e5, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 4026f1e2f098b0040ac107e3437771e5, type: 3}
   - imageName: specialty_treasure
     imagePath: Assets/Sprites/Icons/Jobs/specialty_treasure.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Jobs/specialty_treasure
@@ -24531,6 +24629,16 @@ MonoBehaviour:
     - {fileID: -2474042557835450684, guid: c97aa7e50e4e9ff45b3fda78f0b7c887, type: 3}
     - {fileID: -5380271429366315013, guid: c97aa7e50e4e9ff45b3fda78f0b7c887, type: 3}
     - {fileID: 3270760313745358661, guid: c97aa7e50e4e9ff45b3fda78f0b7c887, type: 3}
+  - imageName: tiered_icon_frames
+    imagePath: Assets/Sprites/Icons/Perks/tiered_icon_frames.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/Perks/tiered_icon_frames
+    texture2D: {fileID: 2800000, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
+    sprite: {fileID: -4320443390831369303, guid: 1430f14b6e5eb134bb865fe057337c98,
+      type: 3}
+    sprites:
+    - {fileID: -4320443390831369303, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
+    - {fileID: 3467695358377983143, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
+    - {fileID: -4200307411854785145, guid: 1430f14b6e5eb134bb865fe057337c98, type: 3}
   - imageName: timer_a
     imagePath: Assets/Sprites/GUI/Shop/timer_a.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Shop/timer_a

@@ -44,6 +44,18 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       this.isLocalPlayer = isLocalPlayer;
 
       _tooltipAssignedPointsText = $"Assigned Points: {assignedPoints}";
+
+      if (assignedPoints > 0) {
+         int borderIndex = Mathf.Clamp(assignedPoints - 1, 0, CharacterInfoPanel.self.perkIconBorders.Count - 1);
+         _perkBorder.sprite = CharacterInfoPanel.self.perkIconBorders[borderIndex];
+
+         _icon.color = Color.white;
+         _perkBorder.color = Color.white;
+      } else {
+         // Make the icons slightly transparent
+         _icon.color = _noAssignedPointsColor;
+         _perkBorder.color = _noAssignedPointsColor;
+      }
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
@@ -114,6 +126,15 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
    [Header("References")]
    [SerializeField]
    private Image _icon;
+
+   // The perk border image
+   [SerializeField]
+   private Image _perkBorder;
+
+   [Header("Colors")]
+   // The color to use when no points have been assigned to the perk
+   [SerializeField]
+   private Color _noAssignedPointsColor = new Color(1, 1, 1, 0.9f);
 
    // The duration of the fade in of the info when hovering over the icon
    [Header("Animation")]
