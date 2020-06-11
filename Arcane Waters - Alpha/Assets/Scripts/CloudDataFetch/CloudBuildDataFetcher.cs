@@ -80,6 +80,11 @@ namespace CloudBuildDataFetch {
             newCloudBuildData.buildMessage = compiledCommitMessage;
             newCloudBuildData.buildDateTime = rootList[0].finished;
 
+            // Make sure the date is never null or blank
+            if (newCloudBuildData.buildDateTime == null || newCloudBuildData.buildDateTime.Length < 5) {
+               newCloudBuildData.buildDateTime = DateTime.UtcNow.ToString();
+            }
+
             if (newCloudBuildData.buildId > 0 && newCloudBuildData.buildMessage.Length > 0) {
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.addNewCloudData(newCloudBuildData);

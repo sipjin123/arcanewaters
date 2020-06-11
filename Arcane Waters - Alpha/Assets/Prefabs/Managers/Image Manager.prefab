@@ -1308,6 +1308,7 @@ MonoBehaviour:
     sprite: {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808,
       type: 3}
     sprites:
+    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 5360088244845722316, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 7233732880463160162, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 995073324737429454, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
@@ -1324,7 +1325,6 @@ MonoBehaviour:
     - {fileID: -6956481233850781577, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -6175816270813957836, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: 1624263401308742618, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
-    - {fileID: 5701517878748478354, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -7269676825590791275, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -798845081429025011, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
     - {fileID: -4684199425938345598, guid: 8e874fc7795c8574e9d3daf080834808, type: 3}
@@ -10867,8 +10867,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon

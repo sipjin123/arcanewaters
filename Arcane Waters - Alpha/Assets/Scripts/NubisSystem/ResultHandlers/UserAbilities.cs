@@ -19,7 +19,7 @@ namespace NubisDataHandling
             }
          }
 
-         // Translate date into class
+         // Translate data into class
          foreach (AbilitySQLData abilityEntry in Util.unserialize<AbilitySQLData>(jsonContentList.ToArray())) {
             abilityDataList.Add(abilityEntry);
          }

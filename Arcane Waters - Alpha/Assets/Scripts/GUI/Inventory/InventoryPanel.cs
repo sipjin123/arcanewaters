@@ -125,7 +125,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       equippedWeaponCellContainer.DestroyChildren();
       equippedArmorCellContainer.DestroyChildren();
       equippedHatCellContainer.DestroyChildren();
-      characterStack.gameObject.SetActive(true);
+      characterStack.gameObject.SetActive(false);
 
       if (Global.player != null) {
          characterNameText.text = Global.player.entityName;
@@ -135,6 +135,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Load the character stack using the cached user info
       if (Global.userObjects != null) {
+         characterStack.gameObject.SetActive(true);
          characterStack.updateLayers(Global.userObjects);
 
          // Clear old data

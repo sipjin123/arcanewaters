@@ -3302,6 +3302,7 @@ public class RPCManager : NetworkBehaviour {
          Instance newInstance = InstanceManager.self.getInstance(_player.instanceId);
          InstanceManager.self.addEnemyToInstance(spawnedEnemy, newInstance);
 
+         spawnedEnemy.areaKey = newInstance.areaKey;
          spawnedEnemy.transform.position = _player.transform.position;
          spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
          NetworkServer.Spawn(spawnedEnemy.gameObject);
@@ -3326,7 +3327,6 @@ public class RPCManager : NetworkBehaviour {
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[netId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
       Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
-
       List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
       // Register the Host as the first entry for the party entities
@@ -3341,6 +3341,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the skill list from database
          List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(localBattler.userId);
+         List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
 
          // Cache Attackers Info
          foreach (BattlerInfo battlerInfo in attackers) {
@@ -3377,6 +3378,52 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
+            int attackerCount = attackers.Length < 1 ? 1 : attackers.Length;
+            List<BattlerInfo> modifiedDefenderList = defenders.ToList();
+
+            // Cache the possible enemy roster
+            List<Enemy> enemyRoster = new List<Enemy>();
+            foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
+               if (enemyInstance is Enemy) {
+                  if (enemy.animGroupType == ((Enemy) enemyInstance).animGroupType) {
+                     enemyRoster.Add((Enemy) enemyInstance);
+                  }
+               }
+            }
+
+            // Process voyage groups
+            foreach (int memberId in groupMembers) {
+               NetEntity entity = EntityManager.self.getEntity(memberId);
+               if (entity != null) {
+                  if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
+                     attackerCount++;
+                  }
+               } 
+            }
+
+            int maximumEnemyCount = (attackerCount * 2) - 1;
+            for (int i = 0; i < maximumEnemyCount; i++) {
+               float randomizedSpawnChance = 0;
+
+               // Chance to spawn additional enemies more than the attackers
+               if (modifiedDefenderList.Count >= attackerCount) {
+                  randomizedSpawnChance = Random.Range(0.0f, 10.0f);
+               }
+
+               if (randomizedSpawnChance < 5) {
+                  Enemy backupEnemy = enemyRoster[Random.Range(0, enemyRoster.Count)];
+                  BattlerData battlerData = MonsterManager.self.getBattler(backupEnemy.enemyType);
+                  modifiedDefenderList.Add(new BattlerInfo {
+                     battlerName = battlerData.enemyName,
+                     battlerType = BattlerType.AIEnemyControlled,
+                     enemyType = backupEnemy.enemyType,
+                     battlerXp = backupEnemy.XP,
+                     companionId = 0
+                  });
+               }
+            }
+
             // Determine if at least one ability is equipped
             hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
 
@@ -3386,8 +3433,17 @@ public class RPCManager : NetworkBehaviour {
                return;
             }
 
+            // Declare the voyage group engaging the enemy
+            if (enemy.battleId < 1) {
+               if (_player.voyageGroupId == -1) {
+                  enemy.voyageGroupId = 0;
+               } else {
+                  enemy.voyageGroupId = _player.voyageGroupId;
+               }
+            }
+
             // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, defenders);
+            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
 
             // If the Battle is full, we can't proceed
             if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {

@@ -189,7 +189,14 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return;
       }
 
-      Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
+      if (body.voyageGroupId == voyageGroupId || voyageGroupId == -1) {
+         Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
+      } else {
+         Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+         GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+         messageCanvas.transform.position = pos;
+         messageCanvas.GetComponentInChildren<Text>().text = "Cannot join battle of different voyage group";
+      }
    }
 
    public bool isPlayerClose () {
