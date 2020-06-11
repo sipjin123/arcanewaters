@@ -2166,14 +2166,19 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new int getUnassignedPerkPoints (int usrId) {
+      return getAssignedPointsByPerkId(usrId, Perk.UNASSIGNED_ID);      
+   }
+
+   public static new int getAssignedPointsByPerkId (int usrId, int perkId) {
       int points = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.perks WHERE usrId = @usrId AND perkId = 0", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.perks WHERE usrId = @usrId AND perkId = @perkId", conn)) {
 
             conn.Open();
             cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@perkId", perkId);
             cmd.Prepare();
 
             // Create a data reader and Execute the command
@@ -2649,6 +2654,25 @@ public class DB_Main : DB_MainStub {
       }
 
       return result;
+   }
+
+   public static new void completeStepForUser (int userId, int stepId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.user_tutorial_step " +
+            "VALUES (@userId, @stepId, @completedTimestamp) " +
+            "ON DUPLICATE KEY UPDATE userId = userId", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@stepId", stepId);
+            cmd.Parameters.AddWithValue("@completedTimestamp", DateTime.UtcNow);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
    }
 
    #endregion

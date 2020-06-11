@@ -682,6 +682,39 @@ namespace MapCreationTool
          return result;
       }
 
+      public static Vector2 calculatePrefabPosition (PrefabGroup prefGroup, Vector2 inputPosition) {
+         Vector2 result = inputPosition;
+
+         PrefabCenterOffset prefOffset = Tools.getPrefab(prefGroup).GetComponent<PrefabCenterOffset>();
+         PrefabDataDefinition prefData = Tools.getPrefab(prefGroup).GetComponent<PrefabDataDefinition>();
+
+         Vector2 step = Tools.snapToGrid ? Vector2.one : prefData.positionStep;
+
+         if (step.x > 0) {
+            result.x = Mathf.FloorToInt(result.x / step.x);
+
+            if (prefGroup.brushSize.x % 2 != 0) result.x += 0.5f;
+            if ((int) (1f / step.x) % 2 == 0) result.x += 0.5f;
+
+            result.x *= step.x;
+         }
+
+         if (step.y > 0) {
+            result.y = Mathf.FloorToInt(result.y / step.y);
+
+            if (prefGroup.brushSize.y % 2 != 0) result.y += 0.5f;
+            if ((int) (1f / step.y) % 2 == 0) result.y += 0.5f;
+
+            result.y *= step.y;
+         }
+
+         if (prefOffset != null) {
+            result -= Vector2.up * prefOffset.offset;
+         }
+
+         return result;
+      }
+
       public static BoundsInt getBoardBoundsInt () {
          // We decrease the size by 1 because we want the 'max' vector to be inclusive
          return new BoundsInt(origin.x, origin.y, 0, size.x - 1, size.y - 1, 0);

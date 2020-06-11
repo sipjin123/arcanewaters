@@ -21,6 +21,7 @@ public class NewTutorialManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          _tutorialList = DB_Main.getNewTutorialList();
          _tutorialAreaKeys = DB_Main.getTutorialAreaKeys();
+         _tutorialStepActionList = DB_Main.getTutorialStepActions();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (string key in _tutorialAreaKeys) {
@@ -35,6 +36,22 @@ public class NewTutorialManager : MonoBehaviour {
                   _tutorialViewModelList.Add(new TutorialViewModel(data));
                }
             }
+
+            foreach (TutorialStepAction action in _tutorialStepActionList) {
+               _tutorialStepActionDictionary.Add(action.code, action);
+            }
+         });
+      });
+   }
+
+   public void completeUserStep (string areaKey, int userId, string actionCode) {
+      List<UserTutorialStep> completedUserSteps = new List<UserTutorialStep>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         //
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
          });
       });
    }
@@ -56,6 +73,10 @@ public class NewTutorialManager : MonoBehaviour {
       return new TutorialViewModel(_tutorialDataByIdDictionary[tutorialId], completedUserSteps);
    }
 
+   public bool isCurrentMapTutorial () {
+      return isTutorialAreaKey(Global.player.areaKey);
+   }
+
    #region Private Variables
 
    // The list holding the tutorial (and steps) info, as it comes from the db.
@@ -73,6 +94,12 @@ public class NewTutorialManager : MonoBehaviour {
    // The list containing the tutorials mapped to view models for use in clients
    [SerializeField]
    private List<TutorialViewModel> _tutorialViewModelList = new List<TutorialViewModel>();
+
+   // The list containing the tutorial step actions as they come from the db
+   private List<TutorialStepAction> _tutorialStepActionList = new List<TutorialStepAction>();
+
+   // The dictionary holding the available step actions by code as key 
+   private Dictionary<string, TutorialStepAction> _tutorialStepActionDictionary = new Dictionary<string, TutorialStepAction>();
 
    #endregion
 }

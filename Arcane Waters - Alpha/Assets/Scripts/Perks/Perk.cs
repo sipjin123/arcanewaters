@@ -14,6 +14,9 @@ public class Perk
    // The ID for unassigned perk points
    public const int UNASSIGNED_ID = 0;
 
+   // The maximum number of points that can be assigned to a perk
+   public const int MAX_POINTS_BY_PERK = 3;
+
    public enum Category
    {
       None = 0,

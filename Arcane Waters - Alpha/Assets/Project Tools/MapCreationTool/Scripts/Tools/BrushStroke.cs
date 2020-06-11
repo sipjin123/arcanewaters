@@ -265,18 +265,7 @@ namespace MapCreationTool
       }
 
       private void paintPrefab (Vector3 position, PrefabGroup group) {
-         if (Tools.snapToGrid) {
-            position = DrawBoard.cellToWorldCenter(DrawBoard.worldToCell(position));
-            position += new Vector3(
-                Tools.tileGroup.brushSize.x % 2 == 0 ? -0.5f : 0,
-                Tools.tileGroup.brushSize.y % 2 == 0 ? -0.5f : 0,
-                0);
-         }
-
-         PrefabCenterOffset prefOffset = Tools.selectedPrefab.GetComponent<PrefabCenterOffset>();
-         if (prefOffset != null) {
-            position -= Vector3.up * prefOffset.offset;
-         }
+         position = DrawBoard.calculatePrefabPosition(group, position);
 
          Bounds bounds = DrawBoard.getPrefabBounds();
          if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)

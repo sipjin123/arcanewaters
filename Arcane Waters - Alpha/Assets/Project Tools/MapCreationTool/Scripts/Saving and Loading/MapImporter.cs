@@ -118,10 +118,11 @@ namespace MapCreationTool
                   vines.GetComponent<BoxCollider2D>().size = chunk.size - new Vector2(0.6f, 0.9f);
                   break;
                case SpecialTileChunk.Type.Waterfall:
-                  GameObject waterfall = UnityEngine.Object.Instantiate(AssetSerializationMaps.waterfallEfector, map.effectorContainer);
-                  waterfall.transform.localPosition = chunk.position;
+                  Ledge waterfall = UnityEngine.Object.Instantiate(AssetSerializationMaps.ledgePrefab, map.prefabParent);
+                  waterfall.name = "Waterfall Ledge";
+                  waterfall.transform.localPosition = chunk.position * 0.16f + Vector2.up * (chunk.size.y - 1) * 0.5f * 0.16f;
                   waterfall.transform.localScale = Vector3.one;
-                  waterfall.GetComponent<BoxCollider2D>().size = chunk.size;
+                  waterfall.setSize(chunk.size);
                   break;
                case SpecialTileChunk.Type.Current:
                   GameObject current = UnityEngine.Object.Instantiate(AssetSerializationMaps.currentEffector, map.effectorContainer);

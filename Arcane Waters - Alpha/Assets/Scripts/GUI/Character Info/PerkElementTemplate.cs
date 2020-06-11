@@ -44,13 +44,17 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       this.isLocalPlayer = isLocalPlayer;
 
       _tooltipAssignedPointsText = $"Assigned Points: {assignedPoints}";
-
+            
       if (assignedPoints > 0) {
          int borderIndex = Mathf.Clamp(assignedPoints - 1, 0, CharacterInfoPanel.self.perkIconBorders.Count - 1);
          _perkBorder.sprite = CharacterInfoPanel.self.perkIconBorders[borderIndex];
 
          _icon.color = Color.white;
          _perkBorder.color = Color.white;
+
+         if (assignedPoints >= Perk.MAX_POINTS_BY_PERK) {
+            _tooltipAssignedPointsText += " <color=green>(Maximum level!)</color>";
+         }
       } else {
          // Make the icons slightly transparent
          _icon.color = _noAssignedPointsColor;
@@ -97,11 +101,16 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
          return;
       }
 
-      if (PerkManager.self.getUnassignedPoints() > 0) {
-         PanelManager.self.showConfirmationPanel("Are you sure you want to assign one point to this perk?\n\nThis cannot be undone.",
-            () => requestPerkPointsIncrement());
+      // Perks can't be assigned more than Perk.MAX_POINTS_PER_PERK points
+      if (PerkManager.self.getAssignedPointsByPerkId(_perkData.perkId) < Perk.MAX_POINTS_BY_PERK) {
+         if (PerkManager.self.getUnassignedPoints() > 0) {
+            PanelManager.self.showConfirmationPanel("Are you sure you want to assign one point to this perk?\n\nThis cannot be undone.",
+               () => requestPerkPointsIncrement());
+         } else {
+            PanelManager.self.noticeScreen.show("You don't have points to assign.");
+         }
       } else {
-         PanelManager.self.noticeScreen.show("You don't have points to assign.");
+         PanelManager.self.noticeScreen.show("This perk already reached its maximum level.");
       }
    }
 

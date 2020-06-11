@@ -168,6 +168,10 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
+   public static int getAssignedPointsByPerkId (int usrId, int perkId) {
+      return 0;
+   }
+
    public static void addPerkPointsForUser (int usrId, int perkId, int perkPoints) {
    }
 
@@ -248,6 +252,9 @@ public class DB_MainStub : MonoBehaviour {
 
    public static List<UserTutorialStep> getUserCompletedSteps (int userId, int tutorialId) {
       return new List<UserTutorialStep>();
+   }
+
+   public static void completeStepForUser (int userId, int stepId) {
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {

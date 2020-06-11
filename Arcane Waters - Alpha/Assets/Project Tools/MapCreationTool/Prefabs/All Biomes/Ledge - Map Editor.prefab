@@ -199,6 +199,7 @@ MonoBehaviour:
   title: Ledge
   canInheritPosition: 0
   canControlPosition: 0
+  positionStep: {x: 0.5, y: 1}
   dataFields:
   - name: width
     defaultValue: 3

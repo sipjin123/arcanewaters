@@ -211,8 +211,8 @@ namespace MapCreationTool.Serialization
                   if (Layer.isWater(columns[i, j].tiles[z].layer) && columns[i, j].tiles[z].sublayer == 5) {
                      columns[i, j].hasWater5 = true;
 
-                     foreach(Direction dir in Enum.GetValues(typeof(Direction))) {
-                        if(columns[i, j].tiles[z].tileBase.name.EndsWith(dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
+                     foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
+                        if (columns[i, j].tiles[z].tileBase.name.EndsWith(dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
                            columns[i, j].currentDirection = dir;
                         }
                      }
@@ -293,7 +293,7 @@ namespace MapCreationTool.Serialization
          if (editorType == EditorType.Area) {
             currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater4 || cell.hasWater5, Direction.South));
          } else if (editorType == EditorType.Sea) {
-            foreach(Direction dir in Enum.GetValues(typeof(Direction))) {
+            foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
                currents = currents.Union(formWaterCurrentChunk((cell) => cell.hasWater5 && cell.currentDirection == dir, dir));
             }
          }
@@ -317,7 +317,6 @@ namespace MapCreationTool.Serialization
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
                if (columnSelector(cellMatrix[i, j])) {
-                  matrix[i, j] = true;
                   currentIndexes.Add((i, j));
                }
             }
@@ -337,6 +336,11 @@ namespace MapCreationTool.Serialization
                   }
 
                   if (cellMatrix[i, j].hasWater) {
+                     // Don't place effectors on waterfalls themselves, since it will be handled by waterfall ledges
+                     if (editorType == EditorType.Area && cellMatrix[i, j].hasWater4) {
+                        continue;
+                     }
+
                      matrix[i, j] = true;
                   }
                }

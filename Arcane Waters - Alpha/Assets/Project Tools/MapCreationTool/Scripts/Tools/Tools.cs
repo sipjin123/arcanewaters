@@ -39,17 +39,21 @@ namespace MapCreationTool
       {
          get
          {
-            if (tileGroup == null)
-               return null;
-            if (tileGroup.type == TileGroupType.Prefab)
-               return (tileGroup as PrefabGroup).refPref;
-            if (tileGroup.type == TileGroupType.TreePrefab) {
-               return burrowedTrees
-                   ? (tileGroup as TreePrefabGroup).burrowedPref
-                   : (tileGroup as TreePrefabGroup).refPref;
-            }
-            return null;
+            return getPrefab(tileGroup);
          }
+      }
+
+      public static GameObject getPrefab (TileGroup group) {
+         if (group == null)
+            return null;
+         if (group.type == TileGroupType.Prefab)
+            return (group as PrefabGroup).refPref;
+         if (group.type == TileGroupType.TreePrefab) {
+            return burrowedTrees
+                ? (group as TreePrefabGroup).burrowedPref
+                : (group as TreePrefabGroup).refPref;
+         }
+         return null;
       }
 
       public static void setDefaultValues () {

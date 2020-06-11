@@ -4134,18 +4134,24 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_AssignPerkPoint (int perkId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int availablePoints = DB_Main.getUnassignedPerkPoints(_player.userId);
+         int assignedPoints = DB_Main.getAssignedPointsByPerkId(_player.userId, perkId);
 
-         if (availablePoints > 0) {
-            DB_Main.assignPerkPoint(_player.userId, perkId);
+         if (assignedPoints < Perk.MAX_POINTS_BY_PERK) {
+            int availablePoints = DB_Main.getUnassignedPerkPoints(_player.userId);
+
+            if (availablePoints > 0) {
+               DB_Main.assignPerkPoint(_player.userId, perkId);
+            }
+
+            // Refresh player's perk points
+            List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
+            });
+         } else {
+            D.log("This perk has already reached its maximum level");
          }
-
-         // Refresh player's perk points
-         List<Perk> userPerks = DB_Main.getPerkPointsForUser(_player.userId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_SetPerkPoints(netIdentity.connectionToClient, userPerks.ToArray());
-         });
       });
    }
 

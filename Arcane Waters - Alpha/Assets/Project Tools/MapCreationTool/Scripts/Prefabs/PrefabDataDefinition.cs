@@ -8,11 +8,25 @@ namespace MapCreationTool
 {
    public class PrefabDataDefinition : MonoBehaviour
    {
+      [Tooltip("Title of the prefab, that appears in the editor")]
       public string title = "";
+
+      [Tooltip("Can this prefab be placed on other prefabs")]
       public bool canInheritPosition = false;
+
+      [Tooltip("Can this prefab have other prefabs on top")]
       public bool canControlPosition = false;
+
+      [Tooltip("At what intervals can the position be changed, 0 if any position is valid")]
+      public Vector2 positionStep = Vector2.zero;
+
+      [Tooltip("Data fields that can be set by the user")]
       public DataField[] dataFields = new DataField[0];
+
+      [Tooltip("Dropdown datafields that can be set by the user")]
       public SelectDataField[] selectDataFields = new SelectDataField[0];
+
+      [Tooltip("Custom defined datafields, that are restructured to regular fields on start")]
       public CustomDataField[] customDataFields = new CustomDataField[0];
 
       /// <summary>
