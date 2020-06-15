@@ -78,10 +78,18 @@ namespace CloudBuildDataFetch {
                compiledCommitMessage += commitLogs.message + "\n";
             }
             newCloudBuildData.buildMessage = compiledCommitMessage;
-            newCloudBuildData.buildDateTime = rootList[0].finished;
+            try {
+               // Make sure the data is valid
+               DateTime newDateTime = DateTime.Parse(rootList[0].finished);
+               newCloudBuildData.buildDateTime = newDateTime.ToString();
+            } catch {
+               // Set current time if invalid data
+               newCloudBuildData.buildDateTime = DateTime.UtcNow.ToString(); ;
+            }
 
             // Make sure the date is never null or blank
             if (newCloudBuildData.buildDateTime == null || newCloudBuildData.buildDateTime.Length < 5) {
+               // Set current time if invalid data
                newCloudBuildData.buildDateTime = DateTime.UtcNow.ToString();
             }
 
@@ -93,7 +101,8 @@ namespace CloudBuildDataFetch {
                   });
                });
             } else {
-               D.log("CloudDataLogger: Prevent creating data, please check database for trash entry");
+               D.log("CloudDataLogger: Prevent creating data, please check database for trash entry, build might be in progress");
+               D.log("Build id = " + newCloudBuildData.buildId + " : Msg Length = " + newCloudBuildData.buildMessage.Length);
             }
          } else {
             logData("CloudDataLogger: Cloud is up to date: " + cloudData.buildId);

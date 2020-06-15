@@ -38,7 +38,7 @@ public class DB_Main : DB_MainStub {
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@buildId", cloudData.buildId);
             cmd.Parameters.AddWithValue("@message", cloudData.buildMessage);
-            cmd.Parameters.AddWithValue("@lastUserUpdate", cloudData.buildDateTime);
+            cmd.Parameters.AddWithValue("@lastUserUpdate", DateTime.UtcNow.ToString());
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -61,11 +61,15 @@ public class DB_Main : DB_MainStub {
                   CloudBuildData newBuildData = new CloudBuildData();
                   int buildId = dataReader.GetInt32("buildId");
                   string message = dataReader.GetString("message");
-                  string lastUpdated = dataReader.GetString("lastUserUpdate");
+                  try {
+                     string lastUpdated = dataReader.GetString("lastUserUpdate");
+                     newBuildData.buildDateTime = lastUpdated;
+                  } catch {
+                     newBuildData.buildDateTime = "";
+                  }
 
                   newBuildData.buildId = buildId;
                   newBuildData.buildMessage = message;
-                  newBuildData.buildDateTime = lastUpdated;
 
                   return newBuildData;
                }

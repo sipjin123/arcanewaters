@@ -150,6 +150,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 341d340460bb77f4288e03930620c139, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rootList: []
+  cloudData:
+    buildId: 0
+    buildMessage: 
+    buildDateTime: 
+  isLoggingData: 1
 --- !u!4 &883372606
 Transform:
   m_ObjectHideFlags: 0
