@@ -1,54 +1,88 @@
+// Web Navigation Requirements
 const puppeteer = require('puppeteer');
 const config = require ('./config.json');
-const Nylas = require('nylas');
 const opn = require('opn');
 
+// File Handling Requirements
 const fs = require('fs');
 const jsonfile = require('jsonfile')
+var jsonFileHandler = require('./jsonFileHandler.js');
 const cookiesFilePath = 'E:/Desktop/WebBotSteamCommunity/data.json'
+const versionsFilePath = 'E:/Desktop/WebBotSteamCommunity/buildVersions.json';
 
-var express = require('express');
-var mysql = require('mysql');
-var connection = mysql.createConnection({
-	// Properties
-	host: 'dev.c1whxibm6zeb.us-east-2.rds.amazonaws.com',
-	user: 'userAdKmE',
-	password: 'HEqbVDsvvCza5n4N',
-	database: 'arcane'
-});
-var app = express();
+// Event Requirements
+var events = require('events');
+var eventFinishedWritingData = new events.EventEmitter();
+var eventFinishedReadingData = new events.EventEmitter();
 
-/*
-private static string _remoteServer = "dev.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; 
-   private static string _database = "arcane";
-   private static string _uid = "userAdKmE";
-   private static string _password = "HEqbVDsvvCza5n4N";
-*/
+var newCloudBuildData = [];
+var latestBuildId = 0;
+//========================================================
+//Create an event handler:
+var dataWriteEventHandler = function (result) {
+  	console.log('Json Data writing is finished! Result: ' + result);
+}
+var dataReadEventHandler = function (result) {
+  	console.log('Json Data reading is finished! Result: Fetched Entries: ' + result.length);
+	try {
+		var localJsonData = jsonFileHandler.readLocalData();
+		var arrayOfObjects = localJsonData;
+		console.log('Reading local JSON data success!');
 
-connection.connect(function(error){
-	if(!!error){
-		console.log('Error');
-	} else	{
-		console.log('Connected');
+		var newEntryCount = 0;
+		for (var i = 0 ; i < result.length ; i ++){
+			var filterData = localJsonData.filter(x => x.buildId == result[i].buildId);
+
+			// If result is less than 1, it means data is not existing locally yet
+			if (filterData.length < 1) {
+				console.log("This is a new entry, registering locally: ID: " + result[i].buildId + " : " + filterData.length);
+				
+				var dataEntry = {
+					buildId: result[i].buildId,
+					message: result[i].message
+				};
+				var newArrayOfObjects = (localJsonData)
+				newArrayOfObjects.push(dataEntry)
+				newCloudBuildData.push(dataEntry)
+				newEntryCount++;
+			}
+		}
+		console.log("Finished updating local data, total added entries: " + newEntryCount);
+
+		for (var i = 0; i < newCloudBuildData.length ; i++){
+			console.log('cached data is: ' + newCloudBuildData[i].buildId);
+		}
+		if (newCloudBuildData.length > 0) {
+			postUpdates(newCloudBuildData, arrayOfObjects);
+		} else {
+			console.log('no new updates');
+		}
+	} catch {
+		console.log('Failed to fetch json data');
+		jsonFileHandler.writeJsonData(eventFinishedWritingData, result);
 	}
-});
+}
 
-Nylas.config({
-    clientId: 'b0ntakun.games@gmail.com',
-    clientSecret: 'B0ntakun2827',
-});
+// Assign the event handler to an event
+eventFinishedWritingData.on('finishedWriting', dataWriteEventHandler);
+eventFinishedReadingData.on('finishedReading', dataReadEventHandler);
 
-const postUpdates = async () => {
+// Begin to read the MySQL Data
+jsonFileHandler.readJsonData(eventFinishedReadingData);
+
+const postUpdates = async (newCloudObjects, arrayOfObjects) => {
+	latestBuildId = newCloudObjects.length-1;
 	const options = {
-		path: 'images/website.png',
+		path: 'images/Build_' + newCloudObjects[latestBuildId].buildId + '.png',
 		fullPage: true,
 		omitBackground: true,
 		type: 'jpeg'
 	}
 	let steamUrl = 'https://steamcommunity.com/login/home/?goto=';
-	let browser = await puppeteer.launch({ headless : false });
+	let browser = await puppeteer.launch({ headless : true });
 	let page = await browser.newPage();
 	var actionInterval = 3000;
+	var typingInterval = 1000;
 
 	await page.goto(steamUrl, { waitUntil: 'networkidle2'});
 
@@ -96,16 +130,38 @@ const postUpdates = async () => {
 
 			// Register text field content
 			await page2.waitFor(actionInterval);
-			await page2.type('.partnereventeditor_EventEditorTitleInput_ZAOXn', 'Title Test');
+			await page2.type('.partnereventeditor_EventEditorTitleInput_ZAOXn', 'Patch Notes!');
 
-			await page2.waitFor(actionInterval);
-			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Subtitle Test');
+			await page2.waitFor(typingInterval);
+			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Build #' + newCloudObjects[latestBuildId].buildId);
 
-			await page2.waitFor(actionInterval);
+			await page2.waitFor(typingInterval);
 			await page2.type('.partnereventeditor_Summary_2eQap', 'Summary Test');
 
+			await page2.waitFor(typingInterval);
+			for (var messageIndex = 0 ; messageIndex < newCloudBuildData.length ; messageIndex ++) {
+				const sentences = newCloudBuildData[messageIndex].message.split('\n');
+				var sentenceList = [];
+
+				for (var index = 0 ; index < sentences.length -1 ; index++) {
+					var textLine = sentences[index];
+				 	if (sentences[index].length > 1) {
+						if (textLine[0] != '-') { 
+					 		sentences[index] = '- ' + textLine;
+					 		textLine = sentences[index];
+					 	}
+				 	}
+				 	sentences[index] = '\n' + textLine;
+				 	sentences[index][sentences.length-1] = '';
+				 	sentenceList.push(sentences[index]);
+				}
+				await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', sentenceList + '\n');
+			}
 			await page2.waitFor(actionInterval);
-			await page2.type('.partnereventeditor_EventEditorDescription_3C8iP', 'Description Test');
+
+			// Take screen shot
+			console.log("Taking screenshot");
+    		await page2.screenshot(options);
 
 			// Navigate to Publish Tab
 			console.log("Select publish Button");
@@ -129,7 +185,8 @@ const postUpdates = async () => {
 			await page2.click('button[type="submit"]');
 
 			// Finishing notification
-		    console.log('Done Typing');
+			await page2.waitFor(actionInterval);
+			jsonFileHandler.writeJsonData(eventFinishedWritingData, arrayOfObjects);
 			await page2.waitFor(actionInterval);
 		    console.log('Session has been loaded in the browser');
 		} else {
@@ -170,6 +227,4 @@ const postUpdates = async () => {
 
     await browser.close();
 };
-
-//console.log('Initializing');
-//postUpdates();
+console.log('Initializing');
