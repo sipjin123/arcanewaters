@@ -138,10 +138,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          // nameText.text = "[" + npcType + "]";
          // setNameColor(nameText, npcType);
       }
-
-      if (AreaManager.self.getArea(areaKey) != null) {
-         transform.SetParent(AreaManager.self.getArea(areaKey).npcParent);
-      }
    }
 
    private void setupClientSideValues () {
@@ -567,6 +563,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          }
       }
       return 0;
+   }
+
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.npcParent, worldPositionStays);
    }
 
    #region Private Variables

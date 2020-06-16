@@ -70,7 +70,7 @@ public class Area : MonoBehaviour
    public List<ExportedPrefab001> seaMonsterDataFields = new List<ExportedPrefab001>();
    
    // Networked entity parents
-   public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent;
+   public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
 
    #endregion
 
@@ -145,6 +145,12 @@ public class Area : MonoBehaviour
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
+   }
+
+   public void OnDestroy () {
+      if (!ClientManager.isApplicationQuitting) {
+         AstarPath.active.data.RemoveGraph(_graph);
+      }
    }
 
    public List<TilemapLayer> getTilemapLayers () {
@@ -276,17 +282,26 @@ public class Area : MonoBehaviour
       }
    }
 
+   public Vector2 getAreaSize () {
+      if (_firstTilemap == null) {
+         return new Vector2(0, 0);
+      }
+      return new Vector2(_firstTilemap.size.x * _grid.transform.localScale.x, _firstTilemap.size.y * _grid.transform.localScale.y);
+   }
+
+   public Vector2 getAreaHalfSize () {
+      return getAreaSize() * 0.5f;
+   }
+
    private void configurePathfindingGraph () {
       _graph = AstarPath.active.data.AddGraph(typeof(GridGraph)) as GridGraph;
       _graph.center = transform.position;
-      Tilemap firstTilemap = GetComponentInChildren<Tilemap>();
-      _graph.SetDimensions(firstTilemap.size.x, firstTilemap.size.y, firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
+      _firstTilemap = GetComponentInChildren<Tilemap>();
+      _graph.SetDimensions(_firstTilemap.size.x, _firstTilemap.size.y, _firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x);
       _graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
       _graph.collision.use2D = true;
       _graph.collision.Initialize(_graph.transform, 1.0f);
       _graph.collision.type = ColliderType.Ray;
-      _graph.collision.type = ColliderType.Sphere;
-      _graph.collision.diameter = 2.5f;
       _graph.collision.mask = LayerMask.GetMask("GridColliders");
       _graph.Scan();
    }
@@ -307,6 +322,9 @@ public class Area : MonoBehaviour
 
    // The grid graph of the area
    protected GridGraph _graph = null;
+
+   // Reference to first tilemap which represents base level of map
+   protected Tilemap _firstTilemap = null;
 
    #endregion
 }

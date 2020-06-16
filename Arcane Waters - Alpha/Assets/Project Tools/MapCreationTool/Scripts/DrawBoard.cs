@@ -682,11 +682,11 @@ namespace MapCreationTool
          return result;
       }
 
-      public static Vector2 calculatePrefabPosition (PrefabGroup prefGroup, Vector2 inputPosition) {
+      public static Vector2 calculatePrefabPosition (PrefabGroup prefGroup, GameObject prefab, Vector2 inputPosition) {
          Vector2 result = inputPosition;
 
-         PrefabCenterOffset prefOffset = Tools.getPrefab(prefGroup).GetComponent<PrefabCenterOffset>();
-         PrefabDataDefinition prefData = Tools.getPrefab(prefGroup).GetComponent<PrefabDataDefinition>();
+         PrefabCenterOffset prefOffset = prefab.GetComponent<PrefabCenterOffset>();
+         PrefabDataDefinition prefData = prefab.GetComponent<PrefabDataDefinition>();
 
          Vector2 step = Tools.snapToGrid ? Vector2.one : prefData.positionStep;
 

@@ -37,6 +37,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for creating a discovery icon
    public MM_Icon discoveryIconPrefab;
 
+   // The prefab we use for marking sea monster entity
+   public MM_SeaMonsterIcon seaMonsterIconPrefab;
+
    // The prefab we use for showing player ship entity (enemy, friendly, neutral)
    public MM_ShipEntityIcon enemyShipIconPrefab;
    public MM_ShipEntityIcon friendlyShipIconPrefab;
@@ -61,9 +64,6 @@ public class Minimap : ClientMonoBehaviour {
 
    // The icons of treasure sites on minimap
    public Image[] treasureSiteImages;
-
-   // The icons of sea monster entities
-   public MM_SeaMonsterIcon[] seaMonsterIcons;
 
    // Image we're using for the map background
    public Image backgroundImage;
@@ -162,6 +162,7 @@ public class Minimap : ClientMonoBehaviour {
       // Delete any old markers we created
       iconContainer.DestroyChildren();
       _treasureChestIcons.Clear();
+      _seaMonsterIcons.Clear();
 
       // Create icons for any impassable areas
       /*for (float y = area.cameraBounds.bounds.min.y; y < area.cameraBounds.bounds.max.y; y += (4f * SCALE)) {
@@ -213,6 +214,13 @@ public class Minimap : ClientMonoBehaviour {
       foreach(TreasureChest chest in TreasureManager.self.GetComponentsInChildren<TreasureChest>()) {
          if (!chest.hasBeenOpened()) {
             addTreasureChestIcon(chest.gameObject);
+         }
+      }
+
+      // Create icons for all sea monsters
+      if (area.isSea) {
+         foreach (SeaMonsterEntity seaMonsterEntity in area.GetComponentsInChildren<SeaMonsterEntity>()) {
+            addSeaMonsterIcon(area, seaMonsterEntity);
          }
       }
 
@@ -272,6 +280,15 @@ public class Minimap : ClientMonoBehaviour {
             icon.target = chest.gameObject;
             _treasureChestIcons.Add(icon);
          }
+      }
+   }
+
+   private void addSeaMonsterIcon (Area currentArea, SeaMonsterEntity seaMonsterEntity) {
+      if (seaMonsterEntity != null && !seaMonsterEntity.isDead()) {
+         MM_SeaMonsterIcon icon = Instantiate(seaMonsterIconPrefab, this.iconContainer.transform.parent);
+         icon.seaMonster = seaMonsterEntity;
+         icon.currentArea = currentArea;
+         _seaMonsterIcons.Add(icon);
       }
    }
 
@@ -1481,6 +1498,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // Current list of discovery icons
    private List<MM_Icon> _discoveryIcons = new List<MM_Icon>();
+
+   // Current list of sea monster entity icons
+   public List<MM_SeaMonsterIcon> _seaMonsterIcons = new List<MM_SeaMonsterIcon>();
 
    [SerializeField] TileLayer[] _tileLayer = new TileLayer[0];
    [SerializeField] TileIcon[] _tileIconLayers = new TileIcon[0];

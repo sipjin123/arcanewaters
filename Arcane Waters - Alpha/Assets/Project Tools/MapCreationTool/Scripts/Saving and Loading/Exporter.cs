@@ -212,7 +212,7 @@ namespace MapCreationTool.Serialization
                      columns[i, j].hasWater5 = true;
 
                      foreach (Direction dir in Enum.GetValues(typeof(Direction))) {
-                        if (columns[i, j].tiles[z].tileBase.name.EndsWith(dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
+                        if (columns[i, j].tiles[z].tileBase.name.EndsWith("_" + dir.ToString(), StringComparison.OrdinalIgnoreCase)) {
                            columns[i, j].currentDirection = dir;
                         }
                      }

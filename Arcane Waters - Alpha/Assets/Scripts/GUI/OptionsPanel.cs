@@ -29,6 +29,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // Log Out Button
    public Button logoutButton;
 
+   // Go Home Button
+   public Button goHomeButton;
+
    // Self
    public static OptionsPanel self;
 
@@ -70,6 +73,7 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       base.show();
 
       logoutButton.gameObject.SetActive(NetworkServer.active || NetworkClient.active);
+      goHomeButton.gameObject.SetActive(NetworkServer.active || NetworkClient.active);
    }
 
    private void initializeResolutionsDropdown () {
@@ -170,6 +174,19 @@ public class OptionsPanel : Panel, IPointerClickHandler {
          PanelManager.self.popPanel();
       } else {
          logOut();
+      }
+   }
+
+   public void onGoHomeButtonPress () {
+      if (Global.player == null) {
+         return;
+      }
+
+      Global.player.Cmd_GoHome();
+
+      // Close this panel
+      if (isShowing()) {
+         PanelManager.self.popPanel();
       }
    }
 

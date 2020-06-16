@@ -15,7 +15,7 @@ namespace MapCreationTool
             return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
          } catch {
             D.editorLog("Failed to deserialize Map data for: " + areaKey, Color.red);
-            return new ExportedProject001();
+            return null;
          }
       }
 

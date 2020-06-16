@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MapCreationTool.PaletteTilesData;
 using MapCreationTool.UndoSystem;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -163,19 +164,24 @@ namespace MapCreationTool
          if (from != to) {
             Vector3 transition = to - from;
             foreach (PlacedPrefab prefab in DrawBoard.instance.currentSelection.prefabs) {
-               result.prefabChanges.Add(new PrefabChange {
-                  prefabToDestroy = prefab.original,
-                  positionToDestroy = prefab.placedInstance.transform.position
-               });
+               PrefabGroup prefGroup = Palette.instance.paletteData.prefabGroups.FirstOrDefault(pg => pg.containsPrefab(prefab.original));
 
-               Vector3 targetPos = prefab.placedInstance.transform.position + transition;
-               if (targetPos.x >= boundsFloat.min.x & targetPos.x <= boundsFloat.max.x & targetPos.y >= boundsFloat.min.y && targetPos.y <= boundsFloat.max.y) {
+               if (prefGroup != null) {
                   result.prefabChanges.Add(new PrefabChange {
-                     positionToPlace = targetPos,
-                     prefabToPlace = prefab.original,
-                     dataToSet = prefab.data.Clone(),
-                     select = true
+                     prefabToDestroy = prefab.original,
+                     positionToDestroy = prefab.placedInstance.transform.position
                   });
+
+                  Vector3 targetPos = DrawBoard.calculatePrefabPosition(prefGroup, prefab.original, prefab.placedInstance.transform.position + transition);
+
+                  if (targetPos.x >= boundsFloat.min.x & targetPos.x <= boundsFloat.max.x & targetPos.y >= boundsFloat.min.y && targetPos.y <= boundsFloat.max.y) {
+                     result.prefabChanges.Add(new PrefabChange {
+                        positionToPlace = targetPos,
+                        prefabToPlace = prefab.original,
+                        dataToSet = prefab.data.Clone(),
+                        select = true
+                     });
+                  }
                }
             }
          }

@@ -25,10 +25,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public int spawnId;
 
-   // The world position of this node
-   [SyncVar]
-   public Vector2 syncedPosition;
-
    // The position the sprite should be set after interacting
    public Transform interactPosition;
 
@@ -92,6 +88,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          return;
       }
 
+      // Make the node a child of the Area
+      StartCoroutine(CO_SetAreaParent());
+
       if (!Util.isBatch()) {
          try {
             mainSprite = ImageManager.getSprite(initSpritePath);
@@ -132,11 +131,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
             SecretsManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
          });
          warp.gameObject.SetActive(false);
-      }
-
-      transform.position = syncedPosition;
-      if (AreaManager.self.getArea(areaKey) != null) {
-         transform.SetParent(AreaManager.self.getArea(areaKey).secretsParent);
       }
 
       if (isFinishedAnimating && !Util.isBatch()) {
@@ -230,6 +224,10 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       }
    }
 
+   public void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.secretsParent, worldPositionStays);
+   }
+
    private void setSprites () {
       if (!Util.isBatch()) {
          spriteRenderer.sprite = mainSprite;
@@ -288,6 +286,18 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
       isFinishedAnimating = true;
+   }
+
+   private IEnumerator CO_SetAreaParent () {
+      // Wait until we have finished instantiating the area
+      while (AreaManager.self.getArea(areaKey) == null) {
+         yield return 0;
+      }
+
+      // Set as a child of the area
+      Area area = AreaManager.self.getArea(this.areaKey);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
+      setAreaParent(area, worldPositionStays);
    }
 
    #region Private Variables

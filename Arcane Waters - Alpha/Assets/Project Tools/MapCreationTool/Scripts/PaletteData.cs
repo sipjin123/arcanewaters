@@ -119,6 +119,18 @@ namespace MapCreationTool.PaletteTilesData
       public virtual GameObject getPrefab () {
          return refPref;
       }
+
+      public bool containsPrefab (GameObject prefab) {
+         if (refPref == prefab) {
+            return true;
+         }
+
+         if (this is TreePrefabGroup && (this as TreePrefabGroup).burrowedPref == prefab) {
+            return true;
+         }
+
+         return false;
+      }
    }
 
    public class TreePrefabGroup : PrefabGroup

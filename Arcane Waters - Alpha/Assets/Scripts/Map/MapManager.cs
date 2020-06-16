@@ -84,18 +84,18 @@ public class MapManager : MonoBehaviour
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Deserialize the map
-            ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
+            if (mapInfo == null) {
+               D.error($"Could not find entry for map { areaKey } in the database");
+            } else if (string.IsNullOrEmpty(mapInfo.gameData)) {
+               D.error($"Could not find gameData from map { areaKey } in the database. Ensure that the map has a published version available.");
+            } else {
+               // Deserialize the map
+               ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
-            int mapVersion = 0;
-            try {
-               mapVersion = mapInfo.version;
-            } catch {
-               D.debug("Map info does not Exist!! Failed to fetch using DBMain for area: " + areaKey);
-               return;
+               if (exportedProject != null) {
+                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
+               }
             }
-
-            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
          });
       });
    }
@@ -133,7 +133,7 @@ public class MapManager : MonoBehaviour
       int unrecognizedTiles = 0;
 
       // Create one layer per frame
-      foreach (ExportedLayer001 layer in exportedProject.layers) {
+      foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
          MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
             result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
          PanelManager.self.loadingScreen.setPercentage((0.1f / exportedProject.layers.Length) * tilemaps.Count);
@@ -208,8 +208,7 @@ public class MapManager : MonoBehaviour
 
       // Only remove old maps on the Clients
       if (!Mirror.NetworkServer.active && _lastMap != null && _lastMap.areaKey != area.areaKey) {
-         AreaManager.self.removeArea(_lastMap.areaKey);
-         Destroy(_lastMap.gameObject);
+         destroyLastMap();
       }
       _lastMap = area;
 
@@ -271,21 +270,29 @@ public class MapManager : MonoBehaviour
    }
 
    public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
-      // Request the map from Nubis Cloud
-      try {
-         // Grab the map data from the request
-         string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey);
+      // TODO: Do not Remove until this issue is completely fixed
+      D.editorLog("Map Log: Download and Create Map", Color.green);
 
+      // Request the map from Nubis Cloud
+      // Grab the map data from the request
+      string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey);
+
+      if (string.IsNullOrEmpty(mapData)) {
+         D.error("Error in retrieving map data from NUBIS");
+      } else {
          // Store it for later reference
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
-         // TODO: Do not Remove until this issue is completely fixed
-         D.editorLog("Map Log: Download and Create Map", Color.green);
-
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);
-      } catch {
-         D.log("Error in retrieving map data from NUBIS");
+      }
+   }
+
+   public void destroyLastMap () {
+      if (_lastMap != null) {
+         AreaManager.self.removeArea(_lastMap.areaKey);
+         Destroy(_lastMap.gameObject);
+         _lastMap = null;
       }
    }
 

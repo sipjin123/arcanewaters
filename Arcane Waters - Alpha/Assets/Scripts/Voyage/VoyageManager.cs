@@ -31,7 +31,7 @@ public class VoyageManager : MonoBehaviour {
 
    public void Start () {
       // Update the members of the voyage group, if any
-      InvokeRepeating("updateVoyageGroupMembers", 0f, 2f);
+      InvokeRepeating(nameof(updateVoyageGroupMembers), 0f, 2f);
    }
 
    public void startVoyageManagement () {
@@ -44,10 +44,10 @@ public class VoyageManager : MonoBehaviour {
       StartCoroutine(CO_ClearVoyageGroups());
 
       // Regularly check that there are enough voyage instances open and create more
-      InvokeRepeating("createVoyageInstanceIfNeeded", 20f, 10f);
+      InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);
 
       // Regularly update the list of voyage instances hosted by this server
-      InvokeRepeating("updateVoyageInstancesList", 5.5f, 5f);
+      InvokeRepeating(nameof(updateVoyageInstancesList), 5.5f, 5f);
    }
 
    public void createVoyageInstance (string areaKey, bool isPvP) {
@@ -148,12 +148,7 @@ public class VoyageManager : MonoBehaviour {
 
       // Check if the player is in a voyage group
       if (isInVoyage(entity)) {
-         // Associate a new function with the confirmation button
-         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmWarpToVoyageMap());
-
-         // Show a confirmation panel
-         PanelManager.self.confirmScreen.show("Do you want to warp to your current voyage?");
+         displayWarpToVoyageConfirmScreen();
       } else {
          // Get the voyages panel
          PanelManager.self.selectedPanel = Panel.Type.Voyage;
@@ -164,6 +159,15 @@ public class VoyageManager : MonoBehaviour {
             panel.displayVoyagesSelection();
          }
       }
+   }
+
+   public void displayWarpToVoyageConfirmScreen () {
+      // Associate a new function with the confirmation button
+      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmWarpToVoyageMap());
+
+      // Show a confirmation panel
+      PanelManager.self.confirmScreen.show("Do you want to warp to your current voyage?");
    }
 
    public void confirmWarpToVoyageMap () {

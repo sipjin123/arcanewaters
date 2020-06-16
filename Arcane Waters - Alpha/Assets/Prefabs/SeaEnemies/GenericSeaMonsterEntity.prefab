@@ -152,6 +152,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 3
   group: 4
+  _index: 0
 --- !u!1 &1307228615476472
 GameObject:
   m_ObjectHideFlags: 0
@@ -285,6 +286,8 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  customHouseBaseId: 0
+  customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   damage: 10
@@ -517,6 +520,7 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   m_AssetId: 
+  hasSpawned: 0
 --- !u!114 &20651762200388567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -544,7 +548,7 @@ MonoBehaviour:
   sendAngularVelocityThreshold: 0
   receivedPositionThreshold: 0
   receivedRotationThreshold: 0
-  snapPositionThreshold: 0
+  snapPositionThreshold: 5
   snapRotationThreshold: 0
   snapScaleThreshold: 0
   positionLerpSpeed: 0.85
@@ -563,6 +567,7 @@ MonoBehaviour:
   isVelocityCompressed: 0
   isAngularVelocityCompressed: 0
   isSmoothingAuthorityChanges: 0
+  transformSource: 0
   whenToUpdateTransform: 1
   sendRate: 4
   networkChannel: 1
@@ -734,6 +739,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  _index: 0
 --- !u!1 &1428648646478705256
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,6 +892,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  _index: 0
 --- !u!1 &1470143744152997659
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,6 +1064,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1356,6 +1364,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1621,6 +1630,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1846,6 +1856,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -1980,6 +1991,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2133,6 +2145,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2372,6 +2385,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: 458cdc1e53b2c034e9bb76f64b4eaddb, type: 2}
   m_Color: {r: 0, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2530,6 +2544,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

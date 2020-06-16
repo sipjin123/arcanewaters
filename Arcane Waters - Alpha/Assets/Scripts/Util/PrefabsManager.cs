@@ -57,7 +57,7 @@ public class PrefabsManager : MonoBehaviour {
    public GameObject tentacleCollisionPrefab;
 
    // The Prefab we use for creating venom residue
-   public GameObject venomResiduePrefab;
+   public VenomResidue venomResiduePrefab;
 
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;

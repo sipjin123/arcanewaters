@@ -198,7 +198,7 @@ public class Instance : NetworkBehaviour
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
                   SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
 
-                  SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos);
+                  SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
 
                   // Special case of the 'horror' boss
                   if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
@@ -207,12 +207,12 @@ public class Instance : NetworkBehaviour
                      float distanceGap = .25f;
                      float diagonalDistanceGap = .35f;
 
-                     SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), seaMonster, 1, -1, 1);
-                     SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), seaMonster, -1, -1, 0);
-                     SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), seaMonster, 1, 1, 1);
-                     SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), seaMonster, -1, 1, 0);
-                     SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), seaMonster, -1, 0, 1);
-                     SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), seaMonster, 1, 0, 0);
+                     SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
+                     SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
+                     SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
+                     SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
+                     SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
+                     SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
 
                      childSeaMonster1.isStationary = true;
                      childSeaMonster2.isStationary = true;
@@ -229,9 +229,11 @@ public class Instance : NetworkBehaviour
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
                   // Add it to the Instance
-                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab, AreaManager.self.getArea(areaKey).enemyParent);
+                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
                   enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
                   enemy.areaKey = area.areaKey;
+                  enemy.transform.localPosition = targetLocalPos;
+                  enemy.setAreaParent(area, false);
 
                   BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
                   if (battleData != null) {
@@ -241,9 +243,7 @@ public class Instance : NetworkBehaviour
                   }
 
                   InstanceManager.self.addEnemyToInstance(enemy, this);
-
-                  enemy.transform.localPosition = targetLocalPos;
-                  enemy.desiredPosition = targetLocalPos;
+                  
                   NetworkServer.Spawn(enemy.gameObject);
                }
             }
@@ -252,12 +252,13 @@ public class Instance : NetworkBehaviour
                foreach (ExportedPrefab001 dataField in area.npcDatafields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
                   int npcId = NPC.fetchDataFieldID(dataField.d);
-                  Transform npcParent = AreaManager.self.getArea(areaKey).npcParent;
 
-                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab, npcParent);
+                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab);
                   npc.areaKey = area.areaKey;
                   npc.npcId = npcId;
-                  
+                  npc.transform.localPosition = targetLocalPos;
+                  npc.setAreaParent(area, false);
+
                   // Make sure npc has correct data
                   IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
                   if (receiver != null && dataField.d != null) {
@@ -269,8 +270,7 @@ public class Instance : NetworkBehaviour
                   foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
                      snap.snapZ();
                   }
-
-                  npc.transform.position = npcParent.position + targetLocalPos;
+                  
                   NetworkServer.Spawn(npc.gameObject);
                }
             } 
@@ -280,12 +280,13 @@ public class Instance : NetworkBehaviour
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
                   // Instantiate the treasure site
-                  TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab, transform);
+                  TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab);
                   site.instanceId = this.id;
                   site.areaKey = area.areaKey;
                   site.setBiome(area.biome);
                   site.difficulty = difficulty;
                   site.transform.localPosition = targetLocalPos;
+                  site.setAreaParent(area, false);
 
                   // Keep a track of the entity
                   InstanceManager.self.addTreasureSiteToInstance(site, this);
@@ -296,7 +297,6 @@ public class Instance : NetworkBehaviour
             }
 
             if (area.oreDataFields.Count > 0) {
-               Transform oreParent = AreaManager.self.getArea(areaKey).oreNodeParent;
                foreach (ExportedPrefab001 dataField in area.oreDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
                   int oreId = 0;
@@ -318,21 +318,16 @@ public class Instance : NetworkBehaviour
                   }
 
                   // Create the ore node locally and through the network
-                  OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType, oreParent);
-
-                  // Make sure the position is synced
-                  newOreNode.syncedPosition = newOreNode.transform.position;
+                  OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType);
                }
             }
 
             if (area.secretsEntranceDataFields.Count > 0) {
-               Transform secretsParent = AreaManager.self.getArea(areaKey).secretsParent;
-
                int spawnIdCounter = 0;
                foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
-                  SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab, secretsParent);
+                  SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab);
 
                   // Make sure obj has correct data
                   IMapEditorDataReceiver receiver = secretObjNode.GetComponent<IMapEditorDataReceiver>();
@@ -344,7 +339,7 @@ public class Instance : NetworkBehaviour
 
                   // Transform Setup
                   secretObjNode.transform.localPosition = targetLocalPos;
-                  secretObjNode.syncedPosition = secretObjNode.transform.position;
+                  secretObjNode.setAreaParent(area, false);
 
                   // Id Setup
                   secretObjNode.instanceId = id;
@@ -358,12 +353,12 @@ public class Instance : NetworkBehaviour
             }
 
             if (area.shipDataFields.Count > 0) {
-               Transform shipParent = Instantiate(new GameObject(), area.transform).transform;
-               shipParent.name = "Ships";
                foreach (ExportedPrefab001 dataField in area.shipDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
 
-                  BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab, shipParent.position + targetLocalPos, Quaternion.identity, shipParent);
+                  BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab, targetLocalPos, Quaternion.identity);
+                  botShip.transform.localPosition = targetLocalPos;
+                  botShip.setAreaParent(area, false);
 
                   // Make sure ship has correct data
                   IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
@@ -392,7 +387,7 @@ public class Instance : NetworkBehaviour
       }
    }
 
-   private SeaMonsterEntity spawnSeaMonster (SeaMonsterEntity.Type seaMonsterType, Vector3 localPos) {
+   private SeaMonsterEntity spawnSeaMonster (SeaMonsterEntity.Type seaMonsterType, Vector3 localPos, Area area) {
       if (SeaMonsterManager.self.getMonster(seaMonsterType) == null) {
          D.debug("Sea monster is null! " + seaMonsterType);
          return null;
@@ -400,21 +395,22 @@ public class Instance : NetworkBehaviour
 
       SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterType);
 
-      SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);//, AreaManager.self.getArea(areaKey).seaMonsterParent);
+      SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       seaMonster.monsterType = seaMonsterType;
       seaMonster.areaKey = this.areaKey;
       seaMonster.facing = Direction.South;
+      seaMonster.transform.localPosition = localPos;
+      seaMonster.setAreaParent(area, false);
 
       InstanceManager.self.addSeaMonsterToInstance(seaMonster, this);
-      seaMonster.transform.position = this.transform.position + localPos;
 
       NetworkServer.Spawn(seaMonster.gameObject);
 
       return seaMonster;
    }
 
-   private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, int variety) {
-      SeaMonsterEntity childSeaMonster = spawnSeaMonster(seaMonsterType, localPos);
+   private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, Area area, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, int variety) {
+      SeaMonsterEntity childSeaMonster = spawnSeaMonster(seaMonsterType, localPos, area);
 
       childSeaMonster.distanceFromSpawnPoint = new Vector2(xVal, yVal);
       childSeaMonster.variety = (variety);

@@ -175,7 +175,7 @@ namespace MapCreationTool
 
          fillBoundsDropdown.gameObject.SetActive(Tools.toolType == ToolType.Fill);
 
-         snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null);
+         snapToGridToggle.gameObject.SetActive(Tools.selectedPrefab != null || Tools.toolType == ToolType.Move);
          selectionTargetDropdown.gameObject.SetActive(Tools.toolType == ToolType.Selection);
       }
 

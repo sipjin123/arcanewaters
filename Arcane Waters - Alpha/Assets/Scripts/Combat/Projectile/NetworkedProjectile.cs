@@ -52,11 +52,11 @@ public class NetworkedProjectile : MonoBehaviour {
 
    #endregion
 
-   public void init (int userID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos) {
+   public void init (uint netID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos) {
       this.startPos = startPos;
       transform.position = startPos;
 
-      _creatorUserId = userID;
+      _creatorNetId = netID;
       _instanceId = instanceID;
       _impactMagnitude = impactType;
 
@@ -112,7 +112,7 @@ public class NetworkedProjectile : MonoBehaviour {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), (Vector2) this.transform.position + offset, Quaternion.identity);
 
          // If it was our ship, shake the camera
-         if (Global.player != null && _creatorUserId == Global.player.userId) {
+         if (Global.player != null && _creatorNetId == Global.player.netId) {
             CameraManager.shakeCamera();
          }
       }
@@ -162,9 +162,11 @@ public class NetworkedProjectile : MonoBehaviour {
             // Commands the server to process spawning of venom residue
             if (NetworkServer.active) {
                if (!hitLand) {
-                  SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
-                  GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
-                  sourceEntity.Rpc_SpawnVenomResidue(sourceEntity.netId, circleCollider.transform.position);
+                  SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+                  VenomResidue venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
+                  venomResidue.creatorNetId = _creatorNetId;
+                  venomResidue.instanceId = _instanceId;
+                  sourceEntity.Rpc_SpawnVenomResidue(_creatorNetId, _instanceId, circleCollider.transform.position);
                }
             }
             break;
@@ -187,11 +189,11 @@ public class NetworkedProjectile : MonoBehaviour {
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this._creatorUserId == hitEntity.userId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
+      if (hitEntity == null || this._creatorNetId == hitEntity.netId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -203,7 +205,7 @@ public class NetworkedProjectile : MonoBehaviour {
                ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Mini_Boulder);
 
                // Spawn Mini Boulders upon Collision
-               SeaManager.self.getEntity(_creatorUserId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
+               SeaManager.self.getEntity(_creatorNetId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
                break;
             case Attack.Type.Venom:
                // Registers the poison action status to the achievementdata for recording
@@ -214,7 +216,7 @@ public class NetworkedProjectile : MonoBehaviour {
                break;
          }
          // Registers Damage throughout the clients
-         hitEntity.Rpc_NetworkProjectileDamage(_creatorUserId, attackType, circleCollider.transform.position);
+         hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, damage, attackType);
@@ -247,7 +249,7 @@ public class NetworkedProjectile : MonoBehaviour {
    protected bool _hasCollided;
 
    // The source of this attack
-   protected int _creatorUserId;
+   protected uint _creatorNetId;
 
    // The instance id for this projectile
    protected int _instanceId;

@@ -144,10 +144,10 @@ public class SeaEntity : NetEntity
    }
 
    [Server]
-   public void chainLightning (uint attackerNetId, Vector2 sourcePos, int primaryTargetID) {
+   public void chainLightning (uint attackerNetId, Vector2 sourcePos, uint primaryTargetNetID) {
       Collider2D[] hits = Physics2D.OverlapCircleAll(sourcePos, 1);
       Dictionary<NetEntity, Transform> collidedEntities = new Dictionary<NetEntity, Transform>();
-      List<int> targetIDList = new List<int>();
+      List<uint> targetIDList = new List<uint>();
 
       foreach (Collider2D collidedEntity in hits) {
          if (collidedEntity != null) {
@@ -163,33 +163,34 @@ public class SeaEntity : NetEntity
                   AchievementManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
-                  targetIDList.Add(entity.userId);
+                  targetIDList.Add(entity.netId);
                }
             }
          }
       }
 
-      Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetID, sourcePos);
+      Rpc_ChainLightning(targetIDList.ToArray(), primaryTargetNetID, sourcePos);
    }
 
    [ClientRpc]
-   public void Rpc_SpawnVenomResidue (uint creatorNetId, Vector3 location) {
-      GameObject venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
-      venomResidue.GetComponent<VenomResidue>().creatorNetId = creatorNetId;
+   public void Rpc_SpawnVenomResidue (uint creatorNetId, int instanceId, Vector3 location) {
+      VenomResidue venomResidue = Instantiate(PrefabsManager.self.venomResiduePrefab, location, Quaternion.identity);
+      venomResidue.creatorNetId = creatorNetId;
+      venomResidue.instanceId = instanceId;
       ExplosionManager.createSlimeExplosion(location);
       SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Coralbow_Attack, this.transform.position);
    }
 
    [ClientRpc]
-   private void Rpc_ChainLightning (int[] targetIDList, int primaryTargetID, Vector2 sourcePos) {
-      SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetID);
+   private void Rpc_ChainLightning (uint[] targetNetIDList, uint primaryTargetNetID, Vector2 sourcePos) {
+      SeaEntity parentEntity = SeaManager.self.getEntity(primaryTargetNetID);
 
       GameObject shockResidue = Instantiate(PrefabsManager.self.lightningResiduePrefab);
       shockResidue.transform.SetParent(parentEntity.spritesContainer.transform, false);
       EffectManager.self.create(Effect.Type.Shock_Collision, sourcePos);
 
-      foreach (int attackerID in targetIDList) {
-         SeaEntity seaEntity = SeaManager.self.getEntity(attackerID);
+      foreach (uint attackerNetID in targetNetIDList) {
+         SeaEntity seaEntity = SeaManager.self.getEntity(attackerNetID);
          LightningBoltScript lightning = Instantiate(PrefabsManager.self.lightningChainPrefab);
          lightning.transform.SetParent(shockResidue.transform, false);
 
@@ -340,8 +341,8 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_NetworkProjectileDamage (int attackerID, Attack.Type attackType, Vector3 location) {
-      SeaEntity sourceEntity = SeaManager.self.getEntity(attackerID);
+   public void Rpc_NetworkProjectileDamage (uint attackerNetID, Attack.Type attackType, Vector3 location) {
+      SeaEntity sourceEntity = SeaManager.self.getEntity(attackerNetID);
       noteAttacker(sourceEntity);
 
       switch (attackType) {
@@ -352,7 +353,7 @@ public class SeaEntity : NetEntity
             break;
          case Attack.Type.Venom:
             // Apply the status effect
-            StatusManager.self.create(Status.Type.Slow, 3f, attackerID);
+            StatusManager.self.create(Status.Type.Slow, 3f, attackerNetID);
             ExplosionManager.createSlimeExplosion(location);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
             break;
@@ -594,7 +595,7 @@ public class SeaEntity : NetEntity
                      targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, attackType);
 
                      if (attackType == Attack.Type.Shock_Ball) {
-                        chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.userId);
+                        chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.netId);
                      }
                   } else {
                      targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, Attack.Type.None);
@@ -611,9 +612,9 @@ public class SeaEntity : NetEntity
                         }
                      }
 
-                     StatusManager.self.create(Status.Type.Freeze, 2f, targetEntity.userId);
+                     StatusManager.self.create(Status.Type.Freeze, 2f, targetEntity.netId);
                   } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, targetEntity.userId);
+                     StatusManager.self.create(Status.Type.Slow, 1f, targetEntity.netId);
                   }
                   enemyHitList.Add(targetEntity);
                }
@@ -697,7 +698,7 @@ public class SeaEntity : NetEntity
       // Create the projectile object from the prefab
       GameObject projectileObj = Instantiate(PrefabsManager.self.networkProjectilePrefab, startPos, Quaternion.identity);
       NetworkedProjectile networkProjectile = projectileObj.GetComponent<NetworkedProjectile>();
-      networkProjectile.init(this.userId, this.instanceId, currentImpactMagnitude, abilityId, startPos);
+      networkProjectile.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, startPos);
       networkProjectile.setDirection((Direction) facing, endPos);
 
       // Add velocity to the projectile

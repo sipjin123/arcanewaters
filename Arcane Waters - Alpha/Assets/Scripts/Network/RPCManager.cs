@@ -593,14 +593,14 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_CloseVoyagePanel (NetworkConnection connection) {
-      // Get the panel
+   public void Target_ConfirmWarpToVoyageArea (NetworkConnection connection) {
+      // Close the voyage panel if it is showing
       VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
-
-      // Close the panel if it is showing
       if (panel.isShowing()) {
          PanelManager.self.popPanel();
       }
+      
+      VoyageManager.self.displayWarpToVoyageConfirmScreen();
    }
 
    [TargetRpc]
@@ -706,8 +706,12 @@ public class RPCManager : NetworkBehaviour {
       if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
 
-         MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
-         return;
+         if (string.IsNullOrEmpty(mapData)) {
+            D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
+         } else {
+            MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
+            return;
+         }
       }
 
       // If we don't have the latest version of the map, download it
@@ -2551,11 +2555,8 @@ public class RPCManager : NetworkBehaviour {
             // Update the user voyage group in the net entity
             _player.voyageGroupId = voyageGroup.groupId;
 
-            // Close the voyage panel
-            Target_CloseVoyagePanel(_player.connectionToClient);
-
-            // Warp to the voyage area
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+            // Display a confirmation to warp to the voyage area
+            Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
          });
       });
    }
@@ -2610,11 +2611,8 @@ public class RPCManager : NetworkBehaviour {
             // Update the user voyage group in the net entity
             _player.voyageGroupId = voyageGroup.groupId;
 
-            // Close the voyage panel
-            Target_CloseVoyagePanel(_player.connectionToClient);
-
-            // Warp to the voyage area
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+            // Display a confirmation to warp to the voyage area
+            Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
          });
       });
    }
@@ -3304,7 +3302,6 @@ public class RPCManager : NetworkBehaviour {
 
          spawnedEnemy.areaKey = newInstance.areaKey;
          spawnedEnemy.transform.position = _player.transform.position;
-         spawnedEnemy.desiredPosition = spawnedEnemy.transform.position;
          NetworkServer.Spawn(spawnedEnemy.gameObject);
 
          netId = spawnedEnemy.netId;

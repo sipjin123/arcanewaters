@@ -374,6 +374,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          // Continue attacking the current target
          if (canCurrentTargetBeAttacked()) {
             _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
+            noteAttacker(targetEntity);
+            Rpc_NoteAttacker(targetEntity.netId);
             return;
          }
 
@@ -382,12 +384,15 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          targetEntity = getNearestTarget();
 
          if (canCurrentTargetBeAttacked()) {
+            // Attack the target in range
             _currentBehaviorCoroutine = StartCoroutine(CO_AttackTargetOnce());
          } else if (targetEntity != null && !targetEntity.isDead() && isWithinMoveDistance(targetEntity) && isWithinTerritory(targetEntity)) {
+            // Move closer to the target
             _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
                (Vector2)targetEntity.transform.position + Random.insideUnitCircle * 0.5f, 0.1f,
                MonsterBehavior.MoveToAttackPosition));
          } else {
+            // Move around
             _currentBehaviorCoroutine = StartCoroutine(CO_MoveToPosition(
                _spawnPos + Random.insideUnitCircle * 0.5f, seaMonsterData.moveFrequency,
                MonsterBehavior.MoveToPosition));
@@ -441,7 +446,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _currentBehavior = MonsterBehavior.Attack;
 
       // Wait for the reload to finish
-      if (!hasReloaded() || !canAttack()) {
+      while (!hasReloaded() && !canAttack()) {
          yield return null;
       }
 
@@ -655,6 +660,10 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _currentPath = newPath.vectorPath;
       _currentPathIndex = 0;
       _seeker.CancelCurrentPathRequest(true);
+   }
+
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.seaMonsterParent, worldPositionStays);
    }
 
    #region Utilities

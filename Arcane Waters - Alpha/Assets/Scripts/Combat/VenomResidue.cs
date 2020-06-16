@@ -13,6 +13,9 @@ public class VenomResidue : MonoBehaviour {
    // The source of this attack
    public uint creatorNetId;
 
+   // The instance id of the source
+   public int instanceId;
+
    // The damage to the ships per second
    public int damagePerSec = 5;
 
@@ -39,7 +42,9 @@ public class VenomResidue : MonoBehaviour {
    }
 
    private void OnTriggerStay2D (Collider2D other) {
-      if (other.GetComponent<SeaEntity>() != null && other.GetComponent<PlayerShipEntity>() != null) {
+      PlayerShipEntity playerShipEntity = other.GetComponent<PlayerShipEntity>();
+
+      if (playerShipEntity != null && playerShipEntity.instanceId == instanceId) {
          SeaEntity entity = other.GetComponent<SeaEntity>();
          if (!targetEntities.Find(_ => _.netId == entity.netId)) {
             targetEntities.Add(entity);

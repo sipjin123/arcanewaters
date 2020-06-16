@@ -27,11 +27,11 @@ public class NetworkedCannonBall : NetworkedProjectile
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || hitEntity.instanceId != this._instanceId || hitEntity.userId == this._creatorUserId) {
+      if (hitEntity == null || hitEntity.instanceId != this._instanceId || hitEntity.netId == this._creatorNetId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorUserId);
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
@@ -39,7 +39,7 @@ public class NetworkedCannonBall : NetworkedProjectile
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect
-         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.userId);
+         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.netId);
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon);

@@ -15,7 +15,8 @@ using MapCustomization;
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
 
-public class DB_Main : DB_MainStub {
+public class DB_Main : DB_MainStub
+{
    #region Public Variables
 
    public static string RemoteServer
@@ -120,7 +121,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT "+ contentToFetch + addedFields + " FROM arcane."+ tableName, conn)) {
+            "SELECT " + contentToFetch + addedFields + " FROM arcane." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -137,7 +138,7 @@ public class DB_Main : DB_MainStub {
                   }
                   if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("paletteId");
-                     xmlContent = dataReader.GetString("xml_content"); 
+                     xmlContent = dataReader.GetString("xml_content");
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent"); ;
@@ -181,7 +182,7 @@ public class DB_Main : DB_MainStub {
 
    public static new string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
       string updateContent = "";
-      string tableName = EditorSQLManager.getSqlTable(editorType); 
+      string tableName = EditorSQLManager.getSqlTable(editorType);
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -1368,7 +1369,7 @@ public class DB_Main : DB_MainStub {
             cmd.Prepare();
 
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
+               if (dataReader.Read()) {
                   string mapName = dataReader.GetString("name");
                   string gameData = dataReader.GetString("gameData");
                   int version = dataReader.GetInt32("publishedVersion");
@@ -2170,7 +2171,7 @@ public class DB_Main : DB_MainStub {
    }
 
    public static new int getUnassignedPerkPoints (int usrId) {
-      return getAssignedPointsByPerkId(usrId, Perk.UNASSIGNED_ID);      
+      return getAssignedPointsByPerkId(usrId, Perk.UNASSIGNED_ID);
    }
 
    public static new int getAssignedPointsByPerkId (int usrId, int perkId) {
@@ -4071,7 +4072,7 @@ public class DB_Main : DB_MainStub {
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG, screenResolution, operatingSystem) VALUES(@usrId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG, @screenResolution, @operatingSystem)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG, @screenResolution, @operatingSystem, @status)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -4088,6 +4089,15 @@ public class DB_Main : DB_MainStub {
 
             // Execute the command
             cmd.ExecuteNonQuery();
+
+            // Saving the initial "Create" action for history purposes
+            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO bug_reports_actions (taskId, actionType, performerAccId, assigneeAccId) VALUES(@taskId, @actionType, @performerAccId, @assigneeAccId)", conn);
+            actionCmd.Prepare();
+            actionCmd.Parameters.AddWithValue("@taskId", cmd.LastInsertedId);
+            actionCmd.Parameters.AddWithValue("@actionType", "Create");
+            actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
+            actionCmd.Parameters.AddWithValue("@assigneeAccId", 0);
+            actionCmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -4139,7 +4149,7 @@ public class DB_Main : DB_MainStub {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM chat_log " + joinUserTable + " WHERE chatType=@chatType "+ secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
+            "SELECT * FROM chat_log " + joinUserTable + " WHERE chatType=@chatType " + secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", chatType);

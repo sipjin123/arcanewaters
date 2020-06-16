@@ -26,10 +26,27 @@ public class MM_SeaMonsterIcon : ClientMonoBehaviour {
          return;
       }
 
-      // Keep the icon in the right position
-      Vector3 relativePosition = seaMonster.transform.position - currentArea.transform.position;
-      relativePosition *= 12f;
-      relativePosition += new Vector3(-128f, 0f);
+      // Prepare data for position calculations
+      Vector2 mapPos = Minimap.self.backgroundImage.rectTransform.localPosition;
+      Vector2 minimapSize = Minimap.self.backgroundImage.rectTransform.sizeDelta;
+      Vector2 minimapMaskSize = Minimap.self.backgroundImage.GetComponentInParent<Mask>().rectTransform.sizeDelta;
+
+      // Get object position relative to area
+      Vector2 relativePosition = seaMonster.transform.position - currentArea.transform.position;
+
+      // Move it to bottom-left corner (because area position is centered)
+      relativePosition -= currentArea.getAreaHalfSize();
+
+      // Calculate relative position in [0, 1] range
+      relativePosition /= currentArea.getAreaSize();
+
+      // Map [0, 1] to minimap
+      relativePosition *= minimapSize;
+
+      // Adjust based on minimap translation (map is focused on player icon)
+      relativePosition += mapPos;
+      relativePosition += minimapMaskSize;
+
       Util.setLocalXY(this.transform, relativePosition);
    }
 

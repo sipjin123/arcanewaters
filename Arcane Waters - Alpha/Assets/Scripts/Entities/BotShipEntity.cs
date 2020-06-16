@@ -430,6 +430,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    public override bool isBotShip () { return true; }
 
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.botShipParent, worldPositionStays);
+   }
+
    #region Private Variables
 
    // The Seeker that handles Pathfinding

@@ -67,8 +67,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    }
 
    public void Update () {
-      // Hide the panel when there is no player or he doesn't belong to a group
-      if (Global.player == null || !VoyageManager.isInVoyage(Global.player)) {
+      // Hide the panel in certain situations
+      if (Global.player == null || !VoyageManager.isInVoyage(Global.player) || Global.player.isInBattle()) {
          hide();
          return;
       }
@@ -124,6 +124,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             break;
       }
 
+      statsPlaqueImage.sprite = ImageManager.getSprite(VoyageMapCell.SEA_MAP_PATH + "plaque_" + VoyageMapCell.getFrameName(instance.difficulty));
+
       // If the panel is collapsed, there is no need to update the rest
       if (!collapsingContainer.activeSelf) {
          return;
@@ -131,7 +133,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
       // Update the voyage status
       //mapNameText.text = Area.getName(instance.areaKey);
-      statsPlaqueImage.sprite = ImageManager.getSprite(VoyageMapCell.SEA_MAP_PATH + "plaque_" + VoyageMapCell.getFrameName(instance.difficulty));
       pvpPveText.text = instance.isPvP ? "PvP" : "PvE";
       pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
       playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();

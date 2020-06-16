@@ -57,7 +57,7 @@ namespace MapCustomization
 
          areaOwnerId = CustomMapManager.getUserId(areaName);
 
-         CustomizationUI.show();
+         PanelManager.self.pushIfNotShowing(Panel.Type.MapCustomization);
          CustomizationUI.setLoading(true);
 
          self.StartCoroutine(enterCustomizationRoutine());
@@ -87,7 +87,7 @@ namespace MapCustomization
 
          currentArea = null;
          _selectedPrefab = null;
-         CustomizationUI.hide();
+         PanelManager.self.popPanel();
 
          self.StopAllCoroutines();
 

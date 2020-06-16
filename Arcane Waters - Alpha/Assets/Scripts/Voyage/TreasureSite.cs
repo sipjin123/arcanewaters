@@ -206,17 +206,20 @@ public class TreasureSite : NetworkBehaviour
       }
    }
 
-   private IEnumerator CO_SetAreaParent () {
-      Vector3 initialPosition = transform.position;
+   public void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.treasureSiteParent, worldPositionStays);
+   }
 
+   private IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(areaKey) == null) {
          yield return 0;
       }
 
       // Set the site as a child of the area
-      Area area = AreaManager.self.getArea(areaKey);
-      this.transform.SetParent(area.treasureSiteParent, false);
+      Area area = AreaManager.self.getArea(this.areaKey);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
+      setAreaParent(area, worldPositionStays);
 
       // Get all the nearby colliders
       Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.6f);

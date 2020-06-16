@@ -345,6 +345,10 @@ public class PlayerShipEntity : ShipEntity {
       _body.angularDrag = 0f;
    }
 
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.userParent, worldPositionStays);
+   }
+
    protected IEnumerator CO_RequestRespawnAfterDelay (float delay) {
       yield return new WaitForSeconds(delay);
 
@@ -377,7 +381,7 @@ public class PlayerShipEntity : ShipEntity {
             abilityId = shipAbilityData.abilityId;
          }
       } 
-      netBall.init(this.userId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position);
+      netBall.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position);
 
       // Add velocity to the ball
       netBall.body.velocity = velocity;

@@ -746,7 +746,6 @@ public class AdminManager : NetworkBehaviour
       InstanceManager.self.addEnemyToInstance(enemy, instance);
 
       enemy.transform.position = _player.transform.position;
-      enemy.desiredPosition = enemy.transform.position;
       NetworkServer.Spawn(enemy.gameObject);
    }
 

@@ -34,16 +34,16 @@ public class OreManager : MonoBehaviour
    }
 
    public OreNode createOreNode (Instance instance, OreSpot spot) {
-      return createOreNode(instance, spot.transform.position, spot.possibleOreTypes.ChooseByRandom(), transform);
+      return createOreNode(instance, spot.transform.localPosition, spot.possibleOreTypes.ChooseByRandom());
    }
 
-   public OreNode createOreNode (Instance instance, Vector3 spot, OreNode.Type oreType, Transform parent) {
+   public OreNode createOreNode (Instance instance, Vector3 localPosition, OreNode.Type oreType) {
       // Instantiate a new Ore Node
-      OreNode oreNode = Instantiate(oreNodePrefab, parent);
+      OreNode oreNode = Instantiate(oreNodePrefab);
       oreNode.areaKey = instance.areaKey;
 
-      // Set local position
-      oreNode.transform.localPosition = spot;
+      // Set position
+      oreNode.transform.localPosition = localPosition;
 
       // Assign a unique ID
       oreNode.id = _id++;

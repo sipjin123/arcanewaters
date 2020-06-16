@@ -265,7 +265,7 @@ namespace MapCreationTool
       }
 
       private void paintPrefab (Vector3 position, PrefabGroup group) {
-         position = DrawBoard.calculatePrefabPosition(group, position);
+         position = DrawBoard.calculatePrefabPosition(group, group.getPrefab(), position);
 
          Bounds bounds = DrawBoard.getPrefabBounds();
          if (position.x < bounds.min.x || position.x > bounds.max.x || position.y < bounds.min.y || position.y > bounds.max.y)

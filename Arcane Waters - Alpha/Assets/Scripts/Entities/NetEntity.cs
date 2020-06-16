@@ -343,7 +343,7 @@ public class NetEntity : NetworkBehaviour {
       }
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
-      if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer) {
+      if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer && AreaManager.self.getArea(this.areaKey) != null) {
          Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
    }
@@ -427,9 +427,9 @@ public class NetEntity : NetworkBehaviour {
 
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
-      if (StatusManager.self.hasStatus(this.userId, Status.Type.Freeze)) {
+      if (StatusManager.self.hasStatus(this.netId, Status.Type.Freeze)) {
          modifier = 0f;
-      } else if (StatusManager.self.hasStatus(this.userId, Status.Type.Slow)) {
+      } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slow)) {
          modifier = .5f;
       } else if (_isClimbing) {
          if (Time.time - _lastBodySpriteChangetime <= .2f) {
@@ -669,6 +669,10 @@ public class NetEntity : NetworkBehaviour {
       } else {
          return _smoothSync.latestReceivedVelocity;
       }
+   }
+
+   public virtual void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.transform, worldPositionStays);
    }
 
    protected void handleInstantMoveMode () {
@@ -972,6 +976,17 @@ public class NetEntity : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_GoHome () {
+      // Don't allow users to go home if they are in PVP.
+      if (hasAttackers()) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, this, "Cannot return to home location while in combat.");
+         return;
+      }
+
+      spawnInNewMap(Area.STARTING_TOWN);
+   }
+
+   [Command]
    public void Cmd_SpawnInNewMap (string areaKey) {
       spawnInNewMap(areaKey);
    }
@@ -1113,16 +1128,14 @@ public class NetEntity : NetworkBehaviour {
    }
 
    protected IEnumerator CO_SetAreaParent () {
-      Vector3 initialPosition = this.transform.position;
-
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(this.areaKey) == null) {
          yield return 0;
       }
 
       Area area = AreaManager.self.getArea(this.areaKey);
-      bool worldPositionStays = area.cameraBounds.bounds.Contains(initialPosition);
-      this.transform.SetParent(area.transform, worldPositionStays);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2)transform.position);
+      setAreaParent(area, worldPositionStays);
 
       if (isLocalPlayer) {
          // Wait until the loading screen is hidden
@@ -1140,6 +1153,12 @@ public class NetEntity : NetworkBehaviour {
          if (VoyageManager.isInVoyage(this)) {
             rpc.Cmd_VerifyVoyageConsistencyAtSpawn();
          }
+      }
+
+      // Wait until the position is stabilized by SmoothSync, then disable distance threshold to save a distance calculation
+      yield return new WaitForSeconds(0.5f);
+      if (_smoothSync != null) {
+         _smoothSync.snapPositionThreshold = 0;
       }
    }
 

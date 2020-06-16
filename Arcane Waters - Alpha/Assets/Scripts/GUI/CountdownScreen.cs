@@ -31,20 +31,26 @@ public class CountdownScreen : MonoBehaviour
    #endregion
 
    public void Update () {
+      if (Global.player == null) {
+         hide();
+         return;
+      }
+
       // Check if the player is moving or in combat
-      if (Global.player == null || Global.player.isMoving() || Global.player.hasAnyCombat()) {
+      if (_timePassed > DELAY_BEFORE_INPUT_INTERRUPTION &&
+         (Global.player.isMoving() || Global.player.hasAnyCombat())) {
          // Stop the countdown
          hide();
       }
 
       // Decrease the remaining seconds
-      seconds -= Time.deltaTime;
+      _timePassed += Time.deltaTime;
 
       // Update the displayed seconds
-      secondsText.text = Mathf.CeilToInt(seconds).ToString();
+      secondsText.text = Mathf.CeilToInt(seconds - _timePassed).ToString();
 
       // Check if the end of the countdown has been reached
-      if (seconds <= 0) {
+      if (_timePassed >= seconds) {
          onCountdownEndEvent.Invoke();
          hide();
       }
@@ -55,9 +61,11 @@ public class CountdownScreen : MonoBehaviour
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
+      _timePassed = 0f;
    }
 
    public void hide () {
+      StopAllCoroutines();
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
@@ -69,6 +77,12 @@ public class CountdownScreen : MonoBehaviour
    }
 
    #region Private Variables
+
+   // The number of seconds the panel will show, even if the user is pressing keys
+   private static float DELAY_BEFORE_INPUT_INTERRUPTION = 1f;
+
+   // The time since the countdown started
+   private float _timePassed = 0f;
 
    #endregion
 }

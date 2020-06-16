@@ -271,6 +271,10 @@ public class PlayerBodyEntity : BodyEntity
       return clickedBody;
    }
 
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.userParent, worldPositionStays);
+   }
+
    #region Private Variables
 
    #endregion

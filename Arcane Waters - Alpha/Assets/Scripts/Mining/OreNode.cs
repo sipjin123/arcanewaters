@@ -25,10 +25,6 @@ public class OreNode : NetworkBehaviour
    [SyncVar]
    public int instanceId;
 
-   // The world position of this node
-   [SyncVar]
-   public Vector2 syncedPosition;
-
    // The number of times this ore node is interacted
    [SyncVar]
    public int interactCount;
@@ -65,11 +61,12 @@ public class OreNode : NetworkBehaviour
    }
 
    private void Start () {
+      // Make the node a child of the Area
+      StartCoroutine(CO_SetAreaParent());
+
       // Load the sprites based on our type
       oreSprites = ImageManager.getSprites("Mining/" + this.oreType);
       spriteRenderer.enabled = true;
-
-      transform.position = syncedPosition;
 
       // We don't need to do anything more when we're running in batch mode
       if (Util.isBatch()) {
@@ -84,9 +81,6 @@ public class OreNode : NetworkBehaviour
       }
 
       OreManager.self.registerOreNode(this.id, this);
-      if (AreaManager.self.getArea(areaKey) != null) {
-         transform.SetParent(AreaManager.self.getArea(areaKey).oreNodeParent);
-      }
    }
 
    public void updateSprite (int spriteId) {
@@ -136,6 +130,10 @@ public class OreNode : NetworkBehaviour
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) <= .24f);
    }
 
+   public void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.oreNodeParent, worldPositionStays);
+   }
+
    protected int getNextSpriteIndex () {
       // Find the next index in the ore sprites array
       for (int i = 0; i < oreSprites.Length-1; i++) {
@@ -146,6 +144,18 @@ public class OreNode : NetworkBehaviour
 
       // We're at the last index of our ore sprites
       return oreSprites.Length - 1;
+   }
+
+   private IEnumerator CO_SetAreaParent () {
+      // Wait until we have finished instantiating the area
+      while (AreaManager.self.getArea(areaKey) == null) {
+         yield return 0;
+      }
+
+      // Set as a child of the area
+      Area area = AreaManager.self.getArea(this.areaKey);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
+      setAreaParent(area, worldPositionStays);
    }
 
    #region Private Variables

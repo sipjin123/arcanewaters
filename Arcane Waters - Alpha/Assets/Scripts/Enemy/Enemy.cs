@@ -43,10 +43,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // Our body animator
    public SimpleAnimation bodyAnim;
 
-   // The position we want to move to, set on the server
-   [SyncVar]
-   public Vector2 desiredPosition;
-
    // A convenient reference to our collider
    public CircleCollider2D circleCollider;
 
@@ -204,7 +200,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return false;
       }
 
-      return (Vector2.Distance(this.transform.position, Global.player.transform.position) < NPC.TALK_DISTANCE);
+      return (Vector2.Distance(this.sortPoint.transform.position, Global.player.sortPoint.transform.position) < NPC.TALK_DISTANCE);
    }
 
    protected void handleAnimations () {
@@ -241,11 +237,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Assign the Sync Var
       this.battleId = newBattleId;
 
-      // Make sure we immediately stop any movement
-      this.desiredPosition = this.transform.position;
-
       // Make us face toward the player who initiated the battle
-      Vector2 vec = aggressor.transform.position - this.transform.position;
+      Vector2 vec = aggressor.sortPoint.transform.position - this.sortPoint.transform.position;
       Direction directionToFace = DirectionUtil.getBodyDirectionForVector(vec);
       this.facing = directionToFace;
    }
@@ -297,7 +290,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (!_seeker.IsDone()) {
          _seeker.CancelCurrentPathRequest();
       }
-      _seeker.StartPath(transform.position, targetPosition);
+      _seeker.StartPath(sortPoint.transform.position, targetPosition);
 
       while (!_seeker.IsDone()) {
          yield return null;
@@ -334,6 +327,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          }
       }
       return 0;
+   }
+
+   public override void setAreaParent (Area area, bool worldPositionStays) {
+      this.transform.SetParent(area.enemyParent, worldPositionStays);
    }
 
    #region Private Variables

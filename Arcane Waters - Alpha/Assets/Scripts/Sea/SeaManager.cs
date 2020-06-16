@@ -103,22 +103,22 @@ public class SeaManager : MonoBehaviour {
       }
    }
 
-   public SeaEntity getEntity (int userId) {
-      if (_entities.ContainsKey(userId)) {
-         return _entities[userId];
+   public SeaEntity getEntity (uint netId) {
+      if (_entities.ContainsKey(netId)) {
+         return _entities[netId];
       }
 
       return null;
    }
 
    public void storeEntity (SeaEntity entity) {
-      _entities[entity.userId] = entity;
+      _entities[entity.netId] = entity;
    }
 
    #region Private Variables
 
-   // A mapping of userId to Sea Entity
-   protected Dictionary<int, SeaEntity> _entities = new Dictionary<int, SeaEntity>();
+   // A mapping of netId to Sea Entity
+   protected Dictionary<uint, SeaEntity> _entities = new Dictionary<uint, SeaEntity>();
 
    #endregion
 }

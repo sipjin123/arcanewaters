@@ -266,7 +266,7 @@ MonoBehaviour:
   sendAngularVelocityThreshold: 0
   receivedPositionThreshold: 0
   receivedRotationThreshold: 0
-  snapPositionThreshold: 0
+  snapPositionThreshold: 5
   snapRotationThreshold: 0
   snapScaleThreshold: 0
   positionLerpSpeed: 0.85

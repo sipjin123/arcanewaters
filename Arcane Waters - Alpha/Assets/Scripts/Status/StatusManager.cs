@@ -16,7 +16,7 @@ public class StatusManager : MonoBehaviour {
       self = this;
    }
 
-   public Status create (Status.Type statusType, float length, int targetUserId) {
+   public Status create (Status.Type statusType, float length, uint targetNetId) {
       Status statusEffect = Instantiate(PrefabsManager.self.statusPrefab);
       statusEffect.transform.SetParent(self.transform, false);
       statusEffect.statusType = statusType;
@@ -24,31 +24,31 @@ public class StatusManager : MonoBehaviour {
       statusEffect.endTime = statusEffect.startTime + length;
 
       // Keep track of the status effects
-      addStatus(targetUserId, statusEffect);
+      addStatus(targetNetId, statusEffect);
 
       // Remove the Status after the delay
-      StartCoroutine(CO_removeStatus(targetUserId, statusEffect, length));
+      StartCoroutine(CO_removeStatus(targetNetId, statusEffect, length));
 
       return statusEffect;
    }
 
-   public void addStatus (int userId, Status status) {
+   public void addStatus (uint netId, Status status) {
       List<Status> list = new List<Status>();
 
-      if (_statuses.ContainsKey(userId)) {
-         list = _statuses[userId];
+      if (_statuses.ContainsKey(netId)) {
+         list = _statuses[netId];
       }
 
       list.Add(status);
-      _statuses[userId] = list;
+      _statuses[netId] = list;
    }
 
-   public void removeStatus (int userId, Status oldStatus) {
+   public void removeStatus (uint netId, Status oldStatus) {
       List<Status> newList = new List<Status>();
 
       // Remove it from the list
-      if (_statuses.ContainsKey(userId)) {
-         foreach (Status status in _statuses[userId]) {
+      if (_statuses.ContainsKey(netId)) {
+         foreach (Status status in _statuses[netId]) {
             // Retain all statuses except the old one
             if (status != oldStatus) {
                newList.Add(status);
@@ -56,15 +56,15 @@ public class StatusManager : MonoBehaviour {
          }
       }
 
-      _statuses[userId] = newList;
+      _statuses[netId] = newList;
 
       // Now we can destroy it
       Destroy(oldStatus.gameObject);
    }
 
-   public bool hasStatus (int userId, Status.Type statusType) {
-      if (_statuses.ContainsKey(userId)) {
-         foreach (Status status in _statuses[userId]) {
+   public bool hasStatus (uint netId, Status.Type statusType) {
+      if (_statuses.ContainsKey(netId)) {
+         foreach (Status status in _statuses[netId]) {
             if (status.statusType == statusType) {
                return true;
             }
@@ -74,16 +74,16 @@ public class StatusManager : MonoBehaviour {
       return false;
    }
 
-   protected IEnumerator CO_removeStatus (int userId, Status status, float delay) {
+   protected IEnumerator CO_removeStatus (uint netId, Status status, float delay) {
       yield return new WaitForSeconds(delay);
 
-      removeStatus(userId, status);
+      removeStatus(netId, status);
    }
 
    #region Private Variables
 
-   // A mapping of user ID to the statuses that affect them
-   protected Dictionary<int, List<Status>> _statuses = new Dictionary<int, List<Status>>();
+   // A mapping of net ID to the statuses that affect them
+   protected Dictionary<uint, List<Status>> _statuses = new Dictionary<uint, List<Status>>();
 
    #endregion
 }

@@ -4,15 +4,12 @@ using MapCustomization;
 
 namespace MapCreationTool
 {
-   public class CustomizationUI : ClientMonoBehaviour
+   public class CustomizationUI : Panel
    {
       #region Public Variables
 
       // Singleton instance
       public static CustomizationUI self { get; private set; }
-
-      // Is the UI currently enabled and showing to the user
-      public static bool isShowing { get; private set; }
 
       // Is the UI showing the loading screen
       public static bool isLoading { get; private set; }
@@ -26,13 +23,10 @@ namespace MapCreationTool
          self = this;
 
          _cGroup = GetComponent<CanvasGroup>();
-
-         // Have the UI hidden by default
-         hide();
       }
 
-      private void Update () {
-         if (!isShowing || isLoading) return;
+      public override void Update () {
+         if (!isShowing() || isLoading) return;
 
          Vector2 pointerPos = Input.mousePosition;
          if (pointerPos != _lastPointerPos) {
@@ -57,22 +51,6 @@ namespace MapCreationTool
       public static void setLoading (bool loading) {
          isLoading = loading;
          self.titleText.text = loading ? "Loading..." : "Customizing a map";
-      }
-
-      public static void show () {
-         isShowing = true;
-
-         self._cGroup.interactable = true;
-         self._cGroup.blocksRaycasts = true;
-         self._cGroup.alpha = 1f;
-      }
-
-      public static void hide () {
-         isShowing = false;
-
-         self._cGroup.interactable = false;
-         self._cGroup.blocksRaycasts = false;
-         self._cGroup.alpha = 0f;
       }
 
       public void exitCustomization () {

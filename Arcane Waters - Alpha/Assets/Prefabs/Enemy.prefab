@@ -152,6 +152,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 2
+  _index: 0
 --- !u!114 &7997790497440781307
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +285,6 @@ MonoBehaviour:
   isDefeated: 0
   isBossType: 0
   bodyAnim: {fileID: 5845733378842891813}
-  desiredPosition: {x: 0, y: 0}
   circleCollider: {fileID: 58000012360398758}
   bossCollider: {fileID: 6484027093327965980}
 --- !u!50 &50000013307885518
@@ -381,7 +381,7 @@ MonoBehaviour:
   sendAngularVelocityThreshold: 0
   receivedPositionThreshold: 0
   receivedRotationThreshold: 0
-  snapPositionThreshold: 0
+  snapPositionThreshold: 5
   snapRotationThreshold: 0
   snapScaleThreshold: 0
   positionLerpSpeed: 0.85
@@ -689,6 +689,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
