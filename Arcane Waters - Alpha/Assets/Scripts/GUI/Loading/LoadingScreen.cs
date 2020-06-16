@@ -126,6 +126,10 @@ public class LoadingScreen : MonoBehaviour
       }
 
       while (!hasCameraChanged()) {
+         if (_startingCamera == getActiveCamera() && waitTime > LOADING_TIMEOUT) {
+            D.editorLog("Camera is not changing, player spawned in the same map");
+            break;
+         }
          yield return null;
       }
 

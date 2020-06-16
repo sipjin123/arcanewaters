@@ -126,6 +126,7 @@ public class PlayerShipEntity : ShipEntity {
          }
       }
 
+      // Speed ship boost feature
       if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
          isSpeedingUp = true;
          if (speedMeter > 0) {

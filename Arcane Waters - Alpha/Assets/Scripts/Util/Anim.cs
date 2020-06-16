@@ -25,7 +25,8 @@ public class Anim : MonoBehaviour {
       Interact_East = 20,
       Interact_North = 21,
       Interact_South = 22,
-      Play_Once = 23
+      Play_Once = 23,
+      Punch = 24
    }
 
    // The different animation groups

@@ -171,6 +171,7 @@ public class Battle : NetworkBehaviour {
          }
 
          participant.player.battleId = 0;
+         participant.player.resetCombatInit();
       }
    }
 

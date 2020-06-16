@@ -305,11 +305,18 @@ public class BattleManager : MonoBehaviour {
       battler.armorManager.palette2 = player.armorManager.palette2;
 
       // Copy the Weapon Info
-      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.weaponType);
-      battler.weaponManager.updateWeaponSyncVars(WeaponStatData.translateDataToWeapon(weaponStatData));
-      battler.weaponManager.weaponType = player.weaponManager.weaponType;
-      battler.weaponManager.palette1 = player.weaponManager.palette1;
-      battler.weaponManager.palette2 = player.weaponManager.palette2;
+      if (player.weaponManager.weaponType < 1) {
+         battler.weaponManager.updateWeaponSyncVars(new Weapon { category = Item.Category.Weapon, itemTypeId = 0 });
+         battler.weaponManager.weaponType = 0;
+         battler.weaponManager.palette1 = "";
+         battler.weaponManager.palette2 = "";
+      } else {
+         WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.weaponType);
+         battler.weaponManager.updateWeaponSyncVars(WeaponStatData.translateDataToWeapon(weaponStatData));
+         battler.weaponManager.weaponType = player.weaponManager.weaponType;
+         battler.weaponManager.palette1 = player.weaponManager.palette1;
+         battler.weaponManager.palette2 = player.weaponManager.palette2;
+      }
 
       // Copy the Hat Info
       HatStatData hatStatData = EquipmentXMLManager.self.getHatData(player.hatsManager.hatType);

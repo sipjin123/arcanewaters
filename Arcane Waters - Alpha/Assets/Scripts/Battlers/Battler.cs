@@ -1003,7 +1003,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
 
-            sourceBattler.playAnim(attackerAbility.getAnimation());
+            if (sourceBattler.weaponManager.weaponType == 0 && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+               sourceBattler.playAnim(Anim.Type.Punch);
+            } else {
+               sourceBattler.playAnim(attackerAbility.getAnimation());
+            }
 
             // Play any sounds that go along with the ability being cast
             attackerAbility.playCastClipAtTarget(targetBattler.transform.position);

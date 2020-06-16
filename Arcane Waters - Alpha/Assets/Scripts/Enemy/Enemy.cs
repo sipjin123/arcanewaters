@@ -167,34 +167,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
    }
 
-   public void clientClickedMe () {
-      if (Global.player == null || isDefeated) {
-         return;
-      }
-
-      // Only works when the player is close enough
-      if (!isPlayerClose()) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
-         return;
-      }
-
-      // For now, require a sword to be equipped
-      PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
-      if (!body.weaponManager.isHoldingWeapon()) {
-         PanelManager.self.noticeScreen.show("You need to equip a weapon to attack this enemy!");
-         return;
-      }
-
-      if (body.voyageGroupId == voyageGroupId || voyageGroupId == -1) {
-         Global.player.rpc.Cmd_StartNewBattle(this.netId, Battle.TeamType.Attackers);
-      } else {
-         Vector3 pos = this.transform.position + new Vector3(0f, .32f);
-         GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
-         messageCanvas.transform.position = pos;
-         messageCanvas.GetComponentInChildren<Text>().text = "Cannot join battle of different voyage group";
-      }
-   }
-
    public bool isPlayerClose () {
       if (Global.player == null) {
          return false;

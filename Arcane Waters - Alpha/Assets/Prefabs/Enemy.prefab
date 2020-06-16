@@ -280,6 +280,7 @@ MonoBehaviour:
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isSpeedingUp: 0
   animGroupType: 0
   enemyType: 205
   isDefeated: 0

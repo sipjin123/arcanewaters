@@ -18,6 +18,25 @@ public class PlayerBodyEntity : BodyEntity
    // Max collision check around the player
    public static int MAX_COLLISION_COUNT = 32;
 
+   // Speedup variables
+   public float speedMeter = 0;
+   public static float SPEEDUP_METER_MAX = 10;
+   public bool isReadyToSpeedup = true;
+   public float fuelDepleteValue = 2;
+   public float fuelRecoverValue = 1.2f;
+
+   // The effect that indicates this ship is speeding up
+   public GameObject speedUpEffect;
+   public Canvas speedupGUI;
+   public Transform speedupEffectPivot;
+   public Image speedUpBar;
+
+   // Color indications if the fuel is usable or not
+   public Color recoveringColor, defaultColor;
+
+   // Script handling the battle initializer
+   public PlayerBattleCollider playerBattleCollider;
+
    #endregion
 
    protected override void Update () {
@@ -65,7 +84,6 @@ public class PlayerBodyEntity : BodyEntity
          bool isNearInteractables = false;
          float overlapRadius = .5f;
          Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
-         List<Enemy> enemiesNearby = new List<Enemy>();
          List<NPC> npcsNearby = new List<NPC>();
          List<TreasureChest> treasuresNearby = new List<TreasureChest>();
 
@@ -77,10 +95,6 @@ public class PlayerBodyEntity : BodyEntity
                }
                currentCount++;
 
-               if (hit.GetComponent<Enemy>() != null) {
-                  enemiesNearby.Add(hit.GetComponent<Enemy>());
-               }
-
                if (hit.GetComponent<NPC>() != null) {
                   npcsNearby.Add(hit.GetComponent<NPC>());
                }
@@ -89,22 +103,17 @@ public class PlayerBodyEntity : BodyEntity
                   treasuresNearby.Add(hit.GetComponent<TreasureChest>());
                }
 
-               if (treasuresNearby.Count > 0 || enemiesNearby.Count > 0 || npcsNearby.Count > 0) { 
+               if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) { 
                   // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
                   isNearInteractables = true;
                }
             }
 
-            // Check first if there are enemies nearby
-            engageNearestEnemy(enemiesNearby);
+            // Loot the nearest lootbag/treasure chest
+            interactNearestLoot(treasuresNearby);
 
-            // If there are no enemies, loot the nearest lootbag/treasure chest
-            if (enemiesNearby.Count < 1) {
-               interactNearestLoot(treasuresNearby);
-            }
-
-            // If there are no loots or enemies nearby, interact with nearest npc
-            if (treasuresNearby.Count < 1 && enemiesNearby.Count < 1) {
+            // If there are no loots nearby, interact with nearest npc
+            if (treasuresNearby.Count < 1) {
                interactNearestNpc(npcsNearby);
             }
          }
@@ -123,25 +132,68 @@ public class PlayerBodyEntity : BodyEntity
             miningTrigger.interactOres();
          }
       }
-   }
 
-   private void engageNearestEnemy (List<Enemy> enemyList) {
-      Enemy targetEnemy = null;
+      // Speed ship boost feature
+      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
+         isSpeedingUp = true;
+         if (speedMeter > 0) {
+            speedMeter -= Time.deltaTime * fuelDepleteValue;
+            Cmd_UpdateSpeedupDisplay(true);
+         } else {
+            isReadyToSpeedup = false;
+            isSpeedingUp = false;
+            Cmd_UpdateSpeedupDisplay(false);
+         }
+      } else {
+         // Only notify other clients once if disabling
+         if (isSpeedingUp) {
+            Cmd_UpdateSpeedupDisplay(false);
+            isSpeedingUp = false;
+         }
 
-      float nearestTargetDistance = 10;
-      foreach (Enemy enemy in enemyList) {
-         float newTargetDistance = Vector2.Distance(transform.position, enemy.transform.position);
-         if (newTargetDistance < nearestTargetDistance && !enemy.isDefeated) {
-            nearestTargetDistance = newTargetDistance;
-            targetEnemy = enemy;
+         if (speedMeter < SPEEDUP_METER_MAX) {
+            speedMeter += Time.deltaTime * fuelRecoverValue;
+         } else {
+            isReadyToSpeedup = true;
          }
       }
 
-      if (targetEnemy != null) {
-         targetEnemy.clientClickedMe();
+      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+   }
+
+   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
+      // Handle GUI
+      if (!forceDisable && (meter < SPEEDUP_METER_MAX)) {
+         speedupGUI.enabled = true;
+         speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
       } else {
-         enemyList.Clear();
+         speedupGUI.enabled = false;
       }
+
+      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
+
+      // Handle sprite effects
+      if (isOn) {
+         speedUpEffect.SetActive(true);
+         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
+      } else {
+         speedUpEffect.SetActive(false);
+      }
+   }
+
+   public override void resetCombatInit () {
+      base.resetCombatInit();
+      playerBattleCollider.combatInitCollider.enabled = true;
+   }
+
+   [Command]
+   void Cmd_UpdateSpeedupDisplay (bool isOn) {
+      Rpc_UpdateSpeedupDisplay(isOn);
+   }
+
+   [ClientRpc]
+   public void Rpc_UpdateSpeedupDisplay (bool isOn) {
+      updateSpeedUpDisplay(0, isOn, false, true);
    }
 
    private void interactNearestLoot (List<TreasureChest> chestList) {

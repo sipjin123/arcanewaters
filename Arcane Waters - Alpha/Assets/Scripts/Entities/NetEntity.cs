@@ -161,6 +161,13 @@ public class NetEntity : NetworkBehaviour {
    // Determines if the player is animating an interact clip
    public bool interactingAnimation = false;
 
+   // Determines if this unit is speeding
+   public bool isSpeedingUp;
+
+   // The speed multiplied when speed boosting
+   public static float SPEEDUP_MULTIPLIER_SHIP = 2;
+   public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
+
    #endregion
 
    protected virtual void Awake () {
@@ -346,6 +353,9 @@ public class NetEntity : NetworkBehaviour {
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer && AreaManager.self.getArea(this.areaKey) != null) {
          Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
+   }
+
+   public virtual void resetCombatInit () {
    }
 
    public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat,
@@ -693,7 +703,12 @@ public class NetEntity : NetworkBehaviour {
 
             // Figure out the force vector we should apply
             Vector2 forceToApply = DirectionUtil.getVectorForDirection(direction);
-            _body.AddForce(forceToApply.normalized * getMoveSpeed());
+            float baseMoveSpeed = getMoveSpeed();
+            if (isSpeedingUp) {
+               baseMoveSpeed *= SPEEDUP_MULTIPLIER_LAND;
+            }
+
+            _body.AddForce(forceToApply.normalized * baseMoveSpeed);
 
             // Make note of the time
             _lastMoveChangeTime = Time.time;

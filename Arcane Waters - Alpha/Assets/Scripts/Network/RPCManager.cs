@@ -709,6 +709,7 @@ public class RPCManager : NetworkBehaviour {
          if (string.IsNullOrEmpty(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
+            D.log("Map Log: Creating cached map data");
             MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
             return;
          }

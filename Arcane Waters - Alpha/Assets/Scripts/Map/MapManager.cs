@@ -102,97 +102,97 @@ public class MapManager : MonoBehaviour
 
    private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
       MapImporter.ensureSerializationMapsLoaded();
-
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
 
       if (exportedProject.biome == Biome.Type.None) {
-         D.warning("Invalid biome type NONE in map data. Setting to 'Forest'.");
-         exportedProject.biome = Biome.Type.Forest;
-      }
+         // Biome should never be None, redownload map data using nubis and overwrite the cached map data
+         D.error("Map Log: Invalid biome type NONE in map data. Redownloading map data using Nubis");
+         downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData);
+      } else {
+         // Create the area
+         Area area = result.area;
 
-      // Create the area
-      Area area = result.area;
+         // Set area properties
+         area.areaKey = areaKey;
+         area.version = mapInfo.version;
+         area.biome = exportedProject.biome;
 
-      // Set area properties
-      area.areaKey = areaKey;
-      area.version = mapInfo.version;
-      area.biome = exportedProject.biome;
+         if (exportedProject.editorType == EditorType.Sea) {
+            area.isSea = true;
+         } else if (exportedProject.editorType == EditorType.Interior) {
+            area.isInterior = true;
+         }
 
-      if (exportedProject.editorType == EditorType.Sea) {
-         area.isSea = true;
-      } else if (exportedProject.editorType == EditorType.Interior) {
-         area.isInterior = true;
-      }
-
-      // Calculate the map bounds
-      Bounds bounds = MapImporter.calculateBounds(exportedProject);
-      yield return null;
-
-      List<TilemapLayer> tilemaps = new List<TilemapLayer>();
-      int unrecognizedTiles = 0;
-
-      // Create one layer per frame
-      foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
-         MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
-            result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
-         PanelManager.self.loadingScreen.setPercentage((0.1f / exportedProject.layers.Length) * tilemaps.Count);
+         // Calculate the map bounds
+         Bounds bounds = MapImporter.calculateBounds(exportedProject);
          yield return null;
-      }
 
-      if (unrecognizedTiles > 0) {
-         Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
-      }
+         List<TilemapLayer> tilemaps = new List<TilemapLayer>();
+         int unrecognizedTiles = 0;
 
-      // Prepare the list of tilemap colliders
-      List<MapChunk> mapColliderChunks = new List<MapChunk>();
-
-      // Calculate the number of chunks
-      int chunkCount = (int) ((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
-
-      // Create the tilemap colliders in chunks
-      for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
-         for (int j = (int) bounds.min.y; j < bounds.max.y; j += TILEMAP_COLLIDERS_CHUNK_SIZE) {
-            // Calculate the chunk rect
-            int xMax = Mathf.Clamp(i + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.x);
-            int yMax = Mathf.Clamp(j + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.y);
-            RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
-
-            // Instantiate the colliders
-            mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
-               exportedProject.biome, rect));
-
-            PanelManager.self.loadingScreen.setPercentage(0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
+         // Create one layer per frame
+         foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
+            MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
+               result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
+            PanelManager.self.loadingScreen.setPercentage((0.1f / exportedProject.layers.Length) * tilemaps.Count);
             yield return null;
          }
-      }
 
-      result.area.setTilemapLayers(tilemaps);
-      result.area.setColliderChunks(mapColliderChunks);
+         if (unrecognizedTiles > 0) {
+            Utilities.warning($"Could not recognize { unrecognizedTiles } tiles of map { mapInfo.mapName }");
+         }
 
-      MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
-      yield return null;
+         // Prepare the list of tilemap colliders
+         List<MapChunk> mapColliderChunks = new List<MapChunk>();
 
-      if (exportedProject.specialTileChunks != null) {
-         MapImporter.addSpecialTileChunks(result, exportedProject.specialTileChunks);
+         // Calculate the number of chunks
+         int chunkCount = (int) ((bounds.max.x - bounds.min.x) * (bounds.max.y - bounds.min.y) / (TILEMAP_COLLIDERS_CHUNK_SIZE * TILEMAP_COLLIDERS_CHUNK_SIZE));
+
+         // Create the tilemap colliders in chunks
+         for (int i = (int) bounds.min.x; i < bounds.max.x; i += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+            for (int j = (int) bounds.min.y; j < bounds.max.y; j += TILEMAP_COLLIDERS_CHUNK_SIZE) {
+               // Calculate the chunk rect
+               int xMax = Mathf.Clamp(i + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.x);
+               int yMax = Mathf.Clamp(j + TILEMAP_COLLIDERS_CHUNK_SIZE, 0, (int) bounds.max.y);
+               RectInt rect = new RectInt(i, j, TILEMAP_COLLIDERS_CHUNK_SIZE, TILEMAP_COLLIDERS_CHUNK_SIZE);
+
+               // Instantiate the colliders
+               mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
+                  exportedProject.biome, rect));
+
+               PanelManager.self.loadingScreen.setPercentage(0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
+               yield return null;
+            }
+         }
+
+         result.area.setTilemapLayers(tilemaps);
+         result.area.setColliderChunks(mapColliderChunks);
+
+         MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
          yield return null;
+
+         if (exportedProject.specialTileChunks != null) {
+            MapImporter.addSpecialTileChunks(result, exportedProject.specialTileChunks);
+            yield return null;
+         }
+
+         MapImporter.setCameraBounds(result, bounds);
+         MapImporter.addEdgeColliders(result, bounds);
+         yield return null;
+
+         if (customizationData != null) {
+            setCustomizations(area, customizationData);
+         }
+
+         // Destroy the template component
+         Destroy(result);
+
+         // Initialize the area
+         area.initialize();
+
+         onAreaCreationIsFinished(area);
       }
-
-      MapImporter.setCameraBounds(result, bounds);
-      MapImporter.addEdgeColliders(result, bounds);
-      yield return null;
-
-      if (customizationData != null) {
-         setCustomizations(area, customizationData);
-      }
-
-      // Destroy the template component
-      Destroy(result);
-
-      // Initialize the area
-      area.initialize();
-
-      onAreaCreationIsFinished(area);
    }
 
    public void onAreaCreationIsFinished (Area area) {
@@ -270,11 +270,7 @@ public class MapManager : MonoBehaviour
    }
 
    public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
-      // TODO: Do not Remove until this issue is completely fixed
-      D.editorLog("Map Log: Download and Create Map", Color.green);
-
       // Request the map from Nubis Cloud
-      // Grab the map data from the request
       string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey);
 
       if (string.IsNullOrEmpty(mapData)) {
@@ -282,6 +278,9 @@ public class MapManager : MonoBehaviour
       } else {
          // Store it for later reference
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
+
+         // TODO: Do not Remove until this issue is completely fixed
+         D.log("Map Log: Creating map data fetched from Nubis");
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);

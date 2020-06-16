@@ -97,7 +97,7 @@ namespace CloudBuildDataFetch {
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   DB_Main.addNewCloudData(newCloudBuildData);
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                     logData("CloudDataLogger: Done");
+                     logData("CloudDataLogger: Finished adding new cloud data");
                   });
                });
             } else {
