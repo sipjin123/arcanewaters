@@ -294,7 +294,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_table WHERE (userID=@userID)", conn)) {
+            "SELECT * FROM ability_table WHERE (userID=@userID and ability_equip_slot != -1)", conn)) {
 
             conn.Open();
             cmd.Prepare();

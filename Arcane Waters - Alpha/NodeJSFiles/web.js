@@ -30,6 +30,7 @@ var dataReadEventHandler = function (result) {
 		console.log('Reading local JSON data success!');
 
 		var newEntryCount = 0;
+		console.log('-----------------------------------');
 		for (var i = 0 ; i < result.length ; i ++){
 			var filterData = localJsonData.filter(x => x.buildId == result[i].buildId);
 
@@ -47,15 +48,13 @@ var dataReadEventHandler = function (result) {
 				newEntryCount++;
 			}
 		}
+		console.log('-----------------------------------');
 		console.log("Finished updating local data, total added entries: " + newEntryCount);
-
-		for (var i = 0; i < newCloudBuildData.length ; i++){
-			console.log('cached data is: ' + newCloudBuildData[i].buildId);
-		}
 		if (newCloudBuildData.length > 0) {
 			postUpdates(newCloudBuildData, arrayOfObjects);
 		} else {
 			console.log('no new updates');
+    		process.exit();
 		}
 	} catch {
 		console.log('Failed to fetch json data');
@@ -136,7 +135,7 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Build #' + newCloudObjects[latestBuildId].buildId);
 
 			await page2.waitFor(typingInterval);
-			await page2.type('.partnereventeditor_Summary_2eQap', 'Summary Test');
+			await page2.type('.partnereventeditor_Summary_2eQap', 'Development Updates');
 
 			await page2.waitFor(typingInterval);
 			for (var messageIndex = 0 ; messageIndex < newCloudBuildData.length ; messageIndex ++) {
@@ -145,6 +144,16 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 
 				for (var index = 0 ; index < sentences.length -1 ; index++) {
 					var textLine = sentences[index];
+					for (var charIndex = 0 ; charIndex < textLine.length ; charIndex++) {
+						if (textLine[textLine.length-1] == ',') {
+							console.log('Redundant comma! : ' +textLine);
+							textLine = sentences[index].toString().substring(0, sentences[index].length -1);
+						} else if (textLine[textLine.length-2] == ',') {
+							console.log('Redundant comma! : ' +textLine);
+							textLine = sentences[index].toString().substring(0, sentences[index].length -2);
+						}
+					}
+
 				 	if (sentences[index].length > 1) {
 						if (textLine[0] != '-') { 
 					 		sentences[index] = '- ' + textLine;
@@ -226,5 +235,6 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 	console.log(data);
 
     await browser.close();
+    process.exit();
 };
 console.log('Initializing');

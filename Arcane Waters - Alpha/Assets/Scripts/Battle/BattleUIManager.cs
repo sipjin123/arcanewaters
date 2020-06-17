@@ -152,6 +152,7 @@ public class BattleUIManager : MonoBehaviour {
       int indexCounter = 0;
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
+
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilitydata.Length) {
             if (abilitydata[indexCounter].abilityType == AbilityType.Standard) {
@@ -230,8 +231,12 @@ public class BattleUIManager : MonoBehaviour {
          indexCounter++;
       }
 
-      playerRing.fillAmount = abilityRingFillValue[abilitydata.Length-1];
-      enemyRing.fillAmount = abilityRingFillValue[abilitydata.Length-1];
+      int abilityIndex = 0;
+      if (abilitydata.Length > 0) {
+         abilityIndex = abilitydata.Length - 1;
+      }
+      playerRing.fillAmount = abilityRingFillValue[abilityIndex];
+      enemyRing.fillAmount = abilityRingFillValue[abilityIndex];
    }
 
    private void Update () {

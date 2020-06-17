@@ -19,11 +19,11 @@ public class AbilityManager : MonoBehaviour
    // Water Bullet = 18
    public static int[] STARTING_ABILITIES = { 9, 20, 37, 6, 18};
 
+   // The id of the punch ability
+   public static int PUNCH_ID = 66;
+
    // A convenient self reference
    public static AbilityManager self;
-
-   // Holds the xml data for all abilities
-   public TextAsset[] abilityDataAssets;
 
    // References to all the abilities
    public List<BasicAbilityData> allGameAbilities { get { return _allGameAbilities; } }
@@ -38,6 +38,10 @@ public class AbilityManager : MonoBehaviour
 
    void Awake () {
       self = this;
+   }
+
+   public AttackAbilityData punchAbility () {
+      return allAttackbilities.Find(_ => _.itemID == PUNCH_ID);
    }
 
    public void initializeAbilities () {

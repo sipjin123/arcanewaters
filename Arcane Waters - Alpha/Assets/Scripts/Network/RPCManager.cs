@@ -3431,6 +3431,11 @@ public class RPCManager : NetworkBehaviour {
                return;
             }
 
+            // Set user to only use skill if no weapon is equipped
+            if (localBattler.weaponManager.weaponType == 0) {
+               abilityDataList = modifiedUnarmedAbilityList();
+            }
+
             // Declare the voyage group engaging the enemy
             if (enemy.battleId < 1) {
                if (_player.voyageGroupId == -1) {
@@ -3475,6 +3480,15 @@ public class RPCManager : NetworkBehaviour {
             }
          });
       });
+   }
+
+   private List<AbilitySQLData> modifiedUnarmedAbilityList () {
+      List<AbilitySQLData> newAbilityList = new List<AbilitySQLData>();
+      AbilitySQLData abilitySql = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+      abilitySql.equipSlotIndex = 0;
+      newAbilityList.Add(abilitySql);
+
+      return newAbilityList;
    }
 
    [Command]
@@ -3568,6 +3582,11 @@ public class RPCManager : NetworkBehaviour {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
             List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(entity.userId);
+
+            // Set user to only use skill if no weapon is equipped
+            if (entity.weaponManager.weaponType == 0) {
+               abilityDataList = modifiedUnarmedAbilityList();
+            }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);

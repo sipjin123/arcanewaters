@@ -56,6 +56,15 @@ public class AbilityPanel : Panel {
    // The object containing all the info of the ability
    public GameObject skillInfoHolder;
 
+   // Indicators that the user has no weapons
+   public GameObject[] emptyHandIndicators;
+
+   // The holder of the one and only skill the player can use when no weapon is equipped
+   public GameObject emptyHandSkillHolder;
+
+   // Cache player body
+   public PlayerBodyEntity playerBody;
+
    #endregion
 
    public override void Awake () {
@@ -74,7 +83,23 @@ public class AbilityPanel : Panel {
       skillInfoHolder.SetActive(false);
    }
 
+   private bool userHasWeapon () {
+      // Handle indicators that no weapon is equipped
+      if (Global.player != null) {
+         if (playerBody == null) {
+            playerBody = (PlayerBodyEntity) Global.player;
+         }
+         return playerBody.weaponManager.weaponType != 0;
+      }
+      return false;
+   }
+
    private void toggleBlockers (bool isActive) {
+      foreach (GameObject indicator in emptyHandIndicators) {
+         indicator.SetActive(!userHasWeapon());
+      }
+
+      // Disable loading blockers
       foreach (GameObject blocker in canvasBlockers) {
          blocker.SetActive(isActive);
       }
@@ -125,6 +150,14 @@ public class AbilityPanel : Panel {
             cachedAbilityList.Add(basicAbilityData);
          } 
       }
+
+      emptyHandSkillHolder.DestroyChildren();
+      if (!userHasWeapon()) {
+         AbilitySlot abilitySlot = Instantiate(abilitySlotPrefab, emptyHandSkillHolder.transform, false);
+         AttackAbilityData punchAbility = AbilityManager.self.punchAbility();
+         abilitySlot.setSlotForAbilityData(punchAbility.itemID, punchAbility, punchAbility.itemDescription);
+      }
+
       skillInfoHolder.SetActive(true);
    }
 
