@@ -2,6 +2,7 @@
 
 namespace MapCreationTool.Serialization
 {
+   [Serializable]
    public class Map
    {
       public int id { get; set; }

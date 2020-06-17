@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using Newtonsoft.Json;
 
 namespace MapCreationTool.Serialization
 {
@@ -166,7 +167,7 @@ namespace MapCreationTool.Serialization
             size = dt.size,
             editorType = dt.editorType,
             nextPrefabId = dt.nextPrefabId
-         }.fixPrefabFields();
+         };
       }
 
       private static int extractVersion (string data) {
@@ -212,15 +213,6 @@ namespace MapCreationTool.Serialization
       public EditorType editorType;
       public Vector2Int size;
       public int nextPrefabId;
-
-      public DeserializedProject fixPrefabFields () {
-         foreach (DeserializedPrefab prefab in prefabs) {
-            foreach (DataField field in prefab.dataFields) {
-               field.fixField(true);
-            }
-         }
-         return this;
-      }
 
       public class DeserializedPrefab
       {
@@ -296,6 +288,8 @@ namespace MapCreationTool.Serialization
       public const string WARP_HEIGHT_KEY = "height";
       public const string WARP_ARRIVE_FACING_KEY = "arrive facing";
 
+      public const string TARGET_MAP_INFO_KEY = "target map info";
+
       public const string SPAWN_NAME_KEY = "name";
       public const string SPAWN_WIDTH_KEY = "width";
       public const string SPAWN_HEIGHT_KEY = "height";
@@ -363,6 +357,14 @@ namespace MapCreationTool.Serialization
          }
 
          return -1;
+      }
+
+      public T objectValue<T> () {
+         if (string.IsNullOrEmpty(v)) {
+            return default(T);
+         }
+
+         return JsonConvert.DeserializeObject<T>(v);
       }
 
       public float floatValue
@@ -439,28 +441,6 @@ namespace MapCreationTool.Serialization
          }
          value = GenericActionTrigger.InteractionType.Enter;
          return false;
-      }
-
-      public void fixField (bool forEditor) {
-         switch (k) {
-            case NPC_DATA_KEY:
-            case LAND_ENEMY_DATA_KEY:
-               string[] values = v.Split(':');
-               if (values.Length == 2) {
-                  if (int.TryParse(values[0], out int nv)) {
-                     v = nv.ToString();
-                  }
-               }
-               break;
-            case WARP_TARGET_MAP_KEY:
-               if (forEditor && !tryGetIntValue(out int mapId)) {
-                  Map map = Overlord.remoteMaps.maps.Values.FirstOrDefault(m => m.name.CompareTo(v) == 0);
-                  if (map != null) {
-                     v = map.id.ToString();
-                  }
-               }
-               break;
-         }
       }
    }
 }

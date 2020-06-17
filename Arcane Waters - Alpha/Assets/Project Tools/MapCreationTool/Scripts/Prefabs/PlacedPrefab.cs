@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using MapCreationTool.Serialization;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace MapCreationTool
@@ -92,6 +95,20 @@ namespace MapCreationTool
          if (data.TryGetValue(key, out string value))
             return value;
          return string.Empty;
+      }
+
+      public IEnumerable<DataField> getAdditionalDataForExport () {
+         // Find if prefab has a 'target map' field, if so, include information about such map
+         KeyValuePair<string, string> targetMapField =
+            data.FirstOrDefault(d => d.Key.Equals(DataField.WARP_TARGET_MAP_KEY) || d.Key.Equals(DataField.HOUSE_TARGET_MAP_KEY));
+
+         if (!string.IsNullOrEmpty(targetMapField.Value)) {
+            if (int.TryParse(targetMapField.Value, out int mapId)) {
+               if (Overlord.remoteMaps.maps.ContainsKey(mapId)) {
+                  yield return new DataField { k = DataField.TARGET_MAP_INFO_KEY, v = JsonConvert.SerializeObject(Overlord.remoteMaps.maps[mapId]) };
+               }
+            }
+         }
       }
    }
 }

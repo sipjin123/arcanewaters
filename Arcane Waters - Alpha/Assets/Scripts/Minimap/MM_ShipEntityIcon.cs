@@ -26,11 +26,8 @@ public class MM_ShipEntityIcon : MonoBehaviour {
          return;
       }
 
-      // Keep the icon in the right position
-      Vector3 relativePosition = shipEntity.transform.position - currentArea.transform.position;
-      relativePosition *= 12f;
-      relativePosition += new Vector3(-64f, 64f);
-      Util.setLocalXY(this.transform, relativePosition);
+      // Set correct ship entity icon position in minimap
+      Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(shipEntity.transform, currentArea));
    }
 
    #region Private Variables

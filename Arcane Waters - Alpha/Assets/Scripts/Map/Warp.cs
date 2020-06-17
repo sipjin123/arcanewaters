@@ -14,6 +14,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The spawn for this warp
    public string spawnTarget;
 
+   // Information about targeted map, can be null if unset
+   public Map targetInfo;
+
    // The facing direction we should have after spawning
    public Direction newFacingDirection = Direction.South;
 
@@ -78,6 +81,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                }
                break;
             case DataField.PLACED_PREFAB_ID:
+               break;
+            case DataField.TARGET_MAP_INFO_KEY:
+               targetInfo = field.objectValue<Map>();
                break;
             default:
                Debug.LogWarning($"Unrecognized data field key: {field.k}");

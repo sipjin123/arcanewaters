@@ -34,6 +34,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    // The spawn for this warp
    public string spawnTarget;
 
+   // Information about targeted map, can be null if unset
+   public Map targetInfo;
+
    // The facing direction we should have after spawning
    public Direction newFacingDirection = Direction.South;
 
@@ -192,7 +195,11 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
                spawnTarget = value;
                break;
             case DataField.PLACED_PREFAB_ID:
-               // TODO: Confirm if this will still be needed
+               // This switch case is only included so a warning wouldn't be raised, 
+               // the ID of a prefab needs to be among the data for a separate system
+               break;
+            case DataField.TARGET_MAP_INFO_KEY:
+               targetInfo = field.objectValue<Map>();
                break;
             case DataField.WARP_ARRIVE_FACING_KEY:
                if (field.tryGetDirectionValue(out Direction dir)) {

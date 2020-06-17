@@ -84,6 +84,14 @@ namespace MapCreationTool
                throw new ArgumentException("Only sea maps can be voyage maps");
             }
 
+            if (newMap.specialType == Area.SpecialType.TreasureSite && targetMap.editorType != EditorType.Area) {
+               throw new ArgumentException("Only outside area maps can be treasure site maps");
+            }
+
+            if (newMap.specialType == Area.SpecialType.Town && targetMap.editorType != EditorType.Area) {
+               throw new ArgumentException("Only outside area maps can be town maps");
+            }
+
             UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string dbError = null;
                try {

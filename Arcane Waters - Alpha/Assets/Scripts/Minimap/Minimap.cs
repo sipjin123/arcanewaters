@@ -40,6 +40,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for marking sea monster entity
    public MM_SeaMonsterIcon seaMonsterIconPrefab;
 
+   // The prefab we use for marking sea monster entity
+   public MM_LandMonsterIcon landMonsterIconPrefab;
+
    // The prefab we use for showing player ship entity (enemy, friendly, neutral)
    public MM_ShipEntityIcon enemyShipIconPrefab;
    public MM_ShipEntityIcon friendlyShipIconPrefab;
@@ -222,10 +225,46 @@ public class Minimap : ClientMonoBehaviour {
          foreach (SeaMonsterEntity seaMonsterEntity in area.GetComponentsInChildren<SeaMonsterEntity>()) {
             addSeaMonsterIcon(area, seaMonsterEntity);
          }
+      } 
+      // Create icons for all land monsters
+      else if (!area.isInterior) {
+         foreach (Enemy enemy in area.GetComponentsInChildren<Enemy>()) {
+            addLandMonsterIcon(area, enemy);
+         }
       }
 
       // Note the new area type
       _previousAreaKey = Global.player.areaKey;
+   }
+
+   public Vector2 getCorrectedPosition (Transform target, Area area) {
+      if (area == null) {
+         D.error("No area referenced");
+         return new Vector2(0.0f, 0.0f);
+      }
+
+      // Prepare data for position calculations
+      Vector2 mapPos = backgroundImage.rectTransform.localPosition;
+      Vector2 minimapSize = backgroundImage.rectTransform.sizeDelta;
+      Vector2 minimapMaskSize = backgroundImage.GetComponentInParent<Mask>().rectTransform.sizeDelta;
+
+      // Get object position relative to area
+      Vector2 relativePosition = target.transform.position - area.transform.position;
+
+      // Move it to bottom-left corner (because area position is centered)
+      relativePosition += area.getAreaHalfSize();
+
+      // Calculate relative position in [0, 1] range
+      relativePosition /= area.getAreaSize();
+
+      // Map [0, 1] to minimap
+      relativePosition *= minimapSize;
+
+      // Adjust based on minimap translation (map is focused on player icon)
+      relativePosition += mapPos;
+      relativePosition -= (minimapSize - minimapMaskSize) * 0.5f;
+
+      return relativePosition;
    }
 
    private Sprite getBuildingSprite(string buildingName) {
@@ -284,11 +323,23 @@ public class Minimap : ClientMonoBehaviour {
    }
 
    private void addSeaMonsterIcon (Area currentArea, SeaMonsterEntity seaMonsterEntity) {
-      if (seaMonsterEntity != null && !seaMonsterEntity.isDead()) {
-         MM_SeaMonsterIcon icon = Instantiate(seaMonsterIconPrefab, this.iconContainer.transform.parent);
+      if (seaMonsterEntity != null && !seaMonsterEntity.isDead() && seaMonsterEntity.instanceId == Global.player.instanceId) {
+         MM_SeaMonsterIcon icon = Instantiate(seaMonsterIconPrefab, this.iconContainer.transform);
          icon.seaMonster = seaMonsterEntity;
          icon.currentArea = currentArea;
          _seaMonsterIcons.Add(icon);
+      }
+   }
+
+   private void addLandMonsterIcon (Area currentArea, Enemy enemy) {
+      if (enemy != null && !enemy.isDead() && enemy.instanceId == Global.player.instanceId) {
+         MM_LandMonsterIcon icon = Instantiate(landMonsterIconPrefab, this.iconContainer.transform);
+         icon.enemy = enemy;
+         icon.currentArea = currentArea;
+         if (enemy && enemy.isBossType) {
+            icon.setBossSprite();
+         }
+         _landMonsterIcons.Add(icon);
       }
    }
 
@@ -1261,7 +1312,7 @@ public class Minimap : ClientMonoBehaviour {
                      if (pref.name.StartsWith(icon.iconLayerName)) {
                         // Special case of prefab icon - warps
                         if (icon.iconLayerName == _warpIconName) {
-                           if (area.isSea && Area.isTown(pref.GetComponent<Warp>().areaTarget)) {
+                           if (area.isSea && pref.GetComponent<Warp>()?.targetInfo?.specialType == Area.SpecialType.Town) {
                               addIconToTexture(layerSizeY, layerSizeX, area, pref.transform, icon, ref textureList);
                            }
                            break;
@@ -1501,6 +1552,9 @@ public class Minimap : ClientMonoBehaviour {
 
    // Current list of sea monster entity icons
    public List<MM_SeaMonsterIcon> _seaMonsterIcons = new List<MM_SeaMonsterIcon>();
+
+   // Current list of land monster entity icons
+   public List<MM_LandMonsterIcon> _landMonsterIcons = new List<MM_LandMonsterIcon>();
 
    [SerializeField] TileLayer[] _tileLayer = new TileLayer[0];
    [SerializeField] TileIcon[] _tileIconLayers = new TileIcon[0];

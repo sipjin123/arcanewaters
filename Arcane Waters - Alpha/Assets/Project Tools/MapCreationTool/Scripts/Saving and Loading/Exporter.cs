@@ -43,7 +43,7 @@ namespace MapCreationTool.Serialization
                     i = prefabToIndex(p.original),
                     x = p.placedInstance.transform.position.x,
                     y = p.placedInstance.transform.position.y,
-                    d = p.data.Select(data => new DataField { k = data.Key, v = data.Value }).ToArray(),
+                    d = p.data.Select(data => new DataField { k = data.Key, v = data.Value }).Union(p.getAdditionalDataForExport()).ToArray(),
                     iz = (p.placedInstance.GetComponent<ZSnap>()?.inheritedOffsetZ ?? 0) * 0.16f
                  }
              ).ToArray();
@@ -558,15 +558,6 @@ namespace MapCreationTool.Serialization
       public ExportedLayer001[] layers;
       public SpecialTileChunk[] specialTileChunks;
       public ExportedLayer001 additionalTileColliders;
-
-      public ExportedProject001 fixPrefabFields () {
-         foreach (ExportedPrefab001 prefab in prefabs) {
-            foreach (DataField field in prefab.d) {
-               field.fixField(false);
-            }
-         }
-         return this;
-      }
    }
 
    [Serializable]

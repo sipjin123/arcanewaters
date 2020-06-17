@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class MM_SeaMonsterIcon : ClientMonoBehaviour {
+public class MM_LandMonsterIcon : MonoBehaviour {
    #region Public Variables
 
    // Associated monster entity
-   public SeaMonsterEntity seaMonster;
+   public Enemy enemy;
 
-   // Area in which sea monster exists
+   // Area in which monster exists
    public Area currentArea;
+
+   // Sprite for special enemy type - boss
+   public Sprite bossSprite;
 
    #endregion
 
@@ -20,14 +23,21 @@ public class MM_SeaMonsterIcon : ClientMonoBehaviour {
       _image = GetComponent<Image>();
    }
 
+   public void setBossSprite () {
+      if (!_image) {
+         _image = GetComponent<Image>();
+      }
+      _image.sprite = bossSprite;
+   }
+
    private void Update () {
-      if (seaMonster == null || seaMonster.isDead()) {
+      if (enemy == null || enemy.isDead()) {
          gameObject.SetActive(false);
          return;
       }
 
       // Set correct sea monster icon position in minimap
-      Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(seaMonster.transform, currentArea));
+      Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(enemy.transform, currentArea));
    }
 
    #region Private Variables

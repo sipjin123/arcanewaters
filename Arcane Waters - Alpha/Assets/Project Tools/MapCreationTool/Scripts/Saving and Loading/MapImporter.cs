@@ -12,7 +12,7 @@ namespace MapCreationTool
    {
       public static ExportedProject001 deserializeMapData (MapInfo mapInfo, string areaKey) {
          try {
-            return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData).fixPrefabFields();
+            return JsonUtility.FromJson<ExportedProject001>(mapInfo.gameData);
          } catch {
             D.editorLog("Failed to deserialize Map data for: " + areaKey, Color.red);
             return null;
