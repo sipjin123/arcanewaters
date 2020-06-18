@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 
-public class NewTutorialManager : MonoBehaviour {
+public class NewTutorialManager : MonoBehaviour
+{
    #region Public Variables
 
    // Self
@@ -44,18 +45,6 @@ public class NewTutorialManager : MonoBehaviour {
       });
    }
 
-   public void completeUserStep (string areaKey, int userId, string actionCode) {
-      List<UserTutorialStep> completedUserSteps = new List<UserTutorialStep>();
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         //
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
-         });
-      });
-   }
-
    public void showTutorialPanel () {
       NewTutorialPanel panel = (NewTutorialPanel) PanelManager.self.get(Panel.Type.NewTutorial);
       panel.showNewTutorialPanel(_tutorialViewModelList);
@@ -75,6 +64,10 @@ public class NewTutorialManager : MonoBehaviour {
 
    public bool isCurrentMapTutorial () {
       return isTutorialAreaKey(Global.player.areaKey);
+   }
+
+   public bool isValidAction (string actionCode) {
+      return _tutorialStepActionList.Select(x => x.code).Contains(actionCode);
    }
 
    #region Private Variables

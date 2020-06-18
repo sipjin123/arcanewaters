@@ -40,7 +40,7 @@ namespace MapCreationTool
 
          nameText.text = map.name;
          createdAtText.text = map.createdAt.ToLocalTime().ToShortDateString();
-         liveVersionText.text = map.publishedVersion?.ToString() ?? "-";
+         liveVersionText.text = map.publishedVersion != -1 ? map.publishedVersion.ToString() : "-";
          creatorText.text = map.creatorName;
 
          versionsButton.onClick.RemoveAllListeners();

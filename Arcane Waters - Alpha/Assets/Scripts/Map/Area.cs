@@ -186,10 +186,6 @@ public class Area : MonoBehaviour
       return areaKey.Contains("House");
    }
 
-   public static bool isTown (string areaKey) {
-      return areaKey.Contains("Town");
-   }
-
    public static string getName (string areaKey) {
       if (areaKey.Contains("Adventure")) {
          return "Adventure Shop";
@@ -283,14 +279,30 @@ public class Area : MonoBehaviour
    }
 
    public Vector2 getAreaSize () {
+      return getAreaSize(new Vector2Int(0, 0));
+   }
+
+   public Vector2 getAreaSize (Vector2Int minTileCount) {
       if (_firstTilemap == null) {
          return new Vector2(0, 0);
       }
-      return new Vector2(_firstTilemap.size.x * _grid.transform.localScale.x, _firstTilemap.size.y * _grid.transform.localScale.y);
+      return new Vector2(Math.Max(_firstTilemap.size.x, minTileCount.x) * _grid.transform.localScale.x, Math.Max(_firstTilemap.size.y, minTileCount.y) * _grid.transform.localScale.y);
+   }
+
+   public Vector2 getAreaSize (int minTileCount) {
+      return getAreaSize(new Vector2Int(minTileCount, minTileCount));
+   }
+
+   public Vector2 getAreaHalfSize (Vector2Int minTileCount) {
+      return getAreaSize(minTileCount) * 0.5f;
    }
 
    public Vector2 getAreaHalfSize () {
       return getAreaSize() * 0.5f;
+   }
+
+   public Vector2 getAreaHalfSize (int minTileCount) {
+      return getAreaSize(minTileCount) * 0.5f;
    }
 
    private void configurePathfindingGraph () {

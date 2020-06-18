@@ -5,17 +5,17 @@ namespace MapCreationTool.Serialization
    [Serializable]
    public class Map
    {
-      public int id { get; set; }
-      public string name { get; set; }
-      public DateTime createdAt { get; set; }
-      public int creatorID { get; set; }
-      public int? publishedVersion { get; set; }
-      public int sourceMapId { get; set; }
-      public string notes { get; set; }
-      public EditorType editorType { get; set; }
-      public Biome.Type biome { get; set; }
-      public Area.SpecialType specialType { get; set; }
+      public int id;
+      public string name;
+      public DateTime createdAt;
+      public int creatorID;
+      public int publishedVersion = -1;
+      public int sourceMapId;
+      public string notes;
+      public EditorType editorType;
+      public Biome.Type biome;
+      public Area.SpecialType specialType;
 
-      public string creatorName { get; set; }
+      public string creatorName;
    }
 }

@@ -309,6 +309,12 @@ public class MyNetworkManager : NetworkManager
                }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Send information about the upcoming map to the user
+                  Map map = AreaManager.self.getMapInfo(baseMapAreaKey);
+                  if (map != null) {
+                     player.rpc.Target_ReceiveMapInfo(map);
+                  }
+
                   player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
                });
             });

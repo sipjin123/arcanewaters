@@ -12,6 +12,7 @@ using Random = UnityEngine.Random;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
 using NubisDataHandling;
+using MapCreationTool.Serialization;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -687,6 +688,12 @@ public class RPCManager : NetworkBehaviour {
    public void Target_SetShipAbilities (NetworkConnection connection, int[] abilityIds) {
       CannonPanel.self.setAbilityTab(abilityIds);
    }
+
+   [TargetRpc]
+   public void Target_ReceiveMapInfo (Map map) {
+      AreaManager.self.storeAreaInfo(map);
+   }
+
 
    [TargetRpc]
    public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations) {
@@ -3999,6 +4006,30 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_CompletedAction (string actionCode) {
+      if (NewTutorialManager.self.isValidAction(actionCode)) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            bool userCompletedAction = DB_Main.userHasCompletedAction(_player.userId, actionCode);
+
+            if (!userCompletedAction) {
+               DB_Main.completeStepForUser(_player.userId, actionCode);
+               TutorialStepData stepData = DB_Main.getTutorialStepDataByAction(actionCode);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  Target_ShowTutorialStepCompletedNotification(netIdentity.connectionToClient, stepData.stepName);
+               });
+            }
+         });
+      }
+   }
+
+   [TargetRpc]
+   private void Target_ShowTutorialStepCompletedNotification (NetworkConnection conn, string title) {
+      StepCompletedNotificationPanel notificationPanel = (StepCompletedNotificationPanel) PanelManager.self.get(Panel.Type.StepCompletedNotification);
+      notificationPanel.showStepCompletedNotification(title);
+   }
+
+   [Command]
    public void Cmd_FoundDiscovery (int discoveryId) {
       Discovery discovery = DiscoveryManager.self.getSpawnedDiscoveryById(discoveryId);
 
@@ -4014,6 +4045,11 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                _player.Target_GainedXP(netIdentity.connectionToClient, gainedXP, newJobXP, Jobs.Type.Explorer, 0, true);
                discovery.Target_RevealDiscovery(netIdentity.connectionToClient);
+
+               // Tutorial logic
+               if (NewTutorialManager.self.isTutorialAreaKey(_player.areaKey)) {
+                  Cmd_CompletedAction(NewTutorialConstants.Actions.DISCOVERY_FOUND);
+               }
             });
          });
       } else {

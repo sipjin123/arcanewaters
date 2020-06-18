@@ -27,7 +27,7 @@ namespace MapCreationTool
          createdAtText.text = mapVersion.createdAt.ToLocalTime().ToString();
          updatedAtText.text = mapVersion.updatedAt.ToLocalTime().ToString();
 
-         bool live = mapVersion.map.publishedVersion != null && mapVersion.map.publishedVersion == mapVersion.version;
+         bool live = mapVersion.map.publishedVersion != -1 && mapVersion.map.publishedVersion == mapVersion.version;
 
          publishButton.interactable = !live;
          publishButton.GetComponentInChildren<Text>().text = live ? "LIVE!" : "PUBLISH";

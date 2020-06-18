@@ -36,22 +36,24 @@ public class AreaManager : MonoBehaviour
          List<Map> maps = DB_Main.getMaps();
 
          foreach (Map map in maps) {
-            if (map.publishedVersion != null) {
-               // Store the map data
-               _areaKeyToMapInfo.Add(map.name, map);
-
-               // Store the sea maps area keys
-               if (map.editorType == MapCreationTool.EditorType.Sea) {
-                  _seaAreaKeys.Add(map.name);
-               }
-            }
-
-            // Store the area id to names dictionary
-            _areaIdToName.Add(map.id, map.name);
-            //Debug.Log(_areaIdToName.Count);
+            storeAreaInfo(map);
          }
       } catch {
-         D.log("Error in storing area");
+         D.log("Error in fetching map info");
+      }
+   }
+
+   public void storeAreaInfo (Map map) {
+      if (!_areaKeyToMapInfo.ContainsKey(map.name)) {
+         _areaKeyToMapInfo.Add(map.name, map);
+      }
+
+      if (map.editorType == EditorType.Sea && _seaAreaKeys.Contains(map.name)) {
+         _seaAreaKeys.Add(map.name);
+      }
+
+      if (!_areaIdToName.ContainsKey(map.id)) {
+         _areaIdToName.Add(map.id, map.name);
       }
    }
 
@@ -85,7 +87,7 @@ public class AreaManager : MonoBehaviour
       if (hasArea(areaKey)) {
          return getArea(areaKey).version;
       } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
-         return map.publishedVersion ?? 0;
+         return map.publishedVersion;
       } else {
          return 0;
       }
@@ -145,6 +147,14 @@ public class AreaManager : MonoBehaviour
 
    public List<string> getAreaKeys () {
       return new List<string>(_areaKeyToMapInfo.Keys);
+   }
+
+   public Map getMapInfo (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map;
+      }
+
+      return null;
    }
 
    public List<string> getSeaAreaKeys () {

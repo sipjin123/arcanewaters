@@ -6,7 +6,8 @@ using Mirror;
 using TMPro;
 using DG.Tweening;
 
-public class StepCompletedNotificationPanel : Panel {
+public class StepCompletedNotificationPanel : Panel
+{
    #region Public Variables
 
    #endregion
@@ -21,15 +22,9 @@ public class StepCompletedNotificationPanel : Panel {
       _tweenSequence = DOTween.Sequence();
    }
 
-   public void showStepCompletedNotification (string stepTitle, string stepImagePath) {
+   public void showStepCompletedNotification (string stepTitle) {
       _tweenSequence?.Kill();
       _stepTitleText.SetText(stepTitle);
-
-      try {
-         _stepImage.sprite = ImageManager.getSprite(stepImagePath);
-      } catch {
-         _stepImage.sprite = ImageManager.self.blankSprite;
-      }
 
       _notificationCanvas.gameObject.SetActive(true);
 
@@ -51,10 +46,6 @@ public class StepCompletedNotificationPanel : Panel {
    // The step title text
    [SerializeField]
    private TextMeshProUGUI _stepTitleText;
-
-   // The step image
-   [SerializeField]
-   private Image _stepImage;
 
    // The exit button
    [SerializeField]

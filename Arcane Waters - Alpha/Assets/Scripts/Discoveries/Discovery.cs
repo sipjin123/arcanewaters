@@ -60,6 +60,7 @@ public class Discovery : NetworkBehaviour
          if (_currentProgress >= EXPLORE_DISCOVERY_TIME && !_isWaitingForRequestResponse) {
             _isWaitingForRequestResponse = true;
             Global.player.rpc.Cmd_FoundDiscovery(id);
+            Minimap.self.deleteDiscoveryIcon(this);
          }
       }
 

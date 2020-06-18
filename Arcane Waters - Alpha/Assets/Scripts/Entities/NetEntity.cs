@@ -6,7 +6,8 @@ using Mirror;
 using Cinemachine;
 using Smooth;
 
-public class NetEntity : NetworkBehaviour {
+public class NetEntity : NetworkBehaviour
+{
    #region Public Variables
 
    // The amount of time that must pass between movement changes
@@ -236,7 +237,11 @@ public class NetEntity : NetworkBehaviour {
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
 
-         // TODO: Display tutorial notice screen
+         // Check if the character has completed the tutorial
+         if (PlayerPrefs.GetInt(this.entityName, 0) == 0) {
+            PanelManager.self.noticeScreen.show("Welcome to Arcane Waters!\nIf you ever need assistance, just press F12 to bring up the Help menu.\nSafe travels!");
+            PlayerPrefs.SetInt(this.entityName, 1);
+         }
       }
 
       // Routinely clean the attackers set

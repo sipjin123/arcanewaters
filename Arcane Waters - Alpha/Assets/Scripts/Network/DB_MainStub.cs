@@ -257,6 +257,17 @@ public class DB_MainStub : MonoBehaviour {
    public static void completeStepForUser (int userId, int stepId) {
    }
 
+   public static void completeStepForUser (int userId, string actionCode) {
+   }
+
+   public static bool userHasCompletedAction (int userId, string actionCode) {
+      return false;
+   }
+
+   public static TutorialStepData getTutorialStepDataByAction (string actionCode) {
+      return null;
+   }
+
    public static void updateNPCXML (string rawData, int typeIndex) {
 
    }

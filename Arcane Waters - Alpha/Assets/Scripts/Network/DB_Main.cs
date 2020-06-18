@@ -1340,7 +1340,7 @@ public class DB_Main : DB_MainStub
                   name = dataReader.GetString("name"),
                   createdAt = dataReader.GetDateTime("createdAt"),
                   publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
-                     ? (int?) null
+                     ? -1
                      : dataReader.GetInt32("publishedVersion"),
                   creatorID = dataReader.GetInt32("creatorUserId"),
                   creatorName = dataReader.GetString("accName"),
@@ -2678,6 +2678,80 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Exception: " + e.ToString());
       }
+   }
+
+   public static new void completeStepForUser (int userId, string actionCode) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.user_tutorial_step (userId, stepId, completedTimestamp)" +
+            "SELECT @userId, stepId, @completedTimestamp " +
+            "FROM arcane.tutorial_step_action " +
+            "INNER JOIN arcane.tutorial_step using (stepActionId) " +
+            "WHERE arcane.tutorial_step_action.code = @actionCode " +
+            "ON DUPLICATE KEY UPDATE userId = userId", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@actionCode", actionCode);
+            cmd.Parameters.AddWithValue("@completedTimestamp", DateTime.UtcNow);
+
+            cmd.Prepare();
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+   }
+
+   public static new bool userHasCompletedAction (int userId, string actionCode) {
+      bool isComplete = false;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.user_tutorial_step " +
+            "INNER JOIN arcane.tutorial_step using (stepId) " +
+            "INNER JOIN arcane.tutorial_step_action using (stepActionId) " +
+            "WHERE userId = @userId AND code = @actionCode", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@actionCode", actionCode);
+
+            cmd.Prepare();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               isComplete = reader.HasRows;
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+
+      return isComplete;
+   }
+
+   public static new TutorialStepData getTutorialStepDataByAction (string actionCode) {
+      TutorialStepData result = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.tutorial_step " +
+            "INNER JOIN arcane.tutorial_step_action USING (stepActionId)" +
+            "WHERE code = @actionCode", conn)) {
+            conn.Open();
+            cmd.Parameters.AddWithValue("@actionCode", actionCode);
+
+            cmd.Prepare();
+
+            using (MySqlDataReader reader = cmd.ExecuteReader()) {
+               while (reader.Read()) {
+                  result = new TutorialStepData(reader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Exception: " + e.ToString());
+      }
+
+      return result;
    }
 
    #endregion

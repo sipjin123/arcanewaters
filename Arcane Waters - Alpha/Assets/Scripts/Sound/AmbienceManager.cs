@@ -57,10 +57,9 @@ public class AmbienceManager : ClientMonoBehaviour {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_House };
       }
 
-      if (Area.isTown(areaKey)) {
+      if (AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Town) {
          return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Outdoor, SoundManager.Type.Ambience_Town };
       }
-
 
       return new List<SoundManager.Type>() { SoundManager.Type.Ambience_Forest_Chirps };
    }

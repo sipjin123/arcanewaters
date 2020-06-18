@@ -13,6 +13,9 @@ using Random = UnityEngine.Random;
 public class Minimap : ClientMonoBehaviour {
    #region Public Variables
 
+   // Minimal size of minimap in tiles
+   public static int minTileSizeMinimap = 64;
+
    // The distance scale the minimap is using
    public static float SCALE = .10f;
 
@@ -65,6 +68,9 @@ public class Minimap : ClientMonoBehaviour {
    // The Container for the bot ship icons we create
    public GameObject botShipIconContainer;
 
+   // The Container for the discoveries icons we create
+   public GameObject discoveryIconContainer;
+
    // The icons of treasure sites on minimap
    public Image[] treasureSiteImages;
 
@@ -91,6 +97,15 @@ public class Minimap : ClientMonoBehaviour {
    public MinimapGeneratorPreset baseLavaPreset;
    public MinimapGeneratorPreset baseForestPreset;
    public MinimapGeneratorPreset baseMushroomPreset;
+
+   // Sprites used for marking towns in minimap
+   [Header("Town icon sprites")]
+   public Sprite townForestSprite;
+   public Sprite townDesertSprite;
+   public Sprite townMushroomSprite;
+   public Sprite townSnowSprite;
+   public Sprite townLavaSprite;
+   public Sprite townPineSprite;
 
    // Minimap generator presets (scriptable objects) for interior maps
    [Header("Interior map prefabs")]
@@ -252,10 +267,10 @@ public class Minimap : ClientMonoBehaviour {
       Vector2 relativePosition = target.transform.position - area.transform.position;
 
       // Move it to bottom-left corner (because area position is centered)
-      relativePosition += area.getAreaHalfSize();
+      relativePosition += area.getAreaHalfSize(minTileSizeMinimap);
 
       // Calculate relative position in [0, 1] range
-      relativePosition /= area.getAreaSize();
+      relativePosition /= area.getAreaSize(minTileSizeMinimap);
 
       // Map [0, 1] to minimap
       relativePosition *= minimapSize;
@@ -289,7 +304,7 @@ public class Minimap : ClientMonoBehaviour {
    }
    
    public void addDiscoveryIcon (Discovery discovery) {
-      MM_Icon icon = Instantiate(discoveryIconPrefab, this.iconContainer.transform);
+      MM_Icon icon = Instantiate(discoveryIconPrefab, this.discoveryIconContainer.transform);
       icon.target = discovery.gameObject;
       _discoveryIcons.Add(icon);
    }
@@ -381,7 +396,7 @@ public class Minimap : ClientMonoBehaviour {
             icon = Instantiate(enemyShipIconPrefab, this.playerShipIconContainer.transform);
          }
          // Friendly ship
-         else if (ship.faction == Global.player.faction) {
+         else if (ship.isAllyOf(Global.player)) {
             icon = Instantiate(friendlyShipIconPrefab, this.playerShipIconContainer.transform);
          }
          // Neutral ship
@@ -423,7 +438,7 @@ public class Minimap : ClientMonoBehaviour {
             icon = Instantiate(enemyShipIconPrefab, this.botShipIconContainer.transform);
          }
          // Friendly ship
-         else if (ship.faction == Global.player.faction) {
+         else if (ship.isAllyOf(Global.player)) {
             icon = Instantiate(friendlyShipIconPrefab, this.botShipIconContainer.transform);
          }
          // Neutral ship
@@ -1313,7 +1328,10 @@ public class Minimap : ClientMonoBehaviour {
                         // Special case of prefab icon - warps
                         if (icon.iconLayerName == _warpIconName) {
                            if (area.isSea && pref.GetComponent<Warp>()?.targetInfo?.specialType == Area.SpecialType.Town) {
-                              addIconToTexture(layerSizeY, layerSizeX, area, pref.transform, icon, ref textureList);
+                              Sprite warpTownSprite = getTownWarpSprite(pref.GetComponent<Warp>().targetInfo.biome);
+                              if (warpTownSprite != null) {
+                                 addIconToTexture(layerSizeY, layerSizeX, area, pref.transform, warpTownSprite, new Vector2Int(-3, -3), ref textureList);
+                              }
                            }
                            break;
                         }
@@ -1430,13 +1448,15 @@ public class Minimap : ClientMonoBehaviour {
    }
 
    private void addIconToTexture (int mapHeight, int mapWidth, Area area, Transform transform, TileIcon icon, ref List<Texture2D> textureList) {
+      addIconToTexture(mapHeight, mapHeight, area, transform, icon.spriteIcon, icon.offset, ref textureList);
+   }
+
+   private void addIconToTexture (int mapHeight, int mapWidth, Area area, Transform transform, Sprite sprite, Vector2Int offset, ref List<Texture2D> textureList) {
       Texture2D map = new Texture2D(mapHeight, mapWidth);
       MakeTextureTransparent(map);
 
       GridLayout gridLayout = area.GetComponentInChildren<GridLayout>();
       Vector2Int collider2DCellPosition = new Vector2Int(gridLayout.WorldToCell(transform.position).x, -gridLayout.WorldToCell(transform.position).y);
-
-      var sprite = icon.spriteIcon;
 
       if (sprite) {
          var pixels = sprite.texture.GetPixels((int) sprite.textureRect.x,
@@ -1444,14 +1464,32 @@ public class Minimap : ClientMonoBehaviour {
                (int) sprite.textureRect.width,
                (int) sprite.textureRect.height);
 
-         int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-mapWidth / 2), 0, map.width - (int) sprite.textureRect.width);
-         int ySetPixel = Mathf.Clamp(mapHeight + icon.offset.y - (collider2DCellPosition.y - (-mapHeight / 2)), 0, map.height - (int) sprite.textureRect.height);
+         int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + offset.x - (-mapWidth / 2), 0, map.width - (int) sprite.textureRect.width);
+         int ySetPixel = Mathf.Clamp(mapHeight + offset.y - (collider2DCellPosition.y - (-mapHeight / 2)), 0, map.height - (int) sprite.textureRect.height);
 
          map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
 
          map.Apply();
          textureList.Add(map);
       }
+   }
+
+   private Sprite getTownWarpSprite (Biome.Type biome) {
+      switch (biome) {
+         case Biome.Type.Desert:
+            return townDesertSprite;
+         case Biome.Type.Forest:
+            return townForestSprite;
+         case Biome.Type.Lava:
+            return townLavaSprite;
+         case Biome.Type.Mushroom:
+            return townMushroomSprite;
+         case Biome.Type.Pine:
+            return townPineSprite;
+         case Biome.Type.Snow:
+            return townSnowSprite;
+      }
+      return null;
    }
 
    /// <summary>

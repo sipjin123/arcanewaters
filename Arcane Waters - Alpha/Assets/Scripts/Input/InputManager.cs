@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class InputManager : MonoBehaviour {
+public class InputManager : MonoBehaviour
+{
    #region Public Variables
 
    #endregion
@@ -25,7 +26,14 @@ public class InputManager : MonoBehaviour {
    }
 
    private void Update () {
-      // TODO: Show tutorial
+      // Show tutorial
+      if (Input.GetKeyDown(KeyCode.F12)) {
+         if (NewTutorialManager.self.isTutorialAreaKey(Global.player.areaKey)) {
+            Global.player.rpc.Cmd_ShowTutorialDetail(Global.player.areaKey);
+         } else {
+            NewTutorialManager.self.showTutorialPanel();
+         }
+      }
    }
 
    #region Private Variables

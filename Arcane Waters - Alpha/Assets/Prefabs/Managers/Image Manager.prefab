@@ -4671,6 +4671,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 426a5940f164d1247b9ec2981e025e18, type: 3}
     sprites:
     - {fileID: 21300000, guid: 426a5940f164d1247b9ec2981e025e18, type: 3}
+  - imageName: DesertTownMinimap
+    imagePath: Assets/Sprites/Minimap/DesertTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/DesertTownMinimap
+    texture2D: {fileID: 2800000, guid: 9a03dd609e10f814e87be06c80f5698f, type: 3}
+    sprite: {fileID: 21300000, guid: 9a03dd609e10f814e87be06c80f5698f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9a03dd609e10f814e87be06c80f5698f, type: 3}
   - imageName: direction_arrow
     imagePath: Assets/Sprites/GUI/Ship/direction_arrow.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Ship/direction_arrow
@@ -10379,6 +10386,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 196588861922d7547a92de83021fc0cc, type: 3}
     sprites:
     - {fileID: 21300000, guid: 196588861922d7547a92de83021fc0cc, type: 3}
+  - imageName: ForestTownMinimap
+    imagePath: Assets/Sprites/Minimap/ForestTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ForestTownMinimap
+    texture2D: {fileID: 2800000, guid: de6c41378c76d4e4dbcb35d919713222, type: 3}
+    sprite: {fileID: 21300000, guid: de6c41378c76d4e4dbcb35d919713222, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: de6c41378c76d4e4dbcb35d919713222, type: 3}
   - imageName: formal
     imagePath: Assets/Sprites/Icons/Armor/formal.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Armor/formal
@@ -13584,6 +13598,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: b8e27a1e1f6a46945b53291e14a3db3b, type: 3}
     sprites:
     - {fileID: 21300000, guid: b8e27a1e1f6a46945b53291e14a3db3b, type: 3}
+  - imageName: LavaTownMinimap
+    imagePath: Assets/Sprites/Minimap/LavaTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/LavaTownMinimap
+    texture2D: {fileID: 2800000, guid: a47eabbabd028e04f9ade11b2d1b98e5, type: 3}
+    sprite: {fileID: 21300000, guid: a47eabbabd028e04f9ade11b2d1b98e5, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a47eabbabd028e04f9ade11b2d1b98e5, type: 3}
   - imageName: leaders_button
     imagePath: Assets/Sprites/GUI/Bottom Buttons/leaders_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/leaders_button
@@ -19553,6 +19574,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 3e97f8c5b1c880d48aafb55b88771459, type: 3}
     sprites:
     - {fileID: 21300000, guid: 3e97f8c5b1c880d48aafb55b88771459, type: 3}
+  - imageName: PineTownMinimap
+    imagePath: Assets/Sprites/Minimap/PineTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/PineTownMinimap
+    texture2D: {fileID: 2800000, guid: 593c9d18cde04804b9462c872d503f5f, type: 3}
+    sprite: {fileID: 21300000, guid: 593c9d18cde04804b9462c872d503f5f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 593c9d18cde04804b9462c872d503f5f, type: 3}
   - imageName: ping_animation
     imagePath: Assets/Sprites/GUI/ping_animation.png
     imagePathWithoutExtension: Assets/Sprites/GUI/ping_animation
@@ -20109,6 +20137,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
     sprites:
     - {fileID: 21300000, guid: d82e7742bc4a30a4ca6762dde5e0cd67, type: 3}
+  - imageName: PlayerMinimap
+    imagePath: Assets/Sprites/Minimap/PlayerMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/PlayerMinimap
+    texture2D: {fileID: 2800000, guid: 56d366e458c02c047a402237bf3cd158, type: 3}
+    sprite: {fileID: 21300000, guid: 56d366e458c02c047a402237bf3cd158, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 56d366e458c02c047a402237bf3cd158, type: 3}
   - imageName: pointer_28
     imagePath: Assets/Sprites/GUI/pointer_28.png
     imagePathWithoutExtension: Assets/Sprites/GUI/pointer_28
@@ -22216,6 +22251,13 @@ MonoBehaviour:
     - {fileID: -6247217472174812781, guid: 0e6d1bda978cf174bab699940e259e42, type: 3}
     - {fileID: 778755323933701671, guid: 0e6d1bda978cf174bab699940e259e42, type: 3}
     - {fileID: -4784644909733376135, guid: 0e6d1bda978cf174bab699940e259e42, type: 3}
+  - imageName: ShroomTownMinimap
+    imagePath: Assets/Sprites/Minimap/ShroomTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/ShroomTownMinimap
+    texture2D: {fileID: 2800000, guid: b8cf8842c4e9da446bda765ab5bc66a7, type: 3}
+    sprite: {fileID: 21300000, guid: b8cf8842c4e9da446bda765ab5bc66a7, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: b8cf8842c4e9da446bda765ab5bc66a7, type: 3}
   - imageName: sideBar
     imagePath: Assets/Sprites/CraftingUI/sideBar.png
     imagePathWithoutExtension: Assets/Sprites/CraftingUI/sideBar
@@ -23445,6 +23487,13 @@ MonoBehaviour:
     - {fileID: 4266068011257239458, guid: 34fef3d20b2b45a488b22c0b79d6c84d, type: 3}
     - {fileID: 7758136256112395416, guid: 34fef3d20b2b45a488b22c0b79d6c84d, type: 3}
     - {fileID: -8749572235457355769, guid: 34fef3d20b2b45a488b22c0b79d6c84d, type: 3}
+  - imageName: SnowTownMinimap
+    imagePath: Assets/Sprites/Minimap/SnowTownMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/SnowTownMinimap
+    texture2D: {fileID: 2800000, guid: bb704edb676e4f044adbde3b3a0bb115, type: 3}
+    sprite: {fileID: 21300000, guid: bb704edb676e4f044adbde3b3a0bb115, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: bb704edb676e4f044adbde3b3a0bb115, type: 3}
   - imageName: sound_icon
     imagePath: Assets/Sprites/GUI/sound_icon.png
     imagePathWithoutExtension: Assets/Sprites/GUI/sound_icon
