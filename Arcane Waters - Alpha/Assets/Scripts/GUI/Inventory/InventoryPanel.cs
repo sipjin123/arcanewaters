@@ -144,9 +144,16 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          equippedHatCellContainer.DestroyChildren();
 
          // Quick load the cached equipment
-         loadCachedEquipment(Global.userObjects.weapon);
-         loadCachedEquipment(Global.userObjects.armor);
-         loadCachedEquipment(Global.userObjects.hat);
+         UserObjects userObj = Global.userObjects;
+         if (userObj.weapon.itemTypeId != 0) {
+            loadCachedEquipment(userObj.weapon);
+         }
+         if (userObj.armor.itemTypeId != 0) {
+            loadCachedEquipment(userObj.armor);
+         }
+         if (userObj.hat.itemTypeId != 0) {
+            loadCachedEquipment(userObj.hat);
+         }
       }
    }
 

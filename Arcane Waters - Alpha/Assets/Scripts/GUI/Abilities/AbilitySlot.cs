@@ -27,6 +27,9 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerDownHand
    // Reference to the selection button
    public Button buttonReference;
 
+   // Disables the capability to grab this template
+   public bool disableGrab;
+
    #endregion
 
    public void Awake () {
@@ -61,7 +64,7 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerDownHand
    }
 
    public void OnPointerDown (PointerEventData eventData) {
-      if (_isUsed) {
+      if (_isUsed && !disableGrab) {
          AbilityPanel.self.tryGrabEquippedAbility(this);
       }
    }

@@ -1805,6 +1805,7 @@ MonoBehaviour:
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  blockMovement: 0
   armorManager: {fileID: 114737132631157730}
   weaponManager: {fileID: 114313576142768070}
   hatsManager: {fileID: 4764568349769096776}
@@ -8768,7 +8769,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6646515736786723003}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.1}
   m_LocalScale: {x: 2.25, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 5814482515820877785}
@@ -9393,7 +9394,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.4
 --- !u!1 &9121914068043213830
 GameObject:
   m_ObjectHideFlags: 0

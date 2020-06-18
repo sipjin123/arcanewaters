@@ -246,13 +246,13 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE ability_table SET ability_equip_slot = @ability_equip_slot WHERE ability_id = @ability_id and userID = @userID", conn)) {
+            "UPDATE ability_table_v2 SET abilityEquipSlot = @abilityEquipSlot WHERE abilityId = @abilityId and userID = @userID", conn)) {
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@ability_id", abilityId);
-            cmd.Parameters.AddWithValue("@ability_equip_slot", slotNumber);
+            cmd.Parameters.AddWithValue("@abilityId", abilityId);
+            cmd.Parameters.AddWithValue("@abilityEquipSlot", slotNumber);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -266,20 +266,20 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ability_table (userID, ability_name, ability_id, ability_level, ability_description, ability_equip_slot, ability_type) " +
-            "VALUES(@userID, @ability_name, @ability_id, @ability_level, @ability_description, @ability_equip_slot, @ability_type) " +
-            "ON DUPLICATE KEY UPDATE ability_level = @ability_level, ability_equip_slot = @ability_equip_slot", conn)) {
+            "INSERT INTO ability_table_v2 (userID, abilityName, abilityId, abilityLevel, abilityDescription, abilityEquipSlot, abilityType) " +
+            "VALUES(@userID, @abilityName, @abilityId, @abilityLevel, @abilityDescription, @abilityEquipSlot, @abilityType) " +
+            "ON DUPLICATE KEY UPDATE abilityLevel = @abilityLevel, abilityEquipSlot = @abilityEquipSlot", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@ability_name", abilityData.name);
-            cmd.Parameters.AddWithValue("@ability_id", abilityData.abilityID);
-            cmd.Parameters.AddWithValue("@ability_level", abilityData.abilityLevel);
-            cmd.Parameters.AddWithValue("@ability_description", abilityData.description);
-            cmd.Parameters.AddWithValue("@ability_equip_slot", abilityData.equipSlotIndex);
-            cmd.Parameters.AddWithValue("@ability_type", abilityData.abilityType);
+            cmd.Parameters.AddWithValue("@abilityName", abilityData.name);
+            cmd.Parameters.AddWithValue("@abilityId", abilityData.abilityID);
+            cmd.Parameters.AddWithValue("@abilityLevel", abilityData.abilityLevel);
+            cmd.Parameters.AddWithValue("@abilityDescription", abilityData.description);
+            cmd.Parameters.AddWithValue("@abilityEquipSlot", abilityData.equipSlotIndex);
+            cmd.Parameters.AddWithValue("@abilityType", abilityData.abilityType);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -294,7 +294,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_table WHERE (userID=@userID and ability_equip_slot != -1)", conn)) {
+            "SELECT * FROM ability_table_v2 WHERE (userID=@userID and abilityEquipSlot != -1)", conn)) {
 
             conn.Open();
             cmd.Prepare();

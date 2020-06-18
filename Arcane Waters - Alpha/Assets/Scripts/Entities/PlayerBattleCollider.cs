@@ -16,19 +16,22 @@ public class PlayerBattleCollider : MonoBehaviour {
    #endregion
 
    private void OnTriggerEnter2D (Collider2D collision) {
-      if (!playerBody.isInBattle() && combatInitCollider.enabled && collision.GetComponent<Enemy>() != null) {
-         Enemy enemy = collision.GetComponent<Enemy>();
-         if (!enemy.isDefeated) {
-            if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
-               combatInitCollider.enabled = false;
-               Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers);
-            } else {
-               Vector3 pos = this.transform.position + new Vector3(0f, .32f);
-               GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
-               messageCanvas.transform.position = pos;
-               messageCanvas.GetComponentInChildren<Text>().text = "Cannot join battle of different voyage group";
-            }
-         }
+      if (playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
+         if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.blockMovement) {
+            Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
+            if (!enemy.isDefeated) {
+               if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
+                  combatInitCollider.enabled = false;
+                  playerBody.blockMovement = true;
+                  Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers);
+               } else {
+                  Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+                  GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+                  messageCanvas.transform.position = pos;
+                  messageCanvas.GetComponentInChildren<Text>().text = "Cannot join battle of different voyage group";
+               }
+            } 
+         } 
       }
    }
 

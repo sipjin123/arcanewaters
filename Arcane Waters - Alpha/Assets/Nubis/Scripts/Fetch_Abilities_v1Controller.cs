@@ -17,7 +17,7 @@ namespace NubisTranslator
             try {
                using (MySqlConnection conn = DB_Main.getConnection())
                using (MySqlCommand cmd = new MySqlCommand(
-                  "SELECT * FROM ability_table WHERE (userID=@userID)", conn)) {
+                  "SELECT * FROM ability_table_v2 WHERE (userID=@userID)", conn)) {
 
                   conn.Open();
                   cmd.Prepare();

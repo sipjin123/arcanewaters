@@ -880,6 +880,7 @@ public class AdminManager : NetworkBehaviour
 
       int weaponsCount = 0;
       int armorCount = 0;
+      int hatCount = 0;
       int usableCount = 0;
       int ingredientsCount = 0;
       int blueprintCount = 0;
@@ -926,9 +927,9 @@ public class AdminManager : NetworkBehaviour
          }
 
          // Create all the armors
-         for (int armorType = 0; armorType < EquipmentXMLManager.self.armorStatList.Count; armorType++) {
-            if (armorType != 0) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, armorType, 1)) {
+         foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+            if (armorData.armorType != 0) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Armor, armorData.armorType, 1)) {
                   armorCount++;
                }
             }
@@ -937,8 +938,17 @@ public class AdminManager : NetworkBehaviour
          // Create all the weapons
          foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
             if (weaponData.weaponType != 0) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Weapon, (int) weaponData.weaponType, 1)) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Weapon, weaponData.weaponType, 1)) {
                   weaponsCount++;
+               }
+            }
+         }
+
+         // Create all the hats
+         foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatData) {
+            if (hatData.hatType != 0) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.hatType, 1)) {
+                  hatCount++;
                }
             }
          }
@@ -946,8 +956,8 @@ public class AdminManager : NetworkBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation back to the player who issued the command
-            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients and {4} blueprints to the inventory.",
-               weaponsCount, armorCount, usableCount, ingredientsCount, blueprintCount);
+            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients, {4} hats and {5} blueprints to the inventory.",
+               weaponsCount, armorCount, usableCount, ingredientsCount, hatCount, blueprintCount);
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });

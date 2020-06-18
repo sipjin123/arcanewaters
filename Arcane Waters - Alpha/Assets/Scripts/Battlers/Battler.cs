@@ -628,7 +628,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private void checkIfSpritesShouldFlip () {
       // All of the Battlers on the right side of the board need to flip
-      if (this.teamType == Battle.TeamType.Attackers) {
+      if (this.teamType == Battle.TeamType.Defenders) {
          foreach (SpriteRenderer renderer in _renderers) {
             renderer.flipX = true;
          }
@@ -987,7 +987,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                // Smoothly jump into position
                sourceBattler.playAnim(Anim.Type.Jump_East);
-               Vector2 targetPosition = targetBattler.getMeleeStandPosition();
+               Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
                float startTime = Time.time;
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;
@@ -1014,6 +1014,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+            if (sourceBattler.weaponManager.weaponType == 0) {
+               sourceBattler.pauseAnim(true);
+            }
 
             #region Display Block
 
@@ -1046,6 +1049,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             #endregion
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+            if (sourceBattler.weaponManager.weaponType == 0) {
+               sourceBattler.pauseAnim(false);
+            }
 
             if (isMovable()) {
                // Now jump back to where we started from
@@ -1822,14 +1828,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
    }
 
-   public Vector2 getMeleeStandPosition () {
+   public Vector2 getMeleeStandPosition (bool hasWeapon = true) {
       Vector2 startPos = battleSpot.transform.position;
-      return startPos + new Vector2(mainSpriteRenderer.bounds.extents.x, 0) * (isAttacker() ? -1f : 1f);
+      return startPos + new Vector2(mainSpriteRenderer.bounds.extents.x, 0) * (isAttacker() ? (hasWeapon ? 1f : .7f) : (hasWeapon ? -1f : -.7f));
    }
 
    public Vector2 getRangedEndPosition () {
       Vector2 startPos = battleSpot.transform.position;
-      return startPos + new Vector2(0f, mainSpriteRenderer.bounds.extents.x * 2) * (isAttacker() ? -1f : 1f);
+      return startPos + new Vector2(0f, mainSpriteRenderer.bounds.extents.x * 2) * (isAttacker() ? 1f : -1f);
    }
 
    // Gets the battler initialized data (health, ap, etc)

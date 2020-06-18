@@ -193,6 +193,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    public void onNextButtonClicked () {
       if (_currentSection == Section.Appearance) {
+
+         // Cache the user info
+         Global.userObjects = new UserObjects {
+            userInfo = _char.getUserInfo(),
+            weapon = _char.getWeapon(),
+            armor = _char.getArmor(),
+            hat = _char.getHat()
+         };
          goToQuestions();
       } else {
          questionsScreen.confirmAnswerClicked();

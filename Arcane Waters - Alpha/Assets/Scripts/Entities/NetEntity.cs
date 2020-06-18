@@ -169,6 +169,9 @@ public class NetEntity : NetworkBehaviour
    public static float SPEEDUP_MULTIPLIER_SHIP = 2;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
+   // Blockes the player movement
+   public bool blockMovement;
+
    #endregion
 
    protected virtual void Awake () {
@@ -325,13 +328,15 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      // Check if we need to use the alternate delayed movement mode
-      if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Delay) {
-         handleDelayMoveMode();
-      } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Arrows) {
-         handleArrowsMoveMode();
-      } else {
-         handleInstantMoveMode();
+      if (!blockMovement) {
+         // Check if we need to use the alternate delayed movement mode
+         if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Delay) {
+            handleDelayMoveMode();
+         } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Arrows) {
+            handleArrowsMoveMode();
+         } else {
+            handleInstantMoveMode();
+         }
       }
    }
 

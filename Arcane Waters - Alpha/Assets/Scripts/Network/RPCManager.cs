@@ -3408,24 +3408,26 @@ public class RPCManager : NetworkBehaviour {
             }
 
             int maximumEnemyCount = (attackerCount * 2) - 1;
-            for (int i = 0; i < maximumEnemyCount; i++) {
-               float randomizedSpawnChance = 0;
+            if (!enemy.isBossType) {
+               for (int i = 0; i < maximumEnemyCount; i++) {
+                  float randomizedSpawnChance = 0;
 
-               // Chance to spawn additional enemies more than the attackers
-               if (modifiedDefenderList.Count >= attackerCount) {
-                  randomizedSpawnChance = Random.Range(0.0f, 10.0f);
-               }
+                  // Chance to spawn additional enemies more than the attackers
+                  if (modifiedDefenderList.Count >= attackerCount) {
+                     randomizedSpawnChance = Random.Range(0.0f, 10.0f);
+                  }
 
-               if (randomizedSpawnChance < 5) {
-                  Enemy backupEnemy = enemyRoster[Random.Range(0, enemyRoster.Count)];
-                  BattlerData battlerData = MonsterManager.self.getBattler(backupEnemy.enemyType);
-                  modifiedDefenderList.Add(new BattlerInfo {
-                     battlerName = battlerData.enemyName,
-                     battlerType = BattlerType.AIEnemyControlled,
-                     enemyType = backupEnemy.enemyType,
-                     battlerXp = backupEnemy.XP,
-                     companionId = 0
-                  });
+                  if (randomizedSpawnChance < 5) {
+                     Enemy backupEnemy = enemyRoster[Random.Range(0, enemyRoster.Count)];
+                     BattlerData battlerData = MonsterManager.self.getBattler(backupEnemy.enemyType);
+                     modifiedDefenderList.Add(new BattlerInfo {
+                        battlerName = battlerData.enemyName,
+                        battlerType = BattlerType.AIEnemyControlled,
+                        enemyType = backupEnemy.enemyType,
+                        battlerXp = backupEnemy.XP,
+                        companionId = 0
+                     });
+                  }
                }
             }
 

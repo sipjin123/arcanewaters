@@ -19,13 +19,13 @@ public class PlayerBodyEntity : BodyEntity
    public static int MAX_COLLISION_COUNT = 32;
 
    // Speedup variables
-   public float speedMeter = 0;
+   public float speedMeter = 10;
    public static float SPEEDUP_METER_MAX = 10;
    public bool isReadyToSpeedup = true;
    public float fuelDepleteValue = 2;
    public float fuelRecoverValue = 1.2f;
 
-   // The effect that indicates this ship is speeding up
+   // The effect that indicates this player is speeding up
    public GameObject speedUpEffect;
    public Canvas speedupGUI;
    public Transform speedupEffectPivot;
@@ -38,6 +38,11 @@ public class PlayerBodyEntity : BodyEntity
    public PlayerBattleCollider playerBattleCollider;
 
    #endregion
+
+   protected override void Awake () {
+      base.Awake();
+      speedMeter = SPEEDUP_METER_MAX;
+   }
 
    protected override void Update () {
       base.Update();
@@ -161,6 +166,16 @@ public class PlayerBodyEntity : BodyEntity
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
    }
 
+   private void updateSprintEffects (bool isOn) {
+      // Handle sprite effects
+      if (isOn) {
+         speedUpEffect.SetActive(true);
+         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
+      } else {
+         speedUpEffect.SetActive(false);
+      }
+   }
+
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
       // Handle GUI
       if (!forceDisable && (meter < SPEEDUP_METER_MAX)) {
@@ -171,18 +186,16 @@ public class PlayerBodyEntity : BodyEntity
       }
 
       speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
-
-      // Handle sprite effects
-      if (isOn) {
-         speedUpEffect.SetActive(true);
-         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
-      } else {
-         speedUpEffect.SetActive(false);
-      }
    }
 
    public override void resetCombatInit () {
       base.resetCombatInit();
+      Rpc_ResetMoveDisable();
+   }
+
+   [ClientRpc]
+   public void Rpc_ResetMoveDisable () {
+      blockMovement = false;
       playerBattleCollider.combatInitCollider.enabled = true;
    }
 
@@ -193,7 +206,7 @@ public class PlayerBodyEntity : BodyEntity
 
    [ClientRpc]
    public void Rpc_UpdateSpeedupDisplay (bool isOn) {
-      updateSpeedUpDisplay(0, isOn, false, true);
+      updateSprintEffects(isOn);
    }
 
    private void interactNearestLoot (List<TreasureChest> chestList) {

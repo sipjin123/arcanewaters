@@ -63,12 +63,12 @@ public class AbilitySQLData
    #if IS_SERVER_BUILD
 
    public AbilitySQLData (MySql.Data.MySqlClient.MySqlDataReader dataReader) {
-      this.name = DataUtil.getString(dataReader, "ability_name");
-      this.abilityID = DataUtil.getInt(dataReader, "ability_id");
-      this.description = DataUtil.getString(dataReader, "ability_description");
-      this.equipSlotIndex = DataUtil.getInt(dataReader, "ability_equip_slot");
-      this.abilityLevel = DataUtil.getInt(dataReader, "ability_level");
-      this.abilityType = (AbilityType)DataUtil.getInt(dataReader, "ability_type");
+      this.name = DataUtil.getString(dataReader, "abilityName");
+      this.abilityID = DataUtil.getInt(dataReader, "abilityId");
+      this.description = DataUtil.getString(dataReader, "abilityDescription");
+      this.equipSlotIndex = DataUtil.getInt(dataReader, "abilityEquipSlot");
+      this.abilityLevel = DataUtil.getInt(dataReader, "abilityLevel");
+      this.abilityType = (AbilityType)DataUtil.getInt(dataReader, "abilityType");
    }
 
    #endif

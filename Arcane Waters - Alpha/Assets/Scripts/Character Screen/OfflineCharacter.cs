@@ -209,6 +209,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
       armor.category = Item.Category.Armor;
       armor.count = 1;
       armor.data = _armorData;
+      if (_armorData.Length < 1 && armor.itemTypeId != 0) {
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armor.itemTypeId);
+         armor.data = ArmorStatData.serializeArmorStatData(armorData);
+      }
 
       return armor;
    }
@@ -221,6 +225,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
       weapon.category = Item.Category.Weapon;
       weapon.count = 1;
       weapon.data = _weaponData;
+      if (_weaponData.Length < 1 && weapon.itemTypeId != 0) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+         weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+      }
 
       return weapon;
    }
@@ -233,6 +241,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
       hat.category = Item.Category.Hats;
       hat.count = 1;
       hat.data = _hatData;
+      if (_hatData.Length < 1 && hat.itemTypeId != 0) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+         hat.data = HatStatData.serializeHatStatData(hatData);
+      }
 
       return hat;
    }

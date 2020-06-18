@@ -86,12 +86,19 @@ public class AbilityPanel : Panel {
    private bool userHasWeapon () {
       // Handle indicators that no weapon is equipped
       if (Global.player != null) {
+         return getPlayerBody().weaponManager.weaponType != 0;
+      }
+      return false;
+   }
+
+   private PlayerBodyEntity getPlayerBody () {
+      if (Global.player != null) {
          if (playerBody == null) {
             playerBody = (PlayerBodyEntity) Global.player;
          }
-         return playerBody.weaponManager.weaponType != 0;
+         return playerBody;
       }
-      return false;
+      return null;
    }
 
    private void toggleBlockers (bool isActive) {
@@ -156,6 +163,7 @@ public class AbilityPanel : Panel {
          AbilitySlot abilitySlot = Instantiate(abilitySlotPrefab, emptyHandSkillHolder.transform, false);
          AttackAbilityData punchAbility = AbilityManager.self.punchAbility();
          abilitySlot.setSlotForAbilityData(punchAbility.itemID, punchAbility, punchAbility.itemDescription);
+         abilitySlot.GetComponent<AbilitySlot>().disableGrab = true;
       }
 
       skillInfoHolder.SetActive(true);
