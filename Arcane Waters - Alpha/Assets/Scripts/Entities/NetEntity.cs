@@ -321,7 +321,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Only change our movement if enough time has passed
-      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+      if (this is SeaEntity && Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
          return;
       }
 
@@ -693,7 +693,10 @@ public class NetEntity : NetworkBehaviour
       this.transform.SetParent(area.transform, worldPositionStays);
    }
 
-   protected void handleInstantMoveMode () {
+   protected void handleInstantMoveMode (bool updatingEveryFrame) {
+      // Calculate by how much to reduce the movement speed due to differing update steps
+      float frameRateMultiplier = updatingEveryFrame ? 1 / Mathf.Ceil(MOVE_CHANGE_INTERVAL / Time.deltaTime) : 1f;
+
       // Get a list of the directions we're allowed to move (sometimes includes diagonal directions)
       List<Direction> availableDirections = DirectionUtil.getAvailableDirections(true, _isClimbing);
 
@@ -716,7 +719,7 @@ public class NetEntity : NetworkBehaviour
                baseMoveSpeed *= SPEEDUP_MULTIPLIER_LAND;
             }
 
-            _body.AddForce(forceToApply.normalized * baseMoveSpeed);
+            _body.AddForce(forceToApply.normalized * baseMoveSpeed * frameRateMultiplier);
 
             // Make note of the time
             _lastMoveChangeTime = Time.time;

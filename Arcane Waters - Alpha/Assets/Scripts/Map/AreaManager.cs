@@ -36,7 +36,9 @@ public class AreaManager : MonoBehaviour
          List<Map> maps = DB_Main.getMaps();
 
          foreach (Map map in maps) {
-            storeAreaInfo(map);
+            if (map.publishedVersion >= 0) {
+               storeAreaInfo(map);
+            }
          }
       } catch {
          D.log("Error in fetching map info");
