@@ -104,7 +104,7 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 33, 34);
 
                case Anim.Type.Punch:
-                  return new AnimInfo(animType, 33, 33);
+                  return new AnimInfo(animType, 32, 33);
             }
             break;
 

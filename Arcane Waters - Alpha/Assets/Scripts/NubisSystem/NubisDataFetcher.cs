@@ -46,7 +46,7 @@ namespace NubisDataHandling {
       }
 
       private async void processXmlVersion () {
-         string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), "1");
+         string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), NubisRequestHandler.getSlotIndex().ToString());
          try {
             int xmlVersion = int.Parse(returnCode);
             xmlVersionEvent.Invoke(xmlVersion);

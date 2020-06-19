@@ -12,6 +12,8 @@ using static ShopDataToolManager;
 using UnityEngine.Events;
 using NubisDataHandling;
 using BackgroundTool;
+using System.IO.Compression;
+using static NubisRequestHandler;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -161,9 +163,17 @@ public class XmlVersionManagerClient : MonoBehaviour {
          finishedCheckingStreamingAsset.Invoke(true);
       }
    }
-
+   
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), "1");
+      string zipDataRequest = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), NubisRequestHandler.getSlotIndex().ToString());
+      if (NubisRequestHandler.getSlotIndex() == (int) XmlSlotIndex.Windows) {
+         writeDefaultData(zipDataRequest, targetVersion);
+      } else {
+         writeLinuxData(zipDataRequest, targetVersion);
+      }
+   }
+   
+   private void writeDefaultData (string zipDataRequest, int targetVersion) {
       if (zipDataRequest.Length < 10) {
          // If the result string is less than expected, the zip blob download has failed then call out the error panel which contains an exit button
          loadBlocker.SetActive(true);
@@ -191,8 +201,22 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
    }
 
+   private void writeLinuxData (string zipDataRequest, int targetVersion) {
+      D.log("Chosen Linux Data");
+      byte[] bytes = Convert.FromBase64String(zipDataRequest);
+      File.WriteAllBytes(ZIP_PATH, bytes);
+
+      GZipUtility.decompressToDirectory(ZIP_PATH, TEXT_PATH, (fileName) => { 
+         debugLog("Decompressing: ..." + fileName); 
+      });
+
+      D.editorLog("Finished Extracting Zip", Color.green);
+      processClientXml();
+   }
+
    private IEnumerator CO_ExtractTextFiles () {
-      yield return new WaitForSeconds(.1f);
+      yield return new WaitForSeconds(.1f); 
+      
       using (ZipInputStream s = new ZipInputStream(File.OpenRead(ZIP_PATH))) {
          ZipEntry theEntry;
          while ((theEntry = s.GetNextEntry()) != null) {

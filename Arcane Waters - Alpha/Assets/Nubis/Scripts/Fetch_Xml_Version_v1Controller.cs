@@ -6,13 +6,13 @@ using MySql.Data.MySqlClient;
 
 namespace NubisTranslator {
    public class Fetch_Xml_Version_v1Controller {
-      public static string fetchXmlVersion () {
+      public static string fetchXmlVersion (int slot) {
          #if NUBIS
          try {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-                  "SELECT version FROM arcane.xml_status where id = 1",
+                  "SELECT version FROM arcane.xml_status where id = " + slot,
                   connection)) {
 
                   using (MySqlDataReader reader = command.ExecuteReader()) {

@@ -9,6 +9,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
 using System.Text;
+using static NubisRequestHandler;
 
 public class XmlVersionManagerServer : MonoBehaviour {
    #region Public Variables
@@ -24,6 +25,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string SERVER_ZIP_DIRECTORY = "C:/XmlZipFiles";
    public static string SERVER_ZIP_FILE = "ServerXml.zip";
    public static string TEXT_FILE_NAME = "textFileName=";
+   public static string SERVER_ZIP_FILE_LINUX = "ServerXml2.zip";
 
    // TABLES (Can be changed)
    public static string ABILITY_TABLE = "ability_xml_v2";
@@ -302,6 +304,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectoryFile = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
             bool ifZippedData = zipData(zipDirectoryFile);
+
+            string linuxDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE_LINUX;
+            GZipUtility.compressDirectory(XML_TEXT_DIRECTORY + "/", linuxDirectory, (fileName) => { debugLog("Compressing ..." + fileName, Color.gray); });
+
             finalizeZipData();
          });
       });
@@ -339,12 +345,15 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    private void finalizeZipData () {
       debugLog("Init Zip data sending", Color.green);
+      string linuxDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE_LINUX;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          byte[] zipData = File.ReadAllBytes(SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE);
-         DB_Main.writeZipData(zipData);
+         byte[] zipDataLinux = File.ReadAllBytes(linuxDirectory);
+         DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Windows); 
+         DB_Main.writeZipData(zipDataLinux, (int) XmlSlotIndex.Linux);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Debug.Log("Zip Upload Complete: " + zipData.Length);
+            Debug.Log("Zip Upload Complete: Windows:" + zipData.Length + " : Linux:" + zipDataLinux.Length);
          });
       });
    }

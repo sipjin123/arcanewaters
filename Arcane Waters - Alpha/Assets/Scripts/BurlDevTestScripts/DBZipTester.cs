@@ -39,7 +39,7 @@ public class DBZipTester : MonoBehaviour {
             File.WriteAllBytes(ServerDataText, rawdata);
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               DB_Main.writeZipData(rawdata);
+               DB_Main.writeZipData(rawdata, ((int)NubisRequestHandler.XmlSlotIndex.Windows));
 
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   D.editorLog("DONE: " + rawdata.Length, Color.green);

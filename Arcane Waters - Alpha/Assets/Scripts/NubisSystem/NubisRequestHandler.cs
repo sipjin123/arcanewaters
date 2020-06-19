@@ -7,6 +7,12 @@ using System;
 
 public class NubisRequestHandler : MonoBehaviour
 {
+   public enum XmlSlotIndex {
+      None = 0,
+      Windows = 1,
+      Linux = 2
+   }
+
    public static string nubisFetchInventoryCount (string rawUserId) {
       string splitter = "_space_";
       string[] rawItemGroup = rawUserId.Split(new string[] { splitter }, StringSplitOptions.None);
@@ -26,12 +32,14 @@ public class NubisRequestHandler : MonoBehaviour
       return NubisTranslator.Fetch_Crafting_Ingredients_v3Controller.fetchCraftingIngredients(userId);
    }
 
-   public static string nubisFetchXmlZipBytes (string rawUserId) {
-      return NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
+   public static string nubisFetchXmlZipBytes (string slotIndex) {
+      int slot = int.Parse(slotIndex);
+      return NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData(slot);
    }
 
-   public static string nubisFetchXmlVersion (string rawUserId) {
-      return NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion();
+   public static string nubisFetchXmlVersion (string slotIndex) {
+      int slot = int.Parse(slotIndex);
+      return NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion(slot);
    }
 
    public static string nubisFetchSingleBlueprint (string rawContent) {
@@ -98,12 +106,20 @@ public class NubisRequestHandler : MonoBehaviour
       return NubisTranslator.Fetch_Inventory_v1Controller.userInventory(userId, inventoryPage, category, weaponId, armorId, hatId);
    }
 
-   public static string nubisFetchMapData (string rawMapName) {
+   public static string nubisFetchMapData (string rawMapName, string rawMapVersion) {
       rawMapName = rawMapName.Replace("+", " ");
-      return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName);
+      int mapVersion = int.Parse(rawMapVersion);
+      return NubisTranslator.Fetch_Map_Data_v1Controller.fetchMapData(rawMapName, mapVersion);
    }
 
    public static string nubisFetchUserAbilities (string userId) {
       return NubisTranslator.Fetch_Abilities_v1Controller.userAbilities(int.Parse(userId));
+   }
+
+   public static int getSlotIndex () {
+#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
+      return (int) XmlSlotIndex.Linux;
+#endif
+      return (int) XmlSlotIndex.Windows;
    }
 }

@@ -6,15 +6,16 @@ using MySql.Data.MySqlClient;
 
 namespace NubisTranslator {
    public class Fetch_Map_Data_v1Controller {
-      public static string fetchMapData (string mapName) {
+      public static string fetchMapData (string mapName, int version) {
 #if NUBIS
          try {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
                using (MySqlCommand command = new MySqlCommand(
-                  "SELECT gameData FROM map_versions_v2 left join maps_v2 on mapid = id WHERE name = @mapName ORDER BY version DESC LIMIT 1",
+                  "SELECT gameData FROM map_versions_v2 left join maps_v2 on mapid = id WHERE (name = @mapName and version=@mapVersion)",
                   connection)) {
                   command.Parameters.AddWithValue("@mapName", mapName);
+                  command.Parameters.AddWithValue("@mapVersion", version);
 
                   using (MySqlDataReader reader = command.ExecuteReader()) {
                      while (reader.Read()) {

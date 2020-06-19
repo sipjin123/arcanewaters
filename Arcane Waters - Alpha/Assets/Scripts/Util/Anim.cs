@@ -65,7 +65,9 @@ public class Anim : MonoBehaviour {
          case Type.Finish_Attack:
             return true;
          case Type.Play_Once:
-            return true; 
+            return true;
+         case Type.Punch:
+            return true;
          default:
             return false;
       }

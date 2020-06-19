@@ -1003,7 +1003,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
 
-            if (sourceBattler.weaponManager.weaponType == 0 && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+            if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
                sourceBattler.playAnim(attackerAbility.getAnimation());
@@ -1014,8 +1014,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
-            if (sourceBattler.weaponManager.weaponType == 0) {
-               sourceBattler.pauseAnim(true);
+
+            if (sourceBattler.isUnarmed()) {
+               sourceBattler.playAnim(Anim.Type.Battle_East);
             }
 
             #region Display Block
@@ -1049,9 +1050,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             #endregion
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
-            if (sourceBattler.weaponManager.weaponType == 0) {
-               sourceBattler.pauseAnim(false);
-            }
 
             if (isMovable()) {
                // Now jump back to where we started from
@@ -1937,6 +1935,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public AttackAbilityData getAttackAbility (int indexID) {
       return getAttackAbilities()[indexID];
+   }
+
+   public bool isUnarmed () {
+      return weaponManager.weaponType == 0;
    }
 
    public BuffAbilityData getBuffAbilitiy (int indexID) {

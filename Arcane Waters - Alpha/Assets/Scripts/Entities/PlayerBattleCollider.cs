@@ -17,12 +17,12 @@ public class PlayerBattleCollider : MonoBehaviour {
 
    private void OnTriggerEnter2D (Collider2D collision) {
       if (playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
-         if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.blockMovement) {
+         if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
             if (!enemy.isDefeated) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
                   combatInitCollider.enabled = false;
-                  playerBody.blockMovement = true;
+                  playerBody.isWithinEnemyRadius = true;
                   Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers);
                } else {
                   Vector3 pos = this.transform.position + new Vector3(0f, .32f);

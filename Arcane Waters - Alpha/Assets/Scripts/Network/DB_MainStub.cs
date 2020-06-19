@@ -19,7 +19,7 @@ public class DB_MainStub : MonoBehaviour {
       return new CloudBuildData();
    }
 
-   public static void writeZipData (byte[] bytes) { 
+   public static void writeZipData (byte[] bytes, int slot) { 
    }
 
    public static string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {

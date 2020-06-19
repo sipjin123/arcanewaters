@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NubisDataHandling;
 using NubisTranslator;
 using UnityEngine;
+using static NubisRequestHandler;
 
 public class NubisDataFetchTest : MonoBehaviour
 {
@@ -90,6 +91,17 @@ public class NubisDataFetchTest : MonoBehaviour
                });
             });
          }
+
+         if (GUILayout.Button("Fetch Map Directly from Nubis")) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               string abilityContent = Fetch_Map_Data_v1Controller.fetchMapData("burl_farm", 3);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Result: " + abilityContent);
+               });
+            });
+         }
+         
       }
    }
 
@@ -108,7 +120,7 @@ public class NubisDataFetchTest : MonoBehaviour
    private void directFetchXmlData () {
       D.debug("Get Xml Bytes");
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string returnCode = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData();
+         string returnCode = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData((int) XmlSlotIndex.Windows);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             D.editorLog("Result: " + returnCode);
@@ -179,13 +191,13 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisMap () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "burl_farm"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "burl_farm", "3"); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisMap2 () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "Shroom Ruins");
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), "Shroom Ruins", "1");
       D.debug("ASync start: " + returnCode);
    }
 
@@ -198,13 +210,13 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisXmlVer () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), "745"); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), ((int) XmlSlotIndex.Windows).ToString()); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisXMLBytes () {
       D.debug("Fetching xml zip");
-      string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), "745"); 
+      string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), ((int)XmlSlotIndex.Windows).ToString()); 
       D.debug("Result: " + returnCode.Length);
    }
 

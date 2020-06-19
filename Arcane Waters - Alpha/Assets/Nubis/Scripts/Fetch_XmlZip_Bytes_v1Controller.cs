@@ -7,8 +7,8 @@ using UnityEngine;
 
 namespace NubisTranslator {
    public class Fetch_XmlZip_Bytes_v1Controller {
-      public static string fetchZipRawData () {
-#if NUBIS
+      public static string fetchZipRawData (int slot) {
+         #if NUBIS
          UInt32 FileSize;
          byte[] rawData;
 
@@ -16,7 +16,7 @@ namespace NubisTranslator {
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
 
-               string query = "SELECT * FROM xml_status where id = 1";
+               string query = "SELECT * FROM xml_status where id = " + slot;
                using (MySqlCommand command = new MySqlCommand(query,connection)) {
                   using (MySqlDataReader dataReader = command.ExecuteReader()) {
                      while (dataReader.Read()) {
@@ -36,7 +36,7 @@ namespace NubisTranslator {
             return string.Empty;
          }
          return "";
-#endif
+         #endif
          return "";
       }
    }

@@ -87,12 +87,12 @@ public class DB_Main : DB_MainStub
 
    #region XML Content Handling
 
-   public static new void writeZipData (byte[] bytes) {
+   public static new void writeZipData (byte[] bytes, int slot) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "UPDATE xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = 1", conn)) {
+            "UPDATE xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + slot, conn)) {
 
             conn.Open();
             cmd.Prepare();

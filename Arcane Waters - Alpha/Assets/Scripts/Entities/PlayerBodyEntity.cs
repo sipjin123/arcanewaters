@@ -37,11 +37,21 @@ public class PlayerBodyEntity : BodyEntity
    // Script handling the battle initializer
    public PlayerBattleCollider playerBattleCollider;
 
+   // If the player is near an enemy
+   public bool isWithinEnemyRadius;
+
    #endregion
 
    protected override void Awake () {
       base.Awake();
       speedMeter = SPEEDUP_METER_MAX;
+   }
+
+   protected override void FixedUpdate () {
+      // Blocks user input and user movement if an enemy is within player collider radius
+      if (!isWithinEnemyRadius) {
+         base.FixedUpdate();
+      }
    }
 
    protected override void Update () {
@@ -139,7 +149,7 @@ public class PlayerBodyEntity : BodyEntity
       }
 
       // Speed ship boost feature
-      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
+      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius) {
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
@@ -195,7 +205,7 @@ public class PlayerBodyEntity : BodyEntity
 
    [ClientRpc]
    public void Rpc_ResetMoveDisable () {
-      blockMovement = false;
+      isWithinEnemyRadius = false;
       playerBattleCollider.combatInitCollider.enabled = true;
    }
 
