@@ -120,7 +120,7 @@ public class NubisDataFetchTest : MonoBehaviour
    private void directFetchXmlData () {
       D.debug("Get Xml Bytes");
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string returnCode = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData((int) XmlSlotIndex.Windows);
+         string returnCode = Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData((int) XmlSlotIndex.Default);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             D.editorLog("Result: " + returnCode);
@@ -210,13 +210,13 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisXmlVer () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), ((int) XmlSlotIndex.Windows).ToString()); 
+      var returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlVersion), ((int) XmlSlotIndex.Default).ToString()); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisXMLBytes () {
       D.debug("Fetching xml zip");
-      string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), ((int)XmlSlotIndex.Windows).ToString()); 
+      string returnCode = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), ((int)XmlSlotIndex.Default).ToString()); 
       D.debug("Result: " + returnCode.Length);
    }
 

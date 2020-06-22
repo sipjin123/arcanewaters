@@ -5,15 +5,12 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Networking;
 using static EditorSQLManager;
-using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
 using static ShopDataToolManager;
 using UnityEngine.Events;
 using NubisDataHandling;
 using BackgroundTool;
-using System.IO.Compression;
-using static NubisRequestHandler;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -166,14 +163,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
    
    private async void downloadClientData (int targetVersion) {
       string zipDataRequest = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), NubisRequestHandler.getSlotIndex().ToString());
-      if (NubisRequestHandler.getSlotIndex() == (int) XmlSlotIndex.Windows) {
-         writeDefaultData(zipDataRequest, targetVersion);
-      } else {
-         writeLinuxData(zipDataRequest, targetVersion);
-      }
+      writeData(zipDataRequest, targetVersion);
    }
    
-   private void writeDefaultData (string zipDataRequest, int targetVersion) {
+   private void writeData (string zipDataRequest, int targetVersion) {
       if (zipDataRequest.Length < 10) {
          // If the result string is less than expected, the zip blob download has failed then call out the error panel which contains an exit button
          loadBlocker.SetActive(true);
@@ -196,54 +189,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
             File.WriteAllText(ERROR_DIRECTORY + ERROR_FILENAME, zipDataRequest);
          }
 
-         StartCoroutine(CO_ExtractTextFiles());
+         GZipUtility.decompressToDirectory(ZIP_PATH, TEXT_PATH, (fileName) => {
+            debugLog("Decompressing: ..." + fileName);
+         });
+
+         D.editorLog("Finished Extracting Zip", Color.green);
          PlayerPrefs.SetInt(XML_VERSION, targetVersion);
+         processClientXml();
       }
-   }
-
-   private void writeLinuxData (string zipDataRequest, int targetVersion) {
-      D.log("Chosen Linux Data");
-      byte[] bytes = Convert.FromBase64String(zipDataRequest);
-      File.WriteAllBytes(ZIP_PATH, bytes);
-
-      GZipUtility.decompressToDirectory(ZIP_PATH, TEXT_PATH, (fileName) => { 
-         debugLog("Decompressing: ..." + fileName); 
-      });
-
-      D.editorLog("Finished Extracting Zip", Color.green);
-      processClientXml();
-   }
-
-   private IEnumerator CO_ExtractTextFiles () {
-      yield return new WaitForSeconds(.1f); 
-      
-      using (ZipInputStream s = new ZipInputStream(File.OpenRead(ZIP_PATH))) {
-         ZipEntry theEntry;
-         while ((theEntry = s.GetNextEntry()) != null) {
-            string fileName = Path.GetFileName(theEntry.Name);
-
-            if (fileName != String.Empty) {
-               string directory = TEXT_PATH + "/";
-               directory += fileName;
-
-               using (FileStream streamWriter = File.Create(directory)) {
-                  int size = 2048;
-                  byte[] fdata = new byte[2048];
-                  while (true) {
-                     size = s.Read(fdata, 0, fdata.Length);
-                     if (size > 0) {
-                        streamWriter.Write(fdata, 0, size);
-                     } else {
-                        break;
-                     }
-                  }
-               }
-            }
-         }
-      }
-
-      D.editorLog("Finished Extracting Zip", Color.green);
-      processClientXml();
    }
 
    private void processClientXml () {

@@ -9,8 +9,7 @@ public class NubisRequestHandler : MonoBehaviour
 {
    public enum XmlSlotIndex {
       None = 0,
-      Windows = 1,
-      Linux = 2
+      Default = 3,
    }
 
    public static string nubisFetchInventoryCount (string rawUserId) {
@@ -117,9 +116,6 @@ public class NubisRequestHandler : MonoBehaviour
    }
 
    public static int getSlotIndex () {
-#if UNITY_STANDALONE_LINUX || UNITY_EDITOR_LINUX
-      return (int) XmlSlotIndex.Linux;
-#endif
-      return (int) XmlSlotIndex.Windows;
+      return (int) XmlSlotIndex.Default;
    }
 }

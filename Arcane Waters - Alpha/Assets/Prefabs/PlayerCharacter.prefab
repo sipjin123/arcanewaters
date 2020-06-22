@@ -1805,7 +1805,6 @@ MonoBehaviour:
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   isSpeedingUp: 0
-  blockMovement: 0
   armorManager: {fileID: 114737132631157730}
   weaponManager: {fileID: 114313576142768070}
   hatsManager: {fileID: 4764568349769096776}
@@ -1822,6 +1821,16 @@ MonoBehaviour:
   recoveringColor: {r: 0.9137255, g: 0.08235294, b: 0.08235294, a: 0.78431374}
   defaultColor: {r: 0.8980392, g: 0.8666667, b: 0.12156863, a: 0.78431374}
   playerBattleCollider: {fileID: 2604634866339590000}
+  isWithinEnemyRadius: 0
+  animators:
+  - {fileID: 95023639661687838}
+  - {fileID: 95557389759112952}
+  - {fileID: 95463498748125442}
+  - {fileID: 95898570600801690}
+  - {fileID: 95975136699788740}
+  - {fileID: 95927211109523790}
+  - {fileID: 95100819043064392}
+  - {fileID: 1560188136588726768}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0

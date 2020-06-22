@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Networking;
 using static EditorSQLManager;
-using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
 using System.Text;
@@ -23,9 +22,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
    // Text directory of the xml text files
    public static string XML_TEXT_DIRECTORY = "C:/XmlTextFiles";
    public static string SERVER_ZIP_DIRECTORY = "C:/XmlZipFiles";
-   public static string SERVER_ZIP_FILE = "ServerXml.zip";
    public static string TEXT_FILE_NAME = "textFileName=";
-   public static string SERVER_ZIP_FILE_LINUX = "ServerXml2.zip";
+   public static string SERVER_ZIP_FILE = "ServerXmlZip.zip";
 
    // TABLES (Can be changed)
    public static string ABILITY_TABLE = "ability_xml_v2";
@@ -302,11 +300,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + PALETTE_FILE + ".txt", paletteData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            string zipDirectoryFile = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
-            bool ifZippedData = zipData(zipDirectoryFile);
-
-            string linuxDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE_LINUX;
-            GZipUtility.compressDirectory(XML_TEXT_DIRECTORY + "/", linuxDirectory, (fileName) => { debugLog("Compressing ..." + fileName, Color.gray); });
+            string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
+            GZipUtility.compressDirectory(XML_TEXT_DIRECTORY + "/", zipDirectory, (fileName) => { debugLog("Compressing ..." + fileName, Color.gray); });
 
             finalizeZipData();
          });
@@ -318,42 +313,15 @@ public class XmlVersionManagerServer : MonoBehaviour {
       _filenamesAndData.Add(fileName, fileContent);
    }
 
-   public bool zipData (string zipPath) {
-      try {
-         //Create our output
-         using (var stream = new ZipOutputStream(File.Create(zipPath))) {
-            stream.SetLevel(0);
-            foreach (var filename in _filenamesAndData.Keys) {
-               //Create the space in the zip file:
-               ZipEntry entry = new ZipEntry(filename);
-               string data = _filenamesAndData[filename];
-               byte[] bytes = Encoding.Default.GetBytes(data);
-               stream.PutNextEntry(entry);
-               stream.Write(bytes, 0, bytes.Length);
-               stream.CloseEntry();
-            } // End For Each File.
-
-            stream.Finish();
-            stream.Close();
-         } // End Using
-      } catch (Exception err) {
-         D.error(err.Message);
-         return false;
-      }
-      return true;
-   }
-
    private void finalizeZipData () {
       debugLog("Init Zip data sending", Color.green);
-      string linuxDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE_LINUX;
+      string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         byte[] zipData = File.ReadAllBytes(SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE);
-         byte[] zipDataLinux = File.ReadAllBytes(linuxDirectory);
-         DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Windows); 
-         DB_Main.writeZipData(zipDataLinux, (int) XmlSlotIndex.Linux);
+         byte[] zipData = File.ReadAllBytes(zipDirectory);
+         DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Default);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Debug.Log("Zip Upload Complete: Windows:" + zipData.Length + " : Linux:" + zipDataLinux.Length);
+            Debug.Log("Zip Upload Complete: Windows:" + zipData.Length);
          });
       });
    }

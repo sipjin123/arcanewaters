@@ -275,8 +275,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
-      // TODO: Determine if casting is still necessary
-      List<Item> newCastedItems = Util.unserialize<Item>(itemArray); //Item.unserializeAndCast(itemArray)
+      List<Item> newCastedItems = Util.unserialize<Item>(itemArray); 
 
       AdventureShopScreen.self.updateGreetingText(greetingText);
       AdventureShopScreen.self.updatePanelWithItems(gold, newCastedItems);
@@ -289,12 +288,15 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveShipyard (NetworkConnection connection, int gold, string[] shipArray, string greetingText) {
-      // Translate Abilities
-      List<ShipInfo> newShipInfo = Util.unserialize<ShipInfo>(shipArray);
-      foreach (ShipInfo info in newShipInfo) {
-         info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
-      }
-
+      List<ShipInfo> newShipInfo = new List<ShipInfo>();
+      if (shipArray.Length != 0) {
+         // Translate Abilities
+         newShipInfo = Util.unserialize<ShipInfo>(shipArray);
+         foreach (ShipInfo info in newShipInfo) {
+            info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
+         }
+      } 
+   
       ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText);
    }
 
@@ -3797,7 +3799,10 @@ public class RPCManager : NetworkBehaviour {
          }
 
          if (shopData == null) {
-            D.editorLog("Shop data is missing for: " + shopName + " - " + _player.areaKey, Color.red);
+            D.log("Shop data is missing for: " + shopName + " - " + _player.areaKey);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "");
+            });
          } else {
             string greetingText = shopData.shopGreetingText;
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {

@@ -82,6 +82,10 @@ public class ShipyardScreen : Panel {
    }
 
    public void updatePanelWithShips (int gold, List<ShipInfo> shipList, string greetingText) {
+      if (greetingText.Length < 1) {
+         greetingText = AdventureShopScreen.UNAVAILABLE_ITEMS;
+      }
+
       this.greetingText.text = greetingText;
       _greetingText = greetingText;
       moneyText.text = gold + "";

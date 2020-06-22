@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Networking;
-using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System;
 using Steamworks;

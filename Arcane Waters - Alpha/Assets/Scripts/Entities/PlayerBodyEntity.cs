@@ -40,6 +40,9 @@ public class PlayerBodyEntity : BodyEntity
    // If the player is near an enemy
    public bool isWithinEnemyRadius;
 
+   // The reference to the sprite animators
+   public Animator[] animators;
+
    #endregion
 
    protected override void Awake () {
@@ -56,6 +59,10 @@ public class PlayerBodyEntity : BodyEntity
 
    protected override void Update () {
       base.Update();
+
+      foreach (Animator animator in animators) {
+         animator.speed = 1;
+      }
 
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
@@ -153,6 +160,11 @@ public class PlayerBodyEntity : BodyEntity
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
+
+            // TODO: Confirm if animator speedup is needed
+            foreach (Animator animator in animators) {
+               animator.speed = 1.5f;
+            }
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;

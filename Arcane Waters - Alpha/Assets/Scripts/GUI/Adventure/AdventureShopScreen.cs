@@ -33,6 +33,12 @@ public class AdventureShopScreen : Panel {
    // The texture of the animated head icon
    public Texture2D headIconTexture = null;
 
+   // An indicator that the data is being fetched
+   public GameObject loadBlocker;
+
+   // Notify the player no item is available for now
+   public static string UNAVAILABLE_ITEMS = "I got nothing to sell right now, come back later.";
+
    #endregion
 
    public override void Awake () {
@@ -49,6 +55,12 @@ public class AdventureShopScreen : Panel {
 
       // Update the head icon image
       headAnim.setNewTexture(headIconTexture);
+
+      // Clear out any old info
+      rowsContainer.DestroyChildren();
+
+      // Create a blank template showing the loading icon
+      Instantiate(loadBlocker, rowsContainer.transform);
 
       // Greeting message is decided from the XML Data of the Shop
       greetingText.text = "";
@@ -83,6 +95,10 @@ public class AdventureShopScreen : Panel {
 
    public void updatePanelWithItems (int gold, List<Item> itemList) {
       moneyText.text = gold + "";
+
+      if (itemList.Count < 1) {
+         updateGreetingText(UNAVAILABLE_ITEMS);
+      }
 
       // Clear out any old info
       rowsContainer.DestroyChildren();
