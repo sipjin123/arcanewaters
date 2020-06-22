@@ -713,7 +713,7 @@ public class RPCManager : NetworkBehaviour {
       if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
 
-         if (string.IsNullOrEmpty(mapData)) {
+         if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
             D.log("Map Log: Creating cached map data");

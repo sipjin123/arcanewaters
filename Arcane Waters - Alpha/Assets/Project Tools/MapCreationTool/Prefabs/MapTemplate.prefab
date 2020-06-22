@@ -457,6 +457,7 @@ MonoBehaviour:
   shipDataFields: []
   secretsEntranceDataFields: []
   seaMonsterDataFields: []
+  prefabParent: {fileID: 5468073751298558255}
   npcParent: {fileID: 2242570168550347574}
   enemyParent: {fileID: 3900406199228979487}
   oreNodeParent: {fileID: 6629125543444801599}

@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 7507974533934048055}
+  size: {x: 3, y: 2}
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

@@ -282,6 +282,7 @@ namespace MapCreationTool
                if (customizablePrefab != null) {
                   customizablePrefab.mapEditorState.localPosition = pref.transform.localPosition;
                   customizablePrefab.mapEditorState.id = DataField.extractId(prefab.d);
+                  customizablePrefab.mapEditorState.created = true;
 
                   customizablePrefab.customizedState = customizablePrefab.mapEditorState;
                   customizablePrefab.unappliedChanges = customizablePrefab.mapEditorState;

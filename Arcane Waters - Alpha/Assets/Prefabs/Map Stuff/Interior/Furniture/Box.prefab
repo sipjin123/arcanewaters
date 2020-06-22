@@ -244,6 +244,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 6256182019317202255}
+  size: {x: 1, y: 1}
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

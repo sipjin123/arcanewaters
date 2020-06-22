@@ -229,10 +229,14 @@ public class MapManager : MonoBehaviour
          Dictionary<int, CustomizablePrefab> prefabs = area.gameObject.GetComponentsInChildren<CustomizablePrefab>().ToDictionary(p => p.unappliedChanges.id, p => p);
 
          foreach (PrefabState state in customizationData.prefabChanges) {
-            if (prefabs.TryGetValue(state.id, out CustomizablePrefab pref)) {
-               pref.revertToMapEditor();
-               pref.unappliedChanges = state;
-               pref.submitUnappliedChanges();
+            if (state.created) {
+               createPrefab(area, state, true);
+            } else {
+               if (prefabs.TryGetValue(state.id, out CustomizablePrefab pref)) {
+                  pref.revertToMapEditor();
+                  pref.unappliedChanges = state;
+                  pref.submitUnappliedChanges();
+               }
             }
          }
       } catch (Exception ex) {
@@ -241,14 +245,49 @@ public class MapManager : MonoBehaviour
    }
 
    public void addCustomizations (Area area, PrefabState changes) {
+      bool found = false;
       foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
          if (pref.unappliedChanges.id == changes.id) {
             pref.unappliedChanges = changes;
             pref.submitUnappliedChanges();
 
+            found = true;
             break;
          }
       }
+
+      if (!found && changes.created) {
+         createPrefab(area, changes, true);
+      }
+   }
+
+   public CustomizablePrefab createPrefab (Area area, PrefabState state, bool confirmedState) {
+      GameObject prefGO = AssetSerializationMaps.getPrefab(state.serializationId, area.biome, false);
+      CustomizablePrefab pref = prefGO?.GetComponent<CustomizablePrefab>();
+
+      if (pref == null) {
+         D.error($"Could not find prefab when adding customized prefab of id: { state.serializationId }");
+         return null;
+      }
+
+      // Create the prefab
+      CustomizablePrefab prefab = Instantiate(pref, area.prefabParent);
+      prefab.name += " (customization system)";
+
+      // Set prefab's data
+      prefab.unappliedChanges = state;
+      prefab.customizedState.id = state.id;
+      prefab.customizedState.serializationId = state.serializationId;
+
+      prefab.transform.localPosition = prefab.unappliedChanges.localPosition;
+      prefab.GetComponent<ZSnap>()?.snapZ();
+
+      // If changes are confirmed, mark them as confirmed
+      if (confirmedState) {
+         prefab.submitUnappliedChanges();
+      }
+
+      return prefab;
    }
 
    public Vector3 getNextMapPosition () {
@@ -273,7 +312,7 @@ public class MapManager : MonoBehaviour
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey, version.ToString());
 
-      if (string.IsNullOrEmpty(mapData)) {
+      if (string.IsNullOrWhiteSpace(mapData)) {
          D.error("Error in retrieving map data from NUBIS");
       } else {
          // Store it for later reference

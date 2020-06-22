@@ -19,6 +19,12 @@ namespace MapCustomization
       [SerializeField]
       public Vector2 localPosition;
 
+      // Whether this prefab was created
+      public bool created;
+
+      // Serialization id of the prefab, as defined in asset serialization maps
+      public int serializationId;
+
       #endregion
 
       public void clearLocalPosition () {
@@ -32,16 +38,19 @@ namespace MapCustomization
       public PrefabState add (PrefabState state) {
          return new PrefabState {
             id = id,
-            localPosition = state.isLocalPositionSet() ? state.localPosition : localPosition
+            localPosition = state.isLocalPositionSet() ? state.localPosition : localPosition,
+            created = state.created || created,
+            serializationId = Math.Max(state.serializationId, serializationId)
          };
       }
 
       public void clearAll () {
          clearLocalPosition();
+         created = false;
       }
 
       public override string ToString () {
-         return $"{id}: {localPosition} ";
+         return $"{ id }:{ serializationId } ({ (created ? "new" : "old") }): {localPosition}";
       }
 
       #region Private Variables

@@ -68,6 +68,9 @@ public class Area : MonoBehaviour
 
    // Sea Monsters to be loaded by the server
    public List<ExportedPrefab001> seaMonsterDataFields = new List<ExportedPrefab001>();
+
+   // Parent of generic prefabs
+   public Transform prefabParent;
    
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;

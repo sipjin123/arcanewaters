@@ -12,6 +12,9 @@ namespace MapCustomization
       // Bounds in which the mouse cursor has to be to interact with the prefab
       public Collider2D interactionCollider;
 
+      // Size of prefab in tiles
+      public Vector2Int size = Vector2Int.one;
+
       // State of the prefab that is set in map editor
       public PrefabState mapEditorState;
 
@@ -32,16 +35,25 @@ namespace MapCustomization
       }
 
       public bool anyUnappliedState () {
-         return unappliedChanges.isLocalPositionSet();
+         return unappliedChanges.isLocalPositionSet() || unappliedChanges.created;
       }
 
       public void revertUnappliedChanges () {
          transform.localPosition = customizedState.localPosition;
-
-         unappliedChanges.clearAll();
+         if (!mapEditorState.created && !customizedState.created) {
+            MapCustomizationManager.removeTracked(this);
+            Destroy(gameObject);
+         } else {
+            unappliedChanges.clearAll();
+         }
       }
 
       public void revertToMapEditor () {
+         if (!mapEditorState.created) {
+            D.error("Cannot revert changes to map editor, because prefab was not created in map editor");
+            return;
+         }
+
          transform.localPosition = mapEditorState.localPosition;
 
          customizedState = mapEditorState;
@@ -52,6 +64,7 @@ namespace MapCustomization
       public void submitUnappliedChanges () {
          if (unappliedChanges.isLocalPositionSet()) {
             customizedState.localPosition = unappliedChanges.localPosition;
+            customizedState.created = customizedState.created || unappliedChanges.created;
          }
 
          revertUnappliedChanges();
