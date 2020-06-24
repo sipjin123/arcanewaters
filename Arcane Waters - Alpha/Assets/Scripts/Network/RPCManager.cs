@@ -2115,7 +2115,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_BuyItem (int shopItemId) {
+   public void Cmd_BuyItem (int shopItemId, string shopName) {
       Item newItem = null;
       Item shopItem = ShopManager.self.getItem(shopItemId);
 
@@ -2182,7 +2182,7 @@ public class RPCManager : NetworkBehaviour {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + shopItem.getName() + "!");
 
             // Make sure their gold display gets updated
-            getItemsForArea(ShopManager.DEFAULT_SHOP_NAME);
+            getItemsForArea(shopName);
          });
       });
    }
@@ -3866,6 +3866,12 @@ public class RPCManager : NetworkBehaviour {
                ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
                if (armorData != null) {
                   item.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
+               }
+               break;
+            case Item.Category.Hats:
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               if (hatData != null) {
+                  item.setBasicInfo(hatData.equipmentName, hatData.equipmentDescription, hatData.equipmentIconPath);
                }
                break;
          }

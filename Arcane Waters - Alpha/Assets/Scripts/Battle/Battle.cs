@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using UnityEngine.UIElements;
 
 public class Battle : NetworkBehaviour {
    #region Public Variables
@@ -61,12 +62,22 @@ public class Battle : NetworkBehaviour {
          transform.SetParent(BattleManager.self.transform, true);
       }
 
-      foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
-         if (battler.transform.parent == null) {
-            battler.transform.SetParent(transform, true);
-            battler.snapToBattlePosition();
+      try {
+         foreach (Battler battler in BattleManager.self.getBattle(battleId).getParticipants()) {
+            if (battler.transform.parent == null) {
+               battler.transform.SetParent(transform, true);
+               battler.snapToBattlePosition();
+            }
          }
+      } catch {
+         D.editorLog("Battle has not loaded yet", Color.red);
+         StartCoroutine(CO_RetryRepositioning());
       }
+   }
+
+   private IEnumerator CO_RetryRepositioning () {
+      yield return new WaitForSeconds(1);
+      clientBattleReposition();
    }
    
    public TickResult tick () {

@@ -43,6 +43,9 @@ public class PlayerBodyEntity : BodyEntity
    // The reference to the sprite animators
    public Animator[] animators;
 
+   // The speedup value of the animation
+   public static float ANIM_SPEEDUP_VALUE = 1.5f;
+
    #endregion
 
    protected override void Awake () {
@@ -60,15 +63,15 @@ public class PlayerBodyEntity : BodyEntity
    protected override void Update () {
       base.Update();
 
-      foreach (Animator animator in animators) {
-         animator.speed = 1;
-      }
-
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          return;
+      }
+
+      foreach (Animator animator in animators) {
+         animator.speed = 1;
       }
 
       // Allow right clicking people to bring up the context menu, only if no panel is opened
@@ -161,9 +164,8 @@ public class PlayerBodyEntity : BodyEntity
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
-            // TODO: Confirm if animator speedup is needed
             foreach (Animator animator in animators) {
-               animator.speed = 1.5f;
+               animator.speed = ANIM_SPEEDUP_VALUE;
             }
             Cmd_UpdateSpeedupDisplay(true);
          } else {
@@ -195,6 +197,10 @@ public class PlayerBodyEntity : BodyEntity
          speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
       } else {
          speedUpEffect.SetActive(false);
+      }
+
+      foreach (Animator animator in animators) {
+         animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
    }
 

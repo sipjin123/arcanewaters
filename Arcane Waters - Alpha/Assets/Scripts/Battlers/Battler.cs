@@ -230,6 +230,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public const float LARGE_MONSTER_SIZE = 140;
    public const float LARGE_MONSTER_OFFSET = .25f;
 
+   // The starting AP for all units
+   public const int DEFAULT_AP = 5;
+
    #endregion
 
    private void Awake () {
@@ -240,6 +243,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Keep track of all of our Simple Animation components
       _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>());
+
+      AP = DEFAULT_AP;
    }
 
    private void Start () {
@@ -258,14 +263,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             updateSprites();
          }
 
-         // Both Monster and Player battlers are selectable
-         onBattlerSelect.AddListener(() => {
-            BattleUIManager.self.triggerTargetUI(this);
-         });
+         if (enemyType != Enemy.Type.PlayerBattler) {
+            // Monster battlers are selectable
+            onBattlerSelect.AddListener(() => {
+               BattleUIManager.self.triggerTargetUI(this);
+            });
 
-         onBattlerDeselect.AddListener(() => {
-            BattleUIManager.self.hideTargetGameobjectUI();
-         });
+            onBattlerDeselect.AddListener(() => {
+               BattleUIManager.self.hideTargetGameobjectUI();
+            });
+         }
       }
 
       // Keep track of Battlers when they're created
@@ -282,7 +289,40 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (isLocalBattler()) {
          CameraManager.enableBattleDisplay();
 
+         BattleUIManager.self.usernameText.text = Global.player.entityName;
          BattleUIManager.self.prepareBattleUI();
+      } else {
+         // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
+         if (enemyType == Enemy.Type.PlayerBattler) {
+            onBattlerSelect.AddListener(() => {
+               Battler allyBattler = this;
+
+               Vector3 pointOffset = new Vector3(allyBattler.clickBox.bounds.size.x / 4, allyBattler.clickBox.bounds.size.y * 1.75f);
+               BattleUIManager.self.setRectToScreenPosition(BattleUIManager.self.mainPlayerRect, allyBattler.battleSpot.transform.position, pointOffset);
+               BattleUIManager.self.setRectToScreenPosition(BattleUIManager.self.playerMainUIHolder.GetComponent<RectTransform>(), allyBattler.battleSpot.transform.position, pointOffset);
+
+               BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(true);
+               BattleUIManager.self.playerBattleCG.Show();
+               BattleUIManager.self.stanceChangeButton.gameObject.SetActive(false);
+               BattleUIManager.self.usernameText.gameObject.SetActive(true);
+               BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
+               selectedBattleBar.gameObject.SetActive(false);
+
+               foreach (AbilityButton abilityButton in BattleUIManager.self.abilityTargetButtons) {
+                  if (abilityButton.isEnabled) {
+                     abilityButton.gameObject.SetActive(true);
+                     abilityButton.enableButton();
+                  }
+               }
+            });
+
+            onBattlerDeselect.AddListener(() => {
+               BattleUIManager.self.playerBattleCG.Hide();
+               selectedBattleBar.gameObject.SetActive(false);
+               BattleUIManager.self.playerStanceFrame.SetActive(false);
+               BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(false);
+            });
+         }
       }
 
       // Start off with the displayed values matching the sync vars
@@ -300,6 +340,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
+
+      if (isLocalBattler()) {
+         BattleSelectionManager.self.selectedBattler = this;
+      }
    }
 
    public void upateBattleSpots () {
@@ -387,6 +431,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
                selectedBattleBar.nameText.enabled = true;
+               selectedBattleBar.gameObject.SetActive(false);
+            } else {
+               selectedBattleBar = minionBattleBar;
+               selectedBattleBar.nameText.text = Global.player.nameText.text;
+               BattleUIManager.self.playerBattleCG.Hide();
                selectedBattleBar.gameObject.SetActive(false);
             }
          }
@@ -582,10 +631,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       
       // Hide or show battler Name
       if (battlerType.Equals(BattlerType.PlayerControlled) && Global.player != null) {
-         if (userId == Global.player.userId) {
-            BattleUIManager.self.usernameText.gameObject.SetActive(isMouseHovering());
+         bool hoverPlayerNames = false;
+         if (BattleSelectionManager.self.selectedBattler != null) {
+            hoverPlayerNames = BattleSelectionManager.self.selectedBattler.enemyType != Enemy.Type.PlayerBattler;
          } else {
-            selectedBattleBar.nameText.gameObject.SetActive(isMouseHovering());
+            hoverPlayerNames = true;
+         }
+
+         if (hoverPlayerNames) {
+            BattleUIManager.self.usernameText.gameObject.SetActive(false);
+            selectedBattleBar.gameObject.SetActive(isMouseHovering());
+         } else {
+            selectedBattleBar.gameObject.SetActive(false);
          }
       } else {
          if (selectedBattleBar != null) {

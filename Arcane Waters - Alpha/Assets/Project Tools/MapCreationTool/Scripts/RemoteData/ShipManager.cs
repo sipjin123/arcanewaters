@@ -48,6 +48,15 @@ namespace MapCreationTool
          ).ToArray();
       }
 
+      public SelectOption[] formNationSelectionOptions () {
+         List<SelectOption> optionList = new List<SelectOption>();
+         foreach (Nation.Type nationType in Enum.GetValues(typeof(Nation.Type))) {
+            SelectOption newOption = new SelectOption(((int)nationType).ToString(), nationType.ToString());
+            optionList.Add(newOption);
+         }
+         return optionList.ToArray();
+      }
+
       public int shipCount
       {
          get { return ships.Length; }

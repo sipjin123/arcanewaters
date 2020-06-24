@@ -243,8 +243,16 @@ public class BattleUIManager : MonoBehaviour {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
-         playerApBar.value = _playerLocalBattler.getActionTimerPercent();
-         playerHealthBar.value = _playerLocalBattler.displayedHealth;
+         // Display the health of the ally
+         if (BattleSelectionManager.self.selectedBattler != null && BattleSelectionManager.self.selectedBattler != _playerLocalBattler && BattleSelectionManager.self.selectedBattler.battlerType == BattlerType.PlayerControlled) {
+            playerHealthBar.maxValue = BattleSelectionManager.self.selectedBattler.getStartingHealth();
+            playerApBar.value = BattleSelectionManager.self.selectedBattler.getActionTimerPercent();
+            playerHealthBar.value = BattleSelectionManager.self.selectedBattler.displayedHealth;
+         } else {
+            playerApBar.value = _playerLocalBattler.getActionTimerPercent();
+            playerHealthBar.maxValue = _playerLocalBattler.getStartingHealth();
+            playerHealthBar.value = _playerLocalBattler.displayedHealth;
+         }
          
          if (_playerLocalBattler.stanceCurrentCooldown > 0) {
             _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
@@ -255,7 +263,7 @@ public class BattleUIManager : MonoBehaviour {
             stanceChangeButton.interactable = true;
             stanceButtonFrameText.text = "change stance";
          }
-      }
+      } 
    }
 
    public void prepareBattleUI () {
@@ -265,8 +273,6 @@ public class BattleUIManager : MonoBehaviour {
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
       setStanceGraphics(Battler.Stance.Balanced);
-
-      usernameText.text = Global.player.entityName;
 
       StartCoroutine(setPlayerBattlerUIEvents());
 
@@ -448,35 +454,48 @@ public class BattleUIManager : MonoBehaviour {
 
       // Whenever we select our local battler, we prepare UI positioning of the ring
       playerBattler.onBattlerSelect.AddListener(() => {
-         playerMainUIHolder.gameObject.SetActive(true);
-         playerBattleCG.Show();
-
-         foreach (AbilityButton abilityButton in abilityTargetButtons) {
-            if (abilityButton.isEnabled) {
-               abilityButton.gameObject.SetActive(true);
-               abilityButton.enableButton();
-            }
-         }
+         stanceChangeButton.gameObject.SetActive(true);
+         highlightLocalBattler();
       });
-
-      // Remove world space local battler canvas
-      GameObject playerCanvas = playerBattler.GetComponentInChildren<Canvas>().gameObject;
-      if (playerCanvas != null) {
-         Destroy(playerCanvas);
-      }
 
       playerHealthBar.maxValue = playerBattler.getStartingHealth();
 
       playerBattler.onBattlerDeselect.AddListener(() => {
          playerStanceFrame.SetActive(false);
          playerMainUIHolder.gameObject.SetActive(false);
+         playerBattleCG.Hide();
+         playerBattler.selectedBattleBar.gameObject.SetActive(false);
       });
 
       _playerLocalBattler = playerBattler;
    }
 
+   public void highlightLocalBattler (bool showAbilities = true) {
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
+      Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
+      setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
+      setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
+
+      playerMainUIHolder.gameObject.SetActive(true);
+
+      playerBattler.selectedBattleBar.gameObject.SetActive(false);
+      usernameText.text = Global.player.entityName;
+      usernameText.gameObject.SetActive(true);
+      if (showAbilities) {
+         playerBattleCG.Show();
+         foreach (AbilityButton abilityButton in abilityTargetButtons) {
+            if (abilityButton.isEnabled) {
+               abilityButton.gameObject.SetActive(true);
+               abilityButton.enableButton();
+            }
+         }
+      } else {
+         playerBattleCG.Hide();
+      }
+   }
+
    // Sets a RectTransform position from world coordinates to screen coordinates
-   private void setRectToScreenPosition (RectTransform originRect, Vector3 worldPoint, Vector3 offset) {
+   public void setRectToScreenPosition (RectTransform originRect, Vector3 worldPoint, Vector3 offset) {
       Vector2 viewportPosition = CameraManager.battleCamera.getCamera().WorldToViewportPoint(worldPoint + offset);
       Vector2 objectScreenPos = new Vector2(
       ((viewportPosition.x * mainCanvasRect.sizeDelta.x) - (mainCanvasRect.sizeDelta.x * 0.5f)),
@@ -485,7 +504,7 @@ public class BattleUIManager : MonoBehaviour {
       originRect.anchoredPosition = objectScreenPos;
    }
 
-   private void setStanceGraphics (Battler.Stance stance) {
+   public void setStanceGraphics (Battler.Stance stance) {
       switch (stance) {
          case Battler.Stance.Balanced:
             stanceMainIcon.sprite = balancedSprite;
@@ -578,6 +597,9 @@ public class BattleUIManager : MonoBehaviour {
 
    #endregion
 
+   public Battler getLocalBattler () {
+      return _playerLocalBattler;
+   }
 
    #region Private Variables
 

@@ -591,7 +591,7 @@ public class BattleManager : MonoBehaviour {
             target.addAP(targetApChange);
 
             // Create the Action object
-            BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value, buffAbility.elementType, buffAbility.bonusStatType);
+            BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value, buffAbility.elementType, buffAbility.bonusStatType, buffAbility.buffActionType);
             
             actions.Add(action);
 
@@ -718,6 +718,12 @@ public class BattleManager : MonoBehaviour {
                // Registers the usage of the Buff Skill for achievement recording
                AchievementManager.registerUserAchievement(source.player.userId, ActionType.BuffSkillUse);
 
+               // Apply damage
+               if (buffAction.buffActionType == BuffActionType.Regeneration) {
+                  target.health += buffAction.buffValue;
+                  target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
+               }
+
                // Apply the Buff
                target.addBuff(buffAction.getBuffTimer());
             }
@@ -766,13 +772,33 @@ public class BattleManager : MonoBehaviour {
          } 
       }
 
+      // Max of 6 enemies can spawn max of 6 loot bags
+      int rowCount = 3;
+      int columnCount = 2;
+      float distanceMagnitude = .075f;
+      List<Vector3> spawnPositions = new List<Vector3>();
+      bool foundPlayer = false;
+
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
             foreach (Battler participant in winningBattlers) {
-               if (!participant.isMonster()) {
+               if (!participant.isMonster() && !foundPlayer) {
+                  foundPlayer = true;
                   Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
+
+                  // Initialize the spawn positions if there are multiple enemies dropping loots
+                  if (spawnPositions.Count < 1) {
+                     Vector3 initSpawnPos = new Vector3(chestPos.x - distanceMagnitude, chestPos.y + distanceMagnitude, chestPos.z);
+                     spawnPositions.Add(initSpawnPos);
+                     for (int i = 0; i < rowCount; i++) {
+                        for (int j = 0; j < columnCount; j++) {
+                           Vector3 newSpawnPos = new Vector3(initSpawnPos.x + (i * distanceMagnitude), chestPos.y + (j * distanceMagnitude), chestPos.z);
+                           spawnPositions.Add(newSpawnPos);
+                        }
+                     }
+                  }
 
                   // Registers the kill count of the combat
                   AchievementManager.registerUserAchievement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
@@ -781,7 +807,13 @@ public class BattleManager : MonoBehaviour {
                   AchievementManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
 
                   if (!battler.isBossType) {
-                     participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, chestPos, battlerEnemyID);
+                     Vector3 targetPosition = chestPos;
+                     if (spawnPositions.Count > 0) {
+                        int randomIndex = Random.Range(0, spawnPositions.Count - 1);
+                        targetPosition = new Vector3(spawnPositions[randomIndex].x, spawnPositions[randomIndex].y, spawnPositions[randomIndex].z);
+                        spawnPositions.RemoveAt(randomIndex);
+                     }
+                     participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, targetPosition, battlerEnemyID);
                   } else {
                      // TODO: Add reward logic here for boss enemies
                   }

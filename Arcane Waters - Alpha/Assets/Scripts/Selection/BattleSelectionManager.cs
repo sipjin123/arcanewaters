@@ -82,6 +82,8 @@ public class BattleSelectionManager : MonoBehaviour {
                   selectedBattler.deselectThis();
                   selectedBattler = null;
                } else {
+                  BattleUIManager.self.highlightLocalBattler(false);
+                  
                   // If it is another battler
                   if (selectedBattler != null) {
                      selectedBattler.deselectThis();
@@ -100,10 +102,7 @@ public class BattleSelectionManager : MonoBehaviour {
                      allySelection.SetActive(false);
                   }
                   selectionSprite.initialYaxis = selectedBattler.transform.position.y;
-
-                  if (!selectedSameTeam) {
-                     selectedBattler.selectThis();
-                  }
+                  selectedBattler.selectThis();
                }
 
                break;
@@ -112,7 +111,9 @@ public class BattleSelectionManager : MonoBehaviour {
 
          // If no Battler was clicked on, then select nothing
          if (!clickedBattler) {
-            if(selectedBattler != null) {
+            BattleUIManager.self.highlightLocalBattler(false);
+
+            if (selectedBattler != null) {
                selectedBattler.deselectThis();
             }
             selectedBattler = null;

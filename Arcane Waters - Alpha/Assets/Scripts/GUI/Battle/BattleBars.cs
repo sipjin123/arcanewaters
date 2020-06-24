@@ -19,6 +19,9 @@ public class BattleBars : MonoBehaviour {
    // Determines if this was initialized
    public bool isInitialized;
 
+   // Disables the script update
+   public bool isDisabled;
+
    #endregion
 
    private void Start () {
@@ -46,7 +49,7 @@ public class BattleBars : MonoBehaviour {
    // For example, I think it is important to only change the health bar whenever we have a health change.
    // Having callbacks for whenever we have a health change for a battler
    private void Update () {
-      if (!isInitialized) {
+      if (!isInitialized || isDisabled) {
          return;
       }
 

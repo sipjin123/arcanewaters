@@ -39,6 +39,9 @@ public class AdventureShopScreen : Panel {
    // Notify the player no item is available for now
    public static string UNAVAILABLE_ITEMS = "I got nothing to sell right now, come back later.";
 
+   // The item name if the xml data does not exist
+   public static string UNKNOWN_ITEM = "Unknown Item";
+
    #endregion
 
    public override void Awake () {
@@ -68,13 +71,41 @@ public class AdventureShopScreen : Panel {
 
    public void buyButtonPressed (int itemId) {
       Item item = getItem(itemId);
+      string itemName = item.getName();
+
+      switch (item.category) {
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+            if (weaponData != null) {
+               itemName = weaponData.equipmentName;
+            } else {
+               itemName = UNKNOWN_ITEM;
+            }
+            break;
+         case Item.Category.Armor:
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            if (armorData != null) {
+               itemName = armorData.equipmentName;
+            } else {
+               itemName = UNKNOWN_ITEM;
+            }
+            break;
+         case Item.Category.Hats:
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+            if (hatData != null) {
+               itemName = hatData.equipmentName;
+            } else {
+               itemName = UNKNOWN_ITEM;
+            }
+            break;
+      }
 
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => buyButtonConfirmed(itemId));
 
       // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Do you want to buy the " + item.getName() + "?");
+      PanelManager.self.confirmScreen.show("Do you want to buy the " + itemName + "?");
    }
 
    protected void buyButtonConfirmed (int itemId) {
@@ -82,7 +113,7 @@ public class AdventureShopScreen : Panel {
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_BuyItem(itemId);
+      Global.player.rpc.Cmd_BuyItem(itemId, shopName);
    }
 
    public void updateGreetingText (string text) {

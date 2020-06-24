@@ -54,7 +54,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: e9d3db546d15b8e49b4722c015f7658f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -296,6 +296,7 @@ MonoBehaviour:
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isSpeedingUp: 0
   damage: 25
   reloadDelay: 1
   attackCounter: 0
@@ -318,7 +319,6 @@ MonoBehaviour:
   speed: 100
   attackRangeModifier: 100
   sailors: 10
-  isSpeedingUp: 0
   rarity: 1
   maxForceOverride: 0
   isDebug: 0

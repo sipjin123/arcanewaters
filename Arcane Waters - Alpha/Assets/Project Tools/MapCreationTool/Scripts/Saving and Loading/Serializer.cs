@@ -344,6 +344,8 @@ namespace MapCreationTool.Serialization
 
       public const string PLACED_PREFAB_ID = "id";
 
+      public const string NATION_TYPE = "nation type";
+    
       public string k; // Key
       public string v; // Value
 

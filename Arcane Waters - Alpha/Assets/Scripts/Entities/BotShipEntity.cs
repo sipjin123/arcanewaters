@@ -301,7 +301,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          NetEntity iEntity = iBehaviour as NetEntity;
 
          // If the entity is a fellow bot ship, ignore it
-         if (iEntity == null || iEntity.isBotShip())
+         if (iEntity == null || (iEntity.isBotShip() && iEntity.nationType == nationType))
             continue;
 
          // If enemy isn't within radius, early out
@@ -384,6 +384,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
             if (shipData.rippleSpritePath != "") {
                ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+            }
+         } else if (field.k.CompareTo(DataField.NATION_TYPE) == 0) {
+            int type = int.Parse(field.v.Split(':')[0]);
+            try {
+               nationType = (Nation.Type) type;
+            } catch {
+               nationType = Nation.Type.Neutral;
             }
          }
       }

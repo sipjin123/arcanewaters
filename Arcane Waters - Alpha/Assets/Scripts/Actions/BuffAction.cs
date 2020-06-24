@@ -24,12 +24,15 @@ public class BuffAction : BattleAction {
    // Determines the stat attribute to be added
    public BonusStatType bonusStatType;
 
+   // The type of buff taking effect
+   public BuffActionType buffActionType;
+
    #endregion
 
    public BuffAction () { }
 
    public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, float buffStartTime, float buffEndTime,
-           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal, Element buffElement, BonusStatType bonusStatType) {
+           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal, Element buffElement, BonusStatType bonusStatType, BuffActionType buffActionType) {
       this.battleId = battleId;
       this.abilityInventoryIndex = abilityInventoryIndex;
       this.sourceId = sourceId;
@@ -42,6 +45,7 @@ public class BuffAction : BattleAction {
       this.targetApChange = targetApChange;
       this.abilityGlobalID = abilityGlobalID;
       this.battleActionType = BattleActionType.BuffDebuff;
+      this.buffActionType = buffActionType;
       this.buffValue = buffVal;
       this.buffElement = buffElement;
       this.bonusStatType = bonusStatType;

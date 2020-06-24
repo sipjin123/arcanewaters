@@ -123,6 +123,9 @@ public class ShopManager : MonoBehaviour {
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
                      data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   }
+                  if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Hats) {
+                     data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+                  }
                   item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
 
                   item.data = data;

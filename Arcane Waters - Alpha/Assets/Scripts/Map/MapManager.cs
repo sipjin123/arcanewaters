@@ -319,7 +319,7 @@ public class MapManager : MonoBehaviour
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // TODO: Do not Remove until this issue is completely fixed
-         D.log("Map Log: Creating map data fetched from Nubis");
+         D.log("Map Log: Creating map data fetched from Nubis: Ver: " + version);
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);

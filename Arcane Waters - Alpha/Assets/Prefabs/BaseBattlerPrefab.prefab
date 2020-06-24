@@ -34,10 +34,10 @@ RectTransform:
   m_Father: {fileID: 849617037178388088}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -20.375}
+  m_SizeDelta: {x: 0, y: 7.25}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1851945027651429747
 CanvasRenderer:
@@ -62,6 +62,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: 458cdc1e53b2c034e9bb76f64b4eaddb, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -78,7 +79,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Alex
+  m_Text: 
 --- !u!114 &4552273046891851187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +171,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -221,7 +223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &849617037178388088
 RectTransform:
   m_ObjectHideFlags: 0
@@ -242,7 +244,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 50}
+  m_AnchoredPosition: {x: 1.2, y: 45.7}
   m_SizeDelta: {x: 100, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2132122534320562451
@@ -288,6 +290,7 @@ MonoBehaviour:
   timerContainer: {fileID: 5752622142954071729}
   stanceImage: {fileID: 8469027119387432061}
   isInitialized: 0
+  isDisabled: 0
 --- !u!225 &2795945241037471970
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -405,7 +408,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 2}
+  m_SizeDelta: {x: 32, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6963962134210359940
 CanvasRenderer:
@@ -430,6 +433,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -662,6 +666,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &4530494152495981214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -722,10 +727,10 @@ RectTransform:
   m_Father: {fileID: 849617037178388088}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -36}
+  m_SizeDelta: {x: 38, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1715586274729748605
 CanvasRenderer:
@@ -750,6 +755,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -778,8 +784,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 36
-  m_PreferredHeight: 6
+  m_PreferredWidth: 38
+  m_PreferredHeight: 8
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -890,6 +896,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673177897736799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1022,6 +1029,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673177916398340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1155,6 +1163,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673178321755515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1289,6 +1298,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673178344692334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1493,6 +1503,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673178838162292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1626,6 +1637,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673179319642655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1760,6 +1772,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  _index: 0
 --- !u!114 &6527673179423663349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2002,6 +2015,7 @@ MonoBehaviour:
     preContactLength: 0
     preMagicLength: 0
     isBossType: 0
+    disableOnDeath: 0
     elementalWeakness: 
     elementalResistance: 
 --- !u!114 &6527673179465098354
@@ -2218,7 +2232,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0.5}
-  m_SizeDelta: {x: 30, y: 1}
+  m_SizeDelta: {x: 32, y: 2.4783}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3108248669509953919
 CanvasRenderer:
@@ -2243,6 +2257,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2290,10 +2305,10 @@ RectTransform:
   m_Father: {fileID: 849617037178388088}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -28}
+  m_SizeDelta: {x: 38, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4673531219781046265
 CanvasRenderer:
@@ -2318,6 +2333,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -2346,7 +2362,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 36
+  m_PreferredWidth: 38
   m_PreferredHeight: 8
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
