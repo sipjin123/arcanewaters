@@ -50,7 +50,7 @@ public class AreaManager : MonoBehaviour
          _areaKeyToMapInfo.Add(map.name, map);
       }
 
-      if (map.editorType == EditorType.Sea && _seaAreaKeys.Contains(map.name)) {
+      if (map.editorType == EditorType.Sea && !_seaAreaKeys.Contains(map.name)) {
          _seaAreaKeys.Add(map.name);
       }
 

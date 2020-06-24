@@ -4159,7 +4159,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@screenshotPNG", screenshotBytes);
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
-            cmd.Parameters.AddWithValue("@status", "Unassigned");
+            cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4168,7 +4168,7 @@ public class DB_Main : DB_MainStub
             MySqlCommand actionCmd = new MySqlCommand("INSERT INTO bug_reports_actions (taskId, actionType, performerAccId, assigneeAccId) VALUES(@taskId, @actionType, @performerAccId, @assigneeAccId)", conn);
             actionCmd.Prepare();
             actionCmd.Parameters.AddWithValue("@taskId", cmd.LastInsertedId);
-            actionCmd.Parameters.AddWithValue("@actionType", "Create");
+            actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
             actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
             actionCmd.Parameters.AddWithValue("@assigneeAccId", 0);
             actionCmd.ExecuteNonQuery();
