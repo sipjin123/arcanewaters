@@ -80,7 +80,7 @@ public class BuffAbilityData : BasicAbilityData
          SoundEffectManager.self.playSoundEffect(castSoundEffectId);
       } else {
          AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
-         SoundManager.playClipOneShotAtPoint(castClip, targetPosition);
+         SoundManager.playClipAtPoint(castClip, targetPosition);
       }
    }
 
@@ -89,7 +89,7 @@ public class BuffAbilityData : BasicAbilityData
          SoundEffectManager.self.playSoundEffect(hitSoundEffectId);
       } else {
          AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
-         SoundManager.playClipOneShotAtPoint(hitclip, targetPosition);
+         SoundManager.playClipAtPoint(hitclip, targetPosition);
       }
    }
 

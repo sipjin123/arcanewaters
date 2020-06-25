@@ -99,7 +99,7 @@ public class NetworkedProjectile : MonoBehaviour {
          if (audioClipData.audioPath.Length > 1) {
             AudioClip clip = audioClipData.audioClip;
             if (clip != null) {
-               SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+               SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
             }
          } else {
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, this.transform.position);

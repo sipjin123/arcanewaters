@@ -185,7 +185,7 @@ public class ShipEntity : SeaEntity
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipData.castSFXPath).audioClip;
       if (clip != null) {
-         SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+         SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
       } else {
          playAttackSound();
       }
@@ -263,7 +263,7 @@ public class ShipEntity : SeaEntity
       // Play an appropriate sound
       AudioClip clip = AudioClipManager.self.getAudioClipData(shipAbilityData.castSFXPath).audioClip;
       if (clip != null) {
-         SoundManager.playClipOneShotAtPoint(clip, Camera.main.transform.position);
+         SoundManager.playClipAtPoint(clip, Camera.main.transform.position);
       } else {
          playAttackSound();
       }

@@ -1,13 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 namespace MapCustomization
 {
    public class CustomizablePrefab : ClientMonoBehaviour
    {
       #region Public Variables
-
-      // Color of alpha of the renderer, when the prefab is set to 'semi-transparent'
-      public const float SEMI_TRANSPARENT_ALPHA = 0.5f;
 
       // Bounds in which the mouse cursor has to be to interact with the prefab
       public Collider2D interactionCollider;
@@ -30,16 +30,77 @@ namespace MapCustomization
          _ren = GetComponent<SpriteRenderer>();
       }
 
-      public void setSemiTransparent (bool semiTransparent) {
-         _ren.color = new Color(_ren.color.r, _ren.color.g, _ren.color.b, semiTransparent ? SEMI_TRANSPARENT_ALPHA : 1f);
+      public void setOutline (bool ready, bool hovered, bool selected, bool valid) {
+         if (_spriteOutline == null) {
+            _spriteOutline = gameObject.AddComponent<SpriteOutline>();
+            _spriteOutline.includeChildren = true;
+            _spriteOutline.alphaThreshold = 0.5f;
+            _spriteOutline.isAnimated = true;
+            _spriteOutline.size = 2;
+         }
+
+         _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));
+      }
+
+      private Color getOutlineColor (bool ready, bool hovered, bool selected, bool valid) {
+         if (!ready) {
+            return new Color(0, 0, 0, 0f);
+         } else if (selected) {
+            if (valid) {
+               return MapCustomizationManager.self.prefabValidColor;
+            } else {
+               return MapCustomizationManager.self.prefabInvalidColor;
+            }
+         } else if (hovered) {
+            return MapCustomizationManager.self.prefabHoveredColor;
+         }
+
+         return MapCustomizationManager.self.prefabReadyColor;
+      }
+
+      public void setGameInteractionsActive (bool active) {
+         if (active) {
+            foreach (Behaviour interaction in _disabledInteractions) {
+               interaction.enabled = true;
+            }
+            _disabledInteractions.Clear();
+         } else {
+            _disabledInteractions = GetComponentsInChildren<Collider2D>().Select(c => c as Behaviour).ToList();
+            foreach (Behaviour interaction in _disabledInteractions) {
+               interaction.enabled = false;
+            }
+         }
+      }
+
+      public bool interactionOverlaps (Vector2 prefabPosition, Vector2 pointPosition, float minMargin) {
+         if (interactionCollider == null) {
+            D.error("Interaction collider not set");
+            return false;
+         }
+
+         if (interactionCollider is CircleCollider2D) {
+            return (pointPosition - prefabPosition).sqrMagnitude < Mathf.Pow(minMargin + (interactionCollider as CircleCollider2D).radius, 2);
+         }
+
+         if (interactionCollider is BoxCollider2D) {
+            BoxCollider2D c = interactionCollider as BoxCollider2D;
+            (float x, float y) min = (prefabPosition.x + c.offset.x - c.size.x * 0.5f - minMargin, prefabPosition.y + c.offset.y - c.size.y * 0.5f - minMargin);
+            (float x, float y) max = (prefabPosition.x + c.offset.x + c.size.x * 0.5f + minMargin, prefabPosition.y + c.offset.y + c.size.y * 0.5f + minMargin);
+            return pointPosition.x >= min.x && pointPosition.y >= min.y && pointPosition.x < max.x && pointPosition.y < max.y;
+         }
+
+         D.error($"Handling of collider type { interactionCollider.GetType().Name } not implemented.");
+         return false;
       }
 
       public bool anyUnappliedState () {
-         return unappliedChanges.isLocalPositionSet() || unappliedChanges.created;
+         return unappliedChanges.isLocalPositionSet() || unappliedChanges.created || unappliedChanges.deleted;
       }
 
       public void revertUnappliedChanges () {
          transform.localPosition = customizedState.localPosition;
+         GetComponent<ZSnap>()?.snapZ();
+
          if (!mapEditorState.created && !customizedState.created) {
             MapCustomizationManager.removeTracked(this);
             Destroy(gameObject);
@@ -62,6 +123,12 @@ namespace MapCustomization
       }
 
       public void submitUnappliedChanges () {
+         if (unappliedChanges.deleted) {
+            MapCustomizationManager.removeTracked(this);
+            Destroy(gameObject);
+            return;
+         }
+
          if (unappliedChanges.isLocalPositionSet()) {
             customizedState.localPosition = unappliedChanges.localPosition;
             customizedState.created = customizedState.created || unappliedChanges.created;
@@ -74,6 +141,12 @@ namespace MapCustomization
 
       // Main Sprite Renderer of the prefab
       private SpriteRenderer _ren;
+
+      // Game interactions that are currently disabled in map customization process
+      private List<Behaviour> _disabledInteractions = new List<Behaviour>();
+
+      // Outline that is used for visual indication during customization process
+      private SpriteOutline _spriteOutline;
 
       #endregion
    }

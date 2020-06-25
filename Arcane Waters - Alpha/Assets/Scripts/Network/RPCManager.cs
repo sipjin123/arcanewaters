@@ -4179,7 +4179,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
       // Check if changes are valid
-      if (MapCustomizationManager.validatePrefabChanges(areaKey, changes, out string errorMessage)) {
+      if (MapCustomizationManager.validatePrefabChanges(AreaManager.self.getArea(areaKey), changes, true, out string errorMessage)) {
          // Set changes in the server
          MapManager.self.addCustomizations(AreaManager.self.getArea(areaKey), changes);
 

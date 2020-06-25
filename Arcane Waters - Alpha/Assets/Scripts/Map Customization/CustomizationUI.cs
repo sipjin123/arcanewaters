@@ -22,7 +22,26 @@ namespace MapCreationTool
       // Dropdown, where user selects the prefab he wants to place
       public Dropdown prefabDropdown;
 
+      // UI button, releasing a prefab on it canceles/deletes the prefab
+      public GameObject deleteButton;
+
       #endregion
+
+      public override void Awake () {
+         base.Awake();
+
+         MapCustomizationManager.SelectedPrefabChanged += (pref) => {
+            deleteButton.SetActive(pref != null);
+            deleteButtonHovered = deleteButtonHovered && deleteButton.activeSelf;
+            _selectedPrefab = pref;
+         };
+      }
+
+      public override void show () {
+         base.show();
+
+         deleteButton.SetActive(false);
+      }
 
       private void OnEnable () {
          self = this;
@@ -44,13 +63,21 @@ namespace MapCreationTool
             _lastPointerPos = pointerPos;
          }
 
-         if (Input.GetMouseButtonDown(0)) {
+         if (Input.GetMouseButtonDown(0) && _selectedPrefab == null) {
             MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerPos));
          }
 
          if (Input.GetMouseButtonUp(0)) {
-            MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerPos));
+            MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerPos), deleteButtonHovered);
          }
+      }
+
+      public void deleteButtonEnter() {
+         deleteButtonHovered = true; ;
+      }
+
+      public void deleteButtonExit() {
+         deleteButtonHovered = false;
       }
 
       public void newPrefabSelected () {
@@ -91,6 +118,12 @@ namespace MapCreationTool
 
       // List of prefabs that can be placed in the scene by the user
       private static List<PlaceablePrefabData> _placeablePrefabData = new List<PlaceablePrefabData>();
+
+      // Whether we are currently hovering deleteButton
+      private bool deleteButtonHovered = false;
+
+      // Currently selected prefab that is being controlled
+      private CustomizablePrefab _selectedPrefab;
 
       #endregion
    }

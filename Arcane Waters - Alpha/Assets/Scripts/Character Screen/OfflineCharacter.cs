@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class OfflineCharacter : ClientMonoBehaviour {
    #region Public Variables
@@ -30,10 +31,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public List<WeaponLayer> weaponLayers;
 
    // The name text
-   public Text nameText;
+   public TextMeshProUGUI nameText;
 
    // The level text
-   public Text levelText;
+   public TextMeshProUGUI levelText;
 
    // Whether or not this character is in creation mode
    public bool creationMode = false;

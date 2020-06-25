@@ -7,36 +7,33 @@ using Mirror;
 public class FootSound : ClientMonoBehaviour {
    #region Public Variables
 
-   // Sounds for when we're on grass
-   public List<AudioClip> grassSounds = new List<AudioClip>();
+   // Sound data for specific footstep scenarios
+   public List<AudioGroupData> footStepSounds = new List<AudioGroupData>();
 
-   // Sounds for when we're on stone
-   public List<AudioClip> stoneSounds = new List<AudioClip>();
-
-   // Sounds for when we're on wood
-   public List<AudioClip> woodSounds = new List<AudioClip>();
-
-   // Sounds for when we're in water
-   public List<AudioClip> waterSounds = new List<AudioClip>();
+   // Footstep data object, allows access to footstep data type details, sounds, and more
+   public AudioGroupData currentFootStepAudioGroup;
 
    // Our associated Audio Source
    public AudioSource audioSource;
 
+   // Used to find the Grass footstep object type and return its audio data
+   public const string GRASS_FOOTSTEP = "Grass FootStep";
+
+   // Used to find the Stone footstep object type and return its audio data
+   public const string STONE_FOOTSTEP = "Stone FootStep";
+
+   // Used to find the Water footstep object type and return its audio data
+   public const string WATER_FOOTSTEP = "Water FootStep";
+
+   // Used to find the Wood footstep object type and return its audio data
+   public const string WOOD_FOOTSTEP = "Wood FootStep";
+
    #endregion
 
    public void Start () {
-      // If we have a player, check if they're in water or on some type of ground
-      if (Global.player != null) {
-         if (Global.player.waterChecker.inWater()) {
-            audioSource.clip = waterSounds.ChooseRandom();
-         } else if (Global.player.groundChecker.isOnWood) {
-            audioSource.clip = woodSounds.ChooseRandom();
-         } else if (Global.player.groundChecker.isOnStone) {
-            audioSource.clip = stoneSounds.ChooseRandom();
-         } else if (Global.player.groundChecker.isOnGrass) {
-            audioSource.clip = grassSounds.ChooseRandom();
-         }
-      }
+
+      // Perform compartmentalized setup for audio clip and its settings
+      setupFootStepAudioClip ();
 
       // If we assigned a clip, then play it
       if (audioSource.clip != null) {
@@ -45,6 +42,10 @@ public class FootSound : ClientMonoBehaviour {
 
          // Make sure enough time has passed
          if (!_lastSoundTime.ContainsKey(clipName) || Time.time - _lastSoundTime[clipName] > .25f) {
+
+            // Check the footstepAudioGroupData for a possibly randomized pitch
+            audioSource.pitch = currentFootStepAudioGroup.getPitch();
+
             audioSource.Play();
 
             // Note the time
@@ -54,6 +55,34 @@ public class FootSound : ClientMonoBehaviour {
 
       // Destroy this object after 1 second
       Destroy(this.gameObject, 1f);
+   }
+
+   // Takes in a string:soundTypeName, traverses footstepSounds, and returns corresponding footstep audioGroupData
+   private AudioGroupData findFootStepData (string soundTypeName) {
+      return footStepSounds.Find(footStepData=> footStepData.soundType == soundTypeName);
+   }
+
+   private void setupFootStepAudioClip () {
+      
+      // When set, Allows main function access to footstep data, sounds, and more
+      currentFootStepAudioGroup = null;
+      
+      // If we have a player, check if they're in water or on some type of ground
+      if (Global.player != null) {
+         if (Global.player.waterChecker.inWater()) {
+            currentFootStepAudioGroup = findFootStepData(WATER_FOOTSTEP);
+         } else if (Global.player.groundChecker.isOnWood) {
+            currentFootStepAudioGroup = findFootStepData(WOOD_FOOTSTEP);
+         } else if (Global.player.groundChecker.isOnStone) {
+            currentFootStepAudioGroup = findFootStepData(STONE_FOOTSTEP);
+         } else if (Global.player.groundChecker.isOnGrass) {
+            currentFootStepAudioGroup = findFootStepData(GRASS_FOOTSTEP);
+         }
+      }
+
+      if (currentFootStepAudioGroup) {
+         audioSource.clip = currentFootStepAudioGroup.sounds.ChooseRandom();
+      }
    }
 
    #region Private Variables

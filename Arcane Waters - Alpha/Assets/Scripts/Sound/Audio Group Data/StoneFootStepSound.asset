@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c63cae132b944d9478ce9ce5d8580900, type: 3}
+  m_Name: StoneFootStepSound
+  m_EditorClassIdentifier: 
+  soundType: Stone FootStep
+  pitchRange: {x: 0.8, y: 1}
+  randomizePitch: 1
+  sounds:
+  - {fileID: 8300000, guid: b8370f5a157843446b345831e5f2a601, type: 3}
+  - {fileID: 8300000, guid: e4358cfbc4c80f740896e521477659f7, type: 3}
+  - {fileID: 8300000, guid: c437f1fbcab251849bcfa385bfb505b0, type: 3}
+  - {fileID: 8300000, guid: f9a3be585a2ee0343a51bba959edacd7, type: 3}
+  - {fileID: 8300000, guid: 2ac1ead8f7fc70d4c8f7d42e76c8bc57, type: 3}

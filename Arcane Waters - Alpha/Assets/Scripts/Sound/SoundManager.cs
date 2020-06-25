@@ -314,18 +314,14 @@ public class SoundManager : MonoBehaviour {
       return source;
    }
 
-   /// <summary>
-   /// This function automatically created an audio source at the position, and disposes of it when clip has finished playing
-   /// </summary>
-   /// <param name="clip"></param>
-   /// <param name="pos"></param>
-   public static void playClipOneShotAtPoint (AudioClip clip, Vector3 pos) {
-      if (clip == null) {
-         //Debug.LogWarning("There was no clip attached, will not play any sound");
-         return;
-      }
+   public static AudioSource playClipAtPoint (AudioClip clip, Vector3 pos) {
+      AudioSource source = createAudioSource(clip, pos);
+      source.Play();
 
-      AudioSource.PlayClipAtPoint(clip, pos);
+      // Cleanup after the clip finishes
+      Destroy(source.gameObject, source.clip.length);
+
+      return source;
    }
 
    public static AudioSource playClipAtPoint (Type type, Vector3 pos) {
@@ -375,6 +371,23 @@ public class SoundManager : MonoBehaviour {
       return source;
    }
 
+   protected static AudioSource createAudioSource (AudioClip clip, Vector3 pos) {
+      // Get the Z position of the currently active camera
+      float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
+      pos = new Vector3(pos.x, pos.y, posZ);
+
+      // Create a Game Object and audio source to play the clip
+      GameObject soundObject = new GameObject();
+      soundObject.transform.SetParent(self.transform, false);
+      soundObject.name = "Sound - " + clip.name;
+      soundObject.transform.position = pos;
+      AudioSource source = soundObject.AddComponent<AudioSource>();
+      source.clip = clip;
+      applySoundEffectSettings(source);
+
+      return source;
+   }
+
    protected static void applySoundEffectSettings (AudioSource source, Type type) {
       if (source == null) {
          return;
@@ -388,6 +401,22 @@ public class SoundManager : MonoBehaviour {
 
       // Make the sound fade off at a good rate based on distance
       source.spatialBlend = isAmbience(type) ? 0f : 1f;
+      source.rolloffMode = AudioRolloffMode.Linear;
+      source.minDistance = .5f;
+      source.maxDistance = 3f;
+      source.spread = 90f;
+   }
+
+   protected static void applySoundEffectSettings (AudioSource source) {
+      if (source == null) {
+         return;
+      }
+
+      // Set the appropriate Audio Mixer group
+      source.outputAudioMixerGroup = self.effectsChildGroup;
+
+      // Make the sound fade off at a good rate based on distance
+      source.spatialBlend = 1f;
       source.rolloffMode = AudioRolloffMode.Linear;
       source.minDistance = .5f;
       source.maxDistance = 3f;

@@ -22,6 +22,9 @@ namespace MapCustomization
       // Whether this prefab was created
       public bool created;
 
+      // Whether this prefab was deleted
+      public bool deleted;
+
       // Serialization id of the prefab, as defined in asset serialization maps
       public int serializationId;
 
@@ -36,17 +39,28 @@ namespace MapCustomization
       }
 
       public PrefabState add (PrefabState state) {
-         return new PrefabState {
+         PrefabState result = new PrefabState {
             id = id,
             localPosition = state.isLocalPositionSet() ? state.localPosition : localPosition,
             created = state.created || created,
+            deleted = deleted,
             serializationId = Math.Max(state.serializationId, serializationId)
          };
+
+         if (state.deleted) {
+            result.clearAll();
+            result.deleted = true;
+         } else if (deleted && state.created) {
+            result.deleted = false;
+         }
+
+         return result;
       }
 
       public void clearAll () {
          clearLocalPosition();
          created = false;
+         deleted = false;
       }
 
       public override string ToString () {
