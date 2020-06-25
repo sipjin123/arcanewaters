@@ -37,6 +37,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // How far the cone extends ahead of the ship
    public float aggroConeRadius;
 
+   // The recolored gui for the bot ships to determine teams
+   public Outline shipBarRecolor;
+   public Outline shipIconRecolor;
+
    #endregion
 
    protected override void Start () {
@@ -392,6 +396,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             } catch {
                nationType = Nation.Type.Neutral;
             }
+            reloadSprites();
+            shipBarRecolor.effectColor = PaletteSwapManager.self.getNationHighlightColor(nationType);
+            shipIconRecolor.effectColor = PaletteSwapManager.self.getNationHighlightColor(nationType);
          }
       }
    }

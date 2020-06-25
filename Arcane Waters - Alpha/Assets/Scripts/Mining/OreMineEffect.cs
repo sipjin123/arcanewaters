@@ -57,6 +57,7 @@ public class OreMineEffect : MonoBehaviour {
       orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite);
       oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 
+      orePickup.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
       spawnedObj.transform.position = animatingObj.position;
       spawnedObj.transform.rotation = animatingObj.rotation;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);

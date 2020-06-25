@@ -73,6 +73,12 @@ public class SeaEntity : NetEntity
       }
    }
 
+   public void reloadSprites () {
+      if (!Util.isBatch()) {
+         StartCoroutine(CO_UpdateAllSprites());
+      }
+   }
+
    protected override void Update () {
       base.Update();
 

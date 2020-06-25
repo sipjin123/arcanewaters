@@ -14,10 +14,25 @@ public class OreManager : MonoBehaviour
    // Self
    public static OreManager self;
 
+   // Sprites of each ore
+   public Sprite goldSprite, ironSprite, silverSprite;
+
    #endregion
 
    public void Awake () {
       self = this;
+   }
+
+   public Sprite getSprite (OreNode.Type oreType) {
+      switch (oreType) {
+         case OreNode.Type.Gold:
+            return goldSprite;
+         case OreNode.Type.Iron:
+            return ironSprite;
+         case OreNode.Type.Silver:
+            return silverSprite;
+      }
+      return null;
    }
 
    public void createOreNodesForInstance (Instance instance) {

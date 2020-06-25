@@ -145,6 +145,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.BACKGROUND_DATA_FILE);
 
       checkStreamingAssetFile(XmlVersionManagerServer.PERKS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.TREASURE_DROPS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
    }
 
@@ -225,6 +226,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Background);
       extractXmlType(EditorToolType.Perks);
       extractXmlType(EditorToolType.Palette);
+      extractXmlType(EditorToolType.Treasure_Drops);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -299,6 +301,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Palette:
             path = TEXT_PATH + XmlVersionManagerServer.PALETTE_FILE + ".txt";
+            break;
+         case EditorToolType.Treasure_Drops:
+            path = TEXT_PATH + XmlVersionManagerServer.TREASURE_DROPS_FILE + ".txt";
             break;
       }
             
@@ -628,8 +633,25 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
-
             PaletteSwapManager.self.storePaletteData(paletteData.ToArray());
+            break;
+
+         case EditorToolType.Treasure_Drops:
+            Dictionary<Biome.Type, List<TreasureDropsData>> treasureBiomeData = new Dictionary<Biome.Type, List<TreasureDropsData>>();
+
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  Biome.Type biomeType = (Biome.Type)int.Parse(xmlSubGroup[0]);
+                  TreasureDropsCollection treasureDropsCollection = Util.xmlLoad<TreasureDropsCollection>(xmlSubGroup[1]);
+                  treasureBiomeData.Add(biomeType, treasureDropsCollection.treasureDropsCollection);
+
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            TreasureDropsDataManager.self.receiveListFromZipData(treasureBiomeData);
             break;
       }
 

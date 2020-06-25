@@ -12,6 +12,13 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateBiomeTreasureDrops (Biome.Type biomeType, string rawXmlContent) {
+   }
+
+   public static List<XMLPair> getBiomeTreasureDrops () {
+      return new List<XMLPair>();
+   }
+
    public static void addNewCloudData (CloudBuildData cloudData) {
    }
 

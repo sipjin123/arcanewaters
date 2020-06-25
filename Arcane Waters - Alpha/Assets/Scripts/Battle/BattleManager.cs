@@ -775,7 +775,7 @@ public class BattleManager : MonoBehaviour {
       // Max of 6 enemies can spawn max of 6 loot bags
       int rowCount = 3;
       int columnCount = 2;
-      float distanceMagnitude = .075f;
+      float distanceMagnitude = .15f;
       List<Vector3> spawnPositions = new List<Vector3>();
       bool foundPlayer = false;
 

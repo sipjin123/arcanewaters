@@ -36,6 +36,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string paletteToolScene = "Palette Tool";
    public const string newTutorialToolScene = "New Tutorial Tool";
    public const string perksToolScene = "Perk Tool";
+   public const string treasureDropToolScene = "Treasure Drops Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -75,6 +76,7 @@ public class MasterToolScene : MonoBehaviour {
       clickPaletteToolScene,
       clickNewTutorialToolScene,
       clickPerkToolScene,
+      clickTreasureDropToolScene,
       exitButton;
 
    #endregion

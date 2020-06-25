@@ -3024,7 +3024,8 @@ public class RPCManager : NetworkBehaviour {
       oreBounce.transform.position = position;
       Vector3 currentAngle = oreBounce.transform.localEulerAngles;
       oreBounce.transform.localEulerAngles = new Vector3(currentAngle.x, currentAngle.y, currentAngle.z + angleOffset);
-     
+      oreMine.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
+
       // Modify object direction
       if (direction == Direction.East) {
          oreBounce.transform.localScale = new Vector3(-1, 1, 1);

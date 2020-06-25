@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 
-public class PlayerBodyEntity : BodyEntity
-{
+public class PlayerBodyEntity : BodyEntity {
    #region Public Variables
 
    // The farming trigger component used for detecting crops

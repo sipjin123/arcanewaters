@@ -117,6 +117,9 @@ public class DB_Main : DB_MainStub
       if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "paletteId, xml_content ";
       }
+      if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
+         contentToFetch = "biomeType, xmlContent ";
+      }
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -139,6 +142,9 @@ public class DB_Main : DB_MainStub
                   if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("paletteId");
                      xmlContent = dataReader.GetString("xml_content");
+                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
+                     xmlId = dataReader.GetInt32("biomeType");
+                     xmlContent = dataReader.GetString("xmlContent");
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent"); ;
@@ -503,6 +509,58 @@ public class DB_Main : DB_MainStub
                   newXML.abilityType = dataReader.GetInt32("ability_type");
                   newXML.abilityId = dataReader.GetInt32("xml_id");
                   newXML.ownderId = dataReader.GetInt32("creator_userID");
+                  xmlContent.Add(newXML);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return xmlContent;
+   }
+
+   #endregion
+
+   #region Treasure Drops XML
+
+   public static new void updateBiomeTreasureDrops (Biome.Type biomeType, string rawXmlContent) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO treasure_drops_xml_v1 (biomeType, xmlContent, lastUserUpdate) " +
+            "VALUES(@biomeType, @xmlContent, NOW()) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@biomeType", (int)biomeType);
+            cmd.Parameters.AddWithValue("@xmlContent", rawXmlContent);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getBiomeTreasureDrops () {
+      List<XMLPair> xmlContent = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.treasure_drops_xml_v1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newXML = new XMLPair();
+                  newXML.xmlId = dataReader.GetInt32("biomeType");
+                  newXML.rawXmlData = dataReader.GetString("xmlContent");
                   xmlContent.Add(newXML);
                }
             }

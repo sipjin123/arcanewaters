@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using System;
 
 public class PaletteSwapManager : MonoBehaviour {
    #region Public Variables
@@ -17,6 +18,9 @@ public class PaletteSwapManager : MonoBehaviour {
    // If the palette data was set
    public bool hasInitialized;
 
+   // The list of nation color highlights
+   public List<NationColorHighlight> nationHighlightList;
+
    #endregion
 
    private void Awake () {
@@ -25,6 +29,10 @@ public class PaletteSwapManager : MonoBehaviour {
       } else {
          Destroy(this);
       }
+   }
+
+   public Color getNationHighlightColor (Nation.Type nationType) {
+      return nationHighlightList.Find(_ => _.nationType == nationType).color;
    }
 
    public PaletteToolData[] getPaletteData () {
@@ -170,4 +178,12 @@ public class PaletteSwapManager : MonoBehaviour {
    private static List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
 
    #endregion
+}
+[Serializable]
+public class NationColorHighlight {
+   // The nation type
+   public Nation.Type nationType;
+
+   // The color of the highlight
+   public Color color;
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class TreasureChest : NetworkBehaviour {
    #region Public Variables
@@ -195,18 +196,22 @@ public class TreasureChest : NetworkBehaviour {
          return getLandMonsterLootContents();
       }
 
-      // Create a random item for now
-      if (Random.Range(0f, 1f) > .5f) {
-         // TODO: This is a fixed loot, proposal: create a tool that will alter options of what loots to randomize
-         int weaponID = EquipmentXMLManager.self.getWeaponData(3).weaponType;
-         Weapon weapon = new Weapon(0, weaponID, "", "", "");
+      string areaKey = InstanceManager.self.getInstance(instanceId).areaKey;
+      Biome.Type biome = AreaManager.self.getArea(areaKey).biome;
+      List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).OrderBy(_=>_.spawnChance).ToList();
+      float randomizer = Random.Range(0, 100);
 
-         return weapon;
-      } else {
-         Armor armor = new Armor(0, 1, "", "", "");
-
-         return armor;
+      foreach (TreasureDropsData treasureDropsEntry in treasureDropsList) {
+         if (randomizer < treasureDropsEntry.spawnChance) {
+            return treasureDropsEntry.item;
+         }
       }
+
+      return new Item {
+         category = Item.Category.CraftingIngredients,
+         count = 1,
+         itemTypeId = (int) CraftingIngredients.Type.Wood,
+      };
    }
 
    public Item getSeaMonsterLootContents () {

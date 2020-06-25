@@ -10890,6 +10890,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
     sprites:
     - {fileID: 21300000, guid: 260e695607a72784ea9a26c51021d6d2, type: 3}
+  - imageName: gold_nugget
+    imagePath: Assets/Sprites/Mining/gold_nugget.png
+    imagePathWithoutExtension: Assets/Sprites/Mining/gold_nugget
+    texture2D: {fileID: 2800000, guid: 612365cd1d93b6949aaef92b51479e0c, type: 3}
+    sprite: {fileID: 21300000, guid: 612365cd1d93b6949aaef92b51479e0c, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 612365cd1d93b6949aaef92b51479e0c, type: 3}
   - imageName: golem
     imagePath: Assets/Sprites/NPCs/Bodies/Golem/golem.png
     imagePathWithoutExtension: Assets/Sprites/NPCs/Bodies/Golem/golem
@@ -12842,6 +12849,13 @@ MonoBehaviour:
     - {fileID: 4750651203034271755, guid: 073b47d8be2fbc64e8663fd8f7201df0, type: 3}
     - {fileID: 1216698196264918829, guid: 073b47d8be2fbc64e8663fd8f7201df0, type: 3}
     - {fileID: -8675770273868967379, guid: 073b47d8be2fbc64e8663fd8f7201df0, type: 3}
+  - imageName: iron_nugget
+    imagePath: Assets/Sprites/Mining/iron_nugget.png
+    imagePathWithoutExtension: Assets/Sprites/Mining/iron_nugget
+    texture2D: {fileID: 2800000, guid: 669a21027ef8af1408166799f0213f3b, type: 3}
+    sprite: {fileID: 21300000, guid: 669a21027ef8af1408166799f0213f3b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 669a21027ef8af1408166799f0213f3b, type: 3}
   - imageName: Item_Discovery_Particles
     imagePath: Assets/Sprites/Effects/Item_Discovery_Particles.png
     imagePathWithoutExtension: Assets/Sprites/Effects/Item_Discovery_Particles
@@ -22357,6 +22371,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 40df7b20fcb64b64ebbe30813b9a3c95, type: 3}
     sprites:
     - {fileID: 21300000, guid: 40df7b20fcb64b64ebbe30813b9a3c95, type: 3}
+  - imageName: silver_nugget
+    imagePath: Assets/Sprites/Mining/silver_nugget.png
+    imagePathWithoutExtension: Assets/Sprites/Mining/silver_nugget
+    texture2D: {fileID: 2800000, guid: 854413aec71bef841abf2580b194af85, type: 3}
+    sprite: {fileID: 21300000, guid: 854413aec71bef841abf2580b194af85, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 854413aec71bef841abf2580b194af85, type: 3}
   - imageName: site_desert
     imagePath: Assets/Sprites/Treasure Sites/site_desert.png
     imagePathWithoutExtension: Assets/Sprites/Treasure Sites/site_desert
