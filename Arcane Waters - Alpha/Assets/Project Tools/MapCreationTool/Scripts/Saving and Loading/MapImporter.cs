@@ -217,6 +217,7 @@ namespace MapCreationTool
             if (original.GetComponent<CropSpot>() != null) {
                cropSpotCounter++;
                original.GetComponent<CropSpot>().cropNumber = cropSpotCounter;
+               original.GetComponent<CropSpot>().areaKey = area.areaKey;
             }
 
             if (original.GetComponent<Enemy>() != null) {

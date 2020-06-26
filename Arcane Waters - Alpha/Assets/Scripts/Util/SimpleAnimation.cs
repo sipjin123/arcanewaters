@@ -41,6 +41,9 @@ public class SimpleAnimation : ClientMonoBehaviour {
    // The Group that defines our animations, if any
    public Anim.Group group = Anim.Group.None;
 
+   // Disables this scripts capability to alter the alpha of the sprite
+   public bool freezeAlpha;
+
    #endregion
 
    protected override void Awake () {
@@ -212,7 +215,9 @@ public class SimpleAnimation : ClientMonoBehaviour {
       // Use the alpha to show or hide, since the renderer 'enabled' property could be controlled by an Observer Manager
       if (_renderer != null) {
          Color color = _renderer.color;
-         color.a = isVisible ? 1f : 0f;
+         if (!freezeAlpha) {
+            color.a = isVisible ? 1f : 0f;
+         }
          _renderer.color = color;
       }
 

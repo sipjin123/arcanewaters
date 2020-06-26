@@ -505,7 +505,7 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static int insertCrop (CropInfo cropInfo) {
+   public static int insertCrop (CropInfo cropInfo, string areaKey) {
       return 0;
    }
 

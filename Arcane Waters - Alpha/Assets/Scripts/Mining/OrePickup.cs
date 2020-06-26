@@ -24,12 +24,13 @@ public class OrePickup : MonoBehaviour {
 
    #endregion
 
-   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, Sprite sprite) {
+   public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, Sprite sprite, Quaternion spawnRotation) {
       this.ownerId = ownerId;
       this.voyageGroupId = voyageGroupId;
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
       spriteRender.sprite = sprite;
+      spriteRender.transform.rotation = spawnRotation;
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {

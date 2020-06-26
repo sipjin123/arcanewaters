@@ -21,6 +21,9 @@ public class CropSpot : MonoBehaviour {
    [XmlIgnore]
    public Vector3 cropPickupLocation;
 
+   // The area key
+   public string areaKey;
+
    #endregion
 
    private void Start () {
@@ -44,7 +47,7 @@ public class CropSpot : MonoBehaviour {
    public void tryToInteractWithCropOnClient () {
       // If a player tried to plant on this spot holding a seed bag, maybe plant something
       if (this.crop == null && (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.PlantCrop) {
-         Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber);
+         Global.player.Cmd_PlantCrop((Crop.Type)(Global.player as PlayerBodyEntity).weaponManager.actionTypeValue, this.cropNumber, Global.player.areaKey);
       }
 
       // If the player tried to water this spot holding the watering pot, maybe water something

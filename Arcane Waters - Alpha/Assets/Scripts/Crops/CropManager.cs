@@ -28,20 +28,16 @@ public class CropManager : NetworkBehaviour {
 
    [Client]
    public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects) {
-      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber);
-
-      if (cropSpot == null) {
-         D.warning("Crop is missing");
-         return;
-      }
-
-      // If there was already a Crop here, delete it
-      if (cropSpot.crop != null) {
-         Destroy(cropSpot.crop.gameObject);
-      }
-
+      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
       Crop crop = Instantiate(cropPrefab);
-      crop.transform.position = cropSpot.transform.position;
+      if (cropSpot != null) {
+         // If there was already a Crop here, delete it
+         if (cropSpot.crop != null) {
+            Destroy(cropSpot.crop.gameObject);
+         }
+
+         crop.transform.position = cropSpot.transform.position;
+      }
       crop.cropType = cropInfo.cropType;
       crop.cropNumber = cropInfo.cropNumber;
       crop.growthLevel = cropInfo.growthLevel;
@@ -52,23 +48,34 @@ public class CropManager : NetworkBehaviour {
       string spriteName = "crop_" + crop.cropType + "_" + growthLevel;
       crop.anim.setNewTexture(ImageManager.getTexture("Crops/" + spriteName));
       crop.name = "Crop " + crop.cropNumber + " [" + crop.cropType + "]";
-      cropSpot.crop = crop;
 
-      // Show some effects
-      if (showEffects) {
-         EffectManager.self.create(Effect.Type.Crop_Shine, cropSpot.transform.position);
+      if (cropSpot == null) {
+         crop.gameObject.SetActive(false);
+         CropSpotManager.self.cropQueueList.Add(new CropQueueData {
+            areaKey = cropInfo.areaKey,
+            cropSpotNumber = cropInfo.cropNumber,
+            crop = crop,
+            showEffects = showEffects,
+            justGrew = justGrew
+         });
+      } else {
+         cropSpot.crop = crop;
+         // Show some effects
+         if (showEffects) {
+            EffectManager.self.create(Effect.Type.Crop_Shine, cropSpot.transform.position);
 
-         if (justGrew) {
-            EffectManager.self.create(Effect.Type.Crop_Water, cropSpot.transform.position);
+            if (justGrew) {
+               EffectManager.self.create(Effect.Type.Crop_Water, cropSpot.transform.position);
 
-            // Play a sound
-            SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
-         } else {
-            EffectManager.self.create(Effect.Type.Crop_Harvest, cropSpot.transform.position);
-            EffectManager.self.create(Effect.Type.Crop_Dirt_Large, cropSpot.transform.position);
+               // Play a sound
+               SoundManager.create3dSound("crop_water_", cropSpot.transform.position, 5);
+            } else {
+               EffectManager.self.create(Effect.Type.Crop_Harvest, cropSpot.transform.position);
+               EffectManager.self.create(Effect.Type.Crop_Dirt_Large, cropSpot.transform.position);
 
-            // Play a sound
-            SoundManager.create3dSound("crop_plant_", cropSpot.transform.position, 5);
+               // Play a sound
+               SoundManager.create3dSound("crop_plant_", cropSpot.transform.position, 5);
+            }
          }
       }
    }
@@ -84,7 +91,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void plantCrop (Crop.Type cropType, int cropNumber) {
+   public void plantCrop (Crop.Type cropType, int cropNumber, string areaKey) {
       int userId = _player.userId;
       int tutorialStep = TutorialManager.getHighestCompletedStep(userId);
       int waterInterval = getWaterIntervalSeconds(cropType, tutorialStep);
@@ -96,7 +103,7 @@ public class CropManager : NetworkBehaviour {
 
       // Make sure there's not already a Crop in that spot
       foreach (CropInfo crop in _crops) {
-         if (crop.cropNumber == cropNumber) {
+         if (crop.cropNumber == cropNumber && crop.areaKey == areaKey) {
             D.error("Already a crop in spot number: " + cropNumber);
             return;
          }
@@ -104,9 +111,11 @@ public class CropManager : NetworkBehaviour {
 
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         long now = System.DateTime.UtcNow.ToBinary();
+         long now = DateTime.UtcNow.ToBinary();
+
          CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), waterInterval);
-         int newCropId = DB_Main.insertCrop(cropInfo);
+         int newCropId = DB_Main.insertCrop(cropInfo, areaKey);
+         cropInfo.areaKey = areaKey;
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
@@ -397,7 +406,7 @@ public class CropManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_HarvestCrop (NetworkConnection connection, CropInfo cropInfo) {
-      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber);
+      CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
       Vector3 effectSpawnPos = cropSpot.cropPickupLocation;
 
       // Show some effects

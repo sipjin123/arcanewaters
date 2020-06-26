@@ -816,7 +816,7 @@ public class NetEntity : NetworkBehaviour
 
       // If it happened at a crop spot, show the XP gain there
       if (cropNumber > 0) {
-         pos = CropSpotManager.self.getCropSpot(cropNumber).transform.position + new Vector3(0f, .32f);
+         pos = CropSpotManager.self.getCropSpot(cropNumber, areaKey).transform.position + new Vector3(0f, .32f);
       }
 
       if (showFloatingXp) {
@@ -915,7 +915,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_PlantCrop (Crop.Type cropType, int cropNumber) {
+   public void Cmd_PlantCrop (Crop.Type cropType, int cropNumber, string areaKey) {
       // We have to holding the seed bag
       BodyEntity body = GetComponent<BodyEntity>();
 
@@ -923,8 +923,8 @@ public class NetEntity : NetworkBehaviour
          D.warning("Can't plant without seeds equipped!");
          return;
       }
-
-      this.cropManager.plantCrop(cropType, cropNumber);
+      
+      this.cropManager.plantCrop(cropType, cropNumber, areaKey);
    }
 
    [Command]

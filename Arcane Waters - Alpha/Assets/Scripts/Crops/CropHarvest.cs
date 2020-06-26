@@ -23,7 +23,14 @@ public class CropHarvest : MonoBehaviour {
    // Animator component
    public Animator animator;
 
+   // Refrence to the shadow
+   public Transform shadow;
+
    #endregion
+
+   private void LateUpdate () {
+      shadow.transform.eulerAngles = new Vector3(0, 0, 0);
+   }
 
    public void setSprite (Crop.Type cropType) {
       CropSprite cropSprite = cropSpriteList.Find(_ => _.cropType == cropType);
@@ -36,10 +43,11 @@ public class CropHarvest : MonoBehaviour {
 
    public void endAnim () {
       GameObject spawnedObj = Instantiate(PrefabsManager.self.cropPickupPrefab);
-      spawnedObj.GetComponent<CropPickup>().cropSpot = cropSpot;
-      spawnedObj.GetComponent<CropPickup>().spriteRender.sprite = spriteRender.sprite;
+      CropPickup cropPickup = spawnedObj.GetComponent<CropPickup>();
+      cropPickup.cropSpot = cropSpot;
+      cropPickup.spriteRender.sprite = spriteRender.sprite;
       spawnedObj.transform.position = animatingObj.position;
-      spawnedObj.transform.rotation = animatingObj.rotation;
+      cropPickup.spriteRender.transform.rotation = animatingObj.rotation;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
       gameObject.SetActive(false);
       Destroy(this.gameObject);

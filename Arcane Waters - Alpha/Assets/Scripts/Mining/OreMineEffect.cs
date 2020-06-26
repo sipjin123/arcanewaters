@@ -32,6 +32,9 @@ public class OreMineEffect : MonoBehaviour {
    // The voyage group that owns this ore
    public int voyageGroupId;
 
+   // Refrence to the shadow
+   public Transform shadow;
+
    #endregion
 
    public void initData (int ownerId, int voyageGroupId, int oreEffectId, OreNode oreNode, float randomSpeed) {
@@ -40,6 +43,10 @@ public class OreMineEffect : MonoBehaviour {
       this.oreEffectId = oreEffectId;
       this.oreNode = oreNode;
       animator.speed = randomSpeed;
+   }
+
+   private void LateUpdate () {
+      shadow.transform.eulerAngles = new Vector3(0, 0, 0);
    }
 
    public void setSprite (OreNode.Type oreType) {
@@ -54,12 +61,11 @@ public class OreMineEffect : MonoBehaviour {
    public void endAnim () {
       GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab);
       OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
-      orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite);
+      orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite, animatingObj.rotation);
       oreNode.orePickupCollection.Add(oreEffectId, orePickup);
 
       orePickup.spriteRender.sprite = OreManager.self.getSprite(oreNode.oreType);
       spawnedObj.transform.position = animatingObj.position;
-      spawnedObj.transform.rotation = animatingObj.rotation;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
       gameObject.SetActive(false);
       Destroy(this.gameObject);

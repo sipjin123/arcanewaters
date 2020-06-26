@@ -3639,19 +3639,19 @@ public class DB_Main : DB_MainStub
       return cropList;
    }
 
-   public static new int insertCrop (CropInfo cropInfo) {
+   public static new int insertCrop (CropInfo cropInfo, string areaKey) {
       int cropId = 0;
-      string unixString = "FROM_UNIXTIME(@creationTime)";
+      string unixString = "CURRENT_TIMESTAMP";
+
       if (_connectionString.Contains("127.0.0.1")) {
          // Local server fails to process query because it cannot accept null
          unixString = "IFNULL(FROM_UNIXTIME(@creationTime), FROM_UNIXTIME(1))";
       }
-
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO crops (usrId, crpType, cropNumber, creationTime, lastWaterTimestamp, waterInterval) " +
-            "VALUES (@usrId, @crpType, @cropNumber, " + unixString + ", UNIX_TIMESTAMP(), @waterInterval);", conn)) {
+            "INSERT INTO crops (usrId, crpType, cropNumber, creationTime, lastWaterTimestamp, waterInterval, areaKey) " +
+            "VALUES (@usrId, @crpType, @cropNumber, " + unixString + ", UNIX_TIMESTAMP(), @waterInterval, @areaKey);", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3660,6 +3660,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@cropNumber", cropInfo.cropNumber);
             cmd.Parameters.AddWithValue("@creationTime", cropInfo.creationTime);
             cmd.Parameters.AddWithValue("@waterInterval", cropInfo.waterInterval);
+            cmd.Parameters.AddWithValue("@areaKey", areaKey);
 
             // Execute the command
             cmd.ExecuteNonQuery();

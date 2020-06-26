@@ -772,30 +772,27 @@ public class BattleManager : MonoBehaviour {
          } 
       }
 
-      // Max of 6 enemies can spawn max of 6 loot bags
-      int rowCount = 3;
-      int columnCount = 2;
-      float distanceMagnitude = .15f;
       List<Vector3> spawnPositions = new List<Vector3>();
       bool foundPlayer = false;
+      float distanceMagnitude = .1f;
 
       // Process monster type reward
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
             foreach (Battler participant in winningBattlers) {
-               if (!participant.isMonster() && !foundPlayer) {
-                  foundPlayer = true;
-                  Vector3 chestPos = BodyManager.self.getBody(participant.player.userId).transform.position;
+               if (!participant.isMonster()) {
+                  Vector3 chestPos = battler.player.transform.position;
+                  if (!foundPlayer) {
+                     foundPlayer = true;
 
-                  // Initialize the spawn positions if there are multiple enemies dropping loots
-                  if (spawnPositions.Count < 1) {
-                     Vector3 initSpawnPos = new Vector3(chestPos.x - distanceMagnitude, chestPos.y + distanceMagnitude, chestPos.z);
-                     spawnPositions.Add(initSpawnPos);
-                     for (int i = 0; i < rowCount; i++) {
-                        for (int j = 0; j < columnCount; j++) {
-                           Vector3 newSpawnPos = new Vector3(initSpawnPos.x + (i * distanceMagnitude), chestPos.y + (j * distanceMagnitude), chestPos.z);
-                           spawnPositions.Add(newSpawnPos);
+                     // Initialize the spawn positions if there are multiple enemies dropping loots
+                     if (spawnPositions.Count < 1) {
+                        Transform[] spawnNodeList = ((Enemy) battler.player).lootSpawnPositions;
+                        foreach (Transform spawnNode in spawnNodeList) {
+                           float randomOffset = Random.Range(-distanceMagnitude, distanceMagnitude);
+                           Vector3 newPosition = new Vector3(spawnNode.position.x + randomOffset, spawnNode.position.y + randomOffset, spawnNode.position.z);
+                           spawnPositions.Add(newPosition);
                         }
                      }
                   }

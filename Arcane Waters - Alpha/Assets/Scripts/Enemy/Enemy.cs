@@ -49,6 +49,15 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // A collider that toggles On if the unit is a boss (to avoid player rendering over a boss)
    public GameObject bossCollider;
 
+   // Reference to the collider that triggers combat
+   public EnemyBattleCollider enemyBattleCollider;
+
+   // The canvas that allows user to hover over the enemy
+   public Canvas highlightCanvas;
+
+   // The possible spawn positions for the loot bags
+   public Transform[] lootSpawnPositions;
+
    #endregion
 
    protected override void Awake () {
@@ -111,6 +120,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Some enemies should stop blocking player movement after they die
       if (isDefeated) {
          _body.mass = 9999;
+         _outline.Hide();
+         highlightCanvas.enabled = false;
+         enemyBattleCollider.gameObject.SetActive(false);
 
          if (shouldDisableColliderOnDeath()) {
             circleCollider.enabled = false;

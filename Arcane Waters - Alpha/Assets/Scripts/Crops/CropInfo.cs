@@ -33,6 +33,9 @@ public struct CropInfo {
    // The current growth level of this crop
    public int growthLevel;
 
+   // The area key where this crop is spawned
+   public string areaKey;
+
    #endregion
 
    #if IS_SERVER_BUILD
@@ -45,11 +48,16 @@ public struct CropInfo {
       this.lastWaterTimestamp = DataUtil.getLong(dataReader, "lastWaterTimestamp");
       this.waterInterval = DataUtil.getInt(dataReader, "waterInterval");
       this.growthLevel = DataUtil.getInt(dataReader, "growthLevel");
+      try {
+         this.areaKey = DataUtil.getString(dataReader, "areaKey");
+      } catch {
+         this.areaKey = "unknown";
+      }
    }
 
    #endif
 
-   public CropInfo (Crop.Type cropType, int userId, int cropNumber, long creationTime, long lastWaterTimestamp, int waterInterval, int growthLevel = 0) {
+   public CropInfo (Crop.Type cropType, int userId, int cropNumber, long creationTime, long lastWaterTimestamp, int waterInterval, int growthLevel = 0, string areaKey = "") {
       this.cropType = cropType;
       this.userId = userId;
       this.cropNumber = cropNumber;
@@ -57,6 +65,7 @@ public struct CropInfo {
       this.lastWaterTimestamp = lastWaterTimestamp;
       this.waterInterval = waterInterval;
       this.growthLevel = growthLevel;
+      this.areaKey = areaKey;
    }
 
    public override bool Equals(object obj) {
