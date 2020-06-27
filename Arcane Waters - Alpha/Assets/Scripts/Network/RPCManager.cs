@@ -718,7 +718,7 @@ public class RPCManager : NetworkBehaviour {
          if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
-            D.log("Map Log: Creating cached map data");
+            D.debug("Map Log: Creating cached map data");
             MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
             return;
          }
@@ -3800,7 +3800,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          if (shopData == null) {
-            D.log("Shop data is missing for: " + shopName + " - " + _player.areaKey);
+            D.debug("Shop data is missing for: " + shopName + " - " + _player.areaKey);
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                _player.rpc.Target_ReceiveShipyard(_player.connectionToClient, gold, new string[0], "");
             });

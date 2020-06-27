@@ -48,7 +48,7 @@ namespace CloudBuildDataFetch {
       }
 
       private void triggerCloudChecker () {
-         D.log("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
+         D.debug("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
          StartCoroutine(CO_GetBuildList());
       }
 
@@ -57,7 +57,7 @@ namespace CloudBuildDataFetch {
             cloudData = DB_Main.getCloudData();
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (cloudData == null) {
-                  D.log("CloudDataLogger: Fetched cloud data is null, try again later");
+                  D.debug("CloudDataLogger: Fetched cloud data is null, try again later");
                } else {
                   logData("CloudDataLogger: Done Fetching Database Cloud Data");
                   crossCheckBuildData();
@@ -101,8 +101,8 @@ namespace CloudBuildDataFetch {
                   });
                });
             } else {
-               D.log("CloudDataLogger: Prevent creating data, please check database for trash entry, build might be in progress");
-               D.log("Build id = " + newCloudBuildData.buildId + " : Msg Length = " + newCloudBuildData.buildMessage.Length);
+               D.debug("CloudDataLogger: Prevent creating data, please check database for trash entry, build might be in progress");
+               D.debug("Build id = " + newCloudBuildData.buildId + " : Msg Length = " + newCloudBuildData.buildMessage.Length);
             }
          } else {
             logData("CloudDataLogger: Cloud is up to date: " + cloudData.buildId);
@@ -111,7 +111,7 @@ namespace CloudBuildDataFetch {
 
       private void logData (string message) {
          if (isLoggingData) {
-            D.log(message);
+            D.debug(message);
          }
       }
 

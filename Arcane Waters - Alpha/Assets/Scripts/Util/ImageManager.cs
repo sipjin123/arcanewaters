@@ -223,7 +223,7 @@ public class ImageManager : ClientMonoBehaviour {
 
          return editedPath;
       } catch {
-         D.log("Failed to return path: (" + path + ")");
+         D.debug("Failed to return path: (" + path + ")");
          return "";
       }
    }

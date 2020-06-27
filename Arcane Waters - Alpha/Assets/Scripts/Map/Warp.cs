@@ -41,8 +41,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       try {
          InvokeRepeating("showOrHideArrow", Random.Range(0f, 1f), 0.5f);
       } catch {
-         // TODO: Confirm if this is still an issue on cloud build
-         D.log("Bug: Issue with warp arrow");
          CancelInvoke();
       }
    }
@@ -140,8 +138,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
       } catch {
-         // TODO: Confirm if this is still an issue on cloud build
-         D.log("Bug 2: Issue with warp arrow");
          CancelInvoke();
       }
    }

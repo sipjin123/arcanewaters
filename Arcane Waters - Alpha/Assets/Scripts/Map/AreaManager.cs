@@ -41,7 +41,7 @@ public class AreaManager : MonoBehaviour
             }
          }
       } catch {
-         D.log("Error in fetching map info");
+         D.debug("Error in fetching map info");
       }
    }
 

@@ -816,7 +816,7 @@ public class AdminManager : NetworkBehaviour
             }
 
             if (!isValid) {
-               D.log("Invalid NPC Path, please complete details in NPC Editor");
+               D.debug("Invalid NPC Path, please complete details in NPC Editor");
                npcSprite = NPCManager.self.defaultNpcFaceSprite;
             }
 
