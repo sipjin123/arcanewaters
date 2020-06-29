@@ -127,8 +127,10 @@ public class Instance : NetworkBehaviour
    }
 
    public int getMaxPlayers () {
-      if (Area.FARM.Equals(areaKey) || Area.HOUSE.Equals(areaKey)) {
-         return 1;
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
+            return 1;
+         }
       }
 
       return _maxPlayerCount;

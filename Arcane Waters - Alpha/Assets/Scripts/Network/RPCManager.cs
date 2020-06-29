@@ -3437,10 +3437,11 @@ public class RPCManager : NetworkBehaviour {
             // Determine if at least one ability is equipped
             hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
 
-            // If no ability is equipped, send an error to the client
+            // If no ability is equipped, Add "Basic Attack" to player abilities in slot 0.
             if (!hasAbilityEquipped) {
-               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You must equip at least one ability!");
-               return;
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.updateAbilitySlot(_player.userId, Global.BASIC_ATTACK_ID, 0);
+               });
             }
 
             // Set user to only use skill if no weapon is equipped

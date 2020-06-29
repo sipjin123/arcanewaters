@@ -17,9 +17,7 @@ public class Area : MonoBehaviour
    public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3 }
 
    // Hardcoded area keys
-   public static string FARM = "Farm";
-   public static string HOUSE = "House";
-   public static string STARTING_TOWN = "Shroom Bay";
+   public static string STARTING_TOWN = "Desert Town Lite";
 
    // The key determining the type of area this is
    public string areaKey;

@@ -1,10 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+﻿using System.Collections.Generic;
 
-public class AmbienceManager : ClientMonoBehaviour {
+public class AmbienceManager : ClientMonoBehaviour
+{
    #region Public Variables
 
    // Self
@@ -41,6 +38,10 @@ public class AmbienceManager : ClientMonoBehaviour {
 
       // Remove any currently playing ambience
       this.gameObject.DestroyChildren();
+      LoopedSound[] loopedSounds = this.gameObject.GetComponents<LoopedSound>();
+      foreach (LoopedSound s in loopedSounds) {
+         Destroy(s);
+      }
 
       // Add the new sounds
       foreach (SoundManager.Type typeToPlay in ambienceTypes) {

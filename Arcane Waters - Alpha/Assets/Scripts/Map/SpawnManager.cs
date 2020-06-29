@@ -74,6 +74,15 @@ public partial class SpawnManager : MonoBehaviour {
    }
 
    public Vector2 getDefaultSpawnLocalPosition (string areaKey) {
+      // Try to find a spawn that has the name "main" or "default"
+      foreach (SpawnID spawnID in _spawnLocalPositions.Keys) {
+         if (spawnID.areaKey.Equals(areaKey, System.StringComparison.OrdinalIgnoreCase) &&
+            (spawnID.spawnKey.StartsWith("main", System.StringComparison.OrdinalIgnoreCase) || spawnID.spawnKey.StartsWith("default", System.StringComparison.OrdinalIgnoreCase))) {
+            return _spawnLocalPositions[spawnID];
+         }
+      }
+
+      // Otherwise, try to find any spawn
       foreach (SpawnID spawnID in _spawnLocalPositions.Keys) {
          if (spawnID.areaKey.Equals(areaKey, System.StringComparison.OrdinalIgnoreCase)) {
             return _spawnLocalPositions[spawnID];

@@ -18229,6 +18229,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: dfe64902b9f82b04fa5bce9ef4d6ce0e, type: 3}
     sprites:
     - {fileID: 21300000, guid: dfe64902b9f82b04fa5bce9ef4d6ce0e, type: 3}
+  - imageName: NPCMinimap
+    imagePath: Assets/Sprites/Minimap/NPCMinimap.png
+    imagePathWithoutExtension: Assets/Sprites/Minimap/NPCMinimap
+    texture2D: {fileID: 2800000, guid: 5d03e5a6be3145e4ead3fbde194b7111, type: 3}
+    sprite: {fileID: 21300000, guid: 5d03e5a6be3145e4ead3fbde194b7111, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5d03e5a6be3145e4ead3fbde194b7111, type: 3}
   - imageName: ocean_current
     imagePath: Assets/Sprites/Map/ocean_current.png
     imagePathWithoutExtension: Assets/Sprites/Map/ocean_current
@@ -19721,9 +19728,6 @@ MonoBehaviour:
     - {fileID: 3147640622745687590, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -3731340726025638196, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -8930204730577503629, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
-    - {fileID: 7933194520102372581, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
-    - {fileID: -4050628607174322462, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
-    - {fileID: -2920201920655475128, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -1184931380182807138, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -1234551371873967225, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}
     - {fileID: -6566102766581992683, guid: 5bd28fa4e43a76c4ba82e8985f01926b, type: 3}

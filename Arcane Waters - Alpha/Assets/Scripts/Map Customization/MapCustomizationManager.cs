@@ -194,8 +194,9 @@ namespace MapCustomization
          Vector3 localPosition = currentArea.prefabParent.transform.InverseTransformPoint(globalPosition);
 
          // Calculate the state of the new prefab
+         int maxId = _customizablePrefabs.Keys.Count == 0 ? 0 : _customizablePrefabs.Keys.Max();
          PrefabState state = new PrefabState {
-            id = Math.Max(NEW_PREFAB_ID_START, _customizablePrefabs.Keys.Max() + 1),
+            id = Math.Max(NEW_PREFAB_ID_START, maxId + 1),
             created = true,
             localPosition = localPosition,
             serializationId = newPrefabData.serializationId

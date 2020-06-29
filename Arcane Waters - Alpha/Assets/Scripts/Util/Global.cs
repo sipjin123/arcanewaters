@@ -63,6 +63,8 @@ public class Global {
    // A global network instance ID that the client and server can use for communication
    public static uint netId;
 
+   // The current ID of the Basic Attack ability to use as a failsafe if the player has no other abilities
+   public static int BASIC_ATTACK_ID = 9;
    #endregion
 
    public static string getAddress (ServerType server) {
@@ -85,6 +87,7 @@ public class Global {
    public static bool isInBattle () {
       return (Global.player != null && Global.player.isInBattle()) ;
    }
+
 
    #region Private Variables
 

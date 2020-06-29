@@ -52,10 +52,16 @@ public class InstanceManager : MonoBehaviour {
          recalculateOpenAreas();
       }
 
-      // IF they're entering their farm, send them their crops
-      if (areaKey.Includes<string>(Area.FARM)) {
-         player.cropManager.loadCrops();
-      } 
+      // If they're entering their farm, send them their crops
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         CustomFarmManager farmManager = customMapManager as CustomFarmManager;
+         if (farmManager != null) {
+            int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
+            if (userId == player.userId) {
+               player.cropManager.loadCrops();
+            }
+         }
+      }
 
       return instance;
    }
