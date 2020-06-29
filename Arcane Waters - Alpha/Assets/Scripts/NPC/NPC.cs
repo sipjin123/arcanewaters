@@ -124,9 +124,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          setupClientSideValues();
       }
 
-      // Get faction from type
-      _faction = getFactionFromType(npcType);
-
       // Update our various text responses
       InvokeRepeating("updateTradeGossip", 0f, 60 * 60);
 
@@ -152,7 +149,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       if (npcData != null) {
          // Set npc name and specialty
          _npcName = npcData.name;
-         _specialty = npcData.specialty;
          if (nameText != null) {
             nameText.text = _npcName;
          }
@@ -324,97 +320,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       Color textColor = Color.white;
       Color outlineColor = Color.black;
 
-      switch (getFactionFromType(npcType)) {
-         case Faction.Type.Pirates:
-            textColor = Color.black;
-            outlineColor = Color.white;
-            break;
-         case Faction.Type.Privateers:
-            textColor = Color.cyan;
-            break;
-         case Faction.Type.Merchants:
-            textColor = Color.yellow;
-            break;
-      }
-
       nameText.color = textColor;
       nameText.GetComponent<Outline>().effectColor = outlineColor;
       nameText.GetComponent<Shadow>().effectColor = outlineColor;
-   }
-
-   public Faction.Type getFaction () {
-      // Try to get the faction from the data file
-      Faction.Type faction = NPCManager.self.getFaction(npcId);
-
-      // If the faction is not defined in the file, use the default one
-      if (faction == Faction.Type.None) {
-         faction = _faction;
-      }
-      return faction;
-   }
-
-   public static Faction.Type getFactionFromType (Type npcType) {
-      switch (npcType) {
-         case Type.Blackbeard:
-         case Type.Headband:
-         case Type.Patch:
-            return Faction.Type.Pirates;
-         case Type.Stripes:
-         case Type.Skullhat:
-         case Type.Fatty:
-            return Faction.Type.Pillagers;
-         case Type.Blacksmith:
-         case Type.ItemShop:
-         case Type.Hammer:
-         case Type.Shipyard:
-            return Faction.Type.Builders;
-         case Type.Feather:
-         case Type.Pegleg:
-            return Faction.Type.Privateers;
-         case Type.Fisherman:
-         case Type.Gardener:
-         case Type.Shroom:
-            return Faction.Type.Naturalists;
-         case Type.Glasses:
-         case Type.Monocle:
-         case Type.Vest:
-            return Faction.Type.Merchants;
-         case Type.Mapper:
-            return Faction.Type.Cartographers;
-         default:
-            return Faction.Type.Neutral;
-      }
-   }
-
-   public Specialty.Type getSpecialty () {
-      // Try to get the specialty from the data file
-      Specialty.Type specialty = NPCManager.self.getSpecialty(npcId);
-
-      // If the specialty is not defined in the file, use the default one
-      if (specialty == Specialty.Type.None) {
-         specialty = _specialty;
-      }
-
-      return specialty;
-   }
-
-   public static List<Specialty.Type> getPossibleSpecialties (Faction.Type factionType) {
-      switch (factionType) {
-         case Faction.Type.Builders:
-            return new List<Specialty.Type>() { Specialty.Type.Crafter, Specialty.Type.Adventurer, Specialty.Type.Merchant };
-         case Faction.Type.Cartographers:
-            return new List<Specialty.Type>() { Specialty.Type.Adventurer, Specialty.Type.Sailor, Specialty.Type.Treasure };
-         case Faction.Type.Merchants:
-            return new List<Specialty.Type>() { Specialty.Type.Merchant, Specialty.Type.Sailor, Specialty.Type.Adventurer };
-         case Faction.Type.Naturalists:
-            return new List<Specialty.Type>() { Specialty.Type.Adventurer, Specialty.Type.Farmer };
-         case Faction.Type.Pillagers:
-         case Faction.Type.Pirates:
-         case Faction.Type.Privateers:
-            return new List<Specialty.Type>() { Specialty.Type.Brawler, Specialty.Type.Cannoneer, Specialty.Type.Fencer, Specialty.Type.Sharpshooter };
-      }
-
-      return new List<Specialty.Type>() { Specialty.Type.Adventurer, Specialty.Type.Crafter, Specialty.Type.Farmer, Specialty.Type.Merchant, Specialty.Type.Sailor };
    }
 
    public static Gender.Type getGender (Type npcType) {
@@ -588,12 +496,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // Our Shop Trigger (if any)
    protected ShopTrigger _shopTrigger;
-
-   // The default faction, when not defined in the data file
-   protected Faction.Type _faction = Faction.Type.Neutral;
-
-   // The default specialty, when not defined in the data file
-   protected Specialty.Type _specialty = Specialty.Type.Sailor;
 
    // The default name, when not defined in the data file
    protected string _npcName = "NPC";

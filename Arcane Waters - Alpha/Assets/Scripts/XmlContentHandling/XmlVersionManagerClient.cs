@@ -132,10 +132,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.LAND_MONSTER_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.NPC_FILE);
 
-      checkStreamingAssetFile(XmlVersionManagerServer.CLASS_FILE);
-      checkStreamingAssetFile(XmlVersionManagerServer.FACTION_FILE);
-      checkStreamingAssetFile(XmlVersionManagerServer.JOB_FILE);
-      checkStreamingAssetFile(XmlVersionManagerServer.SPECIALTY_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SEA_MONSTER_FILE);
 
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_FILE);
@@ -215,10 +211,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.SeaMonster);
       extractXmlType(EditorToolType.NPC);
 
-      extractXmlType(EditorToolType.PlayerClass);
-      extractXmlType(EditorToolType.PlayerFaction);
-      extractXmlType(EditorToolType.PlayerSpecialty);
-
       extractXmlType(EditorToolType.Shop);
       extractXmlType(EditorToolType.Ship);
       extractXmlType(EditorToolType.ShipAbility);
@@ -267,18 +259,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
             path = TEXT_PATH + XmlVersionManagerServer.NPC_FILE + ".txt";
             break;
 
-         case EditorToolType.PlayerClass:
-            path = TEXT_PATH + XmlVersionManagerServer.CLASS_FILE + ".txt";
-            break;
-         case EditorToolType.PlayerFaction:
-            path = TEXT_PATH + XmlVersionManagerServer.FACTION_FILE + ".txt";
-            break;
-         case EditorToolType.PlayerSpecialty:
-            path = TEXT_PATH + XmlVersionManagerServer.SPECIALTY_FILE + ".txt";
-            break;
-         case EditorToolType.PlayerJob:
-            path = TEXT_PATH + XmlVersionManagerServer.JOB_FILE + ".txt";
-            break;
          case EditorToolType.SeaMonster:
             path = TEXT_PATH + XmlVersionManagerServer.SEA_MONSTER_FILE + ".txt";
             break;
@@ -306,15 +286,19 @@ public class XmlVersionManagerClient : MonoBehaviour {
             path = TEXT_PATH + XmlVersionManagerServer.TREASURE_DROPS_FILE + ".txt";
             break;
       }
-            
-      // Read the text from directly from the txt file
-      StreamReader reader = new StreamReader(path);
-      content = reader.ReadToEnd();
-      reader.Close();
 
-      assignDataToManagers(xmlType, content);
-      currentProgress++;
-      checkTextExtractionProgress();
+      // Read the text from directly from the txt file
+      try {
+         StreamReader reader = new StreamReader(path);
+         content = reader.ReadToEnd();
+         reader.Close();
+
+         assignDataToManagers(xmlType, content);
+         currentProgress++;
+         checkTextExtractionProgress();
+      } catch {
+         D.debug("Failed to process: " + xmlType);
+      }
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {
@@ -457,61 +441,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          #endregion
 
-         #region Group 3 (Class/Faction/Job/Specialty/SeaMonster/Perks)
-         case EditorToolType.PlayerClass:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  PlayerClassData actualData = Util.xmlLoad<PlayerClassData>(xmlSubGroup[1]);
-                  ClassManager.self.addClassInfo(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            break;
-         case EditorToolType.PlayerFaction:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  PlayerFactionData actualData = Util.xmlLoad<PlayerFactionData>(xmlSubGroup[1]);
-                  FactionManager.self.addFactionInfo(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            break;
-         case EditorToolType.PlayerJob:
-            List<PlayerJobData> jobList = new List<PlayerJobData>();
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  PlayerJobData actualData = Util.xmlLoad<PlayerJobData>(xmlSubGroup[1]);
-                  jobList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            JobManager.self.receiveDataFromServer(jobList);
-            break;
-         case EditorToolType.PlayerSpecialty:
-            foreach (string subGroup in xmlGroup) {
-               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
-
-               // Extract the segregated data and assign to the xml manager
-               if (xmlSubGroup.Length == 2) {
-                  int dataId = int.Parse(xmlSubGroup[0]);
-                  PlayerSpecialtyData actualData = Util.xmlLoad<PlayerSpecialtyData>(xmlSubGroup[1]);
-                  SpecialtyManager.self.addSpecialtyInfo(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
-               }
-            }
-            break;
+         #region Group 3 (SeaMonster/Perks)
          case EditorToolType.SeaMonster:
             List<SeaMonsterEntityData> seaMonsterDataList = new List<SeaMonsterEntityData>();
             foreach (string subGroup in xmlGroup) {

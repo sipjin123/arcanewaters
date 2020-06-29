@@ -25,11 +25,9 @@ public class GuildPanel : Panel, IPointerClickHandler {
    public Text nameText;
    public Text dateText;
    public Text levelText;
-   public Text factionText;
    public Text countText;
 
    // Our various images
-   public Image factionImage;
    public Image emblemImage;
    public Image flagImage;
 
@@ -53,15 +51,10 @@ public class GuildPanel : Panel, IPointerClickHandler {
       emblemImage.enabled = inGuild;
       flagImage.enabled = inGuild;
 
-      // Update the faction image
-      Faction.Type faction = inGuild ? info.guildFaction : Faction.Type.Neutral;
-      factionImage.sprite = ImageManager.getSprite("Icons/Factions/faction_" + faction);
-
       // Fill in the texts
       nameText.text = inGuild ? info.guildName : "";
       dateText.text = inGuild ? DateTime.FromBinary(info.creationTime).ToString("MMMM yyyy") : "";
       levelText.text = "Level " + (inGuild ? "1" : "");
-      factionText.text = inGuild ? Faction.toString(info.guildFaction) : "";
       countText.text = inGuild ? ("Members: " + info.guildMembers.Length + " / " + GuildInfo.MAX_MEMBERS) : "";
 
       // Clear out any old member info

@@ -16,7 +16,7 @@ public class GuildCreatePanel : Panel {
    }
 
    public void createGuildConfirmed () {
-      Global.player.rpc.Cmd_CreateGuild(_inputField.text, Faction.Type.Neutral);
+      Global.player.rpc.Cmd_CreateGuild(_inputField.text);
    }
 
    #region Private Variables

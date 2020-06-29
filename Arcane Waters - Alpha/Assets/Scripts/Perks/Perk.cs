@@ -33,7 +33,8 @@ public class Perk
       ShipHealth = 11,
       ShopPriceReduction = 12,
       ExperienceGain = 13,
-      ItemDropChances = 14
+      ItemDropChances = 14,
+      MiningDrops = 15
    }
 
    // The unique ID of the perk using the points

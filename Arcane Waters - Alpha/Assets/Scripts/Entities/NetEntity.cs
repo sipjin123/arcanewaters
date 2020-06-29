@@ -126,18 +126,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool shipSpeedupFlag;
 
-   // The Class that this player has chosen
-   [SyncVar]
-   public Class.Type classType;
-
-   // The Specialty that this player has chosen
-   [SyncVar]
-   public Specialty.Type specialty;
-
-   // The Faction that this player has chosen
-   [SyncVar]
-   public Faction.Type faction;
-
    // The guild this user is in
    [SyncVar]
    public int guildId;
@@ -370,9 +358,6 @@ public class NetEntity : NetworkBehaviour
       ShipInfo shipInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;
-      this.classType = userInfo.classType;
-      this.specialty = userInfo.specialty;
-      this.faction = userInfo.faction;
       this.guildId = userInfo.guildId;
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;

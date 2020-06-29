@@ -368,8 +368,6 @@ public class Instance : NetworkBehaviour
                      receiver.receiveData(dataField.d);
                   }
 
-                  botShip.faction = Faction.Type.Pirates;
-
                   InstanceManager.self.addBotShipToInstance(botShip, this);
 
                   foreach (ZSnap snap in botShip.GetComponentsInChildren<ZSnap>()) {

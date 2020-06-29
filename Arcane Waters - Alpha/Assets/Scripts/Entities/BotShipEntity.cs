@@ -46,9 +46,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    protected override void Start () {
       base.Start();
 
-      // Set our name
-      nameText.text = "[" + getNameForFaction() + "]";
-
       // Continually pick new move targets
       if (isServer) {
          _seeker = GetComponent<Seeker>();
@@ -135,22 +132,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          if (newFacingDirection != facing) {
             facing = newFacingDirection;
          }
-      }
-   }
-
-   protected string getNameForFaction () {
-      switch (faction) {
-         case Faction.Type.Pirates:
-            return "Pirate";
-         case Faction.Type.Privateers:
-            return "Privateer";
-         case Faction.Type.Merchants:
-            return "Merchant";
-         case Faction.Type.Cartographers:
-         case Faction.Type.Naturalists:
-            return "Explorer";
-         default:
-            return "Sailor";
       }
    }
 

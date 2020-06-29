@@ -22,14 +22,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
    // Reference to the popup
    public GenericSelectionPopup genericPopup;
 
-   // Player class selection
-   public Button classButton,
-      factionButton,
-      specialtyButton;
-   public Text classText,
-      factionText,
-      specialtyText;
-
    // Monster selection
    public Button monsterButton;
    public Text monsterText;
@@ -240,47 +232,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
       enemyDefenseUI.waterDefBreakdown.totalMultiplier.text = additiveString + enemyDefenseUI.waterDefenseMultiplier.ToString(decimalVal);
    }
 
-   private void processPlayerTypeComputations () {
-      classStatIndex = 0;
-
-      Class.Type classType = (Class.Type) Enum.Parse(typeof(Class.Type), classText.text);
-      Specialty.Type specialtyType = (Specialty.Type) Enum.Parse(typeof(Specialty.Type), specialtyText.text);
-      Faction.Type factionType = (Faction.Type) Enum.Parse(typeof(Faction.Type), factionText.text);
-
-      // Class Setup
-      PlayerClassData classStat = ClassManager.self.getClassData(classType);
-      if (classStat == null) {
-         Debug.LogError("Class is Missing: " + specialtyType);
-      } else {
-         UserDefaultStats classStatDefault = classStat.playerStats.userDefaultStats;
-         UserCombatStats classStatCombat = classStat.playerStats.userCombatStats;
-         addDefaultStats(classStatDefault);
-         addCombatStats(classStatCombat);
-      }
-
-      // Faction Setup
-      PlayerFactionData factionStat = FactionManager.self.getFactionData(factionType);
-      if (factionStat == null) {
-         Debug.LogError("Faction is Missing: " + specialtyType);
-      } else {
-         UserDefaultStats factionStatDefault = factionStat.playerStats.userDefaultStats;
-         UserCombatStats factionStatCombat = factionStat.playerStats.userCombatStats;
-         addDefaultStats(factionStatDefault);
-         addCombatStats(factionStatCombat);
-      }
-
-      // Specialty Setup
-      PlayerSpecialtyData specialtyStat = SpecialtyManager.self.getSpecialtyData(specialtyType);
-      if (specialtyStat == null) {
-         Debug.LogError("Specialty is Missing: " + specialtyType);
-      } else {
-         UserDefaultStats specialtyStatDefault = specialtyStat.playerStats.userDefaultStats;
-         UserCombatStats specialtyStatCombat = specialtyStat.playerStats.userCombatStats;
-         addDefaultStats(specialtyStatDefault);
-         addCombatStats(specialtyStatCombat);
-      }
-   }
-
    private void processPlayerOutputDamage () {
       AttackAbilityData fetchedAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemName == abilityText.text) as AttackAbilityData;
       BattlerData battleData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
@@ -295,9 +246,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
       // Sets the values to default
       setupDefaultValues();
-
-      // Sets up the computation attributed by the class / faction / specialization
-      processPlayerTypeComputations();
 
       int lastIndex = 3;
       // Diplays the base multipliers
@@ -329,9 +277,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
       // Sets the values to default
       setupDefaultValues();
-
-      // Sets up the computation attributed by the class / faction / specialization
-      processPlayerTypeComputations();
 
       int lastIndex = 3;
       // Diplays the base multipliers
@@ -513,15 +458,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
          logOutputPlayerDefense();
       });
 
-      classButton.onClick.AddListener(() => {
-         genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.PlayerClassType, classText);
-      });
-      factionButton.onClick.AddListener(() => {
-         genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.PlayerFactionType, factionText);
-      });
-      specialtyButton.onClick.AddListener(() => {
-         genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.PlayerSpecialtyType, specialtyText);
-      });
       monsterButton.onClick.AddListener(() => {
          genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.MonsterType, monsterText);
       });
@@ -532,9 +468,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
    private void initializePrefs () {
       // Setup cached info
-      classText.text = PlayerPrefs.GetString(Pref_Class, classText.text);
-      factionText.text = PlayerPrefs.GetString(Pref_Faction, factionText.text);
-      specialtyText.text = PlayerPrefs.GetString(Pref_Specialty, specialtyText.text);
       abilityText.text = PlayerPrefs.GetString(Pref_SkillName, abilityText.text);
       monsterText.text = PlayerPrefs.GetString(Pref_MonsterName, monsterText.text);
       playerLevel.text = PlayerPrefs.GetString(Pref_PlayerLvl, playerLevel.text);
@@ -594,9 +527,6 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void savePrefs () {
-      PlayerPrefs.SetString(Pref_Class, classText.text);
-      PlayerPrefs.SetString(Pref_Faction, factionText.text);
-      PlayerPrefs.SetString(Pref_Specialty, specialtyText.text);
       PlayerPrefs.SetString(Pref_SkillName, abilityText.text);
       PlayerPrefs.SetString(Pref_MonsterName, monsterText.text);
 

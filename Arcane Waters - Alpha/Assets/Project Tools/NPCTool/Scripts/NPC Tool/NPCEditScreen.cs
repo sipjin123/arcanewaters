@@ -18,10 +18,6 @@ public class NPCEditScreen : MonoBehaviour
    public InputField npcName;
    public Slider faction;
    public Slider specialty;
-   public Text factionText;
-   public Text specialtyText;
-   public Text factionCountText;
-   public Text specialtyCountText;
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
    public InputField greetingStranger;
@@ -37,10 +33,6 @@ public class NPCEditScreen : MonoBehaviour
    // Holds reference to the inputfields for character limit alterations
    public List<InputField> longTextInputfields;
    public List<InputField> shortTextInputfields;
-
-   // Icons for the selected Faction/Specialty
-   public Image factionImage;
-   public Image specialtyImage;
 
    // The container for the quests
    public GameObject questRowsContainer;
@@ -217,28 +209,7 @@ public class NPCEditScreen : MonoBehaviour
       });
    }
 
-   public void convertFaction () {
-      factionText.text = ((Faction.Type)faction.value).ToString();
-      factionCountText.text = (int)faction.value + "/" + faction.maxValue;
-      factionImage.sprite = Faction.getIcon((Faction.Type) faction.value);
-   }
-
-   public void convertSpecialty () {
-      specialtyText.text = ((Specialty.Type) specialty.value).ToString();
-      specialtyCountText.text = (int) specialty.value + "/" + specialty.maxValue;
-      specialtyImage.sprite = Specialty.getIcon((Specialty.Type) specialty.value);
-   }
-
    public void updatePanelWithNPC (NPCData npcData) {
-      faction.maxValue = Enum.GetValues(typeof(Faction.Type)).Length-1;
-      specialty.maxValue = Enum.GetValues(typeof(Specialty.Type)).Length-1;
-
-      factionCountText.text = (int) faction.value + "/" + faction.maxValue;
-      specialtyCountText.text = (int) specialty.value + "/" + specialty.maxValue;
-
-      factionImage.sprite = Faction.getIcon((Faction.Type) faction.value);
-      specialtyImage.sprite = Specialty.getIcon((Specialty.Type) specialty.value);
-
       try {
          avatarIcon.sprite = iconSpriteList[npcData.iconPath];
       } catch {
@@ -260,8 +231,6 @@ public class NPCEditScreen : MonoBehaviour
       // Fill all the fields with the values from the data file
       npcIdText.text = npcData.npcId.ToString();
       npcName.text = npcData.name;
-      faction.value = (int) npcData.faction;
-      specialty.value = (int) npcData.specialty;
       hasTradeGossip.isOn = npcData.hasTradeGossipDialogue;
       hasGoodbye.isOn = npcData.hasGoodbyeDialogue;
       greetingStranger.text = npcData.greetingTextStranger;
@@ -368,8 +337,7 @@ public class NPCEditScreen : MonoBehaviour
       // Create a new npcData object and initialize it with the values from the UI
       NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
-         giftLiked.text, giftNotLiked.text, npcName.text, (Faction.Type) faction.value,
-         (Specialty.Type) specialty.value, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
+         giftLiked.text, giftNotLiked.text, npcName.text, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
          questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text));
 
       if (startingID != int.Parse(npcID.text)) {

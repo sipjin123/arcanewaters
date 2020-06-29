@@ -129,18 +129,6 @@ public class DB_MainStub : MonoBehaviour {
       return new List<XMLPair>();
    }
 
-   public static void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {
-
-   }
-
-   public static List<string> getPlayerClassXML (ClassManager.PlayerStatType playerStatType) {
-      return new List<string>();
-   }
-
-   public static void deletePlayerClassXML (ClassManager.PlayerStatType playerStatType, int typeID) {
-
-   }
-
    public static void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
 
    }

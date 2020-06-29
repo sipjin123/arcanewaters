@@ -442,9 +442,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          updateAnimGroup(battlerData.animGroup);
 
-         // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
-         setupPlayerStats();
-
          // Enemy stat setup
          setupEnemyStats();
 
@@ -485,54 +482,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          battleData.baseDefenseMultiplierSet.waterDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.waterDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.waterDefenseMultiplierPerLevel);
          battleData.baseDefenseMultiplierSet.airDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.airDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.airDefenseMultiplierPerLevel);
          battleData.baseDefenseMultiplierSet.earthDefenseMultiplier = Mathf.Abs(getBattlerData().baseDefenseMultiplierSet.earthDefenseMultiplier) + (level * battleData.perLevelDefenseMultiplierSet.earthDefenseMultiplierPerLevel);
-      }
-   }
-
-   private void setupPlayerStats () {
-      if (battlerType == BattlerType.PlayerControlled) {
-         NetEntity playerBody = player;
-
-         if (playerBody == null) {
-            D.warning("Could not find player: " + userId);
-            return;
-         }
-
-         Faction.Type factionType = playerBody.faction;
-         Class.Type classType = playerBody.classType;
-         Specialty.Type specialtyType = playerBody.specialty;
-
-         // Faction Setup
-         PlayerFactionData factionStat = FactionManager.self.getFactionData(factionType);
-         if (factionStat == null) {
-            D.error("Faction is Missing: " + specialtyType);
-         } else {
-            UserDefaultStats factionStatDefault = factionStat.playerStats.userDefaultStats;
-            UserCombatStats factionStatCombat = factionStat.playerStats.userCombatStats;
-            addDefaultStats(factionStatDefault);
-            addCombatStats(factionStatCombat);
-         }
-
-         // Class Setup
-         PlayerClassData classStat = ClassManager.self.getClassData(classType);
-         if (classStat == null) {
-            D.error("Class is Missing: " + specialtyType);
-         } else {
-            UserDefaultStats classStatDefault = classStat.playerStats.userDefaultStats;
-            UserCombatStats classStatCombat = classStat.playerStats.userCombatStats;
-            addDefaultStats(classStatDefault);
-            addCombatStats(classStatCombat);
-         }
-
-         // Specialty Setup
-         PlayerSpecialtyData specialtyStat = SpecialtyManager.self.getSpecialtyData(specialtyType);
-         if (specialtyStat == null) {
-            D.error("Specialty is Missing: " + specialtyType);
-         } else {
-            UserDefaultStats specialtyStatDefault = specialtyStat.playerStats.userDefaultStats;
-            UserCombatStats specialtyStatCombat = specialtyStat.playerStats.userCombatStats;
-            addDefaultStats(specialtyStatDefault);
-            addCombatStats(specialtyStatCombat);
-         }
       }
    }
 

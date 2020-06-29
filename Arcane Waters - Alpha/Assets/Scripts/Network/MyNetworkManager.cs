@@ -172,10 +172,6 @@ public class MyNetworkManager : NetworkManager
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
       // TutorialManager.self.initializeDataCache();
-      ClassManager.self.initializeDataCache();
-      FactionManager.self.initializeDataCache();
-      SpecialtyManager.self.initializeDataCache();
-      JobManager.self.initializeDataCache();
       CraftingManager.self.initializeDataCache();
       CropsDataManager.self.initializeDataCache();
       AchievementManager.self.initializeDataCache();
@@ -346,7 +342,7 @@ public class MyNetworkManager : NetworkManager
          // Creates a copy of the npc data with a cleared list of Quests and Gifts
          NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
             npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
-            npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, npcData.faction, npcData.specialty,
+            npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, 
             npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
             npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.landMonsterId, npcData.achievementIdHiringRequirement);
 

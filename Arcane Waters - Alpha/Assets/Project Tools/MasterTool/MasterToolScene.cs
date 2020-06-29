@@ -21,10 +21,6 @@ public class MasterToolScene : MonoBehaviour {
    public const string equipmentScene = "Equipment Data Tool";
    public const string usableItemScene = "UsableItemData Tool";
    public const string achievementScene = "Achievement Tool";
-   public const string playerClassScene = "PlayerClass Tool";
-   public const string playerFactionScene = "PlayerFaction Tool";
-   public const string playerSpecialtyScene = "PlayerSpecialty Tool";
-   public const string playerJobScene = "PlayerJob Tool";
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
    public const string tutorialScene = "Tutorial Tool";
@@ -61,10 +57,6 @@ public class MasterToolScene : MonoBehaviour {
       clickEquipmentScene,
       clickUsableItemScene,
       clickAchievementScene,
-      clickPlayerClassScene,
-      clickFactionScene,
-      clickSpecialtyScene,
-      clickJobScene,
       clickShipAbilityScene,
       clickShopScene,
       clickTutorialScene,
@@ -115,18 +107,6 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickAchievementScene.onClick.AddListener(() => {
          SceneManager.LoadScene(achievementScene);
-      });
-      clickPlayerClassScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(playerClassScene);
-      });
-      clickFactionScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(playerFactionScene);
-      });
-      clickSpecialtyScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(playerSpecialtyScene);
-      });
-      clickJobScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(playerJobScene);
       });
       clickShipAbilityScene.onClick.AddListener(() => {
          SceneManager.LoadScene(shipAbilityScene);

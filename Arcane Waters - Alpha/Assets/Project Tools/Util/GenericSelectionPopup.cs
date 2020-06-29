@@ -80,12 +80,6 @@ public class GenericSelectionPopup : MonoBehaviour
       AchievementIcon = 18,
       ItemType = 19,
       ItemCategory = 20,
-      PlayerClassType = 21,
-      PlayerClassIcons = 22,
-      PlayerFactionType = 23,
-      PlayerFactionIcons = 24,
-      PlayerSpecialtyType = 25,
-      PlayerSpecialtyIcons = 26,
       PlayerJobType = 27,
       PlayerJobIcons = 28,
       MonsterType = 29,
@@ -239,24 +233,6 @@ public class GenericSelectionPopup : MonoBehaviour
             Sprite achievementSprite = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, achievementSprite, imageIcon, textUI);
          }
-      } else if (popupType == selectionType.PlayerClassIcons) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in playerClassSpriteList) {
-            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite classIcon = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, classIcon, imageIcon, textUI);
-         }
-      } else if (popupType == selectionType.PlayerFactionIcons) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in playerFactionSpriteList) {
-            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite factionIcon = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, factionIcon, imageIcon, textUI);
-         }
-      } else if (popupType == selectionType.PlayerSpecialtyIcons) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in playerSpecialtySpriteList) {
-            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
-         }
       } else if (popupType == selectionType.PlayerJobIcons) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in playerJobSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
@@ -400,21 +376,6 @@ public class GenericSelectionPopup : MonoBehaviour
                if (category == Item.Category.None || category == Item.Category.Weapon || category == Item.Category.Armor || category == Item.Category.CraftingIngredients) {
                   createTextTemplate(category.ToString(), textUI, changeEvent);
                }
-            }
-            break;
-         case selectionType.PlayerClassType:
-            foreach (Class.Type category in Enum.GetValues(typeof(Class.Type))) {
-               createTextTemplate(category.ToString(), textUI, changeEvent);
-            }
-            break;
-         case selectionType.PlayerFactionType:
-            foreach (Faction.Type category in Enum.GetValues(typeof(Faction.Type))) {
-               createTextTemplate(category.ToString(), textUI, changeEvent);
-            }
-            break;
-         case selectionType.PlayerSpecialtyType:
-            foreach (Specialty.Type category in Enum.GetValues(typeof(Specialty.Type))) {
-               createTextTemplate(category.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.PlayerJobType:

@@ -37,9 +37,6 @@ public class FriendshipInfo
    // The XP of the friend
    public int friendXP;
 
-   // The faction of the friend
-   public Faction.Type friendFaction;
-
    #endregion
 
    public FriendshipInfo () { }
@@ -54,7 +51,6 @@ public class FriendshipInfo
       this.friendName = DataUtil.getString(dataReader, "usrName");
       this.friendAreaKey = DataUtil.getString(dataReader, "areaKey");
       this.friendXP = DataUtil.getInt(dataReader, "usrXP");
-      this.friendFaction = (Faction.Type) DataUtil.getInt(dataReader, "faction");
    }
 
 #endif

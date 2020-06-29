@@ -22,28 +22,6 @@ public class NPCData
    // The battler id associated with the npc
    public int landMonsterId = 0;
 
-   // The faction of the NPC
-   [XmlIgnore]
-   public Faction.Type faction = Faction.Type.None;
-
-   [XmlElement("faction")]
-   public int FactionInt
-   {
-      get { return (int) faction; }
-      set { faction = (Faction.Type) value; }
-   }
-
-   // The specialty of the NPC
-   [XmlIgnore]
-   public Specialty.Type specialty = Specialty.Type.None;
-
-   [XmlElement("specialty")]
-   public int SpecialtyInt
-   {
-      get { return (int) specialty; }
-      set { specialty = (Specialty.Type) value; }
-   }
-
    // The greeting texts of the NPC for each friendship rank, shown every time the conversation starts
    public string greetingTextStranger = "";
    public string greetingTextAcquaintance = "";
@@ -94,8 +72,7 @@ public class NPCData
 
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
-      string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name,
-      Faction.Type faction, Specialty.Type specialty, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
+      string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
       int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
@@ -107,8 +84,6 @@ public class NPCData
       this.giftLikedText = giftLikedText;
       this.giftNotLikedText = giftNotLikedText;
       this.name = name;
-      this.faction = faction;
-      this.specialty = specialty;
       this.hasTradeGossipDialogue = hasTradeGossipDialogue;
       this.hasGoodbyeDialogue = hasGoodbyeDialogue;
       this.lastUsedQuestId = lastUsedQuestId;

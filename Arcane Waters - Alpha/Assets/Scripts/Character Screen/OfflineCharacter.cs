@@ -48,15 +48,6 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // The sort point
    public GameObject sortPoint;
 
-   // The Class we've chosen
-   public Class.Type classType = Class.Type.Fighter;
-
-   // The Specialty we've chosen
-   public Specialty.Type specialty = Specialty.Type.Adventurer;
-
-   // The Faction we've chosen
-   public Faction.Type faction = Faction.Type.Neutral;
-
    // The spot this character is in
    public CharacterSpot spot;
 
@@ -195,9 +186,6 @@ public class OfflineCharacter : ClientMonoBehaviour {
       info.eyesPalette1 = this.eyes.getPalette1();
       info.eyesPalette2 = this.eyes.getPalette2();
       info.bodyType = this.body.getType();
-      info.classType = this.classType;
-      info.specialty = this.specialty;
-      info.faction = this.faction;
 
       return info;
    }

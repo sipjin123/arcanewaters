@@ -20,9 +20,6 @@ public class FriendListRow : MonoBehaviour
    // The offline icon
    public GameObject offlineIcon;
 
-   // The faction icon
-   public Image factionIcon;
-
    // The level text
    public Text level;
 
@@ -40,7 +37,6 @@ public class FriendListRow : MonoBehaviour
          offlineIcon.SetActive(true);
       }
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
-      factionIcon.sprite = Faction.getShipIcon(entry.friendFaction);
    }
 
    public void onChatButtonPress () {

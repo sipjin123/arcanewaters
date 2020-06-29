@@ -3033,121 +3033,6 @@ public class DB_Main : DB_MainStub
    }
    #endregion
 
-   #region Player Class XML Data
-
-   public static new void updatePlayerClassXML (string rawData, int key, ClassManager.PlayerStatType playerStatType) {
-      string tableName = "";
-      switch (playerStatType) {
-         case ClassManager.PlayerStatType.Class:
-            tableName = "player_class_xml";
-            break;
-         case ClassManager.PlayerStatType.Job:
-            tableName = "player_job_xml";
-            break;
-         case ClassManager.PlayerStatType.Faction:
-            tableName = "player_faction_xml";
-            break;
-         case ClassManager.PlayerStatType.Specialty:
-            tableName = "player_specialty_xml";
-            break;
-      }
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            // Declaration of table elements
-            "INSERT INTO " + tableName + " (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
-            "VALUES(@xml_id, @xmlContent, @creator_userID, NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@xml_id", key);
-            cmd.Parameters.AddWithValue("@xmlContent", rawData);
-            cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new List<string> getPlayerClassXML (ClassManager.PlayerStatType playerStatType) {
-      string tableName = "";
-      switch (playerStatType) {
-         case ClassManager.PlayerStatType.Class:
-            tableName = "player_class_xml";
-            break;
-         case ClassManager.PlayerStatType.Job:
-            tableName = "player_job_xml";
-            break;
-         case ClassManager.PlayerStatType.Faction:
-            tableName = "player_faction_xml";
-            break;
-         case ClassManager.PlayerStatType.Specialty:
-            tableName = "player_specialty_xml";
-            break;
-      }
-
-      List<string> rawDataList = new List<string>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + tableName + " ORDER BY xml_id", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  rawDataList.Add(dataReader.GetString("xmlContent"));
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return new List<string>(rawDataList);
-   }
-
-   public static new void deletePlayerClassXML (ClassManager.PlayerStatType playerStatType, int typeID) {
-      string tableName = "";
-      switch (playerStatType) {
-         case ClassManager.PlayerStatType.Class:
-            tableName = "player_class_xml";
-            break;
-         case ClassManager.PlayerStatType.Job:
-            tableName = "player_job_xml";
-            break;
-         case ClassManager.PlayerStatType.Faction:
-            tableName = "player_faction_xml";
-            break;
-         case ClassManager.PlayerStatType.Specialty:
-            tableName = "player_specialty_xml";
-            break;
-      }
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE xml_id=@xml_id", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@xml_id", typeID);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   #endregion
-
    #region Crafting XML Data
 
    public static new void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
@@ -4607,9 +4492,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@armId", userInfo.armorId);
             cmd.Parameters.AddWithValue("@areaKey", area.areaKey);
             cmd.Parameters.AddWithValue("@charSpot", userInfo.charSpot);
-            cmd.Parameters.AddWithValue("@class", userInfo.classType);
-            cmd.Parameters.AddWithValue("@specialty", userInfo.specialty);
-            cmd.Parameters.AddWithValue("@faction", userInfo.faction);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5768,7 +5650,6 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   info.guildName = dataReader.GetString("gldName");
-                  info.guildFaction = (Faction.Type) dataReader.GetInt32("gldFaction");
                   info.creationTime = dataReader.GetDateTime("gldCreationTime").ToBinary();
                }
             }

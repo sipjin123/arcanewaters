@@ -150,13 +150,6 @@ public class TooltipManager : ClientMonoBehaviour {
          return "Customize Map <color=green>[NULL]</color>";
       }
 
-      // Specialties
-      if (imageName.StartsWith("specialty_")) {
-         string[] split = imageName.Split('_');
-         Specialty.Type specialty = (Specialty.Type) System.Enum.Parse(typeof(Specialty.Type), split[1], true);
-         return Specialty.getDescription(specialty);
-      }
-
       // Return an appropriate tooltip description text for the specified image name
       switch (imageName) {
          case "lvl_shield":
@@ -167,15 +160,6 @@ public class TooltipManager : ClientMonoBehaviour {
 
          case "icon_flagship":
             return "Assigns your <color=red>flagship</color>.  This is the default ship that will be used when you leave town.";
-
-         case "class_fighter":
-            return Class.getDescription(Class.Type.Fighter);
-         case "class_healer":
-            return Class.getDescription(Class.Type.Healer);
-         case "class_mystic":
-            return Class.getDescription(Class.Type.Mystic);
-         case "class_marksman":
-            return Class.getDescription(Class.Type.Marksman);
 
          case "ship_damage":
             return "How much <color=red>damage</color> is done by the cannons on this ship.";
@@ -207,24 +191,6 @@ public class TooltipManager : ClientMonoBehaviour {
             return "Your <color=red>luck</color> increases the chances of finding valuable items after battles.  " +
                "The entire team's luck is added together, so everyone benefits equally.  " +
                "Some items only have a chance of appearing when the total combined luck is high enough!";
-
-         case "faction_neutral":
-            return "By remaining <color=red>neutral</color>, you are safe from attack by other players.  However, there are many benefits that are only available to players who have chosen a faction.";
-         case "faction_builders":
-            return "The <color=red>builders</color> are focused on the construction of new towns and shops.";
-         case "faction_cartographers":
-            return "The <color=red>cartographers</color> are attempting to map out the entire world, which requires long journeys to unexplored territories.";
-         case "faction_merchants":
-            return "The <color=red>merchants</color> are interested in making as much profit as quickly as they can.  Their focus is primarily on selling cargo to the highest bidder.";
-         case "faction_naturalists":
-            return "The <color=red>naturalists</color> are focused on preserving and cultivating the plants and wildlife that inhabit the land.";
-         case "faction_pillagers":
-            return "The <color=red>pillagers</color> endlessly hunt for undiscovered treasure sites, fighting anyone and anything that gets in their way.";
-         case "faction_pirates":
-            return "The <color=red>skull and bones</color> submit to no authority and will attack anyone if they can get away with it.  Ruthless and cut-throat, they are not to be trusted.";
-         case "faction_privateers":
-            return "The noble <color=red>privateers</color> hunt down the thieves and scoundrels who prey on the weak.";
-
          default:
             return "";
       }

@@ -19,10 +19,6 @@ public class EditorSQLManager {
       Equipment = 4,
       LandMonster = 5,
       NPC = 6,
-      PlayerClass = 7,
-      PlayerFaction = 8,
-      PlayerJob = 9,
-      PlayerSpecialty = 10,
       SeaMonster = 11,
       Ship = 12,
       ShipAbility = 13,
@@ -115,14 +111,6 @@ public class EditorSQLManager {
             return "land_monster_xml_v3";
          case EditorToolType.NPC:
             return "npc_xml";
-         case EditorToolType.PlayerClass:
-            return "player_class_xml";
-         case EditorToolType.PlayerFaction:
-            return "player_faction_xml";
-         case EditorToolType.PlayerJob:
-            return "player_job_xml";
-         case EditorToolType.PlayerSpecialty:
-            return "player_specialty_xml";
          case EditorToolType.SeaMonster:
             return "sea_monster_xml_v2";
          case EditorToolType.Ship:

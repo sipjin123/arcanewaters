@@ -35,9 +35,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string LAND_MONSTER_TABLE = "land_monster_xml_v3";
    public static string NPC_TABLE = "npc_xml";
 
-   public static string CLASS_TABLE = "player_class_xml";
-   public static string FACTION_TABLE = "player_faction_xml";
-   public static string SPECIALTY_TABLE = "player_specialty_xml";
    public static string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
 
    public static string SHIP_TABLE = "ship_xml_v2";
@@ -60,10 +57,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string LAND_MONSTER_FILE = "land_monsters";
    public static string NPC_FILE = "npc";
 
-   public static string CLASS_FILE = "player_class";
-   public static string FACTION_FILE = "player_faction";
-   public static string JOB_FILE = "player_job";
-   public static string SPECIALTY_FILE = "player_specialty";
    public static string SEA_MONSTER_FILE = "sea_monsters";
 
    public static string SHIP_FILE = "ships";
@@ -117,10 +110,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(LAND_MONSTER_FILE);
       confirmTextFile(NPC_FILE);
 
-      confirmTextFile(CLASS_FILE);
-      confirmTextFile(FACTION_FILE);
-      confirmTextFile(JOB_FILE);
-      confirmTextFile(SPECIALTY_FILE);
       confirmTextFile(SEA_MONSTER_FILE);
 
       confirmTextFile(SHIP_FILE);
@@ -160,10 +149,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
          
          compiledData += DB_Main.getLastUpdate(EditorToolType.Ship);
          compiledData += DB_Main.getLastUpdate(EditorToolType.ShipAbility);
-
-         compiledData += DB_Main.getLastUpdate(EditorToolType.PlayerClass);
-         compiledData += DB_Main.getLastUpdate(EditorToolType.PlayerFaction);
-         compiledData += DB_Main.getLastUpdate(EditorToolType.PlayerSpecialty);
 
          compiledData += DB_Main.getLastUpdate(EditorToolType.Shop);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Achievement);
@@ -263,10 +248,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string cropsData = DB_Main.getXmlContent(CROPS_TABLE);
          string abilityData = DB_Main.getXmlContent(ABILITY_TABLE);
 
-         string playerClassData = DB_Main.getXmlContent(CLASS_TABLE);
-         string playerSpecialtyData = DB_Main.getXmlContent(SPECIALTY_TABLE);
-         string playerFactionData = DB_Main.getXmlContent(FACTION_TABLE);
-
          string armorData = DB_Main.getXmlContent(ARMOR_TABLE);
          string weaponData = DB_Main.getXmlContent(WEAPON_TABLE);
          string hatData = DB_Main.getXmlContent(HAT_TABLE);
@@ -287,10 +268,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + NPC_FILE + ".txt", npcData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + CROPS_FILE + ".txt", cropsData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ABILITIES_FILE + ".txt", abilityData);
-
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + CLASS_FILE + ".txt", playerClassData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + SPECIALTY_FILE + ".txt", playerSpecialtyData);
-         writeAndCache(XML_TEXT_DIRECTORY + "/" + FACTION_FILE + ".txt", playerFactionData);
 
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ARMOR_FILE + ".txt", armorData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + WEAPON_FILE + ".txt", weaponData);

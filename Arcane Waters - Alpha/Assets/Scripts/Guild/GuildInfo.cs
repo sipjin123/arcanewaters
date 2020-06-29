@@ -23,9 +23,6 @@ public class GuildInfo {
    // The Guild Name
    public string guildName;
 
-   // The Guild faction
-   public Faction.Type guildFaction;
-
    // The list of people in the guild
    public UserInfo[] guildMembers; 
 

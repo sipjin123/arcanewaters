@@ -202,22 +202,6 @@ public class NPCManager : MonoBehaviour {
       }
    }
 
-   public Faction.Type getFaction (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].faction;
-      } else {
-         return Faction.Type.None;
-      }
-   }
-
-   public Specialty.Type getSpecialty (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].specialty;
-      } else {
-         return Specialty.Type.None;
-     }
-   }
-
    public bool canOfferGift (int friendshipLevel) {
       return NPCFriendship.isRankAboveOrEqual(friendshipLevel, NPCFriendship.Rank.Acquaintance);
    }

@@ -16,9 +16,6 @@ public class ShipBars : MonoBehaviour {
    // Our reload bar image
    public Image reloadBarImage;
 
-   // The Faction icon
-   public Image factionIcon;
-
    // The container for our bars
    public GameObject barsContainer;
 
@@ -49,10 +46,6 @@ public class ShipBars : MonoBehaviour {
       if (_entity == null) {
          return;
       }
-
-      if (factionIcon != null) {
-         factionIcon.sprite = Faction.getShipIcon(_entity.faction);
-      }
    }
 
    void Update () {
@@ -73,9 +66,6 @@ public class ShipBars : MonoBehaviour {
 
       // Update our reload bar when we recently fired
       reloadBarImage.fillAmount = (Time.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
-
-      // Only show the faction icon if we're in combat
-      factionIcon.enabled = _entity.hasAnyCombat();
 
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
       barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());

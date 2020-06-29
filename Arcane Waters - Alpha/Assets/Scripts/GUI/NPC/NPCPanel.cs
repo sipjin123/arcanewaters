@@ -17,12 +17,6 @@ public class NPCPanel : Panel {
    // Our head animation
    public SimpleAnimation headAnim;
 
-   // Our Faction Icon
-   public Image factionIcon;
-
-   // Our Specialty Icon
-   public Image specialtyIcon;
-
    // The Text that shows the NPC name
    public Text nameText;
 
@@ -103,14 +97,14 @@ public class NPCPanel : Panel {
       AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
    }
 
-   public void updatePanelWithQuestSelection (int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
+   public void updatePanelWithQuestSelection (int npcId, string npcName,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
       Quest[] quests, bool isHireable, int landMonsterId) {
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
       // Initialize the NPC characteristics
-      setNPC(npcId, npcName, faction, specialty, friendshipLevel);
+      setNPC(npcId, npcName, friendshipLevel);
 
       // Set the panel content common to the different modes
       setCommonPanelContent(greetingText, friendshipLevel);
@@ -379,13 +373,10 @@ public class NPCPanel : Panel {
       questObjectivesGO.SetActive(false);
    }
 
-   private void setNPC(int npcId, string npcName, Faction.Type faction, Specialty.Type specialty,
-      int friendshipLevel) {
+   private void setNPC(int npcId, string npcName, int friendshipLevel) {
       _npc = NPCManager.self.getNPC(npcId);
 
       // Fill in the details for this NPC
-      factionIcon.sprite = Faction.getIcon(faction);
-      specialtyIcon.sprite = Specialty.getIcon(specialty);
       nameText.text = npcName;
 
       // Set the friendship level

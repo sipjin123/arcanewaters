@@ -82,15 +82,6 @@ public class UserInfo {
    // The character spot on the character creation screen
    public int charSpot;
 
-   // The Class we've chosen
-   public Class.Type classType;
-
-   // The Specialty we've chosen
-   public Specialty.Type specialty;
-
-   // The Faction we've chosen
-   public Faction.Type faction;
-
    // The Guild we're in
    public int guildId;
 
@@ -131,9 +122,6 @@ public class UserInfo {
       this.eyesPalette2 = dataReader.GetString("eyesPalette2");
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
-      this.classType = (Class.Type) dataReader.GetInt32("class");
-      this.specialty = (Specialty.Type) dataReader.GetInt32("specialty");
-      this.faction = (Faction.Type) dataReader.GetInt32("faction");
       this.guildId = dataReader.GetInt32("gldId");
       this.customHouseBaseId = dataReader.GetInt32("customHouseBase");
       this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
