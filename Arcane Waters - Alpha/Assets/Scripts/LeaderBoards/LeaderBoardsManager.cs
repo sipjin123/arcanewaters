@@ -36,16 +36,16 @@ public class LeaderBoardsManager : MonoBehaviour
       });
    }
 
-   public void getLeaderBoards (Period period, Faction.Type boardFaction, out List<LeaderBoardInfo> farmingEntries,
+   public void getLeaderBoards (Period period, Perk.Category boardPerkCategory, out List<LeaderBoardInfo> farmingEntries,
       out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
       out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
       // Get the values from the cache
-      farmingEntries = _allFarmingBoards[period][boardFaction];
-      sailingEntries = _allSailingBoards[period][boardFaction];
-      exploringEntries = _allExploringBoards[period][boardFaction];
-      tradingEntries = _allTradingBoards[period][boardFaction];
-      craftingEntries = _allCraftingBoards[period][boardFaction];
-      miningEntries = _allMiningBoards[period][boardFaction];
+      farmingEntries = _allFarmingBoards[period][boardPerkCategory];
+      sailingEntries = _allSailingBoards[period][boardPerkCategory];
+      exploringEntries = _allExploringBoards[period][boardPerkCategory];
+      tradingEntries = _allTradingBoards[period][boardPerkCategory];
+      craftingEntries = _allCraftingBoards[period][boardPerkCategory];
+      miningEntries = _allMiningBoards[period][boardPerkCategory];
    }
 
    public TimeSpan getTimeLeftUntilRecalculation(Period period, DateTime lastCalculationDate) {
@@ -71,20 +71,20 @@ public class LeaderBoardsManager : MonoBehaviour
       self = this;
 
       // Initializes the leader board cache
-      _allFarmingBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
-      _allSailingBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
-      _allExploringBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
-      _allTradingBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
-      _allCraftingBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
-      _allMiningBoards = new Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>>();
+      _allFarmingBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
+      _allSailingBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
+      _allExploringBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
+      _allTradingBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
+      _allCraftingBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
+      _allMiningBoards = new Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>>();
 
       foreach(Period period in Enum.GetValues(typeof(Period))) {
-         _allFarmingBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
-         _allSailingBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
-         _allExploringBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
-         _allTradingBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
-         _allCraftingBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
-         _allMiningBoards[period] = new Dictionary<Faction.Type, List<LeaderBoardInfo>>();
+         _allFarmingBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
+         _allSailingBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
+         _allExploringBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
+         _allTradingBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
+         _allCraftingBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
+         _allMiningBoards[period] = new Dictionary<Perk.Category, List<LeaderBoardInfo>>();
       }
    }
 
@@ -152,7 +152,7 @@ public class LeaderBoardsManager : MonoBehaviour
          DB_Main.deleteLeaderBoards(period);
 
          // Calculate the boards for each faction filter with database queries
-         foreach (Faction.Type boardFaction in Enum.GetValues(typeof(Faction.Type))) {
+         foreach (Perk.Category boardFaction in Enum.GetValues(typeof(Perk.Category))) {
 
             List<LeaderBoardInfo> farmingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Farmer, boardFaction, period, startDate, endDate);
             List<LeaderBoardInfo> sailingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Sailor, boardFaction, period, startDate, endDate);
@@ -183,7 +183,7 @@ public class LeaderBoardsManager : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Update the boards for each faction filter
-         foreach (Faction.Type boardFaction in Enum.GetValues(typeof(Faction.Type))) {
+         foreach (Perk.Category boardPerk in Enum.GetValues(typeof(Perk.Category))) {
 
             // Get the leader boards from the database
             List<LeaderBoardInfo> farmingBoard;
@@ -192,19 +192,19 @@ public class LeaderBoardsManager : MonoBehaviour
             List<LeaderBoardInfo> tradingBoard;
             List<LeaderBoardInfo> craftingBoard;
             List<LeaderBoardInfo> miningBoard;
-            DB_Main.getLeaderBoards(period, boardFaction, out farmingBoard, out sailingBoard, out exploringBoard,
+            DB_Main.getLeaderBoards(period, boardPerk, out farmingBoard, out sailingBoard, out exploringBoard,
                out tradingBoard, out craftingBoard, out miningBoard);
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
                // Update the cache
-               _allFarmingBoards[period][boardFaction] = farmingBoard;
-               _allSailingBoards[period][boardFaction] = sailingBoard;
-               _allExploringBoards[period][boardFaction] = exploringBoard;
-               _allTradingBoards[period][boardFaction] = tradingBoard;
-               _allCraftingBoards[period][boardFaction] = craftingBoard;
-               _allMiningBoards[period][boardFaction] = miningBoard;
+               _allFarmingBoards[period][boardPerk] = farmingBoard;
+               _allSailingBoards[period][boardPerk] = sailingBoard;
+               _allExploringBoards[period][boardPerk] = exploringBoard;
+               _allTradingBoards[period][boardPerk] = tradingBoard;
+               _allCraftingBoards[period][boardPerk] = craftingBoard;
+               _allMiningBoards[period][boardPerk] = miningBoard;
             });
          }
       });
@@ -233,12 +233,12 @@ public class LeaderBoardsManager : MonoBehaviour
    #region Private Variables
 
    // The leader board cache for each job and period
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allFarmingBoards;
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allSailingBoards;
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allExploringBoards;
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allTradingBoards;
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allCraftingBoards;
-   private Dictionary<Period, Dictionary<Faction.Type, List<LeaderBoardInfo>>> _allMiningBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allFarmingBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allSailingBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allExploringBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allTradingBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allCraftingBoards;
+   private Dictionary<Period, Dictionary<Perk.Category, List<LeaderBoardInfo>>> _allMiningBoards;
 
    // The number of days until the job history entries are deleted
    private static int JOB_HISTORY_ENTRIES_LIFETIME = 60;

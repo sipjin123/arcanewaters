@@ -133,14 +133,14 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
-      string npcName, Faction.Type faction, Specialty.Type specialty, int friendshipLevel,
+      string npcName, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
       Quest[] quests, bool isHireable, int landMonsterId) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestSelection(npcId, npcName, faction, specialty, friendshipLevel, greetingText,
+      panel.updatePanelWithQuestSelection(npcId, npcName, friendshipLevel, greetingText,
          canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable, landMonsterId);
 
       // Make sure the panel is showing
@@ -486,7 +486,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
-      Faction.Type boardFaction, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
+      Perk.Category boardPerkCategory, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
       LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
 
@@ -498,7 +498,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, boardFaction, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, boardPerkCategory, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -820,7 +820,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period, Faction.Type boardFaction) {
+   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period, Perk.Category perkCategory) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -837,7 +837,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Get the leader boards
-         LeaderBoardsManager.self.getLeaderBoards(period, boardFaction, out farmingEntries, out sailingEntries, out exploringEntries,
+         LeaderBoardsManager.self.getLeaderBoards(period, perkCategory, out farmingEntries, out sailingEntries, out exploringEntries,
             out tradingEntries, out craftingEntries, out miningEntries);
 
          // Get the last calculation date of this period
@@ -848,7 +848,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, boardFaction, timeLeftUntilRecalculation.TotalSeconds,
+            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, perkCategory, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
                craftingEntries.ToArray(), miningEntries.ToArray());
          });
@@ -1312,7 +1312,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Send the data to the client
-            Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(), npc.getFaction(), npc.getSpecialty(),
+            Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
                questList.ToArray(), isHireable, landMonsterId);
          });
@@ -2245,7 +2245,7 @@ public class RPCManager : NetworkBehaviour {
    #region Guilds
 
    [Command]
-   public void Cmd_CreateGuild (string requestedName, Faction.Type factionType) {
+   public void Cmd_CreateGuild (string requestedName) {
       if (_player.guildId > 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You are already in a guild.");
          return;
@@ -2269,7 +2269,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Try and insert the name
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int guildId = DB_Main.createGuild(requestedName, factionType);
+         int guildId = DB_Main.createGuild(requestedName);
 
          // Assign the guild to the player
          if (guildId > 0) {
@@ -2415,7 +2415,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Add the crafting xp
          int xp = 10;
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, _player.faction, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, Perk.Category.None, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread to send the results back to the client
@@ -3082,7 +3082,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp
          int xp = 10;
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, _player.faction, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, Perk.Category.MiningDrops, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Gather voyage group info
@@ -3192,8 +3192,6 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaKey = _player.areaKey;
-      bot.faction = Faction.Type.Pirates;
-      bot.nationType = Nation.Type.Pirate;
       Array shipTypes = Enum.GetValues(typeof(Ship.Type));
       bot.shipType = (Ship.Type)shipTypes.GetValue(Random.Range(0, shipTypes.Length));
       bot.speed = Ship.getBaseSpeed(bot.shipType);
@@ -4053,7 +4051,7 @@ public class RPCManager : NetworkBehaviour {
             int gainedXP = discovery.getXPValue();
 
             // Add the experience to the player
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, _player.faction, gainedXP);
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, Perk.Category.None, gainedXP);
 
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 

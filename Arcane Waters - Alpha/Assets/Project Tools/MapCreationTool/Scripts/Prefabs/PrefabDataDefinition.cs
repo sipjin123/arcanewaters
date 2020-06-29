@@ -91,13 +91,6 @@ namespace MapCreationTool
                   toolTip = customData.toolTip,
                   options = ShipManager.instance.formSelectionOptions()
                };
-            } else if (customData.type == CustomFieldType.NationType) {
-               Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
-               selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
-                  name = customData.name,
-                  toolTip = customData.toolTip,
-                  options = ShipManager.instance.formNationSelectionOptions()
-               };
             } else if (customData.type == CustomFieldType.ActionName) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
@@ -193,8 +186,7 @@ namespace MapCreationTool
          SecretStartSprite,
          SecretInteractSprite,
          Ship,
-         TreasureType,
-         NationType
+         TreasureType
       }
    }
 }

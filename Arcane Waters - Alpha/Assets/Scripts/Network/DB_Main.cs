@@ -5689,18 +5689,18 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
-   public static new int createGuild (string guildName, Faction.Type guildFaction) {
+   public static new int createGuild (string guildName) {
       int guildId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO guilds (gldName, gldFaction) " +
-                 "VALUES(@gldName, @gldFaction) ", conn)) {
+            "INSERT INTO guilds (gldName) " +
+                 "VALUES(@gldName) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldName", guildName);
-            cmd.Parameters.AddWithValue("@gldFaction", (int) guildFaction);
+            //cmd.Parameters.AddWithValue("@gldFaction", (int) guildFaction);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5730,7 +5730,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void addJobXP (int userId, Jobs.Type jobType, Faction.Type faction, int XP) {
+   public static new void addJobXP (int userId, Jobs.Type jobType, Perk.Category perkCategory, int XP) {
       string columnName = Jobs.getColumnName(jobType);
 
       try {
@@ -5761,7 +5761,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
-            cmd.Parameters.AddWithValue("@faction", (int) faction);
+            cmd.Parameters.AddWithValue("@faction", (int) perkCategory);
             cmd.Parameters.AddWithValue("@metric", XP);
             cmd.Parameters.AddWithValue("@jobTime", DateTime.UtcNow);
 
@@ -5924,7 +5924,7 @@ public class DB_Main : DB_MainStub
 
    #region Leader Boards
 
-   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type boardFaction,
+   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Perk.Category boardPerkCategory,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
 
       List<LeaderBoardInfo> list = new List<LeaderBoardInfo>();
@@ -5939,7 +5939,6 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
-            cmd.Parameters.AddWithValue("@faction", (int) boardFaction);
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@endDate", endDate);
 
@@ -5949,7 +5948,7 @@ public class DB_Main : DB_MainStub
                while (dataReader.Read()) {
                   int userId = DataUtil.getInt(dataReader, "usrId");
                   int totalMetric = DataUtil.getInt(dataReader, "totalMetric");
-                  LeaderBoardInfo entry = new LeaderBoardInfo(userRank, jobType, boardFaction, period, userId, totalMetric);
+                  LeaderBoardInfo entry = new LeaderBoardInfo(userRank, jobType, period, userId, totalMetric);
                   list.Add(entry);
                   userRank++;
                }
@@ -5991,14 +5990,13 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO leader_boards (userRank, jobType, boardFaction, period, usrId, score) " +
-            "VALUES (@userRank, @jobType, @boardFaction, @period, @usrId, @score)", conn)) {
+            "INSERT INTO leader_boards (userRank, jobType, period, usrId, score) " +
+            "VALUES (@userRank, @jobType, @period, @usrId, @score)", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.Add(new MySqlParameter("@userRank", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@jobType", MySqlDbType.Int16));
-            cmd.Parameters.Add(new MySqlParameter("@boardFaction", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@period", MySqlDbType.Int16));
             cmd.Parameters.Add(new MySqlParameter("@usrId", MySqlDbType.Int32));
             cmd.Parameters.Add(new MySqlParameter("@score", MySqlDbType.Int32));
@@ -6007,7 +6005,6 @@ public class DB_Main : DB_MainStub
             for (int i = 0; i < entries.Count; i++) {
                cmd.Parameters["@userRank"].Value = entries[i].userRank;
                cmd.Parameters["@jobType"].Value = (int) entries[i].jobType;
-               cmd.Parameters["@boardFaction"].Value = (int) entries[i].boardFaction;
                cmd.Parameters["@period"].Value = (int) entries[i].period;
                cmd.Parameters["@usrId"].Value = entries[i].userId;
                cmd.Parameters["@score"].Value = entries[i].score;
@@ -6070,7 +6067,7 @@ public class DB_Main : DB_MainStub
       return periodEndDate;
    }
 
-   public static new void getLeaderBoards (LeaderBoardsManager.Period period, Faction.Type boardFaction,
+   public static new void getLeaderBoards (LeaderBoardsManager.Period period, Perk.Category boardFaction,
       out List<LeaderBoardInfo> farmingEntries, out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries,
       out List<LeaderBoardInfo> tradingEntries, out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
 

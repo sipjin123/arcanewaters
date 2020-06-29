@@ -56,10 +56,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public string entityName;
 
-   // The nation of this Entity
-   [SyncVar]
-   public Nation.Type nationType;
-
    // Our current health
    [SyncVar]
    public int currentHealth = 1000;

@@ -24,7 +24,7 @@ public class LeaderBoardRow : MonoBehaviour
 
    public void setRowForLeaderBoard (LeaderBoardInfo entry) {
       rankText.text = entry.userRank.ToString() + ".";
-      factionIcon.sprite = Faction.getShipIcon(entry.userFaction);
+      factionIcon.sprite = null;
       userName.text = entry.userName;
       score.text = entry.score.ToString();
    }

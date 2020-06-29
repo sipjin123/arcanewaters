@@ -25,9 +25,6 @@ public class ShipInfo {
    // The Ship Skintype
    public Ship.SkinType skinType;
 
-   // The Nation type
-   public Nation.Type nationType;
-
    // The Mast type
    public Ship.MastType mastType;
 
@@ -94,7 +91,6 @@ public class ShipInfo {
       // if (!(this is Shop_ShipInfo)) {
          this.shipId = DataUtil.getInt(dataReader, "shpId");
          this.userId = DataUtil.getInt(dataReader, "usrId");
-         this.nationType = (Nation.Type) DataUtil.getInt(dataReader, "natType");
          this.health = DataUtil.getInt(dataReader, "health");
          this.shipName = DataUtil.getString(dataReader, "shpName");
       // }

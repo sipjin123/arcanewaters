@@ -135,7 +135,7 @@ public class BottomBar : MonoBehaviour {
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsPanel.DEFAULT_PERIOD, Faction.Type.None);
+         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsPanel.DEFAULT_PERIOD, Perk.Category.None);
       } else {
          PanelManager.self.togglePanel(Panel.Type.LeaderBoards);
       }

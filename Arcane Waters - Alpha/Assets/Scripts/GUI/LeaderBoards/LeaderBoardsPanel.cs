@@ -55,8 +55,8 @@ public class LeaderBoardsPanel : Panel
       self = this;
 
       // Initialize the faction filter
-      _factionList = new List<Faction.Type>();
-      foreach (Faction.Type faction in System.Enum.GetValues(typeof(Faction.Type))) {
+      _factionList = new List<Perk.Category>();
+      foreach (Perk.Category faction in Enum.GetValues(typeof(Perk.Category))) {
          _factionList.Add(faction);
       }
       _selectedFactionIndex = 0;
@@ -65,7 +65,7 @@ public class LeaderBoardsPanel : Panel
       _selectedPeriod = DEFAULT_PERIOD;
    }
 
-   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, Faction.Type boardFaction,
+   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, Perk.Category boardPerkCategory,
       double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
       LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
       LeaderBoardInfo[] miningEntries) {
@@ -135,23 +135,23 @@ public class LeaderBoardsPanel : Panel
       }
 
       // Select the correct faction
-      _selectedFactionIndex = _factionList.IndexOf(boardFaction);
+      _selectedFactionIndex = _factionList.IndexOf(boardPerkCategory);
       refreshFactionFilterDisplay();
    }
 
    public void onDayPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Day;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
    }
 
    public void onWeekPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Week;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
    }
 
    public void onMonthPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Month;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
    }
 
    public void onFactionFilterLeftButtonPress () {
@@ -164,7 +164,7 @@ public class LeaderBoardsPanel : Panel
       refreshFactionFilterDisplay();
 
       // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
    }
 
    public void onFactionFilterRightButtonPress () {
@@ -177,22 +177,23 @@ public class LeaderBoardsPanel : Panel
       refreshFactionFilterDisplay();
 
       // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedFaction());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
    }
 
    private void refreshFactionFilterDisplay () {
       // Retrieve the correct faction icon
-      factionIcon.sprite = Faction.getIcon(_factionList[_selectedFactionIndex]);
+      factionIcon.sprite = null;
+      D.debug("Perk icon is missing");
 
       // Set the faction name text
-      if (_factionList[_selectedFactionIndex] == Faction.Type.None) {
+      if (_factionList[_selectedFactionIndex] == Perk.Category.None) {
          factionText.text = "All factions";
       } else {
-         factionText.text = Faction.toString(_factionList[_selectedFactionIndex]);
+         factionText.text = Perk.getCategoryDisplayName(_factionList[_selectedFactionIndex]);
       }
    }
 
-   private Faction.Type getSelectedFaction () {
+   private Perk.Category getSelectedPerkCategory () {
       return _factionList[_selectedFactionIndex];
    }
 
@@ -211,7 +212,7 @@ public class LeaderBoardsPanel : Panel
    #region Private Variables
 
    // The list of factions filters
-   private List<Faction.Type> _factionList;
+   private List<Perk.Category> _factionList;
 
    // The index of the currently selected faction
    private int _selectedFactionIndex;

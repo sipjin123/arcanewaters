@@ -46,7 +46,6 @@ public class ShipEntity : SeaEntity
       sailors = data.baseSailors;
       rarity = Rarity.Type.None;
       damage = data.baseDamage;
-      nationType = Nation.Type.None;
    }
 
    protected virtual void initialize (ShipInfo info) {
@@ -59,7 +58,6 @@ public class ShipEntity : SeaEntity
       sailors = info.sailors;
       rarity = info.rarity;
       damage = info.damage;
-      nationType = info.nationType;
    }
 
    public override void playAttackSound () {

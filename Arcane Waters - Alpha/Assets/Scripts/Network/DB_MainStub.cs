@@ -801,7 +801,7 @@ public class DB_MainStub : MonoBehaviour {
       return new List<UserInfo>();
    }
 
-   public static int createGuild (string guildName, Faction.Type guildFaction) {
+   public static int createGuild (string guildName) {
       return 0;
    }
 
@@ -809,7 +809,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void addJobXP (int userId, Jobs.Type jobType, Faction.Type faction, int XP) {
+   public static void addJobXP (int userId, Jobs.Type jobType, Perk.Category perkCategory, int XP) {
 
    }
 
@@ -836,7 +836,7 @@ public class DB_MainStub : MonoBehaviour {
    public static void pruneJobHistory (DateTime untilDate) {
    }
 
-   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Faction.Type faction,
+   public static List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Perk.Category boardPerkCategory,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
       return null;
    }
@@ -855,7 +855,7 @@ public class DB_MainStub : MonoBehaviour {
       return DateTime.UtcNow;
    }
 
-   public static void getLeaderBoards (LeaderBoardsManager.Period period, Faction.Type boardFaction, out List<LeaderBoardInfo> farmingEntries,
+   public static void getLeaderBoards (LeaderBoardsManager.Period period, Perk.Category perkCategory, out List<LeaderBoardInfo> farmingEntries,
       out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
       out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
       farmingEntries = null;

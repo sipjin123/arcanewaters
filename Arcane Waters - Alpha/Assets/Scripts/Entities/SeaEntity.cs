@@ -407,9 +407,6 @@ public class SeaEntity : NetEntity
 
       updateSprites();
 
-      // Recolor our flags based on our Nation
-      spritesContainer.GetComponent<RecoloredSprite>().recolor(Nation.getPalette1(nationType), Nation.getPalette2(nationType));
-
       if (!Util.isEmpty(this.entityName)) {
          this.nameText.text = this.entityName;
       }
