@@ -118,7 +118,7 @@ public class EditorSQLManager {
          case EditorToolType.Perks:
             return "perks_config_xml";
          case EditorToolType.Treasure_Drops:
-            return "treasure_drops_xml_v1";
+            return "treasure_drops_xml_v2";
       }
       return "";
    }

@@ -8,8 +8,6 @@ public class DebugButtons : NetworkBehaviour
 {
    #region Public Variables
 
-   public GenericLootData tempDrop;
-
    public bool enableDebug;
 
    public string quantity;

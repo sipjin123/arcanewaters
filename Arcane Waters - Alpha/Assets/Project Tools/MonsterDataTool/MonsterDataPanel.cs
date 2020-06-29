@@ -7,10 +7,14 @@ using System;
 using System.Linq;
 using static MonsterSkillTemplate;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class MonsterDataPanel : MonoBehaviour
 {
    #region Public Variables
+
+   // The generic popup reference
+   public GenericSelectionPopup genericPopup;
 
    // Reference to the ability manager
    public MonsterAbilityManager abilityManager;
@@ -85,8 +89,6 @@ public class MonsterDataPanel : MonoBehaviour
    // Item Loot Variables
    public GameObject lootSelectionPanel;
    public GameObject lootTemplateParent;
-   public MonsterLootRow lootTemplate, currentLootTemplate;
-   public List<MonsterLootRow> monsterLootList = new List<MonsterLootRow>();
    public GameObject itemCategoryParent, itemTypeParent;
    public ItemCategoryTemplate itemCategoryTemplate;
    public ItemTypeTemplate itemTypeTemplate;
@@ -94,8 +96,6 @@ public class MonsterDataPanel : MonoBehaviour
    public Item.Category selectedCategory;
    public int itemTypeIDSelected;
    public string itemDataSelected;
-   public MonsterLootRow monsterLootRowDefault;
-   public InputField rewardItemMin, rewardItemMax;
    public Sprite emptySprite;
 
    // Skills Variables
@@ -136,6 +136,14 @@ public class MonsterDataPanel : MonoBehaviour
    // Variables that will be hidden if the enemy is a boss type
    public GameObject[] nonBossTypeVariables;
 
+   // Loot group UI requirements
+   public Button lootGroupButton;
+   public Text lootGroupText, lootGroupIndexText;
+   int lootGroupIdSelected = 0;
+   public Transform lootGroupParent;
+   public GameObject lootGroupPrefab;
+   public UnityEvent lootGroupSelected = new UnityEvent();
+
    #endregion
 
    private void Awake () {
@@ -143,6 +151,14 @@ public class MonsterDataPanel : MonoBehaviour
          saveExitButton.gameObject.SetActive(false);
       }
 
+      lootGroupButton.onClick.AddListener(() => {
+         lootGroupSelected.AddListener(() => {
+            lootGroupIdSelected = int.Parse(lootGroupIndexText.text);
+            loadLootGroupById(lootGroupIdSelected);
+         });
+         genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.LootGroupsLandMonsters, lootGroupIndexText, lootGroupSelected);
+      });
+      
       revertButton.onClick.AddListener(() => {
          monsterToolManager.loadAllDataFiles();
          abilityToolManager.loadXML();
@@ -151,7 +167,6 @@ public class MonsterDataPanel : MonoBehaviour
       addATKSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.Standard));
       addDEFSkillButton.onClick.AddListener(() => addSkillTemplate(AbilityType.BuffDebuff));
       addTemplateSkillButton.onClick.AddListener(() => openSkillSelectionPanel());
-      addLootButton.onClick.AddListener(() => addLootTemplate());
       toggleLootsButton.onClick.AddListener(() => toggleLoots());
       closeItemPanelButton.onClick.AddListener(() => lootSelectionPanel.SetActive(false));
       openAvatarSelectionButton.onClick.AddListener(() => openImageSelectionPanel());
@@ -324,6 +339,14 @@ public class MonsterDataPanel : MonoBehaviour
       deathSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.deathSoundEffectId);
       jumpSoundEffect = SoundEffectManager.self.getSoundEffect(newBattleData.jumpSoundEffectId);
 
+      lootGroupIdSelected = newBattleData.lootGroupId;
+      if (lootGroupIdSelected > 0) {
+         loadLootGroupById(lootGroupIdSelected);
+      } else {
+         lootGroupText.text = "";
+         lootGroupParent.gameObject.DestroyChildren();
+      }
+
       jumpSoundEffectName.text = "";
       if (jumpSoundEffect != null) {
          jumpSoundEffectName.text = jumpSoundEffect.name;
@@ -338,7 +361,6 @@ public class MonsterDataPanel : MonoBehaviour
 
       _disableOnDeath.isOn = newBattleData.disableOnDeath;
 
-      loadLootTemplates(newBattleData);
       loadSkillTemplates(newBattleData);
    }
 
@@ -394,6 +416,7 @@ public class MonsterDataPanel : MonoBehaviour
       newBattData.jumpSoundEffectId = jumpSoundEffect.id;
 
       newBattData.enemyName = _name.text;
+      newBattData.lootGroupId = lootGroupIdSelected;
 
       List<int> basicAbilityList = new List<int>();
       List<int> attackAbilityList = new List<int>();
@@ -420,7 +443,6 @@ public class MonsterDataPanel : MonoBehaviour
 
    public void saveData () {
       BattlerData battlerData = getBattlerData();
-      battlerData.battlerLootData = getRawLootData();
 
       if (isValidData(battlerData)) {
          monsterToolManager.saveDataToFile(battlerData, currentXmlId, xml_toggler.isOn);
@@ -433,32 +455,11 @@ public class MonsterDataPanel : MonoBehaviour
    private bool isValidData (BattlerData battleData) {
       if (battleData.imagePath != string.Empty
          && battleData.enemyName != string.Empty
-         && battleData.battlerLootData.defaultLoot.category != Item.Category.None
          && battleData.enemyType != Enemy.Type.None) {
          return true;
       }
 
       return false;
-   }
-
-   private RawGenericLootData getRawLootData () {
-      RawGenericLootData rawData = new RawGenericLootData();
-      List<LootInfo> tempLootInfo = new List<LootInfo>();
-
-      foreach (MonsterLootRow lootRow in monsterLootList) {
-         LootInfo newLootInfo = new LootInfo();
-         int modifiedId = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
-         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedId, data = lootRow.itemData };
-         newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
-         newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
-         tempLootInfo.Add(newLootInfo);
-      }
-      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType, data = monsterLootRowDefault.itemData };
-      rawData.lootList = tempLootInfo.ToArray();
-      rawData.minQuantity = int.Parse(rewardItemMin.text);
-      rawData.maxQuantity = int.Parse(rewardItemMax.text);
-
-      return rawData;
    }
 
    #endregion
@@ -504,6 +505,23 @@ public class MonsterDataPanel : MonoBehaviour
       }
    }
 
+   private void loadLootGroupById (int groupId) {
+      LootGroupData lootGroupData = monsterToolManager.lootGroupDataCollection[groupId];
+      lootGroupText.text = lootGroupData.lootGroupName;
+
+      lootGroupParent.gameObject.DestroyChildren();
+      foreach (TreasureDropsData lootGroupItemData in lootGroupData.treasureDropsCollection) {
+         TreasureDropsItemTemplate itemTemplate = Instantiate(lootGroupPrefab, lootGroupParent).GetComponent<TreasureDropsItemTemplate>();
+         Item cachedItem = lootGroupItemData.item;
+
+         itemTemplate.dropChance.text = lootGroupItemData.spawnChance.ToString();
+         itemTemplate.item = cachedItem;
+         itemTemplate.itemIcon.sprite = ImageManager.getSprite(cachedItem.iconPath);
+         itemTemplate.itemName.text = cachedItem.itemName;
+         itemTemplate.itemType.text = cachedItem.category == Item.Category.CraftingIngredients ? "Material" : cachedItem.category.ToString();
+      }
+   }
+
    private void toggleLoots () {
       dropDownContent.SetActive(!dropDownContent.activeSelf);
       dropDownLoots.SetActive(!dropDownContent.activeSelf);
@@ -531,126 +549,6 @@ public class MonsterDataPanel : MonoBehaviour
 
    #endregion
 
-   #region Loots Feature
-
-   public void addLootTemplate () {
-      GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
-      MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
-      row.itemData = "";
-      row.currentCategory = Item.Category.None;
-      row.initializeSetup();
-      row.updateDisplayName();
-      lootTemp.SetActive(true);
-      monsterLootList.Add(row);
-   }
-
-   public void loadLootTemplates (BattlerData rawData) {
-      lootTemplateParent.DestroyChildren();
-      monsterLootList = new List<MonsterLootRow>();
-
-      if (rawData.battlerLootData != null) {
-         foreach (LootInfo lootInfo in rawData.battlerLootData.lootList) {
-            GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
-            MonsterLootRow row = lootTemp.GetComponent<MonsterLootRow>();
-            row.currentCategory = lootInfo.lootType.category;
-            row.currentType = lootInfo.lootType.itemTypeId;
-            row.itemData = lootInfo.lootType.data;
-            row.itemCount.text = lootInfo.quantity.ToString();
-            row.chanceRatio.value = lootInfo.chanceRatio;
-
-            row.initializeSetup();
-            row.updateDisplayName();
-            lootTemp.SetActive(true);
-            monsterLootList.Add(row);
-         }
-      }
-      if (rawData.battlerLootData != null) {
-         monsterLootRowDefault.currentCategory = rawData.battlerLootData.defaultLoot.category;
-         monsterLootRowDefault.currentType = rawData.battlerLootData.defaultLoot.itemTypeId;
-         monsterLootRowDefault.itemData = rawData.battlerLootData.defaultLoot.data;
-         rewardItemMin.text = rawData.battlerLootData.minQuantity.ToString();
-         rewardItemMax.text = rawData.battlerLootData.maxQuantity.ToString();
-      } else {
-         monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
-         monsterLootRowDefault.itemData = "";
-         monsterLootRowDefault.currentType = 0;
-      }
-      monsterLootRowDefault.initializeSetup();
-      monsterLootRowDefault.updateDisplayName();
-   }
-
-   private void updateMainItemDisplay () {
-      lootSelectionPanel.SetActive(false);
-      currentLootTemplate.itemTypeName.text = itemTypeIDSelected.ToString();
-      currentLootTemplate.itemCategoryName.text = selectedCategory.ToString();
-   }
-
-   public void popupChoices () {
-      lootSelectionPanel.SetActive(true);
-      confirmItemButton.onClick.RemoveAllListeners();
-      confirmItemButton.onClick.AddListener(() => updateMainItemDisplay());
-      itemCategoryParent.gameObject.DestroyChildren();
-
-      foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Hats) {
-            GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
-            ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
-            categoryTemp.itemCategoryText.text = category.ToString();
-            categoryTemp.itemIndexText.text = ((int) category).ToString();
-            categoryTemp.itemCategory = category;
-
-            categoryTemp.selectButton.onClick.AddListener(() => {
-               selectedCategory = category;
-               updateTypeOptions();
-            });
-            template.SetActive(true);
-         }
-      }
-
-      updateTypeOptions();
-   }
-
-   private void updateTypeOptions () {
-      // Dynamically handles the type of item
-      itemTypeParent.gameObject.DestroyChildren();
-
-      Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, MonsterToolManager.instance.craftingDataList);
-      IOrderedEnumerable<KeyValuePair<int, Item>> sortedList = itemNameList.OrderBy(r => r.Value.itemName);
-      foreach (KeyValuePair<int, Item> item in sortedList) {
-         GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
-         ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-         itemTemp.itemTypeText.text = item.Value.itemName;
-         itemTemp.itemIndexText.text = "" + item.Key;
-
-         switch (selectedCategory) {
-            case Item.Category.Armor:
-               string fetchedArmorSprite = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedArmorSprite);
-               break;
-            case Item.Category.Hats:
-               string fetchedHatSprite = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedHatSprite);
-               break;
-            case Item.Category.Weapon:
-               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
-               break;
-            default:
-               itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-               break;
-         }
-
-         itemTemp.selectButton.onClick.AddListener(() => {
-            itemTypeIDSelected = item.Key;
-            itemDataSelected = item.Value.data;
-
-            confirmItemButton.onClick.Invoke();
-         });
-      }
-   }
-
-   #endregion
-
    #region Skill Feature
 
    private void loadSkillTemplates (BattlerData battlerData) {
@@ -666,12 +564,16 @@ public class MonsterDataPanel : MonoBehaviour
             AttackAbilityData attackData = monsterToolManager.attackAbilityList.Find(_ => _.itemID == abilityId);
             if (attackData != null) {
                attackAbilityData.Add(attackData);
+            } else {
+               D.editorLog("Attack is null: " + abilityId, Color.red);
             }
          }
          foreach (int abilityId in dataRecord.buffAbilityDataList) {
             BuffAbilityData buffData = monsterToolManager.buffAbilityList.Find(_ => _.itemID == abilityId);
             if (buffData != null) {
                buffAbilityData.Add(buffData);
+            } else {
+               D.editorLog("Buff is null: " + abilityId, Color.red);
             }
          }
          loadSkill(attackAbilityData.ToArray(), buffAbilityData.ToArray());

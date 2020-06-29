@@ -26,6 +26,12 @@ public class SeaMonsterToolManager : XmlDataToolManager
    // List of abilities
    public List<ShipAbilityPair> shipSkillList = new List<ShipAbilityPair>();
 
+   // Reference to the loot group data
+   public Dictionary<int, LootGroupData> lootGroupDataCollection = new Dictionary<int, LootGroupData>();
+
+   // Checks if requirements are loaded
+   public bool equipmentLoaded, abilitiesLoaded;
+
    #endregion
 
    private void Awake () {
@@ -41,24 +47,31 @@ public class SeaMonsterToolManager : XmlDataToolManager
    private void initializeEquipmentData () {
       // Initialize all craftable item data after equipment data is setup
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
-         loadAllDataFiles();
+         equipmentLoaded = true;
+         checkRequirements();
       });
 
       fetchRecipe();
       EquipmentXMLManager.self.initializeDataCache();
-   }
 
-   public void loadAllDataFiles () {
-      XmlLoadingPanel.self.startLoading();
-      _monsterDataList = new List<SeaMonsterXMLContent>();
+      lootGroupDataCollection = new Dictionary<int, LootGroupData>();
       shipSkillList = new List<ShipAbilityPair>();
-
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getSeaMonsterXML();
-         userIdData = DB_Main.getSQLDataByID(editorToolType);
          List<XMLPair> rawSeaEntityAbilityXMLData = DB_Main.getShipAbilityXML();
+         List<XMLPair> lootDropXmlData = DB_Main.getBiomeTreasureDrops();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Loads all the loot drops xml
+            foreach (XMLPair xmlPair in lootDropXmlData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               LootGroupData lootDropData = Util.xmlLoad<LootGroupData>(newTextAsset);
+               int uniqueId = xmlPair.xmlId;
+
+               if (!lootGroupDataCollection.ContainsKey(uniqueId)) {
+                  lootGroupDataCollection.Add(uniqueId, lootDropData);
+               }
+            }
+
             // Ability loading
             foreach (XMLPair seaEntityAbilityText in rawSeaEntityAbilityXMLData) {
                TextAsset newTextAsset = new TextAsset(seaEntityAbilityText.rawXmlData);
@@ -69,6 +82,27 @@ public class SeaMonsterToolManager : XmlDataToolManager
                });
             }
 
+            abilitiesLoaded = true;
+            checkRequirements();
+         });
+      });
+   }
+
+   private void checkRequirements () {
+      if (abilitiesLoaded && equipmentLoaded) {
+         loadAllDataFiles();
+      }
+   }
+
+   public void loadAllDataFiles () {
+      XmlLoadingPanel.self.startLoading();
+      _monsterDataList = new List<SeaMonsterXMLContent>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> rawXMLData = DB_Main.getSeaMonsterXML();
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);

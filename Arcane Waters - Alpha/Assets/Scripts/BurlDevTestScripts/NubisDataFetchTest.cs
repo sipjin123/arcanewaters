@@ -107,10 +107,10 @@ public class NubisDataFetchTest : MonoBehaviour
                string rawData = Fetch_Treasure_Drops_v1Controller.fetchTreasureDrops();
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  Dictionary<Biome.Type, TreasureDropsCollection> treasureDataCollection = TreasureDrops.processTreasureDrops(rawData);
+                  Dictionary<Biome.Type, LootGroupData> treasureDataCollection = TreasureDrops.processTreasureDrops(rawData);
                   D.editorLog("Result: " + rawData);
 
-                  foreach (KeyValuePair<Biome.Type, TreasureDropsCollection> keyPair in treasureDataCollection) {
+                  foreach (KeyValuePair<Biome.Type, LootGroupData> keyPair in treasureDataCollection) {
                      D.editorLog(keyPair.Key + " : " + keyPair.Value.treasureDropsCollection.Count, Color.magenta);
                      foreach (TreasureDropsData dropsData in keyPair.Value.treasureDropsCollection) {
                         D.editorLog(dropsData.item.category + " : " + dropsData.item.itemTypeId + " : " + dropsData.item.itemName, Color.gray);

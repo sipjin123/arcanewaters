@@ -78,6 +78,9 @@ public class MasterToolScene : MonoBehaviour {
          Application.Quit();
       });
 
+      clickTreasureDropToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(treasureDropToolScene);
+      });
       clickAbilityScene.onClick.AddListener(() => {
          SceneManager.LoadScene(abilityScene);
       });

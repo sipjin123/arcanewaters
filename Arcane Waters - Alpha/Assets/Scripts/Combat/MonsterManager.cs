@@ -47,13 +47,6 @@ public class MonsterManager : MonoBehaviour {
       mainData.defensePerLevel = rawData.defensePerLevel;
       mainData.healthPerlevel = rawData.healthPerlevel;
 
-      RawGenericLootData newLootData = new RawGenericLootData();
-      newLootData.defaultLoot = rawData.battlerLootData.defaultLoot;
-      newLootData.lootList = rawData.battlerLootData.lootList;
-      newLootData.maxQuantity = rawData.battlerLootData.maxQuantity;
-      newLootData.minQuantity = rawData.battlerLootData.minQuantity;
-      mainData.battlerLootData = (newLootData);
-
       mainData.baseDefenseMultiplierSet.physicalDefenseMultiplier = rawData.baseDefenseMultiplierSet.physicalDefenseMultiplier;
       mainData.baseDefenseMultiplierSet.fireDefenseMultiplier = rawData.baseDefenseMultiplierSet.fireDefenseMultiplier;
       mainData.baseDefenseMultiplierSet.earthDefenseMultiplier = rawData.baseDefenseMultiplierSet.earthDefenseMultiplier;
@@ -70,6 +63,7 @@ public class MonsterManager : MonoBehaviour {
 
       mainData.preContactLength = rawData.preContactLength;
       mainData.preMagicLength = rawData.preMagicLength;
+      mainData.lootGroupId = rawData.lootGroupId;
    }
 
    public BattlerData getBattler (Enemy.Type enemyType) {
@@ -151,7 +145,6 @@ public class MonsterManager : MonoBehaviour {
                }
             }
             isInitialized = true;
-            RewardManager.self.initLandMonsterLootList();
          });
       });
    }

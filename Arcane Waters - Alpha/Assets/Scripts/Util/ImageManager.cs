@@ -119,7 +119,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         Debug.LogWarning("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
+         D.warning("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;

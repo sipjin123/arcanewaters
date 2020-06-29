@@ -2934,24 +2934,6 @@ public class RPCManager : NetworkBehaviour {
 
    #region Item Rewards for Combat and Crafting
 
-   [Server]
-   public void processEnemyRewards (Enemy.Type enemyType) {
-      // Gets loots for enemy type
-      EnemyLootLibrary lootLibrary = RewardManager.self.fetchLandMonsterLootData(enemyType);
-      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
-
-      // Build the list of rewarded items
-      List<Item> rewardedItems = new List<Item>();
-      foreach (LootInfo lootInfo in processedLoots) {
-         Item item = new Item { category = lootInfo.lootType.category, itemTypeId = lootInfo.lootType.itemTypeId };
-         item.count = lootInfo.quantity;
-         rewardedItems.Add(item);
-      }
-
-      // Grant the rewards to the user
-      giveItemRewardsToPlayer(_player.userId, rewardedItems, true);
-   }
-
    [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
       RewardManager.self.showItemsInRewardPanel(itemList.ToList());
@@ -3063,21 +3045,25 @@ public class RPCManager : NetworkBehaviour {
       // Add the user ID to the list
       oreNode.userIds.Add(_player.userId);
 
-      // Gathers the item rewards from the scriptable object
-      OreLootLibrary oreLootLibrary = RewardManager.self.getOreLoot(oreNode.oreType);
-      List<LootInfo> lootInfoList = oreLootLibrary.dropTypes.requestLootList();
-
       // Build the list of rewarded items
       List<Item> rewardedItems = new List<Item>();
-      foreach (LootInfo lootInfo in lootInfoList) {
-         Item item = new Item { category = lootInfo.lootType.category, itemTypeId = lootInfo.lootType.itemTypeId };
-         if (item.category == Item.Category.CraftingIngredients) {
-            item.itemName = item.getCastItem().getName();
-            item.iconPath = item.getCastItem().getIconPath();
-         }
-         item.count = lootInfo.quantity;
-         rewardedItems.Add(item);
+      CraftingIngredients.Type ingredientType = CraftingIngredients.Type.None;
+      switch (oreNode.oreType) {
+         case OreNode.Type.Gold:
+            ingredientType = CraftingIngredients.Type.Gold_Ore;
+            break;
+         case OreNode.Type.Silver:
+            ingredientType = CraftingIngredients.Type.Silver_Ore;
+            break;
+         case OreNode.Type.Iron:
+            ingredientType = CraftingIngredients.Type.Iron_Ore;
+            break;
       }
+      rewardedItems.Add(new Item {
+         category = Item.Category.CraftingIngredients,
+         count = 1,
+         itemTypeId = (int) ingredientType
+      });
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp
@@ -3091,7 +3077,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
             AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, lootInfoList.Count);
+            AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, 1);
 
             if (_player.voyageGroupId < 0) {
                // If any player does not belong to any group, reward them directly

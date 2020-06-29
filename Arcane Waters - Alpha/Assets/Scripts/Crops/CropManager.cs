@@ -96,11 +96,6 @@ public class CropManager : NetworkBehaviour {
       int tutorialStep = TutorialManager.getHighestCompletedStep(userId);
       int waterInterval = getWaterIntervalSeconds(cropType, tutorialStep);
 
-      // Make sure the crops have finished loading
-      if (!_cropsDoneLoading) {
-         return;
-      }
-
       // Make sure there's not already a Crop in that spot
       foreach (CropInfo crop in _crops) {
          if (crop.cropNumber == cropNumber && crop.areaKey == areaKey) {
@@ -119,7 +114,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
-         DB_Main.addJobXP(userId, Jobs.Type.Farmer, _player.faction, xp);
+         DB_Main.addJobXP(userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
          Jobs newJobXP = DB_Main.getJobXP(userId);
 
          // Back to the Unity thread
@@ -180,7 +175,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToWater.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, _player.faction, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -242,7 +237,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToHarvest.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, _player.faction, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -336,7 +331,7 @@ public class CropManager : NetworkBehaviour {
             // Add experience
             int baseXP = Crop.getXP(offer.cropType) * amountToSell;
             int totalXP = (int) (baseXP * xpModifier);
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, _player.faction, totalXP);
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, Perk.Category.CropGrowthSpeed, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
             _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
 

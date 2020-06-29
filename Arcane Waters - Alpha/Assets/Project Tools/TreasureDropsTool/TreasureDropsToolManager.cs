@@ -14,7 +14,7 @@ public class TreasureDropsToolManager : MonoBehaviour {
    #region Public Variables
 
    // Cached drops list
-   public Dictionary<Biome.Type, List<TreasureDropsData>> treasureDropsCollection = new Dictionary<Biome.Type, List<TreasureDropsData>>();
+   public Dictionary<int, LootGroupData> treasureDropsCollection = new Dictionary<int, LootGroupData>();
 
    // Reference to self
    public static TreasureDropsToolManager instance;
@@ -42,20 +42,18 @@ public class TreasureDropsToolManager : MonoBehaviour {
       EquipmentXMLManager.self.initializeDataCache();
    }
 
-   public void saveDataFile (Biome.Type biomeType, List<TreasureDropsData> treasureData) {
+   public void saveDataFile (int xmlId, Biome.Type biomeType, LootGroupData lootGroupData) {
       XmlLoadingPanel.self.startLoading();
-      TreasureDropsCollection newTreasureCollection = new TreasureDropsCollection();
-      newTreasureCollection.treasureDropsCollection = treasureData;
 
-      XmlSerializer ser = new XmlSerializer(newTreasureCollection.GetType());
+      XmlSerializer ser = new XmlSerializer(lootGroupData.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, newTreasureCollection);
+         ser.Serialize(writer, lootGroupData);
       }
 
       string longString = sb.ToString();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateBiomeTreasureDrops(biomeType, longString);
+         DB_Main.updateBiomeTreasureDrops(xmlId, longString, biomeType);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
@@ -65,28 +63,18 @@ public class TreasureDropsToolManager : MonoBehaviour {
 
    public void loadAllDataFiles () {
       XmlLoadingPanel.self.startLoading();
-      treasureDropsCollection = new Dictionary<Biome.Type, List<TreasureDropsData>>();
+      treasureDropsCollection = new Dictionary<int, LootGroupData>();
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> xmlPairList = DB_Main.getBiomeTreasureDrops();
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in xmlPairList) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               TreasureDropsCollection treasureCollectionData = Util.xmlLoad<TreasureDropsCollection>(newTextAsset);
-               Biome.Type newBiomeType = (Biome.Type) xmlPair.xmlId;
+               LootGroupData treasureCollectionData = Util.xmlLoad<LootGroupData>(newTextAsset);
+               int uniqueId = xmlPair.xmlId;
 
-               if (!treasureDropsCollection.ContainsKey(newBiomeType)) {
-                  List<TreasureDropsData> newTreasureDropsData = new List<TreasureDropsData>();
-                  foreach (TreasureDropsData treasureDrop in treasureCollectionData.treasureDropsCollection) {
-                     newTreasureDropsData.Add(treasureDrop);
-                  }
-                  treasureDropsCollection.Add(newBiomeType, newTreasureDropsData);
-               }
-            }
-
-            // Makes sure to populate the biomes that does not exist in the database
-            foreach (Biome.Type biomeType in Enum.GetValues(typeof(Biome.Type))) {
-               if (!treasureDropsCollection.ContainsKey(biomeType)) {
-                  treasureDropsCollection.Add(biomeType, new List<TreasureDropsData>());
+               if (!treasureDropsCollection.ContainsKey(uniqueId)) {
+                  treasureDropsCollection.Add(uniqueId, treasureCollectionData);
                }
             }
 

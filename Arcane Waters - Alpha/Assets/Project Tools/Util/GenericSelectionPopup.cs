@@ -97,6 +97,9 @@ public class GenericSelectionPopup : MonoBehaviour
       DiscoverySprites = 41,
       AchievementItemCategory = 42,
       PerkIcon = 43,
+      BiomeType = 44,
+      LootGroupsLandMonsters = 45,
+      LootGroupsSeaMonsters = 46
    }
 
    #endregion
@@ -295,6 +298,16 @@ public class GenericSelectionPopup : MonoBehaviour
       templateParent.DestroyChildren();
       previewSelectionIcon.sprite = emptySprite;
       switch (popupType) {
+         case selectionType.LootGroupsLandMonsters:
+            foreach (KeyValuePair<int, LootGroupData> lootGroupData in MonsterToolManager.instance.lootGroupDataCollection) {
+               createTextTemplate(lootGroupData.Value.lootGroupName, textUI, changeEvent, "", null, lootGroupData.Key, true);
+            }
+            break;
+         case selectionType.LootGroupsSeaMonsters:
+            foreach (KeyValuePair<int, LootGroupData> lootGroupData in SeaMonsterToolManager.instance.lootGroupDataCollection) {
+               createTextTemplate(lootGroupData.Value.lootGroupName, textUI, changeEvent, "", null, lootGroupData.Key, true);
+            }
+            break;
          case selectionType.WeaponActionType:
             foreach (Weapon.ActionType weaponActionType in Enum.GetValues(typeof(Weapon.ActionType))) {
                createTextTemplate(weaponActionType.ToString(), textUI, changeEvent);
@@ -308,6 +321,11 @@ public class GenericSelectionPopup : MonoBehaviour
          case selectionType.RequirementType:
             foreach (RequirementType requirementType in Enum.GetValues(typeof(RequirementType))) {
                createTextTemplate(requirementType.ToString(), textUI, changeEvent);
+            }
+            break;
+         case selectionType.BiomeType:
+            foreach (Biome.Type biomeType in Enum.GetValues(typeof(Biome.Type))) {
+               createTextTemplate(biomeType.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.ShipSailType:
@@ -493,13 +511,13 @@ public class GenericSelectionPopup : MonoBehaviour
       }
    }
 
-   private void createTextTemplate (string selectionName, Text textUI, UnityEvent changeEvent = null, string imagePath = "", Image imageUI = null, int spriteIndex = 0) {
+   private void createTextTemplate (string selectionName, Text textUI, UnityEvent changeEvent = null, string imagePath = "", Image imageUI = null, int spriteIndex = 0, bool useIndexAsName = false) {
       GameObject selectionObj = Instantiate(templatePrefab.gameObject, templateParent.transform);
       ItemTypeTemplate selectionTemplate = selectionObj.GetComponent<ItemTypeTemplate>();
       selectionTemplate.itemTypeText.text = selectionName;
       selectionTemplate.previewButton.gameObject.SetActive(false);
       selectionTemplate.selectButton.onClick.AddListener(() => {
-         textUI.text = selectionName;
+         textUI.text = useIndexAsName ? spriteIndex.ToString() : selectionName;
          if (imageUI != null && imagePath != "") {
             imageUI.sprite = ImageManager.getSprite(imagePath);
          }

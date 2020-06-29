@@ -215,33 +215,31 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public Item getSeaMonsterLootContents () {
-      // Gets loots for enemy type
-      SeaMonsterLootLibrary lootLibrary = RewardManager.self.fetchSeaMonsterLootData((SeaMonsterEntity.Type) enemyType);
-      List<LootInfo> processedLoots = lootLibrary.dropTypes.requestLootList();
+      SeaMonsterEntity.Type monsterType = (SeaMonsterEntity.Type) enemyType;
+      SeaMonsterEntityData battlerData = SeaMonsterManager.self.getMonster(monsterType);
 
-      // Registers list of ingredient types for data fetching
-      List<Item> itemLoots = new List<Item>();
-      foreach(LootInfo info in processedLoots) {
-         itemLoots.Add(info.lootType);
-      }
-
-      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId };
-      return itemToCreate;
+      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId);
+      return processItemChance(treasureDropsDataList);
    }
 
    public Item getLandMonsterLootContents () {
-      // Gets loot
-      BattlerData battlerData = BattleManager.self.getAllBattlersData().Find(x => (int)x.enemyType == enemyType);
-      List<LootInfo> processedLoot = battlerData.battlerLootData.requestLootList();
+      Enemy.Type monsterType = (Enemy.Type) enemyType;
+      BattlerData battlerData = MonsterManager.self.getBattler(monsterType);
 
-      // Registers list of ingredient types for data fetching
-      List <Item> itemLoots = new List<Item>();
-      foreach (LootInfo info in processedLoot) {
-         itemLoots.Add(info.lootType);
+      List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId);
+      return processItemChance(treasureDropsDataList);
+   }
+
+   private Item processItemChance (List<TreasureDropsData> treasureDropsDataList) {
+      float randomizer = Random.Range(0, 100);
+      if (treasureDropsDataList.Count > 0) {
+         foreach (TreasureDropsData treasureDropData in treasureDropsDataList.OrderBy(_ => _.spawnChance)) {
+            if (randomizer < treasureDropData.spawnChance) {
+               return treasureDropData.item;
+            }
+         }
       }
-
-      Item itemToCreate = new Item { category = itemLoots[0].category, itemTypeId = itemLoots[0].itemTypeId, data = itemLoots[0].data };
-      return itemToCreate;
+      return treasureDropsDataList[0].item;
    }
 
    public bool hasBeenOpened () {

@@ -118,7 +118,7 @@ public class DB_Main : DB_MainStub
          contentToFetch = "paletteId, xml_content ";
       }
       if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
-         contentToFetch = "biomeType, xmlContent ";
+         contentToFetch = "xmlId, xmlContent ";
       }
 
       try {
@@ -143,7 +143,7 @@ public class DB_Main : DB_MainStub
                      xmlId = dataReader.GetInt32("paletteId");
                      xmlContent = dataReader.GetString("xml_content");
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
-                     xmlId = dataReader.GetInt32("biomeType");
+                     xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
@@ -524,18 +524,25 @@ public class DB_Main : DB_MainStub
 
    #region Treasure Drops XML
 
-   public static new void updateBiomeTreasureDrops (Biome.Type biomeType, string rawXmlContent) {
+   public static new void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
+      string xmlIdKey = "xmlId, ";
+      string xmlIdValue = "@xmlId, ";
+      if (xmlId < 0) {
+         xmlIdKey = "";
+         xmlIdValue = "";
+      }
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO treasure_drops_xml_v1 (biomeType, xmlContent, lastUserUpdate) " +
-            "VALUES(@biomeType, @xmlContent, NOW()) " +
-            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
+            "INSERT INTO treasure_drops_xml_v2 (" + xmlIdKey + "biomeType, xmlContent, lastUserUpdate) " +
+            "VALUES(" + xmlIdValue + "@biomeType, @xmlContent, NOW()) " +
+            "ON DUPLICATE KEY UPDATE biomeType = @biomeType, xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
             conn.Open();
             cmd.Prepare();
 
+            cmd.Parameters.AddWithValue("@xmlId", xmlId);
             cmd.Parameters.AddWithValue("@biomeType", (int)biomeType);
             cmd.Parameters.AddWithValue("@xmlContent", rawXmlContent);
 
@@ -551,7 +558,7 @@ public class DB_Main : DB_MainStub
       List<XMLPair> xmlContent = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.treasure_drops_xml_v1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.treasure_drops_xml_v2", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -559,7 +566,7 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXML = new XMLPair();
-                  newXML.xmlId = dataReader.GetInt32("biomeType");
+                  newXML.xmlId = dataReader.GetInt32("xmlId");
                   newXML.rawXmlData = dataReader.GetString("xmlContent");
                   xmlContent.Add(newXML);
                }
@@ -5941,6 +5948,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@endDate", endDate);
+            cmd.Parameters.AddWithValue("@faction", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {

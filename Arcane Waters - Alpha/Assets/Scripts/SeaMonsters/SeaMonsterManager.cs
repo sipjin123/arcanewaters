@@ -50,20 +50,6 @@ public class SeaMonsterManager : MonoBehaviour {
 
    }
 
-   public void spawnSeamonstersOnServerForInstance  () {
-      // TODO: Confirm if this is still needed
-      /*
-      foreach (SeaMonsterSpawnData spawnSched in scheduledSpawnList) {
-         // If we don't have any spawners defined for this Area, then we're done
-         if (!_spawners.ContainsKey(spawnSched.instance.areaKey)) {
-            D.log("No SeaMonster Spawners defined for Area Key: " + spawnSched.instance.areaKey);
-            return;
-         }
-
-         spawnSched.spawn();
-      }*/
-   }
-
    #endregion
 
    #region XML Features
@@ -91,8 +77,6 @@ public class SeaMonsterManager : MonoBehaviour {
                      D.debug("Failed to load sea monster: " + xmlPair.xmlId);
                   }
                }
-               spawnSeamonstersOnServerForInstance ();
-               RewardManager.self.initSeaMonsterLootList();
             });
          });
       }

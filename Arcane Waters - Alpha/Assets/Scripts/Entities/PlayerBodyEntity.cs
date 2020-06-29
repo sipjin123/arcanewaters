@@ -145,10 +145,13 @@ public class PlayerBodyEntity : BodyEntity {
          if (!isNearInteractables) {
             if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
                || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
+               requestAnimationPlay(Anim.Type.Interact_East);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
             } else if (facing == Direction.North) {
+               requestAnimationPlay(Anim.Type.Interact_North);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
             } else if (facing == Direction.South) {
+               requestAnimationPlay(Anim.Type.Interact_South);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
             }
 

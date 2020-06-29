@@ -45,7 +45,6 @@ public class BattlerData {
    // Attacks and abilities that the battler have
    public AbilityDataRecord battlerAbilities;
    public string serializedBattlerAbilities;
-   public RawGenericLootData battlerLootData;
 
    // Multiplier Sets
    public BaseDamageMultiplierSet baseDamageMultiplierSet = new BaseDamageMultiplierSet();
@@ -72,6 +71,9 @@ public class BattlerData {
    // Contains the elemental resistance and weakness
    [XmlIgnore] public Element[] elementalWeakness;
    [XmlIgnore] public Element[] elementalResistance;
+
+   // The reference id of the loot group data
+   public int lootGroupId = 0;
 
    #endregion
 
@@ -130,8 +132,8 @@ public class BattlerData {
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
-      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath) {
+      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward,
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId) {
 
       BattlerData data = new BattlerData();
 
@@ -139,7 +141,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, lootData, enemyType, battlerObject, imagePath, animGroup, disableOnDeath);
+       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, enemyType, battlerObject, imagePath, animGroup, disableOnDeath, lootGroupId);
 
       return data;
    }
@@ -164,7 +166,6 @@ public class BattlerData {
       healthPerlevel = datacopy.healthPerlevel;
 
       battlerAbilities = datacopy.battlerAbilities;
-      battlerLootData = datacopy.battlerLootData;
 
       baseDefenseMultiplierSet.physicalDefenseMultiplier = datacopy.baseDefenseMultiplierSet.physicalDefenseMultiplier;
       baseDefenseMultiplierSet.fireDefenseMultiplier = datacopy.baseDefenseMultiplierSet.fireDefenseMultiplier;
@@ -202,14 +203,15 @@ public class BattlerData {
 
       imagePath = datacopy.imagePath;
       disableOnDeath = datacopy.disableOnDeath;
+      lootGroupId = datacopy.lootGroupId;
    }
 
    protected void setAllBattlerData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
       int defPerLevel, int healthPerLevel, AbilityDataRecord battlerAbilities, float physicalDefMultiplier, float fireDefMultiplier,
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
-      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward, RawGenericLootData lootData,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath) {
+      int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward,
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;
@@ -228,7 +230,6 @@ public class BattlerData {
       this.healthPerlevel = healthPerLevel;
 
       this.battlerAbilities = battlerAbilities;
-      this.battlerLootData = lootData;
 
       this.baseDefenseMultiplierSet.physicalDefenseMultiplier = physicalDefMultiplier;
       this.baseDefenseMultiplierSet.fireDefenseMultiplier = fireDefMultiplier;
@@ -252,6 +253,7 @@ public class BattlerData {
       this.imagePath = imagePath;
 
       this.disableOnDeath = disableOnDeath;
+      this.lootGroupId = lootGroupId;
    }
 
    #region Helper Class

@@ -42,7 +42,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string TUTORIAL_TABLE = "tutorial_xml";
    public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
    public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
-   public static string TREASURE_DROPS_TABLE = "treasure_drops_xml_v1";
+   public static string TREASURE_DROPS_TABLE = "treasure_drops_xml_v2";
 
    public static string PERKS_DATA_TABLE = "perks_config_xml";
    public static string PALETTE_DATA_TABLE = "palette";

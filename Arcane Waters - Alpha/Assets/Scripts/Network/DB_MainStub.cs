@@ -12,7 +12,7 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   public static void updateBiomeTreasureDrops (Biome.Type biomeType, string rawXmlContent) {
+   public static void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
    }
 
    public static List<XMLPair> getBiomeTreasureDrops () {

@@ -5,11 +5,15 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using System.Linq;
+using UnityEngine.Events;
 
 public class SeaMonsterDataPanel : MonoBehaviour
 {
    #region Public Variables
-   
+
+   // The generic popup reference
+   public GenericSelectionPopup genericPopup;
+
    // References the tool manager
    public SeaMonsterToolManager monsterToolManager;
 
@@ -80,16 +84,13 @@ public class SeaMonsterDataPanel : MonoBehaviour
    // Monster Loots
    public GameObject lootSelectionPanel;
    public GameObject lootTemplateParent;
-   public SeaMonsterLootRow lootTemplate, currentLootTemplate;
-   public List<SeaMonsterLootRow> monsterLootList = new List<SeaMonsterLootRow>();
    public GameObject itemCategoryParent, itemTypeParent;
    public ItemCategoryTemplate itemCategoryTemplate;
    public ItemTypeTemplate itemTypeTemplate;
-   public Button confirmItemButton, addLootButton, closeItemPanelButton;
+   public Button confirmItemButton, closeItemPanelButton;
    public Item.Category selectedCategory;
    public string itemDataSelected;
    public int itemTypeIDSelected;
-   public SeaMonsterLootRow monsterLootRowDefault;
    public InputField rewardItemMin, rewardItemMax;
 
    // Togglers
@@ -114,6 +115,14 @@ public class SeaMonsterDataPanel : MonoBehaviour
    // Toggler to determine if this sql data is active in the database
    public Toggle xml_toggler;
 
+   // Loot group UI requirements
+   public Button lootGroupButton;
+   public Text lootGroupText, lootGroupIndexText;
+   int lootGroupIdSelected = 0;
+   public Transform lootGroupParent;
+   public GameObject lootGroupPrefab;
+   public UnityEvent lootGroupSelected = new UnityEvent();
+
    #endregion
 
    private void Awake () {
@@ -125,6 +134,14 @@ public class SeaMonsterDataPanel : MonoBehaviour
       revertButton.onClick.AddListener(() => {
          monsterToolManager.loadAllDataFiles();
          gameObject.SetActive(false);
+      });
+
+      lootGroupButton.onClick.AddListener(() => {
+         lootGroupSelected.AddListener(() => {
+            lootGroupIdSelected = int.Parse(lootGroupIndexText.text);
+            loadLootGroupById(lootGroupIdSelected);
+         });
+         genericPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.LootGroupsSeaMonsters, lootGroupIndexText, lootGroupSelected);
       });
 
       previewMonster.onClick.AddListener(() => {
@@ -146,7 +163,6 @@ public class SeaMonsterDataPanel : MonoBehaviour
       });
 
       addSpawnPoint.onClick.AddListener(() => addProjectileSpawnRow());
-      addLootButton.onClick.AddListener(() => addLootTemplate());
       closeAvatarSelectionButton.onClick.AddListener(() => selectionPanel.SetActive(false));
       saveExitButton.onClick.AddListener(() => saveData());
       seaMonsterTypeButton.onClick.AddListener(() => openTypeSelectionPanel());
@@ -274,6 +290,14 @@ public class SeaMonsterDataPanel : MonoBehaviour
       roleType.onValueChanged.Invoke(roleType.value);
       attackType.onValueChanged.Invoke(attackType.value);
 
+      lootGroupIdSelected = seaMonsterData.lootGroupId;
+      if (lootGroupIdSelected > 0) {
+         loadLootGroupById(lootGroupIdSelected);
+      } else {
+         lootGroupText.text = "";
+         lootGroupParent.gameObject.DestroyChildren();
+      }
+
       if (seaMonsterData.defaultSpritePath != null) {
          defaultSprite.sprite = ImageManager.getSprite(seaMonsterData.defaultSpritePath);
       }
@@ -308,8 +332,6 @@ public class SeaMonsterDataPanel : MonoBehaviour
       }
 
       loadProjectileSpawnRow(seaMonsterData);
-
-      loadLootTemplates(seaMonsterData.lootData);
    }
 
    private SeaMonsterEntityData getSeaMonsterData () {
@@ -354,6 +376,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
       seaMonsterData.rippleAnimationSpeedOverride = float.Parse(rippleAnimationSpeedOverride.text);
       seaMonsterData.rippleLocOffset = new Vector3(float.Parse(rippleOffsetX.text), float.Parse(rippleOffsetY.text), 0);
 
+      seaMonsterData.lootGroupId = lootGroupIdSelected;
+
       if (projectileSpawnRowList.Count > 0) {
          seaMonsterData.projectileSpawnLocations = new List<DirectionalPositions>();
          foreach (ProjectileSpawnRow row in projectileSpawnRowList) {
@@ -378,7 +402,6 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    public void saveData () {
       SeaMonsterEntityData rawData = getSeaMonsterData();
-      rawData.lootData = getRawLootData();
 
       monsterToolManager.saveDataToFile(rawData, currentXmlId, xml_toggler.isOn);
       gameObject.SetActive(false);
@@ -386,143 +409,22 @@ public class SeaMonsterDataPanel : MonoBehaviour
 
    #endregion
 
-   #region Loots Feature
+   private void loadLootGroupById (int groupId) {
+      LootGroupData lootGroupData = monsterToolManager.lootGroupDataCollection[groupId];
+      lootGroupText.text = lootGroupData.lootGroupName;
 
-   public void addLootTemplate () {
-      GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
-      SeaMonsterLootRow row = lootTemp.GetComponent<SeaMonsterLootRow>();
-      row.currentCategory = Item.Category.None;
-      row.itemData = "";
-      row.initializeSetup();
-      row.updateDisplayName();
-      lootTemp.SetActive(true);
-      monsterLootList.Add(row);
-   }
+      lootGroupParent.gameObject.DestroyChildren();
+      foreach (TreasureDropsData lootGroupItemData in lootGroupData.treasureDropsCollection) {
+         TreasureDropsItemTemplate itemTemplate = Instantiate(lootGroupPrefab, lootGroupParent).GetComponent<TreasureDropsItemTemplate>();
+         Item cachedItem = lootGroupItemData.item;
 
-   private RawGenericLootData getRawLootData () {
-      RawGenericLootData rawData = new RawGenericLootData();
-      List<LootInfo> tempLootInfo = new List<LootInfo>();
-
-      foreach (SeaMonsterLootRow lootRow in monsterLootList) {
-         LootInfo newLootInfo = new LootInfo();
-         int modifiedID = Blueprint.modifyID(lootRow.currentCategory, lootRow.currentType);
-         newLootInfo.lootType = new Item { category = lootRow.currentCategory, itemTypeId = modifiedID, data = lootRow.itemData };
-         newLootInfo.quantity = int.Parse(lootRow.itemCount.text);
-         newLootInfo.chanceRatio = (float) lootRow.chanceRatio.value;
-         tempLootInfo.Add(newLootInfo);
-      }
-      rawData.defaultLoot = new Item { category = monsterLootRowDefault.currentCategory, itemTypeId = monsterLootRowDefault.currentType, data = monsterLootRowDefault.itemData };
-      rawData.lootList = tempLootInfo.ToArray();
-      rawData.minQuantity = int.Parse(rewardItemMin.text);
-      rawData.maxQuantity = int.Parse(rewardItemMax.text);
-
-      return rawData;
-   }
-
-   public void loadLootTemplates (RawGenericLootData lootData) {
-      lootTemplateParent.DestroyChildren();
-      monsterLootList = new List<SeaMonsterLootRow>();
-
-      if (lootData != null) {
-         foreach (LootInfo lootInfo in lootData.lootList) {
-            GameObject lootTemp = Instantiate(lootTemplate.gameObject, lootTemplateParent.transform);
-            SeaMonsterLootRow row = lootTemp.GetComponent<SeaMonsterLootRow>();
-            row.currentCategory = lootInfo.lootType.category;
-            row.itemData = lootInfo.lootType.data;
-            row.currentType = lootInfo.lootType.itemTypeId;
-            row.itemCount.text = lootInfo.quantity.ToString();
-            row.chanceRatio.value = lootInfo.chanceRatio;
-
-            row.initializeSetup();
-            row.updateDisplayName();
-            lootTemp.SetActive(true);
-            monsterLootList.Add(row);
-         }
-
-         monsterLootRowDefault.currentCategory = lootData.defaultLoot.category;
-         monsterLootRowDefault.itemData = lootData.defaultLoot.data;
-         monsterLootRowDefault.currentType = lootData.defaultLoot.itemTypeId;
-         rewardItemMin.text = lootData.minQuantity.ToString();
-         rewardItemMax.text = lootData.maxQuantity.ToString();
-      } else {
-         monsterLootRowDefault.currentCategory = Item.Category.CraftingIngredients;
-         monsterLootRowDefault.itemData = "";
-         monsterLootRowDefault.currentType = 0;
-      }
-      monsterLootRowDefault.initializeSetup();
-      monsterLootRowDefault.updateDisplayName();
-   }
-
-   public void popupChoices () {
-      lootSelectionPanel.SetActive(true);
-      confirmItemButton.onClick.RemoveAllListeners();
-      confirmItemButton.onClick.AddListener(() => updateMainItemDisplay());
-      itemCategoryParent.gameObject.DestroyChildren();
-
-      foreach (Item.Category category in Enum.GetValues(typeof(Item.Category))) {
-         if (category == Item.Category.CraftingIngredients || category == Item.Category.Blueprint 
-            || category == Item.Category.Armor || category == Item.Category.Weapon || category == Item.Category.Hats) {
-            GameObject template = Instantiate(itemCategoryTemplate.gameObject, itemCategoryParent.transform);
-            ItemCategoryTemplate categoryTemp = template.GetComponent<ItemCategoryTemplate>();
-            categoryTemp.itemCategoryText.text = category.ToString();
-            categoryTemp.itemIndexText.text = ((int) category).ToString();
-            categoryTemp.itemCategory = category;
-
-            categoryTemp.selectButton.onClick.AddListener(() => {
-               selectedCategory = category;
-               updateTypeOptions();
-            });
-            template.SetActive(true);
-         }
-      }
-      updateTypeOptions();
-   }
-
-   private void updateTypeOptions () {
-      // Dynamically handles the type of item
-      itemTypeParent.gameObject.DestroyChildren();
-
-      Dictionary<int, Item> itemNameList = GenericSelectionPopup.getItemCollection(selectedCategory, SeaMonsterToolManager.instance.craftingDataList);
-      IOrderedEnumerable<KeyValuePair<int, Item>> sortedList = itemNameList.OrderBy(r => r.Value.itemName);
-      foreach (KeyValuePair<int, Item> item in sortedList) {
-         GameObject template = Instantiate(itemTypeTemplate.gameObject, itemTypeParent.transform);
-         ItemTypeTemplate itemTemp = template.GetComponent<ItemTypeTemplate>();
-         itemTemp.itemTypeText.text = item.Value.itemName;
-         itemTemp.itemIndexText.text = "" + item.Key;
-
-         switch (selectedCategory) {
-            case Item.Category.Hats:
-               string spritePath = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
-               break;
-            case Item.Category.Armor:
-               spritePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(spritePath);
-               break;
-            case Item.Category.Weapon:
-               string fetchedWeaponSprite = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;
-               itemTemp.spriteIcon.sprite = ImageManager.getSprite(fetchedWeaponSprite);
-               break;
-            default:
-               itemTemp.spriteIcon.sprite = Util.getRawSpriteIcon(selectedCategory, item.Key);
-               break;
-         }
-
-         itemTemp.selectButton.onClick.AddListener(() => {
-            itemTypeIDSelected = item.Key;
-            itemDataSelected = item.Value.data;
-            confirmItemButton.onClick.Invoke();
-         });
+         itemTemplate.dropChance.text = lootGroupItemData.spawnChance.ToString();
+         itemTemplate.item = cachedItem;
+         itemTemplate.itemIcon.sprite = ImageManager.getSprite(cachedItem.iconPath);
+         itemTemplate.itemName.text = cachedItem.itemName;
+         itemTemplate.itemType.text = cachedItem.category == Item.Category.CraftingIngredients ? "Material" : cachedItem.category.ToString();
       }
    }
-
-   private void updateMainItemDisplay () {
-      lootSelectionPanel.SetActive(false);
-      currentLootTemplate.itemTypeName.text = itemTypeIDSelected.ToString();
-      currentLootTemplate.itemCategoryName.text = selectedCategory.ToString();
-   }
-
-   #endregion
 
    #region Stats Feature
 

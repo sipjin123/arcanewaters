@@ -288,14 +288,14 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
 
       // Read the text from directly from the txt file
-      try {
-         StreamReader reader = new StreamReader(path);
-         content = reader.ReadToEnd();
-         reader.Close();
+      StreamReader reader = new StreamReader(path);
+      content = reader.ReadToEnd();
+      reader.Close();
 
-         assignDataToManagers(xmlType, content);
-         currentProgress++;
-         checkTextExtractionProgress();
+      assignDataToManagers(xmlType, content);
+      currentProgress++;
+      checkTextExtractionProgress();
+      try {
       } catch {
          D.debug("Failed to process: " + xmlType);
       }
@@ -567,21 +567,21 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
 
          case EditorToolType.Treasure_Drops:
-            Dictionary<Biome.Type, List<TreasureDropsData>> treasureBiomeData = new Dictionary<Biome.Type, List<TreasureDropsData>>();
+            Dictionary<int, LootGroupData> lootGroupCollection = new Dictionary<int, LootGroupData>();
 
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
                // Extract the segregated data and assign to the xml manager
                if (xmlSubGroup.Length == 2) {
-                  Biome.Type biomeType = (Biome.Type)int.Parse(xmlSubGroup[0]);
-                  TreasureDropsCollection treasureDropsCollection = Util.xmlLoad<TreasureDropsCollection>(xmlSubGroup[1]);
-                  treasureBiomeData.Add(biomeType, treasureDropsCollection.treasureDropsCollection);
+                  int uniqueId = int.Parse(xmlSubGroup[0]);
+                  LootGroupData lootGroupData = Util.xmlLoad<LootGroupData>(xmlSubGroup[1]);
+                  lootGroupCollection.Add(uniqueId, lootGroupData);
 
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
-            TreasureDropsDataManager.self.receiveListFromZipData(treasureBiomeData);
+            TreasureDropsDataManager.self.receiveListFromZipData(lootGroupCollection);
             break;
       }
 

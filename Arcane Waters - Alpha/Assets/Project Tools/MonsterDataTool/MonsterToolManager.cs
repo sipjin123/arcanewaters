@@ -28,8 +28,14 @@ public class MonsterToolManager : XmlDataToolManager {
    // Cache buff abilities only
    public List<BuffAbilityData> buffAbilityList = new List<BuffAbilityData>();
 
+   // Reference to the loot group data
+   public Dictionary<int, LootGroupData> lootGroupDataCollection = new Dictionary<int, LootGroupData>();
+
    // Reference to self
    public static MonsterToolManager instance;
+
+   // Checks if requirements are loaded
+   public bool equipmentLoaded, abilitiesLoaded;
 
    #endregion
 
@@ -46,38 +52,30 @@ public class MonsterToolManager : XmlDataToolManager {
    private void initializeEquipmentData () {
       // Initialize all craftable item data after equipment data is setup
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => {
-         loadAllDataFiles();
+         equipmentLoaded = true;
+         checkRequirements();
       });
 
       fetchRecipe();
       EquipmentXMLManager.self.initializeDataCache();
-   }
 
-   public void loadAllDataFiles () {
-      XmlLoadingPanel.self.startLoading();
       basicAbilityList = new List<BasicAbilityData>();
       attackAbilityList = new List<AttackAbilityData>();
       buffAbilityList = new List<BuffAbilityData>();
-      _monsterDataList = new List<BattlerXMLContent>();
+      lootGroupDataCollection = new Dictionary<int, LootGroupData>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         userIdData = DB_Main.getSQLDataByID(editorToolType);
-         List<XMLPair> xmlPairList = DB_Main.getLandMonsterXML();
          List<AbilityXMLContent> abilityContentList = DB_Main.getBattleAbilityXML();
+         List<XMLPair> lootDropXmlData = DB_Main.getBiomeTreasureDrops();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (XMLPair xmlPair in xmlPairList) {
+            foreach (XMLPair xmlPair in lootDropXmlData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+               LootGroupData lootDropData = Util.xmlLoad<LootGroupData>(newTextAsset);
+               int uniqueId = xmlPair.xmlId;
 
-               // Save the Monster data in the memory cache
-               if (!_monsterDataList.Exists(_=>_.xmlId == xmlPair.xmlId)) {
-                  BattlerXMLContent newXmlContent = new BattlerXMLContent {
-                     xmlId = xmlPair.xmlId,
-                     battler = monsterData,
-                     isEnabled = xmlPair.isEnabled
-                  };
-                  _monsterDataList.Add(newXmlContent);
+               if (!lootGroupDataCollection.ContainsKey(uniqueId)) {
+                  lootGroupDataCollection.Add(uniqueId, lootDropData);
                }
             }
 
@@ -109,6 +107,42 @@ public class MonsterToolManager : XmlDataToolManager {
                      abilityData.itemID = abilityXML.abilityId;
                      basicAbilityList.Add(abilityData);
                      break;
+               }
+            }
+            
+            abilitiesLoaded = true;
+            checkRequirements();
+         });
+      });
+   }
+
+   private void checkRequirements () {
+      if (abilitiesLoaded && equipmentLoaded) {
+         loadAllDataFiles();
+      }
+   }
+
+   public void loadAllDataFiles () {
+      XmlLoadingPanel.self.startLoading();
+      _monsterDataList = new List<BattlerXMLContent>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         userIdData = DB_Main.getSQLDataByID(editorToolType);
+         List<XMLPair> landMonsterXmlData = DB_Main.getLandMonsterXML();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (XMLPair xmlPair in landMonsterXmlData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               BattlerData monsterData = Util.xmlLoad<BattlerData>(newTextAsset);
+
+               // Save the Monster data in the memory cache
+               if (!_monsterDataList.Exists(_=>_.xmlId == xmlPair.xmlId)) {
+                  BattlerXMLContent newXmlContent = new BattlerXMLContent {
+                     xmlId = xmlPair.xmlId,
+                     battler = monsterData,
+                     isEnabled = xmlPair.isEnabled
+                  };
+                  _monsterDataList.Add(newXmlContent);
                }
             }
 

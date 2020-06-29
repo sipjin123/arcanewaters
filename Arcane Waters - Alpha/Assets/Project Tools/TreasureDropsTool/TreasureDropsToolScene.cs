@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using System.Security.Cryptography;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class TreasureDropsToolScene : MonoBehaviour {
    #region Public Variables
@@ -38,9 +39,25 @@ public class TreasureDropsToolScene : MonoBehaviour {
    // Bottom panel buttons
    public Button saveButton;
    public Button cancelButton;
+   public Button mainMenuButton;
+   public Button createGroupButton;
+   public Button createGroupBiomeButton;
 
    // The current biome selected
    public Biome.Type selectedBiome;
+
+   // The current xmlId
+   public int selectedXmlId;
+
+   // The loot group name
+   public InputField lootGroupName;
+
+   // Biome selection UI
+   public Button biomeTypeButton;
+   public Text biomeTypeText;
+
+   // The event triggered after the biome is selected
+   public UnityEvent biomeSelectedEvent;
 
    #endregion
 
@@ -50,7 +67,19 @@ public class TreasureDropsToolScene : MonoBehaviour {
          itemPreviewPanel.SetActive(false);
       });
 
+      mainMenuButton.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
+
       itemPreviewPanel.SetActive(false);
+
+      biomeTypeButton.onClick.AddListener(() => {
+         biomeSelectedEvent.AddListener(() => {
+            selectedBiome = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeTypeText.text);
+         });
+         genericSelectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.BiomeType, biomeTypeText, biomeSelectedEvent);
+      });
+
       addWeapon.onClick.AddListener(() => {
          Item.Category category = Item.Category.Weapon;
 
@@ -101,6 +130,13 @@ public class TreasureDropsToolScene : MonoBehaviour {
          });
          genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
       });
+
+      createGroupButton.onClick.AddListener(() => {
+         selectedBiome = Biome.Type.None;
+         lootGroupName.text = "";
+
+         loadItemsFromGroup(-1);
+      });
    }
 
    private void saveData () {
@@ -116,7 +152,15 @@ public class TreasureDropsToolScene : MonoBehaviour {
             newDropsDataList.Add(newDropsData);
          }
       }
-      TreasureDropsToolManager.instance.saveDataFile(selectedBiome, newDropsDataList);
+
+      LootGroupData newLootGroupData = new LootGroupData {
+         treasureDropsCollection = newDropsDataList,
+         lootGroupName = lootGroupName.text,
+         xmlId = selectedXmlId,
+         biomeType = selectedBiome,
+      };
+
+      TreasureDropsToolManager.instance.saveDataFile(selectedXmlId, selectedBiome, newLootGroupData);
       itemPreviewPanel.SetActive(false);
    }
 
@@ -147,45 +191,54 @@ public class TreasureDropsToolScene : MonoBehaviour {
       });
    }
 
-   public void cacheDatabaseContents (Dictionary<Biome.Type, List<TreasureDropsData>> databaseContents) {
+   public void cacheDatabaseContents (Dictionary<int, LootGroupData> lootGroups) {
       biomeTypeParent.gameObject.DestroyChildren();
-      foreach (Biome.Type biomeType in Enum.GetValues(typeof(Biome.Type))) {
-         if (biomeType != Biome.Type.None) {
-            TreasureDropsTemplate template = Instantiate(biomeTypePrefab.gameObject, biomeTypeParent).GetComponent<TreasureDropsTemplate>();
-            template.biomeTypeText.text = biomeType.ToString();
-            template.selectButton.onClick.AddListener(() => loadItemsInbiome(biomeType));
-            template.gameObject.SetActive(true);
-         }
+      foreach (KeyValuePair<int, LootGroupData> lootGrpData in lootGroups) {
+         TreasureDropsTemplate template = Instantiate(biomeTypePrefab.gameObject, biomeTypeParent).GetComponent<TreasureDropsTemplate>();
+         template.lootGroupName.text = lootGrpData.Value.lootGroupName;
+         template.biomeTypeText.text = lootGrpData.Value.biomeType == Biome.Type.None ? "" : lootGrpData.Value.biomeType.ToString();
+         template.setImage(lootGrpData.Value.biomeType != Biome.Type.None);
+         template.selectButton.onClick.AddListener(() => {
+            lootGroupName.text = lootGrpData.Value.lootGroupName;
+            loadItemsFromGroup(lootGrpData.Key);
+         });
+         template.gameObject.SetActive(true);
       }
    }
 
-   private void loadItemsInbiome (Biome.Type biomeType) {
+   private void loadItemsFromGroup (int lootGroupId) {
+      selectedXmlId = lootGroupId;
       itemTemplateHolder.gameObject.DestroyChildren();
-      selectedBiome = biomeType;
-      biomeText.text = biomeType.ToString();
       itemPreviewPanel.SetActive(true);
 
       int i = 0;
-      foreach (TreasureDropsData treasureData in TreasureDropsToolManager.instance.treasureDropsCollection[biomeType]) {
-         TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
+      if (lootGroupId < 0) {
+         selectedBiome = Biome.Type.None;
+         biomeText.text = Biome.Type.None.ToString();
+      } else {
+         selectedBiome = TreasureDropsToolManager.instance.treasureDropsCollection[lootGroupId].biomeType;
+         biomeText.text = selectedBiome.ToString();
+         foreach (TreasureDropsData treasureData in TreasureDropsToolManager.instance.treasureDropsCollection[lootGroupId].treasureDropsCollection) {
+            TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
 
-         // Item info
-         template.item = treasureData.item;
-         template.itemName.text = treasureData.item.itemName;
-         template.itemIcon.sprite = ImageManager.getSprite(treasureData.item.iconPath);
-         template.itemType.text = template.item.category == Item.Category.CraftingIngredients ? "Material" : template.item.category.ToString();
+            // Item info
+            template.item = treasureData.item;
+            template.itemName.text = treasureData.item.itemName;
+            template.itemIcon.sprite = ImageManager.getSprite(treasureData.item.iconPath);
+            template.itemType.text = template.item.category == Item.Category.CraftingIngredients ? "Material" : template.item.category.ToString();
 
-         // Spawning parameters
-         template.dropChance.text = treasureData.spawnChance.ToString();
-         template.spawnOnSecrets.isOn = treasureData.spawnInSecretChest;
+            // Spawning parameters
+            template.dropChance.text = treasureData.spawnChance.ToString();
+            template.spawnOnSecrets.isOn = treasureData.spawnInSecretChest;
 
-         template.gameObject.SetActive(true);
-         template.destroyButton.onClick.AddListener(() => {
-            Destroy(template.gameObject);
-            StartCoroutine(CO_SortContents());
-         });
-         i++;
-         template.itemIndex.text = i.ToString();
+            template.gameObject.SetActive(true);
+            template.destroyButton.onClick.AddListener(() => {
+               Destroy(template.gameObject);
+               StartCoroutine(CO_SortContents());
+            });
+            i++;
+            template.itemIndex.text = i.ToString();
+         }
       }
    }
 

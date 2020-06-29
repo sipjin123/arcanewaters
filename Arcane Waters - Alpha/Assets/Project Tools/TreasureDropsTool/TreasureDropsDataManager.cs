@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class TreasureDropsDataManager : MonoBehaviour {
    #region Public Variables
@@ -11,7 +12,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
    public static TreasureDropsDataManager self;
 
    // Cached drops list
-   public Dictionary<Biome.Type, List<TreasureDropsData>> treasureDropsCollection = new Dictionary<Biome.Type, List<TreasureDropsData>>();
+   public Dictionary<int, LootGroupData> lootDropsCollection = new Dictionary<int, LootGroupData>();
 
    #endregion
 
@@ -19,56 +20,82 @@ public class TreasureDropsDataManager : MonoBehaviour {
       self = this;
    }
 
-   public void receiveListFromZipData (Dictionary<Biome.Type, List<TreasureDropsData>> zipData) {
-      treasureDropsCollection = new Dictionary<Biome.Type, List<TreasureDropsData>>();
-      _treasureDropsList = new List<TreasureDropsCollection>();
-      foreach (KeyValuePair<Biome.Type, List<TreasureDropsData>> biomeDropCollection in zipData) {
-         if (!treasureDropsCollection.ContainsKey(biomeDropCollection.Key)) {
+   public void receiveListFromZipData (Dictionary<int, LootGroupData> zipData) {
+      lootDropsCollection = new Dictionary<int, LootGroupData>();
+      _lootDropsList = new List<LootGroupData>();
+      foreach (KeyValuePair<int, LootGroupData> lootDropCollection in zipData) {
+         if (!lootDropsCollection.ContainsKey(lootDropCollection.Key)) {
             List<TreasureDropsData> newTreasureDropsData = new List<TreasureDropsData>();
-            foreach (TreasureDropsData treasureDrop in biomeDropCollection.Value) {
+            foreach (TreasureDropsData treasureDrop in lootDropCollection.Value.treasureDropsCollection) {
                newTreasureDropsData.Add(treasureDrop);
             }
-            treasureDropsCollection.Add(biomeDropCollection.Key, newTreasureDropsData);
+            lootDropsCollection.Add(lootDropCollection.Key, lootDropCollection.Value);
 
             // TODO: Remove after successful implementation
-            TreasureDropsCollection newTreasureCollection = new TreasureDropsCollection {
-               biomeType = biomeDropCollection.Key,
+            LootGroupData newTreasureCollection = new LootGroupData {
+               biomeType = lootDropCollection.Value.biomeType,
+               lootGroupName = lootDropCollection.Value.lootGroupName,
+               xmlId = lootDropCollection.Key,
                treasureDropsCollection = newTreasureDropsData
             };
-            _treasureDropsList.Add(newTreasureCollection);
+            _lootDropsList.Add(newTreasureCollection);
          }
       }
    }
 
    public List<TreasureDropsData> getTreasureDropsFromBiome (Biome.Type biomeType) {
-      if (treasureDropsCollection.ContainsKey(biomeType)) {
-         return treasureDropsCollection[biomeType];
+      List<LootGroupData> biomeLoots = lootDropsCollection.Values.ToList().FindAll(_ => _.biomeType == biomeType);
+      List<TreasureDropsData> newTreasureDropList = new List<TreasureDropsData>();
+
+      // Collect all data from loot groups of the same biome
+      if (biomeLoots.Count > 0) {
+         foreach (LootGroupData lootGroups in biomeLoots) {
+            foreach (TreasureDropsData lootData in lootGroups.treasureDropsCollection) {
+               newTreasureDropList.Add(lootData);
+            }
+         }
+         return newTreasureDropList;
       }
-      return new List<TreasureDropsData>(); 
+      return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection; 
+   }
+
+   public List<TreasureDropsData> getTreasureDropsById (int groupId) {
+      List<LootGroupData> groupDataLoots = lootDropsCollection.Values.ToList().FindAll(_ => _.xmlId == groupId);
+      List<TreasureDropsData> newTreasureDropList = new List<TreasureDropsData>();
+
+      // Collect all data from loot groups of the same biome
+      if (groupDataLoots.Count > 0) {
+         foreach (LootGroupData lootGroups in groupDataLoots) {
+            foreach (TreasureDropsData lootData in lootGroups.treasureDropsCollection) {
+               newTreasureDropList.Add(lootData);
+            }
+         }
+         return newTreasureDropList;
+      }
+      return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
    }
 
    public void initializeServerDataCache () {
-      treasureDropsCollection = new Dictionary<Biome.Type, List<TreasureDropsData>>();
-      _treasureDropsList = new List<TreasureDropsCollection>();
+      lootDropsCollection = new Dictionary<int, LootGroupData>();
+      _lootDropsList = new List<LootGroupData>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> xmlPairList = DB_Main.getBiomeTreasureDrops();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in xmlPairList) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               TreasureDropsCollection treasureCollectionData = Util.xmlLoad<TreasureDropsCollection>(newTextAsset);
-               Biome.Type newBiomeType = (Biome.Type) xmlPair.xmlId;
+               LootGroupData lootGroupData = Util.xmlLoad<LootGroupData>(newTextAsset);
+               int uniqueKey = xmlPair.xmlId;
 
-               if (!treasureDropsCollection.ContainsKey(newBiomeType)) {
+               if (!lootDropsCollection.ContainsKey(uniqueKey)) {
                   List<TreasureDropsData> newTreasureDropsData = new List<TreasureDropsData>();
-                  foreach (TreasureDropsData treasureDrop in treasureCollectionData.treasureDropsCollection) {
+                  foreach (TreasureDropsData treasureDrop in lootGroupData.treasureDropsCollection) {
                      newTreasureDropsData.Add(treasureDrop);
                   }
-                  treasureDropsCollection.Add(newBiomeType, newTreasureDropsData);
+                  lootDropsCollection.Add(uniqueKey, lootGroupData);
 
                   // TODO: Remove after successful implementation
-                  treasureCollectionData.biomeType = newBiomeType;
-                  _treasureDropsList.Add(treasureCollectionData);
+                  _lootDropsList.Add(lootGroupData);
                }
             }
          });
@@ -79,7 +106,7 @@ public class TreasureDropsDataManager : MonoBehaviour {
 
    // The list of treasure drops collection for editor preview
    [SerializeField]
-   private List<TreasureDropsCollection> _treasureDropsList = new List<TreasureDropsCollection>();
+   private List<LootGroupData> _lootDropsList = new List<LootGroupData>();
 
    #endregion
 }

@@ -79,7 +79,7 @@ namespace NubisDataHandling {
 
                         newItemList.Add(armorItem);
                      } catch {
-                        D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData, Color.red);
+                        D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData + " : "+itmId, Color.red);
                      }
                      break;
                   case Item.Category.Hats:

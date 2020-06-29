@@ -767,7 +767,9 @@ public class Util : MonoBehaviour {
       int length = sprite.name.Length;
 
       // We'll get the frame number as a string to keep this function efficient enough to call in LateUpdate()
-      return sprite.name.Substring(length - 2);
+      string frameNumber = sprite.name.Substring(length - 2);
+      string cleanedFrameNumber = frameNumber.Replace("_", "");
+      return cleanedFrameNumber;
    }
 
    // Truncates the specified float value to the requested number of digits

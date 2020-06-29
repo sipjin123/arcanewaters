@@ -347,6 +347,10 @@ public class CraftingIngredients : RecipeItem
       return "Icons/CraftingIngredients/ingredient_" + this.type;
    }
 
+   public static string getIconPath (CraftingIngredients.Type craftingIngredientType) {
+      return "Icons/CraftingIngredients/ingredient_" + craftingIngredientType;
+   }
+
    public override string getBorderlessIconPath () {
       return "Icons/CraftingIngredients/NoBorder/ingredient_" + this.type;
    }

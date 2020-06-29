@@ -117,9 +117,9 @@ public class SeaMonsterEntityData
    // Offset value for the position of the ripples
    public Vector3 rippleLocOffset;
 
-   // Holds the data for the loot of this monster
-   public RawGenericLootData lootData;
-
    // The list of the skill id's this unit has
    public List<int> skillIdList = new List<int>();
+
+   // The reference id of the loot group data
+   public int lootGroupId = 0;
 }
