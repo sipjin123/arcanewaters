@@ -15,6 +15,9 @@ public class MyCamera : BaseCamera
    // The PPU scale when creating a character
    public const float CHARACTER_CREATION_PPU_SCALE = 600.0f;
 
+   // Reference to the main GUI canvas
+   public Canvas mainGUICanvas;
+
    #endregion
 
    public override void Awake () {
@@ -28,7 +31,12 @@ public class MyCamera : BaseCamera
    }
 
    void Update () {
-      _vcam.m_Lens.OrthographicSize = _orthographicSize;
+      float scaleFactor = 1;
+      if (mainGUICanvas != null) {
+         scaleFactor = mainGUICanvas.scaleFactor;
+      }
+
+      _vcam.m_Lens.OrthographicSize = _orthographicSize / scaleFactor;
    }
 
    public Tween setOrthographicSize (float size) {

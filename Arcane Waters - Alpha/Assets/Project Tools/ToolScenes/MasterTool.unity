@@ -3192,7 +3192,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c7a4f573f2107c541b156b13ed2d39e9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a289b8203ccdfdb469e6b1d97fa0554f, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -6199,10 +6199,6 @@ MonoBehaviour:
   clickEquipmentScene: {fileID: 1102524222}
   clickUsableItemScene: {fileID: 1059485519}
   clickAchievementScene: {fileID: 1948467570}
-  clickPlayerClassScene: {fileID: 0}
-  clickFactionScene: {fileID: 0}
-  clickSpecialtyScene: {fileID: 0}
-  clickJobScene: {fileID: 0}
   clickShipAbilityScene: {fileID: 1615516691}
   clickShopScene: {fileID: 231653711}
   clickTutorialScene: {fileID: 1786918998}

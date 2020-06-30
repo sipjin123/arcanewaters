@@ -144,14 +144,18 @@ MonoBehaviour:
   canInheritPosition: 0
   canControlPosition: 0
   positionStep: {x: 0, y: 0}
-  dataFields: []
+  dataFields:
+  - name: guild id
+    defaultValue: 0
+    toolTip: The guild id of the ship
+    type: 0
   selectDataFields: []
   customDataFields:
   - name: ship data
     toolTip: Ship from the Database that is spawned here
     type: 12
-  - name: nation type
-    toolTip: The nation this ship belongs to
+  - name: guild type
+    toolTip: The guild this ship belongs to
     type: 14
 --- !u!114 &1767334834277260193
 MonoBehaviour:

@@ -46,24 +46,39 @@ public class SpriteSwap : ClientMonoBehaviour
       if (newSprite != null) {
          setNewSprite(newSprite);
       } else {
-         D.debug("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet.");
+         D.debug("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet for game object: " + gameObject.name);
       }
    }
-
+  
    protected void loadSprites (Texture2D newTexture) {
       _spritesToSwapIn.Clear();
 
-      // Get the array of sprites associated with the new texture
-      Sprite[] newSprites = ImageManager.getSprites(newTexture);
+      if (newTexture != null) {
+         // Get the array of sprites associated with the new texture
+         Sprite[] newSprites = ImageManager.getSprites(newTexture);
+         if (newSprites != null) {
+            if (newSprites.Length > 1) {
+               // Store the sprites associated with our Texture, indexed by their frame number
+               foreach (Sprite newSprite in newSprites) {
+                  if (newSprite != null) {
+                     string index = newSprite.name.Substring(newSprite.name.Length - 2);
+                     string cleanIndex = index.Replace("_", "");
+                     _spritesToSwapIn[cleanIndex] = newSprite;
+                  } 
+               }
 
-      // Store the sprites associated with our Texture, indexed by their frame number
-      foreach (Sprite newSprite in newSprites) {
-         string index = newSprite.name.Substring(newSprite.name.Length - 2);
-         _spritesToSwapIn[index] = newSprite;
+               // Remember the name of the current Texture in case it is changed later
+               _loadedTextureName = newTexture.name;
+            } else {
+               D.error("Sprite loaded was incorrect: " + newTexture.name + " : " + newSprites.Length);
+            }
+         } else {
+            transform.parent.gameObject.SetActive(false);
+            D.error("Problem with loading sprite: " + newTexture.name);
+         }
+      } else {
+         D.error("Texture is null!");
       }
-
-      // Remember the name of the current Texture in case it is changed later
-      _loadedTextureName = newTexture.name;
    }
 
    protected void setNewSprite (Sprite newSprite) {

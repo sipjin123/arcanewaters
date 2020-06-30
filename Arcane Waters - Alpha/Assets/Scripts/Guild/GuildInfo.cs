@@ -5,6 +5,12 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
+public enum GuildType {
+   None = 0,
+   Bot_Pirates = 1,
+   Bot_Privateers = 2
+}
+
 public class GuildInfo {
    #region Public Variables
 

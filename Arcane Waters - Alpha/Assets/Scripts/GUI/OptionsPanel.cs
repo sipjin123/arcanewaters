@@ -20,6 +20,12 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The effects slider
    public Slider effectsSlider;
 
+   // The GUI scale slider
+   public Slider guiScaleSlider;
+
+   // The label of the gui scale in percentage
+   public Text guiScaleLabel;
+
    // The available resolutions dropdown
    public Dropdown resolutionsDropdown;
 
@@ -38,6 +44,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
 
+   // The reference to the UI Parent Canvas
+   public Canvas mainGameCanvas;
+
    #endregion
 
    public override void Awake () {
@@ -54,6 +63,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
+
+      guiScaleSlider.value = mainGameCanvas.scaleFactor;
+      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
    }
 
    private void initializeFullScreenToggle () {
@@ -147,6 +159,11 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       }
 
       SoundManager.effectsVolume = effectsSlider.value;
+   }
+
+   public void guiScaleSliderChanged () {
+      mainGameCanvas.scaleFactor = guiScaleSlider.value;
+      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
    }
 
    public void onLogOutButtonPress () {

@@ -38,12 +38,10 @@ public class CropManager : NetworkBehaviour {
 
          crop.transform.position = cropSpot.transform.position;
       }
-      crop.cropType = cropInfo.cropType;
-      crop.cropNumber = cropInfo.cropNumber;
       crop.growthLevel = cropInfo.growthLevel;
       crop.creationTime = cropInfo.creationTime;
-      crop.lastWaterTimestamp = cropInfo.lastWaterTimestamp;
       crop.waterInterval = cropInfo.waterInterval;
+      crop.setData(cropInfo.cropType, cropInfo.cropNumber, cropInfo.lastWaterTimestamp);
       int growthLevel = Mathf.Min(cropInfo.growthLevel, Crop.getMaxGrowthLevel(crop.cropType));
       string spriteName = "crop_" + crop.cropType + "_" + growthLevel;
       crop.anim.setNewTexture(ImageManager.getTexture("Crops/" + spriteName));
@@ -140,11 +138,6 @@ public class CropManager : NetworkBehaviour {
    public void waterCrop (int cropNumber) {
       CropInfo cropToWater = new CropInfo();
 
-      // Make sure the crops have finished loading
-      if (!_cropsDoneLoading) {
-         return;
-      }
-
       // Make sure there's a Crop in that spot
       foreach (CropInfo crop in _crops) {
          if (crop.cropNumber == cropNumber && crop.cropType != Crop.Type.None) {
@@ -202,11 +195,6 @@ public class CropManager : NetworkBehaviour {
    public void harvestCrop (int cropNumber) {
       int userId = _player.userId;
       CropInfo cropToHarvest = new CropInfo();
-
-      // Make sure the crops have finished loading
-      if (!_cropsDoneLoading) {
-         return;
-      }
 
       // Make sure there's a Crop in that spot
       foreach (CropInfo crop in _crops) {

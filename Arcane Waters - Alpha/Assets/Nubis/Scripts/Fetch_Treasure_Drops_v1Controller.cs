@@ -15,11 +15,11 @@ namespace NubisTranslator
             // Connect to the server.
             using (MySqlConnection connection = DB_Main.getConnection()) {
                connection.Open();
-               using (MySqlCommand command = new MySqlCommand("SELECT * from arcane.treasure_drops_xml_v1", connection)) {
+               using (MySqlCommand command = new MySqlCommand("SELECT * from arcane.treasure_drops_xml_v2", connection)) {
                   StringBuilder stringBuilder = new StringBuilder();
                   using (MySqlDataReader reader = command.ExecuteReader()) {
                      while (reader.Read()) {
-                        int xmlId = reader.GetInt32("biomeType");
+                        int xmlId = reader.GetInt32("xmlId");
                         string xmlContent = reader.GetString("xmlContent");
                         string result = $"[next]{xmlId}[space]{xmlContent}";
                         stringBuilder.AppendLine(result);

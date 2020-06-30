@@ -48,6 +48,15 @@ namespace MapCreationTool
          ).ToArray();
       }
 
+      public SelectOption[] formGuildSelectionOptions () {
+         List<SelectOption> optionList = new List<SelectOption>();
+         foreach (GuildType guildType in Enum.GetValues(typeof(GuildType))) {
+            SelectOption newOption = new SelectOption(((int) guildType).ToString(), guildType.ToString());
+            optionList.Add(newOption);
+         }
+         return optionList.ToArray();
+      }
+
       public int shipCount
       {
          get { return ships.Length; }

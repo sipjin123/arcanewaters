@@ -51,6 +51,9 @@ public class Crop : ClientMonoBehaviour {
    [HideInInspector]
    public SimpleAnimation anim;
 
+   // If the data is set
+   public bool dataIsSet;
+
    #endregion
 
    protected override void Awake () {
@@ -60,7 +63,18 @@ public class Crop : ClientMonoBehaviour {
       anim = GetComponent<SimpleAnimation>();
    }
 
+   public void setData (Crop.Type cropType, int spotNumber, long lastWaterTimeStamp) {
+      this.lastWaterTimestamp = lastWaterTimeStamp;
+      this.cropType = cropType;
+      this.cropNumber = spotNumber;
+      dataIsSet = true;
+   }
+
    private void Update () {
+      if (!dataIsSet || !TimeManager.self.hasReceivedInitialData) {
+         return;
+      }
+
       float currentWaterAlpha = floatingWaterIcon.color.a;
       float currentHarvestAlpha = floatingHarvestIcon.color.a;
 

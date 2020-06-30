@@ -59,7 +59,13 @@ public class InstanceManager : MonoBehaviour {
             int userId = CustomMapManager.isUserSpecificAreaKey(areaKey) ? CustomMapManager.getUserId(areaKey) : player.userId;
             if (userId == player.userId) {
                player.cropManager.loadCrops();
-            }
+            } 
+         }
+      } else {
+         // TODO: Update this block of code after setting up farm maps
+         if (areaKey.ToLower().Contains("farm")) {
+            player.cropManager.loadCrops();
+            D.debug("Failed to get custom map manager for: " + areaKey + " overriding Farm area");
          }
       }
 

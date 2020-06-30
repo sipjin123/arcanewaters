@@ -173,7 +173,6 @@ MonoBehaviour:
   healthBarImage: {fileID: 24691}
   predictedDamageBarImage: {fileID: 3708891612707817060}
   reloadBarImage: {fileID: 24778}
-  factionIcon: {fileID: 5886606020473481193}
   barsContainer: {fileID: 5312579577685087058}
   targetedIcon: {fileID: 879405244330073601}
   enemyIcon: {fileID: 1107790276873077553}
@@ -1002,7 +1001,6 @@ GameObject:
   - component: {fileID: 25324}
   - component: {fileID: 25910}
   - component: {fileID: -573325106903764786}
-  - component: {fileID: -2487086605111269621}
   m_Layer: 8
   m_Name: PlayerShip
   m_TagString: Untagged
@@ -1060,7 +1058,6 @@ MonoBehaviour:
   hairPalette1: 
   hairPalette2: 
   entityName: 
-  nationType: 0
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
@@ -1079,16 +1076,15 @@ MonoBehaviour:
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  classType: 0
-  specialty: 0
-  faction: 0
   guildId: 0
+  guildType: 0
   battleId: 0
   voyageGroupId: -1
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isSpeedingUp: 0
   damage: 25
   reloadDelay: 1
   attackCounter: 0
@@ -1110,7 +1106,6 @@ MonoBehaviour:
   speed: 100
   attackRangeModifier: 100
   sailors: 0
-  isSpeedingUp: 0
   rarity: 0
   shipId: 0
   isNextShotDefined: 0
@@ -1382,28 +1377,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 0.07}
   m_EdgeRadius: 0
---- !u!114 &-2487086605111269621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16787}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 569f79bb107f88641824d5d35062e0b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  tempDrop: {fileID: 0}
-  enableDebug: 0
-  quantity: 
-  categoryType: 0
-  itemType: 
-  outputItem: 
-  itemData: 
-  abilityIDData: 
 --- !u!1 &16792
 GameObject:
   m_ObjectHideFlags: 0
@@ -2245,6 +2218,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1286069097927019864
 GameObject:
@@ -4118,7 +4092,6 @@ MonoBehaviour:
   healthBarImage: {fileID: 3090552734373798102}
   predictedDamageBarImage: {fileID: 1150064586719718385}
   reloadBarImage: {fileID: 3809322806609132501}
-  factionIcon: {fileID: 6452470624353965159}
   barsContainer: {fileID: 5453427050550838604}
   targetedIcon: {fileID: 4510269307130379455}
   enemyIcon: {fileID: 4141995493762431073}

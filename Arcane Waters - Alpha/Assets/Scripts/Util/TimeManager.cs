@@ -11,6 +11,9 @@ public class TimeManager : MonoBehaviour {
    // Self
    public static TimeManager self;
 
+   // If the initial data was received
+   public bool hasReceivedInitialData;
+
    #endregion
 
    private void Awake () {
@@ -19,6 +22,7 @@ public class TimeManager : MonoBehaviour {
 
    public void setLastServerDateTime (long serverDateTime) {
       _lastReceivedServerDateTime = serverDateTime;
+      hasReceivedInitialData = true;
    }
 
    public DateTime getLastServerDateTime () {

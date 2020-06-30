@@ -34,6 +34,12 @@ namespace CloudBuildDataFetch {
       // If data should be added to the logs
       public bool isLoggingData = false;
 
+      // The numer of times the system skips logging the time of the last check
+      public static int LOG_SKIP_COUNT = 5;
+
+      // The current index of the time check log
+      public int currentLogIndex = 0;
+
       #endregion
 
       private void Awake () {
@@ -48,7 +54,11 @@ namespace CloudBuildDataFetch {
       }
 
       private void triggerCloudChecker () {
-         D.debug("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
+         currentLogIndex++;
+         if (currentLogIndex > LOG_SKIP_COUNT) {
+            currentLogIndex = 0;
+            D.debug("CloudDataLogger: Triggered Cloud checker: " + DateTime.UtcNow);
+         }
          StartCoroutine(CO_GetBuildList());
       }
 

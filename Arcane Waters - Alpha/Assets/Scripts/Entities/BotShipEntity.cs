@@ -281,8 +281,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       foreach (NetworkBehaviour iBehaviour in instance.getEntities()) {
          NetEntity iEntity = iBehaviour as NetEntity;
 
-         // If the entity is a fellow bot ship, ignore it
-         if (iEntity == null || iEntity.isBotShip())
+         // If the entity is a fellow bot ship with same guild, ignore it
+         if (iEntity == null || (iEntity.isBotShip() && iEntity.guildId == guildId))
             continue;
 
          // If enemy isn't within radius, early out
@@ -366,7 +366,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             if (shipData.rippleSpritePath != "") {
                ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
             }
-         } 
+         } else if (field.k.CompareTo(DataField.SHIP_GUILD_TYPE) == 0) {
+            int type = int.Parse(field.v.Split(':')[0]);
+            guildType = (GuildType) type;
+         } else if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
+            int id = int.Parse(field.v.Split(':')[0]);
+            guildId = id;
+         }
       }
    }
 
