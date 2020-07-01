@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MapCreationTool;
+using MapCreationTool.Serialization;
 using UnityEngine;
 
 namespace MapCustomization
 {
-   public class CustomizablePrefab : ClientMonoBehaviour
+   public class CustomizablePrefab : ClientMonoBehaviour, IMapEditorDataReceiver
    {
       #region Public Variables
 
@@ -14,6 +16,12 @@ namespace MapCustomization
 
       // Size of prefab in tiles
       public Vector2Int size = Vector2Int.one;
+
+      // Which type of map the prefab is used in
+      public EditorType editorType = EditorType.Area;
+
+      // Is prefab's state permanent
+      public bool isPermanent;
 
       // State of the prefab that is set in map editor
       public PrefabState mapEditorState;
@@ -37,6 +45,7 @@ namespace MapCustomization
             _spriteOutline.alphaThreshold = 0.5f;
             _spriteOutline.isAnimated = true;
             _spriteOutline.size = 2;
+            _spriteOutline.childLayers = LayerMask.NameToLayer("Everything");
          }
 
          _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));
@@ -84,8 +93,8 @@ namespace MapCustomization
 
          if (interactionCollider is BoxCollider2D) {
             BoxCollider2D c = interactionCollider as BoxCollider2D;
-            (float x, float y) min = (prefabPosition.x + c.offset.x - c.size.x * 0.5f - minMargin, prefabPosition.y + c.offset.y - c.size.y * 0.5f - minMargin);
-            (float x, float y) max = (prefabPosition.x + c.offset.x + c.size.x * 0.5f + minMargin, prefabPosition.y + c.offset.y + c.size.y * 0.5f + minMargin);
+            Vector2 min = prefabPosition + (c.offset - c.size * 0.5f) * transform.localScale - Vector2.one * minMargin;
+            Vector2 max = prefabPosition + (c.offset + c.size * 0.5f) * transform.localScale + Vector2.one * minMargin;
             return pointPosition.x >= min.x && pointPosition.y >= min.y && pointPosition.x < max.x && pointPosition.y < max.y;
          }
 
@@ -135,6 +144,16 @@ namespace MapCustomization
          }
 
          revertUnappliedChanges();
+      }
+
+      public void receiveData (DataField[] dataFields) {
+         foreach (DataField field in dataFields) {
+            if (field.k.Equals(DataField.IS_PERMANENT_KEY)) {
+               if (bool.TryParse(field.v, out bool value)) {
+                  isPermanent = value;
+               }
+            }
+         }
       }
 
       #region Private Variables

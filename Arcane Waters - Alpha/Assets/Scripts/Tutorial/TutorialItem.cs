@@ -98,11 +98,6 @@ public class TutorialItem : ClientMonoBehaviour, IMapEditorDataReceiver {
                tutorialStepForThisItem = field.intValue;
                GetComponent<TutorialLocation>().tutorialStepType = tutorialStepForThisItem;
                break;
-            case DataField.PLACED_PREFAB_ID:
-               break;
-            default:
-               Debug.LogWarning($"Unrecognized data field key: {field.k}");
-               break;
          }
       }
    }

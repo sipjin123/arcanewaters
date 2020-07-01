@@ -30,6 +30,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -78,7 +79,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Tree
-  dataFields: []
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!114 &8077664472037124887
@@ -157,6 +165,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -267,7 +276,7 @@ PrefabInstance:
     - target: {fileID: 1219142071434012855, guid: 92691e2cf84a3fc489d40bf128b36577,
         type: 3}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6836209022429192626, guid: 92691e2cf84a3fc489d40bf128b36577,
         type: 3}

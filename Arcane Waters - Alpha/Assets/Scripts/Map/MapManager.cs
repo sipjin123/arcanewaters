@@ -115,6 +115,7 @@ public class MapManager : MonoBehaviour
 
          // Set area properties
          area.areaKey = areaKey;
+         area.baseAreaKey = mapInfo.mapName;
          area.version = mapInfo.version;
          area.biome = exportedProject.biome;
 

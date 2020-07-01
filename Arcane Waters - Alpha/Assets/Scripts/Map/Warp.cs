@@ -78,13 +78,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                   newFacingDirection = dir;
                }
                break;
-            case DataField.PLACED_PREFAB_ID:
-               break;
             case DataField.TARGET_MAP_INFO_KEY:
                targetInfo = field.objectValue<Map>();
-               break;
-            default:
-               Debug.LogWarning($"Unrecognized data field key: {field.k}");
                break;
          }
       }

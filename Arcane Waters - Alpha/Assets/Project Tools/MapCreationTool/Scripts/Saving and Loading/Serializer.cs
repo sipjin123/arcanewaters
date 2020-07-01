@@ -343,6 +343,7 @@ namespace MapCreationTool.Serialization
       public const string SHIP_DATA_KEY = "ship data";
 
       public const string PLACED_PREFAB_ID = "id";
+      public const string IS_PERMANENT_KEY = "is permanent";
 
       public const string SHIP_GUILD_TYPE = "guild type";
 

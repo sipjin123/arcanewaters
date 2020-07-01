@@ -366,7 +366,11 @@ namespace MapCreationTool
             }
          }
 
-         instance.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
+         SpriteOutline so = instance.GetComponent<SpriteOutline>();
+         if (so != null) {
+            so.childLayers = LayerMask.NameToLayer("Everything");
+            so.setNewColor(new Color(0, 0, 0, 0));
+         }
 
          return instance;
       }

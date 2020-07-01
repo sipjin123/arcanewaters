@@ -80,9 +80,6 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
             case DataField.MAP_SIGN_LABEL:
                signLabel.text = field.v;
                break;
-            default:
-               Debug.LogWarning($"Unrecognized data field key: {field.k}");
-               break;
          }
       }
    }

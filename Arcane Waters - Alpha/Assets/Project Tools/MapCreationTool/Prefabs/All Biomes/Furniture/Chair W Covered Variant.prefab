@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -95,7 +96,12 @@ MonoBehaviour:
   title: Chair Covered
   canInheritPosition: 0
   canControlPosition: 1
-  dataFields: []
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!114 &9114668545485670410
@@ -136,6 +142,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2464388529546117382, guid: 44af0af410702a045ad3d964b41f3d13,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4061426370771483848, guid: 44af0af410702a045ad3d964b41f3d13,
         type: 3}
       propertyPath: m_LocalPosition.x

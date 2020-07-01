@@ -158,15 +158,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 6781903743018792231}
   size: {x: 1, y: 2}
+  editorType: 1
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}
+    created: 0
+    deleted: 0
+    serializationId: 0
   customizedState:
     id: 0
     localPosition: {x: 0, y: 0}
+    created: 0
+    deleted: 0
+    serializationId: 0
   unappliedChanges:
     id: 0
     localPosition: {x: 0, y: 0}
+    created: 0
+    deleted: 0
+    serializationId: 0
 --- !u!1 &3422777832018557691
 GameObject:
   m_ObjectHideFlags: 0

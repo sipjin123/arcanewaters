@@ -31,7 +31,12 @@ MonoBehaviour:
   title: Table
   canInheritPosition: 0
   canControlPosition: 1
-  dataFields: []
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!114 &1949279086028217313
@@ -110,6 +115,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -221,6 +227,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Table Round Covered Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 4613131855372843538, guid: 39e78c5bb084eb942bc03354dd5bdad0,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5279056754995727997, guid: 39e78c5bb084eb942bc03354dd5bdad0,
         type: 3}

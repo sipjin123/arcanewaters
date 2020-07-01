@@ -102,7 +102,7 @@ namespace MapCustomization
          yield return new WaitForEndOfFrame();
 
          // Gather prefabs from the scene that can be customized
-         CustomizablePrefab[] prefabs = currentArea.GetComponentsInChildren<CustomizablePrefab>();
+         CustomizablePrefab[] prefabs = currentArea.GetComponentsInChildren<CustomizablePrefab>().Where(cp => !cp.isPermanent).ToArray();
          _customizablePrefabs = prefabs.ToDictionary(p => p.customizedState.id, p => p);
          _serverApprovedState = prefabs.ToDictionary(p => p.customizedState.id, p => p.customizedState);
          yield return new WaitForEndOfFrame();
@@ -269,6 +269,13 @@ namespace MapCustomization
 
             CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(prefabSerializationId ?? -1, area.biome)?.GetComponent<CustomizablePrefab>();
 
+            // Check that the prefab area type matches area's type
+            EditorType? type = AreaManager.self.getAreaEditorType(area.baseAreaKey);
+            if (type == null || type.Value != prefab.editorType) {
+               errorMessage = "Target object does not belong to this type of area";
+               return false;
+            }
+
             if (prefab == null) {
                errorMessage = "Could not find target object";
                return false;
@@ -361,11 +368,18 @@ namespace MapCustomization
          }
          _placeablePrefabData.Clear();
 
+         // Get the type of the current area
+         EditorType? areaType = AreaManager.self.getAreaEditorType(currentArea.baseAreaKey);
+         if (areaType == null) {
+            D.error($"Area { currentArea.areaKey }-{ currentArea.baseAreaKey } does not have a type stored in AreaManager");
+            return;
+         }
+
          // Get new entries from asset serialization maps
          foreach (KeyValuePair<int, GameObject> indexPref in AssetSerializationMaps.allBiomes.indexToPrefab) {
             // Only prefabs with CustomizablePrefab component can be placed
             CustomizablePrefab cPref = indexPref.Value.GetComponent<CustomizablePrefab>();
-            if (cPref != null) {
+            if (cPref != null && areaType.Value == cPref.editorType) {
                _placeablePrefabData.Add(new PlaceablePrefabData {
                   serializationId = indexPref.Key,
                   prefab = cPref,

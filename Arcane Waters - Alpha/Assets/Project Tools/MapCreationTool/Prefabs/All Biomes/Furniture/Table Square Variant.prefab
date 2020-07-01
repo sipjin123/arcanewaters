@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -126,7 +127,12 @@ MonoBehaviour:
   title: Table
   canInheritPosition: 0
   canControlPosition: 1
-  dataFields: []
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!1001 &6098711444606647544
@@ -200,6 +206,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 6.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622429288946267332, guid: 01362b4909f348344a3cf7bc7a22ef5f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1899162754896272966, guid: 01362b4909f348344a3cf7bc7a22ef5f,
         type: 3}

@@ -22,6 +22,9 @@ public class Area : MonoBehaviour
    // The key determining the type of area this is
    public string areaKey;
 
+   // The key of the base map of the area, same as areaKey if no base map is used
+   public string baseAreaKey;
+
    // When the area is a shop, keep also at hand the town's name
    public string townAreaKey = null;
 

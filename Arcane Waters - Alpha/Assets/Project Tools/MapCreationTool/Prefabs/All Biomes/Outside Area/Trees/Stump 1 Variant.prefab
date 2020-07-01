@@ -44,7 +44,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Stump
-  dataFields: []
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: is permanent
+    defaultValue: true
+    toolTip: Is Prefab Placed Permanently
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!1001 &5010637928541173416

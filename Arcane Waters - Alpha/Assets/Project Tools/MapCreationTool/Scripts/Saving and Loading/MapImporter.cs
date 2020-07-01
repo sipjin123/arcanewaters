@@ -273,14 +273,10 @@ namespace MapCreationTool
                   }
                }
 
-               if (prefab.d != null) {
-                  foreach (IMapEditorDataReceiver receiver in pref.GetComponents<IMapEditorDataReceiver>()) {
-                     receiver.receiveData(prefab.d);
-                  }
-               }
-
                CustomizablePrefab customizablePrefab = pref.GetComponent<CustomizablePrefab>();
                if (customizablePrefab != null) {
+                  customizablePrefab.isPermanent = true;
+
                   customizablePrefab.mapEditorState.localPosition = pref.transform.localPosition;
                   customizablePrefab.mapEditorState.id = DataField.extractId(prefab.d);
                   customizablePrefab.mapEditorState.created = true;
@@ -289,6 +285,12 @@ namespace MapCreationTool
                   customizablePrefab.customizedState = customizablePrefab.mapEditorState;
                   customizablePrefab.unappliedChanges = customizablePrefab.mapEditorState;
                   customizablePrefab.unappliedChanges.clearAll();
+               }
+
+               if (prefab.d != null) {
+                  foreach (IMapEditorDataReceiver receiver in pref.GetComponents<IMapEditorDataReceiver>()) {
+                     receiver.receiveData(prefab.d);
+                  }
                }
             }
          }

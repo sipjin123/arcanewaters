@@ -8334,7 +8334,7 @@ public class DB_Main : DB_MainStub
    #region Private Variables
 
    // Database connection settings
-   private static string _remoteServer = "dev.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; // 52.72.202.104 // "127.0.0.1";//
+   private static string _remoteServer = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; // 52.72.202.104 // "127.0.0.1";//
    private static string _database = "arcane";
    private static string _uid = "userAdKmE";
    private static string _password = "HEqbVDsvvCza5n4N";

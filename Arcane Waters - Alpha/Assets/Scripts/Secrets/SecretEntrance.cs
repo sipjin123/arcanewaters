@@ -194,10 +194,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = value;
                break;
-            case DataField.PLACED_PREFAB_ID:
-               // This switch case is only included so a warning wouldn't be raised, 
-               // the ID of a prefab needs to be among the data for a separate system
-               break;
             case DataField.TARGET_MAP_INFO_KEY:
                targetInfo = field.objectValue<Map>();
                break;
@@ -205,9 +201,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
                if (field.tryGetDirectionValue(out Direction dir)) {
                   newFacingDirection = dir;
                }
-               break;
-            default:
-               Debug.LogWarning($"Unrecognized data field key: {field.k}");
                break;
          }
       }
