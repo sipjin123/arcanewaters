@@ -154,6 +154,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          if (userObj.hat.itemTypeId != 0) {
             loadCachedEquipment(userObj.hat);
          }
+
+         // Update the gold and gems count, with commas in thousands place
+         goldText.text = string.Format("{0:n0}", Global.lastUserGold);
+         gemsText.text = string.Format("{0:n0}", Global.lastUserGems);
       }
    }
 
@@ -192,6 +196,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       _equippedWeaponId = userObjects.weapon.id;
       _equippedArmorId = userObjects.armor.id;
       _equippedHatId = userObjects.hat.id;
+      Global.lastUserGold = userObjects.userInfo.gold;
+      Global.lastUserGems = userObjects.userInfo.gems;
 
       // Update the current page number
       _currentPage = pageIndex;

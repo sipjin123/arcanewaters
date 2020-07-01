@@ -44,6 +44,10 @@ public class ChatPanel : MonoBehaviour {
    // Self
    public static ChatPanel self;
 
+   // The custom color for each entity speaking
+   public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor;
+   public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor;
+
    #endregion
 
    void Awake () {
@@ -170,11 +174,16 @@ public class ChatPanel : MonoBehaviour {
 
       // We'll set the message up differently based on whether a sender was defined
       if (Util.isEmpty(chatInfo.sender)) {
-         chatLine.text.text = string.Format("<color=yellow>{0}</color>", chatInfo.text);
+         chatLine.text.text = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Emote) {
          chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatInfo.text);
       } else {
-         chatLine.text.text = string.Format("<color=yellow>{0}:</color> <color={1}>{2}</color>", chatInfo.sender, getColorString(chatInfo.messageType), chatInfo.text);
+         bool isLocalPlayer = true;
+         if (Global.player != null) {
+            isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
+         }
+
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       }
 
       // If we're just starting up, some Managers may not exist yet
@@ -187,6 +196,26 @@ public class ChatPanel : MonoBehaviour {
       if (body != null && chatInfo.messageType != ChatInfo.Type.Emote) {
          SpeechManager.self.showSpeechBubble(body, chatInfo.text);
       }
+   }
+
+   public string getSenderNameColor (ChatInfo.Type chatType, bool isLocalPlayer = false) {
+      Color newColor = Color.white;
+      switch (chatType) {
+         case ChatInfo.Type.Global:
+            newColor = serverNameColor;
+            break;
+         case ChatInfo.Type.Local:
+            if (isLocalPlayer) {
+               newColor = playerNameColor;
+            } else {
+               newColor = otherPlayerNameColor;
+            }
+            break;
+         case ChatInfo.Type.System:
+            newColor = systemNameColor;
+            break;
+      }
+      return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
    }
 
    public void addGuildChatInfo (ChatInfo chatInfo) {
@@ -282,18 +311,18 @@ public class ChatPanel : MonoBehaviour {
       return "";
    }
 
-   protected string getColorString (ChatInfo.Type chatType) {
-      Color color = getChatColor(chatType);
+   protected string getColorString (ChatInfo.Type chatType, bool isLocalPlayer = true) {
+      Color color = getChatColor(chatType, isLocalPlayer);
 
       return "#" + ColorUtility.ToHtmlStringRGBA(color);
    }
 
-   protected Color getChatColor (ChatInfo.Type chatType) {
+   protected Color getChatColor (ChatInfo.Type chatType, bool isLocalPlayer = true) {
       switch (chatType) {
          case ChatInfo.Type.Global:
-            return Color.white;
+            return serverChatColor;
          case ChatInfo.Type.Local:
-            return Color.cyan;
+            return isLocalPlayer ? playerSpeechColor : otherPlayerSpeechColor;
          case ChatInfo.Type.Guild:
             return Color.white;
          case ChatInfo.Type.Emote:

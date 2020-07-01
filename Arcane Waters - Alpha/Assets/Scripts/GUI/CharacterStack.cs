@@ -78,24 +78,30 @@ public class CharacterStack : MonoBehaviour {
    }
 
    public void updateWeapon (Gender.Type gender, int weaponType, string palette1, string palette2) {
-      weaponBackLayer.setType(gender, weaponType);
-      weaponBackLayer.recolor(palette1, palette2);
-      weaponFrontLayer.setType(gender, weaponType);
-      weaponFrontLayer.recolor(palette1, palette2);
+      if (weaponFrontLayer.gameObject.activeInHierarchy) {
+         weaponBackLayer.setType(gender, weaponType);
+         weaponBackLayer.recolor(palette1, palette2);
+         weaponFrontLayer.setType(gender, weaponType);
+         weaponFrontLayer.recolor(palette1, palette2);
+      } 
    }
 
    public void updateHats (Gender.Type gender, int hatType, string palette1, string palette2) {
       if (hatLayer != null) {
-         hatLayer.setType(gender, hatType);
-         hatLayer.recolor(palette1, palette2);
+         if (hatLayer.gameObject.activeInHierarchy) {
+            hatLayer.setType(gender, hatType);
+            hatLayer.recolor(palette1, palette2);
+         } 
       } else {
          D.editorLog("Hat Layer is not set!", Color.red);
       }
    }
 
    public void updateArmor (Gender.Type gender, int armorType, string palette1, string palette2) {
-      armorLayer.setType(gender, armorType);
-      armorLayer.recolor(palette1, palette2);
+      if (armorLayer.gameObject.activeInHierarchy) {
+         armorLayer.setType(gender, armorType);
+         armorLayer.recolor(palette1, palette2);
+      } 
 
       // Only process this when the user is in avatar mode and not in ship mode
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)

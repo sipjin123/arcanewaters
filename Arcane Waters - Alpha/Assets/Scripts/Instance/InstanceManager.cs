@@ -65,7 +65,6 @@ public class InstanceManager : MonoBehaviour {
          // TODO: Update this block of code after setting up farm maps
          if (areaKey.ToLower().Contains("farm")) {
             player.cropManager.loadCrops();
-            D.debug("Failed to get custom map manager for: " + areaKey + " overriding Farm area");
          }
       }
 

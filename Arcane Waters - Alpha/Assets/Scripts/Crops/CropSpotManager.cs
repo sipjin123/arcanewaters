@@ -53,6 +53,7 @@ public class CropSpotManager : MonoBehaviour {
             cachedCropQueueData.crop.gameObject.SetActive(true);
             cropSpot.crop = cachedCropQueueData.crop;
             cachedCropQueueData.crop.transform.position = cropSpot.transform.position;
+            cachedCropQueueData.crop.transform.SetParent(transform);
 
             // Show some effects
             if (cachedCropQueueData.showEffects) {

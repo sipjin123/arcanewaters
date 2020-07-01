@@ -305,10 +305,6 @@ public class RPCManager : NetworkBehaviour {
       // Make sure the panel is showing
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
 
-      if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.CharacterInfo);
-      }
-
       // If this is the local player, update perk points in the perk manager
       if (Global.player != null && userObjects.userInfo.userId == Global.player.userId) {
          PerkManager.self.setPlayerPerkPoints(perks);
@@ -3059,11 +3055,15 @@ public class RPCManager : NetworkBehaviour {
             ingredientType = CraftingIngredients.Type.Iron_Ore;
             break;
       }
-      rewardedItems.Add(new Item {
+
+      Item oreItem = new Item {
          category = Item.Category.CraftingIngredients,
          count = 1,
          itemTypeId = (int) ingredientType
-      });
+      };
+      oreItem.itemName = CraftingIngredients.getName(ingredientType);
+      oreItem.iconPath = CraftingIngredients.getIconPath(ingredientType);
+      rewardedItems.Add(oreItem);
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp

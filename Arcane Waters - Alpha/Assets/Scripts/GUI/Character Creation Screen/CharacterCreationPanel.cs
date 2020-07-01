@@ -201,6 +201,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
             armor = _char.getArmor(),
             hat = _char.getHat()
          };
+         Global.lastUserGold = 0;
+         Global.lastUserGems = 0;
+
          goToQuestions();
       } else {
          questionsScreen.confirmAnswerClicked();

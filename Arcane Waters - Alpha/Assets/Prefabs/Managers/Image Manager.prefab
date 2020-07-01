@@ -2584,6 +2584,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: fd5a9ede40191a840bfacdb1867b8dfc, type: 3}
     sprites:
     - {fileID: 21300000, guid: fd5a9ede40191a840bfacdb1867b8dfc, type: 3}
+  - imageName: chat_background
+    imagePath: Assets/Sprites/GUI/Chat/chat_background.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/chat_background
+    texture2D: {fileID: 2800000, guid: 5ef34af79d7cbd04da37790256f50de1, type: 3}
+    sprite: {fileID: 21300000, guid: 5ef34af79d7cbd04da37790256f50de1, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5ef34af79d7cbd04da37790256f50de1, type: 3}
   - imageName: chat_button
     imagePath: Assets/Sprites/GUI/Friend List/chat_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Friend List/chat_button
@@ -10881,8 +10888,8 @@ MonoBehaviour:
     sprite: {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f,
       type: 3}
     sprites:
-    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
     - {fileID: 3564856121727798196, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
+    - {fileID: 6120081450217617434, guid: 81c46c589e8cd2c44b55ab4a5c3fec8f, type: 3}
   - imageName: gold_icon
     imagePath: Assets/Sprites/Icons/gold_icon.png
     imagePathWithoutExtension: Assets/Sprites/Icons/gold_icon
@@ -11775,6 +11782,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: b1e3500bef146054cbe74695f6d634b3, type: 3}
     sprites:
     - {fileID: 21300000, guid: b1e3500bef146054cbe74695f6d634b3, type: 3}
+  - imageName: human_default_shadow
+    imagePath: Assets/Sprites/GUI/Chat/human_default_shadow.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Chat/human_default_shadow
+    texture2D: {fileID: 2800000, guid: ec9af72c8464c7a4eb4bd7f1bae04cb9, type: 3}
+    sprite: {fileID: 21300000, guid: ec9af72c8464c7a4eb4bd7f1bae04cb9, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ec9af72c8464c7a4eb4bd7f1bae04cb9, type: 3}
   - imageName: icon_bluperint
     imagePath: Assets/Sprites/GUI/Inventory/icon_bluperint.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Inventory/icon_bluperint
@@ -14276,6 +14290,36 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f781d4534f56ee64dbcfef01d4b227a9, type: 3}
     sprites:
     - {fileID: 21300000, guid: f781d4534f56ee64dbcfef01d4b227a9, type: 3}
+  - imageName: loadingboxtext
+    imagePath: Assets/Sprites/Icons/loadingboxtext.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/loadingboxtext
+    texture2D: {fileID: 2800000, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    sprite: {fileID: -6158470073490158193, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b,
+      type: 3}
+    sprites:
+    - {fileID: -6158470073490158193, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: -7868780846497054503, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: 8594898692911719299, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: 2215688400154738052, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: -8008436467427352722, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: -5195415483873639434, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: -4016365218820501389, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+    - {fileID: 2643450673674799357, guid: b74e8ad5ede62cb4c91b25ba9e1c4e4b, type: 3}
+  - imageName: loadingwhitetext
+    imagePath: Assets/Sprites/Icons/loadingwhitetext.png
+    imagePathWithoutExtension: Assets/Sprites/Icons/loadingwhitetext
+    texture2D: {fileID: 2800000, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    sprite: {fileID: -437132172150063205, guid: f78a5685016854245b10cfe58dd06e82,
+      type: 3}
+    sprites:
+    - {fileID: -437132172150063205, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -1620589943266994898, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -1027779694406108582, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -9131758786541535106, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -6510264999885312520, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -7339152880437909109, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: -936737552761079761, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
+    - {fileID: 2403502086326715776, guid: f78a5685016854245b10cfe58dd06e82, type: 3}
   - imageName: Lock Icon
     imagePath: Assets/Sprites/Character Screens/Lock Icon.png
     imagePathWithoutExtension: Assets/Sprites/Character Screens/Lock Icon
@@ -23771,6 +23815,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 7682a1198fba2bd418df17b827fa1d4b, type: 3}
     sprites:
     - {fileID: 21300000, guid: 7682a1198fba2bd418df17b827fa1d4b, type: 3}
+  - imageName: speech_bubble_3
+    imagePath: Assets/Sprites/Speech/speech_bubble_3.png
+    imagePathWithoutExtension: Assets/Sprites/Speech/speech_bubble_3
+    texture2D: {fileID: 2800000, guid: 4d45ba56453d8e242898e71c6a08ee93, type: 3}
+    sprite: {fileID: 21300000, guid: 4d45ba56453d8e242898e71c6a08ee93, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 4d45ba56453d8e242898e71c6a08ee93, type: 3}
   - imageName: spider_web_bounce
     imagePath: Assets/Sprites/Map/spider_web_bounce.png
     imagePathWithoutExtension: Assets/Sprites/Map/spider_web_bounce

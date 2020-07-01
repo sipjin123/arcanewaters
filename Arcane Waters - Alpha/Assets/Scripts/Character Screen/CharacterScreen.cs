@@ -144,6 +144,8 @@ public class CharacterScreen : MonoBehaviour
          if (_spots.ContainsKey(charSpotNumber)) {
             CharacterSpot spot = _spots[charSpotNumber];
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
+            Global.lastUserGold = userArray[i].gold;
+            Global.lastUserGems = userArray[i].gems;
             offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes1[i], armorPalettes2[i]);
             spot.assignCharacter(offlineChar);
          }

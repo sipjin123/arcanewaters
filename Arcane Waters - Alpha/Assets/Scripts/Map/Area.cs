@@ -8,6 +8,7 @@ using System;
 using MapCreationTool.Serialization;
 using System.Linq;
 using Pathfinding;
+using Cinemachine;
 
 public class Area : MonoBehaviour
 {
@@ -75,6 +76,9 @@ public class Area : MonoBehaviour
    
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
+
+   // The value that determines if the screen is too wide for the area
+   public static float WIDE_RESOLUTION_VALUE = 1920;
 
    #endregion
 
@@ -146,6 +150,8 @@ public class Area : MonoBehaviour
       }
 
       configurePathfindingGraph();
+
+      vcam.GetComponent<CinemachineConfiner>().m_ConfineScreenEdges = Screen.currentResolution.width > WIDE_RESOLUTION_VALUE ? false : true;
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);

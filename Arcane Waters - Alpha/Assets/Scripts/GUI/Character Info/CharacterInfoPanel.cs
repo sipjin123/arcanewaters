@@ -46,6 +46,9 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
    // Self
    public static CharacterInfoPanel self;
 
+   // Blocks the outdated info while waiting for server response
+   public GameObject loadingBlocker;
+
    #endregion
 
    public override void Awake () {
@@ -57,6 +60,16 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
    public override void Start () {
       base.Start();
       Util.disableCanvasGroup(canvasGroup);
+   }
+
+   public void loadCharacterCache () {
+      loadingBlocker.SetActive(true);
+
+      // Load the character stack using the cached user info
+      if (Global.userObjects != null) {
+         characterStack.gameObject.SetActive(true);
+         characterStack.updateLayers(Global.userObjects);
+      }
    }
 
    public void receivePerkData (List<PerkData> perkDataList) {
@@ -99,7 +112,23 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
    }
 
    public void receiveDataFromServer (UserObjects userObjects, Stats stats, Jobs jobs, string guildName, Perk[] perks) {
+      if (userObjects.weapon.itemTypeId != 0) {
+         WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
+         userObjects.weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+      }
+      if (userObjects.armor.itemTypeId != 0) {
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(userObjects.armor.itemTypeId);
+         userObjects.armor.data = ArmorStatData.serializeArmorStatData(armorData);
+      }
+      if (userObjects.hat.itemTypeId != 0) {
+         HatStatData hatData = EquipmentXMLManager.self.getHatData(userObjects.hat.itemTypeId);
+         userObjects.hat.data = HatStatData.serializeHatStatData(hatData);
+      }
+
       _userObjects = userObjects;
+      Global.lastUserGold = userObjects.userInfo.gold;
+      Global.lastUserGems = userObjects.userInfo.gems;
+
       UserInfo info = userObjects.userInfo;
       int currentLevel = LevelUtil.levelForXp(info.XP);
 
@@ -122,6 +151,7 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
       xpText.text = "EXP: " + LevelUtil.getProgressTowardsCurrentLevel(info.XP) + " / " + LevelUtil.xpForLevel(currentLevel + 1);
 
       receivePerkPoints(Global.player != null && userObjects.userInfo.userId == Global.player.userId, perks);
+      loadingBlocker.SetActive(false);
    }
 
    public void guildInviteButtonPressed () {
