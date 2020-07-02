@@ -28,8 +28,10 @@ public class GuildPanel : Panel, IPointerClickHandler {
    public Text countText;
 
    // Our various images
-   public Image emblemImage;
    public Image flagImage;
+
+   // The guild icon
+   public GuildIcon guildIcon;
 
    // Self
    public static GuildPanel self;
@@ -48,14 +50,21 @@ public class GuildPanel : Panel, IPointerClickHandler {
       // Disable and enable buttons and images
       createButton.interactable = !inGuild;
       leaveButton.interactable = inGuild;
-      emblemImage.enabled = inGuild;
+      guildIcon.gameObject.SetActive(inGuild);
       flagImage.enabled = inGuild;
 
       // Fill in the texts
       nameText.text = inGuild ? info.guildName : "";
       dateText.text = inGuild ? DateTime.FromBinary(info.creationTime).ToString("MMMM yyyy") : "";
       levelText.text = "Level " + (inGuild ? "1" : "");
-      countText.text = inGuild ? ("Members: " + info.guildMembers.Length + " / " + GuildInfo.MAX_MEMBERS) : "";
+      countText.text = inGuild ? ("Members: " + info.guildMembers.Length + " / " + GuildManager.MAX_MEMBERS) : "";
+
+      // Set the guild icon
+      if (inGuild) {
+         guildIcon.setBorder(info.iconBorder);
+         guildIcon.setBackground(info.iconBackground, info.iconBackPalette1, info.iconBackPalette2);
+         guildIcon.setSigil(info.iconSigil, info.iconSigilPalette1, info.iconSigilPalette2);
+      }
 
       // Clear out any old member info
       memberContainer.DestroyChildren();

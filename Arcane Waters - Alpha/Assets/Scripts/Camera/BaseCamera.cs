@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using Cinemachine;
 
 public class BaseCamera : MonoBehaviour {
    #region Public Variables
+
+   // The default PPU scale
+   public const float DEFAULT_PPU_SCALE = 400.0f;
 
    // The Camera quake effect
    public CameraFilterPack_FX_EarthQuake quakeEffect;
@@ -14,11 +18,16 @@ public class BaseCamera : MonoBehaviour {
 
    public virtual void Awake () {
       _cam = GetComponent<Camera>();
+      _vcam = GetComponent<CinemachineVirtualCamera>();
       _pixelFadeEffect = GetComponent<PixelFadeEffect>();
    }
 
    public Camera getCamera () {
       return _cam;
+   }
+
+   public CinemachineVirtualCamera getVirtualCamera () {
+      return _vcam;
    }
 
    public float getDepth () {
@@ -51,10 +60,21 @@ public class BaseCamera : MonoBehaviour {
       quakeEffect.enabled = false;
    }
 
+   public virtual void onResolutionChanged () {
+      if (_vcam != null) {
+         _vcam.m_Lens.OrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+      } else if (_cam != null) {
+         _cam.orthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+      }
+   }
+
    #region Private Variables
 
    // Our associated camera
    protected Camera _cam;
+
+   // The associated virtual camera
+   protected CinemachineVirtualCamera _vcam;
 
    // Our Pixel Fade effect
    protected PixelFadeEffect _pixelFadeEffect;

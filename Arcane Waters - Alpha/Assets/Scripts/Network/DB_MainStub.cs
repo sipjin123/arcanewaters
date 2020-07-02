@@ -801,7 +801,7 @@ public class DB_MainStub : MonoBehaviour {
       return new List<UserInfo>();
    }
 
-   public static int createGuild (string guildName) {
+   public static int createGuild (GuildInfo guildInfo) {
       return 0;
    }
 

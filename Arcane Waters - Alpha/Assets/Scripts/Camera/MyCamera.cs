@@ -9,9 +9,6 @@ public class MyCamera : BaseCamera
 {
    #region Public Variables
 
-   // The default PPU scale
-   public const float DEFAULT_PPU_SCALE = 400.0f;
-
    // The PPU scale when creating a character
    public const float CHARACTER_CREATION_PPU_SCALE = 600.0f;
 
@@ -23,6 +20,15 @@ public class MyCamera : BaseCamera
    public override void Awake () {
       base.Awake();
       _vcam = GetComponent<Cinemachine.CinemachineVirtualCamera>();
+
+      _defaultOrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+      _orthographicSize = _defaultOrthographicSize;
+
+      _initialSettings = getVirtualCameraSettings();
+   }
+
+   public override void onResolutionChanged () {
+      base.onResolutionChanged();
 
       _defaultOrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
       _orthographicSize = _defaultOrthographicSize;
@@ -86,9 +92,6 @@ public class MyCamera : BaseCamera
 
    // The tween used for animating the position
    protected Tween _positionTween;
-
-   // Our Cinemachine Virtual Camera
-   protected Cinemachine.CinemachineVirtualCamera _vcam;
 
    // The default settings
    protected VirtualCameraSettings _initialSettings;

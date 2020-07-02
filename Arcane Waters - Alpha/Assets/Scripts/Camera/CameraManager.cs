@@ -25,6 +25,7 @@ public class CameraManager : ClientMonoBehaviour {
       // Look up the two cameras
       defaultCamera = GameObject.FindObjectOfType<DefaultCamera>();
       battleCamera = GameObject.FindObjectOfType<BattleCamera>();
+      _baseCameras = GameObject.FindObjectsOfType<BaseCamera>();
 
       // Store a reference
       self = this;
@@ -32,6 +33,25 @@ public class CameraManager : ClientMonoBehaviour {
 
    void Start () {
       _quakeEffect = GetComponent<CameraFilterPack_FX_EarthQuake>();
+      _screenResolution = new Vector2(Screen.width, Screen.height);
+      _isFullscreen = Screen.fullScreen;
+   }
+
+   private void LateUpdate () {
+      // Update the orthographic size of the cameras if the screen resolution changes
+      if (_isFullscreen != Screen.fullScreen || _screenResolution.x != Screen.width || _screenResolution.y != Screen.height) {
+         _screenResolution = new Vector2(Screen.width, Screen.height);
+         _isFullscreen = Screen.fullScreen;
+         onResolutionChanged();
+      }
+   }
+
+   public void onResolutionChanged () {
+      Debug.Log("Updating cam size");
+
+      foreach (BaseCamera baseCam in _baseCameras) {
+         baseCam.onResolutionChanged();
+      }     
    }
 
    public static void shakeCamera (float duration = .25f) {
@@ -124,6 +144,15 @@ public class CameraManager : ClientMonoBehaviour {
 
    // The Camera quake effect
    protected CameraFilterPack_FX_EarthQuake _quakeEffect;
+
+   // The current screen resolution
+   protected Vector2 _screenResolution;
+
+   // Whether the game is in fullscreen
+   protected bool _isFullscreen;
+
+   // All the BaseCameras
+   protected BaseCamera[] _baseCameras;
 
    #endregion
 }

@@ -36,6 +36,11 @@ public class ShipEntity : SeaEntity
 
    #endregion
 
+   protected override void Start () {
+      base.Start();
+      initializePalette();
+   }
+
    protected virtual void initialize (ShipData data) {
       shipType = data.shipType;
       skinType = data.skinType;
@@ -58,6 +63,16 @@ public class ShipEntity : SeaEntity
       sailors = info.sailors;
       rarity = info.rarity;
       damage = info.damage;
+   }
+
+   private void initializePalette () {
+      PaletteSwap swap = spritesContainer.GetComponent<PaletteSwap>();
+      if (swap && swap.paletteName == PaletteDef.Flag.OnlyPalette) {
+         return;
+      }
+      spritesContainer.gameObject.SetActive(false);
+      spritesContainer.AddComponent<PaletteSwap>().paletteName = PaletteDef.Flag.OnlyPalette;
+      spritesContainer.gameObject.SetActive(true);
    }
 
    public override void playAttackSound () {

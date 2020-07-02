@@ -9,7 +9,7 @@ public class PaletteSwap : MonoBehaviour {
    #region Public Variables
 
    // Name of palette to download from database
-   public string paletteName;
+   public string paletteName = "";
 
    #endregion
 

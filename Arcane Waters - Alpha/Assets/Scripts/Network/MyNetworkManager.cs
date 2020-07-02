@@ -209,6 +209,7 @@ public class MyNetworkManager : NetworkManager
          // Store references to the individual info objects for convenience
          UserInfo userInfo = userObjects.userInfo;
          ShipInfo shipInfo = userObjects.shipInfo;
+         GuildInfo guildInfo = userObjects.guildInfo;
 
          // Get the current voyage group the user is member of, if any
          VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(authenticatedUserId);
@@ -286,7 +287,7 @@ public class MyNetworkManager : NetworkManager
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
             ServerCommunicationHandler.self.addPlayer(player.userId);
 
-            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo);
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo);
 
             // Keep track
             _players[conn.connectionId] = player;

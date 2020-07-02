@@ -751,7 +751,7 @@ public class RPCManager : NetworkBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Default to an empty guild info
-         GuildInfo info = new GuildInfo(_player.guildId);
+         GuildInfo info = new GuildInfo();
 
          // Only look up info if they're in a guild
          if (_player.guildId > 0) {
@@ -2241,31 +2241,23 @@ public class RPCManager : NetworkBehaviour {
    #region Guilds
 
    [Command]
-   public void Cmd_CreateGuild (string requestedName) {
+   public void Cmd_CreateGuild (string guildName, string iconBorder, string iconBackground, string iconSigil,
+      string iconBackPalette1, string iconBackPalette2, string iconSigilPalette1, string iconSigilPalette2) {
       if (_player.guildId > 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You are already in a guild.");
          return;
       }
 
-      // Make sure the length is right
-      if (requestedName.Length < GuildInfo.MIN_NAME_LENGTH) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That name is too short.");
-         return;
-      }
-      if (requestedName.Length > GuildInfo.MAX_NAME_LENGTH) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That name is too long.");
+      if (!GuildManager.self.isGuildNameValid(guildName, out string errorMessage)) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, errorMessage);
          return;
       }
 
-      // Make sure it doesn't contain bad words
-      if (BadWordManager.Contains(requestedName) | !NameUtil.isValid(requestedName, true)) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That name is not allowed.");
-         return;
-      }
-
-      // Try and insert the name
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int guildId = DB_Main.createGuild(requestedName);
+         // Try to create the guild in the database
+         GuildInfo guildInfo = new GuildInfo(guildName, iconBorder, iconBackground, iconSigil,
+            iconBackPalette1, iconBackPalette2, iconSigilPalette1, iconSigilPalette2);
+         int guildId = DB_Main.createGuild(guildInfo);
 
          // Assign the guild to the player
          if (guildId > 0) {
@@ -2274,7 +2266,7 @@ public class RPCManager : NetworkBehaviour {
 
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + requestedName + "!");
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + guildName + "!");
             });
 
          } else {

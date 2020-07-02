@@ -4294,6 +4294,7 @@ public class DB_Main : DB_MainStub
             "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmPalette1 AS weaponPalette1, weapon.itmPalette2 AS weaponPalette2, weapon.itmData AS weaponData, " +
             "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalette1 AS hatPalette1, hat.itmPalette2 AS hatPalette2, hat.itmData AS hatData " +
             "FROM users JOIN accounts USING(accId) LEFT JOIN ships USING(shpId) " +
+            "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
             "LEFT JOIN items AS armor ON(users.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
             "LEFT JOIN items AS hat ON(users.hatId = hat.itmId) " +
@@ -4315,6 +4316,7 @@ public class DB_Main : DB_MainStub
                      userObjects.accountCreationTime = dataReader.GetDateTime("accCreationTime").ToBinary();
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
+                     userObjects.guildInfo = new GuildInfo(dataReader);
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
                      userObjects.hat = getHat(dataReader);
@@ -5643,7 +5645,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new GuildInfo getGuildInfo (int guildId) {
-      GuildInfo info = new GuildInfo(guildId);
+      GuildInfo info = null;
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -5656,8 +5658,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  info.guildName = dataReader.GetString("gldName");
-                  info.creationTime = dataReader.GetDateTime("gldCreationTime").ToBinary();
+                  info = new GuildInfo(dataReader);
                }
             }
          }
@@ -5696,18 +5697,24 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
-   public static new int createGuild (string guildName) {
+   public static new int createGuild (GuildInfo guildInfo) {
       int guildId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO guilds (gldName) " +
-                 "VALUES(@gldName) ", conn)) {
+            "INSERT INTO guilds (gldName, gldIconBorder, gldIconBackground, gldIconSigil, gldIconBackPalette1, gldIconBackPalette2, gldIconSigilPalette1, gldIconSigilPalette2) " +
+            "VALUES(@gldName, @gldIconBorder, @gldIconBackground, @gldIconSigil, @gldIconBackPalette1, @gldIconBackPalette2, @gldIconSigilPalette1, @gldIconSigilPalette2) ", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@gldName", guildName);
-            //cmd.Parameters.AddWithValue("@gldFaction", (int) guildFaction);
+            cmd.Parameters.AddWithValue("@gldName", guildInfo.guildName);
+            cmd.Parameters.AddWithValue("@gldIconBorder", guildInfo.iconBorder);
+            cmd.Parameters.AddWithValue("@gldIconBackground", guildInfo.iconBackground);
+            cmd.Parameters.AddWithValue("@gldIconSigil", guildInfo.iconSigil);
+            cmd.Parameters.AddWithValue("@gldIconBackPalette1", guildInfo.iconBackPalette1);
+            cmd.Parameters.AddWithValue("@gldIconBackPalette2", guildInfo.iconBackPalette2);
+            cmd.Parameters.AddWithValue("@gldIconSigilPalette1", guildInfo.iconSigilPalette1);
+            cmd.Parameters.AddWithValue("@gldIconSigilPalette2", guildInfo.iconSigilPalette2);
 
             // Execute the command
             cmd.ExecuteNonQuery();

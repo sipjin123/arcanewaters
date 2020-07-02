@@ -758,6 +758,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 5cf7a614c21818b4da0d4429b763a937, type: 3}
     sprites:
     - {fileID: 21300000, guid: 5cf7a614c21818b4da0d4429b763a937, type: 3}
+  - imageName: background_1
+    imagePath: Assets/Sprites/GUI/Guild/Backgrounds/background_1.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Backgrounds/background_1
+    texture2D: {fileID: 2800000, guid: 452dfeba987a3834a8565e081dc090ab, type: 3}
+    sprite: {fileID: 21300000, guid: 452dfeba987a3834a8565e081dc090ab, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 452dfeba987a3834a8565e081dc090ab, type: 3}
+  - imageName: background_2
+    imagePath: Assets/Sprites/GUI/Guild/Backgrounds/background_2.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Backgrounds/background_2
+    texture2D: {fileID: 2800000, guid: 120ee97e86c328a4797838324798fb02, type: 3}
+    sprite: {fileID: 21300000, guid: 120ee97e86c328a4797838324798fb02, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 120ee97e86c328a4797838324798fb02, type: 3}
+  - imageName: background_3
+    imagePath: Assets/Sprites/GUI/Guild/Backgrounds/background_3.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Backgrounds/background_3
+    texture2D: {fileID: 2800000, guid: 7e48d68576c5eb5479a605a7c79352c6, type: 3}
+    sprite: {fileID: 21300000, guid: 7e48d68576c5eb5479a605a7c79352c6, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7e48d68576c5eb5479a605a7c79352c6, type: 3}
   - imageName: back-wtext
     imagePath: Assets/Sprites/GUI/Login/back-wtext.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Login/back-wtext
@@ -1346,6 +1367,48 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: a437682e2bf0b354f95954916dad2d8e, type: 3}
     sprites:
     - {fileID: 21300000, guid: a437682e2bf0b354f95954916dad2d8e, type: 3}
+  - imageName: border_1
+    imagePath: Assets/Sprites/GUI/Guild/Borders/border_1.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Borders/border_1
+    texture2D: {fileID: 2800000, guid: 73af9c1b683db5647a92745dd30d1403, type: 3}
+    sprite: {fileID: 21300000, guid: 73af9c1b683db5647a92745dd30d1403, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 73af9c1b683db5647a92745dd30d1403, type: 3}
+  - imageName: border_1_mask
+    imagePath: Assets/Sprites/GUI/Guild/Masks/border_1_mask.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Masks/border_1_mask
+    texture2D: {fileID: 2800000, guid: 5df079c8304b8314490de191d68abf7a, type: 3}
+    sprite: {fileID: 21300000, guid: 5df079c8304b8314490de191d68abf7a, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5df079c8304b8314490de191d68abf7a, type: 3}
+  - imageName: border_2
+    imagePath: Assets/Sprites/GUI/Guild/Borders/border_2.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Borders/border_2
+    texture2D: {fileID: 2800000, guid: 556c0f52ece3b734a927768111f7356b, type: 3}
+    sprite: {fileID: 21300000, guid: 556c0f52ece3b734a927768111f7356b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 556c0f52ece3b734a927768111f7356b, type: 3}
+  - imageName: border_2_mask
+    imagePath: Assets/Sprites/GUI/Guild/Masks/border_2_mask.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Masks/border_2_mask
+    texture2D: {fileID: 2800000, guid: 2ea2b579fa1714249a6e5a405630a1f8, type: 3}
+    sprite: {fileID: 21300000, guid: 2ea2b579fa1714249a6e5a405630a1f8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 2ea2b579fa1714249a6e5a405630a1f8, type: 3}
+  - imageName: border_3
+    imagePath: Assets/Sprites/GUI/Guild/Borders/border_3.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Borders/border_3
+    texture2D: {fileID: 2800000, guid: 19d4a333cbab88a47b97c829a707a583, type: 3}
+    sprite: {fileID: 21300000, guid: 19d4a333cbab88a47b97c829a707a583, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 19d4a333cbab88a47b97c829a707a583, type: 3}
+  - imageName: border_3_mask
+    imagePath: Assets/Sprites/GUI/Guild/Masks/border_3_mask.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Masks/border_3_mask
+    texture2D: {fileID: 2800000, guid: 763f1e49aeeee144e8bd97a3e12e1e9d, type: 3}
+    sprite: {fileID: 21300000, guid: 763f1e49aeeee144e8bd97a3e12e1e9d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 763f1e49aeeee144e8bd97a3e12e1e9d, type: 3}
   - imageName: boss_horror
     imagePath: Assets/Sprites/Enemies/SeaMonsters/boss_horror.png
     imagePathWithoutExtension: Assets/Sprites/Enemies/SeaMonsters/boss_horror
@@ -11323,6 +11386,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: ffca36d236b7a044d94a0cdc9c200c25, type: 3}
     sprites:
     - {fileID: 21300000, guid: ffca36d236b7a044d94a0cdc9c200c25, type: 3}
+  - imageName: guild_icon_selection_default_mask
+    imagePath: Assets/Sprites/GUI/Guild/guild_icon_selection_default_mask.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/guild_icon_selection_default_mask
+    texture2D: {fileID: 2800000, guid: 63c9d732a4f69234fb226b1e17dcf324, type: 3}
+    sprite: {fileID: 21300000, guid: 63c9d732a4f69234fb226b1e17dcf324, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 63c9d732a4f69234fb226b1e17dcf324, type: 3}
   - imageName: gun_2
     imagePath: Assets/Sprites/Icons/Weapons/Guns/gun_2.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Weapons/Guns/gun_2
@@ -12069,6 +12139,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 15b23185110b90b41a02b6a11360d359, type: 3}
     sprites:
     - {fileID: 21300000, guid: 15b23185110b90b41a02b6a11360d359, type: 3}
+  - imageName: icon_invalid
+    imagePath: Assets/Sprites/GUI/Guild/icon_invalid.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/icon_invalid
+    texture2D: {fileID: 2800000, guid: 7f04c22f3de375a42916de7749a3c7ff, type: 3}
+    sprite: {fileID: 21300000, guid: 7f04c22f3de375a42916de7749a3c7ff, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7f04c22f3de375a42916de7749a3c7ff, type: 3}
   - imageName: icon_luck
     imagePath: Assets/Sprites/Icons/Stats/icon_luck.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Stats/icon_luck
@@ -12209,6 +12286,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: d51835eae82d01543b913bc07312e61c, type: 3}
     sprites:
     - {fileID: 21300000, guid: d51835eae82d01543b913bc07312e61c, type: 3}
+  - imageName: icon_valid
+    imagePath: Assets/Sprites/GUI/Guild/icon_valid.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/icon_valid
+    texture2D: {fileID: 2800000, guid: a625a6e9779c8b34d99e8b76ecb649cd, type: 3}
+    sprite: {fileID: 21300000, guid: a625a6e9779c8b34d99e8b76ecb649cd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a625a6e9779c8b34d99e8b76ecb649cd, type: 3}
   - imageName: icon_vitality
     imagePath: Assets/Sprites/Icons/Stats/icon_vitality.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Stats/icon_vitality
@@ -22327,6 +22411,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 47e7e67ae516637489d5d4b031cd5049, type: 3}
     sprites:
     - {fileID: 21300000, guid: 47e7e67ae516637489d5d4b031cd5049, type: 3}
+  - imageName: sigil_1
+    imagePath: Assets/Sprites/GUI/Guild/Sigils/sigil_1.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Sigils/sigil_1
+    texture2D: {fileID: 2800000, guid: 7b24a1196e58b214cabf941d43e2733d, type: 3}
+    sprite: {fileID: 21300000, guid: 7b24a1196e58b214cabf941d43e2733d, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 7b24a1196e58b214cabf941d43e2733d, type: 3}
+  - imageName: sigil_2
+    imagePath: Assets/Sprites/GUI/Guild/Sigils/sigil_2.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Sigils/sigil_2
+    texture2D: {fileID: 2800000, guid: a3d2ea218550bd74e8b366362d6647fd, type: 3}
+    sprite: {fileID: 21300000, guid: a3d2ea218550bd74e8b366362d6647fd, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: a3d2ea218550bd74e8b366362d6647fd, type: 3}
+  - imageName: sigil_3
+    imagePath: Assets/Sprites/GUI/Guild/Sigils/sigil_3.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/Sigils/sigil_3
+    texture2D: {fileID: 2800000, guid: 97b3c6313d9d5e844a4b5c732b77d72e, type: 3}
+    sprite: {fileID: 21300000, guid: 97b3c6313d9d5e844a4b5c732b77d72e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 97b3c6313d9d5e844a4b5c732b77d72e, type: 3}
   - imageName: sign_items
     imagePath: Assets/Sprites/Map/sign_items.png
     imagePathWithoutExtension: Assets/Sprites/Map/sign_items

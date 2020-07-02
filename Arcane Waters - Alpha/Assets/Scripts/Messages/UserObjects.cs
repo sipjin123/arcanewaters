@@ -14,6 +14,7 @@ public class UserObjects {
    public long accountCreationTime;
    public UserInfo userInfo;
    public ShipInfo shipInfo;
+   public GuildInfo guildInfo;
    public Item armor;
    public Item weapon;
    public Item hat;

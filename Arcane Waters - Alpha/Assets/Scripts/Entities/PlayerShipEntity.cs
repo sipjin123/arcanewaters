@@ -45,6 +45,24 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public string hatColor2;
 
+   // The guild icon layers
+   [SyncVar]
+   public string guildIconBorder;
+   [SyncVar]
+   public string guildIconBackground;
+   [SyncVar]
+   public string guildIconSigil;
+
+   // The guild icon colors
+   [SyncVar]
+   public string guildIconBackPalette1;
+   [SyncVar]
+   public string guildIconBackPalette2;
+   [SyncVar]
+   public string guildIconSigilPalette1;
+   [SyncVar]
+   public string guildIconSigilPalette2;
+
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffect;
    public Canvas speedupGUI;
@@ -219,8 +237,8 @@ public class PlayerShipEntity : ShipEntity {
       StartCoroutine(CO_FireTimedCannonBall(startTime, velocity));
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo);
 
       // Ship stuff
       initialize(shipInfo);
@@ -233,6 +251,15 @@ public class PlayerShipEntity : ShipEntity {
       hatType = hat.itemTypeId;
       armorColor1 = armor.paletteName1;
       armorColor2 = armor.paletteName2;
+
+      // Store the guild icon layers and colors
+      guildIconBorder = guildInfo.iconBorder;
+      guildIconBackground = guildInfo.iconBackground;
+      guildIconSigil = guildInfo.iconSigil;
+      guildIconBackPalette1 = guildInfo.iconBackPalette1;
+      guildIconBackPalette2 = guildInfo.iconBackPalette2;
+      guildIconSigilPalette1 = guildInfo.iconSigilPalette1;
+      guildIconSigilPalette2 = guildInfo.iconSigilPalette2;
    }
 
    public override Armor getArmorCharacteristics () {

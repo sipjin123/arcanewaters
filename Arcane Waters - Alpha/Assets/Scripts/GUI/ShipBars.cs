@@ -16,8 +16,14 @@ public class ShipBars : MonoBehaviour {
    // Our reload bar image
    public Image reloadBarImage;
 
+   // The guild icon
+   public GuildIcon guildIcon;
+
    // The container for our bars
    public GameObject barsContainer;
+
+   // And empty column used to correctly align icons in certain cases
+   public GameObject togglableSpacer;
 
    // The Image icon that shows when we're being targeted
    public Image targetedIcon;
@@ -30,6 +36,21 @@ public class ShipBars : MonoBehaviour {
 
    // An alternate sprite we use for the health bar background on non-player ships
    public Sprite barsBackgroundAlt;
+
+   // The character portrait
+   public CharacterPortrait portrait;
+
+   // The canvas group of the portrait
+   public CanvasGroup portraitCanvasGroup;
+
+   // The frame image of the character portrait
+   public Image portraitFrameImage;
+
+   // The frame used if the portrait is the local player's
+   public Sprite localPlayerFrame;
+
+   // The frame used if the portrait is not the local player's
+   public Sprite nonLocalPlayerFrame;
 
    #endregion
 
@@ -45,6 +66,10 @@ public class ShipBars : MonoBehaviour {
    private void Start () {
       if (_entity == null) {
          return;
+      }
+
+      if (portrait != null) {
+         StartCoroutine(CO_InitializeUserInfo());
       }
    }
 
@@ -70,12 +95,26 @@ public class ShipBars : MonoBehaviour {
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
       barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());
 
+      // Enable the empty column to correctly align icons when there is no guild icon
+      togglableSpacer.SetActive(!guildIcon.gameObject.activeSelf && !barsContainer.activeSelf);
+
       // Hide and show our status icons accordingly
       handleStatusIcons();
 
       // Show a different background for ships owned by other players
       if (Global.player != null && _entity != Global.player) {
          barBackgroundImage.sprite = barsBackgroundAlt;
+      }
+
+      if (portrait == null) {
+         return;
+      }
+
+      // Only show the user info when the mouse is over the entity or its member cell in the group panel
+      if (!_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId))) {
+         showUserInfo();
+      } else {
+         hideUserInfo();
       }
 
       /*if (_entity.hasRecentCombat()) {
@@ -101,6 +140,46 @@ public class ShipBars : MonoBehaviour {
       } else if (_entity.hasAttackers()) {
          // Show the target icon if we're being attacked
          targetedIcon.gameObject.SetActive(true);
+      }
+   }
+
+   private IEnumerator CO_InitializeUserInfo () {
+      // Wait until the entity has been initialized
+      while (Util.isEmpty(_entity.entityName)) {
+         yield return null;
+      }
+
+      portrait.initialize(_entity);
+
+      // Set the portrait frame for local or non local entities
+      if (_entity.isLocalPlayer) {
+         portraitFrameImage.sprite = localPlayerFrame;
+      } else {
+         portraitFrameImage.sprite = nonLocalPlayerFrame;
+      }
+
+      if (_entity.guildId > 0) {
+         PlayerShipEntity playerShip = (PlayerShipEntity) _entity;
+         guildIcon.setBorder(playerShip.guildIconBorder);
+         guildIcon.setBackground(playerShip.guildIconBackground, playerShip.guildIconBackPalette1, playerShip.guildIconBackPalette2);
+         guildIcon.setSigil(playerShip.guildIconSigil, playerShip.guildIconSigilPalette1, playerShip.guildIconSigilPalette2);
+      } else {
+         guildIcon.gameObject.SetActive(false);
+      }
+   }
+
+   private void showUserInfo () {
+      if (portraitCanvasGroup.alpha < 1) {
+         portraitCanvasGroup.alpha = 1;
+         guildIcon.show();
+         portrait.updateBackground(_entity);
+      }
+   }
+
+   private void hideUserInfo () {
+      if (portraitCanvasGroup.alpha > 0) {
+         portraitCanvasGroup.alpha = 0;
+         guildIcon.hide();
       }
    }
 

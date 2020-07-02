@@ -158,10 +158,18 @@ public class PaletteSwapManager : MonoBehaviour {
          return intToColor(0, 153, 51);
       }
 
+      if (PaletteDef.guildIcon1.ContainsKey(p)) {
+         return PaletteDef.guildIcon1[p];
+      }
+
+      if (PaletteDef.guildIcon2.ContainsKey(p)) {
+         return PaletteDef.guildIcon2[p];
+      }
+
       return Color.magenta;
    }
 
-   private static Color intToColor(int r, int g, int b) {
+   public static Color intToColor(int r, int g, int b) {
       return new Color((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
    }
 
