@@ -90,14 +90,18 @@ public class EquipmentXMLManager : MonoBehaviour {
       List<XMLPair> rawWeaponXml = DB_Main.getEquipmentXML(EquipmentType.Weapon);
       foreach (XMLPair xmlPair in rawWeaponXml) {
          if (xmlPair.isEnabled) {
-            TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-            WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-            rawData.equipmentID = xmlPair.xmlId;
+            try {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
+               rawData.equipmentID = xmlPair.xmlId;
 
-            // Save the data in the memory cache
-            if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
-               _weaponStatList.Add(xmlPair.xmlId, rawData);
-               weaponStatData.Add(rawData);
+               // Save the data in the memory cache
+               if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+                  _weaponStatList.Add(xmlPair.xmlId, rawData);
+                  weaponStatData.Add(rawData);
+               }
+            } catch {
+               D.editorLog("Failed to translate data: " + xmlPair.rawXmlData, Color.red);
             }
          }
       }

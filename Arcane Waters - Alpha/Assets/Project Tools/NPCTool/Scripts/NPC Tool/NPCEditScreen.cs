@@ -168,10 +168,10 @@ public class NPCEditScreen : MonoBehaviour
 
    public void Awake () {
       foreach (InputField inputField in longTextInputfields) {
-         inputField.characterLimit = 30;
+         inputField.characterLimit = 60;
       }
       foreach (InputField inputField in shortTextInputfields) {
-         inputField.characterLimit = 20;
+         inputField.characterLimit = 30;
       }
 
       itemTypeSelectionPanel.SetActive(false);

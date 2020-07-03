@@ -15,11 +15,11 @@ public class TreasureDropsData {
 
 [Serializable]
 public class LootGroupData {
-   // The id of this group data in the database
-   public int xmlId;
-
    // The name of the loot group
    public string lootGroupName;
+
+   // The id of this group data in the database
+   public int xmlId;
 
    // The data collection
    public List<TreasureDropsData> treasureDropsCollection = new List<TreasureDropsData>();

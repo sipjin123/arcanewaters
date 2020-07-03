@@ -60,17 +60,13 @@ public class TreasureDropsDataManager : MonoBehaviour {
    }
 
    public List<TreasureDropsData> getTreasureDropsById (int groupId) {
-      List<LootGroupData> groupDataLoots = lootDropsCollection.Values.ToList().FindAll(_ => _.xmlId == groupId);
-      List<TreasureDropsData> newTreasureDropList = new List<TreasureDropsData>();
+      if (lootDropsCollection.ContainsKey(groupId)) {
+         LootGroupData groupDataLoots = lootDropsCollection[groupId];
 
-      // Collect all data from loot groups of the same biome
-      if (groupDataLoots.Count > 0) {
-         foreach (LootGroupData lootGroups in groupDataLoots) {
-            foreach (TreasureDropsData lootData in lootGroups.treasureDropsCollection) {
-               newTreasureDropList.Add(lootData);
-            }
+         // Collect all data from loot groups of the same biome
+         if (groupDataLoots != null && groupDataLoots.treasureDropsCollection.Count > 0) {
+            return groupDataLoots.treasureDropsCollection;
          }
-         return newTreasureDropList;
       }
       return LootGroupData.DEFAULT_LOOT_GROUP.treasureDropsCollection;
    }

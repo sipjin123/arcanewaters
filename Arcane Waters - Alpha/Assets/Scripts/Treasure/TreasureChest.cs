@@ -199,9 +199,9 @@ public class TreasureChest : NetworkBehaviour {
       string areaKey = InstanceManager.self.getInstance(instanceId).areaKey;
       Biome.Type biome = AreaManager.self.getArea(areaKey).biome;
       List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).OrderBy(_=>_.spawnChance).ToList();
-      float randomizer = Random.Range(0, 100);
 
       foreach (TreasureDropsData treasureDropsEntry in treasureDropsList) {
+         float randomizer = Random.Range(0, 100);
          if (randomizer < treasureDropsEntry.spawnChance) {
             return treasureDropsEntry.item;
          }
@@ -231,9 +231,9 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    private Item processItemChance (List<TreasureDropsData> treasureDropsDataList) {
-      float randomizer = Random.Range(0, 100);
       if (treasureDropsDataList.Count > 0) {
          foreach (TreasureDropsData treasureDropData in treasureDropsDataList.OrderBy(_ => _.spawnChance)) {
+            float randomizer = Random.Range(0, 100);
             if (randomizer < treasureDropData.spawnChance) {
                return treasureDropData.item;
             }

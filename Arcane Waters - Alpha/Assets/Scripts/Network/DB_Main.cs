@@ -3340,12 +3340,16 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  XMLPair xmlPair = new XMLPair {
-                     isEnabled = dataReader.GetInt32("is_enabled") == 1 ? true : false,
-                     rawXmlData = dataReader.GetString("xmlContent"),
-                     xmlId = dataReader.GetInt32("xml_id")
-                  };
-                  rawDataList.Add(xmlPair);
+                  try {
+                     XMLPair xmlPair = new XMLPair {
+                        isEnabled = dataReader.GetInt32("is_enabled") == 1 ? true : false,
+                        rawXmlData = dataReader.GetString("xmlContent"),
+                        xmlId = dataReader.GetInt32("xml_id")
+                     };
+                     rawDataList.Add(xmlPair);
+                  } catch {
+                     D.debug("Failed to translate: " + dataReader.GetInt32("xml_id"));
+                  }
                }
             }
          }

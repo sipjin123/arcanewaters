@@ -1034,7 +1034,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
 
             // Simulate the collision effect of the attack towards the target battler
-            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // If the action was blocked, animate that
             if (action.wasBlocked) {
@@ -1166,7 +1166,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
             // Simulate the collision effect of the attack towards the target battler
-            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1261,7 +1261,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
 
             // Simulate the collision effect of the attack towards the target battler
-            StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);

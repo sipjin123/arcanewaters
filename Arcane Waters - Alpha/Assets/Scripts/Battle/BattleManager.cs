@@ -421,10 +421,15 @@ public class BattleManager : MonoBehaviour {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
 
-      if (abilityType == AbilityType.Standard) {
-         abilityData = source.getAttackAbilities()[abilityInventoryIndex];
-      } else if (abilityType == AbilityType.BuffDebuff) {
-         abilityData = source.getBuffAbilities()[abilityInventoryIndex];
+      if (source.getAttackAbilities().Count > 0) {
+         if (abilityType == AbilityType.Standard) {
+            abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+         } else if (abilityType == AbilityType.BuffDebuff) {
+            abilityData = source.getBuffAbilities()[abilityInventoryIndex];
+         }
+      } else {
+         D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
+         abilityData = AbilityManager.self.punchAbility();
       }
 
       BattleActionType actionType = BattleActionType.UNDEFINED;
