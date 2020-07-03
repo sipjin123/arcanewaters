@@ -64,6 +64,9 @@ public class NPCData
    // Holds the address of the image sprite within the game
    public string spritePath = "";
 
+   // If this object is active in the database
+   public bool isActive;
+
    #endregion
 
    public NPCData () {
@@ -73,7 +76,7 @@ public class NPCData
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement) {
+      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -94,6 +97,7 @@ public class NPCData
       this.isHireable = isHireable;
       this.landMonsterId = landMonsterId;
       this.achievementIdHiringRequirement = achievementIdHiringRequirement;
+      this.isActive = isActive;
    }
 
    #region Private Variables

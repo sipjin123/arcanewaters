@@ -19,9 +19,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Wisp_Armored = 214, Wisp_Healer = 215, Wisp_Inferno = 216, Wisp_Purple = 217, Wisp_Yokai = 218,
       Snake_Base = 219, Snake_Assassin = 220, Snake_Healer = 221, Snake_Ranged = 222, Snake_Tank = 223,
       Shroom_Luminous = 224, Shroom_Old = 225, Shroom_Toxic = 226, Shroom_Warrior = 227,
-      Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232, Pirate_Berzerker = 238,
-      Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237,
-      PlayerBattler = 305,
+      Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232, 
+      Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237, Pirate_Berzerker = 238,
+      Skelly_Captain = 239,
+      PlayerBattler = 305, 
    }
 
    // The Type of animation the Enemy is associated with
@@ -54,6 +55,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // The canvas that allows user to hover over the enemy
    public Canvas highlightCanvas;
+
+   // The text ui for the enemy name
+   public Text displayNameText;
 
    // The possible spawn positions for the loot bags
    public Transform[] lootSpawnPositions;
@@ -121,6 +125,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (isDefeated) {
          _body.mass = 9999;
          _outline.Hide();
+         displayNameText.enabled = false;
          highlightCanvas.enabled = false;
          enemyBattleCollider.gameObject.SetActive(false);
 
@@ -143,6 +148,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (this.facing != newFacingDirection) {
          this.facing = newFacingDirection;
       }
+
+      displayNameText.enabled = isMouseOver();
    }
 
    protected override void FixedUpdate () {

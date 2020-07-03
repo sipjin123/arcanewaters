@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using UnityEngine.Events;
+using System.Linq;
 
 public class GenericSelectionPopup : MonoBehaviour
 {
@@ -430,7 +431,7 @@ public class GenericSelectionPopup : MonoBehaviour
 
       switch (category) {
          case Item.Category.Armor: {
-               foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
+               foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList.OrderBy(_=>_.equipmentName)) {
                   if (armorData != null) {
                      string iconPath = armorData.equipmentIconPath;
                      string armorName = armorData.equipmentName;
@@ -440,7 +441,7 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case Item.Category.Weapon: {
-               foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
+               foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList.OrderBy(_ => _.equipmentName)) {
                   if (weaponData != null) {
                      string iconPath = weaponData.equipmentIconPath;
                      string equipmentName = weaponData.equipmentName;
@@ -450,7 +451,7 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case Item.Category.Hats: {
-               foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
+               foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList.OrderBy(_ => _.equipmentName)) {
                   if (hatData != null) {
                      string iconPath = hatData.equipmentIconPath;
                      string equipmentName = hatData.equipmentName;
@@ -460,7 +461,14 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case Item.Category.CraftingIngredients: {
+               List<CraftingIngredients.Type> ingredientsList = new List<CraftingIngredients.Type>();
                foreach (CraftingIngredients.Type itemType in Enum.GetValues(typeof(CraftingIngredients.Type))) {
+                  if (itemType != CraftingIngredients.Type.None) {
+                     ingredientsList.Add(itemType);
+                  }
+               }
+
+               foreach (CraftingIngredients.Type itemType in ingredientsList.OrderBy(_=>_.ToString())) {
                   string iconPath = new Item { category = Item.Category.CraftingIngredients, itemTypeId = (int) itemType }.getCastItem().getIconPath();
                   createItemTextTemplate(itemType.ToString(), (int) itemType, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                }

@@ -295,10 +295,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
       assignDataToManagers(xmlType, content);
       currentProgress++;
       checkTextExtractionProgress();
-      try {
-      } catch {
-         D.debug("Failed to process: " + xmlType);
-      }
    }
 
    private void assignDataToManagers (EditorToolType xmlType, string content) {

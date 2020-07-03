@@ -345,8 +345,6 @@ namespace MapCreationTool.Serialization
       public const string PLACED_PREFAB_ID = "id";
       public const string IS_PERMANENT_KEY = "is permanent";
 
-      public const string SHIP_GUILD_TYPE = "guild type";
-
       public const string SHIP_GUILD_ID = "guild id";
 
       public string k; // Key

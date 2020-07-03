@@ -108,7 +108,12 @@ public class PanelManager : MonoBehaviour {
    }
 
    public Panel get (Panel.Type panelType) {
-      return _panels[panelType];
+      if (_panels.ContainsKey(panelType)) {
+         return _panels[panelType];
+      } else {
+         D.editorLog("Panel does not exist!", Color.red);
+         return _panels[Panel.Type.Options];
+      }
    }
 
    public T get<T> (Panel.Type panelType) where T : Panel {

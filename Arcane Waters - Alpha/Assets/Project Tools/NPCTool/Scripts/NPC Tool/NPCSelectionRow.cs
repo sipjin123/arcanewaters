@@ -9,6 +9,9 @@ public class NPCSelectionRow : GenericEntryTemplate
    // Holds the button icon of the npc
    public Button npcIconButton;
 
+   // Determines if this template is active in the database
+   public Toggle isActiveToggle;
+
    #endregion
 
    public void setRowForNPC(NPCSelectionScreen npcSelectionScreen, int npcId, string npcName) {

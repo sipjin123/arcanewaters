@@ -95,7 +95,7 @@ public class MonsterDataScene : MonoBehaviour {
             monsterPanel.skillIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string projectileSpritePath = "Assets/Sprites/Cannon/";
+         string projectileSpritePath = "Assets/Sprites/Projectiles/";
          List<ImageManager.ImageData> projectileSpriteFiles = ImageManager.getSpritesInDirectory(projectileSpritePath);
 
          foreach (ImageManager.ImageData imgData in projectileSpriteFiles) {

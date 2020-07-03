@@ -121,7 +121,7 @@ public class AbilityDataScene : MonoBehaviour
             castIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string projectileSpritePath = "Assets/Sprites/Cannon/";
+         string projectileSpritePath = "Assets/Sprites/Projectiles/";
          List<ImageManager.ImageData> projecitleSpriteIconFiles = ImageManager.getSpritesInDirectory(projectileSpritePath);
 
          foreach (ImageManager.ImageData imgData in projecitleSpriteIconFiles) {

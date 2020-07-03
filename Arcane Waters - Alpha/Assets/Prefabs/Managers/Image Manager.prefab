@@ -22615,6 +22615,54 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 2d76d8e16e2ce5b498fdcbfcf8560faf, type: 3}
     sprites:
     - {fileID: 21300000, guid: 2d76d8e16e2ce5b498fdcbfcf8560faf, type: 3}
+  - imageName: skelly_captain
+    imagePath: Assets/Sprites/Enemies/LandMonsters/skelly_captain.png
+    imagePathWithoutExtension: Assets/Sprites/Enemies/LandMonsters/skelly_captain
+    texture2D: {fileID: 2800000, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    sprite: {fileID: 5457328560506547465, guid: 72f4604d3153ca84290ae7b5440179b0,
+      type: 3}
+    sprites:
+    - {fileID: 5457328560506547465, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -1057701546487860089, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -6813039690667730124, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 8266639043642754216, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -4724764742179579864, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 967094883574344485, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 8275021402501587204, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 6658949482737654247, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 6958302529636478414, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 1117755073988951746, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -4721778988936448857, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 670937486062394919, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 5042229512130711801, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 1167448456776584653, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 8335786954320883408, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 2121233741544718516, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -4122231596707419701, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 6548655644921026831, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 1698101650294698422, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -2767813692821208734, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -935302767288747146, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -2146434049967179360, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 2613260070109766278, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 8062997599727335726, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 2248615227410159462, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -2233024413299313532, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 6537861596832644909, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 200601072038130837, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 943593697785817094, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 4332982730984893808, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 5252122972859984989, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -5245238086833474550, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -3013528563616040550, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -1264508354565433853, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -6433230338888392386, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 4684017205445289650, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -6139448367130182376, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: 3638360975027348361, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -7974252298862989035, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -232577065036338400, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
+    - {fileID: -7260700506039000076, guid: 72f4604d3153ca84290ae7b5440179b0, type: 3}
   - imageName: skill_progressbar
     imagePath: Assets/Sprites/GUI/Character/skill_progressbar.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Character/skill_progressbar

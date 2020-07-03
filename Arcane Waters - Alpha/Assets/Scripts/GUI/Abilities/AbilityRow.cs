@@ -41,7 +41,7 @@ public class AbilityRow : MonoBehaviour, IPointerEnterHandler, IPointerDownHandl
 
    public void OnPointerEnter (PointerEventData eventData) {
       // Display the ability description in the ability panel
-      AbilityPanel.self.displayDescription(icon.sprite, abilityName, _description);
+      AbilityPanel.self.displayDescription(icon.sprite, abilityName, _description, _basicAbilityData.abilityLevel, _basicAbilityData.abilityCost);
    }
 
    public void OnPointerDown (PointerEventData eventData) {

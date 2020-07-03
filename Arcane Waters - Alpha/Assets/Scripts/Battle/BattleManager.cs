@@ -333,16 +333,8 @@ public class BattleManager : MonoBehaviour {
    }
 
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp) {
-      Enemy.Type overrideType = enemy.enemyType;//Enemy.Type.Lizard;
+      Enemy.Type overrideType = enemy.enemyType;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
-
-      /* // TODO: Randomizes enemy spawn depending on spawn count
-      _spawnCounter++;
-      // TODO: For testing Purposes, adds a chance to spawn a Golem Monster
-      if (_spawnCounter == 2) {
-         Debug.Log("Spawning a Debug Monster, Delete after feature completion!");
-         overrideType = Enemy.Type.Golem;
-      }*/
 
       BattlerData data = getAllBattlersData().Find(x => x.enemyType == overrideType);
       Battler battler = Instantiate(enemyPrefab);
@@ -849,9 +841,6 @@ public class BattleManager : MonoBehaviour {
 
    // The unique ID we assign to enemy Battlers that are created
    protected int _enemyId = -1;
-
-   // A Test variable only for spawning variety of monsters
-   protected int _spawnCounter = 0;
 
    // All battlers in the game
    [SerializeField] private List<BattlerData> _allBattlersData;

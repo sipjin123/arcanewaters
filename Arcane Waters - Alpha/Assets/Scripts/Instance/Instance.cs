@@ -236,12 +236,13 @@ public class Instance : NetworkBehaviour
                   enemy.areaKey = area.areaKey;
                   enemy.transform.localPosition = targetLocalPos;
                   enemy.setAreaParent(area, false);
-
+                  
                   BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
                   if (battleData != null) {
                      enemy.isBossType = battleData.isBossType;
                      enemy.animGroupType = battleData.animGroup;
                      enemy.facing = Direction.South;
+                     enemy.displayNameText.text = battleData.enemyName;
                   }
 
                   InstanceManager.self.addEnemyToInstance(enemy, this);
@@ -251,30 +252,38 @@ public class Instance : NetworkBehaviour
             }
 
             if (area.npcDatafields.Count > 0 && npcCount < 1) {
+               string disabledNpcLog = "";
+
                foreach (ExportedPrefab001 dataField in area.npcDatafields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
                   int npcId = NPC.fetchDataFieldID(dataField.d);
 
-                  NPC npc = Instantiate(PrefabsManager.self.npcPrefab);
-                  npc.areaKey = area.areaKey;
-                  npc.npcId = npcId;
-                  npc.transform.localPosition = targetLocalPos;
-                  npc.setAreaParent(area, false);
+                  // If npc data equivalent does not exist, do not process this entity
+                  if (NPCManager.self.getNPCData(npcId) == null) {
+                     disabledNpcLog += (disabledNpcLog == "" ? "" : " : ") + npcId;
+                  } else {
+                     NPC npc = Instantiate(PrefabsManager.self.npcPrefab);
+                     npc.areaKey = area.areaKey;
+                     npc.npcId = npcId;
+                     npc.transform.localPosition = targetLocalPos;
+                     npc.setAreaParent(area, false);
 
-                  // Make sure npc has correct data
-                  IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
-                  if (receiver != null && dataField.d != null) {
-                     receiver.receiveData(dataField.d);
+                     // Make sure npc has correct data
+                     IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
+                     if (receiver != null && dataField.d != null) {
+                        receiver.receiveData(dataField.d);
+                     }
+
+                     InstanceManager.self.addNPCToInstance(npc, this);
+
+                     foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
+                        snap.snapZ();
+                     }
+
+                     NetworkServer.Spawn(npc.gameObject);
                   }
-
-                  InstanceManager.self.addNPCToInstance(npc, this);
-
-                  foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
-                     snap.snapZ();
-                  }
-                  
-                  NetworkServer.Spawn(npc.gameObject);
                }
+               D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
             } 
 
             if (area.treasureSiteDataFields.Count > 0) {

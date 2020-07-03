@@ -292,8 +292,12 @@ public class MonsterSkillTemplate : MonoBehaviour
       projectileSpeed.text = attackData.projectileSpeed.ToString();
       projectileScale.text = attackData.projectileScale.ToString();
       projectileSpritePath.text = attackData.projectileSpritePath;
-      if (attackData.projectileSpritePath != null) {
-         projectileSprite.sprite = ImageManager.getSprite(attackData.projectileSpritePath);
+      if (attackData.abilityActionType != AbilityActionType.Melee) {
+         if (attackData.projectileSpritePath != null) {
+            projectileSprite.sprite = ImageManager.getSprite(attackData.projectileSpritePath);
+         }
+      } else {
+         projectileSprite.sprite = ImageManager.self.blankSprite;
       }
 
       attackStatHolder.SetActive(true);

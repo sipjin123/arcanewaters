@@ -20,6 +20,7 @@ public class NPCEditScreen : MonoBehaviour
    public Slider specialty;
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
+   public Toggle isActive;
    public InputField greetingStranger;
    public InputField greetingAcquaintance;
    public InputField greetingCasualFriend;
@@ -245,6 +246,7 @@ public class NPCEditScreen : MonoBehaviour
       isHireableToggle.isOn = npcData.isHireable;
       selectedBattlerIndex.text = npcData.landMonsterId.ToString();
       achievementRequirementHireID.text = npcData.achievementIdHiringRequirement.ToString();
+      isActive.isOn = npcData.isActive;
       if (NPCToolManager.instance.achievementCollection.ContainsKey(npcData.achievementIdHiringRequirement)) {
          achievmentRequirementHireName.text = NPCToolManager.instance.achievementCollection[npcData.achievementIdHiringRequirement].achievementName;
       } else {
@@ -338,7 +340,7 @@ public class NPCEditScreen : MonoBehaviour
       NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text));
+         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text), isActive.isOn);
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc

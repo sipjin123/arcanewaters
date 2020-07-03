@@ -14,7 +14,12 @@ public class PaletteSwap : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      _material = GetComponent<SpriteRenderer>().material;
+      _material = null;
+      try {
+         _material = GetComponent<SpriteRenderer>().material;
+      } catch {
+         _material = GetComponent<Image>().material;
+      }
 
       if (_material.HasProperty(SHADER_TEXTURE_KEY)) {
          generatePaletteSwapTexture();

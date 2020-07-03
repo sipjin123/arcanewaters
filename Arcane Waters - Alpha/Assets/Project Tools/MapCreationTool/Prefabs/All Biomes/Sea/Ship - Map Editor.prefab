@@ -154,9 +154,6 @@ MonoBehaviour:
   - name: ship data
     toolTip: Ship from the Database that is spawned here
     type: 12
-  - name: guild type
-    toolTip: The guild this ship belongs to
-    type: 14
 --- !u!114 &1767334834277260193
 MonoBehaviour:
   m_ObjectHideFlags: 0

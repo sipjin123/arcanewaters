@@ -44,7 +44,7 @@ public class NPCManager : MonoBehaviour {
                NPCData npcData = Util.xmlLoad<NPCData>(newTextAsset);
 
                // Save the NPC data in the memory cache
-               if (!_npcData.ContainsKey(npcData.npcId)) {
+               if (!_npcData.ContainsKey(npcData.npcId) && npcData.isActive) {
                   _npcData.Add(npcData.npcId, npcData);
                   npcList.Add(npcData);
 
@@ -67,16 +67,18 @@ public class NPCManager : MonoBehaviour {
       _npcData = new Dictionary<int, NPCData>();
       foreach (NPCData data in dataList) {
          // Save the NPC data in the memory cache
-         if (_npcData.ContainsKey(data.npcId)) {
-            _npcData[data.npcId] = data;
-         } else {
-            npcList.Add(data);
-            _npcData.Add(data.npcId, data);
-         }
+         if (data.isActive) {
+            if (_npcData.ContainsKey(data.npcId)) {
+               _npcData[data.npcId] = data;
+            } else {
+               npcList.Add(data);
+               _npcData.Add(data.npcId, data);
+            }
 
-         // Initializes info of the npc
-         if (_npcs.ContainsKey(data.npcId)) {
-            _npcs[data.npcId].initData();
+            // Initializes info of the npc
+            if (_npcs.ContainsKey(data.npcId)) {
+               _npcs[data.npcId].initData();
+            }
          }
       }
 

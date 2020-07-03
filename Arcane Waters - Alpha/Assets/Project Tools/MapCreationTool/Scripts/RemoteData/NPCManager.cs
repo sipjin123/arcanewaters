@@ -72,7 +72,7 @@ namespace MapCreationTool
                }
 
                // Save the NPC data in the memory cache
-               if (!idToNpc.ContainsKey(npcData.npcId)) {
+               if (!idToNpc.ContainsKey(npcData.npcId) && npcData.isActive) {
                   idToNpc.Add(npcData.npcId, npcData);
                }
             }

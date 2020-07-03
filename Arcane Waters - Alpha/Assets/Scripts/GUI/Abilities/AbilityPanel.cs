@@ -31,11 +31,11 @@ public class AbilityPanel : Panel {
    // The description of the currently hovered ability
    public Text descriptionText;
 
+   // The basic stat info of each ability
+   public Text apCostText, levelText;
+
    // Self
    public static AbilityPanel self;
-
-   // Data Display
-   public Text panelLevel, panelAP;
 
    // Cached info of the abilities
    public List<BasicAbilityData> cachedAbilityList;
@@ -169,10 +169,12 @@ public class AbilityPanel : Panel {
       skillInfoHolder.SetActive(true);
    }
 
-   public void displayDescription(Sprite iconSprite, string name, string description) {
+   public void displayDescription(Sprite iconSprite, string name, string description, int abilityLevel, int abilityAPCost) {
       descriptionIcon.sprite = iconSprite;
       descriptionName.text = name;
       descriptionText.text = description;
+      apCostText.text = abilityAPCost.ToString();
+      levelText.text = abilityLevel.ToString();
    }
 
    #region Equip Feature

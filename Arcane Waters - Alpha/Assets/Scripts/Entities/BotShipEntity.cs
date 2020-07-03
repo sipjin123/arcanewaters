@@ -366,9 +366,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             if (shipData.rippleSpritePath != "") {
                ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
             }
-         } else if (field.k.CompareTo(DataField.SHIP_GUILD_TYPE) == 0) {
-            int type = int.Parse(field.v.Split(':')[0]);
-            guildType = (GuildType) type;
          } else if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
             int id = int.Parse(field.v.Split(':')[0]);
             guildId = id;

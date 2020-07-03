@@ -618,8 +618,8 @@ MonoBehaviour:
   descriptionIcon: {fileID: 7232580310924715700}
   descriptionName: {fileID: 7232580312450044634}
   descriptionText: {fileID: 7232580311111002976}
-  panelLevel: {fileID: 5168086890751801444}
-  panelAP: {fileID: 530256330579126032}
+  apCostText: {fileID: 530256330579126032}
+  levelText: {fileID: 5168086890751801444}
   cachedAbilityList: []
   canvas: {fileID: 0}
   inventoryDropZone: {fileID: 2553726158148862597}
@@ -4617,7 +4617,7 @@ GameObject:
   - component: {fileID: 7136459962624520102}
   - component: {fileID: 530256330579126032}
   m_Layer: 5
-  m_Name: Text (3)
+  m_Name: StatNumber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4682,7 +4682,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 100
+  m_Text: 0
 --- !u!1 &6657436232578408989
 GameObject:
   m_ObjectHideFlags: 0
@@ -4695,7 +4695,7 @@ GameObject:
   - component: {fileID: 5249237049282128900}
   - component: {fileID: 5168086890751801444}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: StatNumber
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4760,7 +4760,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 100
+  m_Text: 0
 --- !u!1 &6784668544575642361
 GameObject:
   m_ObjectHideFlags: 0

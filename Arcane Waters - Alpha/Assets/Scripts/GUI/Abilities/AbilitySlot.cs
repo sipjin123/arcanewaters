@@ -55,7 +55,7 @@ public class AbilitySlot : MonoBehaviour, IPointerEnterHandler, IPointerDownHand
    public void OnPointerEnter (PointerEventData eventData) {
       if (_isUsed) {
          // Display the ability description in the ability panel
-         AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description);
+         AbilityPanel.self.displayDescription(icon.sprite, abilityName.text, _description, _basicAbilityData.abilityLevel, _basicAbilityData.abilityCost);
       }
    }
 

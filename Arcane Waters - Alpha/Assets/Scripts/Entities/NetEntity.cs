@@ -126,10 +126,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildId;
 
-   // The Type of guild this ship is associated with
-   [SyncVar]
-   public GuildType guildType;
-
    // The ID of the Battle this Enemy is currently in, if any
    [SyncVar]
    public int battleId;

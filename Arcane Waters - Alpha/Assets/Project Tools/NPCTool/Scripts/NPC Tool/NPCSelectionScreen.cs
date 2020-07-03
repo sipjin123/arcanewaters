@@ -44,6 +44,9 @@ public class NPCSelectionScreen : MonoBehaviour
          NPCSelectionRow row = GenericEntryTemplate.createGenericTemplate(npcRowPrefab.gameObject, npcToolManager, rowsContainer.transform).GetComponent<NPCSelectionRow>(); 
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForNPC(this, npcData.npcId, npcData.name);
+         if (row.isActiveToggle != null) {
+            row.isActiveToggle.isOn = npcData.isActive;
+         }
          row.deleteButton.onClick.AddListener(() => deleteNPC(npcData.npcId));
          row.duplicateButton.onClick.AddListener(() => {
             npcData.npcId = 0;
