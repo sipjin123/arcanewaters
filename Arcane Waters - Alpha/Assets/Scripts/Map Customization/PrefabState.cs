@@ -30,6 +30,14 @@ namespace MapCustomization
 
       #endregion
 
+      public string serialize () {
+         return JsonUtility.ToJson(this);
+      }
+
+      public static PrefabState deserialize (string data) {
+         return JsonUtility.FromJson<PrefabState>(data);
+      }
+
       public void clearLocalPosition () {
          localPosition = new Vector2(Mathf.NegativeInfinity, 0);
       }
@@ -52,6 +60,7 @@ namespace MapCustomization
             result.deleted = true;
          } else if (deleted && state.created) {
             result.deleted = false;
+            result.serializationId = state.serializationId;
          }
 
          return result;

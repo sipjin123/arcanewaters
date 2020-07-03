@@ -287,7 +287,11 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static void setMapCustomizationData (MapCustomizationData data) {
+   public static PrefabState getMapCustomizationChanges (int mapId, int userId, int prefabId) {
+      return default;
+   }
+
+   public static void setMapCustomizationChanges (int mapId, int userId, PrefabState changes) {
 
    }
 

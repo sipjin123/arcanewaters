@@ -10470,6 +10470,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: fe2d6a2c2e5880f4aa71a73a1e94faa2, type: 3}
     sprites:
     - {fileID: 21300000, guid: fe2d6a2c2e5880f4aa71a73a1e94faa2, type: 3}
+  - imageName: frame_default_features_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/frame_default_features_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/frame_default_features_1x
+    texture2D: {fileID: 2800000, guid: 1128ca6337238464a84bf508ecf88d5b, type: 3}
+    sprite: {fileID: 21300000, guid: 1128ca6337238464a84bf508ecf88d5b, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 1128ca6337238464a84bf508ecf88d5b, type: 3}
+  - imageName: frame_default_terrain_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/frame_default_terrain_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/frame_default_terrain_1x
+    texture2D: {fileID: 2800000, guid: aefdd8f9d8ee51447bff3dbc2b834055, type: 3}
+    sprite: {fileID: 21300000, guid: aefdd8f9d8ee51447bff3dbc2b834055, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: aefdd8f9d8ee51447bff3dbc2b834055, type: 3}
   - imageName: Frame_House_Desert_1
     imagePath: Assets/Sprites/Doors/Frame_House_Desert_1.png
     imagePathWithoutExtension: Assets/Sprites/Doors/Frame_House_Desert_1
@@ -10526,6 +10540,27 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: b2c903b3a496f134eab6c4417c3762aa, type: 3}
     sprites:
     - {fileID: 21300000, guid: b2c903b3a496f134eab6c4417c3762aa, type: 3}
+  - imageName: frame_selected_features_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/frame_selected_features_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/frame_selected_features_1x
+    texture2D: {fileID: 2800000, guid: 19ad600812d6d34449724280a1cb2519, type: 3}
+    sprite: {fileID: 21300000, guid: 19ad600812d6d34449724280a1cb2519, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 19ad600812d6d34449724280a1cb2519, type: 3}
+  - imageName: frame_selected_features_backing_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/frame_selected_features_backing_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/frame_selected_features_backing_1x
+    texture2D: {fileID: 2800000, guid: 773b8d8e7961c934d98ab8253b8345f3, type: 3}
+    sprite: {fileID: 21300000, guid: 773b8d8e7961c934d98ab8253b8345f3, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 773b8d8e7961c934d98ab8253b8345f3, type: 3}
+  - imageName: frame_selected_terrain_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/frame_selected_terrain_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/frame_selected_terrain_1x
+    texture2D: {fileID: 2800000, guid: c0d3eae13e807294b9abfe5c85453553, type: 3}
+    sprite: {fileID: 21300000, guid: c0d3eae13e807294b9abfe5c85453553, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c0d3eae13e807294b9abfe5c85453553, type: 3}
   - imageName: freeze
     imagePath: Assets/Sprites/Effects/freeze.png
     imagePathWithoutExtension: Assets/Sprites/Effects/freeze
@@ -24527,6 +24562,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 31d3c3ae7fd4cb24f99aab7aaf1df3be, type: 3}
     sprites:
     - {fileID: 21300000, guid: 31d3c3ae7fd4cb24f99aab7aaf1df3be, type: 3}
+  - imageName: tab_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/tab_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/tab_1x
+    texture2D: {fileID: 2800000, guid: 18fba4a4ed934c948aa27319735bf0e4, type: 3}
+    sprite: {fileID: 21300000, guid: 18fba4a4ed934c948aa27319735bf0e4, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 18fba4a4ed934c948aa27319735bf0e4, type: 3}
   - imageName: tab_background
     imagePath: Assets/Sprites/GUI/tab_background.png
     imagePathWithoutExtension: Assets/Sprites/GUI/tab_background
@@ -25113,6 +25155,20 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
     sprites:
     - {fileID: 21300000, guid: 60b706aa1b4e2bc4e930b39c22d5aafa, type: 3}
+  - imageName: townbuilding_interface_features
+    imagePath: Assets/Sprites/GUI/Map Customization/townbuilding_interface_features.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/townbuilding_interface_features
+    texture2D: {fileID: 2800000, guid: fe6075cfc9b0c0049997c076fad8fec4, type: 3}
+    sprite: {fileID: 21300000, guid: fe6075cfc9b0c0049997c076fad8fec4, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: fe6075cfc9b0c0049997c076fad8fec4, type: 3}
+  - imageName: townbuilding_interface_terrain
+    imagePath: Assets/Sprites/GUI/Map Customization/townbuilding_interface_terrain.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/townbuilding_interface_terrain
+    texture2D: {fileID: 2800000, guid: 5363a492ce5a0034ea9c17221d946fe8, type: 3}
+    sprite: {fileID: 21300000, guid: 5363a492ce5a0034ea9c17221d946fe8, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5363a492ce5a0034ea9c17221d946fe8, type: 3}
   - imageName: trade_button
     imagePath: Assets/Sprites/GUI/Bottom Buttons/trade_button.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Bottom Buttons/trade_button
@@ -30573,6 +30629,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: e0fa51b38372de947a3efd509189eaf9, type: 3}
     sprites:
     - {fileID: 21300000, guid: e0fa51b38372de947a3efd509189eaf9, type: 3}
+  - imageName: wood_panel_1x
+    imagePath: Assets/Sprites/GUI/Map Customization/wood_panel_1x.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/wood_panel_1x
+    texture2D: {fileID: 2800000, guid: d0c2b77390339a74894a0b5f82efa11e, type: 3}
+    sprite: {fileID: 21300000, guid: d0c2b77390339a74894a0b5f82efa11e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: d0c2b77390339a74894a0b5f82efa11e, type: 3}
   - imageName: wood_wear
     imagePath: Assets/Sprites/GUI/wood_wear.png
     imagePathWithoutExtension: Assets/Sprites/GUI/wood_wear

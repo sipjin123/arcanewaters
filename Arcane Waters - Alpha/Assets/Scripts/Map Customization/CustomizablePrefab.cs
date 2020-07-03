@@ -74,7 +74,7 @@ namespace MapCustomization
             }
             _disabledInteractions.Clear();
          } else {
-            _disabledInteractions = GetComponentsInChildren<Collider2D>().Select(c => c as Behaviour).ToList();
+            _disabledInteractions = GetComponentsInChildren<Collider2D>().Where(c => !c.isTrigger).Select(c => c as Behaviour).ToList();
             foreach (Behaviour interaction in _disabledInteractions) {
                interaction.enabled = false;
             }

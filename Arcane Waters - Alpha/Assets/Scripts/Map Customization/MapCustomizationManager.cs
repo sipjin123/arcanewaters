@@ -11,9 +11,6 @@ namespace MapCustomization
    {
       #region Public Variables
 
-      // Called when selected prefab changes
-      public static event Action<CustomizablePrefab> SelectedPrefabChanged;
-
       // How many pixels are in one length unit of a tile
       const int PIXELS_PER_TILE = 16;
 
@@ -130,6 +127,29 @@ namespace MapCustomization
          }
       }
 
+      public static void keyDelete () {
+         if (_selectedPrefab == null) return;
+
+         if (_selectedPrefab.unappliedChanges.created) {
+            _selectedPrefab.revertUnappliedChanges();
+         } else {
+            _selectedPrefab.unappliedChanges.deleted = true;
+            _selectedPrefab.unappliedChanges.clearLocalPosition();
+         }
+
+         if (_selectedPrefab.anyUnappliedState()) {
+            if (validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
+               Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+               _selectedPrefab.submitUnappliedChanges();
+            } else {
+               _selectedPrefab.revertUnappliedChanges();
+            }
+         }
+
+         selectPrefab(null);
+         updatePrefabOutlines(null);
+      }
+
       /// <summary>
       /// Called when pointer position changes and pointer is hovering the screen
       /// </summary>
@@ -143,7 +163,7 @@ namespace MapCustomization
       /// </summary>
       /// <param name="worldPosition"></param>
       public static void pointerDrag (Vector2 delta) {
-         if (_selectedPrefab != null) {
+         if (_selectedPrefab != null && _draggedPrefab != null) {
             if (!_selectedPrefab.unappliedChanges.isLocalPositionSet()) {
                _selectedPrefab.unappliedChanges.localPosition = _selectedPrefab.customizedState.localPosition + delta;
             } else {
@@ -158,22 +178,46 @@ namespace MapCustomization
       }
 
       public static void pointerDown (Vector2 worldPosition) {
-         selectPrefab(getPrefabAtPosition(worldPosition));
-         updatePrefabOutlines(null);
+         // If something is hovered, select it and procceed to change it's position
+         CustomizablePrefab hoveredPrefab = getPrefabAtPosition(worldPosition);
+         if (hoveredPrefab != null) {
+            selectPrefab(hoveredPrefab);
+            _draggedPrefab = hoveredPrefab;
+            updatePrefabOutlines(worldPosition);
+         } else {
+            if (CustomizationUI.selectedPrefabEntry != null) {
+               // Calculate local position for the prefab
+               Vector3 localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
+
+               // Calculate the state of the new prefab
+               int maxId = _customizablePrefabs.Keys.Count == 0 ? 0 : _customizablePrefabs.Keys.Max();
+               PrefabState state = new PrefabState {
+                  id = Math.Max(NEW_PREFAB_ID_START, maxId + 1),
+                  created = true,
+                  localPosition = localPosition,
+                  serializationId = CustomizationUI.selectedPrefabEntry.target.serializationId
+               };
+
+               CustomizablePrefab newPref = MapManager.self.createPrefab(currentArea, state, false);
+               _customizablePrefabs.Add(newPref.unappliedChanges.id, newPref);
+
+               if (validatePrefabChanges(currentArea, newPref.unappliedChanges, false, out string errorMessage)) {
+                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, newPref.unappliedChanges);
+                  newPref.submitUnappliedChanges();
+               } else {
+                  newPref.revertUnappliedChanges();
+               }
+            }
+
+            selectPrefab(null);
+            updatePrefabOutlines(worldPosition);
+         }
       }
 
-      public static void pointerUp (Vector2 worldPosition, bool deleteHovered) {
-         if (_selectedPrefab == null) return;
+      public static void pointerUp (Vector2 worldPosition) {
+         _draggedPrefab = null;
 
-         // If delete button is hovered, cancel creation or mark as deleted
-         if (deleteHovered) {
-            if (_selectedPrefab.unappliedChanges.created) {
-               _selectedPrefab.revertUnappliedChanges();
-            } else {
-               _selectedPrefab.unappliedChanges.deleted = true;
-               _selectedPrefab.unappliedChanges.clearLocalPosition();
-            }
-         }
+         if (_selectedPrefab == null) return;
 
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
@@ -182,30 +226,9 @@ namespace MapCustomization
             } else {
                _selectedPrefab.revertUnappliedChanges();
             }
-
          }
 
-         selectPrefab(null);
          updatePrefabOutlines(worldPosition);
-      }
-
-      public static void newPrefabClick (PlaceablePrefabData newPrefabData, Vector3 globalPosition) {
-         // Calculate local position for the prefab
-         Vector3 localPosition = currentArea.prefabParent.transform.InverseTransformPoint(globalPosition);
-
-         // Calculate the state of the new prefab
-         int maxId = _customizablePrefabs.Keys.Count == 0 ? 0 : _customizablePrefabs.Keys.Max();
-         PrefabState state = new PrefabState {
-            id = Math.Max(NEW_PREFAB_ID_START, maxId + 1),
-            created = true,
-            localPosition = localPosition,
-            serializationId = newPrefabData.serializationId
-         };
-
-         CustomizablePrefab newPref = MapManager.self.createPrefab(currentArea, state, false);
-         _customizablePrefabs.Add(newPref.unappliedChanges.id, newPref);
-         selectPrefab(newPref);
-         updatePrefabOutlines(globalPosition);
       }
 
       private static void updatePrefabOutlines (Vector2? hoveredPosition) {
@@ -245,9 +268,8 @@ namespace MapCustomization
 
          if (_selectedPrefab != null) {
             _selectedPrefab.setGameInteractionsActive(false);
+            CustomizationUI.selectEntry(null);
          }
-
-         SelectedPrefabChanged?.Invoke(_selectedPrefab);
       }
 
       public static void serverAllowedEnterCustomization () {
@@ -429,6 +451,9 @@ namespace MapCustomization
 
       // Currently selected prefab
       private static CustomizablePrefab _selectedPrefab;
+
+      // Prefab that is currently being dragged
+      private static CustomizablePrefab _draggedPrefab;
 
       // Are we waiting for the server to respond
       private static bool _waitingServerResponse;

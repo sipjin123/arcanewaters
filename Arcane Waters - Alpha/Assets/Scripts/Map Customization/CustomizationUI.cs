@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using MapCustomization;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.EventSystems;
 
-namespace MapCreationTool
+namespace MapCustomization
 {
    public class CustomizationUI : Panel
    {
@@ -16,32 +17,22 @@ namespace MapCreationTool
       // Is the UI showing the loading screen
       public static bool isLoading { get; private set; }
 
+      // Which prefab data is currently selected 
+      public static PrefabSelectionEntry selectedPrefabEntry;
+
       // Title text of UI
       public Text titleText;
 
-      // Dropdown, where user selects the prefab he wants to place
-      public Dropdown prefabDropdown;
+      // Object that is controlling scrollable area for prefab selection
+      public ScrollRect prefabSelection;
 
-      // UI button, releasing a prefab on it canceles/deletes the prefab
-      public GameObject deleteButton;
+      // Object, which holds placeable prefabs in the UI
+      public RectTransform prefabSelectEntryParent;
+
+      // Template for prefab selection entries
+      public PrefabSelectionEntry prefabSelectEntryPref;
 
       #endregion
-
-      public override void Awake () {
-         base.Awake();
-
-         MapCustomizationManager.SelectedPrefabChanged += (pref) => {
-            deleteButton.SetActive(pref != null);
-            deleteButtonHovered = deleteButtonHovered && deleteButton.activeSelf;
-            _selectedPrefab = pref;
-         };
-      }
-
-      public override void show () {
-         base.show();
-
-         deleteButton.SetActive(false);
-      }
 
       private void OnEnable () {
          self = this;
@@ -54,53 +45,61 @@ namespace MapCreationTool
 
          Vector2 pointerPos = Input.mousePosition;
          if (pointerPos != _lastPointerPos) {
-            if (Input.GetMouseButton(0)) {
-               MapCustomizationManager.pointerDrag(Camera.main.ScreenToWorldPoint(pointerPos) - Camera.main.ScreenToWorldPoint(_lastPointerPos));
-            } else {
+            if (!Input.GetMouseButton(0)) {
                MapCustomizationManager.pointerHover(Camera.main.ScreenToWorldPoint(pointerPos));
             }
 
             _lastPointerPos = pointerPos;
          }
 
-         if (Input.GetMouseButtonDown(0) && _selectedPrefab == null) {
-            MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerPos));
-         }
-
-         if (Input.GetMouseButtonUp(0)) {
-            MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerPos), deleteButtonHovered);
+         if (Input.GetKey(KeyCode.Delete)) {
+            MapCustomizationManager.keyDelete();
          }
       }
 
-      public void deleteButtonEnter() {
-         deleteButtonHovered = true; ;
+      public void pointerDrag (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+         MapCustomizationManager.pointerDrag(Camera.main.ScreenToWorldPoint(pointerData.position) - Camera.main.ScreenToWorldPoint(pointerData.position - pointerData.delta));
       }
 
-      public void deleteButtonExit() {
-         deleteButtonHovered = false;
+      public void pointerUp (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+         MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerData.position));
       }
 
-      public void newPrefabSelected () {
-         PlaceablePrefabData data = _placeablePrefabData[prefabDropdown.value];
+      public void pointerDown (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+         MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
+      }
 
-         MapCustomizationManager.newPrefabClick(data, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+      public static void selectEntry (PrefabSelectionEntry entry) {
+         if (selectedPrefabEntry != null) {
+            selectedPrefabEntry.setSelected(false);
+         }
+
+         selectedPrefabEntry = entry;
+
+         if (selectedPrefabEntry != null) {
+            selectedPrefabEntry.setSelected(false);
+         }
       }
 
       public static void setLoading (bool loading) {
          isLoading = loading;
-         self.titleText.text = loading ? "Loading..." : "Customizing a map";
-         self.prefabDropdown.gameObject.SetActive(!loading);
+         self.titleText.text = loading ? "Loading..." : "Customization";
+         self.prefabSelection.gameObject.SetActive(!loading);
       }
 
       public static void setPlaceablePrefabData (IEnumerable<PlaceablePrefabData> dataCollection) {
-         _placeablePrefabData = dataCollection.ToList();
+         selectedPrefabEntry = null;
+         foreach (PrefabSelectionEntry entry in self.prefabSelectEntryParent.GetComponentsInChildren<PrefabSelectionEntry>(true)) {
+            Destroy(entry.gameObject);
+         }
 
-         self.prefabDropdown.options.Clear();
-         foreach (PlaceablePrefabData data in _placeablePrefabData) {
-            self.prefabDropdown.options.Add(new Dropdown.OptionData {
-               image = data.displaySprite,
-               text = "Some text"
-            });
+         foreach (PlaceablePrefabData data in dataCollection) {
+            PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
+            entry.target = data;
+            entry.setImage(data.displaySprite);
          }
       }
 
@@ -115,15 +114,6 @@ namespace MapCreationTool
 
       // Last pointer position, cached by this component
       private Vector2 _lastPointerPos;
-
-      // List of prefabs that can be placed in the scene by the user
-      private static List<PlaceablePrefabData> _placeablePrefabData = new List<PlaceablePrefabData>();
-
-      // Whether we are currently hovering deleteButton
-      private bool deleteButtonHovered = false;
-
-      // Currently selected prefab that is being controlled
-      private CustomizablePrefab _selectedPrefab;
 
       #endregion
    }

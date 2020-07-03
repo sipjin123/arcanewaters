@@ -1327,7 +1327,7 @@ public class DB_Main : DB_MainStub
    #region Map Customization
 
    public static new MapCustomizationData getMapCustomizationData (int mapId, int userId) {
-      string cmdText = "SELECT data FROM map_customizations WHERE map_id = @map_id AND user_id = @user_id;";
+      string cmdText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@map_id", mapId);
@@ -1335,27 +1335,51 @@ public class DB_Main : DB_MainStub
          conn.Open();
          cmd.Prepare();
 
+         List<PrefabState> changes = new List<PrefabState>();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               changes.Add(PrefabState.deserialize(dataReader.GetString("data")));
+            }
+         }
+
+         return new MapCustomizationData {
+            mapId = mapId,
+            userId = userId,
+            prefabChanges = changes.ToArray()
+         };
+      }
+   }
+
+   public static new PrefabState getMapCustomizationChanges (int mapId, int userId, int prefabId) {
+      string cmdText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id AND prefab_id = @prefab_id;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         cmd.Parameters.AddWithValue("@map_id", mapId);
+         cmd.Parameters.AddWithValue("@user_id", userId);
+         cmd.Parameters.AddWithValue("@prefab_id", prefabId);
+         conn.Open();
+         cmd.Prepare();
+
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             if (dataReader.Read()) {
-               MapCustomizationData data = MapCustomizationData.deserialize(dataReader.GetString("data"));
-               data.userId = userId;
-               data.mapId = mapId;
-               return data;
+               return PrefabState.deserialize(dataReader.GetString("data"));
             }
          }
       }
 
-      return null;
+      return new PrefabState { id = -1 };
    }
 
-   public static new void setMapCustomizationData (MapCustomizationData data) {
-      string cmdText = "INSERT INTO map_customizations(user_id, map_id, data) Values(@user_id, @map_id, @data) " +
+   public static new void setMapCustomizationChanges (int mapId, int userId, PrefabState changes) {
+      string cmdText = "INSERT INTO map_customization_changes(user_id, map_id, prefab_id, data) Values(@user_id, @map_id, @prefab_id, @data) " +
          "ON DUPLICATE KEY UPDATE data = @data;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@map_id", data.mapId);
-         cmd.Parameters.AddWithValue("@user_id", data.userId);
-         cmd.Parameters.AddWithValue("@data", data.serialize());
+         cmd.Parameters.AddWithValue("@map_id", mapId);
+         cmd.Parameters.AddWithValue("@user_id", userId);
+         cmd.Parameters.AddWithValue("@prefab_id", changes.id);
+         cmd.Parameters.AddWithValue("@data", changes.serialize());
          conn.Open();
          cmd.Prepare();
 

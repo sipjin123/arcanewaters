@@ -15,7 +15,8 @@ namespace MapCustomization
       public int mapId;
 
       // Deserialized prefab changes
-      public PrefabState[] prefabChanges;
+      [NonSerialized]
+      public PrefabState[] prefabChanges = new PrefabState[0];
 
       #endregion
 
@@ -27,10 +28,6 @@ namespace MapCustomization
          if (data == null) return new MapCustomizationData();
 
          MapCustomizationData result = JsonUtility.FromJson<MapCustomizationData>(data);
-
-         if (result != null && result.prefabChanges == null) {
-            result.prefabChanges = new PrefabState[0];
-         }
 
          return result;
       }

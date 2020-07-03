@@ -4171,9 +4171,9 @@ public class RPCManager : NetworkBehaviour {
 
          // Set changes in the database
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            MapCustomizationData data = DB_Main.getMapCustomizationData(baseMapId, areaOwnerId) ?? new MapCustomizationData() { userId = areaOwnerId, mapId = baseMapId };
-            data.add(changes);
-            DB_Main.setMapCustomizationData(data);
+            PrefabState currentState = DB_Main.getMapCustomizationChanges(baseMapId, areaOwnerId, changes.id);
+            currentState = currentState.id == -1 ? changes : currentState.add(changes);
+            DB_Main.setMapCustomizationChanges(baseMapId, areaOwnerId, currentState);
          });
       } else {
          Target_FailAddPrefabCustomization(changes, errorMessage);

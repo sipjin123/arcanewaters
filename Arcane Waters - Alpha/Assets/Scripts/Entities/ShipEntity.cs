@@ -70,9 +70,11 @@ public class ShipEntity : SeaEntity
       if (swap && swap.paletteName == PaletteDef.Flag.OnlyPalette) {
          return;
       }
-      spritesContainer.gameObject.SetActive(false);
-      spritesContainer.AddComponent<PaletteSwap>().paletteName = PaletteDef.Flag.OnlyPalette;
-      spritesContainer.gameObject.SetActive(true);
+      if (!isBotShip()) {
+         spritesContainer.gameObject.SetActive(false);
+         spritesContainer.AddComponent<PaletteSwap>().paletteName = PaletteDef.Flag.OnlyPalette;
+         spritesContainer.gameObject.SetActive(true);
+      }
    }
 
    public override void playAttackSound () {
