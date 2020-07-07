@@ -53,6 +53,7 @@ namespace NubisDataHandling {
          } catch {
             xmlVersionEvent.Invoke(0);
             D.debug("Something went wrong with xml version fetching! Report: " + nameof(NubisRequestHandler.nubisFetchXmlVersion));
+            D.debug("Return code is: " + returnCode);
          }
       }
 

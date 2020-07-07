@@ -19,6 +19,16 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private void OnGUI () {
       if (SystemInfo.deviceName == DEVICE_NAME) {
+         if (GUILayout.Button("Get XML Version Directly from Nubis")) {
+
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               var result = NubisTranslator.Fetch_Xml_Version_v1Controller.fetchXmlVersion(3);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Thred: " + result);
+               });
+            });
+         }
          if (GUILayout.Button("User Data")) {
             nubisUserData();
          }

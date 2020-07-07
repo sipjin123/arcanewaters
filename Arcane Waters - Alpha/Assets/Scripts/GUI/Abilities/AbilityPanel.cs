@@ -106,6 +106,11 @@ public class AbilityPanel : Panel {
          indicator.SetActive(!userHasWeapon());
       }
 
+      if (!userHasWeapon()) {
+         // Override active flag if there is no weapon
+         isActive = false;
+      }
+
       // Disable loading blockers
       foreach (GameObject blocker in canvasBlockers) {
          blocker.SetActive(isActive);

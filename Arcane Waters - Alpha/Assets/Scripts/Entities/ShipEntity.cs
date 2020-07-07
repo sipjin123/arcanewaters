@@ -128,7 +128,11 @@ public class ShipEntity : SeaEntity
       }
 
       // Increase or decrease our speed based on the settings for this ship
-      return baseSpeed * (this.speed / 100f);
+      float calculatedSpeed = baseSpeed * (this.speed / 100f);
+      if (calculatedSpeed > MAX_SHIP_SPEED) {
+         calculatedSpeed = MAX_SHIP_SPEED;
+      }
+      return calculatedSpeed;
    }
 
    public override float getTurnDelay () {

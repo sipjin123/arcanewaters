@@ -150,7 +150,8 @@ public class NetEntity : NetworkBehaviour
    public bool isSpeedingUp;
 
    // The speed multiplied when speed boosting
-   public static float SPEEDUP_MULTIPLIER_SHIP = 2;
+   public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
+   public static float MAX_SHIP_SPEED = 150;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
    #endregion
