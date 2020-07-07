@@ -24,7 +24,7 @@ public class ShipBars : MonoBehaviour {
 
    // And empty column used to correctly align icons in certain cases
    public GameObject togglableSpacer;
-
+   
    // The Image icon that shows when we're being targeted
    public Image targetedIcon;
 
@@ -95,9 +95,6 @@ public class ShipBars : MonoBehaviour {
       // Hide our bars if we haven't had a combat action and if the player is not targetting this ship
       barsContainer.SetActive(_entity.hasAnyCombat() || _entity.isAttackCursorOver());
 
-      // Enable the empty column to correctly align icons when there is no guild icon
-      togglableSpacer.SetActive(!guildIcon.gameObject.activeSelf && !barsContainer.activeSelf);
-
       // Hide and show our status icons accordingly
       handleStatusIcons();
 
@@ -106,16 +103,28 @@ public class ShipBars : MonoBehaviour {
          barBackgroundImage.sprite = barsBackgroundAlt;
       }
 
+      // Only show the ship info when the mouse is over the entity or its member cell in the group panel
+      bool showShipInfo = !_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
+
+      if (showShipInfo) {
+         guildIcon.show();
+      } else {
+         guildIcon.hide();
+      }
+
+      // Continue only for player ships
       if (portrait == null) {
          return;
       }
 
-      // Only show the user info when the mouse is over the entity or its member cell in the group panel
-      if (!_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId))) {
-         showUserInfo();
+      if (showShipInfo) {
+         showCharacterPortrait();
       } else {
-         hideUserInfo();
+         hideCharacterPortrait();
       }
+
+      // Enable the empty column to correctly align the character portrait when there is no guild icon
+      togglableSpacer.SetActive(!guildIcon.gameObject.activeSelf && !barsContainer.activeSelf);
 
       /*if (_entity.hasRecentCombat()) {
          _canvasGroup.alpha = 1f;
@@ -159,27 +168,25 @@ public class ShipBars : MonoBehaviour {
       }
 
       if (_entity.guildId > 0) {
-         PlayerShipEntity playerShip = (PlayerShipEntity) _entity;
-         guildIcon.setBorder(playerShip.guildIconBorder);
-         guildIcon.setBackground(playerShip.guildIconBackground, playerShip.guildIconBackPalette1, playerShip.guildIconBackPalette2);
-         guildIcon.setSigil(playerShip.guildIconSigil, playerShip.guildIconSigilPalette1, playerShip.guildIconSigilPalette2);
+         ShipEntity shipEntity = (ShipEntity) _entity;
+         guildIcon.setBorder(shipEntity.guildIconBorder);
+         guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalette1, shipEntity.guildIconBackPalette2);
+         guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalette1, shipEntity.guildIconSigilPalette2);
       } else {
          guildIcon.gameObject.SetActive(false);
       }
    }
 
-   private void showUserInfo () {
-      if (portraitCanvasGroup.alpha < 1) {
+   private void showCharacterPortrait () {
+      if (portrait != null && portraitCanvasGroup.alpha < 1) {
          portraitCanvasGroup.alpha = 1;
-         guildIcon.show();
          portrait.updateBackground(_entity);
       }
    }
 
-   private void hideUserInfo () {
-      if (portraitCanvasGroup.alpha > 0) {
+   private void hideCharacterPortrait () {
+      if (portrait != null && portraitCanvasGroup.alpha > 0) {
          portraitCanvasGroup.alpha = 0;
-         guildIcon.hide();
       }
    }
 

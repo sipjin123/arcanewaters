@@ -9,9 +9,6 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
-   // Button that opens map customization
-   public Button mapCustomizationButton;
-
    #endregion
 
    private void Awake () {
@@ -22,10 +19,6 @@ public class BottomBar : MonoBehaviour {
       if (Global.player == null) {
          return;
       }
-
-      mapCustomizationButton.gameObject.SetActive(
-         CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
-         !MapCustomizationManager.isCustomizing);
 
       // Disable the bottom bar buttons when the area is being loaded
       if (!AreaManager.self.hasArea(Global.player.areaKey)) {
@@ -171,10 +164,6 @@ public class BottomBar : MonoBehaviour {
       } else {
          PanelManager.self.togglePanel(Panel.Type.Mail);
       }
-   }
-
-   public void openMapCustomization () {
-      MapCustomizationManager.enterCustomization(Global.player.areaKey);
    }
 
    #region Private Variables

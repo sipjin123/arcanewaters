@@ -205,6 +205,18 @@ public class Area : MonoBehaviour
          return "Shipyard";
       }
 
+      // If this is a custom map, figure out the special display name
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         // Check if it is someone else's farm, prepend the name if so
+         int userId = CustomMapManager.getUserId(areaKey);
+         if (userId != Global.player.userId) {
+            string userName = EntityManager.self.getEntity(userId)?.entityName ?? "Unknown";
+            return $"{ userName }'s { customMapManager.typeDisplayName }";
+         }
+
+         return customMapManager.typeDisplayName;
+      }
+
       return Util.toTitleCase(areaKey);
    }
 

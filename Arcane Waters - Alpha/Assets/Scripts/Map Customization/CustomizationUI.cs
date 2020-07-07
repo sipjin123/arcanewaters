@@ -57,6 +57,16 @@ namespace MapCustomization
          }
       }
 
+      public void pointerEnter (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+         MapCustomizationManager.pointerEnter(Camera.main.ScreenToWorldPoint(pointerData.position));
+      }
+
+      public void pointerExit (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+         MapCustomizationManager.pointerExit(Camera.main.ScreenToWorldPoint(pointerData.position));
+      }
+
       public void pointerDrag (BaseEventData eventData) {
          PointerEventData pointerData = eventData as PointerEventData;
          MapCustomizationManager.pointerDrag(Camera.main.ScreenToWorldPoint(pointerData.position) - Camera.main.ScreenToWorldPoint(pointerData.position - pointerData.delta));
@@ -80,7 +90,8 @@ namespace MapCustomization
          selectedPrefabEntry = entry;
 
          if (selectedPrefabEntry != null) {
-            selectedPrefabEntry.setSelected(false);
+            selectedPrefabEntry.setSelected(true);
+            MapCustomizationManager.selectPrefab(null);
          }
       }
 
@@ -101,10 +112,6 @@ namespace MapCustomization
             entry.target = data;
             entry.setImage(data.displaySprite);
          }
-      }
-
-      public void exitCustomization () {
-         MapCustomizationManager.exitCustomization();
       }
 
       #region Private Variables

@@ -17,8 +17,6 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    // The list of actions that can be defined and triggered
    public static Dictionary<string, Action<NetEntity>> actions = new Dictionary<string, Action<NetEntity>> {
-      { "test debug1", testDebugLog },
-      { "test debug2", (e) => testDebugLog(e, "Other test log") },
       { "Voyage Panel", showVoyagePanel }
    };
 
@@ -28,15 +26,10 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    // The name of the action that should be triggered
    public string actionName;
 
+   // Arrow that is showed if this is a voyage trigger region
+   public GameObject voyageArrow;
+
    #endregion
-
-   private static void testDebugLog (NetEntity entity) {
-      Debug.Log("Test action - debug log");
-   }
-
-   private static void testDebugLog (NetEntity entity, string message) {
-      Debug.Log(message);
-   }
 
    private static void showVoyagePanel (NetEntity entity) {
       VoyageManager.self.showVoyagePanel(entity);
@@ -50,7 +43,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.GENERIC_ACTION_TRIGGER_INTERACTION_TYPE:
-               if(field.tryGetInteractionTypeValue(out InteractionType value)) {
+               if (field.tryGetInteractionTypeValue(out InteractionType value)) {
                   interactionType = value;
                }
                break;
@@ -65,6 +58,8 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
                break;
          }
       }
+
+      voyageArrow.SetActive(actionName.ToLower().Contains("voyage"));
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {

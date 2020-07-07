@@ -53,6 +53,21 @@ namespace MapCustomization
 
       public static bool isCustomizing => currentArea != null;
 
+      private void Update () {
+         if (Global.player == null) return;
+
+         // Have customization open when player is in customizable map and has appropriate tool equipped
+         bool shouldBeCustomizing = CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
+            (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap &&
+            (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0;
+
+         if (!isCustomizing && shouldBeCustomizing) {
+            enterCustomization(Global.player.areaKey);
+         } else if (isCustomizing && !shouldBeCustomizing) {
+            exitCustomization();
+         }
+      }
+
       public static void enterCustomization (string areaName) {
          if (currentArea != null) {
             D.warning("Trying to open map customization even though it is currently active");
@@ -117,7 +132,7 @@ namespace MapCustomization
 
          currentArea = null;
          _selectedPrefab = null;
-         PanelManager.self.popPanel();
+         PanelManager.self.clearAll();
 
          self.StopAllCoroutines();
 
@@ -150,11 +165,35 @@ namespace MapCustomization
          updatePrefabOutlines(null);
       }
 
+      public static void pointerEnter (Vector2 worldPosition) {
+         // If we have a prefab to place, show it in the map
+         if (CustomizationUI.selectedPrefabEntry != null) {
+            updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+            updatePrefabOutlines(null);
+         }
+      }
+
+      public static void pointerExit (Vector2 worldPosition) {
+         // Destroy prefab that is being placed
+         if (_newPrefab != null) {
+            _newPrefab.revertUnappliedChanges();
+            _newPrefab = null;
+         }
+      }
+
       /// <summary>
       /// Called when pointer position changes and pointer is hovering the screen
       /// </summary>
       /// <param name="worldPosition"></param>
       public static void pointerHover (Vector2 worldPosition) {
+         // Check if we have a prefab that can be placed right now
+         if (_selectedPrefab == null && getPrefabAtPosition(worldPosition) == null && CustomizationUI.selectedPrefabEntry != null) {
+            updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+         } else if (_newPrefab != null) {
+            _newPrefab.revertUnappliedChanges();
+            _newPrefab = null;
+         }
+
          updatePrefabOutlines(worldPosition);
       }
 
@@ -186,27 +225,18 @@ namespace MapCustomization
             updatePrefabOutlines(worldPosition);
          } else {
             if (CustomizationUI.selectedPrefabEntry != null) {
-               // Calculate local position for the prefab
-               Vector3 localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
+               updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+               _newPrefab.setGameInteractionsActive(true);
+               _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
 
-               // Calculate the state of the new prefab
-               int maxId = _customizablePrefabs.Keys.Count == 0 ? 0 : _customizablePrefabs.Keys.Max();
-               PrefabState state = new PrefabState {
-                  id = Math.Max(NEW_PREFAB_ID_START, maxId + 1),
-                  created = true,
-                  localPosition = localPosition,
-                  serializationId = CustomizationUI.selectedPrefabEntry.target.serializationId
-               };
-
-               CustomizablePrefab newPref = MapManager.self.createPrefab(currentArea, state, false);
-               _customizablePrefabs.Add(newPref.unappliedChanges.id, newPref);
-
-               if (validatePrefabChanges(currentArea, newPref.unappliedChanges, false, out string errorMessage)) {
-                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, newPref.unappliedChanges);
-                  newPref.submitUnappliedChanges();
+               if (validatePrefabChanges(currentArea, _newPrefab.unappliedChanges, false, out string errorMessage)) {
+                  Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+                  _newPrefab.submitUnappliedChanges();
                } else {
-                  newPref.revertUnappliedChanges();
+                  _newPrefab.revertUnappliedChanges();
                }
+
+               _newPrefab = null;
             }
 
             selectPrefab(null);
@@ -231,16 +261,48 @@ namespace MapCustomization
          updatePrefabOutlines(worldPosition);
       }
 
+      private static void updateToBePlacedPrefab (Vector3 worldPosition, int serializationId) {
+         // If prefab is missing or it changed, we need to reinitialize it
+         if (_newPrefab == null || _newPrefab.unappliedChanges.serializationId != serializationId) {
+            if (_newPrefab != null) {
+               _newPrefab.revertUnappliedChanges();
+            }
+
+            _newPrefab = MapManager.self.createPrefab(currentArea, newPrefabState(worldPosition, serializationId), false);
+            _newPrefab.setGameInteractionsActive(false);
+         }
+
+         _newPrefab.unappliedChanges.localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition);
+         _newPrefab.transform.localPosition = _newPrefab.unappliedChanges.localPosition;
+         _newPrefab.GetComponent<ZSnap>()?.snapZ();
+      }
+
+      private static PrefabState newPrefabState (Vector3 worldPosition, int serializationId) {
+         // Calculate the state of the new prefab
+         int maxId = _customizablePrefabs.Keys.Count == 0 ? 0 : _customizablePrefabs.Keys.Max();
+         return new PrefabState {
+            id = Math.Max(NEW_PREFAB_ID_START, maxId + 1),
+            created = true,
+            localPosition = currentArea.prefabParent.transform.InverseTransformPoint(worldPosition),
+            serializationId = serializationId
+         };
+      }
+
       private static void updatePrefabOutlines (Vector2? hoveredPosition) {
          CustomizablePrefab hoveredPrefab = hoveredPosition == null ? null : getPrefabAtPosition(hoveredPosition.Value);
 
          foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
-            bool valid = true;
-            if (_selectedPrefab != null) {
-               valid = validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage);
+            if (prefab == _selectedPrefab) {
+               bool valid = validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage);
+               prefab.setOutline(true, prefab == hoveredPrefab, true, valid);
+            } else {
+               prefab.setOutline(true, prefab == hoveredPrefab, false, false);
             }
+         }
 
-            prefab.setOutline(true, prefab == hoveredPrefab, prefab == _selectedPrefab, valid);
+         if (_newPrefab != null) {
+            bool valid = validatePrefabChanges(currentArea, _newPrefab.unappliedChanges, false, out string errorMessage);
+            _newPrefab.setOutline(true, true, true, valid);
          }
       }
 
@@ -259,9 +321,10 @@ namespace MapCustomization
          return result;
       }
 
-      private static void selectPrefab (CustomizablePrefab prefab) {
+      public static void selectPrefab (CustomizablePrefab prefab) {
          if (_selectedPrefab != null) {
             _selectedPrefab.setGameInteractionsActive(true);
+            _selectedPrefab.setOutline(true, false, false, false);
          }
 
          _selectedPrefab = prefab;
@@ -454,6 +517,9 @@ namespace MapCustomization
 
       // Prefab that is currently being dragged
       private static CustomizablePrefab _draggedPrefab;
+
+      // Prefab that is being placed as a new prefab
+      private static CustomizablePrefab _newPrefab;
 
       // Are we waiting for the server to respond
       private static bool _waitingServerResponse;

@@ -31,6 +31,24 @@ public class ShipEntity : SeaEntity
    [SyncVar]
    public int sailors;
 
+   // The guild icon layers
+   [SyncVar]
+   public string guildIconBorder;
+   [SyncVar]
+   public string guildIconBackground;
+   [SyncVar]
+   public string guildIconSigil;
+
+   // The guild icon colors
+   [SyncVar]
+   public string guildIconBackPalette1;
+   [SyncVar]
+   public string guildIconBackPalette2;
+   [SyncVar]
+   public string guildIconSigilPalette1;
+   [SyncVar]
+   public string guildIconSigilPalette2;
+
    // The Rarity of the ship
    public Rarity.Type rarity;
 
