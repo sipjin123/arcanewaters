@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class SeaManager : MonoBehaviour {
    #region Public Variables
@@ -109,6 +110,11 @@ public class SeaManager : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public SeaEntity getEntityByUserId (int userId) {
+      SeaEntity seaEntity = _entities.Values.ToList().Find(_ => _.userId == userId); 
+      return seaEntity;
    }
 
    public void storeEntity (SeaEntity entity) {

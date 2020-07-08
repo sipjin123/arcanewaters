@@ -129,12 +129,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
-
-      // Set the name
-      if (nameText != null) {
-         // nameText.text = "[" + npcType + "]";
-         // setNameColor(nameText, npcType);
-      }
    }
 
    private void setupClientSideValues () {
@@ -278,6 +272,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          }
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
       } else {
+         // Make sure the panel is showing
+         NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+         if (!panel.isShowing()) {
+            NPCData npcData = NPCManager.self.getNPCData(npcId);
+            panel.setNPC(npcId, npcData.name, -1);
+            panel.initLoadBlockers(true);
+            PanelManager.self.pushPanel(panel.type);
+         }
+
          // Send a request to the server to get the npc panel info
          Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npcId);
       }

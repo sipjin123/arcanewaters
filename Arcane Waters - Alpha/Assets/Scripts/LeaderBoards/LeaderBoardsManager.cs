@@ -160,14 +160,16 @@ public class LeaderBoardsManager : MonoBehaviour
             List<LeaderBoardInfo> tradingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Trader, boardFaction, period, startDate, endDate);
             List<LeaderBoardInfo> craftingBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Crafter, boardFaction, period, startDate, endDate);
             List<LeaderBoardInfo> miningBoard = DB_Main.calculateLeaderBoard(Jobs.Type.Miner, boardFaction, period, startDate, endDate);
-
+            
             // Insert the new records in the leader board table
+            // TODO: Enable this after MySQL is revised for leaderboards
+            /*
             DB_Main.updateLeaderBoards(farmingBoard);
             DB_Main.updateLeaderBoards(sailingBoard);
             DB_Main.updateLeaderBoards(exploringBoard);
             DB_Main.updateLeaderBoards(tradingBoard);
             DB_Main.updateLeaderBoards(craftingBoard);
-            DB_Main.updateLeaderBoards(miningBoard);
+            DB_Main.updateLeaderBoards(miningBoard);*/
          }
 
          // Update the leader board dates intervals

@@ -110,6 +110,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          _seeker.pathCallback = setPath_Asynchronous;
 
          InvokeRepeating(nameof(landMonsterBehavior), Random.Range(0f, 1f), 1f);
+      } else {
+         displayNameText.text = MonsterManager.self.getBattler(enemyType).enemyName;
       }
    }
 
@@ -120,6 +122,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (animGroupType != Anim.Group.None) {
          handleAnimations();
       }
+
+      displayNameText.enabled = isMouseOver();
 
       // Some enemies should stop blocking player movement after they die
       if (isDefeated) {
@@ -148,8 +152,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (this.facing != newFacingDirection) {
          this.facing = newFacingDirection;
       }
-
-      displayNameText.enabled = isMouseOver();
    }
 
    protected override void FixedUpdate () {

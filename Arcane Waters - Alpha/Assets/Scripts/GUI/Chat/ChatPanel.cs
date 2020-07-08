@@ -45,8 +45,8 @@ public class ChatPanel : MonoBehaviour {
    public static ChatPanel self;
 
    // The custom color for each entity speaking
-   public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor;
-   public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor;
+   public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor, globalChatLocalColor, globalChatOtherColor;
+   public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor, globalNameLocalColor, globalNameOtherColor;
 
    #endregion
 
@@ -181,7 +181,7 @@ public class ChatPanel : MonoBehaviour {
          bool isLocalPlayer = true;
          if (Global.player != null) {
             isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
-         }
+         } 
 
          chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       }
@@ -191,10 +191,18 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
-      // If we have a Body for the specified sender, create a speech bubble
-      BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
-      if (body != null && chatInfo.messageType != ChatInfo.Type.Emote) {
-         SpeechManager.self.showSpeechBubble(body, chatInfo.text);
+      if (chatInfo.messageType != ChatInfo.Type.Emote) {
+         // If we have a Body for the specified sender, create a speech bubble
+         BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
+         if (body != null) {
+            SpeechManager.self.showSpeechBubble(body, chatInfo.text);
+         } else {
+            // If we have a Ship for the specified sender, create a speech bubble
+            ShipEntity ship = (ShipEntity) SeaManager.self.getEntityByUserId(chatInfo.senderId);
+            if (ship != null) {
+               SpeechManager.self.showSpeechBubble(ship, chatInfo.text);
+            }
+         }
       }
    }
 
@@ -202,7 +210,11 @@ public class ChatPanel : MonoBehaviour {
       Color newColor = Color.white;
       switch (chatType) {
          case ChatInfo.Type.Global:
-            newColor = serverNameColor;
+            if (isLocalPlayer) {
+               newColor = globalNameLocalColor;
+            } else {
+               newColor = globalNameOtherColor;
+            }
             break;
          case ChatInfo.Type.Local:
             if (isLocalPlayer) {
@@ -320,7 +332,7 @@ public class ChatPanel : MonoBehaviour {
    protected Color getChatColor (ChatInfo.Type chatType, bool isLocalPlayer = true) {
       switch (chatType) {
          case ChatInfo.Type.Global:
-            return serverChatColor;
+            return isLocalPlayer ? globalChatLocalColor : globalChatOtherColor;
          case ChatInfo.Type.Local:
             return isLocalPlayer ? playerSpeechColor : otherPlayerSpeechColor;
          case ChatInfo.Type.Guild:

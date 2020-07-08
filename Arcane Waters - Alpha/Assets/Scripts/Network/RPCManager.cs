@@ -142,11 +142,6 @@ public class RPCManager : NetworkBehaviour {
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, friendshipLevel, greetingText,
          canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable, landMonsterId);
-
-      // Make sure the panel is showing
-      if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
-      }
    }
 
    [TargetRpc]

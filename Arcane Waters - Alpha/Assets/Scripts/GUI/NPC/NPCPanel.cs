@@ -79,6 +79,9 @@ public class NPCPanel : Panel {
    // Self
    public static NPCPanel self;
 
+   // The load blockers before the data is received
+   public GameObject[] loadBlockers;
+
    #endregion
 
    public override void Awake () {
@@ -97,9 +100,27 @@ public class NPCPanel : Panel {
       AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
    }
 
+   public void initLoadBlockers (bool isActive) {
+      if (isActive) {
+         // Clear out the old clickable options
+         clearDialogueOptions();
+         questListSection.SetActive(false);
+         questNodeSection.SetActive(false);
+         giftOfferSection.SetActive(false);
+         npcDialogueText.enabled = false;
+      }
+
+      foreach (GameObject obj in loadBlockers) {
+         obj.SetActive(isActive);
+      }
+   }
+
    public void updatePanelWithQuestSelection (int npcId, string npcName,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
       Quest[] quests, bool isHireable, int landMonsterId) {
+      initLoadBlockers(false);
+      npcDialogueText.enabled = true;
+
       // Show the correct section
       configurePanelForMode(Mode.QuestList);
 
@@ -308,7 +329,6 @@ public class NPCPanel : Panel {
       // Clear out the old item cell
       itemCellContainer.DestroyChildren();
 
-
       if (_selectedGiftItem != null) {
          // Instantiates the item cell
          ItemCell cell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
@@ -373,11 +393,13 @@ public class NPCPanel : Panel {
       questObjectivesGO.SetActive(false);
    }
 
-   private void setNPC(int npcId, string npcName, int friendshipLevel) {
+   public void setNPC(int npcId, string npcName, int friendshipLevel) {
       _npc = NPCManager.self.getNPC(npcId);
 
       // Fill in the details for this NPC
       nameText.text = npcName;
+      friendshipLevelText.enabled = friendshipLevel >= 0;
+      friendshipRankText.enabled = friendshipLevel >= 0;
 
       // Set the friendship level
       _friendshipLevel = friendshipLevel;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using System;
 
 public class CameraManager : ClientMonoBehaviour {
    #region Public Variables
@@ -17,6 +18,12 @@ public class CameraManager : ClientMonoBehaviour {
    // Self
    public static CameraManager self;
 
+   // Reference to the main gui canvas
+   public Canvas guiCanvas;
+
+   // Resolution reference that caps the ortho size
+   public List<ResolutionOrthoClamp> resolutionList;
+
    #endregion
 
    protected override void Awake () {
@@ -25,7 +32,11 @@ public class CameraManager : ClientMonoBehaviour {
       // Look up the two cameras
       defaultCamera = GameObject.FindObjectOfType<DefaultCamera>();
       battleCamera = GameObject.FindObjectOfType<BattleCamera>();
-      _baseCameras = GameObject.FindObjectsOfType<BaseCamera>();
+      _baseCameras = new List<BaseCamera>();
+
+      foreach (BaseCamera baseCam in GameObject.FindObjectsOfType<BaseCamera>()) {
+         _baseCameras.Add(baseCam);
+      }
 
       // Store a reference
       self = this;
@@ -46,11 +57,20 @@ public class CameraManager : ClientMonoBehaviour {
       }
    }
 
+   public void registerCamera (MyCamera newSceneCamera) {
+      _baseCameras.Add(newSceneCamera);
+   }
+
    public void onResolutionChanged () {
       Debug.Log("Updating cam size");
 
       foreach (BaseCamera baseCam in _baseCameras) {
-         baseCam.onResolutionChanged();
+         try {
+            MyCamera myCam = (MyCamera) baseCam;
+            myCam.onResolutionChanged();
+         } catch {
+            baseCam.onResolutionChanged();
+         }
       }     
    }
 
@@ -152,7 +172,15 @@ public class CameraManager : ClientMonoBehaviour {
    protected bool _isFullscreen;
 
    // All the BaseCameras
-   protected BaseCamera[] _baseCameras;
+   [SerializeField]
+   protected List<BaseCamera> _baseCameras;
 
    #endregion
+}
+
+[Serializable]
+public class ResolutionOrthoClamp {
+   public string resolutionName;
+   public float resolutionWidth;
+   public float orthoCap;
 }

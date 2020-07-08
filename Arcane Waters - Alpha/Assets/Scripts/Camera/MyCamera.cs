@@ -20,29 +20,32 @@ public class MyCamera : BaseCamera
    public override void Awake () {
       base.Awake();
       _vcam = GetComponent<Cinemachine.CinemachineVirtualCamera>();
+   }
 
-      _defaultOrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
-      _orthographicSize = _defaultOrthographicSize;
-
-      _initialSettings = getVirtualCameraSettings();
+   private void Start () {
+      CameraManager.self.registerCamera(this);
+      setInternalOrthographicSize();
    }
 
    public override void onResolutionChanged () {
-      base.onResolutionChanged();
+      if (gameObject.activeInHierarchy) {
+         setInternalOrthographicSize();
+      }
+   }
 
-      _defaultOrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
-      _orthographicSize = _defaultOrthographicSize;
-
+   private void setInternalOrthographicSize () {
+      _orthographicSize = Screen.height / DEFAULT_PPU_SCALE;
       _initialSettings = getVirtualCameraSettings();
+      foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
+         if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
+            _orthographicSize = resolutionData.orthoCap;
+            break;
+         }
+      }
    }
 
    void Update () {
-      float scaleFactor = 1;
-      if (mainGUICanvas != null) {
-         scaleFactor = mainGUICanvas.scaleFactor;
-      }
-
-      _vcam.m_Lens.OrthographicSize = _orthographicSize / scaleFactor;
+      _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
    }
 
    public Tween setOrthographicSize (float size) {
@@ -71,6 +74,16 @@ public class MyCamera : BaseCamera
       return s;
    }
 
+   private float getScaleFactor () {
+      float scaleFactor = 1;
+      if (mainGUICanvas != null) {
+         scaleFactor = mainGUICanvas.scaleFactor *.75f;
+         scaleFactor = Mathf.Clamp(scaleFactor, 1, 1.5f);
+      }
+
+      return scaleFactor;
+   }
+
    public VirtualCameraSettings getVirtualCameraSettings () {
       VirtualCameraSettings settings = new VirtualCameraSettings();
       settings.position = _vcam.transform.position;
@@ -82,10 +95,8 @@ public class MyCamera : BaseCamera
    #region Private Variables
 
    // The current orthographic size
+   [SerializeField]
    protected float _orthographicSize = -1;
-
-   // The default orthographic size for pixel perfect
-   protected float _defaultOrthographicSize = -1;
 
    // The tween used for animating the orthographic size
    protected Tween _orthoSizeTween;

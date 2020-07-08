@@ -71,10 +71,15 @@ namespace ServerCommunicationHandlerv2 {
                   // Cache the latest chat time
                   latestChatinfo = sortedChatList[0];
 
+                  NetEntity sourceEntity = EntityManager.self.getEntity(latestChatinfo.senderId);
+                  if (sourceEntity != null) {
+                     latestChatinfo.sender = sourceEntity.entityName;
+                  }
+
                   // Send chat to all connected users
                   foreach (int userId in serverCommuncationHandler.ourServerData.connectedUserIds) {
                      NetEntity targetEntity = EntityManager.self.getEntity(userId);
-                     targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), "Server", 0);
+                     targetEntity.Target_ReceiveGlobalChat(latestChatinfo.chatId, latestChatinfo.text, latestChatinfo.chatTime.ToBinary(), latestChatinfo.senderId == 0 ? "Server" : latestChatinfo.sender, latestChatinfo.senderId);
                   }
                }
             });

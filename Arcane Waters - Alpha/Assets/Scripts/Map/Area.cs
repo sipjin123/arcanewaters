@@ -151,7 +151,7 @@ public class Area : MonoBehaviour
 
       configurePathfindingGraph();
 
-      vcam.GetComponent<CinemachineConfiner>().m_ConfineScreenEdges = Screen.currentResolution.width > WIDE_RESOLUTION_VALUE ? false : true;
+      vcam.GetComponent<MyCamera>().mainGUICanvas = CameraManager.self.guiCanvas;
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
