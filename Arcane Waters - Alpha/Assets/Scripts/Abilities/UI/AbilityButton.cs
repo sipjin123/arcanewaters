@@ -41,11 +41,6 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          case AbilityOrigin.Enemy:
             BasicAbilityData fetchedAbilityData = AbilityManager.getAbility(BattleManager.self.getPlayerBattler().basicAbilityIDList[abilityIndex], AbilityType.Undefined);
             BattleUIManager.self.onAbilityHover.Invoke(fetchedAbilityData);
-            BattleUIManager.self.setTooltipFrame((int) abilityOrigin);
-
-            frameRectTransform = BattleUIManager.self.tooltipWindow;
-
-            frameRectTransform.position = transform.position + new Vector3(frameRectTransform.sizeDelta.x * 1.75f, frameRectTransform.sizeDelta.y * 1.75f);
             break;
 
          case AbilityOrigin.Player:
@@ -111,7 +106,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
       switch (abilityOrigin) {
          case AbilityOrigin.Enemy:
-            BattleUIManager.self.setTooltipActiveState(false);
+            BattleUIManager.self.setDescriptionActiveState(false);
             break;
 
          case AbilityOrigin.Player:
@@ -130,31 +125,39 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    }
 
    public void enableButton () {
-      GetComponent<Image>().raycastTarget = true;
+      Image buttonImage = GetComponent<Image>();
+      if (buttonImage != null) {
+         buttonImage.raycastTarget = true;
+      }
 
-      abilityIcon.gameObject.SetActive(true);
+      foreach (Image image in GetComponentsInChildren<Image>()) {
+         image.raycastTarget = true;
+      }
+
       abilityButton.interactable = true;
-      abilityIcon.raycastTarget = true;
 
       abilityIcon.color = Color.white;
-      grayScaleObj.SetActive(false);
       isEnabled = true;
    }
 
-   public void disableButton() {
-      GetComponent<Image>().raycastTarget = false;
+   public void disableButton () {
+      Image buttonImage = GetComponent<Image>();
+      if (buttonImage != null) {
+         buttonImage.raycastTarget = false;
+      }
 
-      abilityIcon.gameObject.SetActive(false);
+      foreach (Image image in GetComponentsInChildren<Image>()) {
+         image.raycastTarget = false;
+      }
+
       abilityButton.interactable = false;
-      abilityIcon.raycastTarget = false;
 
       abilityIcon.color = Color.gray;
-      grayScaleObj.SetActive(true);
       isEnabled = false;
    }
 
    private void OnDisable () {
-      BattleUIManager.self.setTooltipActiveState(false);
+      BattleUIManager.self.setDescriptionActiveState(false);
 
       // TODO - ZERONEV: Remove this debug tooltip event later
       BattleUIManager.self.setDebugTooltipState(false);

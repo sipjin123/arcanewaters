@@ -62,7 +62,7 @@ public class PaletteSwapManager : MonoBehaviour {
 
    public static Texture2D generateTexture2D (string name) {
       if (self == null) {
-         D.error("PaletteSwapManager has not been created yet");
+         D.debug("PaletteSwapManager has not been created yet");
          return null;
       }
 
@@ -85,9 +85,13 @@ public class PaletteSwapManager : MonoBehaviour {
       }
 
       // Changing to RGBA32, mipChain = true (defualt), linear = false (default)
-      Texture2D tex = new Texture2D(2, srcColors.Count, TextureFormat.RGBA32, true, false);
+      Texture2D tex = Instantiate(PrefabsManager.self.texturePrefab);
       tex.filterMode = FilterMode.Point;
       tex.wrapMode = TextureWrapMode.Clamp;
+
+      if (srcColors.Count > tex.height) {
+         D.debug("Palette texture is too small to handle all colors downloaded from database. Palette name: " + name);
+      }
 
       for (int i = 0; i < srcColors.Count; i++) {
          tex.SetPixel(0, i, srcColors[i]);

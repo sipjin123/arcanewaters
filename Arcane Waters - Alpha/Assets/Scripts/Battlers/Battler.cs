@@ -303,6 +303,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(true);
                BattleUIManager.self.playerBattleCG.Show();
+               BattleUIManager.self.abilitiesCG.Show();
+               BattleUIManager.self.buffAbilitiesRow.Show();
+               BattleUIManager.self.targetAbilitiesRow.Hide();
                BattleUIManager.self.stanceChangeButton.gameObject.SetActive(false);
                BattleUIManager.self.usernameText.gameObject.SetActive(true);
                BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
@@ -318,6 +321,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
+               BattleUIManager.self.abilitiesCG.Hide();
                selectedBattleBar.gameObject.SetActive(false);
                BattleUIManager.self.playerStanceFrame.SetActive(false);
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(false);

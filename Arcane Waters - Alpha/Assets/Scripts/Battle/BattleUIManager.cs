@@ -19,23 +19,19 @@ public class BattleUIManager : MonoBehaviour {
 
    [Space(4)]
    [Header("Enemy Target")]
-   // Main canvas group that holds the ring that appears whenever we select an enemy
-   public CanvasGroup targetEnemyCG;
+   // Main canvas group that holds the abilities that appears whenever we select a character
+   public CanvasGroup abilitiesCG;
 
-   // Main rectTransform that holds the abilities and the ring for whenever we select an enemy, 
-   // Used for moving it depending on the selected enemy
-   public RectTransform mainTargetRect;
+   // The row of ability buttons that appear when targetting an enemy
+   public CanvasGroup targetAbilitiesRow;
 
-   // Ring that holds the abilities for attacking
-   public Image enemyRing;
+   // The row of ability buttons that appear when targetting a player
+   public CanvasGroup buffAbilitiesRow;
 
-   // Ring that holds the abilities for buffing
-   public Image playerRing;
-
-   // Abilities icon that appears throughout the UI Ring for enemy
+   // Ability buttons that appear when targetting an enemy
    public AbilityButton[] abilityTargetButtons;
 
-   // Abilities icon that appears throughout the UI Ring for player
+   // Ability buttons that appear when targetting a player
    public AbilityButton[] buffPlayerButtons;
 
    [Space(4)]
@@ -112,18 +108,18 @@ public class BattleUIManager : MonoBehaviour {
    // Subscribe to this event to have something done whenever we hover on an ability in battle
    [HideInInspector] public BattleTooltipEvent onAbilityHover = new BattleTooltipEvent();
 
-   [Header("Ability Tooltip")]
+   [Header("Ability Description")]
    [Space(4)]
-   // All the variables below store the information related to the tooltip window that
+   // All the variables below store the information related to the description window that
    // appears whenever we hover on an ability icon UI, this gets filled whenever we trigger the window
-   public RectTransform tooltipWindow;
+   public GameObject descriptionPanel;
    public Image tooltipOutline;
    public Sprite greyTooltipSprite, goldTooltipSprite;
-   public Image tooltipIcon;
-   public Text tooltipName;
-   public Text tooltipLevel;
-   public Text tooltipCost;
-   public Text tooltipDescription;
+   public Image descriptionIcon;
+   public Text descriptionName;
+   public Text descriptionLevel;
+   public Text descriptionCost;
+   public Text descriptionText;
 
    [Space(4)]
    [Header("Debug")]
@@ -138,9 +134,6 @@ public class BattleUIManager : MonoBehaviour {
 
    // Reference to the attack panel
    public AttackPanel attackPanel;
-
-   // Holds the value of the ring depending on ability count
-   public float[] abilityRingFillValue;
 
    #endregion
 
@@ -235,8 +228,6 @@ public class BattleUIManager : MonoBehaviour {
       if (abilitydata.Length > 0) {
          abilityIndex = abilitydata.Length - 1;
       }
-      playerRing.fillAmount = abilityRingFillValue[abilityIndex];
-      enemyRing.fillAmount = abilityRingFillValue[abilityIndex];
    }
 
    private void Update () {
@@ -268,7 +259,6 @@ public class BattleUIManager : MonoBehaviour {
 
    public void prepareBattleUI () {
       // Enable UI
-      targetEnemyCG.Show();
       playerBattleCG.Show();
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
@@ -281,7 +271,7 @@ public class BattleUIManager : MonoBehaviour {
 
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
-      targetEnemyCG.Hide();
+      abilitiesCG.Hide();
 
       // If any of these are null, then we do not call anything.
       if (playerStanceFrame != null) {
@@ -318,43 +308,33 @@ public class BattleUIManager : MonoBehaviour {
 
    #region Tooltips
 
-   // Triggers the tooltip frame, showing a battle item data (called only in the onAbilityHover callback)
-   public void triggerTooltip (BasicAbilityData battleItemData) {
-      setTooltipActiveState(true);
-
-      // Set the window to change depending if we hovered onto the enemy or the player (change grey or gold sprite)
+   // Triggers the description panel, showing a battle item data (called only in the onAbilityHover callback)
+   public void triggerDescriptionPanel (BasicAbilityData battleItemData) {
+      setDescriptionActiveState(true);
 
       // Set top Sprite
-      tooltipIcon.sprite = ImageManager.getSprite(battleItemData.itemIconPath);
+      descriptionIcon.sprite = ImageManager.getSprite(battleItemData.itemIconPath);
 
       // Set lvl requirement
-      tooltipLevel.text = "lvl " + battleItemData.levelRequirement.ToString();
+      descriptionLevel.text = "LvL: " + battleItemData.levelRequirement.ToString();
 
       // Set ability name
-      tooltipName.text = battleItemData.itemName;
+      descriptionName.text = battleItemData.itemName;
 
       // Set cost
-      tooltipCost.text = "AP: " + battleItemData.abilityCost.ToString();
+      descriptionCost.text = "AP: " + battleItemData.abilityCost.ToString();
 
       // Set description
-      tooltipDescription.text = battleItemData.itemDescription;
+      descriptionText.text = battleItemData.itemDescription;
    }
 
    public void setDebugTooltipState (bool enabled) {
       debugWIPFrame.SetActive(enabled);
    }
 
-   /// <summary>
-   /// Sets the outline frame color
-   /// </summary>
-   /// <param name="frameType"> 0 = Silver, 1 = Gold </param>
-   public void setTooltipFrame (int frameType) {
-      tooltipOutline.sprite = frameType.Equals(1) ? greyTooltipSprite : goldTooltipSprite;
-   }
-
    // Changes state of ability tooltip
-   public void setTooltipActiveState (bool enabled) {
-      tooltipWindow.gameObject.SetActive(enabled);
+   public void setDescriptionActiveState (bool enabled) {
+      descriptionPanel.SetActive(enabled);
    }
 
    // Enable/Disable the stance main button frame window
@@ -401,28 +381,23 @@ public class BattleUIManager : MonoBehaviour {
    #endregion
 
    public void triggerTargetUI (Battler target) {
-      mainTargetRect.gameObject.SetActive(true);
-
-      Vector2 viewportPosition = CameraManager.battleCamera.getCamera().WorldToViewportPoint(target.battleSpot.transform.position +
-         new Vector3(0, target.clickBox.bounds.size.y));
-      Vector2 objectScreenPos = new Vector2(
-      ((viewportPosition.x * mainCanvasRect.sizeDelta.x) - (mainCanvasRect.sizeDelta.x * 0.5f)),
-      ((viewportPosition.y * mainCanvasRect.sizeDelta.y) - (mainCanvasRect.sizeDelta.y * 0.5f)));
-
-      mainTargetRect.anchoredPosition = objectScreenPos;
+      abilitiesCG.Show();
+      buffAbilitiesRow.Hide();
+      targetAbilitiesRow.Show();
    }
 
    public void hideTargetGameobjectUI () {
-      mainTargetRect.gameObject.SetActive(false);
+      abilitiesCG.Hide();
    }
 
    public void hidePlayerGameobjectUI () {
       playerBattleCG.Hide();
+      abilitiesCG.Hide();
    }
 
    // Prepares main listener for preparing the onAbilityHover event
    public void prepareUIEvents () {
-      onAbilityHover.AddListener(triggerTooltip);
+      onAbilityHover.AddListener(triggerDescriptionPanel);
    }
 
    public void updatePlayerUIPositions () {
@@ -448,13 +423,15 @@ public class BattleUIManager : MonoBehaviour {
 
       playerBattler.onBattlerAttackStart.AddListener(() => {
          playerMainUIHolder.Hide();
-         targetEnemyCG.Hide();
+         abilitiesCG.Hide();
          mainPlayerRectCG.Hide();
       });
 
       playerBattler.onBattlerAttackEnd.AddListener(() => {
          playerMainUIHolder.Show();
-         targetEnemyCG.Show();
+         abilitiesCG.Show();
+         buffAbilitiesRow.Show();
+         targetAbilitiesRow.Hide();
          mainPlayerRectCG.Show();
 
          playerBattler.pauseAnim(false);
@@ -472,6 +449,7 @@ public class BattleUIManager : MonoBehaviour {
          playerStanceFrame.SetActive(false);
          playerMainUIHolder.gameObject.SetActive(false);
          playerBattleCG.Hide();
+         abilitiesCG.Hide();
          playerBattler.selectedBattleBar.gameObject.SetActive(false);
       });
 
@@ -491,6 +469,10 @@ public class BattleUIManager : MonoBehaviour {
       usernameText.gameObject.SetActive(true);
       if (showAbilities) {
          playerBattleCG.Show();
+         abilitiesCG.Show();
+         buffAbilitiesRow.Show();
+         targetAbilitiesRow.Hide();
+
          foreach (AbilityButton abilityButton in abilityTargetButtons) {
             if (abilityButton.isEnabled) {
                abilityButton.gameObject.SetActive(true);
@@ -499,6 +481,7 @@ public class BattleUIManager : MonoBehaviour {
          }
       } else {
          playerBattleCG.Hide();
+         abilitiesCG.Hide();
       }
    }
 
