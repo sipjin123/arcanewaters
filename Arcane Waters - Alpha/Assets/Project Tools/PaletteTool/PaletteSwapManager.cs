@@ -18,6 +18,9 @@ public class PaletteSwapManager : MonoBehaviour {
    // If the palette data was set
    public bool hasInitialized;
 
+   // Threshold for palette swap shader
+   public float colorThreshold = 0.05f;
+
    #endregion
 
    private void Awake () {
@@ -77,11 +80,12 @@ public class PaletteSwapManager : MonoBehaviour {
          dstColors.Add(PaletteToolManager.convertHexToRGB(hex));
       }
       if (srcColors.Count != dstColors.Count) {
-         D.error("Source and destination palette has different element count in canvas. Cannot generate Texture2D");
+         D.debug("Source and destination palette has different element count in canvas. Cannot generate Texture2D");
          return null;
       }
 
-      Texture2D tex = new Texture2D(2, srcColors.Count);
+      // Changing to RGBA32, mipChain = true (defualt), linear = false (default)
+      Texture2D tex = new Texture2D(2, srcColors.Count, TextureFormat.RGBA32, true, false);
       tex.filterMode = FilterMode.Point;
       tex.wrapMode = TextureWrapMode.Clamp;
 

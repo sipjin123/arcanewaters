@@ -40,10 +40,11 @@ public class PaletteSwap : MonoBehaviour {
          return;
       }
 
-      if (_material.HasProperty(SHADER_TEXTURE_KEY)) {
-         _material.SetTexture(SHADER_TEXTURE_KEY, paletteTex);
+      if (_material.HasProperty(SHADER_TEXTURE_KEY) && _material.HasProperty(SHADER_THRESHOLD_KEY)) {
+         _material.SetTexture(SHADER_TEXTURE_KEY, paletteTex);         
+         _material.SetFloat(SHADER_THRESHOLD_KEY, PaletteSwapManager.self.colorThreshold);
       } else {
-         D.error("Failed to assign palette to material. Destroying palette swap script");
+         Debug.LogError("Failed to assign palette to material. Destroying palette swap script", this.transform);
          terminatePaletteSwapping();
       }
    }
@@ -56,6 +57,9 @@ public class PaletteSwap : MonoBehaviour {
 
    // Shader property name of palette's texture
    private const string SHADER_TEXTURE_KEY = "_Palette";
+
+   // Shader property name of palette's threshold
+   private const string SHADER_THRESHOLD_KEY = "_Threshold";
 
    // Material which has correct property key
    private Material _material = null;

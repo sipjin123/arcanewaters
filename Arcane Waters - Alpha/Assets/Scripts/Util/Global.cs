@@ -75,7 +75,7 @@ public class Global {
          case ServerType.Localhost:
             return "localhost";
          case ServerType.AmazonVPC:
-            return "52.1.218.202";
+            return "18.217.126.169";
          case ServerType.AmazonSydney:
             return "13.55.171.249";
          case ServerType.ProductionWindows:

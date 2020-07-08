@@ -233,4 +233,11 @@ public class NubisManager : MonoBehaviour
    #endregion
 
 }
+#else
+using UnityEngine;
+public class NubisManager : MonoBehaviour
+{
+
+}
+
 #endif

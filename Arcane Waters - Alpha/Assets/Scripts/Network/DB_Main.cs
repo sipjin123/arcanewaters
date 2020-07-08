@@ -543,7 +543,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@xmlId", xmlId);
-            cmd.Parameters.AddWithValue("@biomeType", (int)biomeType);
+            cmd.Parameters.AddWithValue("@biomeType", (int) biomeType);
             cmd.Parameters.AddWithValue("@xmlContent", rawXmlContent);
 
             // Execute the command
@@ -4125,7 +4125,7 @@ public class DB_Main : DB_MainStub
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenshotPNG, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenshotPNG, @screenResolution, @operatingSystem, @status)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -4135,7 +4135,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@ping", ping);
             cmd.Parameters.AddWithValue("@fps", fps);
             cmd.Parameters.AddWithValue("@playerPosition", playerPosition);
-            cmd.Parameters.AddWithValue("@screenshotPNG", screenshotBytes);
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
@@ -4143,14 +4142,23 @@ public class DB_Main : DB_MainStub
             // Execute the command
             cmd.ExecuteNonQuery();
 
+            // Bug Report's Id
+            long bugId = cmd.LastInsertedId;
+
             // Saving the initial "Create" action for history purposes
-            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO bug_reports_actions (taskId, actionType, performerAccId, assigneeAccId) VALUES(@taskId, @actionType, @performerAccId, @assigneeAccId)", conn);
+            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO bug_reports_actions (taskId, actionType, performerAccId) VALUES(@taskId, @actionType, @performerAccId)", conn);
             actionCmd.Prepare();
-            actionCmd.Parameters.AddWithValue("@taskId", cmd.LastInsertedId);
+            actionCmd.Parameters.AddWithValue("@taskId", bugId);
             actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
             actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
-            actionCmd.Parameters.AddWithValue("@assigneeAccId", 0);
             actionCmd.ExecuteNonQuery();
+
+            // Saving screenshot in bug_reports_screenshots
+            MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
+            screenshotCmd.Prepare();
+            screenshotCmd.Parameters.AddWithValue("@taskId", bugId);
+            screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
+            screenshotCmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -4222,8 +4230,8 @@ public class DB_Main : DB_MainStub
                      info.guildId = senderGuild;
                      list.Add(info);
                   } else {
-                     int userId = 0;
-                     string senderName = "Server";
+                     int userId = dataReader.GetInt32("usrId");
+                     string senderName = userId == 0 ? "Server" : "User";
                      int senderGuild = 0;
                      ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
                      info.guildId = senderGuild;
