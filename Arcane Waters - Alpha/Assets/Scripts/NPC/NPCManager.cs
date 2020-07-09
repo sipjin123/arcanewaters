@@ -142,7 +142,7 @@ public class NPCManager : MonoBehaviour {
    public Quest getQuest (int npcId, int questId) {
       NPCData npcData;
       if (!_npcData.TryGetValue(npcId, out npcData)) {
-         D.error("The npc has no quest data: " + npcId);
+         D.debug("The npc has no quest data: " + npcId);
          return null;
       }
 
@@ -153,7 +153,7 @@ public class NPCManager : MonoBehaviour {
          }
       }
 
-      D.error("The quest does not exist: " + npcId + "/" + questId);
+      D.debug("The quest does not exist: " + npcId + "/" + questId);
       return null;
    }
 
@@ -171,7 +171,7 @@ public class NPCManager : MonoBehaviour {
          }
       }
 
-      D.error("The quest node does not exist: " + npcId + "/" + questId + "/" + questNodeId);
+      D.debug("The quest node does not exist: " + npcId + "/" + questId + "/" + questNodeId);
       return null;
    }
 

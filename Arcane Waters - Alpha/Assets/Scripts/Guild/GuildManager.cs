@@ -54,7 +54,7 @@ public class GuildManager : MonoBehaviour {
 
       // Make sure the sender is in a guild and the recipient is not
       if (sender.guildId == 0 || recipient.guildId != 0) {
-         D.warning("Invalid guild invite from " + sender + " to: " + recipientId);
+         D.debug("Invalid guild invite from " + sender + " to: " + recipientId);
          return;
       }
 

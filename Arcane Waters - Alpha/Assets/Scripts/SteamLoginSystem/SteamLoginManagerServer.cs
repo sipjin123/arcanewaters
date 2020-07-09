@@ -75,7 +75,7 @@ namespace SteamLoginSystem
          UnityWebRequest www = UnityWebRequest.Get(webRequest);
          yield return www.SendWebRequest();
          if (www.isNetworkError || www.isHttpError) {
-            D.warning(www.error);
+            D.debug(www.error);
          } else {
             string rawData = www.downloadHandler.text;
             rawData = rawData.Replace("params", "newParams");
@@ -109,7 +109,7 @@ namespace SteamLoginSystem
          UnityWebRequest www = UnityWebRequest.Get(webRequest);
          yield return www.SendWebRequest();
          if (www.isNetworkError || www.isHttpError) {
-            D.warning(www.error);
+            D.debug(www.error);
          } else {
             string rawData = www.downloadHandler.text;
             AppOwnerShipResponse ownershipResponse = JsonUtility.FromJson<AppOwnerShipResponse>(rawData);

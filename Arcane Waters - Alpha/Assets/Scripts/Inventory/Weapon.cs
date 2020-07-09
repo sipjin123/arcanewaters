@@ -138,7 +138,7 @@ public class Weapon : EquippableItem {
 
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponType);
       if (weaponData == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data :: (" + weaponType + ")");
+         D.debug("Weapon data does not exist! Go to Equipment Editor and make new data :: (" + weaponType + ")");
          return "Undefined";
       }
 
@@ -155,7 +155,7 @@ public class Weapon : EquippableItem {
 
    public virtual float getDamage (Element element) {
       if (getWeaponData() == null) {
-         D.warning("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.itemTypeId + ")");
+         D.debug("Weapon data does not exist! Go to Equipment Editor and make new data: (" + this.itemTypeId + ")");
          return 10;
       }
 

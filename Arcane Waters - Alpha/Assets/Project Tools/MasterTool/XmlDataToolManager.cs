@@ -65,7 +65,7 @@ public class XmlDataToolManager : MonoBehaviour {
    public CraftableItemRequirements getCraftableItem (int itemID, Item.Category category) {
       CraftableItemRequirements fetchedItemRequirement = craftingDataList.Find(_ => _.resultItem.itemTypeId == itemID && _.resultItem.category == category);
       if (fetchedItemRequirement == null) {
-         D.warning("Item does not exist: " + itemID + " - " + category);
+         D.debug("Item does not exist: " + itemID + " - " + category);
          return null;
       }
 

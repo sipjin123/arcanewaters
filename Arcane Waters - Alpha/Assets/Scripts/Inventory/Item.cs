@@ -80,7 +80,7 @@ public class Item {
          case Category.Quest_Item:
             return new QuestItem(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          default:
-            D.warning("Unknown item category: " + category);
+            D.debug("Unknown item category: " + category);
             return null;
       }
    }

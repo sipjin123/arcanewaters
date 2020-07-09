@@ -55,7 +55,7 @@ public class ShipDataManager : MonoBehaviour {
                         shipDataList.Add(shipData);
                      }
                   } catch {
-                     D.warning("Failed to load ship xml data for: " + xmlPair.xmlId);
+                     D.debug("Failed to load ship xml data for: " + xmlPair.xmlId);
                   }
                }
                hasInitialized = true;

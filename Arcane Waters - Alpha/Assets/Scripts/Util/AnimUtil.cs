@@ -409,7 +409,7 @@ public class AnimUtil : MonoBehaviour {
             }
       }
 
-      D.warning("Couldn't find animation info for group: " + animGroup + " and type: " + animType);
+      D.debug("Couldn't find animation info for group: " + animGroup + " and type: " + animType);
       return new AnimInfo(animType, 0, 0);
    }
 

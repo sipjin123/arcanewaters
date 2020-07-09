@@ -68,7 +68,7 @@ public class MonsterManager : MonoBehaviour {
 
    public BattlerData getBattler (Enemy.Type enemyType) {
       if (!_monsterDataList.Exists(_=>_.battler.enemyType == enemyType)) {
-         D.warning("Enemy type is not registered: " + enemyType);
+         D.debug("Enemy type is not registered: " + enemyType);
          return null;
       }
 
@@ -77,7 +77,7 @@ public class MonsterManager : MonoBehaviour {
 
    public BattlerData getBattler (int battlerId) {
       if (!_monsterDataList.Exists(_=>_.xmlId == battlerId)) {
-         D.warning("Enemy type is not registered: " + battlerId);
+         D.debug("Enemy type is not registered: " + battlerId);
          return null;
       }
 

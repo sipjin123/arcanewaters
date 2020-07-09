@@ -53,7 +53,7 @@ public class LoadingScreen : MonoBehaviour
       try {
          SpotFader.self.openSpotToMaxSize(Global.player.transform);
       } catch {
-         D.error("Issue with Spot Fader");
+         D.debug("Issue with Spot Fader");
       }
    }
 

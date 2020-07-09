@@ -70,14 +70,14 @@ public class SpriteSwap : ClientMonoBehaviour
                // Remember the name of the current Texture in case it is changed later
                _loadedTextureName = newTexture.name;
             } else {
-               D.error("Sprite loaded was incorrect: " + newTexture.name + " : " + newSprites.Length);
+               D.debug("Sprite loaded was incorrect: " + newTexture.name + " : " + newSprites.Length);
             }
          } else {
             transform.parent.gameObject.SetActive(false);
-            D.error("Problem with loading sprite: " + newTexture.name);
+            D.debug("Problem with loading sprite: " + newTexture.name);
          }
       } else {
-         D.error("Texture is null!");
+         D.debug("Texture is null!");
       }
    }
 

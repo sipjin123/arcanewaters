@@ -204,7 +204,7 @@ public class CropManager : NetworkBehaviour {
       }
 
       if (cropToHarvest.cropType == Crop.Type.None) {
-         D.error("No crop in spot number: " + cropNumber);
+         D.debug("No crop in spot number: " + cropNumber);
          return;
       }
 
@@ -488,7 +488,7 @@ public class CropManager : NetworkBehaviour {
             return 6;
          }
       } catch {
-         D.warning("Tutorial Manager failed to process");
+         D.debug("Tutorial Manager failed to process");
       }
 
       CropsData cropData = CropsDataManager.self.getCropData(cropType);

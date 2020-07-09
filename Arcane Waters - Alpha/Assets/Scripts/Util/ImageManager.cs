@@ -119,7 +119,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         D.warning("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
+         D.debug("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
@@ -170,7 +170,7 @@ public class ImageManager : ClientMonoBehaviour {
       ImageData imageData = getData(texture);
 
       if (imageData.sprites == null) {
-         D.warning("Couldn't find image data for texture: " + texture);
+         D.debug("Couldn't find image data for texture: " + texture);
          return new Sprite[0];
       }
 

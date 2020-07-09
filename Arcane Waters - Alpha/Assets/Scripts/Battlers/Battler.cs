@@ -392,7 +392,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             _alteredBattlerData = BattlerData.CreateInstance(battlerData);
             setElementalWeakness();
          } else {
-            D.error("DATA IS NULL");
+            D.debug("DATA IS NULL");
          }
 
          if (battlerType == BattlerType.AIEnemyControlled) {

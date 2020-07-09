@@ -190,7 +190,7 @@ public class TutorialManager : MonoBehaviour {
    public TutorialData fetchTutorialData (string stepTitle) {
       TutorialData returnData = _tutorialDataList.Find(_ => _.tutorialName == stepTitle);
       if (returnData == null) {
-         D.warning("Problem with Tutorial XML Data: Please create data in tutorial data editor : ({" + stepTitle + "})");
+         D.debug("Problem with Tutorial XML Data: Please create data in tutorial data editor : ({" + stepTitle + "})");
       }
       return returnData;
    }

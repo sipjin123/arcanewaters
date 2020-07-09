@@ -108,7 +108,7 @@ public class Armor : EquippableItem {
 
    public virtual float getDefense (Element element) {
       if (getArmorData() == null) {
-         D.warning("Cannot get Defense, Armor data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
+         D.debug("Cannot get Defense, Armor data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
          return 5;
       }
 
@@ -128,7 +128,7 @@ public class Armor : EquippableItem {
    public static int getBaseArmor (int armorType) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
       if (armorData == null) {
-         D.warning("Cannot get Base Armor, Armor data does not exist! Go to Equipment Editor and make new data: (" + armorType + ")");
+         D.debug("Cannot get Base Armor, Armor data does not exist! Go to Equipment Editor and make new data: (" + armorType + ")");
          return 5;
       }
 
@@ -169,7 +169,7 @@ public class Armor : EquippableItem {
 
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
       if (armorData == null) {
-         D.warning("Cannot get Name, Armor data does not exist! Go to Equipment Editor and make new data :: (" + armorType + ")");
+         D.debug("Cannot get Name, Armor data does not exist! Go to Equipment Editor and make new data :: (" + armorType + ")");
          return "Undefined";
       }
 

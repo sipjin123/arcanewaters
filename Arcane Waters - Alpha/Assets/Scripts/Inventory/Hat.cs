@@ -109,7 +109,7 @@ public class Hat : EquippableItem
 
    public virtual float getDefense (Element element) {
       if (getHatData() == null) {
-         D.warning("Cannot get Defense, Hat data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
+         D.debug("Cannot get Defense, Hat data does not exist! Go to Equipment Editor and make new data: (" + itemTypeId + ")");
          return 5;
       }
 
@@ -129,7 +129,7 @@ public class Hat : EquippableItem
    public static int getBaseDefense (int hatType) {
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hatType);
       if (hatData == null) {
-         D.warning("Cannot get Base Hat, Hat data does not exist! Go to Equipment Editor and make new data: (" + hatType + ")");
+         D.debug("Cannot get Base Hat, Hat data does not exist! Go to Equipment Editor and make new data: (" + hatType + ")");
          return 5;
       }
 
@@ -170,7 +170,7 @@ public class Hat : EquippableItem
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hatType);
       if (hatData == null) {
-         D.warning("Cannot get Name, Hat data does not exist! Go to Equipment Editor and make new data :: (" + hatType + ")");
+         D.debug("Cannot get Name, Hat data does not exist! Go to Equipment Editor and make new data :: (" + hatType + ")");
          return "Undefined";
       }
 

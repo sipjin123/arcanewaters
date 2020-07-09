@@ -32,7 +32,7 @@ public class BodyManager : MonoBehaviour {
          }
       }
 
-      D.warning("No body with username exists in the collection: " + userName);
+      D.debug("No body with username exists in the collection: " + userName);
       return null;
    }
 

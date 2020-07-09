@@ -59,6 +59,10 @@ public class TreasureDropsToolScene : MonoBehaviour {
    // The event triggered after the biome is selected
    public UnityEvent biomeSelectedEvent;
 
+   // Reference to the warning panel
+   public GameObject warningPanel;
+   public Button closeWarningButton;
+
    #endregion
 
    private void Start () {
@@ -67,6 +71,9 @@ public class TreasureDropsToolScene : MonoBehaviour {
          itemPreviewPanel.SetActive(false);
       });
 
+      closeWarningButton.onClick.AddListener(() => {
+         warningPanel.SetActive(false);
+      });
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
       });
@@ -153,15 +160,19 @@ public class TreasureDropsToolScene : MonoBehaviour {
          }
       }
 
-      LootGroupData newLootGroupData = new LootGroupData {
-         treasureDropsCollection = newDropsDataList,
-         lootGroupName = lootGroupName.text,
-         xmlId = selectedXmlId,
-         biomeType = selectedBiome,
-      };
+      if (newDropsDataList.Count > 0) {
+         LootGroupData newLootGroupData = new LootGroupData {
+            treasureDropsCollection = newDropsDataList,
+            lootGroupName = lootGroupName.text,
+            xmlId = selectedXmlId,
+            biomeType = selectedBiome,
+         };
 
-      TreasureDropsToolManager.instance.saveDataFile(selectedXmlId, selectedBiome, newLootGroupData);
-      itemPreviewPanel.SetActive(false);
+         TreasureDropsToolManager.instance.saveDataFile(selectedXmlId, selectedBiome, newLootGroupData);
+         itemPreviewPanel.SetActive(false);
+      } else {
+         warningPanel.SetActive(true);
+      }
    }
 
    private void processItemTemplate (TreasureDropsItemTemplate template, Item.Category category, int itemType, string rawData, string iconPath = "") {

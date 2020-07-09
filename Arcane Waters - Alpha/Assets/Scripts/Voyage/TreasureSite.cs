@@ -238,7 +238,7 @@ public class TreasureSite : NetworkBehaviour
       }
 
       if (!found) {
-         D.error("Could not find the warp associated with a treasure site in area " + areaKey);
+         D.debug("Could not find the warp associated with a treasure site in area " + areaKey);
       }
    }
 

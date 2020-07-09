@@ -110,7 +110,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       if (isServer) {
          _seeker = GetComponent<Seeker>();
          if (_seeker == null) {
-            D.error("There has to be a Seeker Script attached to the NPC Prefab");
+            D.debug("There has to be a Seeker Script attached to the NPC Prefab");
          }
 
          // Only use the graph in this area to calculate paths
@@ -406,7 +406,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       Area area = GetComponentInParent<Area>();
       if (!area) {
-         D.error("Couldn't get trade gossip - area not found");
+         D.debug("Couldn't get trade gossip - area not found");
          return "I haven't heard anything recently.";
       }
       Biome.Type biome = area.biome;

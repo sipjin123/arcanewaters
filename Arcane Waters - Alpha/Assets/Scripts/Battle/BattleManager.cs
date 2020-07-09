@@ -604,7 +604,7 @@ public class BattleManager : MonoBehaviour {
             }
          }
       } else {
-         D.log("Battle action was not prepared correctly");
+         D.debug("Battle action was not prepared correctly");
       }
 
       // Send it to clients

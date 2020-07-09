@@ -228,7 +228,7 @@ public class NPCPanel : Panel {
             if (k < objectivesProgress.Length) {
                cell.setCellForQuestObjective(o, objectivesProgress[k], isEnabled);
             } else {
-               D.warning("The quest objectives progress received from the server is inconsistent with the client's quest data");
+               D.debug("The quest objectives progress received from the server is inconsistent with the client's quest data");
                cell.setCellForQuestObjective(o, -1, isEnabled);
             }
             k++;
@@ -452,7 +452,7 @@ public class NPCPanel : Panel {
             container = dialogueOptionRowContainerForQuestNode;
             break;
          default:
-            D.warning("The NPC Panel mode " + mode.ToString() + " does not handle dialogue options");
+            D.debug("The NPC Panel mode " + mode.ToString() + " does not handle dialogue options");
             return;
       }
 

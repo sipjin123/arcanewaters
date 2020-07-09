@@ -169,7 +169,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       if (isServer) {
          _seeker = GetComponent<Seeker>();
          if (_seeker == null) {
-            D.error("There has to be a Seeker Script attached to the SeaMonsterEntity Prefab");
+            D.debug("There has to be a Seeker Script attached to the SeaMonsterEntity Prefab");
          }
 
          // Only use the graph in this area to calculate paths

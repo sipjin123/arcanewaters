@@ -148,7 +148,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
       string fileDirectory = TEXT_PATH + fileName + ".txt";
       if (!File.Exists(fileDirectory)) {
-         D.error("Missing file! Creating now: " + fileDirectory);
+         D.debug("Missing file! Creating now: " + fileDirectory);
          File.Create(fileDirectory).Close();
          finishedCheckingStreamingAsset.Invoke(false);
       }

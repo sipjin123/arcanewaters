@@ -94,7 +94,7 @@ public class ItemInfo {
          case Item.Category.Weapon:
             return Weapon.getName(itemType);
          default:
-            D.warning("No getName() defined for item type: " + itemType);
+            D.debug("No getName() defined for item type: " + itemType);
             return "Unknown";
       }
    }

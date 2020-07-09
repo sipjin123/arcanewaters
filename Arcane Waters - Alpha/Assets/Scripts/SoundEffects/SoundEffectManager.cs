@@ -75,7 +75,7 @@ public class SoundEffectManager : MonoBehaviour
          source.loop = false;
          source.Play();
       } else if (id >= 0) {
-         D.log("Could not find SoundEffect with 'id' : '" + id + "'");
+         D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
    }
 
@@ -84,7 +84,7 @@ public class SoundEffectManager : MonoBehaviour
       if (foundClip != null) {
          effect.clip = foundClip;
       } else if (!string.IsNullOrEmpty(effect.clipName)) {
-         D.log("SoundEffect '" + effect.name + "' has an invalid AudioClip link: '" + effect.clipName + "'");
+         D.debug("SoundEffect '" + effect.name + "' has an invalid AudioClip link: '" + effect.clipName + "'");
       }
    }
 

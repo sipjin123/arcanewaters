@@ -44,7 +44,7 @@ public class CropsDataManager : MonoBehaviour {
                   _cropDataCollection.Add(cropType, cropsData);
                   cropDataList.Add(cropsData);
                } else {
-                  D.warning("Key already exists: " + cropType);
+                  D.debug("Key already exists: " + cropType);
                }
             }
          });

@@ -97,7 +97,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
       AnimInfo info = AnimUtil.getInfo(this.group, newAnimType);
 
       if (info.animType == Anim.Type.None) {
-         D.warning("Couldn't find animation for type: " + newAnimType);
+         D.debug("Couldn't find animation for type: " + newAnimType);
          return;
       }
 

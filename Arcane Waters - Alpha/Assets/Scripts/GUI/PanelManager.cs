@@ -222,7 +222,7 @@ public class PanelManager : MonoBehaviour {
          }
       }
 
-      D.warning("Couldn't find modal panel with type: " + panelType);
+      D.debug("Couldn't find modal panel with type: " + panelType);
       return;
    }
 

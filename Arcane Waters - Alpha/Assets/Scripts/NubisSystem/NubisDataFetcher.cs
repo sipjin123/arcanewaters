@@ -136,7 +136,7 @@ namespace NubisDataHandling {
 
       public void fetchEquipmentData (int pageIndex = 1, int itemsPerPage = 42, Item.Category[] categoryFilter = null) {
          if (itemsPerPage > 200) {
-            D.warning("Requesting too many items per page.");
+            D.debug("Requesting too many items per page.");
             return;
          }
 

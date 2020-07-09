@@ -412,7 +412,7 @@ public class ShopManager : MonoBehaviour {
    public void decreaseItemCount (int shopItemId) {
       // Make sure we can find the specified item
       if (!_items.ContainsKey(shopItemId)) {
-         D.warning("Could not find item: " + shopItemId);
+         D.debug("Could not find item: " + shopItemId);
          return;
       }
 

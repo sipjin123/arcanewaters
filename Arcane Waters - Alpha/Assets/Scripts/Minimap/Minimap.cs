@@ -254,7 +254,7 @@ public class Minimap : ClientMonoBehaviour {
 
    public Vector2 getCorrectedPosition (Transform target, Area area) {
       if (area == null) {
-         D.error("No area referenced");
+         D.debug("No area referenced");
          return new Vector2(0.0f, 0.0f);
       }
 
@@ -487,7 +487,7 @@ public class Minimap : ClientMonoBehaviour {
 
    private MinimapGeneratorPreset chooseBaseMapPreset (Area area) {
       if (!area) {
-         D.error("Couldn't get map instance!");
+         D.debug("Couldn't get map instance!");
          return baseForestPreset;
       }
 
@@ -514,7 +514,7 @@ public class Minimap : ClientMonoBehaviour {
          }
       }
 
-      D.error("Couldn't match biome type to given area!");
+      D.debug("Couldn't match biome type to given area!");
       return baseForestPreset;
    }
 
@@ -533,7 +533,7 @@ public class Minimap : ClientMonoBehaviour {
          case Biome.Type.Mushroom:
             return seaMushroomPreset;
       }
-      D.error("Couldn't match biome type to given area!");
+      D.debug("Couldn't match biome type to given area!");
       return seaForestPreset;
    }
 
