@@ -26,7 +26,10 @@ public class Anim : MonoBehaviour {
       Interact_North = 21,
       Interact_South = 22,
       Play_Once = 23,
-      Punch = 24
+      Punch = 24,
+      NC_Jump_East = 25,
+      NC_Jump_South = 26,
+      NC_Jump_North = 27
    }
 
    // The different animation groups
@@ -53,19 +56,12 @@ public class Anim : MonoBehaviour {
    public static bool pausesAtEnd (Type animType) {
       switch (animType) {
          case Type.Death_East:
-            return true;
          case Type.Attack_East:
-            return true;
          case Type.Attack_North:
-            return true;
          case Type.Attack_South:
-            return true;
          case Type.Ready_Attack:
-            return true;
          case Type.Finish_Attack:
-            return true;
          case Type.Play_Once:
-            return true;
          case Type.Punch:
             return true;
          default:

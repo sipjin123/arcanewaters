@@ -105,6 +105,20 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (InputManager.isActionKeyPressed()) {
+         if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
+             || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
+            requestAnimationPlay(Anim.Type.NC_Jump_East);
+            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_East);
+         } else if (facing == Direction.North) {
+            requestAnimationPlay(Anim.Type.NC_Jump_North);
+            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_North);
+         } else if (facing == Direction.South) {
+            requestAnimationPlay(Anim.Type.NC_Jump_South);
+            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
+         }
+      }
+
+      if (Input.GetKeyDown(KeyCode.Mouse1)) {
          bool isNearInteractables = false;
          float overlapRadius = .5f;
          Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);

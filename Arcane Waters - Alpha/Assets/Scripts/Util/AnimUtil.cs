@@ -105,6 +105,15 @@ public class AnimUtil : MonoBehaviour {
 
                case Anim.Type.Punch:
                   return new AnimInfo(animType, 32, 33);
+
+               case Anim.Type.NC_Jump_East:
+                  return new AnimInfo(animType, 17, 17);
+
+               case Anim.Type.NC_Jump_North:
+                  return new AnimInfo(animType, 20, 20);
+
+               case Anim.Type.NC_Jump_South:
+                  return new AnimInfo(animType, 29, 29);
             }
             break;
 

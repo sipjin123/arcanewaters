@@ -403,6 +403,12 @@ public class NetEntity : NetworkBehaviour
                animator.SetBool("interact", true);
                StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
                break;
+            case Anim.Type.NC_Jump_East:
+            case Anim.Type.NC_Jump_North:
+            case Anim.Type.NC_Jump_South:
+               animator.SetBool("jump", true);
+               StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
+               break;
          }
       }
    }
@@ -415,6 +421,11 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Interact_North:
             case Anim.Type.Interact_South:
                animator.SetBool("interact", false);
+               break;
+            case Anim.Type.NC_Jump_East:
+            case Anim.Type.NC_Jump_North:
+            case Anim.Type.NC_Jump_South:
+               animator.SetBool("jump", false);
                break;
          }
       }
