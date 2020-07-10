@@ -20,8 +20,8 @@ namespace NubisTranslator {
                   "WHEN itmCategory = 3 THEN arcane.equipment_hat_xml_v1.xmlContent " +
                   "END AS equipmentXML " +
                   "FROM arcane.items " +
-                  "left join arcane.equipment_weapon_xml_v3 on(itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.equipmentTypeID) " +
-                  "left join arcane.equipment_armor_xml_v3 on(itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.equipmentTypeID) " +
+                  "left join arcane.equipment_weapon_xml_v3 on(itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.xml_id) " +
+                  "left join arcane.equipment_armor_xml_v3 on(itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.xml_id) " +
                   "left join arcane.equipment_hat_xml_v1 on(itmCategory = 3 and itmType = arcane.equipment_hat_xml_v1.xml_id) " +
                   "left join arcane.users on armId = itmId or wpnId = itmId or hatId = itmId " +
                   "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",

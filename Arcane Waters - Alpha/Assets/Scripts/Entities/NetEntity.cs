@@ -134,6 +134,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int voyageGroupId = -1;
 
+   // If this entity is jumping
+   public bool isJumping = false;
+
    // The house layout for this user, if chosen
    public int customHouseBaseId;
 
@@ -406,7 +409,8 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
-               animator.SetBool("jump", true);
+               animator.SetBool("jump", true); 
+               isJumping = true;
                StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
                break;
          }
@@ -425,6 +429,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
+               isJumping = false;
                animator.SetBool("jump", false);
                break;
          }

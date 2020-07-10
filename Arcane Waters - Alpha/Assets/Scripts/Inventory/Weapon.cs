@@ -20,7 +20,8 @@ public class Weapon : EquippableItem {
       WaterCrop = 2,
       HarvestCrop = 3,
       CustomizeMap = 4,
-      Shovel = 5
+      Shovel = 5,
+      Chop = 6
    }
 
    // The generic value of the action type

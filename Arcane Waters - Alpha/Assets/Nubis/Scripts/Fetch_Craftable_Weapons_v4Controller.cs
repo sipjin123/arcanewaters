@@ -17,7 +17,7 @@ namespace NubisTranslator {
                   "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_weapon_xml_v3.xmlContent AS equipmentXML " +
                   "FROM items " +
                   "RIGHT JOIN crafting_xml_v2 ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=weapon%' AND crafting_xml_v2.equipmentCategory = 1) " +
-                  "RIGHT JOIN equipment_weapon_xml_v3 ON(itmType = equipment_weapon_xml_v3.equipmentTypeID AND itmData LIKE '%blueprintType=weapon%') " +
+                  "RIGHT JOIN equipment_weapon_xml_v3 ON(itmType = equipment_weapon_xml_v3.xml_id AND itmData LIKE '%blueprintType=weapon%') " +
                   "WHERE(itmCategory = 7) AND items.usrId = @usrId",
                   connection)) {
                   command.Parameters.AddWithValue("@usrId", usrId);

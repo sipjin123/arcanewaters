@@ -45,6 +45,16 @@ public class PlayerBodyEntity : BodyEntity {
    // The speedup value of the animation
    public static float ANIM_SPEEDUP_VALUE = 1.5f;
 
+   // Strength of the jump
+   public float jumpUpMagnitude = 1.2f;
+   public float jumpDownMagnitude = 1.5f;
+
+   // Max height of the jump
+   public float jumpHeightMax = .15f;
+
+   // Reference to the transform of the sprite holder
+   public Transform spritesTransform;
+
    #endregion
 
    protected override void Awake () {
@@ -57,6 +67,14 @@ public class PlayerBodyEntity : BodyEntity {
       if (!isWithinEnemyRadius) {
          base.FixedUpdate();
       }
+
+      float y = spritesTransform.localPosition.y;
+      if (isJumping) {
+         y += y < jumpHeightMax ? Time.fixedDeltaTime * jumpUpMagnitude : 0;
+      } else {
+         y -= y > 0 ? Time.fixedDeltaTime * jumpDownMagnitude : 0;
+      }
+      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
    }
 
    protected override void Update () {

@@ -24,8 +24,8 @@ namespace NubisTranslator {
                               "on (itmData like '%blueprintType=weapon%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 1) " +
                               "or (itmData like '%blueprintType=armor%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 2) " +
                               "or (itmData like '%blueprintType=hat%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 3) " +
-                              "left join arcane.equipment_weapon_xml_v3 on (itmData like '%blueprintType=weapon%' and itmType = arcane.equipment_weapon_xml_v3.equipmentTypeID) " +
-                              "left join arcane.equipment_armor_xml_v3  on (itmData like '%blueprintType=armor%' and  itmType = arcane.equipment_armor_xml_v3.equipmentTypeID) " +
+                              "left join arcane.equipment_weapon_xml_v3 on (itmData like '%blueprintType=weapon%' and itmType = arcane.equipment_weapon_xml_v3.xml_id) " +
+                              "left join arcane.equipment_armor_xml_v3  on (itmData like '%blueprintType=armor%' and  itmType = arcane.equipment_armor_xml_v3.xml_id) " +
                               "left join arcane.equipment_hat_xml_v1  on (itmData like '%blueprintType=hat%' and  itmType = arcane.equipment_hat_xml_v1.xml_id) " +
                               "where (itmCategory = 7 and itmId = @itmId) and items.usrId = @usrId";
                using (MySqlCommand command = new MySqlCommand(query,connection)) {

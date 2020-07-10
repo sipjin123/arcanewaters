@@ -233,6 +233,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1250778782417802
 GameObject:
@@ -861,6 +862,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1361910378954146
 GameObject:
@@ -1775,7 +1777,6 @@ MonoBehaviour:
   hairPalette1: 
   hairPalette2: 
   entityName: 
-  nationType: 0
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
@@ -1794,12 +1795,10 @@ MonoBehaviour:
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  classType: 0
-  specialty: 0
-  faction: 0
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
@@ -1831,6 +1830,10 @@ MonoBehaviour:
   - {fileID: 95927211109523790}
   - {fileID: 95100819043064392}
   - {fileID: 1560188136588726768}
+  jumpUpMagnitude: 1.2
+  jumpDownMagnitude: 1.5
+  jumpHeightMax: 0.1
+  spritesTransform: {fileID: 7280967387605188078}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2351,7 +2354,6 @@ MonoBehaviour:
   healthBarImage: {fileID: 114082898714157860}
   predictedDamageBarImage: {fileID: 0}
   reloadBarImage: {fileID: 114356364819862670}
-  factionIcon: {fileID: 0}
   barsContainer: {fileID: 1542939184715096}
   targetedIcon: {fileID: 0}
   enemyIcon: {fileID: 0}
@@ -7957,6 +7959,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &5221308735025842766
 GameObject:
@@ -8063,6 +8066,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &5326684929590338027
 GameObject:
@@ -8169,6 +8173,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &5351409806282604604
 GameObject:
@@ -8479,6 +8484,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &5534694074991757507
 GameObject:
@@ -8857,6 +8863,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &6741632826720720563
 GameObject:
@@ -9129,6 +9136,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &7735832618213197003
 GameObject:
@@ -9235,6 +9243,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &8232551664450980630
 GameObject:

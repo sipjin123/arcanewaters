@@ -19,7 +19,7 @@ namespace NubisTranslator {
                   "RIGHT JOIN crafting_xml_v2 " +
                   "ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=armor%' AND crafting_xml_v2.equipmentCategory = 2) "+
                   "RIGHT JOIN equipment_armor_xml_v3 " +
-                  "ON(itmType = equipment_armor_xml_v3.equipmentTypeID AND itmData LIKE '%blueprintType=armor%') " +
+                  "ON(itmType = equipment_armor_xml_v3.xml_id AND itmData LIKE '%blueprintType=armor%') " +
                   "WHERE(itmCategory = 7) AND items.usrId = @usrId",
                   connection)) {
 
