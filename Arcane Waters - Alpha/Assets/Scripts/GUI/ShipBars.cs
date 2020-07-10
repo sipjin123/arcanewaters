@@ -16,14 +16,8 @@ public class ShipBars : MonoBehaviour {
    // Our reload bar image
    public Image reloadBarImage;
 
-   // The guild icon
-   public GuildIcon guildIcon;
-
    // The container for our bars
    public GameObject barsContainer;
-
-   // And empty column used to correctly align icons in certain cases
-   public GameObject togglableSpacer;
    
    // The Image icon that shows when we're being targeted
    public Image targetedIcon;
@@ -37,21 +31,6 @@ public class ShipBars : MonoBehaviour {
    // An alternate sprite we use for the health bar background on non-player ships
    public Sprite barsBackgroundAlt;
 
-   // The character portrait
-   public CharacterPortrait portrait;
-
-   // The canvas group of the portrait
-   public CanvasGroup portraitCanvasGroup;
-
-   // The frame image of the character portrait
-   public Image portraitFrameImage;
-
-   // The frame used if the portrait is the local player's
-   public Sprite localPlayerFrame;
-
-   // The frame used if the portrait is not the local player's
-   public Sprite nonLocalPlayerFrame;
-
    #endregion
 
    void Awake () {
@@ -63,17 +42,13 @@ public class ShipBars : MonoBehaviour {
       barsContainer.SetActive(false);
    }
 
-   private void Start () {
+   protected virtual void Start () {
       if (_entity == null) {
          return;
       }
-
-      if (portrait != null) {
-         StartCoroutine(CO_InitializeUserInfo());
-      }
    }
 
-   void Update () {
+   protected virtual void Update () {
       if (_entity == null) {
          return;
       }
@@ -104,27 +79,7 @@ public class ShipBars : MonoBehaviour {
       }
 
       // Only show the ship info when the mouse is over the entity or its member cell in the group panel
-      bool showShipInfo = !_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
-
-      if (showShipInfo) {
-         guildIcon.show();
-      } else {
-         guildIcon.hide();
-      }
-
-      // Continue only for player ships
-      if (portrait == null) {
-         return;
-      }
-
-      if (showShipInfo) {
-         showCharacterPortrait();
-      } else {
-         hideCharacterPortrait();
-      }
-
-      // Enable the empty column to correctly align the character portrait when there is no guild icon
-      togglableSpacer.SetActive(!guildIcon.gameObject.activeSelf && !barsContainer.activeSelf);
+      _showShipInfo = !_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
 
       /*if (_entity.hasRecentCombat()) {
          _canvasGroup.alpha = 1f;
@@ -152,44 +107,6 @@ public class ShipBars : MonoBehaviour {
       }
    }
 
-   private IEnumerator CO_InitializeUserInfo () {
-      // Wait until the entity has been initialized
-      while (Util.isEmpty(_entity.entityName)) {
-         yield return null;
-      }
-
-      portrait.initialize(_entity);
-
-      // Set the portrait frame for local or non local entities
-      if (_entity.isLocalPlayer) {
-         portraitFrameImage.sprite = localPlayerFrame;
-      } else {
-         portraitFrameImage.sprite = nonLocalPlayerFrame;
-      }
-
-      if (_entity.guildId > 0) {
-         ShipEntity shipEntity = (ShipEntity) _entity;
-         guildIcon.setBorder(shipEntity.guildIconBorder);
-         guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalette1, shipEntity.guildIconBackPalette2);
-         guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalette1, shipEntity.guildIconSigilPalette2);
-      } else {
-         guildIcon.gameObject.SetActive(false);
-      }
-   }
-
-   private void showCharacterPortrait () {
-      if (portrait != null && portraitCanvasGroup.alpha < 1) {
-         portraitCanvasGroup.alpha = 1;
-         portrait.updateBackground(_entity);
-      }
-   }
-
-   private void hideCharacterPortrait () {
-      if (portrait != null && portraitCanvasGroup.alpha > 0) {
-         portraitCanvasGroup.alpha = 0;
-      }
-   }
-
    #region Private Variables
 
    // Our associated Sea Entity
@@ -197,6 +114,9 @@ public class ShipBars : MonoBehaviour {
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;
+
+   // Gets set to true when the identity of the ship (icons) must be displayed
+   protected bool _showShipInfo = false;
 
    #endregion
 }

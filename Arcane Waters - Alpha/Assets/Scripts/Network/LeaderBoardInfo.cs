@@ -31,6 +31,9 @@ public class LeaderBoardInfo
    // The score
    public int score;
 
+   // The info of the guild the user belongs to
+   public GuildInfo guildInfo;
+
    #endregion
 
    public LeaderBoardInfo () { }

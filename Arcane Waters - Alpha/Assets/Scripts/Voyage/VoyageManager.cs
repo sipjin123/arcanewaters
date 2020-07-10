@@ -504,8 +504,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Get the location of the starting spawn
-      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-      Vector2 startingSpawnLocalPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+      Vector2 startingSpawnLocalPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
 
       // Get the name of this computer
       string deviceName = SystemInfo.deviceName;
@@ -538,8 +537,7 @@ public class VoyageManager : MonoBehaviour {
       yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
 
       // Get the location of the starting spawn
-      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-      Vector2 startingSpawnLocalPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+      Vector2 startingSpawnLocalPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

@@ -10,6 +10,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
    #region Public Variables
 
+   // The guild ids for the bot ship guilds
+   public static int PRIVATEERS_GUILD_ID = 1;
+   public static int PIRATES_GUILD_ID = 2;
+
    // A custom max force that we can optionally specify
    public float maxForceOverride = 0f;
 

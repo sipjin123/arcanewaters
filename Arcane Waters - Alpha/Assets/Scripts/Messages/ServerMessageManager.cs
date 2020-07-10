@@ -278,8 +278,7 @@ public class ServerMessageManager : MonoBehaviour {
       Area area = AreaManager.self.getArea(Area.STARTING_TOWN);
 
       // Look up the Spawn position for the map associated with that area
-      SpawnID spawnID = new SpawnID(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-      userInfo.localPos = SpawnManager.self.getSpawnLocalPosition(spawnID);
+      userInfo.localPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
 
       // Make sure the name is available
       int existingUserId = -1;

@@ -23,6 +23,9 @@ namespace MapCustomization
       // Is prefab's state permanent
       public bool isPermanent;
 
+      // Type of item that corresponds to this prefab
+      public Prop.Type propType;
+
       // State of the prefab that is set in map editor
       public PrefabState mapEditorState;
 

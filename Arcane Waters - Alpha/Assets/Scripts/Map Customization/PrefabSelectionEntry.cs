@@ -10,6 +10,12 @@ namespace MapCustomization
       // Image that is showing the prefab's icon
       public Image iconImage;
 
+      // Canvas group of the whole entry
+      public CanvasGroup canvasGroup;
+
+      // Text that shows how much of the prefab is left
+      public Text countText;
+
       // Target prefab that this entry is referencing
       public PlaceablePrefabData target;
 
@@ -30,6 +36,13 @@ namespace MapCustomization
 
       public void setImage (Sprite sprite) {
          iconImage.sprite = sprite;
+      }
+
+      public void setCount (int count) {
+         countText.text = count.ToString();
+         canvasGroup.alpha = count > 0 ? 1f : 0.5f;
+         canvasGroup.interactable = count > 0;
+         canvasGroup.blocksRaycasts = count > 0;
       }
 
       public void onClick () {

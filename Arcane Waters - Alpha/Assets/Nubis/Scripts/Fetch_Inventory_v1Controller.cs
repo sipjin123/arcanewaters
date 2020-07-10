@@ -12,7 +12,11 @@ namespace NubisTranslator {
          bool hasItemFilter = category != 0;
          string itemFilterContent = "and (itmCategory = " + category+")";
          if (!hasItemFilter) {
-            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + " or itmCategory = " + (int) Item.Category.Armor + " or itmCategory = " + (int) Item.Category.Hats + " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
+            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + 
+               " or itmCategory = " + (int) Item.Category.Armor + 
+               " or itmCategory = " + (int) Item.Category.Hats + 
+               " or itmCategory = " + (int) Item.Category.CraftingIngredients + 
+               " or itmCategory = " + (int) Item.Category.Prop + ")";
          }
 
          string weaponFilter = "";
@@ -81,7 +85,11 @@ namespace NubisTranslator {
          bool hasItemFilter = categoryFilter != 0;
          string itemFilterContent = "and (itmCategory = " + categoryFilter + ")";
          if (!hasItemFilter) {
-            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + " or itmCategory = " + (int) Item.Category.Armor + " or itmCategory = " + (int) Item.Category.Hats + " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
+            itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon + 
+               " or itmCategory = " + (int) Item.Category.Armor + 
+               " or itmCategory = " + (int) Item.Category.Hats +
+               " or itmCategory = " + (int) Item.Category.CraftingIngredients +
+               " or itmCategory = " + (int) Item.Category.Prop + ")";
          }
 
          #if NUBIS

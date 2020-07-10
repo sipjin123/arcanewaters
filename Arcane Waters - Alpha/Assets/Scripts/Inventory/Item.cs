@@ -9,7 +9,7 @@ public class Item {
    #region Public Variables
 
    // The category of item this is
-   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9 }
+   public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6 , Blueprint  = 7, Currency = 8, Quest_Item = 9, Prop = 10 }
 
    // The category of item this is
    public Category category;
@@ -79,6 +79,8 @@ public class Item {
             return new Blueprint(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          case Category.Quest_Item:
             return new QuestItem(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+         case Category.Prop:
+            return new Prop(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;

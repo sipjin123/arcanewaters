@@ -156,12 +156,12 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       isEnabled = false;
    }
 
-   private void OnDisable () {
-      BattleUIManager.self.setDescriptionActiveState(false);
+   //private void OnDisable () {
+   //   BattleUIManager.self.setDescriptionActiveState(false);
 
-      // TODO - ZERONEV: Remove this debug tooltip event later
-      BattleUIManager.self.setDebugTooltipState(false);
-   }
+   //   // TODO - ZERONEV: Remove this debug tooltip event later
+   //   BattleUIManager.self.setDebugTooltipState(false);
+   //}
 
    public enum AbilityOrigin
    {

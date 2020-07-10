@@ -711,7 +711,7 @@ public class AdminManager : NetworkBehaviour
 
       // Get the default spawn for the destination area
       // TODO: better checking for if destination exists
-      Vector2 spawnLocalPos = SpawnManager.self.getDefaultSpawnLocalPosition(baseMapAreaKey ?? closestAreaKey);
+      Vector2 spawnLocalPos = SpawnManager.self.getDefaultLocalPosition(baseMapAreaKey ?? closestAreaKey);
 
       if (spawnLocalPos == Vector2.zero) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + closestAreaKey);
@@ -884,6 +884,7 @@ public class AdminManager : NetworkBehaviour
       int usableCount = 0;
       int ingredientsCount = 0;
       int blueprintCount = 0;
+      int propCount = 0;
 
       // Go to the background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -926,6 +927,15 @@ public class AdminManager : NetworkBehaviour
             }
          }
 
+         // Create all map customization props
+         foreach (Prop.Type type in Enum.GetValues(typeof(Prop.Type))) {
+            if (type != Prop.Type.None) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Prop, (int) type, count)) {
+                  propCount++;
+               }
+            }
+         }
+
          // Create all the armors
          foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
             if (armorData.armorType != 0) {
@@ -956,8 +966,8 @@ public class AdminManager : NetworkBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation back to the player who issued the command
-            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients, {4} hats and {5} blueprints to the inventory.",
-               weaponsCount, armorCount, usableCount, ingredientsCount, hatCount, blueprintCount);
+            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients, {4} hats, {5} blueprints and {6} props to the inventory.",
+               weaponsCount, armorCount, usableCount, ingredientsCount, hatCount, blueprintCount, propCount);
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });

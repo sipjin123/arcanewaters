@@ -728,9 +728,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
                } else {
                   // The user might be offline, in which case we need to modify their position in the DB
-                  Spawn spawn = SpawnManager.self.getSpawn(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+                  Vector2 pos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
                   UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.setNewLocalPosition(userId, spawn.transform.localPosition, Direction.North, spawn.AreaKey);
+                     DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
                   });
                }
             }

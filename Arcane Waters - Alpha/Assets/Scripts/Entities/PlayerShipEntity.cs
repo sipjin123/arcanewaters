@@ -45,6 +45,24 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public string hatColor2;
 
+   // The guild icon layers
+   [SyncVar]
+   public string guildIconBorder;
+   [SyncVar]
+   public string guildIconBackground;
+   [SyncVar]
+   public string guildIconSigil;
+
+   // The guild icon colors
+   [SyncVar]
+   public string guildIconBackPalette1;
+   [SyncVar]
+   public string guildIconBackPalette2;
+   [SyncVar]
+   public string guildIconSigilPalette1;
+   [SyncVar]
+   public string guildIconSigilPalette2;
+
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffect;
    public Canvas speedupGUI;

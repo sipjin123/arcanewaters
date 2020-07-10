@@ -11,22 +11,23 @@ public class LeaderBoardRow : MonoBehaviour
    // The rank of the user
    public Text rankText;
 
-   // The faction icon
-   public Image factionIcon;
-
    // The name of the user
    public Text userName;
 
    // The score of the user
    public Text score;
 
+   // The user's guild icon
+   public GuildIcon guildIcon;
+
    #endregion
 
    public void setRowForLeaderBoard (LeaderBoardInfo entry) {
       rankText.text = entry.userRank.ToString() + ".";
-      factionIcon.sprite = null;
       userName.text = entry.userName;
       score.text = entry.score.ToString();
+
+      guildIcon.initialize(entry.guildInfo);
    }
 
    #region Private Variables

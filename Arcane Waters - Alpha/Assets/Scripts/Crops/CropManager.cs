@@ -112,7 +112,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
-         DB_Main.addJobXP(userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
+         DB_Main.addJobXP(userId, Jobs.Type.Farmer, xp);
          Jobs newJobXP = DB_Main.getJobXP(userId);
 
          // Back to the Unity thread
@@ -168,7 +168,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToWater.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -225,7 +225,7 @@ public class CropManager : NetworkBehaviour {
 
          // Add the farming XP
          int xp = Crop.getXP(cropToHarvest.cropType);
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, Perk.Category.CropGrowthSpeed, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Farmer, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread
@@ -319,7 +319,7 @@ public class CropManager : NetworkBehaviour {
             // Add experience
             int baseXP = Crop.getXP(offer.cropType) * amountToSell;
             int totalXP = (int) (baseXP * xpModifier);
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, Perk.Category.CropGrowthSpeed, totalXP);
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Trader, totalXP);
             Jobs jobs = DB_Main.getJobXP(_player.userId);
             _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
 

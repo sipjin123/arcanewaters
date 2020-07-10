@@ -41,31 +41,14 @@ public class LeaderBoardsPanel : Panel
    public Button weekTabButton;
    public Button monthTabButton;
 
-   // The faction icon
-   public Image factionIcon;
-
-   // The faction text
-   public Text factionText;
-
    #endregion
 
    public override void Awake () {
       base.Awake();
-
       self = this;
-
-      // Initialize the faction filter
-      _factionList = new List<Perk.Category>();
-      foreach (Perk.Category faction in Enum.GetValues(typeof(Perk.Category))) {
-         _factionList.Add(faction);
-      }
-      _selectedFactionIndex = 0;
-
-      // Initialize the selected period
-      _selectedPeriod = DEFAULT_PERIOD;
    }
 
-   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period, Perk.Category boardPerkCategory,
+   public void updatePanelWithLeaderBoardEntries(LeaderBoardsManager.Period period,
       double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries, LeaderBoardInfo[] sailingEntries,
       LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries, LeaderBoardInfo[] craftingEntries,
       LeaderBoardInfo[] miningEntries) {
@@ -133,68 +116,21 @@ public class LeaderBoardsPanel : Panel
          default:
             break;
       }
-
-      // Select the correct faction
-      _selectedFactionIndex = _factionList.IndexOf(boardPerkCategory);
-      refreshFactionFilterDisplay();
    }
 
    public void onDayPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Day;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod);
    }
 
    public void onWeekPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Week;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod);
    }
 
    public void onMonthPeriodTabButtonPress () {
       _selectedPeriod = LeaderBoardsManager.Period.Month;
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
-   }
-
-   public void onFactionFilterLeftButtonPress () {
-      _selectedFactionIndex--;
-      if (_selectedFactionIndex < 0) {
-         _selectedFactionIndex = _factionList.Count - 1;
-      }
-
-      // Update the displayed selected faction
-      refreshFactionFilterDisplay();
-
-      // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
-   }
-
-   public void onFactionFilterRightButtonPress () {
-      _selectedFactionIndex++;
-      if (_selectedFactionIndex >= _factionList.Count) {
-         _selectedFactionIndex = 0;
-      }
-
-      // Update the displayed selected faction
-      refreshFactionFilterDisplay();
-
-      // Request the entries from the server
-      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod, getSelectedPerkCategory());
-   }
-
-   private void refreshFactionFilterDisplay () {
-      // Retrieve the correct faction icon
-      factionIcon.sprite = null;
-      D.debug("Perk icon is missing");
-
-      // Set the faction name text
-      if (_factionList[_selectedFactionIndex] == Perk.Category.None) {
-         factionText.text = "All factions";
-      } else {
-         factionText.text = Perk.getCategoryDisplayName(_factionList[_selectedFactionIndex]);
-      }
-   }
-
-   private Perk.Category getSelectedPerkCategory () {
-      return _factionList[_selectedFactionIndex];
+      Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(_selectedPeriod);
    }
 
    private void updateBoardWithEntries (GameObject rowsContainer, LeaderBoardInfo[] entries) {
@@ -211,14 +147,8 @@ public class LeaderBoardsPanel : Panel
 
    #region Private Variables
 
-   // The list of factions filters
-   private List<Perk.Category> _factionList;
-
-   // The index of the currently selected faction
-   private int _selectedFactionIndex;
-
    // The currently selected period
-   private LeaderBoardsManager.Period _selectedPeriod;
+   private LeaderBoardsManager.Period _selectedPeriod = DEFAULT_PERIOD;
 
    #endregion
 }

@@ -178,6 +178,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactionCollider: {fileID: 8378456550316045120}
   size: {x: 2, y: 2}
+  editorType: 0
+  isPermanent: 0
+  propType: 3
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

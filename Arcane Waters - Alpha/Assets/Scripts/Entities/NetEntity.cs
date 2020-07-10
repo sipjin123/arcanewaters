@@ -1047,12 +1047,12 @@ public class NetEntity : NetworkBehaviour
          string baseMapKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(owner));
 
          targetLocalPos = spawn == null
-            ? SpawnManager.self.getDefaultSpawnLocalPosition(baseMapKey)
-            : SpawnManager.self.getSpawnLocalPosition(new SpawnID(baseMapKey, spawn));
+            ? SpawnManager.self.getDefaultLocalPosition(baseMapKey)
+            : SpawnManager.self.getLocalPosition(baseMapKey, spawn);
       } else {
          targetLocalPos = spawn == null
-            ? SpawnManager.self.getDefaultSpawnLocalPosition(newArea)
-            : SpawnManager.self.getSpawnLocalPosition(new SpawnID(newArea, spawn));
+            ? SpawnManager.self.getDefaultLocalPosition(newArea)
+            : SpawnManager.self.getLocalPosition(newArea, spawn);
       }
 
       spawnInNewMap(newArea, targetLocalPos, newFacingDirection);
@@ -1075,7 +1075,7 @@ public class NetEntity : NetworkBehaviour
       Server voyageServer = ServerNetwork.self.getServerHostingVoyage(voyageId);
 
       // Get the default spawn of the area
-      Vector2 spawnLocalPosition = SpawnManager.self.getDefaultSpawnLocalPosition(newArea);
+      Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(newArea);
 
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(voyageServer, newArea, spawnLocalPosition, newFacingDirection);

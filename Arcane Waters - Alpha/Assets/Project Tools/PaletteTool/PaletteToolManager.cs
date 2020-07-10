@@ -174,8 +174,8 @@ public class PaletteToolManager : XmlDataToolManager {
       "Assets/Sprites/Bodies",
       "Assets/Sprites/NPCs",
       "Assets/Sprites/Ships",
-      "Assets/Sprites/GUI/Guild/Backgrounds",
-      "Assets/Sprites/GUI/Guild/Sigils",
+      "Assets/Sprites/GUI/Guild/Icons/Backgrounds",
+      "Assets/Sprites/GUI/Guild/Icons/Sigils",
       "",
    };
 

@@ -366,6 +366,8 @@ MonoBehaviour:
   interactionCollider: {fileID: 4922505460294243373}
   size: {x: 4, y: 6}
   editorType: 0
+  isPermanent: 0
+  propType: 1
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

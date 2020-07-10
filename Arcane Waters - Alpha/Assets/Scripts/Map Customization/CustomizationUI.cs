@@ -106,11 +106,23 @@ namespace MapCustomization
          foreach (PrefabSelectionEntry entry in self.prefabSelectEntryParent.GetComponentsInChildren<PrefabSelectionEntry>(true)) {
             Destroy(entry.gameObject);
          }
+         _prefabEntries.Clear();
 
          foreach (PlaceablePrefabData data in dataCollection) {
             PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
             entry.target = data;
             entry.setImage(data.displaySprite);
+            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, data.prefab.propType);
+            entry.setCount(count);
+            _prefabEntries.Add(entry);
+         }
+      }
+
+      public static void updatePropCount (Prop.Type type, int count) {
+         foreach (PrefabSelectionEntry entry in _prefabEntries) {
+            if (entry.target.prefab.propType == type) {
+               entry.setCount(count);
+            }
          }
       }
 
@@ -121,6 +133,9 @@ namespace MapCustomization
 
       // Last pointer position, cached by this component
       private Vector2 _lastPointerPos;
+
+      // Entries of prefabs that can be selected and placed
+      private static List<PrefabSelectionEntry> _prefabEntries = new List<PrefabSelectionEntry>();
 
       #endregion
    }

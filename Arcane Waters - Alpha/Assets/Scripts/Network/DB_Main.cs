@@ -4914,34 +4914,23 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void decreaseQuantityOrDeleteItem (int userId, int itemId, int deductedValue) {
-      int currentCount = 0;
+      // First query deletes the entry which has only 1 of item left
+      // Second query decreases the count by deductedValue if the item wasn't deleted (had more than deductedValue left)
+      string cmdText = "DELETE FROM items WHERE usrId=@usrId AND itmId=@itmId AND itmCount<=@deductBy; " +
+         "UPDATE items SET itmCount = itmCount - @deductBy WHERE usrId=@usrId AND itmId=@itmId;";
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM items WHERE usrId=@usrId and itmId=@itmId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmId", itemId);
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  currentCount = dataReader.GetInt32("itmCount");
-               }
-            }
+            cmd.Parameters.AddWithValue("@deductBy", deductedValue);
+
+            cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
-      }
-
-      // Computes the item count after reducing the require item count
-      int computedValue = currentCount - deductedValue;
-
-      if (computedValue <= 0) {
-         // Deletes item from the database if count hits zero
-         deleteItem(userId, itemId);
-      } else {
-         // Updates item count
-         updateItemQuantity(userId, itemId, computedValue);
       }
    }
 
@@ -5780,39 +5769,26 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void addJobXP (int userId, Jobs.Type jobType, Perk.Category perkCategory, int XP) {
+   public static new void addJobXP (int userId, Jobs.Type jobType, int XP) {
       string columnName = Jobs.getColumnName(jobType);
+
+      // Update the jobs xp for the user
+      string query = "UPDATE jobs SET " + columnName + " = " + columnName + " + @XP WHERE usrId=@usrId; ";
+
+      // Log the xp gain in the history table
+      query += "INSERT INTO job_history (usrId, jobType, metric, jobTime)" +
+            "VALUES (@usrId, @jobType, @XP, @jobTime);";
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE jobs SET " + columnName + " = " + columnName + " + @XP WHERE usrId=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@XP", XP);
 
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      // Log the xp gain in the history table
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO job_history (usrId, jobType, faction, metric, jobTime)" +
-            "VALUES (@usrId, @jobType, @faction, @metric, @jobTime)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
-            cmd.Parameters.AddWithValue("@faction", (int) perkCategory);
-            cmd.Parameters.AddWithValue("@metric", XP);
             cmd.Parameters.AddWithValue("@jobTime", DateTime.UtcNow);
 
             // Execute the command
@@ -5974,7 +5950,7 @@ public class DB_Main : DB_MainStub
 
    #region Leader Boards
 
-   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType, Perk.Category boardPerkCategory,
+   public static new List<LeaderBoardInfo> calculateLeaderBoard (Jobs.Type jobType,
       LeaderBoardsManager.Period period, DateTime startDate, DateTime endDate) {
 
       List<LeaderBoardInfo> list = new List<LeaderBoardInfo>();
@@ -5983,7 +5959,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT usrId, SUM(metric) AS totalMetric FROM job_history " +
-            "WHERE jobType = @jobType AND faction = CASE WHEN @faction = 0 THEN faction ELSE @faction END " +
+            "WHERE jobType = @jobType " +
             "AND jobTime > @startDate AND jobTime <= @endDate " +
             "GROUP BY usrId ORDER BY totalMetric DESC, jobTime DESC LIMIT 10", conn)) {
             conn.Open();
@@ -5991,7 +5967,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@endDate", endDate);
-            cmd.Parameters.AddWithValue("@faction", 0);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6118,7 +6093,7 @@ public class DB_Main : DB_MainStub
       return periodEndDate;
    }
 
-   public static new void getLeaderBoards (LeaderBoardsManager.Period period, Perk.Category boardFaction,
+   public static new void getLeaderBoards (LeaderBoardsManager.Period period,
       out List<LeaderBoardInfo> farmingEntries, out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries,
       out List<LeaderBoardInfo> tradingEntries, out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
 
@@ -6133,17 +6108,18 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM leader_boards JOIN users USING (usrID) " +
-            "WHERE leader_boards.period=@period AND leader_boards.boardFaction=@boardFaction " +
+            "LEFT JOIN guilds ON users.gldId = guilds.gldId " +
+            "WHERE leader_boards.period=@period " +
             "ORDER BY leader_boards.jobType, leader_boards.userRank", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@period", (int) period);
-            cmd.Parameters.AddWithValue("@boardFaction", (int) boardFaction);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   LeaderBoardInfo entry = new LeaderBoardInfo(dataReader);
+                  entry.guildInfo = new GuildInfo(dataReader);
 
                   // Place the entry in its corresponding list
                   switch (entry.jobType) {

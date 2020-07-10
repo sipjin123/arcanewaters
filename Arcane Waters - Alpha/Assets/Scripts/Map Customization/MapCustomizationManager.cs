@@ -33,6 +33,9 @@ namespace MapCustomization
       // Owner userId of the current area
       public static int areaOwnerId { get; private set; }
 
+      // Remaining props for the user to place
+      public static Item[] remainingProps { get; private set; }
+
       [Space(5), Tooltip("Color for outline that is used when prefab isnt selected but is ready for input")]
       public Color prefabReadyColor;
 
@@ -56,9 +59,11 @@ namespace MapCustomization
       private void Update () {
          if (Global.player == null) return;
 
-         // Have customization open when player is in customizable map and has appropriate tool equipped
-         bool shouldBeCustomizing = CustomMapManager.isUserSpecificAreaKey(Global.player.areaKey) &&
-            (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap &&
+         // Check if player should be customizing
+         bool shouldBeCustomizing = AreaManager.self.tryGetCustomMapManager(Global.player.areaKey, out CustomMapManager cmm) && // Check that this is a customizable area
+            AreaManager.self.getArea(Global.player.areaKey) != null && // Check that the area is already created
+            (currentArea == null || currentArea.areaKey == Global.player.areaKey) && // Check that the area hasn't changed to a different customizable area
+            (Global.player as PlayerBodyEntity).weaponManager.actionType == Weapon.ActionType.CustomizeMap && // Check that customization action weapon is equipped
             (Global.player as PlayerBodyEntity).weaponManager.weaponType > 0;
 
          if (!isCustomizing && shouldBeCustomizing) {
@@ -106,11 +111,10 @@ namespace MapCustomization
       private static IEnumerator enterCustomizationRoutine () {
          // Fetch customization data that is saved for this map
          _waitingServerResponse = true;
-         Global.player.rpc.Cmd_RequestEnterMapCustomization(Global.player.userId, currentArea.areaKey);
+         Global.player.rpc.Cmd_RequestEnterMapCustomization(currentArea.areaKey);
 
-         // Gather data about prefabs that can be placed by the user and set it in the UI
+         // Gather data about prefabs that can be placed by the user
          updatePlaceablePrefabData();
-         CustomizationUI.setPlaceablePrefabData(_placeablePrefabData);
          yield return new WaitForEndOfFrame();
 
          // Gather prefabs from the scene that can be customized
@@ -121,6 +125,8 @@ namespace MapCustomization
 
          yield return new WaitWhile(() => _waitingServerResponse);
 
+         CustomizationUI.setPlaceablePrefabData(_placeablePrefabData);
+
          // Enable prefab outlines
          updatePrefabOutlines(null);
 
@@ -128,7 +134,7 @@ namespace MapCustomization
       }
 
       public static void exitCustomization () {
-         Global.player.rpc.Cmd_ExitMapCustomization(Global.player.userId, currentArea.areaKey);
+         Global.player.rpc.Cmd_ExitMapCustomization(currentArea.areaKey);
 
          currentArea = null;
          _selectedPrefab = null;
@@ -153,7 +159,7 @@ namespace MapCustomization
          }
 
          if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
+            if (validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
                _selectedPrefab.submitUnappliedChanges();
             } else {
@@ -229,8 +235,21 @@ namespace MapCustomization
                _newPrefab.setGameInteractionsActive(true);
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
 
-               if (validatePrefabChanges(currentArea, _newPrefab.unappliedChanges, false, out string errorMessage)) {
+               if (validatePrefabChanges(currentArea, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
+
+                  // Decrease remaining prop item that corresponds to this prefab
+                  foreach (Item item in remainingProps) {
+                     if (item.itemTypeId == (int) _newPrefab.propType) {
+                        item.count--;
+                        CustomizationUI.updatePropCount(_newPrefab.propType, item.count);
+                        if (item.count <= 0) {
+                           CustomizationUI.selectEntry(null);
+                        }
+                        break;
+                     }
+                  }
+
                   _newPrefab.submitUnappliedChanges();
                } else {
                   _newPrefab.revertUnappliedChanges();
@@ -250,7 +269,7 @@ namespace MapCustomization
          if (_selectedPrefab == null) return;
 
          if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
+            if (validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
                _selectedPrefab.submitUnappliedChanges();
             } else {
@@ -293,7 +312,7 @@ namespace MapCustomization
 
          foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
             if (prefab == _selectedPrefab) {
-               bool valid = validatePrefabChanges(currentArea, _selectedPrefab.unappliedChanges, false, out string errorMessage);
+               bool valid = validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage);
                prefab.setOutline(true, prefab == hoveredPrefab, true, valid);
             } else {
                prefab.setOutline(true, prefab == hoveredPrefab, false, false);
@@ -301,7 +320,7 @@ namespace MapCustomization
          }
 
          if (_newPrefab != null) {
-            bool valid = validatePrefabChanges(currentArea, _newPrefab.unappliedChanges, false, out string errorMessage);
+            bool valid = validatePrefabChanges(currentArea, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage);
             _newPrefab.setOutline(true, true, true, valid);
          }
       }
@@ -335,7 +354,8 @@ namespace MapCustomization
          }
       }
 
-      public static void serverAllowedEnterCustomization () {
+      public static void serverAllowedEnterCustomization (Item[] remainingProps) {
+         MapCustomizationManager.remainingProps = remainingProps;
          _waitingServerResponse = false;
       }
 
@@ -345,8 +365,7 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (Area area, PrefabState changes, bool isServer, out string errorMessage) {
-         // Check if prefab is not too close to a player
+      public static bool validatePrefabChanges (Area area, Item[] remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
          if (changes.isLocalPositionSet()) {
             int? prefabSerializationId = changes.created
                ? changes.serializationId
@@ -366,6 +385,7 @@ namespace MapCustomization
                return false;
             }
 
+            // Check if prefab is not too close to a player
             float minDist = isServer ? MIN_PREFAB_DISTANCE_FROM_PLAYER_SERVER : MIN_PREFAB_DISTANCE_FROM_PLAYER_CLIENT;
 
             bool overlapsAny = EntityManager.self.getAllEntities()
@@ -376,10 +396,30 @@ namespace MapCustomization
                errorMessage = "Object is too close to a player";
                return false;
             }
+
+            // Check that the player has enough of prop remaining
+            if (changes.created) {
+               if (amountOfPropLeft(remainingItems, prefab.propType) <= 0) {
+                  errorMessage = "Not enough of items for this object";
+                  return false;
+               }
+            }
          }
 
          errorMessage = null;
          return true;
+      }
+
+      public static int amountOfPropLeft (Item[] items, Prop.Type type) {
+         if (items == null) return 0;
+
+         foreach (Item item in items) {
+            if (item.itemTypeId == (int) type) {
+               return item.count;
+            }
+         }
+
+         return 0;
       }
 
       public static CustomizablePrefab getPrefab (Area area, int prefabId) {
@@ -431,6 +471,13 @@ namespace MapCustomization
          if (_customizablePrefabs.TryGetValue(changes.id, out CustomizablePrefab changedPrefab)) {
             // If we were trying to create a new prefab, delete it
             if (changes.created) {
+               // Read this prefab to remaining prop items
+               foreach (Item item in remainingProps) {
+                  if (item.itemTypeId == (int) changedPrefab.propType) {
+                     item.count++;
+                  }
+               }
+
                removeTracked(changedPrefab);
                Destroy(changedPrefab.gameObject);
             } else if (_serverApprovedState.TryGetValue(changes.id, out PrefabState approvedState)) {

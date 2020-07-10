@@ -8,10 +8,15 @@ public class GuildIcon : MonoBehaviour
    #region Public Variables
 
    // The directories for the layer sprites
-   public static string BORDER_PATH = "Assets/Sprites/GUI/Guild/Borders/";
-   public static string MASK_PATH = "Assets/Sprites/GUI/Guild/Masks/";
-   public static string BACKGROUND_PATH = "Assets/Sprites/GUI/Guild/Backgrounds/";
-   public static string SIGIL_PATH = "Assets/Sprites/GUI/Guild/Sigils/";
+   public static string BORDER_PATH = "Assets/Sprites/GUI/Guild/Icons/Borders/";
+   public static string MASK_PATH = "Assets/Sprites/GUI/Guild/Icons/Masks/";
+   public static string BACKGROUND_PATH = "Assets/Sprites/GUI/Guild/Icons/Backgrounds/";
+   public static string SIGIL_PATH = "Assets/Sprites/GUI/Guild/Icons/Sigils/";
+
+   public static string BORDER_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Borders/";
+   public static string MASK_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Masks/";
+   public static string BACKGROUND_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Backgrounds/";
+   public static string SIGIL_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Sigils/";
 
    // The icon layer images
    public Image border;
@@ -26,6 +31,9 @@ public class GuildIcon : MonoBehaviour
    // Our canvas group
    public CanvasGroup canvasGroup;
 
+   // The tooltip displayed when hovering the icon
+   public Tooltipped tooltip;
+
    #endregion
 
    public void Awake () {
@@ -34,13 +42,25 @@ public class GuildIcon : MonoBehaviour
       sigilRecolored.setNewMaterial(MaterialManager.self.getGUIMaterial());
    }
 
+   public void initialize(GuildInfo guildInfo) {
+      if (guildInfo != null && guildInfo.guildId > 0) {
+         show();
+         tooltip.text = guildInfo.guildName;
+         setBorder(guildInfo.iconBorder);
+         setBackground(guildInfo.iconBackground, guildInfo.iconBackPalette1, guildInfo.iconBackPalette2);
+         setSigil(guildInfo.iconSigil, guildInfo.iconSigilPalette1, guildInfo.iconSigilPalette2);
+      } else {
+         hide();
+      }
+   }
+
    public void setBorder (string borderName) {
-      border.sprite = ImageManager.getSprite(BORDER_PATH + borderName);
-      mask.sprite = ImageManager.getSprite(MASK_PATH + borderName + "_mask");
+      border.sprite = getBorderSprite(borderName);
+      mask.sprite = getMaskSprite(borderName);
    }
 
    public void setBackground (string backgroundName, string palette1, string palette2) {
-      background.sprite = ImageManager.getSprite(BACKGROUND_PATH + backgroundName);
+      background.sprite = getBackgroundSprite(backgroundName);
       backgroundRecolored.recolor(palette1, palette2);
 
       // The mask applied to the image uses a copy of the material to draw
@@ -50,7 +70,7 @@ public class GuildIcon : MonoBehaviour
    }
 
    public void setSigil (string sigilName, string palette1, string palette2) {
-      sigil.sprite = ImageManager.getSprite(SIGIL_PATH + sigilName);
+      sigil.sprite = getSigilSprite(sigilName);
       sigilRecolored.recolor(palette1, palette2);
 
       // The mask applied to the image uses a copy of the material to draw
@@ -61,14 +81,30 @@ public class GuildIcon : MonoBehaviour
 
    public void show () {
       if (canvasGroup.alpha < 1f) {
-         canvasGroup.alpha = 1f;
+         canvasGroup.Show();
       }
    }
 
    public void hide () {
       if (canvasGroup.alpha > 0f) {
-         canvasGroup.alpha = 0f;
+         canvasGroup.Hide();
       }
+   }
+
+   protected virtual Sprite getBorderSprite (string borderName) {
+      return ImageManager.getSprite(BORDER_PATH + borderName);
+   }
+
+   protected virtual Sprite getMaskSprite (string borderName) {
+      return ImageManager.getSprite(MASK_PATH + borderName + "_mask");
+   }
+
+   protected virtual Sprite getBackgroundSprite (string backgroundName) {
+      return background.sprite = ImageManager.getSprite(BACKGROUND_PATH + backgroundName);
+   }
+
+   protected virtual Sprite getSigilSprite (string sigilName) {
+      return ImageManager.getSprite(SIGIL_PATH + sigilName);
    }
 
    #region Private Variables

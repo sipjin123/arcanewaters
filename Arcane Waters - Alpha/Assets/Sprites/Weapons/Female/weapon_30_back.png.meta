@@ -1,313 +1,313 @@
 fileFormatVersion: 2
-guid: 219079279e0b4e0419f0c114e38ec334
+guid: 4f52a866addaa2d41985d0075e52e1bd
 TextureImporter:
   internalIDToNameTable:
   - first:
       213: 21300000
-    second: Sword_2_Front_0
+    second: Gun_3_Back_0
   - first:
       213: 21300002
-    second: Sword_2_Front_1
+    second: Gun_3_Back_1
   - first:
       213: 21300004
-    second: Sword_2_Front_2
+    second: Gun_3_Back_2
   - first:
       213: 21300006
-    second: Sword_2_Front_3
+    second: Gun_3_Back_3
   - first:
       213: 21300008
-    second: Sword_2_Front_4
+    second: Gun_3_Back_4
   - first:
       213: 21300010
-    second: Sword_2_Front_5
+    second: Gun_3_Back_5
   - first:
       213: 21300012
-    second: Sword_2_Front_6
+    second: Gun_3_Back_6
   - first:
       213: 21300014
-    second: Sword_2_Front_7
+    second: Gun_3_Back_7
   - first:
       213: 21300016
-    second: Sword_2_Front_8
+    second: Gun_3_Back_8
   - first:
       213: 21300018
-    second: Sword_2_Front_9
+    second: Gun_3_Back_9
   - first:
       213: 21300020
-    second: Sword_2_Front_10
+    second: Gun_3_Back_10
   - first:
       213: 21300022
-    second: Sword_2_Front_11
+    second: Gun_3_Back_11
   - first:
       213: 21300024
-    second: Sword_2_Front_12
+    second: Gun_3_Back_12
   - first:
       213: 21300026
-    second: Sword_2_Front_13
+    second: Gun_3_Back_13
   - first:
       213: 21300028
-    second: Sword_2_Front_14
+    second: Gun_3_Back_14
   - first:
       213: 21300030
-    second: Sword_2_Front_15
+    second: Gun_3_Back_15
   - first:
       213: 21300032
-    second: Sword_2_Front_16
+    second: Gun_3_Back_16
   - first:
       213: 21300034
-    second: Sword_2_Front_17
+    second: Gun_3_Back_17
   - first:
       213: 21300036
-    second: Sword_2_Front_18
+    second: Gun_3_Back_18
   - first:
       213: 21300038
-    second: Sword_2_Front_19
+    second: Gun_3_Back_19
   - first:
       213: 21300040
-    second: Sword_2_Front_20
+    second: Gun_3_Back_20
   - first:
       213: 21300042
-    second: Sword_2_Front_21
+    second: Gun_3_Back_21
   - first:
       213: 21300044
-    second: Sword_2_Front_22
+    second: Gun_3_Back_22
   - first:
       213: 21300046
-    second: Sword_2_Front_23
+    second: Gun_3_Back_23
   - first:
       213: 21300048
-    second: Sword_2_Front_24
+    second: Gun_3_Back_24
   - first:
       213: 21300050
-    second: Sword_2_Front_25
+    second: Gun_3_Back_25
   - first:
       213: 21300052
-    second: Sword_2_Front_26
+    second: Gun_3_Back_26
   - first:
       213: 21300054
-    second: Sword_2_Front_27
+    second: Gun_3_Back_27
   - first:
       213: 21300056
-    second: Sword_2_Front_28
+    second: Gun_3_Back_28
   - first:
       213: 21300058
-    second: Sword_2_Front_29
+    second: Gun_3_Back_29
   - first:
       213: 21300060
-    second: Sword_2_Front_30
+    second: Gun_3_Back_30
   - first:
       213: 21300062
-    second: Sword_2_Front_31
+    second: Gun_3_Back_31
   - first:
       213: 21300064
-    second: Sword_2_Front_32
+    second: Gun_3_Back_32
   - first:
       213: 21300066
-    second: Sword_2_Front_33
+    second: Gun_3_Back_33
   - first:
       213: 21300068
-    second: Sword_2_Front_34
+    second: Gun_3_Back_34
   - first:
       213: 21300070
-    second: Sword_2_Front_35
+    second: Gun_3_Back_35
   - first:
       213: 21300072
-    second: Sword_2_Front_36
+    second: Gun_3_Back_36
   - first:
       213: 21300074
-    second: Sword_2_Front_37
+    second: Gun_3_Back_37
   - first:
       213: 21300076
-    second: Sword_2_Front_38
+    second: Gun_3_Back_38
   - first:
       213: 21300078
-    second: Sword_2_Front_39
+    second: Gun_3_Back_39
   - first:
       213: 21300080
-    second: Sword_2_Front_40
+    second: Gun_3_Back_40
   - first:
       213: 21300082
-    second: Sword_2_Front_41
+    second: Gun_3_Back_41
   - first:
       213: 21300084
-    second: Sword_2_Front_42
+    second: Gun_3_Back_42
   - first:
       213: 21300086
-    second: Sword_2_Front_43
+    second: Gun_3_Back_43
   - first:
       213: 21300088
-    second: Sword_2_Front_44
+    second: Gun_3_Back_44
   - first:
       213: 21300090
-    second: Sword_2_Front_45
+    second: Gun_3_Back_45
   - first:
       213: 21300092
-    second: Sword_2_Front_46
+    second: Gun_3_Back_46
   - first:
       213: 21300094
-    second: Sword_2_Front_47
+    second: Gun_3_Back_47
   - first:
-      213: -662041104979370938
-    second: weapon_20_back_0
+      213: 7442833010287266351
+    second: weapon_22_back_0
   - first:
-      213: -4647238106942971013
-    second: weapon_20_back_1
+      213: -3672231118222159600
+    second: weapon_22_back_1
   - first:
-      213: -5911415256522509225
-    second: weapon_20_back_2
+      213: 147959870072340535
+    second: weapon_22_back_2
   - first:
-      213: 4192444565312716740
-    second: weapon_20_back_3
+      213: 5757350325924561728
+    second: weapon_22_back_3
   - first:
-      213: -2721757483213334329
-    second: weapon_20_back_4
+      213: 6676627875280993730
+    second: weapon_22_back_4
   - first:
-      213: 8929389390679081274
-    second: weapon_20_back_5
+      213: 729634084626222342
+    second: weapon_22_back_5
   - first:
-      213: -6774723798025840629
-    second: weapon_20_back_6
+      213: -8170978395692760968
+    second: weapon_22_back_6
   - first:
-      213: -9149344364957372619
-    second: weapon_20_back_7
+      213: 6199157685805404392
+    second: weapon_22_back_7
   - first:
-      213: 2499184980363626242
-    second: weapon_20_back_8
+      213: 2129799269460910038
+    second: weapon_22_back_8
   - first:
-      213: 8470866592280029512
-    second: weapon_20_back_9
+      213: -2923064471626875931
+    second: weapon_22_back_9
   - first:
-      213: -8103815588979946401
-    second: weapon_20_back_10
+      213: 8910251447595357571
+    second: weapon_22_back_10
   - first:
-      213: -4794456303396953190
-    second: weapon_20_back_11
+      213: 857176979490406126
+    second: weapon_22_back_11
   - first:
-      213: 3448144709428241560
-    second: weapon_20_back_12
+      213: -3874624645105017945
+    second: weapon_22_back_12
   - first:
-      213: -4501964878633830117
-    second: weapon_20_back_13
+      213: 2680780595708002186
+    second: weapon_22_back_13
   - first:
-      213: 1025081163403597354
-    second: weapon_20_back_14
+      213: -2494914910073009941
+    second: weapon_22_back_14
   - first:
-      213: -8180944714991661769
-    second: weapon_20_back_15
+      213: 5991620681867923745
+    second: weapon_22_back_15
   - first:
-      213: -5996960062275772121
-    second: weapon_20_back_16
+      213: 8251230247289724541
+    second: weapon_22_back_16
   - first:
-      213: 4433555063227828650
-    second: weapon_20_back_17
+      213: -181510861053796056
+    second: weapon_22_back_17
   - first:
-      213: 8567746816034625374
-    second: weapon_20_back_18
+      213: 8617185644354079219
+    second: weapon_22_back_18
   - first:
-      213: 1850756490548108061
-    second: weapon_20_back_19
+      213: 4765095228022231125
+    second: weapon_22_back_19
   - first:
-      213: 4988433515380656126
-    second: weapon_20_back_20
+      213: 981945826163022883
+    second: weapon_22_back_20
   - first:
-      213: 8278098288723346363
-    second: weapon_20_back_21
+      213: -3385264394249983904
+    second: weapon_22_back_21
   - first:
-      213: 7992050196402211052
-    second: weapon_20_back_22
+      213: 4076432253762335182
+    second: weapon_22_back_22
   - first:
-      213: 7554017833301085692
-    second: weapon_20_back_23
+      213: -5277016118685063892
+    second: weapon_22_back_23
   - first:
-      213: -5202541979852832514
-    second: weapon_20_back_24
+      213: 3224521958351815753
+    second: weapon_22_back_24
   - first:
-      213: 1659406923337401948
-    second: weapon_20_back_25
+      213: -9215610555689349165
+    second: weapon_22_back_25
   - first:
-      213: 6289845042198997782
-    second: weapon_20_back_26
+      213: -8435274578945441267
+    second: weapon_22_back_26
   - first:
-      213: -7736880858162336662
-    second: weapon_20_back_27
+      213: 4485595466762194458
+    second: weapon_22_back_27
   - first:
-      213: -1888072717590951421
-    second: weapon_20_back_28
+      213: 3300992427496950605
+    second: weapon_22_back_28
   - first:
-      213: -4630129407018717076
-    second: weapon_20_back_29
+      213: 1609164898222549042
+    second: weapon_22_back_29
   - first:
-      213: -1246905537322026259
-    second: weapon_20_back_30
+      213: -8417952343930491164
+    second: weapon_22_back_30
   - first:
-      213: -5810187260781229678
-    second: weapon_20_back_31
+      213: 3456638030363489621
+    second: weapon_22_back_31
   - first:
-      213: 3470986125773838507
-    second: weapon_20_back_32
+      213: -6995321118356441701
+    second: weapon_22_back_32
   - first:
-      213: -3440768159818782342
-    second: weapon_20_back_33
+      213: -9220247727677490071
+    second: weapon_22_back_33
   - first:
-      213: 1611397513332883902
-    second: weapon_20_back_34
+      213: 4328569478163191216
+    second: weapon_22_back_34
   - first:
-      213: -3196447214310157373
-    second: weapon_20_back_35
+      213: 2783130614952495689
+    second: weapon_22_back_35
   - first:
-      213: -7026107179043558737
-    second: weapon_20_back_36
+      213: -7057714079188466434
+    second: weapon_22_back_36
   - first:
-      213: -3844425363133189927
-    second: weapon_20_back_37
+      213: -2680206823725985551
+    second: weapon_22_back_37
   - first:
-      213: -2934147102771150618
-    second: weapon_20_back_38
+      213: -4904630522882136701
+    second: weapon_22_back_38
   - first:
-      213: -6279007956441856693
-    second: weapon_20_back_39
+      213: -1154010754463422751
+    second: weapon_22_back_39
   - first:
-      213: 1147698514289811347
-    second: weapon_20_back_40
+      213: 2002828518325181615
+    second: weapon_22_back_40
   - first:
-      213: 6909686919444346071
-    second: weapon_20_back_41
+      213: 8587747237777056257
+    second: weapon_22_back_41
   - first:
-      213: 8086899762121759500
-    second: weapon_20_back_42
+      213: 947539826104900362
+    second: weapon_22_back_42
   - first:
-      213: -504559119393431698
-    second: weapon_20_back_43
+      213: 3246376293714667235
+    second: weapon_22_back_43
   - first:
-      213: 990245859831010348
-    second: weapon_20_back_44
+      213: -6499378970440600280
+    second: weapon_22_back_44
   - first:
-      213: 8398498786904374365
-    second: weapon_20_back_45
+      213: -6700390098255920955
+    second: weapon_22_back_45
   - first:
-      213: 3539708808483688820
-    second: weapon_20_back_46
+      213: -7330074762988293821
+    second: weapon_22_back_46
   - first:
-      213: -5303689453126384238
-    second: weapon_20_back_47
+      213: -990488688545506859
+    second: weapon_22_back_47
   - first:
-      213: 7677239230070676992
-    second: weapon_20_back_48
+      213: 233910329915722291
+    second: weapon_22_back_48
   - first:
-      213: -2435014242217257318
-    second: weapon_20_back_49
+      213: -1010990993296550695
+    second: weapon_22_back_49
   - first:
-      213: -6901685859733645596
-    second: weapon_20_back_50
+      213: -7819008121338446949
+    second: weapon_22_back_50
   - first:
-      213: -2237866075827331944
-    second: weapon_20_back_51
+      213: -5998105308833816713
+    second: weapon_22_back_51
   - first:
-      213: 8080307465252920147
-    second: weapon_20_back_52
+      213: -7402002105594180945
+    second: weapon_22_back_52
   - first:
-      213: -4746898148337669417
-    second: weapon_20_back_53
+      213: 1632714989825974454
+    second: weapon_22_back_53
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -417,7 +417,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: weapon_20_back_0
+      name: weapon_22_back_0
       rect:
         serializedVersion: 2
         x: 0
@@ -431,14 +431,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cec2cc8266db37d4bb6706d9f9f9aff8
-      internalID: -662041104979370938
+      spriteID: 00c84dc54a5e6a540a59ef461af50e44
+      internalID: 7442833010287266351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_1
+      name: weapon_22_back_1
       rect:
         serializedVersion: 2
         x: 85
@@ -452,14 +452,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d04aa52346c4eb94d905bd0a3b713bb0
-      internalID: -4647238106942971013
+      spriteID: 36b46987ed772a244aa0987713235435
+      internalID: -3672231118222159600
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_2
+      name: weapon_22_back_2
       rect:
         serializedVersion: 2
         x: 170
@@ -473,14 +473,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc0e354a4cba0494091126bbb2bc54f7
-      internalID: -5911415256522509225
+      spriteID: 183cd71e9068b7a49a76f80a53148fd2
+      internalID: 147959870072340535
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_3
+      name: weapon_22_back_3
       rect:
         serializedVersion: 2
         x: 255
@@ -494,14 +494,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b3db9e68257058e43b3529955635f322
-      internalID: 4192444565312716740
+      spriteID: 96283ab5917322e42a411ecd960f3692
+      internalID: 5757350325924561728
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_4
+      name: weapon_22_back_4
       rect:
         serializedVersion: 2
         x: 340
@@ -515,14 +515,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 51e0617c7b598a74bb22e4e9e50a939e
-      internalID: -2721757483213334329
+      spriteID: 44de8cc2f4637154cbd6925559ded8ca
+      internalID: 6676627875280993730
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_5
+      name: weapon_22_back_5
       rect:
         serializedVersion: 2
         x: 425
@@ -536,14 +536,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 721dd4ba8fdf4964f9237905a90ecbf7
-      internalID: 8929389390679081274
+      spriteID: fa48b718d8331674aae2d0859a59f88b
+      internalID: 729634084626222342
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_6
+      name: weapon_22_back_6
       rect:
         serializedVersion: 2
         x: 510
@@ -557,14 +557,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f2e340c7553f914b9565f739d03fc1c
-      internalID: -6774723798025840629
+      spriteID: c72b574c9d8963741bc858be3294afcc
+      internalID: -8170978395692760968
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_7
+      name: weapon_22_back_7
       rect:
         serializedVersion: 2
         x: 595
@@ -578,14 +578,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 455f3135e5ba12147b30813049efc129
-      internalID: -9149344364957372619
+      spriteID: b5a807495bfc7fc4db5535b6179d8203
+      internalID: 6199157685805404392
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_8
+      name: weapon_22_back_8
       rect:
         serializedVersion: 2
         x: 680
@@ -599,14 +599,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7c5fb5432eff794faa29e4053762615
-      internalID: 2499184980363626242
+      spriteID: ef888bbe66f95c74caa569749433aa8c
+      internalID: 2129799269460910038
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_9
+      name: weapon_22_back_9
       rect:
         serializedVersion: 2
         x: 765
@@ -620,14 +620,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c732a9005575e6b488c761c898f3a9ff
-      internalID: 8470866592280029512
+      spriteID: baffdd7cd0f83b04a88722e7522b2410
+      internalID: -2923064471626875931
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_10
+      name: weapon_22_back_10
       rect:
         serializedVersion: 2
         x: 850
@@ -641,14 +641,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b6221bf5e812e1c46ab49526993fa144
-      internalID: -8103815588979946401
+      spriteID: 77be2613b0c7eb94980bb6b03d894e46
+      internalID: 8910251447595357571
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_11
+      name: weapon_22_back_11
       rect:
         serializedVersion: 2
         x: 935
@@ -662,14 +662,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c17264fd5fbf5ce4db080dbcb7ebf350
-      internalID: -4794456303396953190
+      spriteID: 6b2e38498e8f9d647975e41e60ded12e
+      internalID: 857176979490406126
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_12
+      name: weapon_22_back_12
       rect:
         serializedVersion: 2
         x: 0
@@ -683,14 +683,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 88c15d0b2596b3b458178cf93d90df18
-      internalID: 3448144709428241560
+      spriteID: 084e6c3096027b444bc7ea8549610516
+      internalID: -3874624645105017945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_13
+      name: weapon_22_back_13
       rect:
         serializedVersion: 2
         x: 85
@@ -704,14 +704,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01621ce0df380eb4eaa898155b5fcbb8
-      internalID: -4501964878633830117
+      spriteID: 2d7a11042f96eb14e8e1417bbc0a600d
+      internalID: 2680780595708002186
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_14
+      name: weapon_22_back_14
       rect:
         serializedVersion: 2
         x: 170
@@ -725,14 +725,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7bc89c8cd2aeaaa4d8783012622640e1
-      internalID: 1025081163403597354
+      spriteID: 3b3d138711cc354408600f7adbc54994
+      internalID: -2494914910073009941
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_15
+      name: weapon_22_back_15
       rect:
         serializedVersion: 2
         x: 255
@@ -746,14 +746,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ba449a5c49e6c404db8c7e5ad8f496bd
-      internalID: -8180944714991661769
+      spriteID: b437870315575ff4dae0a6f4ded37fab
+      internalID: 5991620681867923745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_16
+      name: weapon_22_back_16
       rect:
         serializedVersion: 2
         x: 340
@@ -767,14 +767,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 997aa7b7766b9ad4085fb3e54c6c1e22
-      internalID: -5996960062275772121
+      spriteID: 73eae1ddc3a8e8640b90d040a00b8eca
+      internalID: 8251230247289724541
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_17
+      name: weapon_22_back_17
       rect:
         serializedVersion: 2
         x: 425
@@ -788,14 +788,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c789af51c2214494f85ae2ae19a7f8ec
-      internalID: 4433555063227828650
+      spriteID: 87af89d5f710d1d44ba4b1f511280e3c
+      internalID: -181510861053796056
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_18
+      name: weapon_22_back_18
       rect:
         serializedVersion: 2
         x: 510
@@ -809,14 +809,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 51398e949724d2248bc04b9f3561c585
-      internalID: 8567746816034625374
+      spriteID: b96962b347101cb4e90a38252a8f0c2d
+      internalID: 8617185644354079219
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_19
+      name: weapon_22_back_19
       rect:
         serializedVersion: 2
         x: 595
@@ -830,14 +830,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a59ecf0631a8aa9498d91490ea0d1bc6
-      internalID: 1850756490548108061
+      spriteID: 2e1ab6edbf2ea1f4b877b287489e50d4
+      internalID: 4765095228022231125
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_20
+      name: weapon_22_back_20
       rect:
         serializedVersion: 2
         x: 680
@@ -851,14 +851,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d5cf06c681894d747bce2a4d65161b0f
-      internalID: 4988433515380656126
+      spriteID: d41ff8232b801b34ab30a7a94208fe41
+      internalID: 981945826163022883
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_21
+      name: weapon_22_back_21
       rect:
         serializedVersion: 2
         x: 765
@@ -872,14 +872,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 45ae9874169c0c64b927b2e5ee37fc75
-      internalID: 8278098288723346363
+      spriteID: fa1152da5094d154c9c0bef4ba19ebde
+      internalID: -3385264394249983904
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_22
+      name: weapon_22_back_22
       rect:
         serializedVersion: 2
         x: 850
@@ -893,14 +893,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f14617d47ec9d9f4a91343030d98e12f
-      internalID: 7992050196402211052
+      spriteID: ed95643551b55f0439e24e7d888329c4
+      internalID: 4076432253762335182
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_23
+      name: weapon_22_back_23
       rect:
         serializedVersion: 2
         x: 935
@@ -914,14 +914,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8dab7120917a8414b9e40fc5382f6833
-      internalID: 7554017833301085692
+      spriteID: 1e1a41473189f924e93b08fc61dc4a45
+      internalID: -5277016118685063892
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_24
+      name: weapon_22_back_24
       rect:
         serializedVersion: 2
         x: 0
@@ -935,14 +935,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 93c3246f4a1258d4bb9c75a7f1136058
-      internalID: -5202541979852832514
+      spriteID: 1f11cee6a653d564f98bd3cdd725bd05
+      internalID: 3224521958351815753
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_25
+      name: weapon_22_back_25
       rect:
         serializedVersion: 2
         x: 85
@@ -956,14 +956,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 00bb4d47b76f58c46a044b6d54ec1b3d
-      internalID: 1659406923337401948
+      spriteID: 1f1ad5e59f693f1488cd5ecdacf68157
+      internalID: -9215610555689349165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_26
+      name: weapon_22_back_26
       rect:
         serializedVersion: 2
         x: 170
@@ -977,14 +977,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63e5d099111c19143a54fd700766b925
-      internalID: 6289845042198997782
+      spriteID: b25645cf5fb6bf440a094287c8463be7
+      internalID: -8435274578945441267
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_27
+      name: weapon_22_back_27
       rect:
         serializedVersion: 2
         x: 255
@@ -998,14 +998,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4eb1eddda7a713942893b62a5c77f31b
-      internalID: -7736880858162336662
+      spriteID: f53f54de559c02c41832d92ffc400a76
+      internalID: 4485595466762194458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_28
+      name: weapon_22_back_28
       rect:
         serializedVersion: 2
         x: 340
@@ -1019,14 +1019,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61ec536361d936c4f9bdb3c672971d1a
-      internalID: -1888072717590951421
+      spriteID: 0fb60e1a804a34f4fb5c225fa1d8b1d6
+      internalID: 3300992427496950605
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_29
+      name: weapon_22_back_29
       rect:
         serializedVersion: 2
         x: 425
@@ -1040,14 +1040,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 52cf3ea5d6b52224f8c98aae95a764c6
-      internalID: -4630129407018717076
+      spriteID: 79ab783e2a22bc84b8777d4652926bbf
+      internalID: 1609164898222549042
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_30
+      name: weapon_22_back_30
       rect:
         serializedVersion: 2
         x: 510
@@ -1061,14 +1061,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9220fd8ee545a304eb41b8f7cd7f2753
-      internalID: -1246905537322026259
+      spriteID: fe1753b4500e27d459d69bafc1abd680
+      internalID: -8417952343930491164
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_31
+      name: weapon_22_back_31
       rect:
         serializedVersion: 2
         x: 595
@@ -1082,14 +1082,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8de7f193a3b8e0b49999f8e1d066ad0d
-      internalID: -5810187260781229678
+      spriteID: edac6ae7df1737f479b7673cd4832851
+      internalID: 3456638030363489621
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_32
+      name: weapon_22_back_32
       rect:
         serializedVersion: 2
         x: 680
@@ -1103,14 +1103,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: edf02669a91c41e4eb3bb09dcb794ea3
-      internalID: 3470986125773838507
+      spriteID: ab779d0a8a7a07741ae31bfe57a6f437
+      internalID: -6995321118356441701
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_33
+      name: weapon_22_back_33
       rect:
         serializedVersion: 2
         x: 765
@@ -1124,14 +1124,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fad13ad173ed8cb4888c3ed08c353058
-      internalID: -3440768159818782342
+      spriteID: 88a982fe33a51c8469b2d969b41aa18b
+      internalID: -9220247727677490071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_34
+      name: weapon_22_back_34
       rect:
         serializedVersion: 2
         x: 850
@@ -1145,14 +1145,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87020fcc93922b24b917a3184e7b7616
-      internalID: 1611397513332883902
+      spriteID: 136742a4a56d77140974f1ff33f66890
+      internalID: 4328569478163191216
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_35
+      name: weapon_22_back_35
       rect:
         serializedVersion: 2
         x: 935
@@ -1166,14 +1166,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b61f6e5e6db62ae478c5922b89d86bd9
-      internalID: -3196447214310157373
+      spriteID: 64bcdc8f4de8fb7409713a27f4e35d3c
+      internalID: 2783130614952495689
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_36
+      name: weapon_22_back_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1187,14 +1187,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b8a1beefc8ceb52479e92f1ee1c0e744
-      internalID: -7026107179043558737
+      spriteID: 045d86ebd1781f4488a56e574888875c
+      internalID: -7057714079188466434
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_37
+      name: weapon_22_back_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1208,14 +1208,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df0367def05469547aa4a3aea8e2fca7
-      internalID: -3844425363133189927
+      spriteID: d52c5927395f56b4d932c5846872e181
+      internalID: -2680206823725985551
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_38
+      name: weapon_22_back_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1229,14 +1229,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4b4b45a548e57c445a7bb86237929cb0
-      internalID: -2934147102771150618
+      spriteID: c98591c07fe33024482b60d9e0e75dcd
+      internalID: -4904630522882136701
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_39
+      name: weapon_22_back_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1250,14 +1250,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f56d47cfc2b7f0a43b35c13804c81afe
-      internalID: -6279007956441856693
+      spriteID: dd5cbb53a56842a4a92994b46b9e3bba
+      internalID: -1154010754463422751
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_40
+      name: weapon_22_back_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1271,14 +1271,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d250e1f6dfbade14a9876e996f1bd9e0
-      internalID: 1147698514289811347
+      spriteID: 1d0ebd8e23c193842853d8117c970c6d
+      internalID: 2002828518325181615
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_41
+      name: weapon_22_back_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1292,14 +1292,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 190619f9a71fd374a88aca808c349671
-      internalID: 6909686919444346071
+      spriteID: 2787f158d2df0314f9ebc08a8d702f6f
+      internalID: 8587747237777056257
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_42
+      name: weapon_22_back_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1313,14 +1313,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5daeef3974c944b479dbc487935b094c
-      internalID: 8086899762121759500
+      spriteID: c633dd6668a9eb241931041033a8ee12
+      internalID: 947539826104900362
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_43
+      name: weapon_22_back_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1334,14 +1334,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d7a42ca7e81e0704b9b1befff40ec9f0
-      internalID: -504559119393431698
+      spriteID: f5ad15b3c240ddb4fb06d53c0ffe2346
+      internalID: 3246376293714667235
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_44
+      name: weapon_22_back_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1355,14 +1355,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b79e3a922131c7840a73d66652ac8814
-      internalID: 990245859831010348
+      spriteID: 6a8ecbb800ab38c4ebe8c455d81c05aa
+      internalID: -6499378970440600280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_45
+      name: weapon_22_back_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1376,14 +1376,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 249cd9e150e9c6a478dcde95f19aec78
-      internalID: 8398498786904374365
+      spriteID: d21d2a90aa5179f4ca5bd8f99d56d806
+      internalID: -6700390098255920955
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_46
+      name: weapon_22_back_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1397,14 +1397,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1421b52ef7a43248b5fa5e01b2f0ef4
-      internalID: 3539708808483688820
+      spriteID: ae443a240b6747d42856b17b43996a01
+      internalID: -7330074762988293821
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_47
+      name: weapon_22_back_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1418,14 +1418,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 495c8dddcbe619742b8d52a0fd48e492
-      internalID: -5303689453126384238
+      spriteID: af387ffc0d08eaf428f33a90ab991703
+      internalID: -990488688545506859
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_48
+      name: weapon_22_back_48
       rect:
         serializedVersion: 2
         x: 0
@@ -1439,14 +1439,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d62ac665aa7e6ff4a99943c6ce1aeacb
-      internalID: 7677239230070676992
+      spriteID: 81da4fe5e2500dc4d8b8c023ca5c6820
+      internalID: 233910329915722291
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_49
+      name: weapon_22_back_49
       rect:
         serializedVersion: 2
         x: 85
@@ -1460,14 +1460,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4534a888d92692648bfda51e0ee6688f
-      internalID: -2435014242217257318
+      spriteID: cd3fb03b4c3af5947ae0aa1518374340
+      internalID: -1010990993296550695
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_50
+      name: weapon_22_back_50
       rect:
         serializedVersion: 2
         x: 170
@@ -1481,14 +1481,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a377b6bfaca098a478c097dfda26abdd
-      internalID: -6901685859733645596
+      spriteID: 7082108893f68d74aabe361efe011805
+      internalID: -7819008121338446949
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_51
+      name: weapon_22_back_51
       rect:
         serializedVersion: 2
         x: 255
@@ -1502,14 +1502,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4f7f038ca17bacf4c93f6d9244063435
-      internalID: -2237866075827331944
+      spriteID: b29ed11827d1f9146b0846149de82692
+      internalID: -5998105308833816713
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_52
+      name: weapon_22_back_52
       rect:
         serializedVersion: 2
         x: 340
@@ -1523,14 +1523,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8d8531aa856b53847b3670d43598fe73
-      internalID: 8080307465252920147
+      spriteID: 72a95ffddfcd092498eb673bdb8c5fe0
+      internalID: -7402002105594180945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: weapon_20_back_53
+      name: weapon_22_back_53
       rect:
         serializedVersion: 2
         x: 425
@@ -1544,8 +1544,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4d92087b88dad394897b9214ac8b9ac4
-      internalID: -4746898148337669417
+      spriteID: ea4c118a2f6bf6a41adf8b33c5dc26d0
+      internalID: 1632714989825974454
       vertices: []
       indices: 
       edges: []
@@ -1553,7 +1553,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 80ccb518829fa694cb8cc6b709a8ca90
+    spriteID: ef86b2419be0bd14fa83b146a3cc0c20
     internalID: 0
     vertices: []
     indices: 

@@ -23,11 +23,6 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
 
       // If a spawn box was specified in the Editor, look it up now
       _spawnBox = GetComponent<BoxCollider2D>();
-
-      // Keep track of this spawn if it is defined
-      if (!string.IsNullOrWhiteSpace(spawnKey)) {
-         SpawnManager.get().store(_areaKey, spawnKey, this);
-      }
    }
 
    public Vector3 getSpawnPosition () {
@@ -39,18 +34,11 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
       return _areaKey;
    }
 
-   public void OnDestroy () {
-      if (SpawnManager.get() != null) {
-         SpawnManager.get().remove(_areaKey, spawnKey);
-      }
-   }
-
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.SPAWN_NAME_KEY:
                spawnKey = field.v.Trim(' ');
-               SpawnManager.get().store(_areaKey, spawnKey, this);
                break;
             case DataField.SPAWN_WIDTH_KEY:
                _spawnBox.size = new Vector2(field.floatValue, _spawnBox.size.y);

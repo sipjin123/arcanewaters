@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6954952714548661877}
   - component: {fileID: 257469153709004587}
   - component: {fileID: 5153099042173846079}
+  - component: {fileID: 4460654853672726486}
   m_Layer: 5
   m_Name: Border
   m_TagString: Untagged
@@ -74,6 +75,19 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4460654853672726486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174320100242952630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: 
 --- !u!1 &1699346556543120544
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,7 +148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -236,7 +250,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -311,7 +325,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -417,6 +431,7 @@ MonoBehaviour:
   backgroundRecolored: {fileID: 387931898985382934}
   sigilRecolored: {fileID: 1567343519869301918}
   canvasGroup: {fileID: 7627315011435658254}
+  tooltip: {fileID: 4460654853672726486}
 --- !u!225 &7627315011435658254
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -426,6 +441,6 @@ CanvasGroup:
   m_GameObject: {fileID: 5642681577568405534}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

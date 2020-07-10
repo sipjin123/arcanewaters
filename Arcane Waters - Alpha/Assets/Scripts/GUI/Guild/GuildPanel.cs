@@ -61,9 +61,7 @@ public class GuildPanel : Panel, IPointerClickHandler {
 
       // Set the guild icon
       if (inGuild) {
-         guildIcon.setBorder(info.iconBorder);
-         guildIcon.setBackground(info.iconBackground, info.iconBackPalette1, info.iconBackPalette2);
-         guildIcon.setSigil(info.iconSigil, info.iconSigilPalette1, info.iconSigilPalette2);
+         guildIcon.initialize(info);
       }
 
       // Clear out any old member info

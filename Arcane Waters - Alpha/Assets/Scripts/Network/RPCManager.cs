@@ -13,6 +13,7 @@ using ServerCommunicationHandlerv2;
 using MapCustomization;
 using NubisDataHandling;
 using MapCreationTool.Serialization;
+using MapCreationTool;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -477,7 +478,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveLeaderBoards (NetworkConnection connection, LeaderBoardsManager.Period period,
-      Perk.Category boardPerkCategory, double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
+      double secondsLeftUntilRecalculation, LeaderBoardInfo[] farmingEntries,
       LeaderBoardInfo[] sailingEntries, LeaderBoardInfo[] exploringEntries, LeaderBoardInfo[] tradingEntries,
       LeaderBoardInfo[] craftingEntries, LeaderBoardInfo[] miningEntries) {
 
@@ -489,7 +490,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass them along to the Leader Boards panel
-      panel.updatePanelWithLeaderBoardEntries(period, boardPerkCategory, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
+      panel.updatePanelWithLeaderBoardEntries(period, secondsLeftUntilRecalculation, farmingEntries, sailingEntries,
          exploringEntries, tradingEntries, craftingEntries, miningEntries);
    }
 
@@ -811,7 +812,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period, Perk.Category perkCategory) {
+   public void Cmd_RequestLeaderBoardsFromServer (LeaderBoardsManager.Period period) {
       if (_player == null) {
          D.warning("No player object found.");
          return;
@@ -828,7 +829,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Get the leader boards
-         LeaderBoardsManager.self.getLeaderBoards(period, perkCategory, out farmingEntries, out sailingEntries, out exploringEntries,
+         LeaderBoardsManager.self.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries,
             out tradingEntries, out craftingEntries, out miningEntries);
 
          // Get the last calculation date of this period
@@ -839,7 +840,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, perkCategory, timeLeftUntilRecalculation.TotalSeconds,
+            _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
                craftingEntries.ToArray(), miningEntries.ToArray());
          });
@@ -2398,7 +2399,7 @@ public class RPCManager : NetworkBehaviour {
 
          // Add the crafting xp
          int xp = 10;
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, Perk.Category.None, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Crafter, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Back to the Unity thread to send the results back to the client
@@ -3055,7 +3056,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Add the mining xp
          int xp = 10;
-         DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, Perk.Category.MiningDrops, xp);
+         DB_Main.addJobXP(_player.userId, Jobs.Type.Miner, xp);
          Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Gather voyage group info
@@ -4024,7 +4025,7 @@ public class RPCManager : NetworkBehaviour {
             int gainedXP = discovery.getXPValue();
 
             // Add the experience to the player
-            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, Perk.Category.None, gainedXP);
+            DB_Main.addJobXP(_player.userId, Jobs.Type.Explorer, gainedXP);
 
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
@@ -4054,37 +4055,44 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestEnterMapCustomization (int customizerId, string areaKey) {
+   public void Cmd_RequestEnterMapCustomization (string areaKey) {
       // Find the player
-      NetEntity player = EntityManager.self.getEntity(customizerId);
-      if (player == null) {
+      if (_player == null) {
          Target_DenyEnterMapCustomization("Player doesn't exist");
          return;
       }
 
       // Check if player is in the area
-      if (!areaKey.Equals(player.areaKey)) {
+      if (!areaKey.Equals(_player.areaKey)) {
          Target_DenyEnterMapCustomization("Player must be in the area to customize it");
          return;
       }
 
       // Get the instance
-      Instance instance = InstanceManager.self.getInstance(player.instanceId);
+      Instance instance = _player.getInstance();
 
       // Check if someone is already customizing
-      if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != customizerId) {
+      if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId != _player.userId) {
          Target_DenyEnterMapCustomization("Someone else is already customizing the area");
          return;
       }
 
       // Allow player to enter customization
-      instance.playerMakingCustomizations = player;
-      Target_AllowEnterMapCustomization();
+      instance.playerMakingCustomizations = _player;
+
+      // Get props that can be used for customization
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item[] remainingProps = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000).ToArray();
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_AllowEnterMapCustomization(remainingProps);
+         });
+      });
    }
 
    [TargetRpc]
-   private void Target_AllowEnterMapCustomization () {
-      MapCustomizationManager.serverAllowedEnterCustomization();
+   private void Target_AllowEnterMapCustomization (Item[] remainingProps) {
+      MapCustomizationManager.serverAllowedEnterCustomization(remainingProps);
    }
 
    [TargetRpc]
@@ -4093,17 +4101,15 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_ExitMapCustomization (int customizerId, string areaKey) {
-      // Find the player
-      NetEntity player = EntityManager.self.getEntity(customizerId);
-      if (player != null) {
+   public void Cmd_ExitMapCustomization (string areaKey) {
+      if (_player != null) {
          // Check if player is in the area
-         if (areaKey.Equals(player.areaKey)) {
+         if (areaKey.Equals(_player.areaKey)) {
             // Get the instance
-            Instance instance = InstanceManager.self.getInstance(player.instanceId);
+            Instance instance = _player.getInstance();
 
             // Check if someone is already customizing
-            if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId == customizerId) {
+            if (instance.playerMakingCustomizations != null && instance.playerMakingCustomizations.userId == _player.userId) {
                instance.playerMakingCustomizations = null;
             }
          }
@@ -4122,12 +4128,33 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
+      // If player did not have a base map before, give him some props as a reward
+      List<Item> rewards = null;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (manager is CustomHouseManager) {
             DB_Main.setCustomHouseBase(_player.userId, baseMapId);
+
+            if (_player.customHouseBaseId == 0) {
+               rewards = new List<Item> {
+                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Table, count = 2 },
+                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Chair, count = 6 }
+               };
+            }
+
             _player.customHouseBaseId = baseMapId;
          } else if (manager is CustomFarmManager) {
             DB_Main.setCustomFarmBase(_player.userId, baseMapId);
+
+            // If player did not have a farm before, give him some free props
+            if (_player.customFarmBaseId == 0) {
+               rewards = new List<Item> {
+                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Tree, count = 5 },
+                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Stump, count = 1 },
+                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Bush, count = 2 }
+               };
+            }
+
             _player.customFarmBaseId = baseMapId;
          } else {
             D.error("Unrecoginzed custom map manager");
@@ -4135,6 +4162,10 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (rewards != null) {
+               giveItemRewardsToPlayer(_player.userId, rewards, false);
+            }
+
             if (warpIntoAfterSetting) {
                _player.spawnInNewMap(customMapKey);
             }
@@ -4151,28 +4182,47 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
-      // Check if changes are valid
-      if (MapCustomizationManager.validatePrefabChanges(AreaManager.self.getArea(areaKey), changes, true, out string errorMessage)) {
-         // Set changes in the server
-         MapManager.self.addCustomizations(AreaManager.self.getArea(areaKey), changes);
+      Area area = AreaManager.self.getArea(areaKey);
+      Instance instance = _player.getInstance();
 
-         // Notify all clients about them
-         Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         Item[] remainingProps = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000).ToArray();
 
-         // Figure out the base map of area
-         AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
-         NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
-         int baseMapId = customMapManager.getBaseMapId(areaOwner);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Check if changes are valid
+            if (MapCustomizationManager.validatePrefabChanges(area, remainingProps, changes, true, out string errorMessage)) {
+               // Set changes in the server
+               MapManager.self.addCustomizations(area, changes);
 
-         // Set changes in the database
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            PrefabState currentState = DB_Main.getMapCustomizationChanges(baseMapId, areaOwnerId, changes.id);
-            currentState = currentState.id == -1 ? changes : currentState.add(changes);
-            DB_Main.setMapCustomizationChanges(baseMapId, areaOwnerId, currentState);
+               // Notify all clients about them
+               Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
+
+               // Find the customizable prefab that is being targeted
+               CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome).GetComponent<CustomizablePrefab>();
+
+               // Figure out the base map of area
+               AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
+               NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
+               int baseMapId = customMapManager.getBaseMapId(areaOwner);
+
+               // Set changes in the database
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  // Update changes in the database
+                  PrefabState currentState = DB_Main.getMapCustomizationChanges(baseMapId, areaOwnerId, changes.id);
+                  currentState = currentState.id == -1 ? changes : currentState.add(changes);
+                  DB_Main.setMapCustomizationChanges(baseMapId, areaOwnerId, currentState);
+
+                  // If creating a new prefab, remove an item from the inventory
+                  if (changes.created) {
+                     int itemId = remainingProps.FirstOrDefault(i => i.itemTypeId == (int) prefab.propType)?.id ?? -1;
+                     DB_Main.decreaseQuantityOrDeleteItem(_player.userId, itemId, 1);
+                  }
+               });
+            } else {
+               Target_FailAddPrefabCustomization(changes, errorMessage);
+            }
          });
-      } else {
-         Target_FailAddPrefabCustomization(changes, errorMessage);
-      }
+      });
    }
 
    [TargetRpc]
