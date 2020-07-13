@@ -1227,6 +1227,81 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region NPC Quest XML Data
+
+   public static new void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO quest_data_xml_v1 (xmlId, xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
+            "VALUES(@xmlId, @xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
+            "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW(), xmlName = @xmlName, isActive = @isActive", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@xmlId", typeIndex);
+            cmd.Parameters.AddWithValue("@xmlContent", rawData);
+            cmd.Parameters.AddWithValue("@xmlName", xmlName);
+            cmd.Parameters.AddWithValue("@isActive", isActive); 
+            cmd.Parameters.AddWithValue("@creatorUserID", MasterToolAccountManager.self.currentAccountID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<XMLPair> getNPCQuestXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.quest_data_xml_v1", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newPair = new XMLPair {
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("xmlId"),
+                     xmlOwnerId = dataReader.GetInt32("creatorUserID")
+                  };
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return new List<XMLPair>();
+   }
+
+   public static new void deleteNPCQuestXML (int typeID) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM quest_data_xml_v1 WHERE xmlId=@xmlId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@xmlId", typeID);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    #region NPC XML Data
 
    public static new void updateNPCXML (string rawData, int typeIndex) {

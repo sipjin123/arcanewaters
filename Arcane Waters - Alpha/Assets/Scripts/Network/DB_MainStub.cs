@@ -12,6 +12,16 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
+   }
+
+   public static List<string> getNPCQuestXML () {
+      return new List<string>();
+   }
+
+   public static void deleteNPCQuestXML (int typeID) {
+   }
+
    public static void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
    }
 

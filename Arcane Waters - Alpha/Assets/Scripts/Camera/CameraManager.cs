@@ -24,6 +24,9 @@ public class CameraManager : ClientMonoBehaviour {
    // Resolution reference that caps the ortho size
    public List<ResolutionOrthoClamp> resolutionList;
 
+   // List of objects to reset
+   public List<GameObject> resetObjectList;
+
    #endregion
 
    protected override void Awake () {
@@ -61,6 +64,16 @@ public class CameraManager : ClientMonoBehaviour {
       _baseCameras.Add(newSceneCamera);
    }
 
+   private IEnumerator CO_ResetObjects () {
+      foreach (GameObject obj in resetObjectList) {
+         obj.SetActive(false);
+      }
+      yield return new WaitForSeconds(.5f);
+      foreach (GameObject obj in resetObjectList) {
+         obj.SetActive(true);
+      }
+   }
+
    public void onResolutionChanged () {
       Debug.Log("Updating cam size");
 
@@ -71,7 +84,9 @@ public class CameraManager : ClientMonoBehaviour {
          } catch {
             baseCam.onResolutionChanged();
          }
-      }     
+      }
+
+      StartCoroutine(CO_ResetObjects());
    }
 
    public static void shakeCamera (float duration = .25f) {

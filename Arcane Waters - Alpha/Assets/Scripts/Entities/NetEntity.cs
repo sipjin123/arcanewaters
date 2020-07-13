@@ -411,7 +411,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_South:
                animator.SetBool("jump", true); 
                isJumping = true;
-               StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
+               StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
                break;
          }
       }

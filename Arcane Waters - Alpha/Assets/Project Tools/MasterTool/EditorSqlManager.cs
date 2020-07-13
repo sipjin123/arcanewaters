@@ -35,7 +35,8 @@ public class EditorSQLManager {
       NewTutorial = 24,
       Perks = 25,
       Palette = 26,
-      Treasure_Drops = 27
+      Treasure_Drops = 27,
+      Quest = 28
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -119,6 +120,8 @@ public class EditorSQLManager {
             return "perks_config_xml";
          case EditorToolType.Treasure_Drops:
             return "treasure_drops_xml_v2";
+         case EditorToolType.Quest:
+            return "quest_data_xml_v1";
       }
       return "";
    }
