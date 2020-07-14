@@ -57,6 +57,7 @@ public class GenericSelectionPopup : MonoBehaviour
    public Dictionary<string, Sprite> cropIconSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> discoveriesSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> perkIconSpriteList = new Dictionary<string, Sprite>();
+   public Dictionary<string, Sprite> npcIconSpriteList = new Dictionary<string, Sprite>();
 
    public enum selectionType
    {
@@ -100,7 +101,9 @@ public class GenericSelectionPopup : MonoBehaviour
       PerkIcon = 43,
       BiomeType = 44,
       LootGroupsLandMonsters = 45,
-      LootGroupsSeaMonsters = 46
+      LootGroupsSeaMonsters = 46,
+      NpcIcon = 47,
+      QuestSelection = 48
    }
 
    #endregion
@@ -174,6 +177,9 @@ public class GenericSelectionPopup : MonoBehaviour
 
       string perkSpritePath = "Assets/Sprites/Icons/Perks/";
       setupSpriteContent(perkIconSpriteList, perkSpritePath);
+
+      string npcIconSpritePath = "Assets/Sprites/Faces/";
+      setupSpriteContent(npcIconSpriteList, npcIconSpritePath);
    }
 
    private void setupSpriteContent (Dictionary<string, Sprite> spriteCollection, string spritePath) {
@@ -285,12 +291,31 @@ public class GenericSelectionPopup : MonoBehaviour
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
          }
+      } else if (popupType == selectionType.NpcIcon) {
+         foreach (KeyValuePair<string, Sprite> sourceSprite in npcIconSpriteList) {
+            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+         }
       } else if (popupType == selectionType.PerkIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in perkIconSpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
          }
+      }
+   }
+
+   public void callTextNameIndexPopup (selectionType popupType, Text textNameUI, Text textIdUI, UnityEvent newEvent) {
+      selectionPanel.SetActive(true);
+      templateParent.DestroyChildren();
+      previewSelectionIcon.sprite = emptySprite;
+      switch (popupType) {
+         case selectionType.QuestSelection:
+            foreach (QuestData questEntry in NPCToolManager.instance.questDataList) {
+               createTextNameAndIDTemplate(questEntry.questGroupName, questEntry.questId, textNameUI, textIdUI, newEvent, questEntry.iconPath);
+            }
+            break;
       }
    }
 
@@ -421,6 +446,11 @@ public class GenericSelectionPopup : MonoBehaviour
                createTextTemplate(cropType.ToString(), textUI, changeEvent);
             }
             break;
+         case selectionType.QuestSelection:
+            foreach (QuestData questEntry in NPCToolManager.instance.questDataList) {
+               createTextTemplate(questEntry.questGroupName.ToString(), textUI, changeEvent);
+            }
+            break; 
       }
    }
 
@@ -517,6 +547,22 @@ public class GenericSelectionPopup : MonoBehaviour
       if (imagePath != "") {
          selectionTemplate.spriteIcon.sprite = ImageManager.getSprite(imagePath);
       }
+   }
+
+   private void createTextNameAndIDTemplate (string selectionName, int indexId,Text textName, Text textId, UnityEvent newEvent, string iconPath) {
+      GameObject selectionObj = Instantiate(templatePrefab.gameObject, templateParent.transform);
+      ItemTypeTemplate selectionTemplate = selectionObj.GetComponent<ItemTypeTemplate>();
+      selectionTemplate.itemTypeText.text = selectionName;
+      if (iconPath.Length > 0) {
+         selectionTemplate.spriteIcon.sprite = ImageManager.getSprite(iconPath);
+      }
+      selectionTemplate.previewButton.gameObject.SetActive(false);
+      selectionTemplate.selectButton.onClick.AddListener(() => {
+         textName.text = selectionName;
+         textId.text = indexId.ToString();
+         newEvent.Invoke();
+         closePopup();
+      });
    }
 
    private void createTextTemplate (string selectionName, Text textUI, UnityEvent changeEvent = null, string imagePath = "", Image imageUI = null, int spriteIndex = 0, bool useIndexAsName = false) {

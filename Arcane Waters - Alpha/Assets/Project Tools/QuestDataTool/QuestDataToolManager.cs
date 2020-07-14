@@ -75,6 +75,7 @@ public class QuestDataToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                QuestData questData = Util.xmlLoad<QuestData>(newTextAsset);
+               questData.questId = xmlPair.xmlId;
 
                // Save the data to cache
                if (!_questDataList.Exists(_ => _.xmlId == xmlPair.xmlId)) {

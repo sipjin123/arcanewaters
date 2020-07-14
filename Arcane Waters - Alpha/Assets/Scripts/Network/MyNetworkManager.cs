@@ -184,6 +184,8 @@ public class MyNetworkManager : NetworkManager
       EquipmentXMLManager.self.initializeDataCache();
       SoundEffectManager.self.initializeDataCache();
       XmlVersionManagerServer.self.initializeServerData();
+      TreasureDropsDataManager.self.initializeServerDataCache();
+      NPCQuestManager.self.initializeServerDataCache();
    }
 
    public override void OnStopServer () {
@@ -344,7 +346,7 @@ public class MyNetworkManager : NetworkManager
          NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
             npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
             npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, 
-            npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, new List<Quest>(), new List<NPCGiftData>(),
+            npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, npcData.questId, new List<NPCGiftData>(),
             npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.landMonsterId, npcData.achievementIdHiringRequirement, npcData.isActive);
 
          newNPCDataList.Add(newNPCData);

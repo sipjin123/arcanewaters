@@ -5,8 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 
 public class GenericItemUITemplate : MonoBehaviour {
-   // Change item button
-   public Button itemButton;
+   // Change item button, delete button
+   public Button itemButton, deleteButton;
    
    // Item info
    public Text itemName;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.IO;
+using UnityEngine.Events;
 
 public class NPCEditScreen : MonoBehaviour
 {
@@ -16,8 +17,6 @@ public class NPCEditScreen : MonoBehaviour
    // The main parameters of the NPC
    public Text npcIdText;
    public InputField npcName;
-   public Slider faction;
-   public Slider specialty;
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
    public Toggle isActive;
@@ -31,24 +30,19 @@ public class NPCEditScreen : MonoBehaviour
    public InputField giftNotLiked;
    public InputField npcID;
 
+   // The quest id
+   public Button changeQuestButton;
+   public Text questNameText;
+   public Text questIdText;
+   public Image questImage;
+   public UnityEvent changedQuestSelection = new UnityEvent();
+
    // Holds reference to the inputfields for character limit alterations
    public List<InputField> longTextInputfields;
    public List<InputField> shortTextInputfields;
 
-   // The container for the quests
-   public GameObject questRowsContainer;
-
-   // The prefab we use for creating quest rows
-   public QuestRow questPrefab;
-
-   // The reference to determine which quest is being modified
-   public QuestRow currentQuestModified;
-
    // The panel scrollbar
    public Scrollbar scrollbar;
-
-   // Holds the info of the quests
-   public GameObject questInfo;
 
    // If the npc is recruitable
    public Toggle isHireableToggle;
@@ -131,9 +125,6 @@ public class NPCEditScreen : MonoBehaviour
    // The cache list for avatar sprite selection
    public Dictionary<string, Sprite> avatarSpriteList = new Dictionary<string, Sprite>();
 
-   // An image indicator for dropdown capabilities of quests
-   public GameObject dropDownIndicatorQuest;
-
    // An image indicator for dropdown capabilities of gifts
    public GameObject dropDownIndicatorGifts;
 
@@ -153,6 +144,9 @@ public class NPCEditScreen : MonoBehaviour
    public Text selectedBattlertype;
    public Text selectedBattlerIndex;
    public GameObject selectedBattlerGroup;
+
+   // Reference to the selection popup
+   public GenericSelectionPopup genericSelectionPopup;
 
    // Enum to determine the current item category
    public enum ItemSelectionType
@@ -178,6 +172,20 @@ public class NPCEditScreen : MonoBehaviour
       exitSelectionButton.onClick.AddListener(() => { itemTypeSelectionPanel.SetActive(false); });
       confirmSelectionButton.onClick.AddListener(() => {
          itemTypeSelectionPanel.SetActive(false);
+      });
+
+      changeQuestButton.onClick.AddListener(() => {
+         changedQuestSelection.AddListener(() => {
+            int questIndex = int.Parse(questIdText.text);
+            try {
+               QuestData questData = NPCToolManager.instance.questDataList.Find(_=>_.questId == questIndex);
+               questImage.sprite = ImageManager.getSprite(questData.iconPath);
+            } catch {
+               questImage.sprite = ImageManager.self.blankSprite;
+            }
+         });
+
+         genericSelectionPopup.callTextNameIndexPopup(GenericSelectionPopup.selectionType.QuestSelection, questNameText, questIdText, changedQuestSelection);
       });
 
       achievementRequirementHireButton.onClick.AddListener(() => {
@@ -259,18 +267,15 @@ public class NPCEditScreen : MonoBehaviour
          selectedBattlertype.text = "None";
       }
 
-      // Clear all the rows
-      questRowsContainer.DestroyChildren();
-
-      // Create a row for each quest
-      if (npcData.quests != null) {
-         foreach (Quest quest in npcData.quests) {
-            // Create a new row
-            QuestRow row = Instantiate(questPrefab, questRowsContainer.transform, false);
-            row.transform.SetParent(questRowsContainer.transform, false);
-            row.npcEditionScreen = this;
-            row.setRowForQuest(quest);
-         }
+      if (npcData.questId > 0) {
+         QuestData questData = NPCToolManager.instance.questDataList.Find(_ => _.questId == npcData.questId);
+         questNameText.text = questData.questGroupName;
+         questIdText.text = questData.questId.ToString();
+         questImage.sprite = ImageManager.getSprite(questData.iconPath);
+      } else {
+         questNameText.text = "None";
+         questIdText.text = "0";
+         questImage.sprite = ImageManager.self.blankSprite;
       }
 
       if (npcData.gifts != null) {
@@ -281,28 +286,9 @@ public class NPCEditScreen : MonoBehaviour
       giftNode.npcEditScreen = this;
    }
 
-   public void toggleQuestView() {
-      questInfo.SetActive(!questInfo.activeSelf);
-      dropDownIndicatorQuest.SetActive(!questInfo.activeSelf);
-   }
-
    public void toggleGiftView () {
       giftInfo.SetActive(!giftInfo.activeSelf);
       dropDownIndicatorGifts.SetActive(!giftInfo.activeSelf);
-   }
-
-   public void createQuestButtonClickedOn () {
-      // Increment the last used quest id
-      _lastUsedQuestId++;
-
-      // Create a new empty quest
-      Quest quest = new Quest(_lastUsedQuestId, "", NPCFriendship.Rank.Stranger, false, -1, null);
-
-      // Create a new quest row
-      QuestRow row = Instantiate(questPrefab, questRowsContainer.transform, false);
-      row.transform.SetParent(questRowsContainer.transform, false);
-      row.npcEditionScreen = this;
-      row.setRowForQuest(quest);
    }
 
    public void revertButtonClickedOn () {
@@ -315,16 +301,10 @@ public class NPCEditScreen : MonoBehaviour
       // Hide the screen
       hide();
 
-      NPCToolManager.instance.loadAllDataFiles();
+      //NPCToolManager.instance.loadAllDataFiles();
    }
 
    public void saveButtonClickedOn () {
-      // Retrieve the quest list
-      List<Quest> questList = new List<Quest>();
-      foreach (QuestRow questRow in questRowsContainer.GetComponentsInChildren<QuestRow>()) {
-         questList.Add(questRow.getModifiedQuest());
-      }
-
       List<NPCGiftData> newGiftDataList = new List<NPCGiftData>();
       foreach(ItemRewardRow itemRow in giftNode.cachedItemRowsList) {
          if (itemRow.isValidItem()) {
@@ -340,7 +320,7 @@ public class NPCEditScreen : MonoBehaviour
       NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         questList, newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text), isActive.isOn);
+         int.Parse(questIdText.text), newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text), isActive.isOn);
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc
@@ -415,8 +395,6 @@ public class NPCEditScreen : MonoBehaviour
                achievmentRequirementHireName.text = achievementData.Value.achievementName;
                itemTypeSelectionPanel.SetActive(false);
             } else {
-               currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeIndex = achievementData.Key;
-               currentQuestModified.currentQuestNode.cachedRequiredActionRow.actionTypeLabel.text = achievementData.Value.achievementName;
                confirmSelectionButton.onClick.Invoke();
             }
          });
@@ -495,43 +473,7 @@ public class NPCEditScreen : MonoBehaviour
 
                giftNode.cachedGiftData.itemCategory = selectedCategory;
                giftNode.cachedGiftData.itemTypeId = selectedTypeID;
-            } else if (selectionType == ItemSelectionType.Reward) {
-               currentQuestModified.currentQuestNode.currentRewardRow.itemCategory.text = ((int) selectedCategory).ToString();
-               currentQuestModified.currentQuestNode.currentRewardRow.itemTypeId.text = newID.ToString();
-               currentQuestModified.currentQuestNode.currentRewardRow.itemData = selectedData;
-
-               currentQuestModified.currentQuestNode.currentRewardRow.itemCategoryName.text = selectedCategory.ToString();
-               currentQuestModified.currentQuestNode.currentRewardRow.itemTypeName.text = item.Value.itemName.ToString();
-               setupSpriteIcon(currentQuestModified.currentQuestNode.currentRewardRow.itemIcon, selectedCategory, item.Key, item.Value.data);
-
-               currentQuestModified.currentQuestNode.cachedReward.category = selectedCategory;
-               currentQuestModified.currentQuestNode.cachedReward.itemTypeId = newID;
-
-               if (selectedCategory == Item.Category.Quest_Item) {
-                  currentQuestModified.currentQuestNode.currentRewardRow.count.text = "1";
-                  currentQuestModified.currentQuestNode.currentRewardRow.count.gameObject.SetActive(false);
-               } else {
-                  currentQuestModified.currentQuestNode.currentRewardRow.count.gameObject.SetActive(true);
-               }
-            } else if (selectionType == ItemSelectionType.Delivery) {
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategory.text = ((int) selectedCategory).ToString();
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeId.text = newID.ToString();
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemData = selectedData;
-
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemCategoryName.text = selectedCategory.ToString();
-               currentQuestModified.currentQuestNode.currentDeliverObjective.itemTypeName.text = item.Value.itemName.ToString();
-               setupSpriteIcon(currentQuestModified.currentQuestNode.currentDeliverObjective.itemIcon, selectedCategory, item.Key, item.Value.data);
-
-               currentQuestModified.currentQuestNode.cachedDeliverObjective.category = selectedCategory;
-               currentQuestModified.currentQuestNode.cachedDeliverObjective.itemTypeId = newID;
-
-               if (selectedCategory == Item.Category.Quest_Item) {
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.text = "1";
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(false);
-               } else {
-                  currentQuestModified.currentQuestNode.currentDeliverObjective.count.gameObject.SetActive(true);
-               }
-            }
+            } 
 
             confirmSelectionButton.onClick.Invoke();
          });

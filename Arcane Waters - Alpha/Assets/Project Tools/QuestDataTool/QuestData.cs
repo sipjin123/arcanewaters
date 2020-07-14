@@ -5,6 +5,9 @@ public class QuestData {
    // Name of the quest group
    public string questGroupName;
 
+   // The details of the quest group
+   public string questGroupDetails;
+
    // Id of the quest, a primary key to be referenced
    public int questId;
 
@@ -16,6 +19,9 @@ public class QuestData {
 
    // If the quest is active
    public bool isActive;
+
+   // The icon path
+   public string iconPath;
 }
 
 [Serializable]
@@ -35,8 +41,12 @@ public class QuestDataNode {
 
 [Serializable]
 public class QuestDialogueNode {
+   // The dialogue info
    public string npcDialogue;
    public string playerDialogue;
+
+   // The index of the dialogue
+   public int dialogueIdIndex;
 
    // Rewarded friendship pts after completing the dialogue
    public int friendshipRewardPts;

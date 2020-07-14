@@ -33,6 +33,7 @@ public class MasterToolScene : MonoBehaviour {
    public const string newTutorialToolScene = "New Tutorial Tool";
    public const string perksToolScene = "Perk Tool";
    public const string treasureDropToolScene = "Treasure Drops Tool";
+   public const string questDataToolScene = "QuestData Tool";
 
    // Loading delay before fetching XML Data
    public static float loadDelay = 2;
@@ -69,7 +70,8 @@ public class MasterToolScene : MonoBehaviour {
       clickNewTutorialToolScene,
       clickPerkToolScene,
       clickTreasureDropToolScene,
-      exitButton;
+      exitButton,
+      clickQuestDataToolScene;
 
    #endregion
 
@@ -143,6 +145,9 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickPerkToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(perksToolScene);
+      });
+      clickQuestDataToolScene.onClick.AddListener(() => {
+         SceneManager.LoadScene(questDataToolScene);
       });
 
       if (MasterToolAccountManager.self == null) {

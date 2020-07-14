@@ -13,10 +13,16 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
    // Add item buttons
    public Button addItemRequirementButton, addItemRewardButton;
 
+   // Deletes the template
+   public Button deleteButton;
+
    // Basic dialogue data
    public InputField npcDialogue;
    public InputField playerDialogue;
    public InputField friendshipRewardPts;
+
+   // The id of the dialogue
+   public Text dialogueIdText;
 
    // Parent holding the item requirement/reward
    public Transform questRewardParent, questRequirementParent;
@@ -31,10 +37,13 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       addItemRequirementButton.onClick.AddListener(() => {
          GenericItemUITemplate itemTemplate = Instantiate(itemUITemplate.gameObject, questRequirementParent).GetComponent<GenericItemUITemplate>();
          itemTemplate.itemButton.onClick.AddListener(() => {
-            string categoryText = requirementDropDown.options[rewardDropdown.value].text;
+            string categoryText = requirementDropDown.options[requirementDropDown.value].text;
             Item.Category category = (Item.Category) Enum.Parse(typeof(Item.Category), categoryText);
             itemTemplate.itemCategory.text = ((int) category).ToString();
             genericSelectionPopup.callItemTypeSelectionPopup(category, itemTemplate.itemName, itemTemplate.itemId, itemTemplate.itemIcon);
+         });
+         itemTemplate.deleteButton.onClick.AddListener(() => {
+            Destroy(itemTemplate.gameObject);
          });
       });
       addItemRewardButton.onClick.AddListener(() => {
@@ -45,12 +54,16 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
             itemTemplate.itemCategory.text = ((int) category).ToString();
             genericSelectionPopup.callItemTypeSelectionPopup(category, itemTemplate.itemName, itemTemplate.itemId, itemTemplate.itemIcon);
          });
+         itemTemplate.deleteButton.onClick.AddListener(() => {
+            Destroy(itemTemplate.gameObject);
+         });
       });
    }
 
    public void setDialogueData (QuestDialogueNode dialogueData) {
       npcDialogue.text = dialogueData.npcDialogue;
       playerDialogue.text = dialogueData.playerDialogue;
+      dialogueIdText.text = dialogueData.dialogueIdIndex.ToString();
 
       if (dialogueData.itemRewards != null) {
          foreach (Item item in dialogueData.itemRewards) {
@@ -73,6 +86,7 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       newDialogue.itemRewards = convertItemUIToList(questRewardParent).ToArray();
       newDialogue.itemRequirements = convertItemUIToList(questRequirementParent).ToArray();
       newDialogue.friendshipRewardPts = int.Parse(friendshipRewardPts.text);
+      newDialogue.dialogueIdIndex = int.Parse(dialogueIdText.text);
 
       return newDialogue;
    }
@@ -101,18 +115,26 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
          case Item.Category.Weapon:
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
             itemTemplate.itemName.text = weaponData.equipmentName;
+            itemTemplate.itemIcon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
             break;
          case Item.Category.Hats:
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
             itemTemplate.itemName.text = hatData.equipmentName;
+            itemTemplate.itemIcon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
             break;
          case Item.Category.Armor:
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
             itemTemplate.itemName.text = armorData.equipmentName;
+            itemTemplate.itemIcon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
          case Item.Category.CraftingIngredients:
-            itemTemplate.itemName.text = CraftingIngredients.getName((CraftingIngredients.Type) item.itemTypeId);
+            CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+            itemTemplate.itemName.text = CraftingIngredients.getName(ingredientType);
+            itemTemplate.itemIcon.sprite = ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
             break;
       }
+      itemTemplate.deleteButton.onClick.AddListener(() => {
+         Destroy(itemTemplate.gameObject);
+      });
    }
 }

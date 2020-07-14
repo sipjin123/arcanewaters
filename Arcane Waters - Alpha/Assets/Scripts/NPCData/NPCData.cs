@@ -50,9 +50,8 @@ public class NPCData
    // The achievement id that is required to hire this companion
    public int achievementIdHiringRequirement = -1;
 
-   // The list of quests
-   [XmlArray("Quests"), XmlArrayItem("Quest")]
-   public List<Quest> quests;
+   // Quest ID reference
+   public int questId;
 
    // The list of items that the NPC likes to be gifted
    [XmlArray("Gifts"), XmlArrayItem("Gift")]
@@ -76,7 +75,7 @@ public class NPCData
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, List<Quest> quests, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive) {
+      int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -90,7 +89,7 @@ public class NPCData
       this.hasTradeGossipDialogue = hasTradeGossipDialogue;
       this.hasGoodbyeDialogue = hasGoodbyeDialogue;
       this.lastUsedQuestId = lastUsedQuestId;
-      this.quests = quests;
+      this.questId = questId;
       this.gifts = gifts;
       this.iconPath = iconPath;
       this.spritePath = spritePath;

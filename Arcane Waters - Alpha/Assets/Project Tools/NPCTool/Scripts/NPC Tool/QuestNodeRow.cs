@@ -128,7 +128,6 @@ public class QuestNodeRow : MonoBehaviour
                npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Delivery);
                currentDeliverObjective = deliveryRow;
                questRow.currentQuestNode = this;
-               questRow.npcEditionScreen.currentQuestModified = questRow;
             });
             deliveryRow.deleteButton.onClick.AddListener(() => {
                deliveryItemList.Remove(deliveryRow);
@@ -160,7 +159,6 @@ public class QuestNodeRow : MonoBehaviour
                npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
                currentRewardRow = itemRewardRow;
                questRow.currentQuestNode = this;
-               questRow.npcEditionScreen.currentQuestModified = questRow;
             });
             itemRewardRow.updateTypeButton.onClick.AddListener(() => { itemRewardRow.updateCategoryButton.onClick.Invoke(); });
             itemRewardRow.deleteButton.onClick.AddListener(() => {
@@ -184,7 +182,6 @@ public class QuestNodeRow : MonoBehaviour
             actionRow.actionTypeButton.onClick.AddListener(() => {
                cachedRequiredActionRow = actionRow;
                questRow.currentQuestNode = this;
-               questRow.npcEditionScreen.currentQuestModified = questRow;
                npcEditScreen.toggleActionSelectionPanel();
             });
             actionRow.deleteTypeButton.onClick.AddListener(() => {
@@ -211,7 +208,6 @@ public class QuestNodeRow : MonoBehaviour
          npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Reward);
          currentRewardRow = itemRewardRow;
          questRow.currentQuestNode = this;
-         questRow.npcEditionScreen.currentQuestModified = questRow;
       });
       itemRewardRow.updateTypeButton.onClick.AddListener(() => { itemRewardRow.updateCategoryButton.onClick.Invoke(); });
       itemRewardRow.deleteButton.onClick.AddListener(() => {
@@ -230,7 +226,6 @@ public class QuestNodeRow : MonoBehaviour
       newRequirementRow.actionTypeButton.onClick.AddListener(() => {
          cachedRequiredActionRow = newRequirementRow;
          questRow.currentQuestNode = this;
-         questRow.npcEditionScreen.currentQuestModified = questRow;
          npcEditScreen.toggleActionSelectionPanel();
       }); 
       newRequirementRow.deleteTypeButton.onClick.AddListener(() => {
@@ -264,7 +259,6 @@ public class QuestNodeRow : MonoBehaviour
          npcEditScreen.toggleItemSelectionPanel(NPCEditScreen.ItemSelectionType.Delivery);
          currentDeliverObjective = deliveryRow;
          questRow.currentQuestNode = this;
-         questRow.npcEditionScreen.currentQuestModified = questRow;
       });
       deliveryRow.deleteButton.onClick.AddListener(() => {
          deliveryItemList.Remove(deliveryRow);

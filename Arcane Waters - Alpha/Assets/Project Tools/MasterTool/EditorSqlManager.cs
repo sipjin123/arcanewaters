@@ -159,9 +159,14 @@ public class SQLEntryIDClass {
 
 #if IS_SERVER_BUILD
 
-   public SQLEntryIDClass (MySqlDataReader dataReader) {
-      this.xmlID = DataUtil.getInt(dataReader, "xml_id");
-      this.ownerID = DataUtil.getInt(dataReader, "creator_userID");
+   public SQLEntryIDClass (MySqlDataReader dataReader, bool isUpdated) {
+      if (isUpdated) {
+         this.xmlID = DataUtil.getInt(dataReader, "xmlId");
+         this.ownerID = DataUtil.getInt(dataReader, "creatorUserID");
+      } else {
+         this.xmlID = DataUtil.getInt(dataReader, "xml_id");
+         this.ownerID = DataUtil.getInt(dataReader, "creator_userID");
+      }
    }
 
 #endif

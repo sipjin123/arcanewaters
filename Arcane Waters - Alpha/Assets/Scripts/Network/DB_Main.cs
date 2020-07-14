@@ -117,7 +117,7 @@ public class DB_Main : DB_MainStub
       if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "paletteId, xml_content ";
       }
-      if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
+      if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
          contentToFetch = "xmlId, xmlContent ";
       }
 
@@ -142,7 +142,7 @@ public class DB_Main : DB_MainStub
                   if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("paletteId");
                      xmlContent = dataReader.GetString("xml_content");
-                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops) {
+                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
                   } else {
@@ -879,8 +879,13 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  SQLEntryIDClass newEntry = new SQLEntryIDClass(dataReader);
-                  rawDataList.Add(newEntry);
+                  if (editorType == EditorSQLManager.EditorToolType.Quest) {
+                     SQLEntryIDClass newEntry = new SQLEntryIDClass(dataReader, true);
+                     rawDataList.Add(newEntry);
+                  } else {
+                     SQLEntryIDClass newEntry = new SQLEntryIDClass(dataReader, false);
+                     rawDataList.Add(newEntry);
+                  }
                }
             }
          }
@@ -1230,12 +1235,21 @@ public class DB_Main : DB_MainStub
    #region NPC Quest XML Data
 
    public static new void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
+      string xmlIdKey = "xmlId, ";
+      string xmlIdValue = "@xmlId, ";
+
+      // If this is a newly created data, let sql table auto generate id
+      if (typeIndex < 0) {
+         xmlIdKey = "";
+         xmlIdValue = "";
+      }
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO quest_data_xml_v1 (xmlId, xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
-            "VALUES(@xmlId, @xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
+            "INSERT INTO quest_data_xml_v1 ("+ xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
+            "VALUES("+ xmlIdValue + "@xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW(), xmlName = @xmlName, isActive = @isActive", conn)) {
 
             conn.Open();
@@ -1244,8 +1258,12 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlId", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@xmlName", xmlName);
-            cmd.Parameters.AddWithValue("@isActive", isActive); 
-            cmd.Parameters.AddWithValue("@creatorUserID", MasterToolAccountManager.self.currentAccountID);
+            cmd.Parameters.AddWithValue("@isActive", isActive);
+            if (MasterToolAccountManager.self != null) {
+               cmd.Parameters.AddWithValue("@creatorUserID", MasterToolAccountManager.self.currentAccountID);
+            } else {
+               cmd.Parameters.AddWithValue("@creatorUserID", 0);
+            }
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1281,7 +1299,7 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-      return new List<XMLPair>();
+      return rawDataList;
    }
 
    public static new void deleteNPCQuestXML (int typeID) {

@@ -10,6 +10,9 @@ public class QuestDataGroupTemplate : GenericEntryTemplate {
    // The xml id of the data
    public int xmlId;
 
+   // Determines if this template is active in the database
+   public Toggle isActiveToggle;
+
    #endregion
 
    private void OnEnable () {

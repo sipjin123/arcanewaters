@@ -142,6 +142,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       checkStreamingAssetFile(XmlVersionManagerServer.PERKS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.TREASURE_DROPS_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.QUEST_DATA_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
    }
 
@@ -219,6 +220,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Perks);
       extractXmlType(EditorToolType.Palette);
       extractXmlType(EditorToolType.Treasure_Drops);
+      extractXmlType(EditorToolType.Quest);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -284,6 +286,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Treasure_Drops:
             path = TEXT_PATH + XmlVersionManagerServer.TREASURE_DROPS_FILE + ".txt";
+            break;
+         case EditorToolType.Quest:
+            path = TEXT_PATH + XmlVersionManagerServer.QUEST_DATA_FILE + ".txt";
             break;
       }
 
@@ -578,6 +583,25 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             TreasureDropsDataManager.self.receiveListFromZipData(lootGroupCollection);
+            break;
+
+         case EditorToolType.Quest:
+            Dictionary<int, QuestData> questDataCollection = new Dictionary<int, QuestData>();
+
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int uniqueId = int.Parse(xmlSubGroup[0]);
+                  QuestData questData = Util.xmlLoad<QuestData>(xmlSubGroup[1]);
+                  questData.questId = uniqueId;
+                  questDataCollection.Add(uniqueId, questData);
+
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            NPCQuestManager.self.receiveListFromZipData(questDataCollection);
             break;
       }
 

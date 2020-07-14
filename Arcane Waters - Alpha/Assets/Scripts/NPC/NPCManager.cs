@@ -131,50 +131,6 @@ public class NPCManager : MonoBehaviour {
       }
    }
 
-   public List<Quest> getQuests (int npcId) {
-      if (_npcData.ContainsKey(npcId)) {
-         return _npcData[npcId].quests;
-      } else {
-         return new List<Quest>();
-      }
-   }
-
-   public Quest getQuest (int npcId, int questId) {
-      NPCData npcData;
-      if (!_npcData.TryGetValue(npcId, out npcData)) {
-         D.debug("The npc has no quest data: " + npcId);
-         return null;
-      }
-
-      // Look for the quest
-      foreach(Quest quest in npcData.quests) {
-         if (quest.questId == questId) {
-            return quest;
-         }
-      }
-
-      D.debug("The quest does not exist: " + npcId + "/" + questId);
-      return null;
-   }
-
-   public QuestNode getQuestNode (int npcId, int questId, int questNodeId) {
-      Quest quest = getQuest(npcId, questId);
-
-      if (quest == null) {
-         return null;
-      }
-
-      // Look for the quest node
-      foreach (QuestNode node in quest.nodes) {
-         if (node.nodeId == questNodeId) {
-            return node;
-         }
-      }
-
-      D.debug("The quest node does not exist: " + npcId + "/" + questId + "/" + questNodeId);
-      return null;
-   }
-
    public string getGreetingText (int npcId, int friendshipLevel) {
       if (_npcData.ContainsKey(npcId)) {
          switch (NPCFriendship.getRank(friendshipLevel)) {

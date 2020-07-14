@@ -29,6 +29,9 @@ public class NPCToolManager : XmlDataToolManager {
    // Collection of achievements fetched from the database
    public Dictionary<int, AchievementData> achievementCollection;
 
+   // List of quest data created in the database
+   public List<QuestData> questDataList = new List<QuestData>();
+
    // Determines if achievement data is loaded
    public bool hasLoadedAchievements;
 
@@ -66,13 +69,15 @@ public class NPCToolManager : XmlDataToolManager {
       });
 
       fetchRecipe();
-      initializeMonsterData();
+      initializeOtherData();
       EquipmentXMLManager.self.initializeDataCache();
    }
 
-   public void initializeMonsterData () {
+   public void initializeOtherData () {
+      questDataList = new List<QuestData>();
       battlerList = new Dictionary<int, BattlerData>();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> questDataPair = DB_Main.getNPCQuestXML();
          List<XMLPair> monsterDataPair = DB_Main.getLandMonsterXML();
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair pair in monsterDataPair) {
@@ -80,6 +85,17 @@ public class NPCToolManager : XmlDataToolManager {
                BattlerData battleData = Util.xmlLoad<BattlerData>(newTextAsset);
                if (!battlerList.ContainsKey(pair.xmlId)) {
                   battlerList.Add(pair.xmlId, battleData);
+               } else {
+                  D.editorLog("This id is duplicated: " + pair.xmlId, Color.red);
+               }
+            }
+
+            foreach (XMLPair pair in questDataPair) {
+               TextAsset newTextAsset = new TextAsset(pair.rawXmlData);
+               QuestData questData = Util.xmlLoad<QuestData>(newTextAsset);
+               questData.questId = pair.xmlId;
+               if (!questDataList.Exists(_=>_.questId == pair.xmlId)) {
+                  questDataList.Add(questData);
                } else {
                   D.editorLog("This id is duplicated: " + pair.xmlId, Color.red);
                }
@@ -129,7 +145,7 @@ public class NPCToolManager : XmlDataToolManager {
       }
 
       // Create an empty npc
-      NPCData npcData = new NPCData(npcId, "", "", "", "", "", "", "", "", "NPC", true, true, -1, new List<Quest>() { },
+      NPCData npcData = new NPCData(npcId, "", "", "", "", "", "", "", "", "NPC", true, true, -1, -1,
          new List<NPCGiftData>() { }, "", "", false, 0, -1, false);
 
       // Add the data to the dictionary

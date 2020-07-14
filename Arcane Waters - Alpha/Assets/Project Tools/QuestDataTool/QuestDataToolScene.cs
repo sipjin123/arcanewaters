@@ -22,6 +22,7 @@ public class QuestDataToolScene : MonoBehaviour {
    private void Awake () {
       createNewTemplate.onClick.AddListener(() => {
          QuestDataGroupTemplate newQuestTemplate = Instantiate(questGroupTemplate.gameObject, questGroupHolder).GetComponent<QuestDataGroupTemplate>();
+         newQuestTemplate.isActiveToggle.isOn = false;
          newQuestTemplate.editButton.onClick.AddListener(() => {
             questToolPanel.gameObject.SetActive(true);
             questToolPanel.loadPanel(new QuestData());
@@ -31,8 +32,21 @@ public class QuestDataToolScene : MonoBehaviour {
    }
 
    public void loadData (List<QuestXMLContent> questXml) {
+      questGroupHolder.gameObject.DestroyChildren();
       foreach (QuestXMLContent questGroup in questXml) {
          QuestDataGroupTemplate newQuestTemplate = Instantiate(questGroupTemplate.gameObject, questGroupHolder).GetComponent<QuestDataGroupTemplate>();
+         newQuestTemplate.nameText.text = questGroup.xmlData.questGroupName;
+         newQuestTemplate.xmlId = questGroup.xmlId;
+         newQuestTemplate.indexText.text = questGroup.xmlId.ToString();
+         newQuestTemplate.isActiveToggle.isOn = questGroup.isEnabled;
+
+         Sprite sprite = ImageManager.getSprite(questGroup.xmlData.iconPath);
+         if (sprite != null) {
+            newQuestTemplate.itemIcon.sprite = sprite;
+         } else {
+            newQuestTemplate.itemIcon.sprite = ImageManager.self.blankSprite;
+         }
+
          newQuestTemplate.editButton.onClick.AddListener(() => {
             questToolPanel.gameObject.SetActive(true);
             questToolPanel.loadPanel(questGroup.xmlData);
