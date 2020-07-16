@@ -652,6 +652,10 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static UserInfo getUserInfoJSON (string userId) {
+      return null;
+   }
+
    public static UserInfo getUserInfo (string userName) {
       return null;
    }

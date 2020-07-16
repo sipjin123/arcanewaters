@@ -17,6 +17,12 @@ using MySql.Data.MySqlClient;
 
 public class DB_Main : DB_MainStub
 {
+   #region NubisFeatures
+
+
+
+   #endregion
+
    #region Public Variables
 
    public static string RemoteServer
@@ -111,14 +117,16 @@ public class DB_Main : DB_MainStub
       string content = "";
       string addedFields = "";
       string contentToFetch = "xml_id, xmlContent ";
+
       if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
          addedFields = ", ability_type";
-      }
-      if (toolType == EditorSQLManager.EditorToolType.Palette) {
+      } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "paletteId, xml_content ";
-      }
-      if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
+      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
          contentToFetch = "xmlId, xmlContent ";
+      } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
+         contentToFetch = "id, serializedData ";
+         addedFields = ", category";
       }
 
       try {
@@ -138,13 +146,16 @@ public class DB_Main : DB_MainStub
 
                   if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
                      addedContent = dataReader.GetInt32("ability_type") + "[space]";
-                  }
-                  if (toolType == EditorSQLManager.EditorToolType.Palette) {
+                  } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("paletteId");
                      xmlContent = dataReader.GetString("xml_content");
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
+                  } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
+                     xmlId = dataReader.GetInt32("id");
+                     xmlContent = dataReader.GetString("serializedData");
+                     addedContent = dataReader.GetInt32("category") + "[space]";
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent"); ;
@@ -3510,7 +3521,7 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Item Definitions
+   #region Item Definitions Xml Data
 
    public static new List<ItemDefinition> getItemDefinitions () {
       List<ItemDefinition> result = new List<ItemDefinition>();
@@ -3602,7 +3613,7 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Companions
+   #region Companions Features
 
    public static new void updateCompanionExp (int xmlId, int userId, int exp) {
       try {
@@ -3773,7 +3784,7 @@ public class DB_Main : DB_MainStub
       return newItemList;
    }
 
-   #region Crops
+   #region Crops Xml
 
    public static new List<CropInfo> getCropInfo (int userId) {
       List<CropInfo> cropList = new List<CropInfo>();
@@ -3872,57 +3883,7 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   public static new int getAccountId (string accountName, string accountPassword) {
-      int accountId = -1;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM accounts WHERE accName=@accName AND accPassword=@accPassword", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accName", accountName);
-            cmd.Parameters.AddWithValue("@accPassword", accountPassword);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  accountId = dataReader.GetInt32("accId");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return accountId;
-   }
-
-   public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
-      List<UserInfo> userList = new List<UserInfo>();
-      string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  UserInfo info = new UserInfo(dataReader);
-                  userList.Add(info);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return userList;
-   }
+   #region Equipment Features
 
    public static new List<Armor> getArmorForAccount (int accId, int userId = 0) {
       List<Armor> armorList = new List<Armor>();
@@ -4139,6 +4100,122 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new Armor getArmor (int userId) {
+      Armor armor = new Armor();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN items ON (users.armId=items.itmId) WHERE users.usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int itemId = dataReader.GetInt32("itmId");
+                  int itemTypeId = dataReader.GetInt32("itmType");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
+                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
+
+                  if (category == Item.Category.Armor) {
+                     armor = new Armor(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return armor;
+   }
+
+   public static new Weapon getWeapon (int userId) {
+      Weapon weapon = new Weapon();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN items ON (users.wpnId=items.itmId) WHERE users.usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int itemId = dataReader.GetInt32("itmId");
+                  int itemTypeId = dataReader.GetInt32("itmType");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
+                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
+
+                  if (category == Item.Category.Weapon) {
+                     weapon = new Weapon(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return weapon;
+   }
+
+   #endregion
+
+   #region Crops Features
+
+   public static new List<SiloInfo> getSiloInfo (int userId) {
+      List<SiloInfo> siloInfo = new List<SiloInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM silo WHERE usrId=@usrId ORDER BY silo.crpType", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  SiloInfo info = new SiloInfo(dataReader);
+                  siloInfo.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return siloInfo;
+   }
+
+   public static new void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO silo (usrId, crpType, cropCount) VALUES(@usrId, @crpType, @cropCount) " +
+            "ON DUPLICATE KEY UPDATE cropCount = cropCount + " + amount, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@crpType", (int) cropType);
+            cmd.Parameters.AddWithValue("@cropCount", 1);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
    public static new bool hasItem (int userId, int itemId, int itemCategory) {
       bool found = false;
 
@@ -4206,51 +4283,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<SiloInfo> getSiloInfo (int userId) {
-      List<SiloInfo> siloInfo = new List<SiloInfo>();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM silo WHERE usrId=@usrId ORDER BY silo.crpType", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  SiloInfo info = new SiloInfo(dataReader);
-                  siloInfo.Add(info);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return siloInfo;
-   }
-
-   public static new void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO silo (usrId, crpType, cropCount) VALUES(@usrId, @crpType, @cropCount) " +
-            "ON DUPLICATE KEY UPDATE cropCount = cropCount + " + amount, conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@crpType", (int) cropType);
-            cmd.Parameters.AddWithValue("@cropCount", 1);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
+   #region Tutorial Features / Achievement Features
 
    public static new List<TutorialInfo> getTutorialInfo (int userId) {
       List<TutorialInfo> tutorialInfo = new List<TutorialInfo>();
@@ -4302,29 +4335,9 @@ public class DB_Main : DB_MainStub
       return new TutorialData();
    }
 
-   public static new int getUserId (string username) {
-      int userId = -1;
+   #endregion
 
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT usrId FROM users WHERE usrName=@usrName", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrName", username);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  userId = dataReader.GetInt32("usrId");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return userId;
-   }
+   #region User Currency Features
 
    public static new void addGold (int userId, int amount) {
       try {
@@ -4362,6 +4375,75 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
    }
+
+   public static new int getGold (int userId) {
+      int gold = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrGold FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  gold = dataReader.GetInt32("usrGold");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return gold;
+   }
+
+   public static new int getGems (int accountId) {
+      int gems = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accGems FROM accounts WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  gems = dataReader.GetInt32("accGems");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return gems;
+   }
+
+   public static new void addGems (int accountId, int amount) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET accGems = accGems + @amount WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@amount", amount);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Chat System Features / Bug Reporting Features
 
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
@@ -4488,6 +4570,62 @@ public class DB_Main : DB_MainStub
       return list;
    }
 
+   #endregion
+
+   #region Accounts Features / User Info Features
+
+   public static new int getAccountId (string accountName, string accountPassword) {
+      int accountId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM accounts WHERE accName=@accName AND accPassword=@accPassword", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accName", accountName);
+            cmd.Parameters.AddWithValue("@accPassword", accountPassword);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountId = dataReader.GetInt32("accId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountId;
+   }
+
+   public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
+      List<UserInfo> userList = new List<UserInfo>();
+      string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  UserInfo info = new UserInfo(dataReader);
+                  userList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userList;
+   }
+
    public static new int getAccountStatus (int accountId) {
       int accountStatus = 0;
 
@@ -4558,6 +4696,30 @@ public class DB_Main : DB_MainStub
       }
 
       return accountId;
+   }
+
+   public static new int getUserId (string username) {
+      int userId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrId FROM users WHERE usrName=@usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", username);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userId = dataReader.GetInt32("usrId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userId;
    }
 
    public static new UserObjects getUserObjects (int userId) {
@@ -4640,6 +4802,31 @@ public class DB_Main : DB_MainStub
       return userInfo;
    }
 
+   public static new UserInfo getUserInfoJSON (string userId) {
+      UserInfo userInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", int.Parse(userId));
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userInfo = new UserInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+
+      return userInfo;
+   }
+
    public static new UserInfo getUserInfo (string userName) {
       UserInfo userInfo = null;
 
@@ -4664,36 +4851,13 @@ public class DB_Main : DB_MainStub
       return userInfo;
    }
 
-   public static new ShipInfo getShipInfo (int shipId) {
-      ShipInfo shipInfo = null;
+   public static new Stats getStats (int userId) {
+      Stats stats = new Stats(userId);
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM ships LEFT JOIN users USING (shpId) WHERE ships.shpId=@shipId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipId", shipId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  shipInfo = new ShipInfo(dataReader);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return shipInfo;
-   }
-
-   public static new Armor getArmor (int userId) {
-      Armor armor = new Armor();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN items ON (users.armId=items.itmId) WHERE users.usrId=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM stats WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
@@ -4701,15 +4865,12 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  int itemId = dataReader.GetInt32("itmId");
-                  int itemTypeId = dataReader.GetInt32("itmType");
-                  string palette1 = dataReader.GetString("itmPalette1");
-                  string palette2 = dataReader.GetString("itmPalette2");
-                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
-
-                  if (category == Item.Category.Armor) {
-                     armor = new Armor(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
-                  }
+                  stats.strength = dataReader.GetInt32("strength");
+                  stats.precision = dataReader.GetInt32("precision");
+                  stats.vitality = dataReader.GetInt32("vitality");
+                  stats.intelligence = dataReader.GetInt32("intelligence");
+                  stats.spirit = dataReader.GetInt32("spirit");
+                  stats.luck = dataReader.GetInt32("luck");
                }
             }
          }
@@ -4717,39 +4878,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return armor;
-   }
-
-   public static new Weapon getWeapon (int userId) {
-      Weapon weapon = new Weapon();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN items ON (users.wpnId=items.itmId) WHERE users.usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  int itemId = dataReader.GetInt32("itmId");
-                  int itemTypeId = dataReader.GetInt32("itmType");
-                  string palette1 = dataReader.GetString("itmPalette1");
-                  string palette2 = dataReader.GetString("itmPalette2");
-                  Item.Category category = (Item.Category) dataReader.GetInt32("itmCategory");
-
-                  if (category == Item.Category.Weapon) {
-                     weapon = new Weapon(itemId, itemTypeId, palette1, palette2, dataReader.GetString("itmData"));
-                  }
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return weapon;
+      return stats;
    }
 
    public static new int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
@@ -4789,6 +4918,27 @@ public class DB_Main : DB_MainStub
 
       return userId;
    }
+
+   public static new void deleteUser (int accountId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Inventory Features
 
    public static new Item createNewItem (int userId, Item baseItem) {
       Item newItem = baseItem.Clone();
@@ -4891,228 +5041,6 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-   }
-
-   public static new void deleteUser (int accountId, int userId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM users WHERE accId=@accId AND usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accountId);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void deleteAllFromTable (int accountId, int userId, string table) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE " + table + " FROM users JOIN " + table + " USING (usrId) WHERE accId=@accId AND usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accountId);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new ShipInfo createStartingShip (int userId) {
-      Ship.Type shipType = Ship.Type.Type_1;
-      ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
-            PaletteDef.ShipHull.Brown, PaletteDef.ShipHull.Brown, PaletteDef.ShipSail.White, PaletteDef.ShipSail.White, 100, 100, 20,
-            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
-      shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
-
-      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
-      var sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, shipInfo.shipAbilities);
-      }
-
-      string serializedShipAbilities = sb.ToString();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@shpType", (int) shipInfo.shipType);
-            cmd.Parameters.AddWithValue("@skinType", (int) shipInfo.skinType);
-            cmd.Parameters.AddWithValue("@palette1", shipInfo.palette1);
-            cmd.Parameters.AddWithValue("@palette2", shipInfo.palette2);
-            cmd.Parameters.AddWithValue("@mastType", (int) shipInfo.mastType);
-            cmd.Parameters.AddWithValue("@sailType", (int) shipInfo.sailType);
-            cmd.Parameters.AddWithValue("@shipName", shipInfo.shipName);
-            cmd.Parameters.AddWithValue("@sailPalette1", shipInfo.sailPalette1);
-            cmd.Parameters.AddWithValue("@sailPalette2", shipInfo.sailPalette2);
-            cmd.Parameters.AddWithValue("@supplies", shipInfo.supplies);
-            cmd.Parameters.AddWithValue("@suppliesMax", shipInfo.suppliesMax);
-            cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
-            cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
-            cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
-            cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
-            cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
-            cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
-            cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
-            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-            shipInfo.shipId = (int) cmd.LastInsertedId;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return shipInfo;
-   }
-
-   public static new void updateShipAbilities (int shipId, string abilityXML) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.shipAbilities=@shipAbilities WHERE ships.shpId = @shipId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipId", shipId);
-            cmd.Parameters.AddWithValue("@shipAbilities", abilityXML);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {
-      ShipInfo shipInfo = new ShipInfo();
-
-      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipyardInfo.shipAbilities.GetType());
-      var sb = new StringBuilder();
-      using (var writer = XmlWriter.Create(sb)) {
-         ser.Serialize(writer, shipyardInfo.shipAbilities);
-      }
-
-      string serializedShipAbilities = sb.ToString();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
-            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@shpType", (int) shipyardInfo.shipType);
-            cmd.Parameters.AddWithValue("@skinType", (int) shipyardInfo.skinType);
-            cmd.Parameters.AddWithValue("@palette1", shipyardInfo.palette1);
-            cmd.Parameters.AddWithValue("@palette2", shipyardInfo.palette2);
-            cmd.Parameters.AddWithValue("@mastType", (int) shipyardInfo.mastType);
-            cmd.Parameters.AddWithValue("@sailType", (int) shipyardInfo.sailType);
-            cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipName);
-            cmd.Parameters.AddWithValue("@sailPalette1", shipyardInfo.sailPalette1);
-            cmd.Parameters.AddWithValue("@sailPalette2", shipyardInfo.sailPalette2);
-            cmd.Parameters.AddWithValue("@supplies", shipyardInfo.supplies);
-            cmd.Parameters.AddWithValue("@suppliesMax", shipyardInfo.suppliesMax);
-            cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
-            cmd.Parameters.AddWithValue("@health", shipyardInfo.maxHealth);
-            cmd.Parameters.AddWithValue("@maxHealth", shipyardInfo.maxHealth);
-            cmd.Parameters.AddWithValue("@attackRange", shipyardInfo.attackRange);
-            cmd.Parameters.AddWithValue("@damage", shipyardInfo.damage);
-            cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
-            cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
-            cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
-            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-            shipInfo.shipId = (int) cmd.LastInsertedId;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return shipInfo;
-   }
-
-   public static new void setCurrentShip (int userId, int shipId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET shpId=@shipId WHERE usrId=@userId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@shipId", shipId);
-            cmd.Parameters.AddWithValue("@userId", userId);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new int getGold (int userId) {
-      int gold = 0;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT usrGold FROM users WHERE usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  gold = dataReader.GetInt32("usrGold");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return gold;
-   }
-
-   public static new int getGems (int accountId) {
-      int gems = 0;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accGems FROM accounts WHERE accId=@accId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accountId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  gems = dataReader.GetInt32("accGems");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return gems;
    }
 
    public static new int getItemID (int userId, int itmCategory, int itmType) {
@@ -5583,23 +5511,6 @@ public class DB_Main : DB_MainStub
       return itemList;
    }
 
-   public static new void addGems (int accountId, int amount) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET accGems = accGems + @amount WHERE accId=@accId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accountId);
-            cmd.Parameters.AddWithValue("@amount", amount);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
    public static new int insertNewUsableItem (int userId, UsableItem.Type itemType, string palette1, string palette2) {
       int itemId = 0;
 
@@ -5682,75 +5593,6 @@ public class DB_Main : DB_MainStub
       }
 
       return itemId;
-   }
-
-   public static new void setHairColor (int userId, string newPalette) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET hairPalette1=@hairPalette1 WHERE usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@hairPalette1", newPalette);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Execute the command
-            int rowsAffected = cmd.ExecuteNonQuery();
-
-            if (rowsAffected != 1) {
-               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
-            }
-         }
-
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void setHairType (int userId, HairLayer.Type newType) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE users SET hairType=@hairType WHERE usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@hairType", (int) newType);
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Execute the command
-            int rowsAffected = cmd.ExecuteNonQuery();
-
-            if (rowsAffected != 1) {
-               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
-            }
-         }
-
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void setShipSkin (int shipId, Ship.SkinType newSkin) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE ships SET skinType=@skinType WHERE shpId=@shipId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@skinType", (int) newSkin);
-            cmd.Parameters.AddWithValue("@shipId", shipId);
-
-            // Execute the command
-            int rowsAffected = cmd.ExecuteNonQuery();
-
-            if (rowsAffected != 1) {
-               D.warning("An UPDATE didn't affect just 1 row, for shipId " + shipId);
-            }
-         }
-
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
    }
 
    public static new int deleteItem (int userId, int itemId) {
@@ -5850,26 +5692,87 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new Stats getStats (int userId) {
-      Stats stats = new Stats(userId);
+   #endregion
 
+   public static new void deleteAllFromTable (int accountId, int userId, string table) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE " + table + " FROM users JOIN " + table + " USING (usrId) WHERE accId=@accId AND usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accountId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setHairColor (int userId, string newPalette) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM stats WHERE usrId=@usrId", conn)) {
+            "UPDATE users SET hairPalette1=@hairPalette1 WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
+            cmd.Parameters.AddWithValue("@hairPalette1", newPalette);
             cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setHairType (int userId, HairLayer.Type newType) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE users SET hairType=@hairType WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@hairType", (int) newType);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for usrId " + userId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #region Ship Features
+
+   public static new ShipInfo getShipInfo (int shipId) {
+      ShipInfo shipInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM ships LEFT JOIN users USING (shpId) WHERE ships.shpId=@shipId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipId", shipId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  stats.strength = dataReader.GetInt32("strength");
-                  stats.precision = dataReader.GetInt32("precision");
-                  stats.vitality = dataReader.GetInt32("vitality");
-                  stats.intelligence = dataReader.GetInt32("intelligence");
-                  stats.spirit = dataReader.GetInt32("spirit");
-                  stats.luck = dataReader.GetInt32("luck");
+                  shipInfo = new ShipInfo(dataReader);
                }
             }
          }
@@ -5877,8 +5780,203 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return stats;
+      return shipInfo;
    }
+
+   public static new ShipInfo createStartingShip (int userId) {
+      Ship.Type shipType = Ship.Type.Type_1;
+      ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
+            PaletteDef.ShipHull.Brown, PaletteDef.ShipHull.Brown, PaletteDef.ShipSail.White, PaletteDef.ShipSail.White, 100, 100, 20,
+            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
+      shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
+
+      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, shipInfo.shipAbilities);
+      }
+
+      string serializedShipAbilities = sb.ToString();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, attackRange, speed, sailors, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @maxHealth, @maxHealth, @attackRange, @speed, @sailors, @rarity, @shipAbilities)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@shpType", (int) shipInfo.shipType);
+            cmd.Parameters.AddWithValue("@skinType", (int) shipInfo.skinType);
+            cmd.Parameters.AddWithValue("@palette1", shipInfo.palette1);
+            cmd.Parameters.AddWithValue("@palette2", shipInfo.palette2);
+            cmd.Parameters.AddWithValue("@mastType", (int) shipInfo.mastType);
+            cmd.Parameters.AddWithValue("@sailType", (int) shipInfo.sailType);
+            cmd.Parameters.AddWithValue("@shipName", shipInfo.shipName);
+            cmd.Parameters.AddWithValue("@sailPalette1", shipInfo.sailPalette1);
+            cmd.Parameters.AddWithValue("@sailPalette2", shipInfo.sailPalette2);
+            cmd.Parameters.AddWithValue("@supplies", shipInfo.supplies);
+            cmd.Parameters.AddWithValue("@suppliesMax", shipInfo.suppliesMax);
+            cmd.Parameters.AddWithValue("@cargoMax", shipInfo.cargoMax);
+            cmd.Parameters.AddWithValue("@health", shipInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@maxHealth", shipInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@attackRange", shipInfo.attackRange);
+            cmd.Parameters.AddWithValue("@speed", shipInfo.speed);
+            cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
+            cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
+            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            shipInfo.shipId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return shipInfo;
+   }
+
+   public static new void updateShipAbilities (int shipId, string abilityXML) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE ships SET ships.shipAbilities=@shipAbilities WHERE ships.shpId = @shipId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipId", shipId);
+            cmd.Parameters.AddWithValue("@shipAbilities", abilityXML);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new ShipInfo createShipFromShipyard (int userId, ShipInfo shipyardInfo) {
+      ShipInfo shipInfo = new ShipInfo();
+
+      System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipyardInfo.shipAbilities.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, shipyardInfo.shipAbilities);
+      }
+
+      string serializedShipAbilities = sb.ToString();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO ships (usrId, shpType, palette1, palette2, mastType, sailType, shpName, sailPalette1, sailPalette2, supplies, suppliesMax, cargoMax, health, maxHealth, damage, sailors, attackRange, speed, rarity, shipAbilities) " +
+            "VALUES(@usrId, @shpType, @palette1, @palette2, @mastType, @sailType, @shipName, @sailPalette1, @sailPalette2, @supplies, @suppliesMax, @cargoMax, @health, @maxHealth, @damage, @sailors, @attackRange, @speed, @rarity, @shipAbilities)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@shpType", (int) shipyardInfo.shipType);
+            cmd.Parameters.AddWithValue("@skinType", (int) shipyardInfo.skinType);
+            cmd.Parameters.AddWithValue("@palette1", shipyardInfo.palette1);
+            cmd.Parameters.AddWithValue("@palette2", shipyardInfo.palette2);
+            cmd.Parameters.AddWithValue("@mastType", (int) shipyardInfo.mastType);
+            cmd.Parameters.AddWithValue("@sailType", (int) shipyardInfo.sailType);
+            cmd.Parameters.AddWithValue("@shipName", shipyardInfo.shipName);
+            cmd.Parameters.AddWithValue("@sailPalette1", shipyardInfo.sailPalette1);
+            cmd.Parameters.AddWithValue("@sailPalette2", shipyardInfo.sailPalette2);
+            cmd.Parameters.AddWithValue("@supplies", shipyardInfo.supplies);
+            cmd.Parameters.AddWithValue("@suppliesMax", shipyardInfo.suppliesMax);
+            cmd.Parameters.AddWithValue("@cargoMax", shipyardInfo.cargoMax);
+            cmd.Parameters.AddWithValue("@health", shipyardInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@maxHealth", shipyardInfo.maxHealth);
+            cmd.Parameters.AddWithValue("@attackRange", shipyardInfo.attackRange);
+            cmd.Parameters.AddWithValue("@damage", shipyardInfo.damage);
+            cmd.Parameters.AddWithValue("@sailors", shipyardInfo.sailors);
+            cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
+            cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
+            cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            shipInfo.shipId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return shipInfo;
+   }
+
+   public static new List<ShipInfo> getShips (int userId, int page, int shipsPerPage) {
+      List<ShipInfo> shipList = new List<ShipInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM ships JOIN users USING (usrId) WHERE ships.usrId=@usrId ORDER BY ships.shpType ASC, ships.shpId ASC LIMIT @start, @perPage", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            cmd.Parameters.AddWithValue("@start", (page - 1) * shipsPerPage);
+            cmd.Parameters.AddWithValue("@perPage", shipsPerPage);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  ShipInfo ship = new ShipInfo(dataReader);
+                  shipList.Add(ship);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return shipList;
+   }
+
+   public static new void setShipSkin (int shipId, Ship.SkinType newSkin) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE ships SET skinType=@skinType WHERE shpId=@shipId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@skinType", (int) newSkin);
+            cmd.Parameters.AddWithValue("@shipId", shipId);
+
+            // Execute the command
+            int rowsAffected = cmd.ExecuteNonQuery();
+
+            if (rowsAffected != 1) {
+               D.warning("An UPDATE didn't affect just 1 row, for shipId " + shipId);
+            }
+         }
+
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void setCurrentShip (int userId, int shipId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET shpId=@shipId WHERE usrId=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@shipId", shipId);
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   #endregion
+
+   #region Jobs Features / Guild Features
 
    public static new Jobs getJobXP (int userId) {
       Jobs jobs = new Jobs(userId);
@@ -6058,33 +6156,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new List<ShipInfo> getShips (int userId, int page, int shipsPerPage) {
-      List<ShipInfo> shipList = new List<ShipInfo>();
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ships JOIN users USING (usrId) WHERE ships.usrId=@usrId ORDER BY ships.shpType ASC, ships.shpId ASC LIMIT @start, @perPage", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-            cmd.Parameters.AddWithValue("@start", (page - 1) * shipsPerPage);
-            cmd.Parameters.AddWithValue("@perPage", shipsPerPage);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  ShipInfo ship = new ShipInfo(dataReader);
-                  shipList.Add(ship);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return shipList;
-   }
+   #endregion
 
    #region Trade History
 
@@ -7296,6 +7368,7 @@ public class DB_Main : DB_MainStub
 
    }
 
+   #region Equipment Translation
 
    protected static Armor getArmor (MySqlDataReader dataReader) {
       int itemId = DataUtil.getInt(dataReader, "armorId");
@@ -7352,6 +7425,8 @@ public class DB_Main : DB_MainStub
 
       return new Hat(itemId, itemTypeId, palette1, palette2, itemData);
    }
+
+   #endregion
 
    public static new int getUsrAdminFlag (int accountId) {
       int result = -1;
@@ -7448,6 +7523,8 @@ public class DB_Main : DB_MainStub
    }
 
    */
+
+   #region Account creation and Update
    public static new int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {
       int accountId = 0;
 
@@ -7490,6 +7567,8 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
    }
+
+   #endregion
 
    /*
    public static new void deleteAccount (int accountId) {

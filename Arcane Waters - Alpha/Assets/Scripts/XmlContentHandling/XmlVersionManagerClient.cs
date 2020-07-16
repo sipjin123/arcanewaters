@@ -611,9 +611,13 @@ public class XmlVersionManagerClient : MonoBehaviour {
                // id <spacer> category <spacer> serializer data
                string[] entries = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.RemoveEmptyEntries);
                if (entries.Length == 3) {
-                  Debug.Log((ItemDefinition.Category) int.Parse(entries[1]));
-                  ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
-                  ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
+                  try {
+                     Debug.Log((ItemDefinition.Category) int.Parse(entries[1]));
+                     ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
+                     ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
+                  } catch {
+                     D.debug("Error storing Item Definitions!");
+                  }
                }
             }
             break;
