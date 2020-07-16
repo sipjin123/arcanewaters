@@ -139,6 +139,22 @@ public class DB_MainStub : MonoBehaviour {
       return new List<XMLPair>();
    }
 
+   public static List<ItemDefinition> getItemDefinitions () {
+      return new List<ItemDefinition>();
+   }
+
+   public static void createNewItemDefinition (ItemDefinition definition) {
+
+   }
+
+   public static void updateItemDefinition (ItemDefinition definition) {
+
+   }
+
+   public static void deleteItemDefinition (int id) {
+
+   }
+
    public static void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
 
    }

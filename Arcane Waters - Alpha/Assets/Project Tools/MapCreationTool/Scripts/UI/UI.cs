@@ -231,7 +231,7 @@ namespace MapCreationTool
 
       public void editorTypeDropdown_ValueChanged () {
          if (Tools.editorType != (EditorType) editorTypeDropdown.value)
-            yesNoDialog.display(
+            yesNoDialog.displayIfMapStateModified(
              "Editor type change",
              "Are you sure you want to change the editor type?\nAll unsaved progress will be permanently lost.",
              () => Tools.changeEditorType((EditorType) editorTypeDropdown.value),
@@ -247,7 +247,7 @@ namespace MapCreationTool
          Vector2Int dropdownSize = new Vector2Int(boardSizes[boardSizeDropdown.value], boardSizes[boardSizeDropdown.value]);
 
          if (Tools.boardSize != dropdownSize) {
-            yesNoDialog.display(
+            yesNoDialog.displayIfMapStateModified(
              "Board size change",
              "Are you sure you want to change the size of the board?\nAll unsaved progress will be permanently lost.",
              () => Tools.changeBoardSize(dropdownSize),
@@ -305,7 +305,7 @@ namespace MapCreationTool
       }
 
       public void newButton_Click () {
-         yesNoDialog.display(
+         yesNoDialog.displayIfMapStateModified(
              "New map",
              "Are you sure you want to start a new map?\nAll unsaved progress will be lost.",
              drawBoard.newMap,
@@ -441,7 +441,7 @@ namespace MapCreationTool
       }
 
       public void masterToolButton_Click () {
-         yesNoDialog.display("Exiting map editor",
+         yesNoDialog.displayIfMapStateModified("Exiting map editor",
              "Are you sure you want to exit the map editor?\nAll unsaved progress will be lost.",
              () => SceneManager.LoadScene(masterSceneName), null);
       }

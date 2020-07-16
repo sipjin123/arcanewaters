@@ -81,6 +81,37 @@ public class ContextMenuPanel : MonoBehaviour
       button.initForAction(text, action);
    }
 
+   public void showDefaultMenuForUser (int userId, string userName) {
+      if (Global.player == null) {
+         return;
+      }
+
+      // Try to find the entity of the clicked user
+      NetEntity targetEntity = EntityManager.self.getEntity(userId);
+
+      clearButtons();
+      addButton("Info", () => Global.player.rpc.Cmd_RequestCharacterInfoFromServer(userId));
+      
+      if (Global.player.userId != userId) {
+         if (VoyageManager.isInVoyage(Global.player)) {
+            // If we can locally see the clicked user, only allow inviting if he is not already in the group
+            if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
+               PanelManager.self.contextMenuPanel.addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
+            }
+         }
+         PanelManager.self.contextMenuPanel.addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
+
+         // Only allow inviting to guild if we can locally see the invitee
+         if (Global.player.guildId > 0 && targetEntity != null && targetEntity.guildId == 0) {
+            PanelManager.self.contextMenuPanel.addButton("Guild Invite", () => Global.player.rpc.Cmd_InviteToGuild(userId));
+         }
+
+         PanelManager.self.contextMenuPanel.addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
+      }
+
+      show(userName);
+   }
+
    #region Private Variables
 
    #endregion

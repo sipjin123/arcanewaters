@@ -16,20 +16,20 @@ public class InventoryStatRow : MonoBehaviour
    // The attack value of the equipped weapon
    public Text attackText;
 
-   // The attack difference between the currently equipped weapon and the hovered one
-   public Text attackModText;
-
    // The defense value of the equipped armor
    public Text defenseText;
 
-   // The defense difference between the currently equipped armor and the hovered one
-   public Text defenseModText;
+   // The difference between the currently equipped item and the hovered one
+   public Text modText;
 
    // The color used for positive stat modifiers
    public Color positiveStatModColor;
 
    // The color used for negative stat modifiers
    public Color negativeStatModColor;
+
+   // The color used without modifiers
+   public Color normalStatModColor;
 
    #endregion
 
@@ -55,44 +55,47 @@ public class InventoryStatRow : MonoBehaviour
    }
 
    public void setStatModifiersForWeapon (Weapon weapon) {
-      // Enable the modifier text object
-      attackModText.gameObject.SetActive(true);
-
       // Calculate the attack modifier
       float newAttack = weapon.getDamage(element);
       float attackDifference = newAttack - _equippedAttackValue;
+      attackText.text = newAttack.ToString();
 
       // Display the stat difference and color according to its positive or negative effect
       if (attackDifference >= 0) {
-         attackModText.text = "+" + attackDifference.ToString();
-         attackModText.color = positiveStatModColor;
+         modText.text = "+" + attackDifference.ToString();
+         modText.color = positiveStatModColor;
+         attackText.color = positiveStatModColor;
       } else {
-         attackModText.text = attackDifference.ToString();
-         attackModText.color = negativeStatModColor;
+         modText.text = attackDifference.ToString();
+         modText.color = negativeStatModColor;
+         attackText.color = negativeStatModColor;
       }
    }
 
    public void setStatModifiersForArmor (Armor armor) {
-      // Enable the modifier text objects
-      defenseModText.gameObject.SetActive(true);
-
       // Calculate the defense modifier
       float newDefense = armor.getDefense(element);
       float defenseDifference = newDefense - _equippedDefenseValue;
+      defenseText.text = newDefense.ToString();
 
       // Display the stat difference and color according to its positive or negative effect
       if (defenseDifference >= 0) {
-         defenseModText.text = "+" + defenseDifference.ToString();
-         defenseModText.color = positiveStatModColor;
+         modText.text = "+" + defenseDifference.ToString();
+         modText.color = positiveStatModColor;
+         defenseText.color = positiveStatModColor;
       } else {
-         defenseModText.text = defenseDifference.ToString();
-         defenseModText.color = negativeStatModColor;
+         modText.text = defenseDifference.ToString();
+         modText.color = negativeStatModColor;
+         defenseText.color = negativeStatModColor;
       }
    }
 
    public void disableStatModifiers () {
-      attackModText.gameObject.SetActive(false);
-      defenseModText.gameObject.SetActive(false);
+      modText.text = "";
+      attackText.text = _equippedAttackValue.ToString();
+      defenseText.text = _equippedDefenseValue.ToString();
+      attackText.color = normalStatModColor;
+      defenseText.color = normalStatModColor;
    }
 
    #region Private Variables

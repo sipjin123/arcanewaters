@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Allows to communicate with Nubis through reflection calls.
@@ -37,19 +38,30 @@ internal class NubisClient
       }
       return sbuilder.ToString();
    }
-
+   private static string buildUrl (string endpoint, string queryString, string remoteServer, int remotePort) {
+      return $"http://{remoteServer}:{remotePort}/{NubisEndpoints.RPC}/{endpoint}{queryString}";
+   }
+   private static async Task<string> callImpl (string function, params string[] args) {
+      string endpoint = getEndpointFromFunctionName(function);
+      string query = getQueryStringFromArguments(args);
+      string server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
+      string url = buildUrl(endpoint, query, server, REMOTE_PORT);
+      HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, url);
+      HttpClient client = new HttpClient();
+      HttpResponseMessage response = await client.SendAsync(message);
+      return await response.Content.ReadAsStringAsync();
+   }
+   public static async Task<T> call<T> (string function, params string[] args) {
+      try {
+         string result = await callImpl(function, args);
+         return JsonConvert.DeserializeObject<T>(result);
+      } catch {
+         return default(T);
+      }
+   }
    public static async Task<string> call (string function, params string[] args) {
       try {
-         string endpoint = getEndpointFromFunctionName(function);
-         string queryString = getQueryStringFromArguments(args);
-         string remoteServer = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
-         int remotePort = REMOTE_PORT;
-         string url = $"http://{remoteServer}:{remotePort}/{NubisEndpoints.RPC}/{endpoint}{queryString}";
-         //D.editorLog("The URL is: " + url, UnityEngine.Color.green);
-         HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, url);
-         HttpClient client = new HttpClient();
-         HttpResponseMessage response = await client.SendAsync(message);
-         return await response.Content.ReadAsStringAsync();
+         return await callImpl(function, args);
       } catch {
          return string.Empty;
       }

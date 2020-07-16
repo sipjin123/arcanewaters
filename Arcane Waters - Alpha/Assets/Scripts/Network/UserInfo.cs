@@ -91,6 +91,9 @@ public class UserInfo {
    // The farm layout map we've chosen
    public int customFarmBaseId;
 
+   // Gets set to true when the user is online (this is not stored in the DB)
+   public bool isOnline = false;
+
    #endregion
 
    public UserInfo () { }

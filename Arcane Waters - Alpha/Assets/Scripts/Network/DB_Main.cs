@@ -3510,6 +3510,98 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   #region Item Definitions
+
+   public static new List<ItemDefinition> getItemDefinitions () {
+      List<ItemDefinition> result = new List<ItemDefinition>();
+
+      string cmdText = "SELECT id, category, serializedData FROM item_definitions;";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               result.Add(ItemDefinition.deserialize(
+                  dataReader.GetString("serializedData"),
+                  (ItemDefinition.Category) dataReader.GetInt32("category")));
+            }
+         }
+      }
+
+      return result;
+   }
+
+   public static new void createNewItemDefinition (ItemDefinition definition) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            // Insert a new empty entry to item definitions
+            cmd.CommandText = "INSERT INTO item_definitions(category, serializedData) VALUES(@category, @serializedData);";
+            cmd.Parameters.AddWithValue("@category", -1);
+            cmd.Parameters.AddWithValue("@serializedData", "undefined");
+            cmd.ExecuteNonQuery();
+
+            // Get the id of the new inserted entry
+            long id = cmd.LastInsertedId;
+
+            // Apply that id to our item definition
+            definition.id = (int) id;
+
+            // Populate the database entry with our definition
+            cmd.CommandText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@id", definition.id);
+            cmd.Parameters.AddWithValue("@category", (int) definition.category);
+            cmd.Parameters.AddWithValue("@serializedData", definition.serialize());
+            cmd.ExecuteNonQuery();
+
+            // Commit our transaction
+            transaction.Commit();
+         } catch (Exception e) {
+            // In case there's an error in the middle, revert back, so no empty entry is leftover in the database
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new void updateItemDefinition (ItemDefinition definition) {
+      string cmdText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@id", definition.id);
+         cmd.Parameters.AddWithValue("@category", (int) definition.category);
+         cmd.Parameters.AddWithValue("@serializedData", definition.serialize());
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   public static new void deleteItemDefinition (int id) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand("DELETE FROM item_definitions WHERE id = @id;", conn)) {
+         conn.Open();
+         cmd.Prepare();
+
+         cmd.Parameters.AddWithValue("@id", id);
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   #endregion
+
    #region Companions
 
    public static new void updateCompanionExp (int xmlId, int userId, int exp) {

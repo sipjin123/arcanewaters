@@ -1,4 +1,5 @@
 ﻿using System;
+using MapCreationTool.UndoSystem;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -22,6 +23,14 @@ namespace MapCreationTool
          contentText.text = content;
 
          show();
+      }
+
+      public void displayIfMapStateModified (string title, string content, Action onYes, Action onNo) {
+         if (Undo.anyModificationUndoEntries()) {
+            display(title, content, onYes, onNo);
+         } else {
+            onYes?.Invoke();
+         }
       }
 
       public void yesButton_Click () {

@@ -308,6 +308,10 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveCharacterInfo (NetworkConnection connection, UserObjects userObjects, Stats stats, Jobs jobs, string guildName, Perk[] perks) {
       // Make sure the panel is showing
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
+      if (!panel.isShowing()) {
+         PanelManager.self.pushPanel(Panel.Type.CharacterInfo);
+         panel.loadCharacterCache();
+      }
 
       // If this is the local player, update perk points in the perk manager
       if (Global.player != null && userObjects.userInfo.userId == Global.player.userId) {
@@ -596,6 +600,17 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
+   public void Target_CloseVoyagePanel (NetworkConnection connection) {
+      // Get the panel
+      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
+
+      // Close the panel if it is showing
+      if (panel.isShowing()) {
+         PanelManager.self.popPanel();
+      }
+   }
+
+   [TargetRpc]
    public void Target_ConfirmWarpToVoyageArea (NetworkConnection connection) {
       // Close the voyage panel if it is showing
       VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
@@ -764,6 +779,13 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determine if the members are online
+            if (_player.guildId > 0) {
+               foreach (UserInfo member in info.guildMembers) {
+                  member.isOnline = ServerNetwork.self.isUserOnline(member.userId);
+               }
+            }
+
             _player.rpc.Target_ReceiveGuildInfo(_player.connectionToClient, info);
          });
       });
@@ -2475,11 +2497,11 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Update the user voyage group in the net entity
             _player.voyageGroupId = voyageGroup.groupId;
+            Target_CloseVoyagePanel(_player.connectionToClient);
 
-            // Display a confirmation to warp to the voyage area
-            Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
+            // Warp the player to the voyage map immediately
+            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
          });
       });
    }
@@ -4045,6 +4067,22 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
+   [TargetRpc]
+   public void Target_ShowCustomMapPanel (string customMapType, bool warpAfterSelecting, Map[] baseMaps) {
+      // If we received information about base maps that will be required by the panel, store it
+      if (baseMaps != null) {
+         foreach (Map map in baseMaps) {
+            AreaManager.self.storeAreaInfo(map);
+         }
+      }
+
+      if (AreaManager.self.tryGetCustomMapManager(customMapType, out CustomMapManager manager)) {
+         PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).displayFor(manager, warpAfterSelecting);
+      } else {
+         D.error($"Cannot find custom map manager for key: { customMapType }");
+      }
+   }
+
    [Command]
    public void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
       // Check if this is a custom map key
@@ -4053,7 +4091,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Check if this type of custom map has this base map
-      if (!manager.getAllBaseMapKeys().Contains(AreaManager.self.getAreaName(baseMapId))) {
+      if (!manager.getRelatedMaps().Any(m => m.id == baseMapId)) {
          return;
       }
 

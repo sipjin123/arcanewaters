@@ -1079,6 +1079,7 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
@@ -1695,7 +1696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c157dbab0c2a7dd4a9f4fc06c188ea2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newZ: 100.45
+  newZ: 100.94
 --- !u!1 &16999
 GameObject:
   m_ObjectHideFlags: 0

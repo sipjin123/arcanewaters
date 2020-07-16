@@ -159,6 +159,14 @@ public class AreaManager : MonoBehaviour
       return null;
    }
 
+   public IEnumerable<Map> getChildMaps (Map parentMap) {
+      foreach (Map map in _areaKeyToMapInfo.Values) {
+         if (map.sourceMapId == parentMap.id) {
+            yield return map;
+         }
+      }
+   }
+
    public List<string> getSeaAreaKeys () {
       return _seaAreaKeys;
    }

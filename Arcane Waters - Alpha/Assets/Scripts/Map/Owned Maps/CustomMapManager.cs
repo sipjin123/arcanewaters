@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
-using MapCustomization;
+using System.Collections.Generic;
+using MapCreationTool.Serialization;
 
 public abstract class CustomMapManager
 {
@@ -43,13 +43,16 @@ public abstract class CustomMapManager
       return int.Parse(userSpecificAreaKey.Split(new string[] { "_user" }, StringSplitOptions.RemoveEmptyEntries)[1]);
    }
 
-   // Gets all base map keys for this owned map type
-   public string[] getAllBaseMapKeys () {
-      return AreaManager.self.getAreaKeys().Where(k => k.StartsWith(mapTypeAreaKey + "_base")).ToArray();
-   }
+   // Gets the main placeholder map and the base maps for this type of custom map
+   public Map[] getRelatedMaps () {
+      Map mainMap = AreaManager.self.getMapInfo(mapTypeAreaKey);
+      if (mainMap == null) {
+         D.error($"Cound not find main map for custom map type: { mapTypeAreaKey }");
+         return new Map[0];
+      }
 
-   // Extracts the display name from the base map area key
-   public string getBaseMapDisplayName (string baseMapAreaKey) {
-      return baseMapAreaKey.Replace(mapTypeAreaKey, "").Replace("base", "").Replace("_", "");
+      List<Map> maps = new List<Map> { mainMap };
+      maps.AddRange(AreaManager.self.getChildMaps(mainMap));
+      return maps.ToArray();
    }
 }

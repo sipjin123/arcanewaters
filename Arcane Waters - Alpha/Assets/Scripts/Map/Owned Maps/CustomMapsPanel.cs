@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using MapCreationTool.Serialization;
 
 public class CustomMapsPanel : Panel
 {
@@ -18,9 +19,6 @@ public class CustomMapsPanel : Panel
    // Title of the panel
    public Text title;
 
-   // Text, which displays a hint for the next user action
-   public Text userActionText;
-
    #endregion
 
    public void displayFor (CustomMapManager manager, bool warpAfterSelecting = false) {
@@ -33,13 +31,16 @@ public class CustomMapsPanel : Panel
       // Clear out any old info
       mapBaseContainer.gameObject.DestroyChildren();
 
-      title.text = manager.typeDisplayName;
-      userActionText.text = $"Choose a space for your { manager.typeDisplayName }:";
+      title.text = $"Choose a { manager.typeDisplayName } layout";
 
       // Create base map entries
-      foreach (string baseMapKey in manager.getAllBaseMapKeys()) {
+      foreach (Map baseMap in manager.getRelatedMaps().Where(m => m.sourceMapId > 0)) {
          BaseMapEntry cell = Instantiate(baseMapEntryPref, mapBaseContainer.transform, false);
-         cell.setData(manager.getBaseMapDisplayName(baseMapKey), () => selectBaseMap(AreaManager.self.getAreaId(baseMapKey)));
+
+         // Get the preview image for the entry
+         Sprite sprite = ImageManager.getSprite($"GUI/Map Customization/Preview Images/{ manager.typeDisplayName }_map_{ baseMap.name.ToLower().Replace(" ", "_") }");
+
+         cell.setData(baseMap.name, sprite, 0, 0, () => selectBaseMap(baseMap.id));
       }
 
       // TODO: highlight the entry, which is owned by user

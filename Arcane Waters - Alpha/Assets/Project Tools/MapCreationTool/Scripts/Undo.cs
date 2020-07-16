@@ -87,6 +87,22 @@ namespace MapCreationTool.UndoSystem
          get { return Log.Count - head; }
       }
 
+      // Finds out if there are any undo entries that modified the state of the map
+      public static bool anyModificationUndoEntries () {
+         for (int i = 0; i < head; i++) {
+            if (Log[i].undoData is PrefabDataUndoRedoData) {
+               return true;
+            }
+
+            BoardUndoRedoData boardData = Log[i].undoData as BoardUndoRedoData;
+            if (boardData != null && (boardData.change.prefabChanges.Count > 0 || boardData.change.tileChanges.Count > 0)) {
+               return true;
+            }
+         }
+
+         return false;
+      }
+
       public static void clear () {
          Log.Clear();
          head = 0;

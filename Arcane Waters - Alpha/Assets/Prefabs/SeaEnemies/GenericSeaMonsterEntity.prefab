@@ -152,6 +152,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 3
   group: 4
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1307228615476472
 GameObject:
@@ -261,7 +262,6 @@ MonoBehaviour:
   hairPalette1: 
   hairPalette2: 
   entityName: 
-  nationType: 0
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
@@ -280,16 +280,15 @@ MonoBehaviour:
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  classType: 0
-  specialty: 0
-  faction: 0
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isSpeedingUp: 0
   damage: 10
   reloadDelay: 1
   attackCounter: 0
@@ -364,22 +363,8 @@ MonoBehaviour:
     rippleAnimationSpeedOverride: -1
     projectileSpawnLocations: []
     rippleLocOffset: {x: 0, y: 0, z: 0}
-    lootData:
-      lootList: []
-      defaultLoot:
-        category: 0
-        id: 0
-        itemTypeId: 0
-        paletteName1: 
-        paletteName2: 
-        data: 
-        count: 1
-        itemName: 
-        itemDescription: 
-        iconPath: 
-      minQuantity: 0
-      maxQuantity: 0
     skillIdList: 
+    lootGroupId: 0
   isAttacking: 0
   variety: 0
   monsterType: 0
@@ -702,7 +687,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c157dbab0c2a7dd4a9f4fc06c188ea2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  newZ: 100.45
+  newZ: 100.94
 --- !u!114 &7021352677719540742
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -739,6 +724,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1428648646478705256
 GameObject:
@@ -892,6 +878,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
   _index: 0
 --- !u!1 &1470143744152997659
 GameObject:

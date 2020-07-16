@@ -110,7 +110,7 @@ namespace MapCreationTool
       }
 
       public void openLatestVersion (Map map) {
-         UI.yesNoDialog.display(
+         UI.yesNoDialog.displayIfMapStateModified(
             "Opening a map",
             $"Are you sure you want to open map { map.name }?\nAll unsaved progress will be permanently lost.",
              () => openLatestVersionConfirm(map),

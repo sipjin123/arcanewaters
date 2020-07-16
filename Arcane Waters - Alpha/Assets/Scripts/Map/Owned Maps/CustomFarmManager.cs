@@ -24,7 +24,7 @@ public class CustomFarmManager : CustomMapManager
          }
 
          // Otherwise, show panel for selecting the layout
-         denyWarpHandler = (player) => PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).displayFor(this, true);
+         denyWarpHandler = (player) => player.rpc.Target_ShowCustomMapPanel(mapTypeAreaKey, true, getRelatedMaps());
          return false;
       } else {
          // User is trying to warp into someone else's farm

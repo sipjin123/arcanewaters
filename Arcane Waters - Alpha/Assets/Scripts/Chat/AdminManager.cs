@@ -576,6 +576,9 @@ public class AdminManager : NetworkBehaviour
       }
 
       foreach (Ship.Type shipType in System.Enum.GetValues(typeof(Ship.Type))) {
+         if (shipType == Ship.Type.None) {
+            continue;
+         }
          Rarity.Type rarity = Rarity.Type.Uncommon;
          int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
          speed = Mathf.Clamp(speed, 70, 130);

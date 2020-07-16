@@ -95,22 +95,7 @@ public class PlayerBodyEntity : BodyEntity {
       if (Input.GetMouseButtonUp(1) && !PanelManager.self.hasPanelInStack()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null) {
-            // Make sure the parameters are captured for the click events
-            int userId = body.userId;
-            string userName = body.entityName;
-
-            PanelManager.self.contextMenuPanel.clearButtons();
-
-            // Add the context menu buttons
-            PanelManager.self.contextMenuPanel.addButton("Info", () => this.rpc.Cmd_RequestCharacterInfoFromServer(userId));
-            if (VoyageManager.isInVoyage(this) && this.voyageGroupId != body.voyageGroupId) {
-               PanelManager.self.contextMenuPanel.addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
-            }
-            if (this.userId != body.userId) {
-               PanelManager.self.contextMenuPanel.addButton("Add Friend", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
-            }
-
-            PanelManager.self.contextMenuPanel.show(userName);
+            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          }
       }
 

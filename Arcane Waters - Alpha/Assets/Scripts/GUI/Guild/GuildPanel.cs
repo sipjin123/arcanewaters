@@ -19,7 +19,7 @@ public class GuildPanel : Panel, IPointerClickHandler {
    public GameObject memberContainer;
 
    // The prefab we use for creating a guild member row
-   public GameObject guildMemberPrefab;
+   public GuildMemberRow guildMemberPrefab;
 
    // Our various texts
    public Text nameText;
@@ -69,9 +69,8 @@ public class GuildPanel : Panel, IPointerClickHandler {
 
       if (info.guildMembers != null) {
          foreach (UserInfo member in info.guildMembers) {
-            GameObject memberRow = Instantiate(guildMemberPrefab);
-            memberRow.GetComponent<Text>().text = member.username;
-            memberRow.transform.SetParent(memberContainer.transform);
+            GuildMemberRow memberRow = Instantiate(guildMemberPrefab, memberContainer.transform);
+            memberRow.setRowForGuildMember(member);
          }
       }
    }

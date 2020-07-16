@@ -68,7 +68,7 @@ namespace MapCreationTool
       }
 
       public void openMapVersion (MapVersion mapVersion) {
-         UI.yesNoDialog.display(
+         UI.yesNoDialog.displayIfMapStateModified(
             "Opening a map",
             $"Are you sure you want to open map {mapVersion.map.name}?\nAll unsaved progress will be permanently lost.",
              () => openMapConfirm(mapVersion),

@@ -92,18 +92,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
 
       // Allow right clicking to bring up the context menu, only if no panel is opened
       if (Input.GetMouseButtonUp(1) && _mouseOver && !PanelManager.self.hasPanelInStack() ) {
-         // Make sure the parameters are captured for the click events
-         int userId = _userId;
-         string userName = entity.entityName;
-
-         // Add the context menu buttons
-         PanelManager.self.contextMenuPanel.clearButtons();
-         PanelManager.self.contextMenuPanel.addButton("Info", () => Global.player.rpc.Cmd_RequestCharacterInfoFromServer(userId));
-         if (Global.player.userId != _userId) {
-            PanelManager.self.contextMenuPanel.addButton("Add Friend", () => FriendListManager.self.sendFriendshipInvite(userName));
-         }
-
-         PanelManager.self.contextMenuPanel.show(userName);
+         PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, entity.entityName);
       }
    }
 
