@@ -117,14 +117,22 @@ public class RPCManager : NetworkBehaviour {
    #region NPC QUEST
 
    [TargetRpc]
+   public void Target_ReceiveProcessRewardToggle (NetworkConnection connection) {
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel); 
+      if (panel.isShowing()) {
+         PanelManager.self.popPanel();
+         panel.hide();
+      }
+   }
+
+   [TargetRpc]
    public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int questId,
-      QuestNode questNode, int friendshipLevel, bool areObjectivesCompleted, int[] objectivesProgress, bool isEnabled) {
+      int questNodId, int dialogueId, int friendshipLevel, bool areObjectivesCompleted, bool isEnabled, int[] itemStock) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestNode(friendshipLevel, questId, questNode, areObjectivesCompleted,
-         objectivesProgress, isEnabled);
+      panel.updatePanelWithQuestNode(friendshipLevel, questId, questNodId, dialogueId, areObjectivesCompleted, isEnabled, itemStock);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -136,13 +144,13 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
       string npcName, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      Quest[] quests, bool isHireable, int landMonsterId) {
+      bool isHireable, int landMonsterId, int questId, int questNodeId, int questDialogueId, int[] itemStock) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, quests, isHireable, landMonsterId);
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, isHireable, landMonsterId, questId, questNodeId, questDialogueId, itemStock);
    }
 
    [TargetRpc]
@@ -1237,6 +1245,24 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestNPCQuestSelectionListFromServer (int npcId) {
+      // Initialize key indexes
+      int questId = 0;
+      int questNodeId = 0;
+      int dialogueId = 0;
+
+      // Initialize item dependencies
+      List<int> itemStock = new List<int>();
+      List<Item> itemRequirementList = new List<Item>();
+
+      // Retrieve the full list of quests for this npc
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
+      QuestData questData = new QuestData();
+      if (npcData.questId > 0) {
+         questData = NPCQuestManager.self.getQuestData(npcData.questId);
+      } else {
+         D.editorLog("Npc has no valid quest id", Color.red);
+      }
+
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the friendship level
@@ -1252,36 +1278,40 @@ public class RPCManager : NetworkBehaviour {
          List<QuestStatusInfo> questStatuses = DB_Main.getQuestStatuses(npcId, _player.userId);
          List<AchievementData> playerAchievements = DB_Main.getAchievementDataList(_player.userId);
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Save in a hashset the quests that the player has already completed
-            HashSet<int> completedQuestIds = new HashSet<int>();
-            foreach (QuestStatusInfo status in questStatuses) {
-               if (status.questNodeId == -1) {
-                  completedQuestIds.Add(status.questId);
-               }
-            }
+         // Return the current quest node step
+         QuestStatusInfo statusInfo = questStatuses.Find(_ => _.questId == questData.questId && _.npcId == npcId);
+         if (questData != null) {
+            questId = questData.questId;
+            if (questData.questDataNodes != null) {
+               questNodeId = questData.questDataNodes[0].questDataNodeId;
+               dialogueId = questData.questDataNodes[0].questDialogueNodes[0].dialogueIdIndex;
 
-            // Retrieve the full list of quests for this npc
-            List<Quest> allQuests = NPCManager.self.getQuests(npcId);
+               if (statusInfo != null) {
+                  questNodeId = statusInfo.questNodeId;
+                  dialogueId = statusInfo.questDialogueId;
 
-            // Create a list of new quest objects, containing only information useful to the client
-            List<Quest> questList = new List<Quest>();
-            foreach (Quest quest in allQuests) {
-               // Skip the quest if the player has already completed it
-               if (!completedQuestIds.Contains(quest.questId)) {
-                  Quest q = new Quest(quest.questId, quest.title, quest.friendshipRankRequired, quest.isRepeatable, quest.lastUsedNodeId, null);
-                  questList.Add(q);
-
-                  QuestStatusInfo questStatInfo = questStatuses.Find(_ => _.questId == quest.questId);
-                  if (questStatInfo == null) {
-                     q.questProgress = 0;
-                  } else {
-                     q.questProgress = questStatInfo.questNodeId;
+                  if (questData.questDataNodes.Length > questNodeId) {
+                     QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
+                     if (questDataNode.questDialogueNodes.Length > dialogueId) {
+                        QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
+                        if (questDialogue.itemRequirements != null) {
+                           foreach (Item item in questDialogue.itemRequirements) {
+                              itemRequirementList.Add(item);
+                           }
+                        }
+                     }
                   }
                }
             }
+         }
 
+         if (itemRequirementList.Count > 0) {
+            List<Item> currentItems = DB_Main.getRequiredItems(itemRequirementList, _player.userId);
+            itemStock = getItemStock(itemRequirementList, currentItems);
+         }
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Retrieve other data only available server-side
             string greetingText = NPCManager.self.getGreetingText(npcId, friendshipLevel);
             bool canOfferGift = NPCManager.self.canOfferGift(friendshipLevel);
@@ -1306,197 +1336,96 @@ public class RPCManager : NetworkBehaviour {
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
-               questList.ToArray(), isHireable, landMonsterId);
+               isHireable, landMonsterId, questId, questNodeId, dialogueId, itemStock.ToArray());
          });
       });
    }
 
    [Command]
-   public void Cmd_SelectNPCQuest (int npcId, int questId) {
-      // Get the selected quest
-      Quest quest = NPCManager.self.getQuest(npcId, questId);
+   public void Cmd_SelectNextNPCDialogue (int npcId, int questId, int questNodeId, int dialogueId) {
+      int newQuestNodeId = questNodeId;
+      int newDialogueId = dialogueId;
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+      List<int> itemStock = new List<int>();
+      List<Item> itemRequirementList = new List<Item>();
+      List<Item> itemsToDeduct = new List<Item>();
 
-         // Retrieve the friendship level
-         int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
-
-         // Verifies if the user has enough friendship to start the quest
-         if (!NPCFriendship.isRankAboveOrEqual(friendshipLevel, quest.friendshipRankRequired)) {
-            return;
-         }
-
-         // Get the quest status
-         QuestStatusInfo status = DB_Main.getQuestStatus(npcId, _player.userId, questId);
-         List<AchievementData> userAchievementList = DB_Main.getAchievementDataList(_player.userId);
-
-         // Determine the destination node
-         int destinationNodeId;
-         if (status == null) {
-            // If it is the first time the player enters this quest, the destination node is the first node
-            destinationNodeId = quest.getFirstNode().nodeId;
-
-            // Initialize the quest status in the DB
-            DB_Main.createQuestStatus(npcId, _player.userId, questId, destinationNodeId);
-         } else {
-            // If the conversation is ongoing, retrieve the last reached node
-            destinationNodeId = status.questNodeId;
-         }
-
-         // If there is no destination node, throw an error
-         if (destinationNodeId == -1) {
-            D.error("The next node of this quest is undefined " + npcId + "/" + questId);
-            return;
-         }
-
-         // Retrieve the destination node
-         QuestNode destinationNode = NPCManager.self.getQuestNode(npcId, questId, destinationNodeId);
-
-         // Manage the objectives if they exist
-         List<int> objectivesProgress = new List<int>();
-         bool areObjectivesCompleted = true;
-         foreach (QuestObjective o in destinationNode.getAllQuestObjectives()) {
-            // Retrieve the objective progress
-            int progress = o.getObjectiveProgress(_player.userId);
-            objectivesProgress.Add(progress);
-
-            // Check if the objective can be completed
-            if (!o.canObjectiveBeCompleted(progress)) {
-               areObjectivesCompleted = false;
+      QuestData questData = NPCQuestManager.self.getQuestData(questId);
+      QuestDataNode questDataNode = questData.questDataNodes[questNodeId];
+      if (questDataNode.questDialogueNodes.Length > dialogueId + 1) {
+         // Gather the item list to deduct from the preview node
+         QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[newDialogueId];
+         if (questDialogue.itemRequirements != null) {
+            foreach (Item item in questDialogue.itemRequirements) {
+               itemsToDeduct.Add(item);
             }
          }
 
-         bool canInteractDialogue = true;
-         if (destinationNode.actionRequirements != null) {
-            foreach (QuestActionRequirement questRequirements in destinationNode.actionRequirements) {
-               AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
-               AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
-               if (userAchievement == null) {
-                  canInteractDialogue = false;
+         // Iterate to the next dialogue and extract the required item list
+         newDialogueId++;
+         questDialogue = questDataNode.questDialogueNodes[newDialogueId];
+         if (questDialogue.itemRequirements != null) {
+            foreach (Item item in questDialogue.itemRequirements) {
+               itemRequirementList.Add(item);
+            }
+         }
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Update the quest status of the npc
+            DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
+
+            // Deduct the items from the user id from the database
+            if (itemsToDeduct.Count > 0) {
+               List<Item> deductableItems = DB_Main.getRequiredItems(itemsToDeduct, _player.userId);
+               foreach (Item item in deductableItems) {
+                  int deductCount = itemsToDeduct.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId).count;
+                  DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, deductCount);
                }
             }
-         }
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Send the new quest status to the client
-            Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, destinationNode,
-               friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray(), canInteractDialogue);
+            // If the dialogue node has required items, get the current items of the user
+            if (itemRequirementList.Count > 0) {
+               List<Item> currentItems = DB_Main.getRequiredItems(itemRequirementList, _player.userId);
+               itemStock = getItemStock(itemRequirementList, currentItems);
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, 0, true, true, itemStock.ToArray());
+            });
          });
-      });
-   }
+      } else {
+         newDialogueId = 0;
+         newQuestNodeId++;
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Update the quest status of the npc
+            DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
-   [Command]
-   public void Cmd_MoveToNextNPCQuestNode (int npcId, int questId) {
-      // Select the quest
-      Quest currentQuest = NPCManager.self.getQuest(npcId, questId);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveProcessRewardToggle(_player.connectionToClient);
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Get the quest status
-         QuestStatusInfo status = DB_Main.getQuestStatus(npcId, _player.userId, currentQuest.questId);
-         List<AchievementData> userAchievementList = DB_Main.getAchievementDataList(_player.userId);
-
-         // If there is no quest status, throw an error
-         if (status == null) {
-            D.error("The quest status for this quest and user does not exist " + _player.userId + "/" + npcId + "/" + questId);
-            return;
-         }
-
-         // Get the last reached node in this conversation
-         QuestNode currentNode = NPCManager.self.getQuestNode(npcId, questId, status.questNodeId);
-
-         // Make sure that the quest objectives can be completed
-         foreach (QuestObjective objective in currentNode.getAllQuestObjectives()) {
-            if (!objective.canObjectiveBeCompletedDB(_player.userId)) {
-               return;
-            }
-         }
-
-         // Complete each quest objective
-         foreach (QuestObjective objective in currentNode.getAllQuestObjectives()) {
-            objective.completeObjective(_player.userId);
-         }
-
-         // Keeps track of all the rewarded items
-         List<Item> rewardedItems = new List<Item>();
-
-         // Grants the rewards
-         foreach (QuestReward r in currentNode.getAllQuestRewards()) {
-            Item item = r.giveRewardToUser(npcId, _player.userId);
-            if (item != null) {
-               rewardedItems.Add(item);
-            }
-         }
-
-         // If this is the end of the conversation and the quest is repeatable, reset its progress
-         if (currentNode.nextNodeId == -1 && currentQuest.isRepeatable) {
-            DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentQuest.getFirstNode().nodeId);
-         } else {
-            // Update the DB with the quest status after advancing to the next node
-            DB_Main.updateQuestStatus(npcId, _player.userId, questId, currentNode.nextNodeId);
-         }
-
-         // Retrieve the next node
-         QuestNode nextNode = null;
-         if (currentNode.nextNodeId != -1) {
-            nextNode = NPCManager.self.getQuestNode(npcId, questId, currentNode.nextNodeId);
-         }
-
-         // Determine the objectives progress status of the next node
-         List<int> objectivesProgress = new List<int>();
-         bool areObjectivesCompleted = true;
-         if (currentNode.nextNodeId != -1) {
-            foreach (QuestObjective o in nextNode.getAllQuestObjectives()) {
-               // Retrieve the objective progress
-               int progress = o.getObjectiveProgress(_player.userId);
-               objectivesProgress.Add(progress);
-
-               // Check if the objective can be completed
-               if (!o.canObjectiveBeCompleted(progress)) {
-                  areObjectivesCompleted = false;
-               }
-            }
-         }
-
-         // Retrieve the friendship level
-         int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            bool canInteractDialogue = true;
-            if (nextNode != null) {
-               if (nextNode.actionRequirements != null) {
-                  foreach (QuestActionRequirement questRequirements in nextNode.actionRequirements) {
-                     AchievementData achievementData = AchievementManager.self.getAchievementData(questRequirements.actionTypeIndex);
-                     AchievementData userAchievement = userAchievementList.Find(_ => _.actionType == achievementData.actionType && _.tier == achievementData.tier);
-                     if (userAchievement == null) {
-                        canInteractDialogue = false;
-                     }
+               QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
+               if (questDialogue.itemRewards != null) {
+                  if (questDialogue.itemRewards.Length > 0) {
+                     giveItemRewardsToPlayer(_player.userId, new List<Item>(questDialogue.itemRewards), true);
                   }
                }
-            }
-
-            // If this is the end of the conversation, close the dialogue panel
-            if (currentNode.nextNodeId == -1) {
-               Target_EndNPCDialogue(_player.connectionToClient);
-            } else {
-               // Send the new quest status to the client
-               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, nextNode,
-                  friendshipLevel, areObjectivesCompleted, objectivesProgress.ToArray(), canInteractDialogue);
-            }
-
-            // If items have been rewarded, show the reward panel
-            if (rewardedItems.Count > 0) {
-               // Registers the quest completion to the achievement data
-               AchievementManager.registerUserAchievement(_player.userId, ActionType.QuestComplete);
-               Target_ReceiveItemList(_player.connectionToClient, rewardedItems.ToArray());
-            }
+            });
          });
-      });
+      }
    }
+
+   private List<int> getItemStock (List<Item> itemRequirements, List<Item> currentItems) {
+      List<int> newItemStockList = new List<int>();
+      foreach (Item item in itemRequirements) {
+         Item currentItem = currentItems.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId && _.count >= item.count);
+         if (currentItem == null) {
+            newItemStockList.Add(0);
+         } else {
+            newItemStockList.Add(currentItem.count);
+         }
+      }
+      return newItemStockList;
+   } 
 
    [Command]
    public void Cmd_RequestNPCTradeGossipFromServer (int npcId) {

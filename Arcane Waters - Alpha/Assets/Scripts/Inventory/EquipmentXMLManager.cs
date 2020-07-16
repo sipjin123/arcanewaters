@@ -279,6 +279,31 @@ public class EquipmentXMLManager : MonoBehaviour {
       return itemData;
    }
 
+   public string getItemName (Item item) {
+      string newName = "";
+      
+      switch (item.category) {
+         case Item.Category.Hats:
+            HatStatData hatData = getHatData(item.itemTypeId);
+            newName = hatData.equipmentName;
+            break;
+         case Item.Category.Armor:
+            ArmorStatData armorData = getArmorData(item.itemTypeId);
+            newName = armorData.equipmentName;
+            break;
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = getWeaponData(item.itemTypeId);
+            newName = weaponData.equipmentName;
+            break;
+         case Item.Category.CraftingIngredients:
+            CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+            newName = CraftingIngredients.getName(ingredientType);
+            break;
+      }
+
+      return newName;
+   }
+
    #region Private Variables
 
    // Stores the list of all weapon data

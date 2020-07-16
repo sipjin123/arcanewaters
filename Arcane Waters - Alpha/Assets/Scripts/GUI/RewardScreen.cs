@@ -58,7 +58,7 @@ public class RewardScreen : Panel
          rewardRows[i].gameObject.SetActive(true);
 
          // Initialize the row
-         rewardRows[0].setRowForItem(currItem);
+         rewardRows[i].setRowForItem(currItem);
       }
    }
 

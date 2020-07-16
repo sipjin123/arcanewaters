@@ -283,7 +283,9 @@ public class Instance : NetworkBehaviour
                      NetworkServer.Spawn(npc.gameObject);
                   }
                }
-               D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
+               if (disabledNpcLog.Length > 1) {
+                  D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
+               }
             } 
 
             if (area.treasureSiteDataFields.Count > 0) {

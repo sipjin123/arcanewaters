@@ -353,14 +353,14 @@ public class ShopManager : MonoBehaviour {
 
       if (!_itemsByShopName.ContainsKey(shopName)) {
          D.debug("Shop name does not exist!: " + shopName);
-      }
-
-      foreach (int itemId in _itemsByShopName[shopName]) {
-         if (_items.ContainsKey(itemId)) {
-            Item item = _items[itemId];
-            list.Add(item);
-         } else {
-            D.editorLog("Does not contain: " + itemId, Color.red);
+      } else {
+         foreach (int itemId in _itemsByShopName[shopName]) {
+            if (_items.ContainsKey(itemId)) {
+               Item item = _items[itemId];
+               list.Add(item);
+            } else {
+               D.editorLog("Does not contain: " + itemId, Color.red);
+            }
          }
       }
 

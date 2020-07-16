@@ -25,6 +25,9 @@ public class QuestStatusInfo
    // The quest node ID - the current progress in the quest
    public int questNodeId;
 
+   // The current dialogue id
+   public int questDialogueId;
+
    #endregion
 
    public QuestStatusInfo () { }
@@ -36,6 +39,7 @@ public class QuestStatusInfo
       this.userId = DataUtil.getInt(dataReader, "usrId");
       this.questId = DataUtil.getInt(dataReader, "questId");
       this.questNodeId = DataUtil.getInt(dataReader, "questNodeId");
+      this.questDialogueId = DataUtil.getInt(dataReader, "questDialogueId"); 
    }
 
 #endif

@@ -60,10 +60,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Event that notifies if streaming asset files are complete of not
    public UnityEvent initializeLoadingXmlData = new UnityEvent();
 
-   // Popup notice if nubis failed to return zip file data
-   public GameObject failedToFetchDataPanel;
-   public Button exitButton;
-
    #endregion
 
    private void Awake () {
@@ -168,8 +164,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
       if (zipDataRequest.Length < 10) {
          // If the result string is less than expected, the zip blob download has failed then call out the error panel which contains an exit button
          loadBlocker.SetActive(true);
-         failedToFetchDataPanel.SetActive(true);
-         exitButton.onClick.AddListener(() => Application.Quit());
+         PanelManager.self.noticeScreen.show("Failed to fetch data from server!");
+         PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => Application.Quit());
          return;
       } else {
          try {

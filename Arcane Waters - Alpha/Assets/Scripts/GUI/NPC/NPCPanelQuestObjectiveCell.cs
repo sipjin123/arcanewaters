@@ -25,17 +25,28 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
 
    #endregion
 
-   public void setCellForQuestObjective(QuestObjective objective, int progress, bool isEnabled) {
-      icon.sprite = objective.getIcon();
-      progressText.text = objective.getProgressString(progress);
-      tooltip.text = objective.getObjectiveDescription();
-
-      // Set the color of the progress text
-      if (objective.canObjectiveBeCompleted(progress) && isEnabled) {
-         progressText.color = completedObjectiveColor;
-      } else {
-         progressText.color = incompletedObjectivesColor;
+   public void updateCellContent (Item item, int requirement, int current) {
+      switch (item.category) {
+         case Item.Category.Armor:
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            break;
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+            icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+            break;
+         case Item.Category.Hats:
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            break;
+         case Item.Category.CraftingIngredients:
+            CraftingIngredients.Type categoryType = (CraftingIngredients.Type) item.itemTypeId;
+            Sprite newSprite = ImageManager.getSprite(CraftingIngredients.getIconPath(categoryType));
+            icon.sprite = newSprite;
+            break;
       }
+      progressText.text = current + " / " + requirement;
+      progressText.color = current >= requirement ? completedObjectiveColor : incompletedObjectivesColor;
    }
    
    #region Private Variables

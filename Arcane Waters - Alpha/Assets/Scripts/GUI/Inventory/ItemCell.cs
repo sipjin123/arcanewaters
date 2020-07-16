@@ -67,13 +67,23 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             break;
          case Item.Category.Armor:
             item = Armor.castItemToArmor(item);
-            ArmorStatData armorData = ArmorStatData.getStatData(item.data, item.itemTypeId);
-            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            if (item.data.Length < 1) {
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            } else {
+               ArmorStatData armorData = ArmorStatData.getStatData(item.data, item.itemTypeId);
+               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            }
             break;
          case Item.Category.Hats:
             item = Hat.castItemToHat(item);
-            HatStatData hatData = HatStatData.getStatData(item.data, item.itemTypeId);
-            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            if (item.data.Length < 1) {
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            } else {
+               HatStatData hatData = HatStatData.getStatData(item.data, item.itemTypeId);
+               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            }
             break;
          case Item.Category.Potion:
             icon.sprite = foodIcon;
@@ -82,7 +92,8 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite = defaultItemIcon;
             break;
          case Item.Category.CraftingIngredients:
-            icon.sprite = ImageManager.getSprite(item.getBorderlessIconPath());
+            CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+            icon.sprite =  ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
             icon.sprite = ImageManager.getSprite(item.getIconPath());

@@ -35,7 +35,7 @@ public class RewardRow : MonoBehaviour {
       cell.hideBackground();
 
       // Set the item name
-      rewardName.text = castedItem.getName();
+      rewardName.text = EquipmentXMLManager.self.getItemName(castedItem);
    }
 
    public void setDisplayRow (string name, string iconPath) {

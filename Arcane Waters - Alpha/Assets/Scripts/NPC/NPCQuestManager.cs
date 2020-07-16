@@ -51,6 +51,11 @@ public class NPCQuestManager : MonoBehaviour {
       });
    }
 
+   public QuestData getQuestData (int questId) {
+      QuestData newQuestData = questDataList.Find(_ => _.questId == questId);
+      return newQuestData;
+   }
+
    #region Private Variables
 
    #endregion

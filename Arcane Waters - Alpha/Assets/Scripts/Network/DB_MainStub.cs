@@ -15,8 +15,8 @@ public class DB_MainStub : MonoBehaviour {
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
    }
 
-   public static List<string> getNPCQuestXML () {
-      return new List<string>();
+   public static List<XMLPair> getNPCQuestXML () {
+      return new List<XMLPair>();
    }
 
    public static void deleteNPCQuestXML (int typeID) {
@@ -487,7 +487,11 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void updateQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+   public static List<Item> getRequiredItems (List<Item> itemList, int userId) {
+      return new List<Item>();
+   }
+
+   public static void updateQuestStatus (int npcId, int userId, int questId, int questNodeId, int dialogueId) {
 
    }
 

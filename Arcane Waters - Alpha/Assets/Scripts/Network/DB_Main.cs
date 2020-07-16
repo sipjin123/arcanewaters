@@ -760,18 +760,74 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void updateQuestStatus (int npcId, int userId, int questId, int questNodeId) {
+   public static new List<Item> getRequiredItems (List<Item> itemList, int usrId) {
+      List<Item> newItemList = new List<Item>();
+      List<string> categoryList = new List<string>();
+      List<string> typeList = new List<string>();
+
+      string itemGroup = "";
+      int index = 0;
+      foreach (Item itemData in itemList) {
+         categoryList.Add(((int) itemData.category).ToString());
+         typeList.Add((itemData.itemTypeId).ToString());
+         if (index > 0) {
+            itemGroup += " or ";
+         }
+         itemGroup += "(itmCategory = @itmCategory_" + index + " AND itmType = @itmType_" + index + ")";
+         index++;
+      }
+
+      string cmdText = "SELECT * FROM items WHERE usrId=@usrId AND (" + itemGroup + ")";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            for (int i = 0; i < itemList.Count; i++) {
+               cmd.Parameters.AddWithValue("@itmCategory_" + i, categoryList[i]);
+               cmd.Parameters.AddWithValue("@itmType_" + i, typeList[i]);
+            }
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int itemId = dataReader.GetInt32("itmId");
+                  Item.Category itemCategory = (Item.Category) dataReader.GetInt32("itmCategory");
+                  int itemTypeId = dataReader.GetInt32("itmType");
+                  string palette1 = dataReader.GetString("itmPalette1");
+                  string palette2 = dataReader.GetString("itmPalette2");
+                  string data = dataReader.GetString("itmData");
+                  int count = dataReader.GetInt32("itmCount");
+
+                  // Create an Item instance of the proper class, and then add it to the list
+                  Item item = new Item(itemId, itemCategory, itemTypeId, count, palette1, palette2, data);
+                  newItemList.Add(item.getCastItem());
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return newItemList;
+   }
+
+   public static new void updateQuestStatus (int npcId, int userId, int questId, int questNodeId, int dialogueId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE quest_status SET questNodeId=@questNodeId WHERE npcId=@npcId AND usrId=@usrId AND questId=@questId", conn)) {
-
+            "INSERT INTO quest_status_v2 (npcId, usrId, questId, questNodeId, questDialogueId) " +
+            "VALUES(@npcId, @usrId, @questId, @questNodeId, @questDialogueId) " +
+            "ON DUPLICATE KEY UPDATE questNodeId=@questNodeId, questDialogueId=@questDialogueId", conn)) {
+            
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            cmd.Parameters.AddWithValue("@questDialogueId", dialogueId); 
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -816,7 +872,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM quest_status WHERE npcId=@npcId AND usrId=@usrId ORDER BY questId", conn)) {
+            "SELECT * FROM quest_status_v2 WHERE npcId=@npcId AND usrId=@usrId ORDER BY questId", conn)) {
 
             conn.Open();
             cmd.Prepare();
