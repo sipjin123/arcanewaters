@@ -5,14 +5,20 @@ using UnityEngine;
 /// <summary>
 /// Represents a description of an item - it's name, images and various properties.
 /// When this item is used/owned/created inside the game, it takes form of 'ItemInstance'.
+/// 
+/// NOTE: Include '[XmlRoot("Item")]' in every derived class to avoid type errors when deserializing.
 /// </summary>
 [Serializable]
+[XmlRoot("Item")]
 public class ItemDefinition
 {
    #region Public Variables
 
    // Category type of an item
    public enum Category { None = 0, Weapon = 1, Armor = 2, Hats = 3, Potion = 4, Usable = 5, CraftingIngredients = 6, Blueprint = 7, Currency = 8, Quest_Item = 9, Prop = 10 }
+
+   // Name of the item
+   public string name = "";
 
    // Unique identifier of item's definition
    public int id;
@@ -22,9 +28,6 @@ public class ItemDefinition
 
    // The category of item this is
    public Category category;
-
-   // Name of the item
-   public string name = "";
 
    // Description of the item
    public string description = "";
@@ -53,6 +56,8 @@ public class ItemDefinition
          // return <call appropriate subclass constructor with provided parameters>
          case Category.None:
             return deserialize<ItemDefinition>(data);
+         case Category.Weapon:
+            return deserialize<WeaponDefinition>(data);
          default:
             D.error($"Undefined deserialization of an item category: { category }");
             return deserialize<ItemDefinition>(data);

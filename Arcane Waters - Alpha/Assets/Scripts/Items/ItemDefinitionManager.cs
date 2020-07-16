@@ -55,12 +55,6 @@ public class ItemDefinitionManager : MonoBehaviour
       });
    }
 
-   public void receiveDefinitionsFromZipData (List<ItemDefinition> definitions) {
-      foreach (ItemDefinition definition in definitions) {
-         storeItemDefinition(definition);
-      }
-   }
-
    public void storeItemDefinition (ItemDefinition definition) {
       // Save the data in the memory cache
       if (!_itemDefinitions.ContainsKey(definition.id)) {

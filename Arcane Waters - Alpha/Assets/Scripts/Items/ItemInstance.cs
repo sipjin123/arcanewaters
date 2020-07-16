@@ -26,12 +26,23 @@ public class ItemInstance
    #endregion
 
    public T getDefinition<T> () where T : ItemDefinition {
-      return _definition as T;
+      return getDefinition() as T;
+   }
+
+   public ItemDefinition getDefinition () {
+      // If definition is assigned, try getting it
+      if (_definition == null && ItemDefinitionManager.self != null) {
+         _definition = ItemDefinitionManager.self.getDefinition(itemDefinitionId);
+      }
+
+      return _definition;
    }
 
    #region Private Variables
 
    // The definition of this item, describing it's behavior
+   // We are not serializing this field, so it would be left out when trasferred over network
+   // 'getDefinition' method should be relied upon to reattach it, based on 'itemDefinitionId'
    protected ItemDefinition _definition;
 
    #endregion

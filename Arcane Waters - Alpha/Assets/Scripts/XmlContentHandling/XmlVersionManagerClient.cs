@@ -139,6 +139,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.PERKS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.TREASURE_DROPS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.QUEST_DATA_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.ITEM_DEFINITIONS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
    }
 
@@ -217,6 +218,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Palette);
       extractXmlType(EditorToolType.Treasure_Drops);
       extractXmlType(EditorToolType.Quest);
+      extractXmlType(EditorToolType.ItemDefinitions);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -285,6 +287,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Quest:
             path = TEXT_PATH + XmlVersionManagerServer.QUEST_DATA_FILE + ".txt";
+            break;
+         case EditorToolType.ItemDefinitions:
+            path = TEXT_PATH + XmlVersionManagerServer.ITEM_DEFINITIONS_FILE + ".txt";
             break;
       }
 
@@ -598,6 +603,19 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             NPCQuestManager.self.receiveListFromZipData(questDataCollection);
+            break;
+
+         case EditorToolType.ItemDefinitions:
+            foreach (string subGroup in xmlGroup) {
+               // Subgroup should have 3 entries in this structure:
+               // id <spacer> category <spacer> serializer data
+               string[] entries = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.RemoveEmptyEntries);
+               if (entries.Length == 3) {
+                  Debug.Log((ItemDefinition.Category) int.Parse(entries[1]));
+                  ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
+                  ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
+               }
+            }
             break;
       }
 

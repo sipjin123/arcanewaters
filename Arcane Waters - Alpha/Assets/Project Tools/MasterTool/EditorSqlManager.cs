@@ -36,7 +36,8 @@ public class EditorSQLManager {
       Perks = 25,
       Palette = 26,
       Treasure_Drops = 27,
-      Quest = 28
+      Quest = 28,
+      ItemDefinitions = 29
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -85,6 +86,8 @@ public class EditorSQLManager {
             return "perks_config_xml";
          case EditorToolType.Palette:
             return "palette";
+         case EditorToolType.ItemDefinitions:
+            return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
       }
       return "";
    }
@@ -122,6 +125,8 @@ public class EditorSQLManager {
             return "treasure_drops_xml_v2";
          case EditorToolType.Quest:
             return "quest_data_xml_v1";
+         case EditorToolType.ItemDefinitions:
+            return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
       }
       return "";
    }
