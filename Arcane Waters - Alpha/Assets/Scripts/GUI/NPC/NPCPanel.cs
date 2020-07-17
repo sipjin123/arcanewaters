@@ -121,7 +121,7 @@ public class NPCPanel : Panel {
 
    public void updatePanelWithQuestSelection (int npcId, string npcName,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      bool isHireable, int landMonsterId, int questId, int questNodeId, int dialogueId, int[] itemStock) {
+      bool isHireable, int landMonsterId, int questId, int questNodeId, int dialogueId, int[] itemStock, Jobs newJobsXp) {
       initLoadBlockers(false);
 
       // Show the correct section
@@ -189,6 +189,13 @@ public class NPCPanel : Panel {
             }
 
             if (hasCompleteIngredients) {
+               Jobs.Type dialogueJobTypeRequirement = (Jobs.Type) dialogueNode.jobTypeRequirement;
+               if (dialogueJobTypeRequirement != Jobs.Type.None) {
+                  if (newJobsXp.getXP(dialogueJobTypeRequirement) < dialogueNode.jobLevelRequirement) {
+                     canStartQuest = false;
+                     addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
+                  }
+               }
                addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
                   () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
             } else {
@@ -502,7 +509,6 @@ public class NPCPanel : Panel {
          D.debug("The NPC Panel mode " + mode.ToString() + " does not handle dialogue options");
          return;
       }
-
       // Create a clickable text row
       ClickableText row = Instantiate(dialogueOptionRowPrefab);
       row.transform.SetParent(container.transform);

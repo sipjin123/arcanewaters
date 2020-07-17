@@ -59,6 +59,12 @@ public class QuestDialogueNode {
 
    // Rewarded ability
    public int abilityIdReward;
+
+   // The required job type to proceed with dialogue
+   public int jobTypeRequirement = 0;
+
+   // The level of the job required to proceed with the dialogue
+   public int jobLevelRequirement = 0;
 }
 
 [Serializable]

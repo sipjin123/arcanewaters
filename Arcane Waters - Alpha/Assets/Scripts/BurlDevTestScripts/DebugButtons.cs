@@ -32,14 +32,6 @@ public class DebugButtons : NetworkBehaviour
    private void simulateAbilityData () {
       GUILayout.BeginHorizontal("box");
       {
-         if (GUILayout.Button("Load All Skill List")) {
-            List<AbilitySQLData> newID = DB_Main.getAllAbilities(Global.player.userId);
-
-            foreach (AbilitySQLData fetchedID in newID) {
-               Debug.LogError("ID: " + fetchedID.abilityID+" - "+fetchedID.name);
-            }
-         }
-
          if (GUILayout.Button("Open Crafting")) {
             // Get the crafting panel
             NubisDataFetcher.self.fetchCraftableData(0, CraftingPanel.ROWS_PER_PAGE);

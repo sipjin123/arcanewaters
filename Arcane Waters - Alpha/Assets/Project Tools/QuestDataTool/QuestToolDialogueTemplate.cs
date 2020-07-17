@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
-using UnityEngine.Animations;
 
 public class QuestToolDialogueTemplate : MonoBehaviour {
    // The item ui template of the item requirement
@@ -33,7 +32,17 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
    // Dropdown selection of the item to create
    public Dropdown rewardDropdown, requirementDropDown;
 
+   // Job requirement ui
+   public Dropdown jobTypeDropdown;
+   public InputField jobLevelField;
+
    private void Awake () {
+      List<Dropdown.OptionData> optionsList = new List<Dropdown.OptionData>();
+      foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
+         optionsList.Add(new Dropdown.OptionData { text = category.ToString() });
+      }
+      jobTypeDropdown.options = optionsList;
+
       addItemRequirementButton.onClick.AddListener(() => {
          GenericItemUITemplate itemTemplate = Instantiate(itemUITemplate.gameObject, questRequirementParent).GetComponent<GenericItemUITemplate>();
          itemTemplate.itemButton.onClick.AddListener(() => {
@@ -64,6 +73,10 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       npcDialogue.text = dialogueData.npcDialogue;
       playerDialogue.text = dialogueData.playerDialogue;
       dialogueIdText.text = dialogueData.dialogueIdIndex.ToString();
+      friendshipRewardPts.text = dialogueData.friendshipRewardPts.ToString();
+      jobLevelField.text = dialogueData.jobLevelRequirement.ToString();
+      jobTypeDropdown.value = dialogueData.jobTypeRequirement;
+
 
       if (dialogueData.itemRewards != null) {
          foreach (Item item in dialogueData.itemRewards) {
@@ -87,6 +100,9 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       newDialogue.itemRequirements = convertItemUIToList(questRequirementParent).ToArray();
       newDialogue.friendshipRewardPts = int.Parse(friendshipRewardPts.text);
       newDialogue.dialogueIdIndex = int.Parse(dialogueIdText.text);
+
+      newDialogue.jobLevelRequirement = int.Parse(jobLevelField.text);
+      newDialogue.jobTypeRequirement = (int) Enum.Parse(typeof(Jobs.Type), jobTypeDropdown.options[jobTypeDropdown.value].text);
 
       return newDialogue;
    }

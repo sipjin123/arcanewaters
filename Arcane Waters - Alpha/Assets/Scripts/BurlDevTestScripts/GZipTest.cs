@@ -49,7 +49,7 @@ public class GZipTest : MonoBehaviour {
       D.debug("Fetching xml zip");
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
-         string returnCode = NubisTranslator.Fetch_XmlZip_Bytes_v1Controller.fetchZipRawData(2);
+         string returnCode = DB_Main.fetchZipRawData("2");
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Debug.Log("Zip download Complete: " + returnCode);
             byte[] bytes = Convert.FromBase64String(returnCode);

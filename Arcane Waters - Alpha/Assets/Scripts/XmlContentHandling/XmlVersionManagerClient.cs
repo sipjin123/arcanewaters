@@ -157,7 +157,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
    
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchXmlZipBytes), NubisRequestHandler.getSlotIndex().ToString());
+      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex().ToString());
       writeData(zipDataRequest, targetVersion);
    }
    
@@ -612,7 +612,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
                string[] entries = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.RemoveEmptyEntries);
                if (entries.Length == 3) {
                   try {
-                     Debug.Log((ItemDefinition.Category) int.Parse(entries[1]));
                      ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
                      ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
                   } catch {

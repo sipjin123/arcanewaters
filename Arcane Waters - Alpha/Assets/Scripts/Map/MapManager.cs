@@ -311,7 +311,7 @@ public class MapManager : MonoBehaviour
 
    public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
       // Request the map from Nubis Cloud
-      string mapData = await NubisClient.call(nameof(NubisRequestHandler.nubisFetchMapData), baseMapAreaKey, version.ToString());
+      string mapData = await NubisClient.call(nameof(DB_Main.fetchMapData), baseMapAreaKey, version.ToString());
 
       if (string.IsNullOrWhiteSpace(mapData)) {
          D.error("Error in retrieving map data from NUBIS");

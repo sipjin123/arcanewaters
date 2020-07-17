@@ -8,7 +8,6 @@ using static EditorSQLManager;
 using System.IO;
 using System;
 using System.Text;
-using static NubisRequestHandler;
 
 public class XmlVersionManagerServer : MonoBehaviour {
    #region Public Variables

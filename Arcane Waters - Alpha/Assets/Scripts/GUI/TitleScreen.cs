@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.EventSystems;
 
 public class TitleScreen : MonoBehaviour {
    #region Public Variables
@@ -30,6 +31,9 @@ public class TitleScreen : MonoBehaviour {
 
    // The various login panels
    public GameObject steamLoginPanel, defaultLoginPanel;
+
+   // The canvas reference
+   public CanvasGroup titleScreenCanvas;
 
    #endregion
 
@@ -61,6 +65,21 @@ public class TitleScreen : MonoBehaviour {
       // If they press Enter in the password field, activate the Play button
       if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "") {
          Util.clickButton(loginButton);
+      }
+
+      if (Input.GetKeyDown(KeyCode.Mouse0) && titleScreenCanvas.alpha > .1f) {
+         EventSystem clickedObj = EventSystem.current;
+         if (clickedObj != null) {
+            PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+            eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+            string hierarchyString = "(";
+            foreach (RaycastResult result in results) {
+               hierarchyString += result.gameObject.name + ") -> (";
+            }
+            D.debug("Mouse clicked on object: " + hierarchyString + ")");
+         }
       }
 
       // Check for an assortment of keys

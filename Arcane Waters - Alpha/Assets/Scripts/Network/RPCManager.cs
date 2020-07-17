@@ -144,13 +144,13 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveNPCQuestList (NetworkConnection connection, int npcId,
       string npcName, int friendshipLevel,
       string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      bool isHireable, int landMonsterId, int questId, int questNodeId, int questDialogueId, int[] itemStock) {
+      bool isHireable, int landMonsterId, int questId, int questNodeId, int questDialogueId, int[] itemStock, Jobs newJobsXp) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, isHireable, landMonsterId, questId, questNodeId, questDialogueId, itemStock);
+         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, isHireable, landMonsterId, questId, questNodeId, questDialogueId, itemStock, newJobsXp);
    }
 
    [TargetRpc]
@@ -1289,6 +1289,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the friendship level
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
+         Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
          // Initialize the relationship if it is the first time the player talks to this NPC
          if (friendshipLevel == -1) {
@@ -1358,7 +1359,7 @@ public class RPCManager : NetworkBehaviour {
             // Send the data to the client
             Target_ReceiveNPCQuestList(_player.connectionToClient, npcId, npc.getName(),
                friendshipLevel, greetingText, canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue,
-               isHireable, landMonsterId, questId, questNodeId, dialogueId, itemStock.ToArray());
+               isHireable, landMonsterId, questId, questNodeId, dialogueId, itemStock.ToArray(), newJobXP);
          });
       });
    }

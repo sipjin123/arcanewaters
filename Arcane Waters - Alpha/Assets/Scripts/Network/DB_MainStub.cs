@@ -12,6 +12,62 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   #region Nubis Requests
+
+   public static string userData (string userIdString) {
+      return "";
+   }
+
+   public static string fetchSingleBlueprint (string bpId, string usrId) {
+      return "";
+   }
+
+   public static string fetchZipRawData (string slot) {
+      return "";
+   }
+   
+   public static string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr) {
+      return "";
+   }
+
+   public static string userInventoryCount (string usrIdStr, string categoryFilterStr) {
+      return "";
+   }
+   
+   public static string fetchXmlVersion (string slotstr) {
+      return "";
+   }
+
+   public static string fetchCraftableHats (string usrId) {
+      return "";
+   }
+
+   public static string fetchCraftableArmors (string usrId) {
+      return "";
+   }
+
+   public static string fetchCraftableWeapons (string usrId) {
+      return "";
+   }
+
+   public static string fetchCraftingIngredients (string usrId) {
+      return "";
+   }
+
+   public static string fetchEquippedItems (string usrId) {
+      return "";
+   }
+
+   public static string fetchMapData (string mapName, string version) {
+      return "";
+   }
+
+   public static string userAbilities (string userIdString) {
+      return "";
+   }
+
+   #endregion
+
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
    }
 

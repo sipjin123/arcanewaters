@@ -19,7 +19,507 @@ public class DB_Main : DB_MainStub
 {
    #region NubisFeatures
 
+   public static new string userData (string userIdString) {
+      int usrId = int.Parse(userIdString);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, wpnId, armId, hatId " +
+               "FROM users " +
+               "JOIN accounts " +
+               "USING (accId) " +
+               "WHERE usrId=@usrId",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
 
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int usrGold = reader.GetInt32("usrGold");
+                     int accGems = reader.GetInt32("accGems");
+                     int usrGender = reader.GetInt32("usrGender");
+                     string usrName = reader.GetString("usrName");
+                     int bodyType = reader.GetInt32("bodyType");
+                     int hairType = reader.GetInt32("hairType");
+                     string hairPalette1 = reader.GetString("hairPalette1");
+                     string hairPalette2 = reader.GetString("hairPalette2");
+                     int eyesType = reader.GetInt32("eyesType");
+                     string eyesColor1 = reader.GetString("eyesPalette1");
+                     string eyesColor2 = reader.GetString("eyesPalette2");
+                     int wpnId = reader.GetInt32("wpnId");
+                     int armId = reader.GetInt32("armId");
+                     int hatId = reader.GetInt32("hatId");
+                     string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairPalette1:{hairPalette1}[space]hairPalette2:{hairPalette2}[space]eyesType:{eyesType}[space]eyesPalette1:{eyesColor1}[space]eyesPalette2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}[space]hatId:{hatId}\n";
+                     return result;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+      return "";
+   }
+
+   public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {
+      int bpId = int.Parse(bpIdStr);
+      int usrId = int.Parse(usrIdStr);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            string query = "SELECT itmId, itmCategory, itmType, arcane.crafting_xml_v2.xmlContent as craftingXML, " +
+                           "CASE " +
+                           "WHEN      itmCategory = 7 and itmData like '%blueprintType=weapon%' THEN arcane.equipment_weapon_xml_v3.xmlContent " +
+                           "WHEN      itmCategory = 7 and itmData like '%blueprintType=armor%' THEN arcane.equipment_armor_xml_v3.xmlContent " +
+                           "WHEN      itmCategory = 7 and itmData like '%blueprintType=hat%' THEN arcane.equipment_hat_xml_v1.xmlContent " +
+                           "END AS equipmentXML " +
+                           "FROM arcane.items " +
+                           "left join arcane.crafting_xml_v2 " +
+                           "on (itmData like '%blueprintType=weapon%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 1) " +
+                           "or (itmData like '%blueprintType=armor%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 2) " +
+                           "or (itmData like '%blueprintType=hat%' and itmType = equipmentTypeID and arcane.crafting_xml_v2.equipmentCategory = 3) " +
+                           "left join arcane.equipment_weapon_xml_v3 on (itmData like '%blueprintType=weapon%' and itmType = arcane.equipment_weapon_xml_v3.xml_id) " +
+                           "left join arcane.equipment_armor_xml_v3  on (itmData like '%blueprintType=armor%' and  itmType = arcane.equipment_armor_xml_v3.xml_id) " +
+                           "left join arcane.equipment_hat_xml_v1  on (itmData like '%blueprintType=hat%' and  itmType = arcane.equipment_hat_xml_v1.xml_id) " +
+                           "where (itmCategory = 7 and itmId = @itmId) and items.usrId = @usrId";
+            using (MySqlCommand command = new MySqlCommand(query, connection)) {
+               command.Parameters.AddWithValue("@itmId", bpId);
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder builder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string craftingXML = reader.GetString("craftingXML");
+                     string equipmentXML = reader.GetString("equipmentXML");
+
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     builder.AppendLine(result);
+                  }
+               }
+               return builder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchZipRawData (string slotStr) {
+      int slot = int.Parse(slotStr);
+      UInt32 FileSize;
+      byte[] rawData;
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            string query = "SELECT * FROM xml_status where id = " + slot;
+            using (MySqlCommand command = new MySqlCommand(query, connection)) {
+               using (MySqlDataReader dataReader = command.ExecuteReader()) {
+                  while (dataReader.Read()) {
+                     FileSize = dataReader.GetUInt32(dataReader.GetOrdinal("dataSize"));
+                     rawData = new byte[FileSize];
+
+                     dataReader.GetBytes(dataReader.GetOrdinal("xmlZipData"), 0, rawData, 0, (int) FileSize);
+
+                     string textData = Convert.ToBase64String(rawData);
+                     return textData;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+      return "";
+   }
+
+   public static new string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      int currentPage = int.Parse(currentPageStr);
+      int category = int.Parse(categoryStr);
+      int weaponId = int.Parse(weaponIdStr);
+      int armorId = int.Parse(armorIdStr);
+      int hatId = int.Parse(hatIdStr);
+
+      int offset = currentPage * InventoryPanel.ITEMS_PER_PAGE;
+      bool hasItemFilter = category != 0;
+      string itemFilterContent = "and (itmCategory = " + category + ")";
+      if (!hasItemFilter) {
+         itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
+            " or itmCategory = " + (int) Item.Category.Armor +
+            " or itmCategory = " + (int) Item.Category.Hats +
+            " or itmCategory = " + (int) Item.Category.CraftingIngredients +
+            " or itmCategory = " + (int) Item.Category.Prop + ")";
+      }
+
+      string weaponFilter = "";
+      string armorFilter = "";
+      string hatFilter = "";
+      if (weaponId > 0) {
+         weaponFilter = " and itmId != " + weaponId;
+      }
+      if (armorId > 0) {
+         armorFilter = " and itmId != " + armorId;
+      }
+      if (hatId > 0) {
+         hatFilter = " and itmId != " + hatId;
+      }
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+            "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId " + itemFilterContent + weaponFilter + armorFilter + hatFilter + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     int itmCount = reader.GetInt32("itmCount");
+                     string itmData = "";
+                     string itmPalette1 = "";
+                     string itmPalette2 = "";
+
+                     try {
+                        itmData = reader.GetString("itmData");
+                     } catch {
+                        D.editorLog("Blank item data");
+                     }
+                     try {
+                        itmPalette1 = reader.GetString("itmPalette1");
+                     } catch {
+                        D.editorLog("Blank Palette 1");
+                     }
+                     try {
+                        itmPalette2 = reader.GetString("itmPalette2");
+                     } catch {
+                        D.editorLog("Blank Palette 2");
+                     }
+
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]{itmData}[space]{itmPalette1}[space]{itmPalette2}";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return "Failed to Query";
+   }
+
+   public static new string userInventoryCount (string usrIdStr, string categoryFilterStr) {
+      int usrId = int.Parse(usrIdStr);
+      int categoryFilter = int.Parse(categoryFilterStr);
+
+      bool hasItemFilter = categoryFilter != 0;
+      string itemFilterContent = "and (itmCategory = " + categoryFilter + ")";
+      if (!hasItemFilter) {
+         itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
+            " or itmCategory = " + (int) Item.Category.Armor +
+            " or itmCategory = " + (int) Item.Category.Hats +
+            " or itmCategory = " + (int) Item.Category.CraftingIngredients +
+            " or itmCategory = " + (int) Item.Category.Prop + ")";
+      }
+
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT COUNT(*) as itemCount FROM arcane.items where (usrId = @usrId " + itemFilterContent + ")", connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmCount = reader.GetInt32("itemCount");
+                     return itmCount.ToString();
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "0";
+      }
+      return "0";
+   }
+
+   public static new string fetchXmlVersion (string slotstr) {
+      int slot = int.Parse(slotstr);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT version FROM arcane.xml_status where id = " + slot,
+               connection)) {
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     string version = reader.GetString("version");
+                     return version;
+                  }
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "0";
+      }
+      return "0";
+   }
+
+   public static new string fetchCraftableHats (string usrIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      try {
+         // Connect to the server.
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_hat_xml_v1.xmlContent AS equipmentXML " +
+               "FROM arcane.items " +
+               "RIGHT JOIN arcane.crafting_xml_v2 ON(itmType = crafting_xml_v2.xml_id AND itmData LIKE '%blueprintType=hat%' AND crafting_xml_v2.equipmentCategory = 3) " +
+               "RIGHT JOIN arcane.equipment_hat_xml_v1 ON(itmType = equipment_hat_xml_v1.xml_id AND itmData LIKE '%blueprintType=hat%') " +
+               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string craftingXML = reader.GetString("craftingXML");
+                     string equipmentXML = reader.GetString("equipmentXML");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchCraftableArmors (string usrIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      try {
+         // Connect to the server.
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_armor_xml_v3.xmlContent AS equipmentXML " +
+               "FROM items " +
+               "RIGHT JOIN crafting_xml_v2 " +
+               "ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=armor%' AND crafting_xml_v2.equipmentCategory = 2) " +
+               "RIGHT JOIN equipment_armor_xml_v3 " +
+               "ON(itmType = equipment_armor_xml_v3.xml_id AND itmData LIKE '%blueprintType=armor%') " +
+               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               connection)) {
+
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string craftingXML = reader.GetString("craftingXML");
+                     string equipmentXML = reader.GetString("equipmentXML");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchCraftableWeapons (string usrIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      try {
+         // Connect to the server.
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_weapon_xml_v3.xmlContent AS equipmentXML " +
+               "FROM items " +
+               "RIGHT JOIN crafting_xml_v2 ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=weapon%' AND crafting_xml_v2.equipmentCategory = 1) " +
+               "RIGHT JOIN equipment_weapon_xml_v3 ON(itmType = equipment_weapon_xml_v3.xml_id AND itmData LIKE '%blueprintType=weapon%') " +
+               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string craftingXML = reader.GetString("craftingXML");
+                     string equipmentXML = reader.GetString("equipmentXML");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchCraftingIngredients (string usrIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            string result = "";
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType, itmCount " +
+               "FROM items " +
+               "WHERE usrId = @usrId and itmCategory = 6",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     int itmCount = reader.GetInt32("itmCount");
+
+                     result += $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itmCount}[space]";
+                  }
+                  return result;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchEquippedItems (string usrIdStr) {
+      int usrId = int.Parse(usrIdStr);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT itmId, itmCategory, itmType, " +
+               "CASE " +
+               "WHEN itmCategory = 1 THEN arcane.equipment_weapon_xml_v3.xmlContent " +
+               "WHEN itmCategory = 2 THEN arcane.equipment_armor_xml_v3.xmlContent " +
+               "WHEN itmCategory = 3 THEN arcane.equipment_hat_xml_v1.xmlContent " +
+               "END AS equipmentXML " +
+               "FROM arcane.items " +
+               "left join arcane.equipment_weapon_xml_v3 on(itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.xml_id) " +
+               "left join arcane.equipment_armor_xml_v3 on(itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.xml_id) " +
+               "left join arcane.equipment_hat_xml_v1 on(itmCategory = 3 and itmType = arcane.equipment_hat_xml_v1.xml_id) " +
+               "left join arcane.users on armId = itmId or wpnId = itmId or hatId = itmId " +
+               "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
+               connection)) {
+               command.Parameters.AddWithValue("@usrId", usrId);
+
+               StringBuilder stringBuilder = new StringBuilder();
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     int itmId = reader.GetInt32("itmId");
+                     int itmCategory = reader.GetInt32("itmCategory");
+                     int itmType = reader.GetInt32("itmType");
+                     string equipmentXML = reader.GetString("equipmentXML");
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{equipmentXML}[space]";
+                     stringBuilder.AppendLine(result);
+                  }
+               }
+               return stringBuilder.ToString();
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string fetchMapData (string mapName, string versionStr) {
+      int version = int.Parse(versionStr);
+      try {
+         using (MySqlConnection connection = getConnection()) {
+            connection.Open();
+            using (MySqlCommand command = new MySqlCommand(
+               "SELECT gameData FROM map_versions_v2 left join maps_v2 on mapid = id WHERE (name = @mapName and version=@mapVersion)",
+               connection)) {
+               command.Parameters.AddWithValue("@mapName", mapName);
+               command.Parameters.AddWithValue("@mapVersion", version);
+
+               using (MySqlDataReader reader = command.ExecuteReader()) {
+                  while (reader.Read()) {
+                     string result = reader.GetString("gameData");
+                     return result;
+                  }
+               }
+               return "";
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
+
+   public static new string userAbilities (string userIdString) {
+      int usrId = int.Parse(userIdString);
+      List<AbilitySQLData> abilityList = new List<AbilitySQLData>();
+      StringBuilder stringBuilder = new StringBuilder();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM ability_table_v2 WHERE (userID=@userID)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", usrId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AbilitySQLData abilityData = new AbilitySQLData(dataReader);
+                  abilityList.Add(abilityData);
+               }
+            }
+            D.editorLog("REsult of fetch: " + Util.serialize<AbilitySQLData>(abilityList).Length);
+            foreach (string splitString in Util.serialize<AbilitySQLData>(abilityList)) {
+               stringBuilder.AppendLine(splitString + "_space_");
+            }
+            return stringBuilder.ToString();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return "";
+      }
+   }
 
    #endregion
 

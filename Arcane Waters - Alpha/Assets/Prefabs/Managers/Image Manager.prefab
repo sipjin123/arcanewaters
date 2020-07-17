@@ -6378,6 +6378,48 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: f164066df391b0642afd63d660dd1c5c, type: 3}
     sprites:
     - {fileID: 21300000, guid: f164066df391b0642afd63d660dd1c5c, type: 3}
+  - imageName: farm_map_arcadian_vale
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_arcadian_vale.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_arcadian_vale
+    texture2D: {fileID: 2800000, guid: 15d8ed364244e854dbcd969c363bb682, type: 3}
+    sprite: {fileID: 21300000, guid: 15d8ed364244e854dbcd969c363bb682, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 15d8ed364244e854dbcd969c363bb682, type: 3}
+  - imageName: farm_map_fertile_meadows
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_fertile_meadows.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_fertile_meadows
+    texture2D: {fileID: 2800000, guid: df884e92d3068b74ea290d9fd15c7d39, type: 3}
+    sprite: {fileID: 21300000, guid: df884e92d3068b74ea290d9fd15c7d39, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: df884e92d3068b74ea290d9fd15c7d39, type: 3}
+  - imageName: farm_map_highland_homestead
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_highland_homestead.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_highland_homestead
+    texture2D: {fileID: 2800000, guid: c668c72c8d20a5249bacfb4a135e4e14, type: 3}
+    sprite: {fileID: 21300000, guid: c668c72c8d20a5249bacfb4a135e4e14, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c668c72c8d20a5249bacfb4a135e4e14, type: 3}
+  - imageName: farm_map_riverside_fields
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_riverside_fields.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_riverside_fields
+    texture2D: {fileID: 2800000, guid: ccf802de87925fc42b8ac67d4cd58b26, type: 3}
+    sprite: {fileID: 21300000, guid: ccf802de87925fc42b8ac67d4cd58b26, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: ccf802de87925fc42b8ac67d4cd58b26, type: 3}
+  - imageName: farm_map_rugged_freehold
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_rugged_freehold.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_rugged_freehold
+    texture2D: {fileID: 2800000, guid: 9cf8dce83a9e2404cb662db0f327b534, type: 3}
+    sprite: {fileID: 21300000, guid: 9cf8dce83a9e2404cb662db0f327b534, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9cf8dce83a9e2404cb662db0f327b534, type: 3}
+  - imageName: farm_map_stately_gardens
+    imagePath: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_stately_gardens.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Map Customization/Preview Images/farm_map_stately_gardens
+    texture2D: {fileID: 2800000, guid: 9e2c5f4810f0e944da3924545144263f, type: 3}
+    sprite: {fileID: 21300000, guid: 9e2c5f4810f0e944da3924545144263f, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 9e2c5f4810f0e944da3924545144263f, type: 3}
   - imageName: fatty_1
     imagePath: Assets/Sprites/Faces/fatty_1.png
     imagePathWithoutExtension: Assets/Sprites/Faces/fatty_1
@@ -12545,6 +12587,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 4762b8c5524d9b846b9373a7891858dc, type: 3}
     sprites:
     - {fileID: 21300000, guid: 4762b8c5524d9b846b9373a7891858dc, type: 3}
+  - imageName: icon_pirates_2
+    imagePath: Assets/Sprites/GUI/Guild/icon_pirates_2.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/icon_pirates_2
+    texture2D: {fileID: 2800000, guid: c51b3c84d824c24449ba64b94588ed27, type: 3}
+    sprite: {fileID: 21300000, guid: c51b3c84d824c24449ba64b94588ed27, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: c51b3c84d824c24449ba64b94588ed27, type: 3}
   - imageName: icon_player_elixir
     imagePath: Assets/Sprites/Icons/Battle/Player/icon_player_elixir.png
     imagePathWithoutExtension: Assets/Sprites/Icons/Battle/Player/icon_player_elixir
@@ -12615,6 +12664,13 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 2c7b5a37eea810c4992a74e2e08bc9fd, type: 3}
     sprites:
     - {fileID: 21300000, guid: 2c7b5a37eea810c4992a74e2e08bc9fd, type: 3}
+  - imageName: icon_privateers_2
+    imagePath: Assets/Sprites/GUI/Guild/icon_privateers_2.png
+    imagePathWithoutExtension: Assets/Sprites/GUI/Guild/icon_privateers_2
+    texture2D: {fileID: 2800000, guid: 5c9a38690df5e02409d8cabb7b62022e, type: 3}
+    sprite: {fileID: 21300000, guid: 5c9a38690df5e02409d8cabb7b62022e, type: 3}
+    sprites:
+    - {fileID: 21300000, guid: 5c9a38690df5e02409d8cabb7b62022e, type: 3}
   - imageName: icon_rank3
     imagePath: Assets/Sprites/GUI/Guild/icon_rank3.png
     imagePathWithoutExtension: Assets/Sprites/GUI/Guild/icon_rank3
