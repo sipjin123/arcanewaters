@@ -7,6 +7,9 @@ using Mirror;
 public class AttackPanel : MonoBehaviour {
    #region Public Variables
 
+   // The selected ability index
+   public int selectedAbilityIndex = 0;
+
    #endregion
 
    private void Start () {
@@ -23,8 +26,6 @@ public class AttackPanel : MonoBehaviour {
       if (target == null) {
          return;
       }
-
-      BattleUIManager.self.hideTargetGameobjectUI();
 
       // Send the request to the server
       Global.player.rpc.Cmd_RequestAttack(target.netId, abilityIndex);

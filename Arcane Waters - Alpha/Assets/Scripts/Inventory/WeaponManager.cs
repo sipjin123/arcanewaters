@@ -110,6 +110,7 @@ public class WeaponManager : EquipmentManager {
          return;
       }
 
+      D.editorLog("The weapon Manager is fetching Weapon data of: " + weapon.itemTypeId, Color.magenta);
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
       if (weaponData != null) {
          weaponData.itemSqlId = weapon.id;

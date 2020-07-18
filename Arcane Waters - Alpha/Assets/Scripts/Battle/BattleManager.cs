@@ -779,6 +779,7 @@ public class BattleManager : MonoBehaviour {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
+                  participant.player.rpc.endBattle();
                   Vector3 chestPos = battler.player.transform.position;
                   if (!foundPlayer) {
                      foundPlayer = true;

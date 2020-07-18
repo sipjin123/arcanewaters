@@ -27,7 +27,45 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // If this Button is enabled
    public bool isEnabled;
 
+   // Cool down parameters
+   public float cooldownValue, cooldownTarget = .1f;
+
+   // The cooldown image
+   public Image cooldownImage;
+
+   // The ability type 
+   public AbilityType abilityType;
+
+   // The animator reference
+   public Animator buttonAnimator;
+
+   // The animation clip names
+   public static string INVALID_ANIM = "Invalid";
+   public static string SELECT_ANIM = "Select";
+   public static string IDLE_ANIM = "Idle";
+
    #endregion
+
+   public void startCooldown (float coolDownTarget) {
+      CancelInvoke();
+      cooldownValue = 0;
+      cooldownTarget = coolDownTarget;
+      cooldownImage.enabled = true;
+      cooldownImage.fillAmount = 1;
+      InvokeRepeating("processCooldownTime", 0, .1f);
+   }
+
+   public void invalidButtonClick () {
+      buttonAnimator.Play(INVALID_ANIM);
+   }
+
+   public void playSelectAnim () {
+      buttonAnimator.Play(SELECT_ANIM);
+   }
+
+   public void playIdleAnim () {
+      buttonAnimator.Play(IDLE_ANIM);
+   }
 
    public void OnPointerEnter (PointerEventData eventData) {
       if (!isEnabled) {
@@ -121,6 +159,17 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          case AbilityOrigin.StanceAction:
             BattleUIManager.self.hideActionStanceFrame();
             break;
+      }
+   }
+
+   private void processCooldownTime () {
+      if (cooldownValue < cooldownTarget) {
+         cooldownValue+= .1f;
+         cooldownImage.fillAmount = cooldownValue / cooldownTarget;
+      } else {
+         cooldownImage.enabled = false;
+         playIdleAnim();
+         CancelInvoke();
       }
    }
 

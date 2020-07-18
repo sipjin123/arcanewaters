@@ -209,7 +209,7 @@ namespace NubisDataHandling {
          if (userRawData.Length < 10) {
             D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
             D.editorLog("Content: " + userRawData, Color.red);
-         }
+         } 
          newUserInfo = UserInfoData.processUserInfo(userRawData);
 
          // Process user equipped items

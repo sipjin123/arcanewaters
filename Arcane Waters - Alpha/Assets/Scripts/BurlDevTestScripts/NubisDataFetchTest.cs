@@ -134,8 +134,8 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisUserData () {
       D.debug("Getting UserData");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userData), "745"); 
-      D.debug("ASync start: "+ returnCode); 
+      var returnCode = await NubisClient.call<string>(nameof(DB_Main.userData), "745"); 
+      D.debug("User Data Result: "+ returnCode); 
    }
 
    private async void nubisWeapons () {

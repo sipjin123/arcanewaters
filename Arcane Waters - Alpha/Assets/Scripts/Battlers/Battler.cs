@@ -268,10 +268,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             onBattlerSelect.AddListener(() => {
                BattleUIManager.self.triggerTargetUI(this);
             });
-
-            onBattlerDeselect.AddListener(() => {
-               BattleUIManager.self.hideTargetGameobjectUI();
-            });
          }
       }
 
@@ -303,7 +299,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(true);
                BattleUIManager.self.playerBattleCG.Show();
-               BattleUIManager.self.abilitiesCG.Show();
                BattleUIManager.self.buffAbilitiesRow.Show();
                BattleUIManager.self.targetAbilitiesRow.Hide();
                BattleUIManager.self.stanceChangeButton.gameObject.SetActive(false);
@@ -321,7 +316,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
-               BattleUIManager.self.abilitiesCG.Hide();
                selectedBattleBar.gameObject.SetActive(false);
                BattleUIManager.self.playerStanceFrame.SetActive(false);
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(false);
@@ -437,6 +431,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                selectedBattleBar.nameText.enabled = true;
                selectedBattleBar.gameObject.SetActive(false);
             } else {
+               BattleUIManager.self.abilitiesCG.Show();
                selectedBattleBar = minionBattleBar;
                selectedBattleBar.nameText.text = Global.player.nameText.text;
                BattleUIManager.self.playerBattleCG.Hide();
@@ -538,6 +533,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // Basic method that will handle the functionality for whenever we deselect this battler
    public void deselectThis () {
+      BattleSelectionManager.self.deselectTarget();
       onBattlerDeselect.Invoke();
    }
 
@@ -982,6 +978,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSeconds(timeToWait);
+
+            // Implement ability button cooldowns
+            if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
+               BattleUIManager.self.initializeAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+            } 
 
             // Make sure the source battler is still alive at this point
             if (sourceBattler.isDead()) {

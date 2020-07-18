@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5052184360325384851}
   - component: {fileID: 2246104871548537171}
   - component: {fileID: 5493135368530025442}
+  - component: {fileID: 7768413648986102060}
   m_Layer: 5
   m_Name: Ability Button
   m_TagString: Untagged
@@ -129,12 +130,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityIndex: -1
   abilityOrigin: 1
-  borderImage: {fileID: 3615050016808728003}
-  backgroundImage: {fileID: 5046406676399770908}
   abilityIcon: {fileID: 385830021983388437}
   abilityButton: {fileID: 5052184360325384851}
   grayScaleObj: {fileID: 5785167255937590420}
   isEnabled: 0
+  cooldownValue: 0
+  cooldownTarget: 0.1
+  cooldownImage: {fileID: 1328332891309934809}
+  abilityType: 0
+  buttonAnimator: {fileID: 7768413648986102060}
+--- !u!95 &7768413648986102060
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4823555918481933101}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 67b24f7674ba4684f9e6af33e2c23484, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5785167255937590420
 GameObject:
   m_ObjectHideFlags: 0
@@ -152,7 +175,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2305588821106325144
 RectTransform:
   m_ObjectHideFlags: 0
@@ -187,13 +210,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5785167255937590420}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.53333336}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -204,7 +227,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
-  m_FillAmount: 1
+  m_FillAmount: 0.644
   m_FillClockwise: 1
   m_FillOrigin: 2
   m_UseSpriteMesh: 0

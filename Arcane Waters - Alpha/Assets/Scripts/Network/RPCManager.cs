@@ -127,12 +127,12 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveNPCQuestNode (NetworkConnection connection, int questId,
-      int questNodId, int dialogueId, int friendshipLevel, bool areObjectivesCompleted, bool isEnabled, int[] itemStock) {
+      int questNodId, int dialogueId, int friendshipLevel, bool areObjectivesCompleted, bool isEnabled, int[] itemStock, Jobs newJobs) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
       // Pass the data to the panel
-      panel.updatePanelWithQuestNode(friendshipLevel, questId, questNodId, dialogueId, areObjectivesCompleted, isEnabled, itemStock);
+      panel.updatePanelWithQuestNode(friendshipLevel, questId, questNodId, dialogueId, areObjectivesCompleted, isEnabled, itemStock, newJobs);
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
@@ -150,7 +150,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass the data to the panel
       panel.updatePanelWithQuestSelection(npcId, npcName, friendshipLevel, greetingText,
-         canOfferGift, hasTradeGossipDialogue, hasGoodbyeDialogue, isHireable, landMonsterId, questId, questNodeId, questDialogueId, itemStock, newJobsXp);
+         canOfferGift, hasGoodbyeDialogue, isHireable, landMonsterId, questId, questNodeId, questDialogueId, itemStock, newJobsXp);
    }
 
    [TargetRpc]
@@ -439,6 +439,16 @@ public class RPCManager : NetworkBehaviour {
    public void spawnBattlerMonsterChest (int instanceID, Vector3 position, int enemyID) {
       Instance currentInstance = InstanceManager.self.getInstance(instanceID);
       TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID);
+   }
+
+   [Server]
+   public void endBattle () {
+      Target_ReceiveEndBattle(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveEndBattle (NetworkConnection connection) {
+      BattleUIManager.self.abilitiesCG.Hide();
    }
 
    [TargetRpc]
@@ -1396,6 +1406,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
+            Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
             // Deduct the items from the user id from the database
             if (itemsToDeduct.Count > 0) {
@@ -1413,7 +1424,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, 0, true, true, itemStock.ToArray());
+               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, 0, true, true, itemStock.ToArray(), newJobXP);
             });
          });
       } else {
@@ -3642,6 +3653,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
+         D.editorLog("Invalid Targets!");
          return;
       }
 

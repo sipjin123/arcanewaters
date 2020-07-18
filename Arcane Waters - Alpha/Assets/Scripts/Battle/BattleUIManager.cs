@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
+using System.Linq;
 
 public class BattleUIManager : MonoBehaviour {
    #region Public Variables
@@ -141,6 +142,35 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
+   public void initializeAbilityCooldown (AbilityType abilityType, int index, float coolDown) {
+      AbilityButton selectedButton = abilityTargetButtons.ToList().FindAll(_ => _.abilityType == abilityType)[index];
+      selectedButton.startCooldown(coolDown);
+      selectedButton.playSelectAnim();
+   }
+
+   private void FixedUpdate () {
+      if (Input.GetKeyUp(KeyCode.Alpha1)) {
+         triggerAbilityByKey(0);
+      } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+         triggerAbilityByKey(1);
+      } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+         triggerAbilityByKey(2);
+      } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+         triggerAbilityByKey(3);
+      } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+         triggerAbilityByKey(4);
+      }
+   }
+
+   private void triggerAbilityByKey (int keySlot) {
+      AbilityButton selectedButton = abilityTargetButtons.ToList()[keySlot];
+      if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
+         selectedButton.abilityButton.onClick.Invoke();
+      } else { 
+         selectedButton.invalidButtonClick();
+      }
+   }
+
    public void SetupAbilityUI (AbilitySQLData[] abilitydata) {
       int indexCounter = 0;
       int attackAbilityIndex = 0;
@@ -165,11 +195,18 @@ public class BattleUIManager : MonoBehaviour {
                   buffPlayerButtons[indexCounter].disableButton();
 
                   int indexToSet = attackAbilityIndex;
+                  abilityButton.abilityType = AbilityType.Standard; 
                   abilityButton.GetComponent<Button>().onClick.RemoveAllListeners();
                   abilityButton.GetComponent<Button>().onClick.AddListener(() => {
-                     attackPanel.requestAttackTarget(indexToSet);
-                  });
+                     deselectOtherAbilities();
 
+                     if (BattleSelectionManager.self.selectedBattler == null) {
+                        abilityButton.invalidButtonClick();
+                     } else {
+                        attackPanel.requestAttackTarget(indexToSet);
+                     }
+                  });
+                  
                   abilityButton.abilityIndex = indexCounter;
                   attackAbilityIndex++;
                } else {
@@ -190,6 +227,7 @@ public class BattleUIManager : MonoBehaviour {
                   buffPlayerButtons[indexCounter].enableButton();
 
                   int indexToSet = buffAbilityIndex;
+                  abilityButton.abilityType = AbilityType.BuffDebuff;
                   buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.RemoveAllListeners();
                   buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.AddListener(() => {
                      attackPanel.requestBuffTarget(indexToSet);
@@ -227,6 +265,12 @@ public class BattleUIManager : MonoBehaviour {
       int abilityIndex = 0;
       if (abilitydata.Length > 0) {
          abilityIndex = abilitydata.Length - 1;
+      }
+   }
+
+   private void deselectOtherAbilities () {
+      foreach (AbilityButton abilityButton in abilityTargetButtons) {
+         abilityButton.playIdleAnim();
       }
    }
 
@@ -271,7 +315,6 @@ public class BattleUIManager : MonoBehaviour {
 
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
-      abilitiesCG.Hide();
 
       // If any of these are null, then we do not call anything.
       if (playerStanceFrame != null) {
@@ -381,18 +424,12 @@ public class BattleUIManager : MonoBehaviour {
    #endregion
 
    public void triggerTargetUI (Battler target) {
-      abilitiesCG.Show();
       buffAbilitiesRow.Hide();
       targetAbilitiesRow.Show();
    }
 
-   public void hideTargetGameobjectUI () {
-      abilitiesCG.Hide();
-   }
-
    public void hidePlayerGameobjectUI () {
       playerBattleCG.Hide();
-      abilitiesCG.Hide();
    }
 
    // Prepares main listener for preparing the onAbilityHover event
@@ -423,15 +460,11 @@ public class BattleUIManager : MonoBehaviour {
 
       playerBattler.onBattlerAttackStart.AddListener(() => {
          playerMainUIHolder.Hide();
-         abilitiesCG.Hide();
          mainPlayerRectCG.Hide();
       });
 
       playerBattler.onBattlerAttackEnd.AddListener(() => {
          playerMainUIHolder.Show();
-         abilitiesCG.Show();
-         buffAbilitiesRow.Show();
-         targetAbilitiesRow.Hide();
          mainPlayerRectCG.Show();
 
          playerBattler.pauseAnim(false);
@@ -449,7 +482,6 @@ public class BattleUIManager : MonoBehaviour {
          playerStanceFrame.SetActive(false);
          playerMainUIHolder.gameObject.SetActive(false);
          playerBattleCG.Hide();
-         abilitiesCG.Hide();
          playerBattler.selectedBattleBar.gameObject.SetActive(false);
       });
 
@@ -469,7 +501,6 @@ public class BattleUIManager : MonoBehaviour {
       usernameText.gameObject.SetActive(true);
       if (showAbilities) {
          playerBattleCG.Show();
-         abilitiesCG.Show();
          buffAbilitiesRow.Show();
          targetAbilitiesRow.Hide();
 
@@ -481,7 +512,6 @@ public class BattleUIManager : MonoBehaviour {
          }
       } else {
          playerBattleCG.Hide();
-         abilitiesCG.Hide();
       }
    }
 

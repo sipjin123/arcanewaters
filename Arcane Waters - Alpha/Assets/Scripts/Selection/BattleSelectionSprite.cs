@@ -56,12 +56,6 @@ public class BattleSelectionSprite : MonoBehaviour {
          // Disabled sprite UI if the battler is jumping
          spriteHolder.SetActive(!isBattlerJumping);
 
-         // Hide skill UI if battler is jumping
-         BattleUIManager.self.abilitiesCG.gameObject.SetActive(!isBattlerJumping);
-         if (selectedBattler.teamType == Battle.TeamType.Attackers) {
-            BattleUIManager.self.playerBattleCG.gameObject.SetActive(!isBattlerJumping);
-         }
-
          this.transform.position = targetPosition + getOffset(selectedBattler);
 
          // Move the arrows around based on the orientation of our target

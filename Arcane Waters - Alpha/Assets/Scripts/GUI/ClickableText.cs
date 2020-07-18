@@ -21,12 +21,19 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
    // A custom Event that gets invoked when we're clicked
    public UnityEvent clickedEvent = new UnityEvent();
 
+   // The hover events
+   public UnityEvent hoverEnterEvent = new UnityEvent();
+   public UnityEvent hoverExitEvent = new UnityEvent();
+
    // Holds the status of the clickable text if there is one
    public GameObject statusIndicator;
    public Text statusText;
    public Sprite positiveIndicator, negativeIndicator;
    public Image indicatorImage;
    public bool hasIndicator;
+
+   // The snap node where the tooltip will spawn
+   public Transform toolTipSnapNode;
 
    #endregion
 
@@ -93,9 +100,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
          textComp.color = Color.yellow;
       }
 
-      if (hasIndicator) {
-         statusIndicator.gameObject.SetActive(true);
-      }
+      hoverEnterEvent.Invoke();
    }
 
    public void OnPointerExit (PointerEventData eventData) {
@@ -104,9 +109,7 @@ public class ClickableText : ClientMonoBehaviour, IPointerEnterHandler, IPointer
          textComp.color = _initialFontColor;
       }
 
-      if (hasIndicator) {
-         statusIndicator.gameObject.SetActive(false);
-      }
+      hoverExitEvent.Invoke();
    }
 
    public void OnPointerDown (PointerEventData eventData) {

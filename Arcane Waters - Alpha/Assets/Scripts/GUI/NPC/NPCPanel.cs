@@ -86,6 +86,10 @@ public class NPCPanel : Panel {
    // The cached quest data
    QuestData cachedQuestData;
 
+   // The tool tip obj
+   public GameObject toolTipObj;
+   public Text toolTipText;
+
    #endregion
 
    public override void Awake () {
@@ -120,7 +124,7 @@ public class NPCPanel : Panel {
    }
 
    public void updatePanelWithQuestSelection (int npcId, string npcName,
-      int friendshipLevel, string greetingText, bool canOfferGift, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
+      int friendshipLevel, string greetingText, bool canOfferGift, bool hasGoodbyeDialogue,
       bool isHireable, int landMonsterId, int questId, int questNodeId, int dialogueId, int[] itemStock, Jobs newJobsXp) {
       initLoadBlockers(false);
 
@@ -133,43 +137,62 @@ public class NPCPanel : Panel {
       // Set the panel content common to the different modes
       setCommonPanelContent(greetingText, friendshipLevel);
 
-      // Clear out the old clickable options
-      clearDialogueOptions();
-
       isHireableNotification.SetActive(isHireable);
       hireButton.onClick.RemoveAllListeners();
       hireButton.onClick.AddListener(() => {
          Global.player.rpc.Cmd_HireCompanion(landMonsterId);
       });
 
-      // Create a clickable text row for each quest in the list
+      processInternalDialogues(questId, questNodeId, dialogueId, friendshipLevel, itemStock, newJobsXp);
+
+      /*
+      // Create a clickable text row for the gift offering
+      if (canOfferGift) {
+         addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.Gift,
+            () => giftRowClickedOn(), true);
+      }*/
+   }
+
+   public void updatePanelWithQuestNode (int friendshipLevel, int questId, int questNodeId, int dialogueId,
+      bool areObjectivesCompleted, bool isEnabled, int[] itemStock, Jobs newJobsXp) {
+      initLoadBlockers(false);
+
+      if (areObjectivesCompleted && !isEnabled) {
+         areObjectivesCompleted = false;
+      }
+
+      // Show the correct section
+      configurePanelForMode(Mode.QuestNode);
+
+      processInternalDialogues(questId, questNodeId, dialogueId, friendshipLevel, itemStock, newJobsXp);
+   }
+
+   private void processInternalDialogues (int questId, int questNodeId, int dialogueId, int friendshipLevel, int[] itemStock, Jobs newJobsXp) {
+      // Clear out the old clickable options
+      clearDialogueOptions();
+
+      string questStatus = "In Progress";
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
+      bool canStartQuest = true;
+
       if (questData != null) {
-         cachedQuestData = questData;
-
-         // Verifies if the user has enough friendship to start the quest
-         string questStatus = "";
-         bool canStartQuest = true;
-
          if (questNodeId + 1 > questData.questDataNodes.Length) {
             addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
             () => dialogueEndClickedOn(), true);
-
          } else {
             QuestDataNode questDataNode = new List<QuestDataNode>(questData.questDataNodes).Find(_ => _.questDataNodeId == questNodeId);
-            if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
-               canStartQuest = false;
-               questStatus = "Friendship too Low";
-            } else {
-               questStatus = "In Progress";
-            }
-
-            // Create a clickable text row for the quest
             QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
             npcDialogueText.enabled = true;
             _npcDialogueLine = dialogueNode.npcDialogue;
             if (isShowing()) {
                AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+            }
+
+            if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
+               canStartQuest = false;
+               questStatus = "Friendship too Low";
+            } else {
+               questStatus = null;
             }
 
             // Clear the quest objectives grid
@@ -188,91 +211,28 @@ public class NPCPanel : Panel {
                hasCompleteIngredients = displayItemRequirements(dialogueNode.itemRequirements, itemStock);
             }
 
+            addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
             if (hasCompleteIngredients) {
                Jobs.Type dialogueJobTypeRequirement = (Jobs.Type) dialogueNode.jobTypeRequirement;
                if (dialogueJobTypeRequirement != Jobs.Type.None) {
                   if (newJobsXp.getXP(dialogueJobTypeRequirement) < dialogueNode.jobLevelRequirement) {
                      canStartQuest = false;
-                     addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
+                     questStatus = "Not enough " + dialogueJobTypeRequirement + " experience!";
                   }
                }
                addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
                   () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
-            } else {
-               D.editorLog("Not enough ingredients!", Color.red);
-               addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
             }
          }
       } else {
-         NPCData npcData = NPCManager.self.getNPCData(npcId);
+         NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
          npcDialogueText.enabled = true;
          _npcDialogueLine = npcData.greetingTextStranger;
          if (isShowing()) {
             AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
          }
+
          addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
-      }
-      
-      /*
-      // Create a clickable text row for the gift offering
-      if (canOfferGift) {
-         addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.Gift,
-            () => giftRowClickedOn(), true);
-      }*/
-   }
-
-   public void updatePanelWithQuestNode (int friendshipLevel, int questId, int questNodeId, int dialogueId,
-      bool areObjectivesCompleted, bool isEnabled, int[] itemStock) {
-      initLoadBlockers(false);
-
-      if (areObjectivesCompleted && !isEnabled) {
-         areObjectivesCompleted = false;
-      }
-
-      // Show the correct section
-      configurePanelForMode(Mode.QuestNode);
-
-      // Clear out the old clickable options
-      clearDialogueOptions();
-
-      string questStatus = "In Progress";
-      QuestData questNode = NPCQuestManager.self.getQuestData(questId);
-      if (questNodeId + 1 > questNode.questDataNodes.Length) {
-         D.editorLog("No quest left to take", Color.green);
-
-         addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
-         () => dialogueEndClickedOn(), true);
-      } else {
-         QuestDataNode questDataNode = new List<QuestDataNode>(questNode.questDataNodes).Find(_ => _.questDataNodeId == questNodeId);
-         QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
-         npcDialogueText.enabled = true;
-         _npcDialogueLine = dialogueNode.npcDialogue; 
-         if (isShowing()) {
-            AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
-         }
-
-         // Clear the quest objectives grid
-         questObjectivesContainer.DestroyChildren();
-         if (dialogueNode.itemRequirements == null || dialogueNode.itemRequirements.Length == 0) {
-            questObjectivesGO.SetActive(false);
-         } else {
-            questObjectivesGO.SetActive(true);
-         }
-
-         // Add each quest objective
-         bool hasCompleteIngredients = false;
-         if (dialogueNode.itemRequirements.Length < 1) {
-            hasCompleteIngredients = true;
-         } else {
-            hasCompleteIngredients = displayItemRequirements(dialogueNode.itemRequirements, itemStock);
-         }
-
-         if (!hasCompleteIngredients) {
-            D.editorLog("Not enough ingredients!", Color.red);
-            addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
-         } else {
-            addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption, () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), true, dialogueNode.playerDialogue, questStatus);
-         }
       }
    }
 
@@ -332,7 +292,6 @@ public class NPCPanel : Panel {
    }
 
    public void questSelectionRowClickedOn (int questId, int questNodeId, int dialogueId) {
-      D.editorLog("Quest node was clicked");
       Global.player.rpc.Cmd_SelectNextNPCDialogue(_npc.npcId, questId, questNodeId, dialogueId);
 
       initLoadBlockers(true);
@@ -512,11 +471,7 @@ public class NPCPanel : Panel {
       // Create a clickable text row
       ClickableText row = Instantiate(dialogueOptionRowPrefab);
       row.transform.SetParent(container.transform);
-      if (statusText != null) {
-         row.statusIndicator.SetActive(true);
-         row.setBackground(isInteractive, statusText);
-      }
-
+      
       // Set the text
       if (text == null) {
          row.initData(clickableType);
@@ -531,6 +486,20 @@ public class NPCPanel : Panel {
       // Disable the row if it is not interactive
       if (!isInteractive) {
          row.disablePointerEvents(disabledClickableRowColor);
+      }
+
+      // The tooltip 
+      if (statusText != null) {
+         toolTipText.text = statusText;
+         row.hoverEnterEvent.RemoveAllListeners();
+         row.hoverEnterEvent.AddListener(() => {
+            toolTipObj.gameObject.SetActive(true);
+            toolTipObj.transform.position = row.toolTipSnapNode.position;
+         });
+         row.hoverExitEvent.RemoveAllListeners();
+         row.hoverExitEvent.AddListener(() => {
+            toolTipObj.gameObject.SetActive(false);
+         });
       }
    }
 
