@@ -7,11 +7,17 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using MiniJSON;
 
 public class LoggerManager : MonoBehaviour {
    #region Public Variables
    public static LoggerManager self;
+   public bool catchEditorLogs;
+   // message patterns to include for regular logs LogType.Log
+   public string[] includePatterns;
+   // message patterns to exclude from logging
+   public string[] excludePatterns;
    #endregion
 
    void Awake () {
@@ -51,19 +57,40 @@ public class LoggerManager : MonoBehaviour {
    
    void InitMessagesFolder () {
       if (Directory.Exists(messagesDirPath)) return;
-      Debug.Log ("Creating messages folder: " + messagesDirPath);
+      // Debug.Log ("Creating messages folder: " + messagesDirPath);
       Directory.CreateDirectory(messagesDirPath);
    }
 
    public void AddMessage(string logString, string stackTrace, LogType type) {
-      if (type == LogType.Log) return; // skip default log messages
-      // TODO - skip all LoggerManager messages to avoid recursion
+      // skip default log messages if no include patters found
+      if (type == LogType.Log && !IsPatternPresent(includePatterns, logString)) return;
+      // don't catch editor logs if not enabled
+      if (Application.isEditor && !catchEditorLogs) return;
+      // skip all LoggerManager messages to avoid recursion
+      if (stackTrace.Contains("LoggerManager.cs")) return; 
+      // skip messages with exclude patterns
+      if (IsPatternPresent(excludePatterns, logString)) return; 
       
       Dictionary <string, string> messageData = new Dictionary<string, string>();
 
       messageData["message"] = logString;
       messageData["stackTrace"] = stackTrace;
       messageData["messageType"] = type.ToString();
+      
+      #if IS_SERVER_BUILD
+      messageData["appType"] = "server";
+      #else
+      messageData["appType"] = "client";
+      #endif
+      #if IS_MASTER_TOOL
+      messageData["appType"] = "mastertool";
+      #endif
+      #if NUBIS
+      messageData["appType"] = "nubis";
+      #endif
+      #if ARCANE_WATERS_WEBSITE
+      messageData["appType"] = "website";
+      #endif
 
       messageData["messageHash"] = CalculateMD5Hash(logString);
       messageData["systemInfo"] = SystemInfo.operatingSystem;
@@ -75,6 +102,15 @@ public class LoggerManager : MonoBehaviour {
 
       // add to event queue
       StoreMessage(messageData);
+   }
+
+   bool IsPatternPresent(string[] patterns, string message) {
+      foreach (string pattern in patterns) {
+         Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+         MatchCollection matches = regex.Matches(message);
+         if (matches.Count > 0) return true;
+      }
+      return false;
    }
 
    void StoreMessage(Dictionary <string, string> messageData) {
@@ -92,7 +128,7 @@ public class LoggerManager : MonoBehaviour {
    void SendMessages () {
       if (messagesAreSending) return;
 
-      Debug.Log("Time to send messages");
+      // Debug.Log("Time to send messages");
 
       try {
          messagesAreSending = true;
@@ -112,7 +148,7 @@ public class LoggerManager : MonoBehaviour {
       messagesToSend = "";
       messagesToSendDate = "";
 
-      //  check all messages folders
+      // check all messages folders
       string[] messagesDirs = Directory.GetDirectories(messagesDirPath);
       for (int d=0; d<messagesDirs.Length; d++) {
 
@@ -135,7 +171,7 @@ public class LoggerManager : MonoBehaviour {
          messagesToSend = Json.Serialize(data);
          if (messagesToSend != "" && messagesToSend != "{}") return; // limit to send one day statistic at once
          
-         // TODO: remove empty directory
+         Directory.Delete(messagesDirs[d]); // no messages to send, remove empty directory
       }
    }
 
@@ -194,7 +230,7 @@ public class LoggerManager : MonoBehaviour {
    }
    
    #region Private Variables
-   const string VERSION = "1";
+   const string VERSION = "2";
    // const string SERVER_URL = "http://127.0.0.1:3000/";
    const string SERVER_URL = "http://tools.arcanewaters.com/";
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
@@ -202,11 +238,10 @@ public class LoggerManager : MonoBehaviour {
 
    string messagesDirPath;
    float currentSendDelay = 0;
-   
+
    bool messagesAreSending;
    string messagesToSend;
    string messagesToSendDate;
    List <string> messagesIds;
-   
    #endregion
 }

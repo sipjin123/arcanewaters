@@ -14,6 +14,8 @@ namespace MapCreationTool
       [SerializeField]
       private InputField nameInput = null;
       [SerializeField]
+      private InputField displayNameInput = null;
+      [SerializeField]
       private Dropdown sourceMapDropdown = null;
       [SerializeField]
       private InputField notesInput = null;
@@ -42,9 +44,11 @@ namespace MapCreationTool
 
          targetMap = map;
 
-         sourceOptions = Enumerable.Repeat((0, "None"), 1).Union(Overlord.remoteMaps.maps.Select(m => (m.Value.id, m.Value.name))).ToArray();
+         sourceOptions = Enumerable.Repeat((0, "None"), 1).Union(Overlord.remoteMaps.maps
+            .Where(m => m.Value.specialType == Area.SpecialType.Town).Select(m => (m.Value.id, m.Value.name))).ToArray();
 
          nameInput.text = map.name;
+         displayNameInput.text = map.displayName;
          notesInput.text = map.notes;
          sourceMapDropdown.options = sourceOptions.Select(o => new Dropdown.OptionData { text = o.displayText }).ToList();
 
@@ -71,6 +75,7 @@ namespace MapCreationTool
             Map newMap = new Map {
                id = targetMap.id,
                name = nameInput.text,
+               displayName = displayNameInput.text,
                notes = notesInput.text,
                sourceMapId = sourceOptions[sourceMapDropdown.value].id,
                specialType = typeOptions[typeDropdown.value].type

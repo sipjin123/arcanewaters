@@ -7,12 +7,10 @@ namespace MapCreationTool
 {
    public class MapListEntry : MonoBehaviour
    {
-      private const string DOWN_TRIANGLE = "▼";
-      private const string LEFT_TRIANGLE = "▶";
-      private const string BULLET = "◆";
-
       [SerializeField]
       private Text nameText = null;
+      [SerializeField]
+      private Text markerText = null;
       [SerializeField]
       private Text createdAtText = null;
       [SerializeField]
@@ -27,18 +25,14 @@ namespace MapCreationTool
       private Button detailsButton = null;
       [SerializeField]
       private Button deleteButton = null;
-      [SerializeField]
-      private Button arrowButton = null;
 
       public Map target { get; private set; }
 
-      public int? childOf { get; private set; }
-
-      public void set (Map map, int? childOf) {
+      public void set (Map map, bool isChild) {
          target = map;
-         this.childOf = childOf;
 
          nameText.text = map.name;
+         markerText.enabled = isChild;
          createdAtText.text = map.createdAt.ToLocalTime().ToShortDateString();
          liveVersionText.text = map.publishedVersion != -1 ? map.publishedVersion.ToString() : "-";
          creatorText.text = map.creatorName;
@@ -54,25 +48,11 @@ namespace MapCreationTool
 
          latestVersionButton.onClick.RemoveAllListeners();
          latestVersionButton.onClick.AddListener(() => UI.mapList.openLatestVersion(map));
-
-         arrowButton.onClick.RemoveAllListeners();
-         arrowButton.onClick.AddListener(() => UI.mapList.toggleExpandMap(map));
       }
 
-      public void setExpandable (bool expandable, bool child) {
-         if (child) {
-            arrowButton.interactable = false;
-            arrowButton.GetComponentInChildren<Text>().text = "";
-            nameText.text = nameText.text.Replace(BULLET + "   ", "");
-            nameText.text = BULLET + "   " + nameText.text;
-         } else {
-            arrowButton.interactable = expandable;
-            arrowButton.GetComponentInChildren<Text>().text = expandable ? LEFT_TRIANGLE : "";
-         }
-      }
-
-      public void setExpanded (bool expanded) {
-         arrowButton.GetComponentInChildren<Text>(true).text = expanded ? DOWN_TRIANGLE : LEFT_TRIANGLE;
+      public void setMarkerColor (Color color) {
+         markerText.color = color;
+         latestVersionButton.image.color = color;
       }
    }
 }

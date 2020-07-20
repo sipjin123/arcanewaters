@@ -9,10 +9,10 @@ namespace MapCreationTool
 {
    public class MapListPanel : UIPanel
    {
-      private enum OrderingType { None = 0, NameAsc = 1, NameDesc = 2, DateAsc = 3, DateDesc = 4, CreatorAsc = 5, CreatorDesc = 6 }
+      public enum OrderingType { None = 0, NameAsc = 1, NameDesc = 2, DateAsc = 3, DateDesc = 4, CreatorAsc = 5, CreatorDesc = 6 }
 
       [SerializeField]
-      private MapListEntry entryPref = null;
+      private UserMapsEntry entryPref = null;
       [SerializeField]
       private Transform entryParent = null;
       [SerializeField]
@@ -25,16 +25,11 @@ namespace MapCreationTool
       [SerializeField]
       private Text creatorLabel = null;
 
-      private List<MapListEntry> entries = new List<MapListEntry>();
-
-      private bool showOnlyMyMaps = true;
-
+      private List<UserMapsEntry> entries = new List<UserMapsEntry>();
       private List<Map> loadedMaps;
-      private HashSet<int> expandedMaps = new HashSet<int>();
-      private OrderingType orderingType = OrderingType.None;
 
       private void clearEverything () {
-         foreach (MapListEntry entry in entries) {
+         foreach (UserMapsEntry entry in entries) {
             Destroy(entry.gameObject);
          }
          entries.Clear();
@@ -45,7 +40,7 @@ namespace MapCreationTool
          show();
          loadList();
 
-         showMyMapsToggle.SetIsOnWithoutNotify(showOnlyMyMaps);
+         showMyMapsToggle.SetIsOnWithoutNotify(MapListPanelState.self.showOnlyMyMaps);
       }
 
       private void loadList () {
@@ -75,7 +70,7 @@ namespace MapCreationTool
 
          if (loadedMaps == null) return;
 
-         IEnumerable<Map> maps = showOnlyMyMaps
+         IEnumerable<Map> maps = MapListPanelState.self.showOnlyMyMaps
             ? loadedMaps.Where(m => m.creatorID == MasterToolAccountManager.self.currentAccountID)
             : loadedMaps;
 
@@ -86,24 +81,12 @@ namespace MapCreationTool
          var groups = groupRoots.Select(gr => new KeyValuePair<Map, IEnumerable<Map>>(gr,
             maps.Where(m => m.sourceMapId == gr.id && m.sourceMapId != m.id && !maps.Any(other => other.sourceMapId == m.id))));
 
-         foreach (var group in groups) {
-            MapListEntry entry = Instantiate(entryPref, entryParent);
-            entry.set(group.Key, null);
-            entries.Add(entry);
-            bool expandable = group.Value.Count() > 0;
-            bool expanded = expandedMaps.Contains(group.Key.id);
-            entry.setExpandable(expandable, false);
-            if (expandable) {
-               entry.setExpanded(expanded);
-            }
+         var userGroups = groups.GroupBy(g => (g.Key.creatorID, g.Key.creatorName));
 
-            foreach (Map child in group.Value) {
-               MapListEntry cEntry = Instantiate(entryPref, entryParent);
-               cEntry.set(child, group.Key.id);
-               entries.Add(cEntry);
-               cEntry.setExpandable(false, true);
-               cEntry.gameObject.SetActive(expanded);
-            }
+         foreach (var userGroup in userGroups) {
+            UserMapsEntry entry = Instantiate(entryPref, entryParent);
+            entry.set(userGroup);
+            entries.Add(entry);
          }
 
          updateColumnLabels();
@@ -118,7 +101,7 @@ namespace MapCreationTool
       }
 
       private IEnumerable<Map> order (IEnumerable<Map> input) {
-         switch (orderingType) {
+         switch (MapListPanelState.self.orderingType) {
             case OrderingType.NameAsc:
                return input.OrderBy(m => m.name);
             case OrderingType.NameDesc:
@@ -137,25 +120,25 @@ namespace MapCreationTool
       }
 
       private void updateColumnLabels () {
-         if (orderingType == OrderingType.NameAsc) {
+         if (MapListPanelState.self.orderingType == OrderingType.NameAsc) {
             nameLabel.text = "Name↑";
-         } else if (orderingType == OrderingType.NameDesc) {
+         } else if (MapListPanelState.self.orderingType == OrderingType.NameDesc) {
             nameLabel.text = "Name↓";
          } else {
             nameLabel.text = "Name";
          }
 
-         if (orderingType == OrderingType.DateAsc) {
+         if (MapListPanelState.self.orderingType == OrderingType.DateAsc) {
             dateLabel.text = "Created At↑";
-         } else if (orderingType == OrderingType.DateDesc) {
+         } else if (MapListPanelState.self.orderingType == OrderingType.DateDesc) {
             dateLabel.text = "Created At↓";
          } else {
             dateLabel.text = "Created At";
          }
 
-         if (orderingType == OrderingType.CreatorAsc) {
+         if (MapListPanelState.self.orderingType == OrderingType.CreatorAsc) {
             creatorLabel.text = "Creator↑";
-         } else if (orderingType == OrderingType.CreatorDesc) {
+         } else if (MapListPanelState.self.orderingType == OrderingType.CreatorDesc) {
             creatorLabel.text = "Creator↓";
          } else {
             creatorLabel.text = "Creator";
@@ -239,61 +222,44 @@ namespace MapCreationTool
          UI.loadingPanel.display("Deleting a Map", task);
       }
 
-      public void toggleExpandMap (Map map) {
-         if (expandedMaps.Contains(map.id)) {
-            expandedMaps.Remove(map.id);
-         } else {
-            expandedMaps.Add(map.id);
-         }
-
-         bool expand = expandedMaps.Contains(map.id);
-         entries.FirstOrDefault(e => e.target.id == map.id)?.setExpanded(expand);
-
-         foreach (MapListEntry entry in entries) {
-            if (entry.childOf != null && entry.childOf.Value == map.id) {
-               entry.gameObject.SetActive(expand);
-            }
-         }
-      }
-
       public void orderByName () {
-         if (orderingType == OrderingType.NameAsc) {
-            orderingType = OrderingType.None;
-         } else if (orderingType == OrderingType.NameDesc) {
-            orderingType = OrderingType.NameAsc;
+         if (MapListPanelState.self.orderingType == OrderingType.NameAsc) {
+            MapListPanelState.setOrderingType(OrderingType.None);
+         } else if (MapListPanelState.self.orderingType == OrderingType.NameDesc) {
+            MapListPanelState.setOrderingType(OrderingType.NameAsc);
          } else {
-            orderingType = OrderingType.NameDesc;
+            MapListPanelState.setOrderingType(OrderingType.NameDesc);
          }
 
          updateShowedMaps();
       }
 
       public void orderByDate () {
-         if (orderingType == OrderingType.DateAsc) {
-            orderingType = OrderingType.None;
-         } else if (orderingType == OrderingType.DateDesc) {
-            orderingType = OrderingType.DateAsc;
+         if (MapListPanelState.self.orderingType == OrderingType.DateAsc) {
+            MapListPanelState.setOrderingType(OrderingType.None);
+         } else if (MapListPanelState.self.orderingType == OrderingType.DateDesc) {
+            MapListPanelState.setOrderingType(OrderingType.DateAsc);
          } else {
-            orderingType = OrderingType.DateDesc;
+            MapListPanelState.setOrderingType(OrderingType.DateDesc);
          }
 
          updateShowedMaps();
       }
 
       public void orderByCreator () {
-         if (orderingType == OrderingType.CreatorAsc) {
-            orderingType = OrderingType.None;
-         } else if (orderingType == OrderingType.CreatorDesc) {
-            orderingType = OrderingType.CreatorAsc;
+         if (MapListPanelState.self.orderingType == OrderingType.CreatorAsc) {
+            MapListPanelState.setOrderingType(OrderingType.None);
+         } else if (MapListPanelState.self.orderingType == OrderingType.CreatorDesc) {
+            MapListPanelState.setOrderingType(OrderingType.CreatorAsc);
          } else {
-            orderingType = OrderingType.CreatorDesc;
+            MapListPanelState.setOrderingType(OrderingType.CreatorDesc);
          }
 
          updateShowedMaps();
       }
 
       public void showMyMapsChanged () {
-         showOnlyMyMaps = showMyMapsToggle.isOn;
+         MapListPanelState.setShowOnlyMyMaps(showMyMapsToggle.isOn);
          updateShowedMaps();
       }
 

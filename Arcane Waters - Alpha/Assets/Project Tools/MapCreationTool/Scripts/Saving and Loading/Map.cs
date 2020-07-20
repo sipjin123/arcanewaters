@@ -7,6 +7,7 @@ namespace MapCreationTool.Serialization
    {
       public int id;
       public string name;
+      public string displayName;
       public DateTime createdAt;
       public int creatorID;
       public int publishedVersion = -1;

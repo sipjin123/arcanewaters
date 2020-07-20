@@ -1008,12 +1008,12 @@ public class AdminManager : NetworkBehaviour
 
       // Set all the weapon names
       foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.equipmentID);
+         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.sqlId);
       }
 
       // Set all the armor names
       foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.equipmentID);
+         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.sqlId);
       }
 
       // Set all the usable items names

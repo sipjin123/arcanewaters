@@ -197,14 +197,6 @@ public class Area : MonoBehaviour
    }
 
    public static string getName (string areaKey) {
-      if (areaKey.Contains("Adventure")) {
-         return "Adventure Shop";
-      } else if (areaKey.Contains("Merchant")) {
-         return "Merchant Shop";
-      } else if (areaKey.Contains("Shipyard")) {
-         return "Shipyard";
-      }
-
       // If this is a custom map, figure out the special display name
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          // Check if it is someone else's farm, prepend the name if so
@@ -217,6 +209,13 @@ public class Area : MonoBehaviour
          return customMapManager.typeDisplayName;
       }
 
+      // Check if we have this map cached and check if it has a display name set
+      Map map = AreaManager.self.getMapInfo(areaKey);
+      if (map != null && map.displayName != null) {
+         return Util.toTitleCase(map.displayName);
+      }
+
+      // Otherwise, use default name
       return Util.toTitleCase(areaKey);
    }
 

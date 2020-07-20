@@ -2072,7 +2072,7 @@ public class DB_Main : DB_MainStub
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName " +
+      string cmdText = "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName " +
          "FROM maps_v2 " +
             "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
          "ORDER BY name;";
@@ -2087,6 +2087,7 @@ public class DB_Main : DB_MainStub
                result.Add(new Map {
                   id = dataReader.GetInt32("id"),
                   name = dataReader.GetString("name"),
+                  displayName = dataReader.GetString("displayName"),
                   createdAt = dataReader.GetDateTime("createdAt"),
                   publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
                      ? -1
@@ -2276,8 +2277,8 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert entry to maps
-            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome) " +
-               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome);";
+            cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName) " +
+               "VALUES(@name, @createdAt, @creatorID, @publishedVersion, @editorType, @biome, @name);";
             cmd.Parameters.AddWithValue("@name", mapVersion.map.name);
             cmd.Parameters.AddWithValue("@createdAt", mapVersion.map.createdAt);
             cmd.Parameters.AddWithValue("@creatorID", mapVersion.map.creatorID);
@@ -2325,7 +2326,7 @@ public class DB_Main : DB_MainStub
 
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE maps_v2 " +
-         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType " +
+         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName " +
          "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2337,6 +2338,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@sourceId", map.sourceMapId);
          cmd.Parameters.AddWithValue("@notes", map.notes);
          cmd.Parameters.AddWithValue("@specialType", map.specialType);
+         cmd.Parameters.AddWithValue("@displayName", map.displayName);
 
          // Execute the command
          cmd.ExecuteNonQuery();
