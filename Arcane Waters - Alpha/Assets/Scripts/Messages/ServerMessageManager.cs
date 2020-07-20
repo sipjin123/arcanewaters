@@ -136,7 +136,7 @@ public class ServerMessageManager : MonoBehaviour {
                         armorPalettes1[i] = armorStat.palette1;
                         armorPalettes2[i] = armorStat.palette2;
                      } else {
-                        D.warning("There is no data for: " + armorList[i].itemTypeId);
+                        D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
                      }
                      amorItemList.Add(armorList[i]);
                   }
@@ -149,7 +149,7 @@ public class ServerMessageManager : MonoBehaviour {
                      if (weaponData != null) {
                         weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
                      } else {
-                        D.warning("There is no data for: " + weapon.itemTypeId);
+                        D.warning("There is no data for Weapon Type: " + weapon.itemTypeId);
                      }
                   }
                   weaponItemList.Add(weapon);
@@ -162,7 +162,7 @@ public class ServerMessageManager : MonoBehaviour {
                      if (hatData != null) {
                         hat.data = HatStatData.serializeHatStatData(hatData);
                      } else {
-                        D.warning("There is no data for: " + hat.itemTypeId);
+                        D.warning("There is no data for Hat Type: " + hat.itemTypeId);
                      }
                   }
                   hatItemList.Add(hat);
@@ -175,7 +175,7 @@ public class ServerMessageManager : MonoBehaviour {
                if (armorList.Count < 1) {
                   for (int i = 1; i < 4; i++) {
                      ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(i);
-                     startingEquipmentIds.Add(startArmorData.equipmentID);
+                     startingEquipmentIds.Add(startArmorData.sqlId);
                      startingSpriteIds.Add(startArmorData.armorType);
                   }
                }

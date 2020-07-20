@@ -164,7 +164,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
 
       if (selectedCategory == Item.Category.Armor) {
          foreach (ArmorStatData armorStat in EquipmentXMLManager.self.armorStatList) {
-            int newVal = armorStat.equipmentID;
+            int newVal = armorStat.sqlId;
             if (!itemNameList.ContainsKey(newVal)) {
                itemNameList.Add(newVal, armorStat.equipmentName.ToString());
             } 
@@ -178,7 +178,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
          }
       } else if (selectedCategory == Item.Category.Weapon) {
          foreach (WeaponStatData weaponStat in EquipmentXMLManager.self.weaponStatList) {
-            int newVal = weaponStat.equipmentID;
+            int newVal = weaponStat.sqlId;
             if (!itemNameList.ContainsKey(newVal)) {
                itemNameList.Add(newVal, weaponStat.equipmentName.ToString());
             }

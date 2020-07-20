@@ -278,31 +278,41 @@ public class Battle : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType type) {
+   public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
 
-      if (type == BattleActionType.Stance) {
+      if (battleActionType == BattleActionType.Stance) {
          // Stance action change
          actionToSend = StanceAction.deserialize(actionStrings[0]);
-         AbilityManager.self.execute((StanceAction)actionToSend);
+         AbilityManager.self.execute((StanceAction) actionToSend);
 
-      } else if (type != BattleActionType.UNDEFINED) {
+      }  else if (battleActionType != BattleActionType.UNDEFINED) {
          // Standard attack
          foreach (string actionString in actionStrings) {
-            switch (type) {
+            switch (battleActionType) {
                case BattleActionType.Attack:
-                  actionToSend = AttackAction.deseralize(actionString);
+                  if (cancelAbility) {
+                     actionToSend = CancelAction.deseralize(actionString);
+                     actionToSend.battleActionType = BattleActionType.Cancel;
+                  } else {
+                     actionToSend = AttackAction.deseralize(actionString);
+                  }
                   actionList.Add(actionToSend);
                   break;
                case BattleActionType.BuffDebuff:
-                  actionToSend = BuffAction.deseralize(actionString);
+                  if (cancelAbility) {
+                     actionToSend = CancelAction.deseralize(actionString);
+                     actionToSend.battleActionType = BattleActionType.Cancel;
+                  } else {
+                     actionToSend = BuffAction.deseralize(actionString);
+                  }
                   actionList.Add(actionToSend);
                   break;
             }
          }
          AbilityManager.self.execute(actionList.ToArray());
-      }
+      } 
    }
 
    private void OnDestroy () {

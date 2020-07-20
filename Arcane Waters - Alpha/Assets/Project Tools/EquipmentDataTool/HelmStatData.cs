@@ -23,12 +23,9 @@ public class HatStatData : EquipmentStatData
    public int airResist;
    public int earthResist;
 
-   // Item sql id assigned from the database
-   public int itemSqlId = 0;
-
    public static Hat translateDataToHat (HatStatData hatStatData) {
       Hat newHat = new Hat {
-         id = hatStatData.itemSqlId,
+         id = hatStatData.sqlId,
          itemTypeId = hatStatData.hatType,
          itemName = hatStatData.equipmentName,
          itemDescription = hatStatData.equipmentDescription,

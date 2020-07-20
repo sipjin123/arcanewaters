@@ -16,7 +16,7 @@ public class EquipmentStatData
    public string equipmentDescription;
 
    // The id of the item
-   public int equipmentID = 0;
+   public int sqlId = 0;
 
    // The icon path of the item
    public string equipmentIconPath = "";

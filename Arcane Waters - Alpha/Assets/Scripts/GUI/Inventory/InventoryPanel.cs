@@ -169,7 +169,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          if (item.category == Item.Category.Weapon) {
             WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(item.data);
             Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
-            newWeapon.itemTypeId = weaponData.equipmentID;
+            newWeapon.itemTypeId = weaponData.sqlId;
 
             cell.setCellForItem(newWeapon);
             cell.transform.SetParent(equippedWeaponCellContainer.transform, false);

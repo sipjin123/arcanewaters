@@ -99,10 +99,12 @@ public class BasicAbilityData : BattleItemData
       if (abilityType == AbilityType.Standard) {
 
          if (sourceBattler.AP < abilityCost) {
+            D.editorLog("User does not have enough AP!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
          if (Util.netTime() < sourceBattler.cooldownEndTime) {
+            D.editorLog("User is still cooling down ability cast!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }
 

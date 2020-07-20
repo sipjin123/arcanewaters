@@ -124,6 +124,7 @@ public class BattleSelectionManager : MonoBehaviour {
    public void deselectTarget () {
       enemySelection.SetActive(false);
       allySelection.SetActive(false);
+      BattleUIManager.self.updateAbilityStates(AbilityType.Undefined);
    }
 
    #region Private Variables

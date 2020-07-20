@@ -52,12 +52,13 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public ArmorStatData getArmorData (int armorType) {
       if (_armorStatList == null) {
-         Debug.LogWarning("Does not exist: " + armorType);
+         Debug.LogWarning("List is null!: " + armorType);
          return null;
       }
       if (_armorStatList.ContainsKey(armorType)) {
          return _armorStatList[armorType];
       }
+      Debug.LogWarning("Does not exist: " + armorType);
       return null;
    }
 
@@ -65,7 +66,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       if (_hatStatList == null) {
          return null;
       }
-      HatStatData hatDataFetched = _hatStatList.Values.ToList().Find(_ => _.equipmentID == hatType);
+      HatStatData hatDataFetched = _hatStatList.Values.ToList().Find(_ => _.sqlId == hatType);
       if (hatDataFetched != null) {
          return hatDataFetched;
       }
@@ -93,7 +94,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             try {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-               rawData.equipmentID = xmlPair.xmlId;
+               rawData.sqlId = xmlPair.xmlId;
 
                // Save the data in the memory cache
                if (!_weaponStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
@@ -111,7 +112,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          if (xmlPair.isEnabled) {
             TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
             ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-            rawData.equipmentID = xmlPair.xmlId;
+            rawData.sqlId = xmlPair.xmlId;
 
             // Save the data in the memory cache
             if (!_armorStatList.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
@@ -126,7 +127,8 @@ public class EquipmentXMLManager : MonoBehaviour {
          if (xmlPair.isEnabled) {
             TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
             HatStatData rawData = Util.xmlLoad<HatStatData>(newTextAsset);
-            int uniqueID = rawData.hatType;
+            int uniqueID = xmlPair.xmlId;
+            rawData.sqlId = xmlPair.xmlId;
 
             // Save the data in the memory cache
             if (!_hatStatList.ContainsKey(uniqueID) && xmlPair.isEnabled) {
@@ -141,7 +143,7 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveWeaponDataFromZipData (List<WeaponStatData> statData) {
       foreach (WeaponStatData rawData in statData) {
-         int uniqueID = rawData.itemSqlId;
+         int uniqueID = rawData.sqlId;
          // Save the data in the memory cache
          if (!_weaponStatList.ContainsKey(uniqueID)) {
             _weaponStatList.Add(uniqueID, rawData);
@@ -167,7 +169,8 @@ public class EquipmentXMLManager : MonoBehaviour {
       _hatStatList = new Dictionary<int, HatStatData>();
       hatStatData = new List<HatStatData>(); 
       foreach (HatStatData rawData in statData) {
-         int uniqueID = rawData.hatType;
+         int uniqueID = rawData.sqlId;
+
          // Save the data in the memory cache
          if (!_hatStatList.ContainsKey(uniqueID)) {
             _hatStatList.Add(uniqueID, rawData);
@@ -190,7 +193,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public List<WeaponStatData> requestWeaponList (List<int> xmlIDList) {
       List<WeaponStatData> returnWeaponStatList = new List<WeaponStatData>();
       foreach (int index in xmlIDList) {
-         WeaponStatData searchData = _weaponStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         WeaponStatData searchData = _weaponStatList.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnWeaponStatList.Add(searchData);
          }
@@ -202,7 +205,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public List<ArmorStatData> requestArmorList (List<int> xmlIDList) {
       List<ArmorStatData> returnArmorList = new List<ArmorStatData>();
       foreach (int index in xmlIDList) {
-         ArmorStatData searchData = _armorStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         ArmorStatData searchData = _armorStatList.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnArmorList.Add(searchData);
          }
@@ -214,7 +217,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public List<HatStatData> requestHatList (List<int> xmlIDList) {
       List<HatStatData> returnHatStatList = new List<HatStatData>();
       foreach (int index in xmlIDList) {
-         HatStatData searchData = _hatStatList.Values.ToList().Find(_ => _.equipmentID == index);
+         HatStatData searchData = _hatStatList.Values.ToList().Find(_ => _.sqlId == index);
          if (searchData != null) {
             returnHatStatList.Add(searchData);
          }

@@ -12,7 +12,7 @@ using System.IO;
 using SimpleJSON;
 using MapCustomization;
 
-#if IS_SERVER_BUILD
+#if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
 
 public class DB_Main : DB_MainStub

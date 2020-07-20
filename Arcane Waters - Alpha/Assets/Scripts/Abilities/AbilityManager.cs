@@ -134,14 +134,18 @@ public class AbilityManager : MonoBehaviour
 
          // Mark both battlers as animating for the duration
          sourceBattler.animatingUntil = action.actionEndTime;
-         targetBattler.animatingUntil = action.actionEndTime;
+         if (targetBattler != null) {
+            targetBattler.animatingUntil = action.actionEndTime;
+         }
 
          float animationLength = .6f;
 
          // Get the ability object for this action
          AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
          if (abilityData != null) {
-            animationLength = abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+            if (targetBattler != null) {
+               animationLength = abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+            }
          } else {
             D.editorLog("Issue getting ability data: " + action.abilityInventoryIndex + " - " + action.abilityGlobalID);
          }
@@ -154,7 +158,7 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = actionToExecute.actionEndTime - Util.netTime() - animationLength ;
 
-               StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
             case BattleActionType.Stance: 
@@ -167,7 +171,7 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = actionToExecute.actionEndTime - Util.netTime();
 
-               StartCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst));
+               sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
             case BattleActionType.BuffDebuff: 
@@ -177,17 +181,17 @@ public class AbilityManager : MonoBehaviour
                // Check how long we need to wait before displaying this action
                timeToWait = actionToExecute.actionEndTime - Util.netTime();
 
-               StartCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst));
-               
+               sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
 
-            case BattleActionType.Cancel: 
+            case BattleActionType.Cancel:
+               D.editorLog("Ability has been canceled!", Color.red);
                CancelAction cancelAction = action as CancelAction;
                actionToExecute = cancelAction;
 
                // Update the battler's action timestamps
                sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
-               
+               sourceBattler.stopActionCoroutine();
                break;
          }
 

@@ -94,7 +94,7 @@ public class ArmorManager : EquipmentManager {
 
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
       if (armorData != null) {
-         armorData.itemSqlId = newArmor.id;
+         armorData.sqlId = newArmor.itemTypeId;
       } else {
          armorData = ArmorStatData.getDefaultData();
       }
@@ -102,7 +102,7 @@ public class ArmorManager : EquipmentManager {
       _armor = newArmor;
 
       // Assign the armor ID
-      this.equippedArmorId = (newArmor.itemTypeId == 0) ? 0 : newArmor.id;
+      this.equippedArmorId = (newArmor.itemTypeId == 0) ? 0 : newArmor.itemTypeId;
 
       // Set the Sync Vars so they get sent to the clients
       this.armorType = armorData.armorType;

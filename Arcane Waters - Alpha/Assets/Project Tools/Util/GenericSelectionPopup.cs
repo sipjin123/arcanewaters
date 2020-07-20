@@ -386,7 +386,7 @@ public class GenericSelectionPopup : MonoBehaviour
             break;
          case selectionType.ArmorType:
             foreach (ArmorStatData armorType in EquipmentXMLManager.self.armorStatList) {
-               createTextTemplate(armorType.equipmentID.ToString(), textUI, changeEvent);
+               createTextTemplate(armorType.sqlId.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.ArmorTypeSprites:
@@ -465,7 +465,7 @@ public class GenericSelectionPopup : MonoBehaviour
                   if (armorData != null) {
                      string iconPath = armorData.equipmentIconPath;
                      string armorName = armorData.equipmentName;
-                     createItemTextTemplate(armorName, armorData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                     createItemTextTemplate(armorName, armorData.sqlId, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
                }
             }
@@ -475,7 +475,7 @@ public class GenericSelectionPopup : MonoBehaviour
                   if (weaponData != null) {
                      string iconPath = weaponData.equipmentIconPath;
                      string equipmentName = weaponData.equipmentName;
-                     createItemTextTemplate(equipmentName, weaponData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                     createItemTextTemplate(equipmentName, weaponData.sqlId, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
                }
             }
@@ -485,7 +485,7 @@ public class GenericSelectionPopup : MonoBehaviour
                   if (hatData != null) {
                      string iconPath = hatData.equipmentIconPath;
                      string equipmentName = hatData.equipmentName;
-                     createItemTextTemplate(equipmentName, hatData.equipmentID, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+                     createItemTextTemplate(equipmentName, hatData.sqlId, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
                   }
                }
             }
@@ -677,12 +677,12 @@ public class GenericSelectionPopup : MonoBehaviour
             break;
          case Item.Category.Armor:
             foreach (ArmorStatData armorStatData in EquipmentXMLManager.self.armorStatList) {
-               itemNameList.Add(armorStatData.equipmentID, new Item { itemName = armorStatData.equipmentName });
+               itemNameList.Add(armorStatData.sqlId, new Item { itemName = armorStatData.equipmentName });
             }
             break;
          case Item.Category.Weapon:
             foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-               itemNameList.Add(weaponData.equipmentID, new Item { itemName = weaponData.equipmentName });
+               itemNameList.Add(weaponData.sqlId, new Item { itemName = weaponData.equipmentName });
             }
             break;
          default:

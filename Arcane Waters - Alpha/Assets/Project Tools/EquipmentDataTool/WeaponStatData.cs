@@ -32,12 +32,9 @@ public class WeaponStatData : EquipmentStatData
    // The generic value of the action type
    public int actionTypeValue = 0;
 
-   // Item sql id assigned from the database
-   public int itemSqlId = 0;
-
    public static Weapon translateDataToWeapon (WeaponStatData weaponData) {
       Weapon newWeapon = new Weapon {
-         id = weaponData.itemSqlId,
+         id = weaponData.sqlId,
          itemTypeId = weaponData.weaponType,
          itemName = weaponData.equipmentName,
          itemDescription = weaponData.equipmentDescription,

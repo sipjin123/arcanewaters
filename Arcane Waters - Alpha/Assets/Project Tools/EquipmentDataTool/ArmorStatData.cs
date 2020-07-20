@@ -22,12 +22,9 @@ public class ArmorStatData : EquipmentStatData
    public int airResist;
    public int earthResist;
 
-   // Item sql id assigned from the database
-   public int itemSqlId = 0;
-
    public static Armor translateDataToArmor (ArmorStatData armorData) {
       Armor newArmor = new Armor {
-         id = armorData.itemSqlId,
+         id = armorData.sqlId,
          itemTypeId = armorData.armorType,
          itemName = armorData.equipmentName,
          itemDescription = armorData.equipmentDescription,

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class CancelAction : BattleAction {
    #region Public Variables
@@ -9,6 +10,10 @@ public class CancelAction : BattleAction {
    public float timeToSubtract = 0f;
 
    #endregion
+
+   public CancelAction () {
+
+   }
 
    public CancelAction (int battleId, int sourceId, int targetId, float actionEndTime, float timeToSubtract) {
       this.battleId = battleId;
@@ -26,6 +31,34 @@ public class CancelAction : BattleAction {
              actionEndTime == other.actionEndTime;
       }
       return false;
+   }
+
+   public string serialize () {
+      string serialized = "";
+
+      serialized += "CancelAction" + ",";
+      serialized += this.battleId + ",";
+      serialized += this.sourceId + ",";
+      serialized += targetId + ",";
+      serialized += actionEndTime + ",";
+      serialized += timeToSubtract + ",";
+      serialized += (int)BattleActionType.Cancel + ",";
+
+      return serialized;
+   }
+
+   public static CancelAction deseralize (string serialized) {
+      CancelAction action = new CancelAction();
+      string[] stringArray = serialized.Split(',');
+
+      action.battleId = Convert.ToInt32(stringArray[1]);
+      action.sourceId = Convert.ToInt32(stringArray[2]);
+      action.targetId = Convert.ToInt32(stringArray[3]);
+      action.actionEndTime = Convert.ToInt32(stringArray[4]);
+      action.timeToSubtract = Convert.ToInt32(stringArray[5]);
+      action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[6]);
+
+      return action;
    }
 
    public override int GetHashCode () {

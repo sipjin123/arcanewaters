@@ -94,7 +94,7 @@ public class HatManager : EquipmentManager {
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(newHat.itemTypeId);
       if (hatData != null) {
-         hatData.itemSqlId = newHat.id;
+         hatData.sqlId = newHat.itemTypeId;
       } else {
          hatData = HatStatData.getDefaultData();
       }
@@ -102,7 +102,7 @@ public class HatManager : EquipmentManager {
       _hat = newHat;
 
       // Assign the hat ID
-      this.equippedHatId = (newHat.itemTypeId == 0) ? 0 : newHat.id;
+      this.equippedHatId = (newHat.itemTypeId == 0) ? 0 : newHat.itemTypeId;
 
       // Set the Sync Vars so they get sent to the clients
       this.hatType = hatData.hatType;

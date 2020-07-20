@@ -488,7 +488,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       // Setup base data
       equipmentData.equipmentName = _itemName.text;
       equipmentData.equipmentDescription = _itemDescription.text;
-      equipmentData.equipmentID = int.Parse(_itemID.text);
+      equipmentData.sqlId = int.Parse(_itemID.text);
       equipmentData.equipmentPrice = int.Parse(_itemPrice.text);
       equipmentData.canBeTrashed = _canBeTrashed.isOn;
       equipmentData.equipmentIconPath = _iconPath.text;

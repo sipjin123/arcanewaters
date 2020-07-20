@@ -233,7 +233,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The starting AP for all units
    public const int DEFAULT_AP = 5;
 
+   // The current coroutine action
+   public IEnumerator currentActionCoroutine = null;
+
+   // If cancel state was received
+   public bool receivedCancelState;
+
    #endregion
+
+   public void stopActionCoroutine () {
+      if (currentActionCoroutine != null) {
+         StopCoroutine(currentActionCoroutine);
+         receivedCancelState = true;
+      } 
+   }
+
+   public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
+      currentActionCoroutine = newEnumerator;
+      StartCoroutine(currentActionCoroutine);
+   }
 
    private void Awake () {
       // Look up components
@@ -266,7 +284,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          if (enemyType != Enemy.Type.PlayerBattler) {
             // Monster battlers are selectable
             onBattlerSelect.AddListener(() => {
-               BattleUIManager.self.triggerTargetUI(this);
+               // Enable all offensive abilities
+               BattleUIManager.self.updateAbilityStates(AbilityType.Standard);
             });
          }
       }
@@ -299,19 +318,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(true);
                BattleUIManager.self.playerBattleCG.Show();
-               BattleUIManager.self.buffAbilitiesRow.Show();
-               BattleUIManager.self.targetAbilitiesRow.Hide();
                BattleUIManager.self.stanceChangeButton.gameObject.SetActive(false);
                BattleUIManager.self.usernameText.gameObject.SetActive(true);
                BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
                selectedBattleBar.gameObject.SetActive(false);
 
-               foreach (AbilityButton abilityButton in BattleUIManager.self.abilityTargetButtons) {
-                  if (abilityButton.isEnabled) {
-                     abilityButton.gameObject.SetActive(true);
-                     abilityButton.enableButton();
-                  }
-               }
+               // Enable all buff abilities
+               BattleUIManager.self.updateAbilityStates(AbilityType.BuffDebuff);
             });
 
             onBattlerDeselect.AddListener(() => {
@@ -772,6 +785,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
+   private void triggerAbilityCooldown (AbilityType abilityType, int abilityIndex, float cooldownDuration) {
+      // Remove coroutine cache, this ability can not be stopped anymore
+      currentActionCoroutine = null;
+
+      // Implement ability button cooldowns
+      if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
+         AttackPanel.self.clearCachedAbilityCast();
+         BattleUIManager.self.initializeAbilityCooldown(abilityType, abilityIndex, cooldownDuration);
+      }
+   }
+
    public IEnumerator animateDeath () {
       playAnim(Anim.Type.Death_East);
 
@@ -948,6 +972,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.Standard);
       AttackAbilityData globalAbilityData = AttackAbilityData.CreateInstance(abilityDataReference);
 
+      // Highlight ability to be casted
+      if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
+         BattleUIManager.self.initializeAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex);
+      }
+
+      // Init the position of the ability effect
       Vector2 effectPosition = new Vector2();
 
       // Cancel ability works differently, so before we try to get the ability from the local battler, 
@@ -978,11 +1008,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSeconds(timeToWait);
-
-            // Implement ability button cooldowns
-            if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
-               BattleUIManager.self.initializeAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
-            } 
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // Make sure the source battler is still alive at this point
             if (sourceBattler.isDead()) {
@@ -1112,6 +1138,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSeconds(timeToWait);
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
@@ -1210,6 +1237,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSeconds(timeToWait);
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {

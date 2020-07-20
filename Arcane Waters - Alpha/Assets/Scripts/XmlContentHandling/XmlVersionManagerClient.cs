@@ -368,9 +368,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   ArmorStatData actualData = Util.xmlLoad<ArmorStatData>(xmlSubGroup[1]);
-                  actualData.equipmentID = dataId;
+                  actualData.sqlId = dataId;
                   armorList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " +actualData.armorType;
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " +actualData.armorType;
                }
                EquipmentXMLManager.self.receiveArmorDataFromZipData(armorList);
             }
@@ -384,9 +384,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   WeaponStatData actualData = Util.xmlLoad<WeaponStatData>(xmlSubGroup[1]);
-                  actualData.itemSqlId = dataId;
+                  actualData.sqlId = dataId;
                   weaponList.Add(actualData);
-                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.weaponType;
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.weaponType;
                }
             }
             EquipmentXMLManager.self.receiveWeaponDataFromZipData(weaponList);
@@ -400,10 +400,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   if (xmlSubGroup.Length == 2) {
                      int dataId = int.Parse(xmlSubGroup[0]);
                      HatStatData actualData = Util.xmlLoad<HatStatData>(xmlSubGroup[1]);
-                     actualData.equipmentID = dataId;
-                     actualData.itemSqlId = dataId;
+                     actualData.sqlId = dataId;
                      hatList.Add(actualData);
-                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.equipmentID + " - " + actualData.hatType;
+                     message = xmlType + " Success! " + xmlSubGroup[0] + " - " + actualData.equipmentName + " - " + actualData.sqlId + " - " + actualData.hatType;
                   }
                } catch {
                   D.editorLog("Cant process hat data: " + xmlSubGroup[0] + " : " + xmlSubGroup[1] + " : ", Color.yellow);

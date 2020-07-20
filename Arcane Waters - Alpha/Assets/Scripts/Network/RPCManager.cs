@@ -118,7 +118,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveProcessRewardToggle (NetworkConnection connection) {
-      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel); 
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
       if (panel.isShowing()) {
          PanelManager.self.popPanel();
          panel.hide();
@@ -279,7 +279,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
-      List<Item> newCastedItems = Util.unserialize<Item>(itemArray); 
+      List<Item> newCastedItems = Util.unserialize<Item>(itemArray);
 
       AdventureShopScreen.self.updateGreetingText(greetingText);
       AdventureShopScreen.self.updatePanelWithItems(gold, newCastedItems);
@@ -299,8 +299,8 @@ public class RPCManager : NetworkBehaviour {
          foreach (ShipInfo info in newShipInfo) {
             info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
          }
-      } 
-   
+      }
+
       ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText);
    }
 
@@ -627,7 +627,7 @@ public class RPCManager : NetworkBehaviour {
       if (panel.isShowing()) {
          PanelManager.self.popPanel();
       }
-      
+
       VoyageManager.self.displayWarpToVoyageConfirmScreen();
    }
 
@@ -977,7 +977,7 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestSetHatId (int hatId) {
       requestSetHatId(hatId);
    }
-   
+
    [Command]
    public void Cmd_DeleteItem (int itemId) {
       if (_player == null) {
@@ -1459,7 +1459,7 @@ public class RPCManager : NetworkBehaviour {
          }
       }
       return newItemStockList;
-   } 
+   }
 
    [Command]
    public void Cmd_RequestNPCTradeGossipFromServer (int npcId) {
@@ -2943,12 +2943,12 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset,float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
+   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
-      
+
       // Modify object transform
       oreBounce.transform.position = position;
       Vector3 currentAngle = oreBounce.transform.localEulerAngles;
@@ -3130,7 +3130,7 @@ public class RPCManager : NetworkBehaviour {
       bot.facing = Util.randomEnum<Direction>();
       bot.areaKey = _player.areaKey;
       Array shipTypes = Enum.GetValues(typeof(Ship.Type));
-      bot.shipType = (Ship.Type)shipTypes.GetValue(Random.Range(0, shipTypes.Length));
+      bot.shipType = (Ship.Type) shipTypes.GetValue(Random.Range(0, shipTypes.Length));
       bot.speed = Ship.getBaseSpeed(bot.shipType);
       bot.attackRangeModifier = Ship.getBaseAttackRange(bot.shipType);
       bot.entityName = "Pirate";
@@ -3342,7 +3342,7 @@ public class RPCManager : NetworkBehaviour {
                   if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
                      attackerCount++;
                   }
-               } 
+               }
             }
 
             int maximumEnemyCount = (attackerCount * 2) - 1;
@@ -3453,7 +3453,7 @@ public class RPCManager : NetworkBehaviour {
 
       BattlerData enemyData = MonsterManager.self.getBattler(enemy.enemyType);
       List<BattlerInfo> battlerInfoList = new List<BattlerInfo>();
-      battlerInfoList.Add(new BattlerInfo { 
+      battlerInfoList.Add(new BattlerInfo {
          battlerName = enemyData.enemyName,
          enemyType = enemy.enemyType,
          battlerType = BattlerType.AIEnemyControlled,
@@ -3471,7 +3471,7 @@ public class RPCManager : NetworkBehaviour {
                List<BattlerInfo> allyInfoList = new List<BattlerInfo>();
                foreach (CompanionInfo companionInfo in companionInfoList) {
                   if (companionInfo.equippedSlot > 0) {
-                     allyInfoList.Add(new BattlerInfo { 
+                     allyInfoList.Add(new BattlerInfo {
                         enemyType = (Enemy.Type) companionInfo.companionType,
                         battlerName = companionInfo.companionName,
                         battlerType = BattlerType.AIEnemyControlled,
@@ -3594,7 +3594,9 @@ public class RPCManager : NetworkBehaviour {
    #endregion
 
    [Command]
-   public void Cmd_RequestBuff (uint netId, int abilityInventoryIndex) {
+   public void Cmd_RequestAbility (int abilityTypeInt, uint netId, int abilityInventoryIndex, bool cancelAction) {
+      AbilityType abilityType = (AbilityType) abilityTypeInt;
+
       if (_player == null || !(_player is PlayerBodyEntity)) {
          return;
       }
@@ -3603,47 +3605,16 @@ public class RPCManager : NetworkBehaviour {
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
       Battler sourceBattler = battle.getBattler(_player.userId);
-
-      // Get the ability from the battler abilities.
-      BuffAbilityData abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
       Battler targetBattler = null;
+      BasicAbilityData abilityData = new BasicAbilityData();
 
-      foreach (Battler participant in battle.getParticipants()) {
-         if (participant.netId == netId) {
-            targetBattler = participant;
-         }
+      if (abilityType == AbilityType.Standard) {
+         // Get the ability from the battler abilities.
+         abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+      } else {
+         // Get the ability from the battler abilities.
+         abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
       }
-
-      // Ignore invalid or dead sources and targets
-      if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         return;
-      }
-
-      // Make sure the source battler can use that ability type
-      if (!abilityData.isReadyForUseBy(sourceBattler)) {
-         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
-         return;
-      }
-
-      // Let the Battle Manager handle executing the buff
-      List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, AbilityType.BuffDebuff);
-   }
-
-   [Command]
-   public void Cmd_RequestAttack (uint netId, int abilityInventoryIndex) {
-      if (_player == null || !(_player is PlayerBodyEntity)) {
-         return;
-      }
-
-      // Look up the player's Battle object
-      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
-      Battle battle = BattleManager.self.getBattle(playerBody.battleId);
-      Battler sourceBattler = battle.getBattler(_player.userId);
-
-      // Get the ability from the battler abilities.
-      AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
-      Battler targetBattler = null;
 
       foreach (Battler participant in battle.getParticipants()) {
          if (participant.netId == netId) {
@@ -3656,22 +3627,27 @@ public class RPCManager : NetworkBehaviour {
          D.editorLog("Invalid Targets!");
          return;
       }
-
       // Make sure the source battler can use that ability type
-      if (!abilityData.isReadyForUseBy(sourceBattler)) {
+      if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
          D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          return;
       }
 
-      // If it's a Melee Ability, make sure the target isn't currently protected
-      if (abilityData.isMelee() && targetBattler.isProtected(battle)) {
-         D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
-         return;
+      if (abilityType == AbilityType.Standard) {
+         // If it's a Melee Ability, make sure the target isn't currently protected
+         if (((AttackAbilityData) abilityData).isMelee() && targetBattler.isProtected(battle)) {
+            D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
+            return;
+         }
       }
 
-      // Let the Battle Manager handle executing the attack
+      // Let the Battle Manager handle executing the ability
       List<Battler> targetBattlers = new List<Battler>() { targetBattler };
-      BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, AbilityType.Standard);
+      if (cancelAction) {
+         BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
+      } else {
+         BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
+      }
    }
 
    [Command]

@@ -417,6 +417,48 @@ public class BattleManager : MonoBehaviour {
 
    #region Attack Execution
 
+   public void cancelBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
+      BasicAbilityData abilityData = new BasicAbilityData();
+      List<BattleAction> actions = new List<BattleAction>();
+
+      // String action list that will be sent to clients
+      List<string> stringList = new List<string>();
+
+      if (source.getAttackAbilities().Count > 0) {
+         if (abilityType == AbilityType.Standard) {
+            abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+         } else if (abilityType == AbilityType.BuffDebuff) {
+            abilityData = source.getBuffAbilities()[abilityInventoryIndex];
+         }
+      } else {
+         D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
+         abilityData = AbilityManager.self.punchAbility();
+      }
+      
+      if (abilityType == AbilityType.Standard) {
+         AttackAbilityData attackAbilityData = abilityData as AttackAbilityData;
+         
+         CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, 0, 0, 0);
+         cancelAction.abilityGlobalID = abilityData.itemID;
+         actions.Add(cancelAction);
+
+         if (cancelAction != null) {
+            cancelAction.battleActionType = BattleActionType.Cancel;
+            //action.battleActionType = BattleActionType.Cancel;
+
+            foreach (CancelAction action in actions) {
+               stringList.Add(action.serialize());
+            }
+
+            // Force the cooldown to reach current time so a new ability can be casted
+            source.cooldownEndTime = Util.netTime() - .1f;
+
+            // Send it to clients
+            battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
+         } 
+      }
+   }
+
    public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
@@ -608,7 +650,7 @@ public class BattleManager : MonoBehaviour {
       }
 
       // Send it to clients
-      battle.Rpc_SendCombatAction(stringList.ToArray(), actionType);
+      battle.Rpc_SendCombatAction(stringList.ToArray(), actionType, false);
    }
 
    // Stance action does not requires another target or an ability inventory index, thus, being removed from executeBattleAction
@@ -619,7 +661,7 @@ public class BattleManager : MonoBehaviour {
       string serializedValue = stanceAction.serialize();
       string[] values = new[] { serializedValue };
 
-      battle.Rpc_SendCombatAction(values, BattleActionType.Stance);
+      battle.Rpc_SendCombatAction(values, BattleActionType.Stance, false);
    }
 
    #endregion

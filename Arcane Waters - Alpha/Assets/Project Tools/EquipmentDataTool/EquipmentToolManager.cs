@@ -57,7 +57,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    #region Save 
 
    public void saveWeapon (WeaponStatData data, int xml_id, bool isEnabled) {
-      data.equipmentID = xml_id;
+      data.sqlId = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -75,7 +75,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    }
 
    public void saveArmor (ArmorStatData data, int xml_id, bool isEnabled) {
-      data.equipmentID = xml_id;
+      data.sqlId = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -93,7 +93,7 @@ public class EquipmentToolManager : XmlDataToolManager {
    }
 
    public void saveHat (HatStatData data, int xml_id, bool isEnabled) {
-      data.equipmentID = xml_id;
+      data.sqlId = xml_id;
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -228,7 +228,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                WeaponStatData rawData = Util.xmlLoad<WeaponStatData>(newTextAsset);
-               rawData.equipmentID = xmlPair.xmlId;
+               rawData.sqlId = xmlPair.xmlId;
 
                // Save the data in the memory cache
                if (!_weaponStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
@@ -257,7 +257,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ArmorStatData rawData = Util.xmlLoad<ArmorStatData>(newTextAsset);
-               rawData.equipmentID = xmlPair.xmlId;
+               rawData.sqlId = xmlPair.xmlId;
 
                // Save the data in the memory cache
                if (!_armorStatData.Exists(_ => _.xml_id == xmlPair.xmlId)) {
@@ -285,7 +285,7 @@ public class EquipmentToolManager : XmlDataToolManager {
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                HatStatData rawData = Util.xmlLoad<HatStatData>(newTextAsset);
-               rawData.equipmentID = (int) rawData.hatType;
+               rawData.sqlId = (int) rawData.hatType;
 
                // Save the data in the memory cache
                if (!_hatStatData.Exists(_=>_.xml_id == xmlPair.xmlId)) {

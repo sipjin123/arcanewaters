@@ -23,17 +23,8 @@ public class BattleUIManager : MonoBehaviour {
    // Main canvas group that holds the abilities that appears whenever we select a character
    public CanvasGroup abilitiesCG;
 
-   // The row of ability buttons that appear when targetting an enemy
-   public CanvasGroup targetAbilitiesRow;
-
-   // The row of ability buttons that appear when targetting a player
-   public CanvasGroup buffAbilitiesRow;
-
    // Ability buttons that appear when targetting an enemy
    public AbilityButton[] abilityTargetButtons;
-
-   // Ability buttons that appear when targetting a player
-   public AbilityButton[] buffPlayerButtons;
 
    [Space(4)]
    [Header("Player")]
@@ -142,32 +133,33 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
-   public void initializeAbilityCooldown (AbilityType abilityType, int index, float coolDown) {
-      AbilityButton selectedButton = abilityTargetButtons.ToList().FindAll(_ => _.abilityType == abilityType)[index];
-      selectedButton.startCooldown(coolDown);
-      selectedButton.playSelectAnim();
-   }
-
-   private void FixedUpdate () {
-      if (Input.GetKeyUp(KeyCode.Alpha1)) {
-         triggerAbilityByKey(0);
-      } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
-         triggerAbilityByKey(1);
-      } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
-         triggerAbilityByKey(2);
-      } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
-         triggerAbilityByKey(3);
-      } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
-         triggerAbilityByKey(4);
+   public void updateAbilityStates (AbilityType abilityType) {
+      foreach (AbilityButton abilityButton in abilityTargetButtons) {
+         if (abilityButton.abilityType == abilityType) {
+            abilityButton.enableButton();
+         } else {
+            abilityButton.disableButton();
+         }
       }
    }
 
+   public void initializeAbilityCooldown (AbilityType abilityType, int index, float coolDown = -1) {
+      deselectOtherAbilities();
+      AbilityButton selectedButton = abilityTargetButtons.ToList().FindAll(_ => _.abilityType == abilityType)[index];
+      if (coolDown > -1) {
+         selectedButton.startCooldown(coolDown);
+      }
+      selectedButton.playSelectAnim();
+   }
+
    private void triggerAbilityByKey (int keySlot) {
-      AbilityButton selectedButton = abilityTargetButtons.ToList()[keySlot];
-      if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-         selectedButton.abilityButton.onClick.Invoke();
-      } else { 
-         selectedButton.invalidButtonClick();
+      AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_=>_.abilityIndex == keySlot);
+      if (selectedButton != null) {
+         if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
+            selectedButton.abilityButton.onClick.Invoke();
+         } else {
+            selectedButton.invalidButtonClick();
+         }
       }
    }
 
@@ -178,63 +170,58 @@ public class BattleUIManager : MonoBehaviour {
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilitydata.Length) {
-            if (abilitydata[indexCounter].abilityType == AbilityType.Standard) {
-               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilitydata[indexCounter].abilityType);
+            AbilityType abilityType = abilitydata[indexCounter].abilityType;
+            if (abilityType == AbilityType.Standard || abilityType == AbilityType.BuffDebuff) {
+               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilityType);
+
                if (currentAbility != null) {
+                  // Setup Button Display
                   string iconPath = currentAbility.itemIconPath;
                   Sprite skillSprite = ImageManager.getSprite(iconPath);
-
                   if (abilityButton.abilityIcon != null) {
                      abilityButton.abilityIcon.sprite = skillSprite;
-                     buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
                   } else {
                      D.editorLog("This ability does not have an icon", Color.red);
                   }
-
                   abilityButton.enableButton();
-                  buffPlayerButtons[indexCounter].disableButton();
 
-                  int indexToSet = attackAbilityIndex;
-                  abilityButton.abilityType = AbilityType.Standard; 
-                  abilityButton.GetComponent<Button>().onClick.RemoveAllListeners();
-                  abilityButton.GetComponent<Button>().onClick.AddListener(() => {
+                  // Setup Button Values 
+                  abilityButton.abilityIndex = indexCounter;
+                  abilityButton.abilityType = abilityType;
+                  if (abilityType == AbilityType.Standard) {
+                     abilityButton.abilityTypeIndex = attackAbilityIndex;
+                     attackAbilityIndex++;
+                  }
+                  if (abilityType == AbilityType.BuffDebuff) {
+                     abilityButton.abilityTypeIndex = buffAbilityIndex;
+                     buffAbilityIndex++;
+                  }
+
+                  // Button Click Setup
+                  abilityButton.getButton().onClick.RemoveAllListeners();
+                  abilityButton.getButton().onClick.AddListener(() => {
                      deselectOtherAbilities();
 
                      if (BattleSelectionManager.self.selectedBattler == null) {
                         abilityButton.invalidButtonClick();
                      } else {
-                        attackPanel.requestAttackTarget(indexToSet);
+                        if (abilityType == AbilityType.Standard) {
+                           attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
+                        } else if (abilityType == AbilityType.BuffDebuff) {
+                           attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+                        }
+                     }
+                  }); 
+                  
+                  abilityButton.cancelButton.onClick.AddListener(() => {
+                     deselectOtherAbilities();
+
+                     if (BattleSelectionManager.self.selectedBattler == null) {
+                        abilityButton.invalidButtonClick();
+                     } else {
+                        attackPanel.cancelAbility(abilityType, abilityButton.abilityTypeIndex);
                      }
                   });
-                  
-                  abilityButton.abilityIndex = indexCounter;
-                  attackAbilityIndex++;
-               } else {
-                  Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
-               }
-            } else if (abilitydata[indexCounter].abilityType == AbilityType.BuffDebuff) {
-               BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilitydata[indexCounter].abilityType);
-               if (currentAbility != null) {
-                  string iconPath = currentAbility.itemIconPath;
-                  Sprite skillSprite = ImageManager.getSprite(iconPath);
-
-                  if (abilityButton.abilityIcon != null) {
-                     abilityButton.abilityIcon.sprite = skillSprite;
-                     buffPlayerButtons[indexCounter].abilityIcon.sprite = skillSprite;
-                  }
-
-                  abilityButton.disableButton();
-                  buffPlayerButtons[indexCounter].enableButton();
-
-                  int indexToSet = buffAbilityIndex;
-                  abilityButton.abilityType = AbilityType.BuffDebuff;
-                  buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.RemoveAllListeners();
-                  buffPlayerButtons[indexCounter].GetComponent<Button>().onClick.AddListener(() => {
-                     attackPanel.requestBuffTarget(indexToSet);
-                  });
-
-                  abilityButton.abilityIndex = indexCounter;
-                  buffAbilityIndex++;
                } else {
                   Debug.LogWarning("Missing Ability: " + abilityButton.abilityIndex);
                }
@@ -244,20 +231,12 @@ public class BattleUIManager : MonoBehaviour {
 
             abilityButton.gameObject.SetActive(true);
             abilityButton.enabled = true;
-            buffPlayerButtons[indexCounter].enabled = true;
          } else {
             // Disable skill button if equipped abilities does not reach 5 (max abilities in combat)
             abilityButton.abilityIcon.sprite = null;
-            buffPlayerButtons[indexCounter].abilityIcon.sprite = null;
-
             abilityButton.disableButton();
-            buffPlayerButtons[indexCounter].disableButton();
-
             abilityButton.enabled = false;
-            buffPlayerButtons[indexCounter].enabled = false;
-
             abilityButton.gameObject.SetActive(false);
-            buffPlayerButtons[indexCounter].gameObject.SetActive(false);
          }
          indexCounter++;
       }
@@ -266,9 +245,11 @@ public class BattleUIManager : MonoBehaviour {
       if (abilitydata.Length > 0) {
          abilityIndex = abilitydata.Length - 1;
       }
+
+      updateAbilityStates(AbilityType.Undefined);
    }
 
-   private void deselectOtherAbilities () {
+   public void deselectOtherAbilities () {
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          abilityButton.playIdleAnim();
       }
@@ -278,6 +259,18 @@ public class BattleUIManager : MonoBehaviour {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
+         if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            triggerAbilityByKey(0);
+         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+            triggerAbilityByKey(1);
+         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+            triggerAbilityByKey(2);
+         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+            triggerAbilityByKey(3);
+         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+            triggerAbilityByKey(4);
+         }
+
          // Display the health of the ally
          if (BattleSelectionManager.self.selectedBattler != null && BattleSelectionManager.self.selectedBattler != _playerLocalBattler && BattleSelectionManager.self.selectedBattler.battlerType == BattlerType.PlayerControlled) {
             playerHealthBar.maxValue = BattleSelectionManager.self.selectedBattler.getStartingHealth();
@@ -423,11 +416,6 @@ public class BattleUIManager : MonoBehaviour {
 
    #endregion
 
-   public void triggerTargetUI (Battler target) {
-      buffAbilitiesRow.Hide();
-      targetAbilitiesRow.Show();
-   }
-
    public void hidePlayerGameobjectUI () {
       playerBattleCG.Hide();
    }
@@ -501,15 +489,9 @@ public class BattleUIManager : MonoBehaviour {
       usernameText.gameObject.SetActive(true);
       if (showAbilities) {
          playerBattleCG.Show();
-         buffAbilitiesRow.Show();
-         targetAbilitiesRow.Hide();
 
-         foreach (AbilityButton abilityButton in abilityTargetButtons) {
-            if (abilityButton.isEnabled) {
-               abilityButton.gameObject.SetActive(true);
-               abilityButton.enableButton();
-            }
-         }
+         // Enable all buff abilities
+         updateAbilityStates(AbilityType.BuffDebuff);
       } else {
          playerBattleCG.Hide();
       }

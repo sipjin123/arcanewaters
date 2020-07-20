@@ -12,6 +12,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // (If this is 0, then this button will execute the first ability in the ability inventory)
    public int abilityIndex = -1;
 
+   // The index by type such as Attack index 0
+   public int abilityTypeIndex = -1;
+
    // Where is this button coming from? (from the player battler or selected enemy battler?) 
    public AbilityOrigin abilityOrigin;
 
@@ -32,6 +35,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
    // The cooldown image
    public Image cooldownImage;
+
+   // The cancel button
+   public Button cancelButton;
 
    // The ability type 
    public AbilityType abilityType;
@@ -203,6 +209,10 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
       abilityIcon.color = Color.gray;
       isEnabled = false;
+   }
+
+   public Button getButton () {
+      return abilityButton;
    }
 
    //private void OnDisable () {
