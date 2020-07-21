@@ -38,7 +38,7 @@ public class SeaEntity : NetEntity
    public GameObject leftSideTarget;
    public GameObject rightSideTarget;
 
-   // Determines if this monster can be damaged
+   // Determines if this entity can be damaged
    public bool invulnerable;
 
    // The position data where the projectile starts
@@ -548,6 +548,11 @@ public class SeaEntity : NetEntity
 
                // Check if the attacker and the target are allies
                if (attacker.isAllyOf(targetEntity)) {
+                  continue;
+               }
+
+               // Prevent players from damaging each other in PvE voyage instances
+               if (attacker.isAdversaryInPveInstance(targetEntity)) {
                   continue;
                }
 

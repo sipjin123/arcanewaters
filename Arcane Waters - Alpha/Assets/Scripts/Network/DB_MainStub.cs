@@ -417,6 +417,10 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
+   public static void duplicateMapGroup (int mapId, int newCreatorId) {
+
+   }
+
    public static void updateMapDetails (Map map) {
 
    }
@@ -433,7 +437,15 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
+   public static void deleteMapGroup (int mapId) {
+
+   }
+
    public static void deleteMapVersion (MapVersion version) {
+
+   }
+
+   public static void publishLatestVersionForAllGroup (int mapId) {
 
    }
 

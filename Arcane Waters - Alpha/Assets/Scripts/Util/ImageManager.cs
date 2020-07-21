@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.UI;
 using Mirror;
 using System;
@@ -16,9 +17,6 @@ public class ImageManager : ClientMonoBehaviour {
 
       // The relative path to the Image
       public string imagePath;
-
-      // The relative path to the Image, without the file extension
-      public string imagePathWithoutExtension;
 
       // The Texture for the Image
       public Texture2D texture2D;
@@ -36,7 +34,6 @@ public class ImageManager : ClientMonoBehaviour {
       public bool Equals (ImageData other) {
          if (imageName.CompareTo(other.imageName) != 0 ||
             imagePath.CompareTo(other.imagePath) != 0 ||
-            imagePathWithoutExtension.CompareTo(other.imagePathWithoutExtension) != 0 ||
             texture2D != other.texture2D ||
             sprite != other.sprite ||
             sprites.Count != other.sprites.Count)
@@ -55,15 +52,11 @@ public class ImageManager : ClientMonoBehaviour {
          return
             imageName.GetHashCode() ^
             imagePath.GetHashCode() ^
-            imagePathWithoutExtension.GetHashCode() ^
             texture2D.GetHashCode() ^
             sprite.GetHashCode() ^
             sprites.GetHashCode();
       }
    }
-
-   // An array of data on the image assets in our project
-   public List<ImageData> imageDataList = new List<ImageData>();
 
    // A reference to a blank sprite for null values
    public Sprite blankSprite;
@@ -71,21 +64,26 @@ public class ImageManager : ClientMonoBehaviour {
    // A reference to a blank texture for null values
    public Texture2D blankTexture;
 
+   // Path containing all project sprites
+   public static string SPRITES_PATH = "Assets/Resources/Sprites";
+
+   // Path containing filepaths for texture resources
+   public static string FILEPATH_FOLDER = "Assets/Resources/Filepaths";
+
    // Self
    public static ImageManager self;
 
    #endregion
 
    protected override void Awake () {
-      // The batchmode server doesn't need to waste memory on these images
-      if (Util.isBatch()) {
-          imageDataList.Clear();
+      if (self == null) {
+         base.Awake();
+
+         // Store a self reference
+         self = this;
+         _dataByTexture = new Dictionary<Texture2D, Sprite[]>();
+         _dataByPath = new Dictionary<string, List<ImageData>>();
       }
-
-      base.Awake();
-
-      // Store a self reference
-      self = this;
    }
 
    public static Sprite getSprite (string path) {
@@ -126,9 +124,41 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    public static List<ImageData> getSpritesInDirectory (string path) {
-      List<ImageData> imgDataList = self.imageDataList.FindAll(_ => _.imagePath.Contains(path));
+      path = self.getResourcePath(path);
 
-      return imgDataList;
+      if (_dataByPath.ContainsKey(path)) {
+         return _dataByPath[path];
+      } else {
+         List<ImageData> imageData = new List<ImageData>();
+         Texture2D[] textureList = Resources.LoadAll<Texture2D>(path);
+         if (textureList == null) {
+            return new List<ImageData>();
+         }
+
+         foreach (Texture2D tex in textureList) {
+            ImageData data = new ImageData();
+
+            data.imageName = tex.name;
+            data.imagePath = path + tex.name;
+            data.texture2D = tex;
+            if (data.texture2D == null) {
+               continue;
+            }
+            data.sprites = self.getSpritesFromTexture(data.texture2D).ToList();
+            if (data.sprites.Count > 0) {
+               data.sprite = data.sprites[0];
+            }
+
+            imageData.Add(data);
+         }
+
+         _dataByPath.Add(path, imageData);
+         if (_dataByPath.ContainsKey(path)) {
+            return _dataByPath[path];
+         }
+      }
+
+      return new List<ImageData>();
    }
 
    public static Sprite[] getSprites (string path) {
@@ -143,125 +173,150 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    protected Sprite getSpriteFromPath (string path) {
-      ImageData imageData = getData(path);
+      path = getResourcePath(path);
+      Sprite sprite = Resources.Load<Sprite>(path);
 
-      // Returns blank sprite if the data fetch is null
-      if (imageData.sprite == null) {
+      if (sprite == null) {
          Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
          return self.blankSprite;
       }
-      return imageData.sprite;
+      return sprite;
    }
 
    protected Texture2D getTextureFromPath (string path, bool warnOnNull=true) {
-      ImageData imageData = getData(path);
+      path = getResourcePath(path);
+      Texture2D tex = Resources.Load<Texture2D>(path);
 
-      if (imageData.texture2D == null && warnOnNull) {
-         if (!Util.isBatch()) { 
+      if (tex == null && warnOnNull) {
+         if (!Util.isBatch()) {
             Debug.LogWarning("Couldn't find texture for path: " + path);
          }
          return blankTexture;
       }
-
-      return imageData.texture2D;
+      return tex;
    }
 
    protected Sprite[] getSpritesFromTexture (Texture2D texture) {
-      ImageData imageData = getData(texture);
+      if (_dataByTexture.ContainsKey(texture)) {
+         return _dataByTexture[texture];
+      } else {
+         string path = "Filepaths/" + getHashForTexture(texture);
+         TextAsset textAsset = (TextAsset) Resources.Load(path, typeof(TextAsset));
+         if (textAsset == null) {
+            return new Sprite[0];
+         }
+         Sprite[] sprites = getSpritesFromPath(textAsset.text);
+         _dataByTexture.Add(texture, sprites);
 
-      if (imageData.sprites == null) {
-         D.debug("Couldn't find image data for texture: " + texture);
-         return new Sprite[0];
+         if (_dataByTexture.ContainsKey(texture)) {
+            return _dataByTexture[texture];
+         }
       }
-
-      return imageData.sprites.ToArray();
+      return new Sprite[0];
    }
 
    protected Sprite[] getSpritesFromPath (string path) {
-      ImageData imageData = getData(path);
+      path = getResourcePath(path);
+      UnityEngine.Object[] data = Resources.LoadAll(path);
+      List<Sprite> sprites = new List<Sprite>();
 
-      if (imageData.sprites == null) {
-         return new Sprite[0];
+      foreach (UnityEngine.Object obj in data) {
+         if (obj is Sprite) {
+            sprites.Add((Sprite) obj);
+         }
       }
-
-      return imageData.sprites.ToArray();
+      sprites.OrderBy(_ => extractInteger(_.name)).ToList();
+      return sprites.ToArray();
    }
 
-   protected ImageData getData (string path) {
-      string simplePath = getSimplePath(path);
-
-      // Cache our files before we start looking them up
-      if (!_hasCached) {
-         cacheFiles();
-      }
-
-      if (_dataByPath.ContainsKey(simplePath)) {
-         return _dataByPath[simplePath];
-      }
-
-      return new ImageData();
-   }
-
-   protected ImageData getData (Texture2D texture) {
-      // Cache our files before we start looking them up
-      if (!_hasCached) {
-         cacheFiles();
-      }
-
-      if (_dataByTexture.ContainsKey(texture)) {
-         return _dataByTexture[texture];
-      }
-
-      return new ImageData();
-   }
-
-   protected string getSimplePath (string path) {
+   protected string getResourcePath (string path) {
       try {
-         string editedPath = path.ToLowerInvariant();
-         editedPath = editedPath.Replace("assets/sprites/", "");
-         editedPath = System.IO.Path.ChangeExtension(editedPath, null);
-
-         return editedPath;
+         path = path.Replace("Assets/Sprites/", "Sprites/");
+         path = path.Replace("Assets/Resources/Sprites/", "Sprites/");
+         if (!path.StartsWith("Sprites/")) {
+            path = "Sprites/" + path;
+         }
+         return System.IO.Path.ChangeExtension(path, null);
       } catch {
          D.debug("Failed to return path: (" + path + ")");
          return "";
       }
    }
 
-   protected void cacheFiles () {
-      // Cache our Image Data for fast lookup
-      foreach (ImageData imageData in imageDataList) {
-         string simplePath = getSimplePath(imageData.imagePath);
-
-         if (simplePath == null) {
-            Debug.LogError($"Image simple path is null. Image path: {imageData.imagePath}");
-            continue;
+   public static int extractInteger (string name) {
+      string newString = "";
+      for (int i = name.Length - 1; i > 0; i--) {
+         if (name[i] == '_') {
+            break;
          }
-
-         if (imageData.texture2D == null) {
-            if (!Util.isBatch()) {
-               Debug.LogError($"Image texture is null. Image path: {imageData.imagePath}");
-            }
-            continue;
-         }
-
-         _dataByTexture[imageData.texture2D] = imageData;
-         _dataByPath[simplePath] = imageData;
+         newString = newString.Insert(0, name[i].ToString());
       }
 
-      _hasCached = true;
+      try {
+         return int.Parse(newString);
+      } catch {
+         return 0;
+      }
+   }
+
+   public static string convertRGBToHex (Color color) {
+      return convertIntToHex(color.r) + convertIntToHex(color.g) + convertIntToHex(color.b);
+   }
+
+   private static string convertIntToHex (float val) {
+      int dec = Mathf.RoundToInt(val * 255.0f);
+      return translateIntToHexLetter(dec / 16) + translateIntToHexLetter(dec % 16);
+   }
+
+   private static string translateIntToHexLetter (int val) {
+      switch (val) {
+         case 10: return "A";
+         case 11: return "B";
+         case 12: return "C";
+         case 13: return "D";
+         case 14: return "E";
+         case 15: return "F";
+      }
+      return val.ToString();
+   }
+
+   public static string getHashForTexture (Texture2D tex) {
+      string hash = "";
+
+      const int numberOfLines = 12;
+      int heightStep = tex.height / numberOfLines;
+      if (tex.height < numberOfLines) {
+         heightStep = 1;
+      }
+
+      for (int y = 0; y < tex.height; y += heightStep) { 
+         Color[] pixels = tex.GetPixels(0, y, tex.width, 1);
+
+         double averageColorR = 0;
+         double averageColorG = 0;
+         double averageColorB = 0;
+         foreach (Color color in pixels) {
+            averageColorR += color.r * 255.0;
+            averageColorG += color.g * 255.0;
+            averageColorB += color.b * 255.0;
+         }
+         averageColorR /= (double)pixels.Length;
+         averageColorG /= (double)pixels.Length;
+         averageColorB /= (double)pixels.Length;
+
+         hash += convertRGBToHex(new Color((float) averageColorR / 255.0f, (float) averageColorG / 255.0f, (float) averageColorB / 255.0f));
+      }
+
+      return System.IO.Path.ChangeExtension(tex.name, null) + hash;
    }
 
    #region Private Variables
 
-   // Gets set to true after we store our cache
-   protected bool _hasCached = false;
-
    // Cache of our data by Texture
-   protected Dictionary<Texture2D, ImageData> _dataByTexture = new Dictionary<Texture2D, ImageData>();
+   protected static Dictionary<Texture2D, Sprite[]> _dataByTexture = new Dictionary<Texture2D, Sprite[]>();
 
    // Cache of our data by path
-   protected Dictionary<string, ImageData> _dataByPath = new Dictionary<string, ImageData>();
+   protected static Dictionary<string, List<ImageData>> _dataByPath = new Dictionary<string, List<ImageData>>();
 
    #endregion
 }

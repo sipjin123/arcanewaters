@@ -101,7 +101,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       _simpleAnim = spritesContainer.GetComponent<SimpleAnimation>();
       _simpleAnimRipple = ripplesContainer.GetComponent<SimpleAnimation>();
 
-      if (ImageManager.self.imageDataList.Count > 0 && !Util.isBatch()) {
+      if (!Util.isBatch()) {
          ripplesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.defaultRippleSpritePath);
 
          Sprite rippleTextureSprite = ImageManager.getSprite(seaMonsterData.defaultRippleTexturePath);
@@ -143,7 +143,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          spritesContainer.transform.GetChild(0).gameObject.SetActive(false);
       }
 
-      if (ImageManager.self.imageDataList.Count > 0 && !Util.isBatch()) {
+      if (!Util.isBatch()) {
          if (variety != 0 && seaMonsterData.secondarySpritePath != null) {
             spritesContainer.GetComponent<SpriteRenderer>().sprite = ImageManager.getSprite(seaMonsterData.secondarySpritePath);
          } else {

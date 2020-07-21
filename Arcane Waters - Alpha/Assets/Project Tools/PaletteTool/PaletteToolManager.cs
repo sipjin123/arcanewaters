@@ -167,15 +167,15 @@ public class PaletteToolManager : XmlDataToolManager {
 
    public static string[] paletteImageTypePaths = {
       "",
-      "Assets/Sprites/Armor",
-      "Assets/Sprites/Weapons",
-      "Assets/Sprites/Hair",
-      "Assets/Sprites/Eyes",
-      "Assets/Sprites/Bodies",
-      "Assets/Sprites/NPCs",
-      "Assets/Sprites/Ships",
-      "Assets/Sprites/GUI/Guild/Icons/Backgrounds",
-      "Assets/Sprites/GUI/Guild/Icons/Sigils",
+      "Assets/Sprites/Armor/",
+      "Assets/Sprites/Weapons/",
+      "Assets/Sprites/Hair/",
+      "Assets/Sprites/Eyes/",
+      "Assets/Sprites/Bodies/",
+      "Assets/Sprites/NPCs/",
+      "Assets/Sprites/Ships/",
+      "Assets/Sprites/GUI/Guild/Icons/Backgrounds/",
+      "Assets/Sprites/GUI/Guild/Icons/Sigils/",
       "",
    };
 
@@ -696,8 +696,11 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void prepareSpriteChooseDropdown (string path = "") {
-      string spritePath = (path != "") ? path : "Assets/Sprites";
-      _cachedSpriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
+      if (path == "") {
+         return;
+      }
+
+      _cachedSpriteIconFiles = ImageManager.getSpritesInDirectory(path);
       dropdownFileChoose.options.Clear();
 
       foreach (ImageManager.ImageData imageData in _cachedSpriteIconFiles) {

@@ -312,7 +312,7 @@ namespace MapCreationTool
       /// <summary>
       /// Returns a dictionary of palettes that the current type of editor uses
       /// </summary>
-      private BiomedPaletteData currentPaletteData
+      public BiomedPaletteData currentPaletteData
       {
          get
          {

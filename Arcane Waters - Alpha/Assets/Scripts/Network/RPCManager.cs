@@ -2836,13 +2836,19 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_VerifyVoyageConsistencyAtSpawn () {
+   public void Cmd_OnClientFinishedLoadingArea () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      // If the user is not in a voyage or not in a voyage area, do nothing
+      // Now that the area is loaded in the client, enable the player ship
+      PlayerShipEntity playerShipEntity = _player.GetComponent<PlayerShipEntity>();
+      if (playerShipEntity != null) {
+         playerShipEntity.isDisabled = false;
+      }
+
+      // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.isInVoyage(_player) || !VoyageManager.self.isVoyageArea(_player.areaKey)) {
          return;
       }

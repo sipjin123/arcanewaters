@@ -2324,6 +2324,84 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void duplicateMapGroup (int mapId, int newCreatorId) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            // Find all children of the map
+            List<int> childrenIds = getChildMapIds(cmd, mapId);
+            cmd.Parameters.Clear();
+
+            // Duplicate parent map
+            int newParentId = duplicateMap(cmd, mapId, newCreatorId, 0);
+
+            // Duplicate all child maps, attaching new parent to them
+            foreach (int childId in childrenIds) {
+               duplicateMap(cmd, childId, newCreatorId, newParentId);
+            }
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   private static List<int> getChildMapIds (MySqlCommand cmd, int parentMapId) {
+      List<int> childrenIds = new List<int>();
+
+      cmd.Parameters.Clear();
+      cmd.CommandText = "SELECT id FROM maps_v2 WHERE sourceMapId = @mapID;";
+      cmd.Parameters.AddWithValue("@mapID", parentMapId);
+
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            childrenIds.Add(dataReader.GetInt32("id"));
+         }
+      }
+
+      return childrenIds;
+   }
+
+   private static int duplicateMap (MySqlCommand cmd, int mapId, int newCreatorId, int newSourceMapId) {
+      int resultId = -1;
+
+      // Create a new map entry with a random name ending
+      cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId) " +
+         "SELECT CONCAT(LEFT(name, 24), ' ', FLOOR(RAND() * (99999 - 10001)) + 10000), @nowDate, @creatorID, @publishedVersion, editorType, biome, name, notes, specialType, @sourceMapID " +
+            "FROM maps_v2 WHERE id = @mapID;";
+      cmd.Parameters.Clear();
+      cmd.Parameters.AddWithValue("@mapID", mapId);
+      cmd.Parameters.AddWithValue("@nowDate", DateTime.Now);
+      cmd.Parameters.AddWithValue("@creatorID", newCreatorId);
+      cmd.Parameters.AddWithValue("@sourceMapID", newSourceMapId);
+      cmd.Parameters.AddWithValue("@publishedVersion", -1);
+      cmd.ExecuteNonQuery();
+
+      resultId = (int) cmd.LastInsertedId;
+
+      // Insert entry to map versions
+      cmd.CommandText = "INSERT INTO map_versions_v2(mapId, version, createdAt, updatedAt, editorData, gameData) " +
+         "SELECT @resultID, version, @nowDate, @nowDate, editorData, gameData " +
+            "FROM map_versions_v2 WHERE mapId = @mapID;";
+      cmd.Parameters.AddWithValue("@resultID", resultId);
+      cmd.ExecuteNonQuery();
+
+      // Insert spawns
+      cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
+         "SELECT @resultID, mapVersion, name, posX, posY " +
+            "FROM map_spawns_v2 WHERE mapId = @mapID;";
+      cmd.ExecuteNonQuery();
+
+      return resultId;
+   }
+
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE maps_v2 " +
          "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName " +
@@ -2354,8 +2432,13 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            // Fetch latest version of a map
+            // Update biome of map entry
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
+            cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
+            cmd.CommandText = "UPDATE maps_v2 SET biome = @biome WHERE id = @mapId;";
+            cmd.ExecuteNonQuery();
+
+            // Fetch latest version of a map
             cmd.CommandText = "SELECT IFNULL(MAX(version), -1) as latestVersion FROM map_versions_v2 WHERE mapId = @mapId;";
 
             int latestVersion = -1;
@@ -2480,19 +2563,7 @@ public class DB_Main : DB_MainStub
          cmd.Connection = conn;
 
          try {
-            cmd.Parameters.AddWithValue("@id", id);
-
-            // Delete map entry
-            cmd.CommandText = "DELETE FROM maps_v2 WHERE id = @id;";
-            cmd.ExecuteNonQuery();
-
-            // Delete all version entries
-            cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @id;";
-            cmd.ExecuteNonQuery();
-
-            // Delete all spawn entries
-            cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @id;";
-            cmd.ExecuteNonQuery();
+            deleteMap(cmd, id);
 
             transaction.Commit();
          } catch (Exception e) {
@@ -2500,6 +2571,50 @@ public class DB_Main : DB_MainStub
             throw e;
          }
       }
+   }
+
+   public static new void deleteMapGroup (int mapId) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            List<int> ids = new List<int> { mapId };
+
+            // Find all children of a map
+            ids.AddRange(getChildMapIds(cmd, mapId));
+
+            // Delete parent and children
+            foreach (int id in ids) {
+               deleteMap(cmd, id);
+            }
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   private static void deleteMap (MySqlCommand cmd, int mapId) {
+      cmd.Parameters.Clear();
+      cmd.Parameters.AddWithValue("@id", mapId);
+
+      // Delete map entry
+      cmd.CommandText = "DELETE FROM maps_v2 WHERE id = @id;";
+      cmd.ExecuteNonQuery();
+
+      // Delete all version entries
+      cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @id;";
+      cmd.ExecuteNonQuery();
+
+      // Delete all spawn entries
+      cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @id;";
+      cmd.ExecuteNonQuery();
    }
 
    public static new void deleteMapVersion (MapVersion version) {
@@ -2525,6 +2640,36 @@ public class DB_Main : DB_MainStub
             // Delete all spawn entries
             cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
             cmd.ExecuteNonQuery();
+
+            transaction.Commit();
+         } catch (Exception e) {
+            transaction.Rollback();
+            throw e;
+         }
+      }
+   }
+
+   public static new void publishLatestVersionForAllGroup (int mapId) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.Open();
+         MySqlTransaction transaction = conn.BeginTransaction();
+         cmd.Transaction = transaction;
+         cmd.Connection = conn;
+
+         try {
+            List<int> ids = new List<int> { mapId };
+
+            // Find all children of a map
+            ids.AddRange(getChildMapIds(cmd, mapId));
+
+            // Delete parent and children
+            foreach (int id in ids) {
+               cmd.Parameters.Clear();
+               cmd.CommandText = "UPDATE maps_v2 SET publishedVersion = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id) WHERE id = @id";
+               cmd.Parameters.AddWithValue("@id", id);
+               cmd.ExecuteNonQuery();
+            }
 
             transaction.Commit();
          } catch (Exception e) {

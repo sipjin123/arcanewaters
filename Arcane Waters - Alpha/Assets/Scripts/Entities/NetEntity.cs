@@ -648,6 +648,12 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (VoyageManager.isInVoyage(this) && VoyageManager.isInVoyage(otherEntity)) {
+         // In PvE voyage instances, players from other groups are not enemies
+         Instance instance = getInstance();
+         if (instance != null && !instance.isPvP) {
+            return false;
+         }
+
          if (this.voyageGroupId == otherEntity.voyageGroupId) {
             return false;
          } else {
@@ -675,6 +681,10 @@ public class NetEntity : NetworkBehaviour
          }
       }
 
+      return false;
+   }
+
+   public virtual bool isAdversaryInPveInstance (NetEntity otherEntity) {
       return false;
    }
 
@@ -1173,10 +1183,8 @@ public class NetEntity : NetworkBehaviour
          // Show the Area name
          LocationBanner.self.setText(Area.getName(this.areaKey));
 
-         // Now that the area is fully loaded client-side, verify if the voyage (if any) exists
-         if (VoyageManager.isInVoyage(this)) {
-            rpc.Cmd_VerifyVoyageConsistencyAtSpawn();
-         }
+         // Signal the server
+         rpc.Cmd_OnClientFinishedLoadingArea();
       }
 
       // Wait until the position is stabilized by SmoothSync, then disable distance threshold to save a distance calculation

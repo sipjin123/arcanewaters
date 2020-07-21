@@ -28,7 +28,7 @@ public class SecretsMapManager : MonoBehaviour {
 
    public SelectOption[] formInitialSprite () {
       List<SelectOption> selectionList = new List<SelectOption>();
-      List<ImageManager.ImageData> initSprites = ImageManager.self.imageDataList.FindAll(_ => _.imagePath.Contains("Sprites/Secrets"));
+      List<ImageManager.ImageData> initSprites = ImageManager.getSpritesInDirectory("Sprites/Secrets");
       foreach (ImageManager.ImageData initSprite in initSprites) {
          selectionList.Add(new SelectOption(initSprite.imagePath, initSprite.imageName));
       }

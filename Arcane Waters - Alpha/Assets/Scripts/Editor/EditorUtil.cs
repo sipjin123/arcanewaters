@@ -71,36 +71,30 @@ public class EditorUtil : EditorWindow {
       EditorApplication.isPlaying = true;
    }
 
-   [MenuItem("Util/Update Image Manager (Ctrl+L) %l")]
-   public static void updateImagerManager () {
-      // Load the Image Manager prefab
-      GameObject loadedPrefab = PrefabUtility.LoadPrefabContents(IMAGE_MANAGER_PATH);
+   [MenuItem("Util/Update Resources - texture paths")]
+   public static void updateResourceTexturePaths () {
+      // Look through all of our stuff in the Assets folder
+      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+         // We only care about textures
+         if (assetPath.StartsWith(ImageManager.SPRITES_PATH)) {
+            Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
 
-      // Get Image Manager component of the prefab
-      ImageManager imageManager = loadedPrefab?.GetComponent<ImageManager>();
+            if (texture == null) {
+               continue;
+            }
 
-      if (imageManager == null) {
-         Debug.Log("Couldn't find the Image Manager prefab, so not updating it.");
-         return;
+            // Find the image name
+            string imagePath = System.IO.Path.ChangeExtension(assetPath, null);
+
+            if (!System.IO.Directory.Exists(ImageManager.FILEPATH_FOLDER)) {
+               System.IO.Directory.CreateDirectory(ImageManager.FILEPATH_FOLDER);
+            }
+
+            var file = System.IO.File.CreateText(ImageManager.FILEPATH_FOLDER + "/" + ImageManager.getHashForTexture(texture) + ".txt");
+            file.Write(imagePath);
+            file.Close();
+         }
       }
-
-      // Get all images in project currently
-      List<ImageManager.ImageData> newImageList = findAllImagesInProject();
-
-      // Sort by image name
-      newImageList = newImageList.OrderBy(o => o.imageName).ToList();
-
-      // Check if there are any changes
-      if (!areImageDataListsEqual(newImageList, imageManager.imageDataList)) {
-         // Set new image list
-         imageManager.imageDataList = newImageList;
-
-         // Save the changes to the prefab asset
-         PrefabUtility.SaveAsPrefabAsset(loadedPrefab, IMAGE_MANAGER_PATH);
-      }
-
-      // Unload prefab from memory
-      PrefabUtility.UnloadPrefabContents(loadedPrefab);
    }
 
    private static List<ImageManager.ImageData> findAllImagesInProject () {
@@ -110,7 +104,7 @@ public class EditorUtil : EditorWindow {
       // Look through all of our stuff in the Assets folder
       foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
          // We only care about textures
-         if (assetPath.StartsWith("Assets/Sprites")) {
+         if (assetPath.StartsWith(ImageManager.SPRITES_PATH)) {
             Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
 
             if (sprite == null) {
@@ -125,7 +119,6 @@ public class EditorUtil : EditorWindow {
             Texture2D texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
             imageData.imageName = imageName;
             imageData.imagePath = assetPath;
-            imageData.imagePathWithoutExtension = System.IO.Path.ChangeExtension(assetPath, null);
             imageData.texture2D = texture;
             imageData.sprite = sprite;
             imageData.sprites = new List<Sprite>();

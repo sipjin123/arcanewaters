@@ -79,12 +79,21 @@ public class PlayerShipEntity : ShipEntity {
    public float fuelDepleteValue = 2;
    public float fuelRecoverValue = 1.2f;
 
+   // Gets set to true when the player ship is hidden and cannot be damaged or controlled
+   [SyncVar]
+   public bool isDisabled = true;
+
    #endregion
 
    protected override bool isBot () { return false; }
 
    protected override void Start () {
       base.Start();
+
+      // Player ships spawn hidden and invulnerable, until the client finishes loading the area
+      if (isDisabled) {
+         StartCoroutine(CO_TemporarilyDisableShip());
+      }
 
       if (isLocalPlayer) {
          // Create a ship movement sound for our own ship
@@ -125,7 +134,7 @@ public class PlayerShipEntity : ShipEntity {
       }
 
       // Check if input is allowed
-      if (!Util.isGeneralInputAllowed()) {
+      if (!Util.isGeneralInputAllowed() || isDisabled) {
          return;
       }
 
@@ -377,6 +386,17 @@ public class PlayerShipEntity : ShipEntity {
       this.transform.SetParent(area.userParent, worldPositionStays);
    }
 
+   public override bool isAdversaryInPveInstance (NetEntity otherEntity) {
+      // Check if the entities are in different voyage groups and in a PvE instance
+      Instance instance = getInstance();
+      if (instance != null && !instance.isPvP && otherEntity is PlayerShipEntity
+         && this.voyageGroupId != otherEntity.voyageGroupId) {
+         return true;
+      } else {
+         return false;
+      }
+   }
+
    protected IEnumerator CO_RequestRespawnAfterDelay (float delay) {
       yield return new WaitForSeconds(delay);
 
@@ -416,6 +436,38 @@ public class PlayerShipEntity : ShipEntity {
 
       // Destroy the cannon ball after a couple seconds
       Destroy(ballObject, NetworkedCannonBall.LIFETIME);
+   }
+
+   protected IEnumerator CO_TemporarilyDisableShip () {
+      if (!isDisabled) {
+         yield break;
+      }
+
+      invulnerable = true;
+      _clickableBox.gameObject.SetActive(false);
+
+      foreach (Collider2D c in GetComponents<Collider2D>()) {
+         c.enabled = false;
+      }
+
+      foreach (SpriteRenderer renderer in _renderers) {
+         renderer.enabled = false;
+      }
+
+      while (isDisabled) {
+         yield return null;
+      }
+
+      invulnerable = false;
+      _clickableBox.gameObject.SetActive(true);
+
+      foreach (Collider2D c in GetComponents<Collider2D>()) {
+         c.enabled = true;
+      }
+
+      foreach (SpriteRenderer renderer in _renderers) {
+         renderer.enabled = true;
+      }
    }
 
    [Command]

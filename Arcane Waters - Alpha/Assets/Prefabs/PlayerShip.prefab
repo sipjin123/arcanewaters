@@ -1136,6 +1136,7 @@ MonoBehaviour:
   isReadyToSpeedup: 1
   fuelDepleteValue: 2
   fuelRecoverValue: 1.2
+  isDisabled: 1
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -3883,7 +3884,7 @@ MonoBehaviour:
   portraitCanvasGroup: {fileID: 2783503284007509480}
   portraitFrameImage: {fileID: 3941883892241880687}
   localPlayerFrame: {fileID: 21300000, guid: efe95a8b9f3c1ec4596fdaf77a358539, type: 3}
-  nonLocalPlayerFrame: {fileID: 21300000, guid: 511b2de505956734c9e3cc874e2cbab7,
+  nonLocalPlayerFrame: {fileID: 21300000, guid: 60897cbc45a894e4ebf1902c17492b86,
     type: 3}
 --- !u!1 &5312579577685087058
 GameObject:
