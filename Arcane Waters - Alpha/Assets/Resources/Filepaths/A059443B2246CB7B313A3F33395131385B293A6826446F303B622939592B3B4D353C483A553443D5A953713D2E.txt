@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Icons/CraftingIngredients/ingredient_green_blood_droplet

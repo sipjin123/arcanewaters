@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Icons/Icon-32x32

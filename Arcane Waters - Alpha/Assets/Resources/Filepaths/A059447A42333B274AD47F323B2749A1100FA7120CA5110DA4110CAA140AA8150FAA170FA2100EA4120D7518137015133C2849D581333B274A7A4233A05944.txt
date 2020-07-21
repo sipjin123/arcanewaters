@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Leader Boards/stat_title_players_1x

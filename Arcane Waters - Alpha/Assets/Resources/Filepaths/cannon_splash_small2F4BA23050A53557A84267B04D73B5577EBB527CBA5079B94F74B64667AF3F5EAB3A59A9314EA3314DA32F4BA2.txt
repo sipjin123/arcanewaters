@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Effects/cannon_splash_small

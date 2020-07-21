@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Towns/item_sign

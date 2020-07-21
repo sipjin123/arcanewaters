@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/OLD/ForegroundAnimatedElements/Forest_Foreground_Section_1

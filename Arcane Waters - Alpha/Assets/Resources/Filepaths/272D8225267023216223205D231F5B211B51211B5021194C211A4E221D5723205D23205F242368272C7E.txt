@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Map/cloud_4_shadow

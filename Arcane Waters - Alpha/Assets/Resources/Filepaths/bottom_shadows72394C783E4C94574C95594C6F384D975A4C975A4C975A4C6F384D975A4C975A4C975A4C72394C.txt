@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/bottom_shadows

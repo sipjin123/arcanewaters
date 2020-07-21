@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/orange_button_hover_1x

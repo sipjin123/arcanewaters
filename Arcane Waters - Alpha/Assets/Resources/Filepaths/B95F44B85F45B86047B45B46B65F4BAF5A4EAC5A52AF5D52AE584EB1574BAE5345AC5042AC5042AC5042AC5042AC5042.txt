@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Mushroom Elements/MidgroundAnimatedElements/Mushroom_Midground_Section_1

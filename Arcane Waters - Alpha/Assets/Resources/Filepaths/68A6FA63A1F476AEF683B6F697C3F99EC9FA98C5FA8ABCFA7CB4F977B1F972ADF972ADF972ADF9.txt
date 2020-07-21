@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Forest Elements/SkiesAndGround/Forest_Clouds_Upper

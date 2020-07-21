@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Battle/stance_button_pressed

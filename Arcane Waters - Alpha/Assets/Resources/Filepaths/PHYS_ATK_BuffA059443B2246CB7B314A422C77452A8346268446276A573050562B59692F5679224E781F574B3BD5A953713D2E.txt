@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Icons/UsableItems/PHYS_ATK_Buff

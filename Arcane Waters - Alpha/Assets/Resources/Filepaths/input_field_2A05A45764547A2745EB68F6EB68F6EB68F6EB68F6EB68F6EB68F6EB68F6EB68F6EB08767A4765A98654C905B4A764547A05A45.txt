@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/input_field_2

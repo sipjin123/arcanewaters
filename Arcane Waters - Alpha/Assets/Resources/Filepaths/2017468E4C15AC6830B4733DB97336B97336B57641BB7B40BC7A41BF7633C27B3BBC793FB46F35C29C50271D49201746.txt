@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Voyages/count_plaque_gold

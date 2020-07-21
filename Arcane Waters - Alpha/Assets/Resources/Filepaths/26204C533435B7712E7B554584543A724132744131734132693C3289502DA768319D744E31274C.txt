@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Leader Boards/gold_frame_tall_box_1x

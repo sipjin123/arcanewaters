@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Ship/bars_background_player

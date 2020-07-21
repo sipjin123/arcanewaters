@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Pine Elements/SkiesAndGround/Pine_Clouds_Upper

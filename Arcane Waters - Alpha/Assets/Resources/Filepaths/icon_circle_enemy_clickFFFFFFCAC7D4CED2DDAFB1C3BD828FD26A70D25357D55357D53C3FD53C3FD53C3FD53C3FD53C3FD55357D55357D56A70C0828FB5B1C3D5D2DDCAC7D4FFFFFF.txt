@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Icons/Battle/enemy/icon_circle_enemy_click

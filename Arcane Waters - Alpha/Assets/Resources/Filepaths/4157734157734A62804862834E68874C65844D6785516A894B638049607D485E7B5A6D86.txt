@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Effects/ship_cannon_smoke

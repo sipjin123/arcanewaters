@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/panel_button_brown_hovered_2x

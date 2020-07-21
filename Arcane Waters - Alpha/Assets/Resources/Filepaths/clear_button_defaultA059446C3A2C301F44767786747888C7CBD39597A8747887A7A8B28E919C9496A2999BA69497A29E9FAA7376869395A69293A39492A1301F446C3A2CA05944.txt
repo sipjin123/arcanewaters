@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/CraftingUI/Buttons/clear_button_default

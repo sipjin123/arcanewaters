@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Icons/Abilities/ability_earth_rock_hammer

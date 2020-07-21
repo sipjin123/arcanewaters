@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Snow Elements/BackgroundAnimatedElements/Snow_Background_Section_1

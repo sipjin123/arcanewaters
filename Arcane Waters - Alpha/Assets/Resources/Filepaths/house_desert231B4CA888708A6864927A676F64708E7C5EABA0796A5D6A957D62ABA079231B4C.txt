@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Minimap/house_desert

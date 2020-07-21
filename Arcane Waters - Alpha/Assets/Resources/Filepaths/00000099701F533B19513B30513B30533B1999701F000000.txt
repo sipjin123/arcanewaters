@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Loading/loading_bar_border

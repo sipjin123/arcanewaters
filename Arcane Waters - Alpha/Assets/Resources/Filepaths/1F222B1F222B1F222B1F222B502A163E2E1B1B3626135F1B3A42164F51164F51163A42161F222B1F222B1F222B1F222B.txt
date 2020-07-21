@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Guild/Icons Small/Sigils/sigil_4_small

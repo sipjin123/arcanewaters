@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Forest Elements/GroundElements/Forest_Ground_Stones_3

@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/BackgroundEntities/Desert Elements/MidgroundInteractiveElements/Desert_InteractiveBush_1

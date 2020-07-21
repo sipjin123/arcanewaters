@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/panel_button_clicked_2x

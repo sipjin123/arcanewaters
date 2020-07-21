@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Speech/speech_bubble_2

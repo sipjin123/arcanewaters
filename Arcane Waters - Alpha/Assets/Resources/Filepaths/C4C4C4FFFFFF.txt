@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Voyage Groups/group_frame_power_bar_white

@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/button_arrow_right_hover_1x

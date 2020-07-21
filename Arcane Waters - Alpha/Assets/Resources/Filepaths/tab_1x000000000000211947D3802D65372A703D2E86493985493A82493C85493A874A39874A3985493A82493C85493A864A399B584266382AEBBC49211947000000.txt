@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Map Customization/tab_1x

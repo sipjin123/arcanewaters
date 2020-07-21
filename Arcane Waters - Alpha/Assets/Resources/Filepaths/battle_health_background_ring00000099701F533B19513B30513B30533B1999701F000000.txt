@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Battle/battle_health_background_ring
