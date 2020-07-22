@@ -23,7 +23,8 @@ public class LoggerManager : MonoBehaviour {
    void Awake () {
       self = this;
       Init();
-      // AddMessage("message text", "stack trace", LogType.Error);
+      // AddMessage("message text test", "stack trace", LogType.Error);
+      // AddMessage("message text test", "stack trace 2", LogType.Error);
    }
    
    void OnEnable()  {
@@ -92,7 +93,6 @@ public class LoggerManager : MonoBehaviour {
       messageData["appType"] = "website";
       #endif
 
-      messageData["messageHash"] = CalculateMD5Hash(logString);
       messageData["systemInfo"] = SystemInfo.operatingSystem;
       messageData["host"] = Dns.GetHostName();
 
@@ -115,7 +115,7 @@ public class LoggerManager : MonoBehaviour {
 
    void StoreMessage(Dictionary <string, string> messageData) {
       string messageDataString = Json.Serialize(messageData);
-      Debug.Log("StoreEventData: " + messageDataString);
+      // Debug.Log("StoreEventData: " + messageDataString);
 
       string messageDir = messagesDirPath + "/" + DateTime.Parse(messageData["datetime"]).ToString("yyyy-MM-dd") + "/";
 
@@ -168,16 +168,20 @@ public class LoggerManager : MonoBehaviour {
             messagesIds.Add(id);
          }
 
-         messagesToSend = Json.Serialize(data);
-         if (messagesToSend != "" && messagesToSend != "{}") return; // limit to send one day statistic at once
+         // limit to send one day statistic at once
+         if (data.Keys.Count > 0) {
+            // add control sum
+            data["sum2"] = CalculateMD5Hash(string.Join("",messagesIds.ToArray()));
+            data["sum"] = CalculateMD5Hash(API_SALT + data["sum2"]);
+            messagesToSend = Json.Serialize(data);
+            return; 
+         }
          
          Directory.Delete(messagesDirs[d]); // no messages to send, remove empty directory
       }
    }
 
    void SendMessagesAsync () {
-      // TODO: add hash with salt
-      
       WWWForm form = new WWWForm();
       Dictionary<string,string> headers = form.headers;
       headers["Content-Type"] = "application/json";
@@ -230,10 +234,11 @@ public class LoggerManager : MonoBehaviour {
    }
    
    #region Private Variables
-   const string VERSION = "2";
+   const string VERSION = "3";
    // const string SERVER_URL = "http://127.0.0.1:3000/";
    const string SERVER_URL = "http://tools.arcanewaters.com/";
    const string API_MESSAGES_URL = SERVER_URL + "api/logger/add";
+   const string API_SALT = "as5HU5_YhkPaRWpr+dxmBMq#eTWAx98fu8XJF-b2Rg@AWtgF*8EqaEvLedMexk";
    const int SEND_INTERVAL = 20; // seconds
 
    string messagesDirPath;

@@ -140,6 +140,7 @@ public class ImageManager : ClientMonoBehaviour {
 
             data.imageName = tex.name;
             data.imagePath = path + tex.name;
+
             data.texture2D = tex;
             if (data.texture2D == null) {
                continue;
@@ -166,7 +167,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         Debug.LogWarning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
+         D.warning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
@@ -177,7 +178,7 @@ public class ImageManager : ClientMonoBehaviour {
       Sprite sprite = Resources.Load<Sprite>(path);
 
       if (sprite == null) {
-         Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         D.warning("Could not find sprite at path(" + path + "). Returning a blank sprite");
          return self.blankSprite;
       }
       return sprite;
@@ -189,7 +190,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       if (tex == null && warnOnNull) {
          if (!Util.isBatch()) {
-            Debug.LogWarning("Couldn't find texture for path: " + path);
+            D.warning("Couldn't find texture for path: " + path);
          }
          return blankTexture;
       }
@@ -280,7 +281,7 @@ public class ImageManager : ClientMonoBehaviour {
       return val.ToString();
    }
 
-   public static string getHashForTexture (Texture2D tex) {
+   public static string getHashForTexture (Texture2D tex, string name = "") {
       string hash = "";
 
       const int numberOfLines = 12;
@@ -307,7 +308,37 @@ public class ImageManager : ClientMonoBehaviour {
          hash += convertRGBToHex(new Color((float) averageColorR / 255.0f, (float) averageColorG / 255.0f, (float) averageColorB / 255.0f));
       }
 
-      return System.IO.Path.ChangeExtension(tex.name, null) + hash;
+      return System.IO.Path.ChangeExtension(tex.name != "" ? tex.name : name, null) + hash;
+   }
+
+   public static string getImageName (string imagePath) {
+      string splitKey = "/";
+      string[] stringGroup = imagePath.Split(new string[] { splitKey }, StringSplitOptions.None);
+
+      string returnString = stringGroup[stringGroup.Length - 1];
+      return returnString;
+   }
+
+   public static string getImagePath (string imagePath) {
+      string splitKey = "/";
+      string[] stringGroup = imagePath.Split(new string[] { splitKey }, StringSplitOptions.None);
+
+      if (stringGroup.Length < 2) {
+         return imagePath;
+      }
+
+      int groupMemberCount = stringGroup.Length - 1;
+      List<string> newStringGroup = stringGroup.ToList();
+      newStringGroup.RemoveAt(groupMemberCount - 1);
+      newStringGroup.RemoveAt(groupMemberCount - 1);
+
+      string returnString = "";
+      int index = 0;
+      foreach (string groups in newStringGroup) {
+         string merger = index < (groupMemberCount - 1) ? splitKey : "";
+         returnString += groups + merger;
+      }
+      return returnString;
    }
 
    #region Private Variables

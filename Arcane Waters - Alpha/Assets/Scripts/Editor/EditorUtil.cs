@@ -90,11 +90,36 @@ public class EditorUtil : EditorWindow {
                System.IO.Directory.CreateDirectory(ImageManager.FILEPATH_FOLDER);
             }
 
-            var file = System.IO.File.CreateText(ImageManager.FILEPATH_FOLDER + "/" + ImageManager.getHashForTexture(texture) + ".txt");
-            file.Write(imagePath);
-            file.Close();
+            string filePath = ImageManager.FILEPATH_FOLDER + "/" + ImageManager.getHashForTexture(texture) + ".txt";
+            if (System.IO.File.Exists(filePath)) {
+               System.IO.File.WriteAllText(filePath, imagePath);
+            } else {
+               var file = System.IO.File.CreateText(filePath);
+               file.Write(imagePath);
+               file.Close();
+            }
          }
       }
+   }
+
+   [MenuItem("Util/Update Resources - set sprites as readable")]
+   public static void updateResourcesSetSpritesReadable () {
+      // Look through all of our stuff in the Assets folder
+      foreach (string assetPath in AssetDatabase.GetAllAssetPaths()) {
+         // We only care about textures
+         if (assetPath.StartsWith(ImageManager.SPRITES_PATH)) {
+            TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+
+            if (importer == null)
+               continue;
+
+            if (importer.isReadable == false) {
+               importer.isReadable = true;
+               AssetDatabase.ImportAsset(assetPath);
+            }
+         }
+      }
+      AssetDatabase.Refresh();
    }
 
    private static List<ImageManager.ImageData> findAllImagesInProject () {
