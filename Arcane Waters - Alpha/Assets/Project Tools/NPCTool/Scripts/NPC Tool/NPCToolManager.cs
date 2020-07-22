@@ -40,7 +40,8 @@ public class NPCToolManager : XmlDataToolManager {
 
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
+      base.Awake();
       instance = this;
       self = this;
       openMainTool.onClick.AddListener(() => {
@@ -242,10 +243,14 @@ public class NPCToolManager : XmlDataToolManager {
       });
    }
 
+   public List<NPCData> getNpcDataList () {
+      return _npcData.Values.ToList();
+   }
+
    #region Private Variables
 
    // The cached NPC data
-   private Dictionary<int, NPCData> _npcData = new Dictionary<int, NPCData>();
+   protected Dictionary<int, NPCData> _npcData = new Dictionary<int, NPCData>();
 
    #endregion
 }

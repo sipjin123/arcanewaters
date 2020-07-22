@@ -32,7 +32,8 @@ public class CraftingToolManager : XmlDataToolManager {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       self = this;
    }
 

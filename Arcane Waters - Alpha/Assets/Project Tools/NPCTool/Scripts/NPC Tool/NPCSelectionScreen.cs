@@ -58,11 +58,11 @@ public class NPCSelectionScreen : MonoBehaviour
                row.itemIcon.sprite = ImageManager.getSprite(npcData.iconPath);
             } catch {
                // Should be an Error Icon
-               row.itemIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_precision.png");
+               row.itemIcon.sprite = ImageManager.getSprite("Sprites/Icons/cancel");
             }
          } else {
             // Should be a NULL Icon
-            row.itemIcon.sprite = ImageManager.getSprite("Assets/Sprites/Icons/Stats/icon_luck.png");
+            row.itemIcon.sprite = ImageManager.getSprite("Sprites/Faces/unknown");
          }
 
          npcRowList.Add(row);
@@ -70,7 +70,7 @@ public class NPCSelectionScreen : MonoBehaviour
 
       if (!_hasBeenInitialized) {
          _hasBeenInitialized = true;
-         string iconPath = "Assets/Sprites/Faces/";
+         string iconPath = "Sprites/Faces/";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(iconPath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
@@ -78,7 +78,7 @@ public class NPCSelectionScreen : MonoBehaviour
             npcEditScreen.iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string spritePath = "Assets/Sprites/NPCs/Bodies/";
+         string spritePath = "Sprites/NPCs/Bodies/";
          List<ImageManager.ImageData> spriteFiles = ImageManager.getSpritesInDirectory(spritePath);
 
          foreach (ImageManager.ImageData imgData in spriteFiles) {
@@ -86,7 +86,7 @@ public class NPCSelectionScreen : MonoBehaviour
             npcEditScreen.avatarSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string battlerSpritePath = "Assets/Sprites/Enemies/LandMonsters/";
+         string battlerSpritePath = "Sprites/Enemies/LandMonsters/";
          List<ImageManager.ImageData> battlerSpriteFiles = ImageManager.getSpritesInDirectory(battlerSpritePath);
          foreach (ImageManager.ImageData imgData in battlerSpriteFiles) {
             Sprite sourceSprite = imgData.sprite;

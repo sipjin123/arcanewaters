@@ -541,13 +541,13 @@ public class EquipmentToolPanel : MonoBehaviour {
       string spritePath = "";
       switch (equipmentType) {
          case EquipmentType.Weapon:
-            spritePath = "Assets/Sprites/Weapons/" + genderType + "/" + "weapon_" + equipmentID +"_front";
+            spritePath = "Sprites/Weapons/" + genderType + "/" + "weapon_" + equipmentID +"_front";
             break;
          case EquipmentType.Hat:
-            spritePath = "Assets/Sprites/Hats/" + genderType + "/" + genderType.ToString().ToLower() + "_hat_" + equipmentID;
+            spritePath = "Sprites/Hats/" + genderType + "/" + genderType.ToString().ToLower() + "_hat_" + equipmentID;
             break;
          case EquipmentType.Armor:
-            spritePath = "Assets/Sprites/Armor/" + genderType + "/" + genderType.ToString().ToLower() + "_armor_" + equipmentID;
+            spritePath = "Sprites/Armor/" + genderType + "/" + genderType.ToString().ToLower() + "_armor_" + equipmentID;
             break;
       }
 

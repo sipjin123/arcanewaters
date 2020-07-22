@@ -21,7 +21,8 @@ public class QuestDataToolManager : XmlDataToolManager {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       instance = this;
    }
 

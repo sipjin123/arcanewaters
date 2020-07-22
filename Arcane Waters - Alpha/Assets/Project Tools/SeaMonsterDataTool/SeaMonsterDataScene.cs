@@ -47,17 +47,14 @@ public class SeaMonsterDataScene : MonoBehaviour
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
-         string spritePath = "Assets/Sprites/Enemies/";
+         string spritePath = "Sprites/Enemies/SeaMonsters";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
-
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
-            if (imgData.imagePath.Contains("SeaMonsters")) {
-               Sprite sourceSprite = imgData.sprite;
-               monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
-            }
+            Sprite sourceSprite = imgData.sprite;
+            monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string hitSpritePath = "Assets/Sprites/Effects/";
+         string hitSpritePath = "Sprites/Effects/";
          List<ImageManager.ImageData> hitSpriteIconFiles = ImageManager.getSpritesInDirectory(hitSpritePath);
 
          foreach (ImageManager.ImageData imgData in hitSpriteIconFiles) {
@@ -65,7 +62,7 @@ public class SeaMonsterDataScene : MonoBehaviour
             monsterPanel.hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string castSpritePath = "Assets/Sprites/Effects/";
+         string castSpritePath = "Sprites/Effects/";
          List<ImageManager.ImageData> castSpriteIconFiles = ImageManager.getSpritesInDirectory(castSpritePath);
 
          foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {
@@ -73,12 +70,14 @@ public class SeaMonsterDataScene : MonoBehaviour
             monsterPanel.castIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string skillIconSpritePath = "Assets/Sprites/Icons/";
+         string skillIconSpritePath = "Sprites/Icons/Abilities/";
          List<ImageManager.ImageData> skillIconSpriteFiles = ImageManager.getSpritesInDirectory(skillIconSpritePath);
 
          foreach (ImageManager.ImageData imgData in skillIconSpriteFiles) {
             Sprite sourceSprite = imgData.sprite;
-            monsterPanel.skillIconSpriteList.Add(imgData.imagePath, sourceSprite);
+            if (!monsterPanel.skillIconSpriteList.ContainsKey(imgData.imagePath)) {
+               monsterPanel.skillIconSpriteList.Add(imgData.imagePath, sourceSprite);
+            }
          }
       }
    }

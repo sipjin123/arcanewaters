@@ -97,7 +97,7 @@ public class AbilityDataScene : MonoBehaviour
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
-         string spritePath = "Assets/Sprites/Icons/Abilities/";
+         string spritePath = "Sprites/Icons/Abilities/";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
 
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
@@ -105,7 +105,7 @@ public class AbilityDataScene : MonoBehaviour
             iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string hitSpritePath = "Assets/Sprites/Effects/";
+         string hitSpritePath = "Sprites/Effects/";
          List<ImageManager.ImageData> hitSpriteIconFiles = ImageManager.getSpritesInDirectory(hitSpritePath);
 
          foreach (ImageManager.ImageData imgData in hitSpriteIconFiles) {
@@ -113,7 +113,7 @@ public class AbilityDataScene : MonoBehaviour
             hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string castSpritePath = "Assets/Sprites/Effects/";
+         string castSpritePath = "Sprites/Effects/";
          List<ImageManager.ImageData> castSpriteIconFiles = ImageManager.getSpritesInDirectory(castSpritePath);
 
          foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {
@@ -121,7 +121,7 @@ public class AbilityDataScene : MonoBehaviour
             castIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string projectileSpritePath = "Assets/Sprites/Projectiles/";
+         string projectileSpritePath = "Sprites/Projectiles/";
          List<ImageManager.ImageData> projecitleSpriteIconFiles = ImageManager.getSpritesInDirectory(projectileSpritePath);
 
          foreach (ImageManager.ImageData imgData in projecitleSpriteIconFiles) {

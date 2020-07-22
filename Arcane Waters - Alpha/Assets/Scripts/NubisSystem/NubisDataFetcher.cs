@@ -51,12 +51,6 @@ namespace NubisDataHandling {
          return (int) XmlSlotIndex.Default;
       }
 
-      private void Update () {
-         if (Input.GetKeyDown(KeyCode.X)) {
-            testNubisFunction();
-         }
-      }
-
       public void fetchXmlVersion () {
          processXmlVersion();
       }

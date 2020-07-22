@@ -34,7 +34,8 @@ public class SeaMonsterToolManager : XmlDataToolManager
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       instance = this;
    }
 

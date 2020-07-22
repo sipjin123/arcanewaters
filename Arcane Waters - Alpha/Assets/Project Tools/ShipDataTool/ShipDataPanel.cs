@@ -196,12 +196,18 @@ public class ShipDataPanel : MonoBehaviour {
       _randomSkill.isOn = loadedShipData.isSkillRandom;
 
       if (loadedShipData.avatarIconPath != null && loadedShipData.avatarIconPath != "") {
-         Sprite shipSprite = ImageManager.getSpritesInDirectory(loadedShipData.avatarIconPath)[0].sprites[3];
-         _avatarIcon.sprite = shipSprite;
+         List<ImageManager.ImageData> imgData = ImageManager.getSpritesInDirectory(loadedShipData.avatarIconPath);
+         if (imgData.Count > 0) {
+            Sprite shipSprite = imgData[0].sprites[3];
+            _avatarIcon.sprite = shipSprite;
+         }
       }
       if (loadedShipData.spritePath != null && loadedShipData.spritePath != "") {
-         Sprite shipSprite = ImageManager.getSpritesInDirectory(loadedShipData.spritePath)[0].sprites[3];
-         _spriteIcon.sprite = shipSprite;
+         List<ImageManager.ImageData> imgData = ImageManager.getSpritesInDirectory(loadedShipData.spritePath);
+         if (imgData.Count > 0) {
+            Sprite shipSprite = ImageManager.getSpritesInDirectory(loadedShipData.spritePath)[0].sprites[3];
+            _spriteIcon.sprite = shipSprite;
+         }
       }
       if (loadedShipData.rippleSpritePath != null && loadedShipData.rippleSpritePath != "") {
          _rippleSpriteIcon.sprite = ImageManager.getSprite(loadedShipData.rippleSpritePath);

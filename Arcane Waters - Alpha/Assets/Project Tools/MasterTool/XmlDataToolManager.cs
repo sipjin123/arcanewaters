@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
+[RequireComponent(typeof(XmlToolSpriteModifier))]
 public class XmlDataToolManager : MonoBehaviour {
    #region Public Variables
 
@@ -22,7 +24,14 @@ public class XmlDataToolManager : MonoBehaviour {
    // Self
    public static XmlDataToolManager self;
 
+   // Reference to the sprite address modifier
+   public XmlToolSpriteModifier xmlSpriteModifier;
+
    #endregion
+
+   protected virtual void Awake () {
+      xmlSpriteModifier = gameObject.AddComponent<XmlToolSpriteModifier>();
+   }
 
    public bool didUserCreateData (string entryName) {
       SQLEntryNameClass sqlEntry = userNameData.Find(_ => _.dataName == entryName);

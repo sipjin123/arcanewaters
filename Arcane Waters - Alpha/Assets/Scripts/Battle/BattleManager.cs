@@ -444,7 +444,6 @@ public class BattleManager : MonoBehaviour {
 
          if (cancelAction != null) {
             cancelAction.battleActionType = BattleActionType.Cancel;
-            //action.battleActionType = BattleActionType.Cancel;
 
             foreach (CancelAction action in actions) {
                stringList.Add(action.serialize());

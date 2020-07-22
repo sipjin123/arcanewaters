@@ -39,7 +39,8 @@ public class MonsterToolManager : XmlDataToolManager {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       instance = this;
    }
 

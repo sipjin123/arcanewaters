@@ -52,13 +52,13 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public ArmorStatData getArmorData (int armorType) {
       if (_armorStatList == null) {
-         Debug.LogWarning("List is null!: " + armorType);
+         D.warning("List is null!: " + armorType);
          return null;
       }
       if (_armorStatList.ContainsKey(armorType)) {
          return _armorStatList[armorType];
       }
-      Debug.LogWarning("Does not exist: " + armorType);
+      D.warning("Does not exist: " + armorType);
       return null;
    }
 

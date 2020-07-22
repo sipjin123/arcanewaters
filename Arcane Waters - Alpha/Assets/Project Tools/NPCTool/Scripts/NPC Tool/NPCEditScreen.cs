@@ -219,17 +219,8 @@ public class NPCEditScreen : MonoBehaviour
    }
 
    public void updatePanelWithNPC (NPCData npcData) {
-      try {
-         avatarIcon.sprite = iconSpriteList[npcData.iconPath];
-      } catch {
-         avatarIcon.sprite = ImageManager.self.blankSprite;
-      }
-
-      try {
-         avatarSprite.sprite = avatarSpriteList[npcData.spritePath];
-      } catch {
-         avatarSprite.sprite = ImageManager.self.blankSprite;
-      }
+      avatarIcon.sprite = ImageManager.getSprite(npcData.iconPath);
+      avatarSprite.sprite = ImageManager.getSprite(npcData.spritePath);
 
       npcIconPath = npcData.iconPath;
       npcSpritePath = npcData.spritePath;

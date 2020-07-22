@@ -181,7 +181,8 @@ public class PaletteToolManager : XmlDataToolManager {
 
    #endregion
 
-   public void Awake () {
+   protected override void Awake () {
+      base.Awake();
       // After loading scene - download and preset xml data in list form
       loadXMLData();
 

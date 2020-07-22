@@ -118,67 +118,67 @@ public class GenericSelectionPopup : MonoBehaviour
    }
 
    private void initializeSpriteDictionary () {
-      string hatSpritePath = "Assets/Sprites/Icons/Hat/";
+      string hatSpritePath = "Sprites/Icons/Hat/";
       setupSpriteContent(hatSpriteList, hatSpritePath);
 
-      string armorSpritePath = "Assets/Sprites/Icons/Armor/";
+      string armorSpritePath = "Sprites/Icons/Armor/";
       setupSpriteContent(armorSpriteList, armorSpritePath);
 
-      string weaponSpritePath = "Assets/Sprites/Icons/Weapons/";
+      string weaponSpritePath = "Sprites/Icons/Weapons/";
       setupSpriteContent(weaponSpriteList, weaponSpritePath);
 
-      string genericspritePath = "Assets/Sprites/Icons/";
+      string genericspritePath = "Sprites/Icons/";
       setupSpriteContent(genericIconSpriteList, genericspritePath);
 
-      string spritePath = "Assets/Sprites/Ships/";
+      string spritePath = "Sprites/Ships/";
       setupSpriteContent(shipIconSpriteList, spritePath);
 
-      string shipsPath = "Assets/Sprites/Ships/";
+      string shipsPath = "Sprites/Ships/";
       setupSpriteContent(shipSpriteList, shipsPath);
 
-      string shipsWakePath = "Assets/Sprites/ShipWakes/";
+      string shipsWakePath = "Sprites/ShipWakes/";
       setupSpriteContent(shipWakeSpriteList, shipsWakePath);
 
-      string usableItemPath = "Assets/Sprites/Icons/UsableItems/";
+      string usableItemPath = "Sprites/Icons/UsableItems/";
       setupSpriteContent(usableItemSpriteList, usableItemPath);
 
-      string classPath = "Assets/Sprites/Icons/Classes/";
+      string classPath = "Sprites/Icons/Classes/";
       setupSpriteContent(playerClassSpriteList, classPath);
 
-      string factionPath = "Assets/Sprites/Icons/Factions/";
+      string factionPath = "Sprites/Icons/Factions/";
       setupSpriteContent(playerFactionSpriteList, factionPath);
 
-      string specialtyPath = "Assets/Sprites/Icons/Specialties/";
+      string specialtyPath = "Sprites/Icons/Specialties/";
       setupSpriteContent(playerSpecialtySpriteList, specialtyPath);
 
-      string jobPath = "Assets/Sprites/Icons/Jobs/";
+      string jobPath = "Sprites/Icons/Jobs/";
       setupSpriteContent(playerJobSpriteList, jobPath);
 
-      string tutorialPath = "Assets/Sprites/Icons/";
+      string tutorialPath = "Sprites/Icons/Undefined/";
       setupSpriteContent(tutorialSpriteList, tutorialPath);
 
-      string shipAbilityPath = "Assets/Sprites/Icons/";
+      string shipAbilityPath = "Sprites/Icons/Abilities/";
       setupSpriteContent(shipAbilitySpriteList, shipAbilityPath);
 
-      string shipAbilityEffectPath = "Assets/Sprites/Effects/";
+      string shipAbilityEffectPath = "Sprites/Effects/";
       setupSpriteContent(shipAbilityEffectSpriteList, shipAbilityEffectPath);
 
-      string cannonSpritePath = "Assets/Sprites/Projectiles/";
+      string cannonSpritePath = "Sprites/Projectiles/";
       setupSpriteContent(cannonSpriteList, cannonSpritePath);
 
-      string shopIconPath = "Assets/Sprites/Icons/";
+      string shopIconPath = "Sprites/Icons/ShopIcons/";
       setupSpriteContent(shopIconSpriteList, shopIconPath);
 
-      string cropIconPath = "Assets/Sprites/Crops/";
+      string cropIconPath = "Sprites/Crops/";
       setupSpriteContent(cropIconSpriteList, cropIconPath);
 
-      string discoverySpritesPath = "Assets/Sprites/Discoveries/";
+      string discoverySpritesPath = "Sprites/Discoveries/";
       setupSpriteContent(discoveriesSpriteList, discoverySpritesPath);
 
-      string perkSpritePath = "Assets/Sprites/Icons/Perks/";
+      string perkSpritePath = "Sprites/Icons/Perks/";
       setupSpriteContent(perkIconSpriteList, perkSpritePath);
 
-      string npcIconSpritePath = "Assets/Sprites/Faces/";
+      string npcIconSpritePath = "Sprites/Faces/";
       setupSpriteContent(npcIconSpriteList, npcIconSpritePath);
    }
 
@@ -187,7 +187,9 @@ public class GenericSelectionPopup : MonoBehaviour
 
       foreach (ImageManager.ImageData imgData in spriteIconFiles) {
          Sprite sourceSprite = imgData.sprite;
-         spriteCollection.Add(imgData.imagePath, sourceSprite);
+         if (!spriteCollection.ContainsKey(imgData.imagePath)) {
+            spriteCollection.Add(imgData.imagePath, sourceSprite);
+         }
       }
    }
 
@@ -263,9 +265,11 @@ public class GenericSelectionPopup : MonoBehaviour
          }
       } else if (popupType == selectionType.ShipAbilityEffect) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in shipAbilityEffectSpriteList) {
-            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+            if (ImageManager.getSpritesInDirectory(sourceSprite.Key).Count > 0) {
+               string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
+               Sprite icon = ImageManager.getSprite(sourceSprite.Key);
+               createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
+            }
          }
       } else if (popupType == selectionType.CannonSprites) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in cannonSpriteList) {
@@ -371,7 +375,7 @@ public class GenericSelectionPopup : MonoBehaviour
             break;
          case selectionType.WeaponType:
             for (int weaponType = 1; weaponType < MAX_OPTIONS; weaponType++) {
-               string spritePath = "Assets/Sprites/Weapons/" + Gender.Type.Female + "/" + "weapon_" + weaponType + "_front";
+               string spritePath = "Sprites/Weapons/" + Gender.Type.Female + "/" + "weapon_" + weaponType + "_front";
                createTextTemplate(weaponType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
             }
             break;
@@ -396,7 +400,7 @@ public class GenericSelectionPopup : MonoBehaviour
             break;
          case selectionType.HatType:
             for (int hatType = 1; hatType < MAX_OPTIONS; hatType++) {
-               string spritePath = "Assets/Sprites/Hats/" + Gender.Type.Female + "/" + Gender.Type.Female.ToString().ToLower() + "_hat_" + hatType;
+               string spritePath = "Sprites/Hats/" + Gender.Type.Female + "/" + Gender.Type.Female.ToString().ToLower() + "_hat_" + hatType;
                createTextTemplate(hatType.ToString(), textUI, changeEvent, spritePath, null, EquipmentToolPanel.EQUIPMENT_SPRITE_INDEX);
             }
             break;
