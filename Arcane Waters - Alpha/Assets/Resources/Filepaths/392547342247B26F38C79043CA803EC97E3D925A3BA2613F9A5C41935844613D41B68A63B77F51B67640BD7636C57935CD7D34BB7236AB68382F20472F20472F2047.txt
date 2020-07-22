@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Bottom Buttons/btn_ship_press

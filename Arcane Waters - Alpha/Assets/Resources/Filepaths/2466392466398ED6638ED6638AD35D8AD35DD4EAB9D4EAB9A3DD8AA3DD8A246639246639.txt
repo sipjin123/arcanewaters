@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Character/skill_progressbar_2x

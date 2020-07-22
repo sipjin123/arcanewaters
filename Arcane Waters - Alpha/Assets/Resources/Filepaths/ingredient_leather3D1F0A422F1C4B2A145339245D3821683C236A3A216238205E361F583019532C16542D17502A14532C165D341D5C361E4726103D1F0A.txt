@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_leather
+Assets/Resources/Sprites/Icons/NoBorderCraftingIngredients/ingredient_leather

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Abilities/slash/icon_slash_water
+Assets/Resources/Sprites/Icons/Abilities/icon_slash_water

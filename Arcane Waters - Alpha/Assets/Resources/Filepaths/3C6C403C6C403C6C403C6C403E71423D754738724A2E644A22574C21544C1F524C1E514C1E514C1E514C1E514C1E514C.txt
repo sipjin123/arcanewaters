@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Forest Elements/ForegroundAnimatedElements/Forest_MidGround_Section_2

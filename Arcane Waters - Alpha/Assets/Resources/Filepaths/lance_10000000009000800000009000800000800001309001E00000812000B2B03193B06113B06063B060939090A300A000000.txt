@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Weapons/Lance/lance_1
+Assets/Resources/Sprites/Icons/Weapons/lance_1

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Voyages/map_selection_panel_mockup

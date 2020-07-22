@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Friend List/message_button

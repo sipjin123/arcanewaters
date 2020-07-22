@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Topknot/TopKnot
+Assets/Resources/Sprites/NPCs/Bodies/TopKnot

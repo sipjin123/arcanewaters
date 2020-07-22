@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/tutorial_item_background

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Ships/Type_4/type_4_ripples_moving
+Assets/Resources/Sprites/Ships/type_4_ripples_moving

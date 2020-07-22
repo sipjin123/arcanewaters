@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/CraftingUI/Icons/crafting_jewel_icon

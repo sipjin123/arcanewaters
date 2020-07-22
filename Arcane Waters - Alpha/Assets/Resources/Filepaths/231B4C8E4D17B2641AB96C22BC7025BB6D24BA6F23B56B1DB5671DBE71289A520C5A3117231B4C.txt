@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Voyages/floating_exit_button_pressed

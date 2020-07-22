@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Shop/coins_icon_2

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Patch/patch_1
+Assets/Resources/Sprites/NPCs/Bodies/patch_1

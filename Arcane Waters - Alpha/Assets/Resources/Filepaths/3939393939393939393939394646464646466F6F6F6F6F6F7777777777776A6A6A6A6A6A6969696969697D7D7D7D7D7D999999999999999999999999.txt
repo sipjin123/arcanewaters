@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/panel_button_disabled_2x

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Battle/Player/select_ring_player

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Enemies/lizard_king_shadow

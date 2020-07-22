@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/ExplorerGuy/ExplorerGuy
+Assets/Resources/Sprites/NPCs/Bodies/ExplorerGuy

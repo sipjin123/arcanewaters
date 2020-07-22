@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/titlescreen_logo_cropped_nowhite

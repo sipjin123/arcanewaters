@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/button_base_normal

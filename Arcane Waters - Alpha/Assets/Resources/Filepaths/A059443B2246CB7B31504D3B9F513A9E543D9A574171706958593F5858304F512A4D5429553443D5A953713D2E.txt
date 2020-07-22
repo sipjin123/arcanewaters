@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/UsableItems/Healing_High

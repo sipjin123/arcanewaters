@@ -143,10 +143,7 @@ MonoBehaviour:
   waterLevelContainer: {fileID: 1627345094036914}
   waterBar: {fileID: 114685888714518232}
   anim: {fileID: 0}
-  debugBOol1: 0
-  debugBool2: 0
-  debugFloat1: 0
-  debugFloat2: 0
+  dataIsSet: 0
 --- !u!212 &212229960750434164
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -315,7 +312,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.24, y: 0.24}
+  m_Size: {x: 0.16, y: 0.16}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

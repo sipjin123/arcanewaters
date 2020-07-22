@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Creation/panel_simple_2x

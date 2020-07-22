@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Login/button-1

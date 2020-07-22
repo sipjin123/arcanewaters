@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Factions/Ships/faction_ship_naturalists
+Assets/Resources/Sprites/Icons/ShipFactions/faction_ship_naturalists

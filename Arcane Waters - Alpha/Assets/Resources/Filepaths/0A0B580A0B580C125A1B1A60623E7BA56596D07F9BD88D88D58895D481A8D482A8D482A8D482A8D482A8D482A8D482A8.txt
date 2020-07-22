@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Lava Elements/MidgroundAnimatedElements/Lava_Flower_1

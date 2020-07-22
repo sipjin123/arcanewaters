@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/UsableItems/STR_Buff

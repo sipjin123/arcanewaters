@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Battle/Player/icon_circle_player_hover

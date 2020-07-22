@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Map/spider_web_bounce

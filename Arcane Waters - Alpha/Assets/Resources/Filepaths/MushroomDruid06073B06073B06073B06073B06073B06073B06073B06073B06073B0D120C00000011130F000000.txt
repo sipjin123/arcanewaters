@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Mushroomdruid/MushroomDruid
+Assets/Resources/Sprites/NPCs/Bodies/MushroomDruid

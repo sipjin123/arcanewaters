@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Ships/Type_8/type_8_ripples
+Assets/Resources/Sprites/Ships/type_8_ripples

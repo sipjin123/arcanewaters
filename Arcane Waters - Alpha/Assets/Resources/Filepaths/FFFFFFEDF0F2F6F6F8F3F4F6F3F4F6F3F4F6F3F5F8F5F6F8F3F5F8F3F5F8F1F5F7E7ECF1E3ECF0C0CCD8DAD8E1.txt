@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Battle/enemy/enemy_icon_ring_4

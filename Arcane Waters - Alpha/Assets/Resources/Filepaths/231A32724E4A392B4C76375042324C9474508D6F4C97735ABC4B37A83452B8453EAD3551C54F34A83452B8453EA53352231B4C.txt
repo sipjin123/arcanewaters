@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Furniture/bed_sheet

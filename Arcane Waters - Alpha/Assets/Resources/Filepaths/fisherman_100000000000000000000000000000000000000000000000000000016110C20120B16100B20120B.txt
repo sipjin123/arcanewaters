@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Fisherman/fisherman_1
+Assets/Resources/Sprites/NPCs/Bodies/fisherman_1

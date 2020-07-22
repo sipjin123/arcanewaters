@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Guild/Icons Small/Borders/border_1_small

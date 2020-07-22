@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Select/selection_s

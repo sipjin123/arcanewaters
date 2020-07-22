@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Abilities/slash/icon_slash

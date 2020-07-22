@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/separator_line_nails

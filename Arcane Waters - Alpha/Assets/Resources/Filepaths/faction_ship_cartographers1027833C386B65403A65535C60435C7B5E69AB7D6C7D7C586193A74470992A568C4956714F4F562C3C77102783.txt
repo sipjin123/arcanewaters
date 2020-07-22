@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Perks/Ships/faction_ship_cartographers
+Assets/Resources/Sprites/Icons/ShipsPerks/faction_ship_cartographers

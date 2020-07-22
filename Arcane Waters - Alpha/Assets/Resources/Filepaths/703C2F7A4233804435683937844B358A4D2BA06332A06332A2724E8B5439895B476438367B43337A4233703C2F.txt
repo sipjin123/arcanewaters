@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/radio_button_on

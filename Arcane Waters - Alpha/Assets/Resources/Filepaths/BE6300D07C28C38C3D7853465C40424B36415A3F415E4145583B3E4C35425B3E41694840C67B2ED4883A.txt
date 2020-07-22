@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/screen_border_alt_2x

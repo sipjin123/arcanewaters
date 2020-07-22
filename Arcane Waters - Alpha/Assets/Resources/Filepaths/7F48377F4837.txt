@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/CraftingUI/Panels/crafting_panel_middle_right

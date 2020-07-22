@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Mushroom Elements/GroundElements/Mushroom_Ground_Stones_5

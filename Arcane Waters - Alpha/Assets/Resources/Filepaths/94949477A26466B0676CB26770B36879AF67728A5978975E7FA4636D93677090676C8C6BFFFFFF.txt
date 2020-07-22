@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Map Customization/townbuilding_interface_terrain

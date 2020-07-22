@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Projectiles/burning_shot

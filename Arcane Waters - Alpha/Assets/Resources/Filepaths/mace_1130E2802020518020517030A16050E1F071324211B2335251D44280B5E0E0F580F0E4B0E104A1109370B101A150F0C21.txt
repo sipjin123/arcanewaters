@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Weapons/Mace/mace_1
+Assets/Resources/Sprites/Icons/Weapons/mace_1

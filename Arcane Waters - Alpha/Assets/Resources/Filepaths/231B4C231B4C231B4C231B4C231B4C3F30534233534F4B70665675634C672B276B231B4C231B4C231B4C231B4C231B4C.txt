@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Stats/icon_precision

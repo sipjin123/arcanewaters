@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Mushroom Elements/MidgroundInteractiveElements/Mushroom_InteractiveBush_1

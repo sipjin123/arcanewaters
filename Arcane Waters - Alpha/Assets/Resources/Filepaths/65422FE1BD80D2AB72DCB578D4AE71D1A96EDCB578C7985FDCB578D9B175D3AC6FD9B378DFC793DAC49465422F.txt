@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/CraftingUI/Icons/crafting_sword_blueprint

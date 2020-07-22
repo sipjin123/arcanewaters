@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Voyage Groups/ship_frame_inner_brown

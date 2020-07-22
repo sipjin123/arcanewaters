@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_silver_ore
+Assets/Resources/Sprites/Icons/NoBorderCraftingIngredients/ingredient_silver_ore

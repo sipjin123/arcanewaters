@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/FunctionalElements/Battle_Position_Right

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Weapons/Farming/Pickaxe
+Assets/Resources/Sprites/Icons/Weapons/pickaxe

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Minimap/mm_orange_square

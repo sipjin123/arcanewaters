@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/head_icon_32

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Crops/upper_left_item

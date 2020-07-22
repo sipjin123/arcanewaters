@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Leader Boards/stats_trough_outline_players_1x

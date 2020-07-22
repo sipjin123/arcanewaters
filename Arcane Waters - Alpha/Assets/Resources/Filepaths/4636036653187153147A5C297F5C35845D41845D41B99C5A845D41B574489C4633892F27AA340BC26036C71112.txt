@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Perks/Ships/faction_ship_privateers

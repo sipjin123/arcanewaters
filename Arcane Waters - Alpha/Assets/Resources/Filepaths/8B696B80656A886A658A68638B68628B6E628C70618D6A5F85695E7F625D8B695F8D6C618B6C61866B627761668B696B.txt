@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Lava Elements/GroundElements/Lava_Ground_Stones_5

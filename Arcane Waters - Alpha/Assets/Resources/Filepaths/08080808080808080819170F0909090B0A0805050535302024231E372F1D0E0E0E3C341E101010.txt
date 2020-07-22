@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Enemies/LandMonsters/snake_base

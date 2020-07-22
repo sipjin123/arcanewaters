@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Shroom/shroom_8
+Assets/Resources/Sprites/NPCs/Bodies/shroom_8

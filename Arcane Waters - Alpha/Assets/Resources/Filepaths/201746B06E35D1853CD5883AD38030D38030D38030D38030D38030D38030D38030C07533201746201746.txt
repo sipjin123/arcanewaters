@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/orange_button_click

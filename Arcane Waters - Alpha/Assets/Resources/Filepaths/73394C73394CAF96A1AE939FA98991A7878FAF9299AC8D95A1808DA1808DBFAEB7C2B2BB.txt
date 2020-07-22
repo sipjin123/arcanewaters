@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Login/account_text

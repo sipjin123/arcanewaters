@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Voyage Groups/group_frame_inner_white

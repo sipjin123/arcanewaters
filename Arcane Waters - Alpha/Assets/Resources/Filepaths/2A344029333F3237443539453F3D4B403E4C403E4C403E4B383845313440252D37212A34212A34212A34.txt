@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Lava Elements/ForegroundAnimatedElements/Lava_Foreground_Section_2

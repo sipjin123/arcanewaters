@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Abilities/gun/icon_gun_air

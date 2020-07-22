@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/CraftingUI/crafting_gold_frame_solo

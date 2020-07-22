@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Mushroom Elements/SkiesAndGround/Mushroom_Clouds_Upper

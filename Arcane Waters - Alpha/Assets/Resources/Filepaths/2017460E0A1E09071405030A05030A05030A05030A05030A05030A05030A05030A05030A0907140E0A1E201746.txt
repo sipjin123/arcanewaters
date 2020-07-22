@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Chat/chat_background

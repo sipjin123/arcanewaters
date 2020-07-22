@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Mushroom Elements/BackgroundElements/Mushroom_Background_1

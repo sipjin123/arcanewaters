@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Voyages/pine_hover

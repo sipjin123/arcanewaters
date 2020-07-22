@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Fatty/fatty_1
+Assets/Resources/Sprites/NPCs/Bodies/fatty_1

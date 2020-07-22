@@ -276,6 +276,7 @@ MonoBehaviour:
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
@@ -667,7 +668,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.48, y: 0.3}
+  m_Size: {x: 0.17, y: 0.05}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1

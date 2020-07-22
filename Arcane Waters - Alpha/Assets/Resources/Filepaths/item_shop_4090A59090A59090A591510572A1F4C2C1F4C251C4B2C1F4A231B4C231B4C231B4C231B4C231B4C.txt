@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Item_Shop/item_shop_4
+Assets/Resources/Sprites/NPCs/Bodies/item_shop_4

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/fancy_box_with_paper_1x

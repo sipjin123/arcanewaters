@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Snow Elements/MidgroundInteractiveElements/Snow_InteractiveBush_1

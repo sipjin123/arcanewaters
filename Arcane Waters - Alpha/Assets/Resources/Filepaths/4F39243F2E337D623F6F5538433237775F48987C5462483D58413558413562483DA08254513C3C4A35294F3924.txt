@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Bottom Buttons/trade_button

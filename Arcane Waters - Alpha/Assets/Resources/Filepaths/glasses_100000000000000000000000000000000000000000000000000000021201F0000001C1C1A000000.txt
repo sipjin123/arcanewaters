@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Glasses/glasses_1
+Assets/Resources/Sprites/NPCs/Bodies/glasses_1

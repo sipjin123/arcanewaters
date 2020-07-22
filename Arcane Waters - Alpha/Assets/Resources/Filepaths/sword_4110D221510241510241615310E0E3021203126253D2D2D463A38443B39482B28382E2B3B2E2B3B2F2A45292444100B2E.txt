@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Weapons/Swords/sword_4
+Assets/Resources/Sprites/Icons/Weapons/sword_4

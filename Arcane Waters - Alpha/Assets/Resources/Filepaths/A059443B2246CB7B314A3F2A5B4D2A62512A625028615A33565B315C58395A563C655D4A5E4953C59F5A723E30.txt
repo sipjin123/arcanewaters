@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/UsableItems/EARTH_DEF_Buff

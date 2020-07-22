@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Login/octo_panel_updated_1x

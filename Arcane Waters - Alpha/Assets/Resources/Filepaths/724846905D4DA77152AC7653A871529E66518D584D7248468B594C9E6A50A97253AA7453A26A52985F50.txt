@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Lava Elements/MidgroundInteractiveElements/Lava_InteractiveBush_1

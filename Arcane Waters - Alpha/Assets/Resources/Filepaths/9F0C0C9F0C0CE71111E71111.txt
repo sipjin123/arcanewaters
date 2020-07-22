@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Ship/predicted_damage_bar_2

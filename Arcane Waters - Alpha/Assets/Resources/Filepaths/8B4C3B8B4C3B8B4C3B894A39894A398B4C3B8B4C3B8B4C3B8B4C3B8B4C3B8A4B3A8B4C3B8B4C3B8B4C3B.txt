@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/wood_background_grain

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/bottom_left_side

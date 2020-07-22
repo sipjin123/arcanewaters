@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Crops/water_level_background

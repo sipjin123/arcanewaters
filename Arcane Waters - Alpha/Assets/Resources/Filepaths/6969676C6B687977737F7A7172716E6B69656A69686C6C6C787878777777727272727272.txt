@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Effects/blunt_physical

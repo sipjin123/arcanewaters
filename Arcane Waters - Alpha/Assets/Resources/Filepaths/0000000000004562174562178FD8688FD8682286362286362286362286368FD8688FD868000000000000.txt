@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/btn_minus_normal

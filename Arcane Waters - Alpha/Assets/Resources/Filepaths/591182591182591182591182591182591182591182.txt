@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Leader Boards/stats_trough_outline_monsters_1x

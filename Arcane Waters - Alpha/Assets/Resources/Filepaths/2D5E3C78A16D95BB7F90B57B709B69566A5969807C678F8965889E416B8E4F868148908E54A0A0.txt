@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Battle Boards/board_forest

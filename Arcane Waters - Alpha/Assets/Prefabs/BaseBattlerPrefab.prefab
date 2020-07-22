@@ -437,7 +437,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5d82f1000a379e94d9ce5c172d500b47, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b8e427297a647bd41ba89bb979e3554e, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -637,7 +637,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.85, y: 0.85}
+  m_Size: {x: 0.85333335, y: 0.85333335}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -666,6 +666,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &4530494152495981214
 MonoBehaviour:
@@ -896,6 +897,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673177897736799
 MonoBehaviour:
@@ -1000,7 +1002,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.85, y: 0.85}
+  m_Size: {x: 0.85333335, y: 0.85333335}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -1029,6 +1031,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673177916398340
 MonoBehaviour:
@@ -1163,6 +1166,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673178321755515
 MonoBehaviour:
@@ -1298,6 +1302,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673178344692334
 MonoBehaviour:
@@ -1503,6 +1508,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673178838162292
 MonoBehaviour:
@@ -1637,6 +1643,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673179319642655
 MonoBehaviour:
@@ -1772,6 +1779,7 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 1
+  freezeAlpha: 0
   _index: 0
 --- !u!114 &6527673179423663349
 MonoBehaviour:
@@ -1946,6 +1954,7 @@ MonoBehaviour:
   battlerAbilitiesInitialized: 0
   targetUISnapLocation: {fileID: 0}
   isBossType: 0
+  receivedCancelState: 0
   _battlerBasicAbilities: []
   _alteredBattlerData:
     enemyName: unknown
@@ -1967,21 +1976,6 @@ MonoBehaviour:
       attackAbilityDataList: 
       buffAbilityDataList: 
     serializedBattlerAbilities: 
-    battlerLootData:
-      lootList: []
-      defaultLoot:
-        category: 0
-        id: 0
-        itemTypeId: 0
-        paletteName1: 
-        paletteName2: 
-        data: 
-        count: 1
-        itemName: 
-        itemDescription: 
-        iconPath: 
-      minQuantity: 0
-      maxQuantity: 0
     baseDamageMultiplierSet:
       physicalAttackMultiplier: 0
       fireAttackMultiplier: 0
@@ -2018,6 +2012,7 @@ MonoBehaviour:
     disableOnDeath: 0
     elementalWeakness: 
     elementalResistance: 
+    lootGroupId: 0
 --- !u!114 &6527673179465098354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2261,7 +2256,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a8bbdb7e66945934183d385cad374f6d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f72ef6391b78e504bbd1da676fe53718, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1

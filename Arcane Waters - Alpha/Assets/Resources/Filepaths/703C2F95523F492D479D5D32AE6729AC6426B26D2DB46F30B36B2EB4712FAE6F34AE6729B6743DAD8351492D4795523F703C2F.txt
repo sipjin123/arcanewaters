@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/CraftingUI/Buttons/crafting_exit_button_default

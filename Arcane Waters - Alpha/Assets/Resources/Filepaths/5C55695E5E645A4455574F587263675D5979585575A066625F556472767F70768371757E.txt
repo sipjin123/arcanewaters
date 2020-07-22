@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Biomable/lava_sea

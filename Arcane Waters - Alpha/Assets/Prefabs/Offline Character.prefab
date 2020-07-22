@@ -7399,9 +7399,6 @@ MonoBehaviour:
   creationCanvasGroup: {fileID: 225507257009904452}
   nameInputField: {fileID: 114865900238149002}
   sortPoint: {fileID: 1471675478357384}
-  classType: 1
-  specialty: 2
-  faction: 1
   spot: {fileID: 0}
   contentHolder: {fileID: 1755323069164578892}
   contentLoader: {fileID: 234946045717982995}

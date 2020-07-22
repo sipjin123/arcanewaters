@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Tutorial/Seed_Bag_Text

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/BackgroundEntities/Lava Elements/SkiesAndGround/Lava_Clouds_Upper

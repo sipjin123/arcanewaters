@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Battle/basic_attack_button_disabled

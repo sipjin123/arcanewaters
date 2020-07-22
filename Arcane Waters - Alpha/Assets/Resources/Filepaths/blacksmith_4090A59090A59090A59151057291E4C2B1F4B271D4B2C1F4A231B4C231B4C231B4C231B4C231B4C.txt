@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Blacksmith/blacksmith_4
+Assets/Resources/Sprites/NPCs/Bodies/blacksmith_4

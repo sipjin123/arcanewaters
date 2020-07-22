@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/preview_box

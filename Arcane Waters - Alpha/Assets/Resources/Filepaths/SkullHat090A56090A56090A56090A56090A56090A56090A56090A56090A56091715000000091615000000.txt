@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/Skullhat/SkullHat
+Assets/Resources/Sprites/NPCs/Bodies/SkullHat

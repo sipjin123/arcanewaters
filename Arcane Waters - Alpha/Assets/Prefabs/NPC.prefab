@@ -419,7 +419,6 @@ MonoBehaviour:
   hairPalette1: 
   hairPalette2: 
   entityName: 
-  nationType: 0
   currentHealth: 1000
   maxHealth: 1000
   XP: 0
@@ -438,16 +437,15 @@ MonoBehaviour:
   fallDirection: 0
   adminFlag: 0
   shipSpeedupFlag: 0
-  classType: 0
-  specialty: 0
-  faction: 0
   guildId: 0
   battleId: 0
   voyageGroupId: -1
+  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
+  isSpeedingUp: 0
   spritePath: 
   iconPath: 
   npcType: 0

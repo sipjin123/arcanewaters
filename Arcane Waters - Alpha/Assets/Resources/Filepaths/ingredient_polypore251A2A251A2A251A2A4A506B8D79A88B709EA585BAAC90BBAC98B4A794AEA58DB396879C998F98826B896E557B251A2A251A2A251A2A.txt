@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_polypore
+Assets/Resources/Sprites/Icons/NoBorderCraftingIngredients/ingredient_polypore

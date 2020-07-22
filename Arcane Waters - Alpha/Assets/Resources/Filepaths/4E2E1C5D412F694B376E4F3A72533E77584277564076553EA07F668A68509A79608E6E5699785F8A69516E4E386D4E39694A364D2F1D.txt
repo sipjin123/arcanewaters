@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_light_cloth

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/Abilities/gun/icon_gun_water
+Assets/Resources/Sprites/Icons/Abilities/icon_gun_water

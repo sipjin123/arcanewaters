@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Perks/tiered_icon_frames

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/button_arrow_left_hover_2x

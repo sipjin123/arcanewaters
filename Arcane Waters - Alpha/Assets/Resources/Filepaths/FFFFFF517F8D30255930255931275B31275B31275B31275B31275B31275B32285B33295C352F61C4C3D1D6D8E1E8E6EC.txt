@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Battle/tooltip_frame_enemy

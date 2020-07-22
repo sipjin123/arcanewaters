@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/title_icon_512

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/fancy_button_disabled_1x

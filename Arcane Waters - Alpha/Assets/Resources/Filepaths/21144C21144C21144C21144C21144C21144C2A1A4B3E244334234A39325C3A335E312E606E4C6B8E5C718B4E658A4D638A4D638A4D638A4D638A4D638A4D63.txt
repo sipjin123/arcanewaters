@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Icons/Battle/enemy/icon_enemy_sword_slash

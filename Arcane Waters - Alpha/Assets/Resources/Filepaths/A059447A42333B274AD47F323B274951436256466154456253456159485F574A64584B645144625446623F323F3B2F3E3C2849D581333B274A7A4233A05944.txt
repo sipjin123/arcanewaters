@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Leader Boards/stat_title_ore_1x

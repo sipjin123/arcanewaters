@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/slider_handle_1x

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/Projectiles/freeze_shot_north

@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Context Menu/context_menu_panel

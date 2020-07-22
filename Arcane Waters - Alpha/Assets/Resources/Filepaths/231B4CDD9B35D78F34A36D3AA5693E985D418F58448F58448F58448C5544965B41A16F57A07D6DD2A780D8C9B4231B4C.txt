@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/panel_background_1x

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/CraftingIngredients/NoBorder/ingredient_spores
+Assets/Resources/Sprites/Icons/NoBorderCraftingIngredients/ingredient_spores

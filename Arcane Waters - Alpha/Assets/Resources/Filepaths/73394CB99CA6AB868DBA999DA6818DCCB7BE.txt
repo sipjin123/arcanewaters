@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/skin_text

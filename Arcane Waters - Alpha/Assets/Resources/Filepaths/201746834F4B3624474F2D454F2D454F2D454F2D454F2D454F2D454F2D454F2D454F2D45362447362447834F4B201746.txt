@@ -1,1 +1,0 @@
-Assets/Resources/Sprites/GUI/Inventory/scrollbar_container
