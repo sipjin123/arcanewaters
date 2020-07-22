@@ -1993,8 +1993,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public AttackAbilityData getBasicAttack () {
       // Safe check
       if (getAttackAbilities().Count <= 0) {
-         Debug.LogError("This battler do not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
-         return AbilityManager.self.allAttackbilities[0];
+         if (AbilityManager.self.allAttackbilities.Count > 0) {
+            D.error("This battler do not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
+            return AbilityManager.self.allAttackbilities[0];
+         } else {
+            D.error("Something went wrong with ability manager!");
+         }
       }
 
       return getAttackAbility(0);

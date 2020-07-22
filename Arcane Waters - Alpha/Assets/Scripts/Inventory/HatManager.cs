@@ -10,18 +10,26 @@ public class HatManager : EquipmentManager {
    // The Layers we're interested in
    public HatLayer hatLayer;
 
+   // The unique database inventory id of the hat
    [SyncVar]
    public int equippedHatId;
 
-   // Hat Type
+   // The Sprite Id
    [SyncVar]
    public int hatType = 0;
+
+   // Equipment sql Id
+   [SyncVar]
+   public int equipmentDataId = 0;
 
    // Hat colors
    [SyncVar]
    public string palette1;
    [SyncVar]
    public string palette2;
+
+   // The current hat data
+   public HatStatData cachedHatData;
 
    #endregion
 
@@ -37,8 +45,8 @@ public class HatManager : EquipmentManager {
    }
 
    public Hat getHat () {
-      if (_hat != null) {
-         return _hat;
+      if (cachedHatData != null) {
+         return HatStatData.translateDataToHat(cachedHatData);
       }
 
       return new Hat(0, 0, "", "");
@@ -66,11 +74,10 @@ public class HatManager : EquipmentManager {
    [ClientRpc]
    public void Rpc_EquipHat (string rawHatData, string palette1, string palette2) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
-      Hat newHat = HatStatData.translateDataToHat(hatData);
-      _hat = newHat;
+      cachedHatData = hatData;
 
       // Update the sprites for the new hat type
-      int newType = newHat == null ? 0 : newHat.itemTypeId;
+      int newType = hatData == null ? 0 : hatData.hatType;
       updateSprites(newType, palette1, palette2);
 
       // Play a sound
@@ -78,13 +85,14 @@ public class HatManager : EquipmentManager {
    }
 
    [Server]
-   public void updateHatSyncVars (Hat newHat) {
-      if (newHat == null) {
-         D.debug("Hat is null");
-         return;
+   public void updateHatSyncVars (int hatDataId, int hatId) {
+      HatStatData hatData = EquipmentXMLManager.self.getHatData(hatDataId);
+
+      if (hatData == null) {
+         hatData = HatStatData.getDefaultData();
       }
 
-      if (newHat.itemTypeId == 0) {
+      if (hatData.hatType == 0) {
          // No Hat to equip
          equippedHatId = 0;
          hatType = 0;
@@ -92,33 +100,22 @@ public class HatManager : EquipmentManager {
          return;
       }
 
-      HatStatData hatData = EquipmentXMLManager.self.getHatData(newHat.itemTypeId);
-      if (hatData != null) {
-         hatData.sqlId = newHat.itemTypeId;
-      } else {
-         hatData = HatStatData.getDefaultData();
-      }
-
-      _hat = newHat;
+      cachedHatData = hatData;
 
       // Assign the hat ID
-      this.equippedHatId = (newHat.itemTypeId == 0) ? 0 : newHat.itemTypeId;
+      this.equippedHatId = hatId;
 
       // Set the Sync Vars so they get sent to the clients
+      this.equipmentDataId = hatData.sqlId;
       this.hatType = hatData.hatType;
       this.palette1 = hatData.palette1;
       this.palette2 = hatData.palette2;
-      newHat.paletteName1 = hatData.palette1;
-      newHat.paletteName2 = hatData.palette2;
 
       // Send the Info to all clients
       Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), hatData.palette1, hatData.palette2);
    }
 
    #region Private Variables
-
-   // The equipped hat, if any
-   protected Hat _hat = new Hat(0, 0);
 
    #endregion
 }

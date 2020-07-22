@@ -1463,7 +1463,8 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestNPCTradeGossipFromServer (int npcId) {
-      string gossip = NPCManager.self.getNPC(npcId).tradeGossip;
+      // TODO: Confirm if this is still necessary
+      string gossip = "Empty Msg";
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3830,7 +3831,7 @@ public class RPCManager : NetworkBehaviour {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
 
             if (body != null) {
-               body.armorManager.updateArmorSyncVars(armor);
+               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
             }
 
             // Let the client know that we're done
@@ -3863,7 +3864,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Hat hat = Hat.castItemToHat(userObjects.hat);
             if (body != null) {
-               body.hatsManager.updateHatSyncVars(hat);
+               body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
             }
 
             // Let the client know that we're done
@@ -3889,7 +3890,7 @@ public class RPCManager : NetworkBehaviour {
             Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
 
             if (body != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon);
+               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id);
             }
 
             // Let the client know that we're done

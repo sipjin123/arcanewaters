@@ -30,8 +30,8 @@ public class AdventureShopScreen : Panel {
    // Name of the shop reference
    public string shopName = ShopManager.DEFAULT_SHOP_NAME;
 
-   // The texture of the animated head icon
-   public Texture2D headIconTexture = null;
+   // The sprite of the animated head icon
+   public Sprite headIconSprite = null;
 
    // An indicator that the data is being fetched
    public GameObject loadBlocker;
@@ -57,7 +57,7 @@ public class AdventureShopScreen : Panel {
       Global.player.rpc.Cmd_GetItemsForArea(shopName);
 
       // Update the head icon image
-      headAnim.setNewTexture(headIconTexture);
+      headAnim.setNewTexture(headIconSprite.texture);
 
       // Clear out any old info
       rowsContainer.DestroyChildren();

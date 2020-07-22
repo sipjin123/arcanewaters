@@ -59,7 +59,7 @@ public class ItemDefinition
          case Category.Weapon:
             return deserialize<WeaponDefinition>(data);
          default:
-            D.error($"Undefined deserialization of an item category: { category }");
+            D.debug($"Undefined deserialization of an item category: { category }");
             return deserialize<ItemDefinition>(data);
       }
    }

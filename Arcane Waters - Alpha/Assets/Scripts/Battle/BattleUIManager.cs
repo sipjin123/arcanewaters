@@ -187,7 +187,7 @@ public class BattleUIManager : MonoBehaviour {
 
                   // Setup Button Values 
                   abilityButton.abilityIndex = indexCounter;
-                  abilityButton.abilityType = abilityType;
+                  abilityButton.setAbility(abilityType);
                   if (abilityType == AbilityType.Standard) {
                      abilityButton.abilityTypeIndex = attackAbilityIndex;
                      attackAbilityIndex++;

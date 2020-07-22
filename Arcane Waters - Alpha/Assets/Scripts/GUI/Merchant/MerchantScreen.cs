@@ -38,8 +38,8 @@ public class MerchantScreen : Panel {
    // Name of the shop reference
    public string shopName = ShopManager.DEFAULT_SHOP_NAME;
 
-   // The texture of the animated head icon
-   public Texture2D headIconTexture = null;
+   // The sprite of the animated head icon
+   public Sprite headIconSprite = null;
 
    #endregion
 
@@ -60,7 +60,7 @@ public class MerchantScreen : Panel {
       Global.player.rpc.Cmd_GetOffersForArea(shopName);
 
       // Update the head icon image
-      headAnim.setNewTexture(headIconTexture);
+      headAnim.setNewTexture(headIconSprite.texture);
 
       // Greeting message is decided from the XML Data of the Shop
       greetingText.text = "";

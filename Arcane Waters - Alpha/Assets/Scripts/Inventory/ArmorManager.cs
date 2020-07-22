@@ -10,18 +10,26 @@ public class ArmorManager : EquipmentManager {
    // The Layers we're interested in
    public ArmorLayer armorLayer;
 
+   // The unique database inventory id of the armor
    [SyncVar]
    public int equippedArmorId;
 
-   // Armor Type
+   // The Sprite Id
    [SyncVar]
    public int armorType = 0;
+
+   // Equipment sql Id
+   [SyncVar]
+   public int equipmentDataId = 0;
 
    // Armor colors
    [SyncVar]
    public string palette1;
    [SyncVar]
    public string palette2;
+
+   // The current armor data
+   public ArmorStatData cachedArmorData;
 
    #endregion
 
@@ -37,8 +45,8 @@ public class ArmorManager : EquipmentManager {
    }
 
    public Armor getArmor () {
-      if (_armor != null) {
-         return _armor;
+      if (cachedArmorData != null) {
+         return ArmorStatData.translateDataToArmor(cachedArmorData);
       }
 
       return new Armor(0, 0, "", "");
@@ -66,11 +74,10 @@ public class ArmorManager : EquipmentManager {
    [ClientRpc]
    public void Rpc_EquipArmor (string rawArmorData, string palette1, string palette2) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
-      Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
-      _armor = newArmor;
+      cachedArmorData = armorData;
 
       // Update the sprites for the new armor type
-      int newType = newArmor == null ? 0 : newArmor.itemTypeId;
+      int newType = armorData == null ? 0 : armorData.armorType;
       updateSprites(newType, palette1, palette2);
 
       // Play a sound
@@ -78,13 +85,14 @@ public class ArmorManager : EquipmentManager {
    }
 
    [Server]
-   public void updateArmorSyncVars (Armor newArmor) {
-      if (newArmor == null) {
-         D.debug("Armor is null");
-         return;
+   public void updateArmorSyncVars (int armorTypeId, int armorId) {
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorTypeId);
+
+      if (armorData == null) {
+         armorData = ArmorStatData.getDefaultData();
       }
 
-      if (newArmor.itemTypeId == 0) {
+      if (armorData.armorType == 0) {
          // No armor to equip
          equippedArmorId = 0;
          armorType = 0;
@@ -92,33 +100,22 @@ public class ArmorManager : EquipmentManager {
          return;
       }
 
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(newArmor.itemTypeId);
-      if (armorData != null) {
-         armorData.sqlId = newArmor.itemTypeId;
-      } else {
-         armorData = ArmorStatData.getDefaultData();
-      }
-
-      _armor = newArmor;
+      cachedArmorData = armorData;
 
       // Assign the armor ID
-      this.equippedArmorId = (newArmor.itemTypeId == 0) ? 0 : newArmor.itemTypeId;
+      this.equippedArmorId = armorId;
 
       // Set the Sync Vars so they get sent to the clients
+      this.equipmentDataId = armorData.sqlId;
       this.armorType = armorData.armorType;
       this.palette1 = armorData.palette1;
       this.palette2 = armorData.palette2;
-      newArmor.paletteName1 = armorData.palette1;
-      newArmor.paletteName2 = armorData.palette2;
 
       // Send the Info to all clients
       Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), armorData.palette1, armorData.palette2);
    }
 
    #region Private Variables
-
-   // The equipped armor, if any
-   protected Armor _armor = new Armor(0, 0);
 
    #endregion
 }

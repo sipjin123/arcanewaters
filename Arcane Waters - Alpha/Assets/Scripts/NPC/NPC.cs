@@ -54,9 +54,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The unique id assigned to this npc
    public int npcId;
 
-   // The current trade gossip for this NPC, changes over time
-   public string tradeGossip;
-
    // Determines if this npc is spawned at debug mode
    public bool isDebug = false;
 
@@ -123,9 +120,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       } else {
          setupClientSideValues();
       }
-
-      // Update our various text responses
-      InvokeRepeating("updateTradeGossip", 0f, 60 * 60);
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
@@ -257,17 +251,17 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             case Panel.Type.Adventure:
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
                adventurePanel.shopName = shopName;
-               adventurePanel.headIconTexture = getHeadIconTexture();
+               adventurePanel.headIconSprite = getHeadIconSprite();
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
                shipyardPanel.shopName = shopName;
-               shipyardPanel.headIconTexture = getHeadIconTexture();
+               shipyardPanel.headIconSprite = getHeadIconSprite();
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
                merchantPanel.shopName = shopName;
-               merchantPanel.headIconTexture = getHeadIconTexture();
+               merchantPanel.headIconSprite = getHeadIconSprite();
                break;
          }
          PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
@@ -381,39 +375,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       return name;
    }
 
-   public Texture2D getHeadIconTexture () {
-      Texture2D texture = ImageManager.getTexture(iconPath, false);
-
-      if (texture == null || texture == ImageManager.self.blankTexture) {
-         texture = NPCManager.self.defaultNpcFaceSprite.texture;
+   public Sprite getHeadIconSprite () {
+      Sprite spriteRet = ImageManager.getSprite(iconPath);
+      if (spriteRet == null || spriteRet == ImageManager.self.blankTexture) {
+         spriteRet = NPCManager.self.defaultNpcFaceSprite;
       }
 
-      return texture;
-   }
-
-   protected void updateTradeGossip () {
-      // TODO System is going to be removed soon
-      tradeGossip = "I haven't heard anything recently.";
-   }
-
-   protected string getTradeGossip (List<CropOffer> offers) {
-      if (offers.Count <= 0 || true) {
-         return "I haven't heard anything recently.";
-      }
-
-      // Pick a random offer
-      CropOffer offer = offers.ChooseRandom();
-
-      Area area = GetComponentInParent<Area>();
-      if (!area) {
-         D.debug("Couldn't get trade gossip - area not found");
-         return "I haven't heard anything recently.";
-      }
-      Biome.Type biome = area.biome;
-      string tradeGossip = string.Format("I heard that there's a merchant over in {0} that was {1} looking for {2}.",
-         Biome.getName(biome), "really", IconUtil.getCrop(offer.cropType));
-
-      return tradeGossip;
+      return spriteRet;
    }
 
    public void receiveData (DataField[] dataFields) {

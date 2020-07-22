@@ -99,12 +99,17 @@ public class PlayerBodyEntity : BodyEntity {
          }
       }
 
-      if (Input.GetKeyUp(KeyCode.Alpha1)) {
-         Cmd_EquipWeapon(1);
-      } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
-         Cmd_EquipWeapon(2);
-      } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
-         Cmd_EquipWeapon(3);
+      if (!isInBattle()) {
+         if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            D.editorLog("Equipping Seeds!", Color.blue);
+            Cmd_EquipWeapon(1);
+         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+            D.editorLog("Equipping Watering Can!", Color.blue);
+            Cmd_EquipWeapon(2);
+         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+            D.editorLog("Equipping Pitch Fork!", Color.blue);
+            Cmd_EquipWeapon(3);
+         }
       }
 
       if (InputManager.isActionKeyPressed()) {
@@ -323,7 +328,7 @@ public class PlayerBodyEntity : BodyEntity {
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (newWeapon.itemTypeId != 0) {
-               this.weaponManager.updateWeaponSyncVars(newWeapon);
+               this.weaponManager.updateWeaponSyncVars(newWeapon.itemTypeId, newWeapon.id);
             }
          });
       });
@@ -339,7 +344,7 @@ public class PlayerBodyEntity : BodyEntity {
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               armorManager.updateArmorSyncVars(new Armor());
+               armorManager.updateArmorSyncVars(0, 0);
             });
          });
       } else {
@@ -352,7 +357,7 @@ public class PlayerBodyEntity : BodyEntity {
 
                // Back to Unity
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  armorManager.updateArmorSyncVars(armor);
+                  armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
                });
             }
          });

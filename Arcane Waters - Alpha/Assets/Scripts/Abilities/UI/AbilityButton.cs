@@ -50,7 +50,32 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    public static string SELECT_ANIM = "Select";
    public static string IDLE_ANIM = "Idle";
 
+   // Type of sprites to activate depending on the ability type
+   public GameObject[] buffTypeSprites, attackTypeSprites;
+
    #endregion
+
+   public void setAbility (AbilityType abilityType) {
+      this.abilityType = abilityType;
+      
+      if (abilityType == AbilityType.Standard) {
+         foreach (GameObject obj in attackTypeSprites) {
+            obj.SetActive(true);
+         }
+         foreach (GameObject obj in buffTypeSprites) {
+            obj.SetActive(false);
+         }
+      } else if (abilityType == AbilityType.BuffDebuff) {
+         foreach (GameObject obj in attackTypeSprites) {
+            obj.SetActive(false);
+         }
+         foreach (GameObject obj in buffTypeSprites) {
+            obj.SetActive(true);
+         }
+      } else if (abilityType == AbilityType.Stance) {
+         // TODO: Add stance logic here
+      }
+   }
 
    public void startCooldown (float coolDownTarget) {
       CancelInvoke();

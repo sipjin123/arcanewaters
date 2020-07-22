@@ -298,36 +298,43 @@ public class BattleManager : MonoBehaviour {
       NetworkServer.Spawn(battler.gameObject);
 
       // Copy the Armor Info
-      ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(player.armorManager.armorType);
-      battler.armorManager.updateArmorSyncVars(ArmorStatData.translateDataToArmor(armorStatData));
-      battler.armorManager.armorType = player.armorManager.armorType;
-      battler.armorManager.palette1 = player.armorManager.palette1;
-      battler.armorManager.palette2 = player.armorManager.palette2;
+      if (player.armorManager.armorType < 1) {
+         battler.armorManager.updateArmorSyncVars(0, 0);
+         battler.armorManager.armorType = 0;
+         battler.armorManager.palette1 = "";
+         battler.armorManager.palette2 = "";
+      } else {
+         battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId);
+         battler.armorManager.armorType = player.armorManager.armorType;
+         battler.armorManager.palette1 = player.armorManager.palette1;
+         battler.armorManager.palette2 = player.armorManager.palette2;
+      }
 
       // Copy the Weapon Info
       if (player.weaponManager.weaponType < 1) {
-         battler.weaponManager.updateWeaponSyncVars(new Weapon { category = Item.Category.Weapon, itemTypeId = 0 });
+         battler.weaponManager.updateWeaponSyncVars(0, 0);
          battler.weaponManager.weaponType = 0;
          battler.weaponManager.palette1 = "";
          battler.weaponManager.palette2 = "";
       } else {
-         WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(player.weaponManager.weaponType);
-         battler.weaponManager.updateWeaponSyncVars(WeaponStatData.translateDataToWeapon(weaponStatData));
+         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId);
          battler.weaponManager.weaponType = player.weaponManager.weaponType;
          battler.weaponManager.palette1 = player.weaponManager.palette1;
          battler.weaponManager.palette2 = player.weaponManager.palette2;
       }
 
       // Copy the Hat Info
-      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(player.hatsManager.hatType);
-      if (hatStatData == null) {
-         battler.hatManager.updateHatSyncVars(new Hat { category = Item.Category.Hats, itemTypeId = 0, id = 0 });
+      if (player.hatsManager.hatType < 1) {
+         battler.hatManager.updateHatSyncVars(0, 0);
+         battler.hatManager.hatType = 0;
+         battler.hatManager.palette1 = "";
+         battler.hatManager.palette2 = "";
       } else {
-         battler.hatManager.updateHatSyncVars(HatStatData.translateDataToHat(hatStatData));
+         battler.hatManager.updateHatSyncVars(player.hatsManager.equipmentDataId, player.hatsManager.equippedHatId);
+         battler.hatManager.hatType = player.hatsManager.hatType;
+         battler.hatManager.palette1 = player.hatsManager.palette1;
+         battler.hatManager.palette2 = player.hatsManager.palette2;
       }
-      battler.hatManager.hatType = player.hatsManager.hatType;
-      battler.hatManager.palette1 = player.hatsManager.palette1;
-      battler.hatManager.palette2 = player.hatsManager.palette2;
 
       return battler;
    }

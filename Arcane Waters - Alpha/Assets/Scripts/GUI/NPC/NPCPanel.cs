@@ -102,7 +102,7 @@ public class NPCPanel : Panel {
       base.show();
 
       // Get the head image from the npc and update it
-      headAnim.setNewTexture(_npc.getHeadIconTexture());
+      headAnim.setNewTexture(_npc.getHeadIconSprite().texture);
 
       // Start typing out our intro text
       AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
@@ -211,7 +211,6 @@ public class NPCPanel : Panel {
                hasCompleteIngredients = displayItemRequirements(dialogueNode.itemRequirements, itemStock);
             }
 
-            addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd, () => dialogueEndClickedOn(), true);
             if (hasCompleteIngredients) {
                Jobs.Type dialogueJobTypeRequirement = (Jobs.Type) dialogueNode.jobTypeRequirement;
                if (dialogueJobTypeRequirement != Jobs.Type.None) {
@@ -220,6 +219,11 @@ public class NPCPanel : Panel {
                      questStatus = "Not enough " + dialogueJobTypeRequirement + " experience!";
                   }
                }
+               addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
+                  () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
+            } else {
+               canStartQuest = false;
+               questStatus = "Not enough items!";
                addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
                   () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
             }
