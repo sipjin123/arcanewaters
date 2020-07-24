@@ -15949,6 +15949,7 @@ GameObject:
   - component: {fileID: 625023599}
   - component: {fileID: 625023601}
   - component: {fileID: 625023600}
+  - component: {fileID: 625023602}
   m_Layer: 5
   m_Name: PreviewIcon
   m_TagString: Untagged
@@ -16012,6 +16013,31 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 625023598}
   m_CullTransparentMesh: 0
+--- !u!114 &625023602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 625023598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59a9a98428d226e419fede1b7cdd5674, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initialDelay: 0
+  frameLengthOverride: -1
+  delayStart: 0
+  destroyAtEnd: 0
+  stayAtLastFrame: 0
+  loopDelay: 0
+  isPaused: 0
+  minIndex: 0
+  maxIndex: 1000
+  currentAnimation: 0
+  group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!1001 &630360048
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32555,6 +32581,7 @@ MonoBehaviour:
   userIdData: []
   editorToolType: 1
   craftingDataList: []
+  xmlSpriteModifier: {fileID: 0}
   abilityScene: {fileID: 631334679}
   monsterAbilityManager: {fileID: 0}
 --- !u!1 &1218971292
@@ -43480,6 +43507,7 @@ GameObject:
   - component: {fileID: 1660862879}
   - component: {fileID: 1660862878}
   - component: {fileID: 1660862877}
+  - component: {fileID: 1660862881}
   m_Layer: 5
   m_Name: ItemTypeRowPrefab
   m_TagString: Untagged
@@ -43583,6 +43611,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1660862875}
   m_CullTransparentMesh: 0
+--- !u!114 &1660862881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1660862875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3111451a85849734d80b7a7779559f7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previewImage: {fileID: 625023600}
+  spriteImage: {fileID: 2054993358}
 --- !u!114 &1661907915 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5890500984787708247, guid: cf247d87f846fb348af5e917ad74d094,

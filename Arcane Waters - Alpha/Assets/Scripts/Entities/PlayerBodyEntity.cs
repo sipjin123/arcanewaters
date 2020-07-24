@@ -25,9 +25,7 @@ public class PlayerBodyEntity : BodyEntity {
    public float fuelRecoverValue = 1.2f;
 
    // The effect that indicates this player is speeding up
-   public GameObject speedUpEffect;
    public Canvas speedupGUI;
-   public Transform speedupEffectPivot;
    public Image speedUpBar;
 
    // Color indications if the fuel is usable or not
@@ -54,6 +52,15 @@ public class PlayerBodyEntity : BodyEntity {
 
    // Reference to the transform of the sprite holder
    public Transform spritesTransform;
+
+   // The animator handling the dash vfx
+   public Animator dashAnimator;
+
+   // Reference to the wind vfx during dash
+   public Transform windDashSprite;
+
+   // The offset of the wind vfx
+   public float windDashZOffset = 1;
 
    #endregion
 
@@ -87,6 +94,7 @@ public class PlayerBodyEntity : BodyEntity {
          return;
       }
 
+      dashAnimator.speed = 1;
       foreach (Animator animator in animators) {
          animator.speed = 1;
       }
@@ -188,9 +196,6 @@ public class PlayerBodyEntity : BodyEntity {
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
-            foreach (Animator animator in animators) {
-               animator.speed = ANIM_SPEEDUP_VALUE;
-            }
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
@@ -209,6 +214,7 @@ public class PlayerBodyEntity : BodyEntity {
          } else {
             isReadyToSpeedup = true;
          }
+         dashAnimator.SetInteger("direction", -1);
       }
 
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
@@ -217,15 +223,35 @@ public class PlayerBodyEntity : BodyEntity {
    private void updateSprintEffects (bool isOn) {
       // Handle sprite effects
       if (isOn) {
-         speedUpEffect.SetActive(true);
-         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
+         Direction overrideDirection = facing;
+         switch (overrideDirection) {
+            case Direction.NorthWest:
+            case Direction.SouthWest:
+               overrideDirection = Direction.West;
+               break;
+            case Direction.NorthEast:
+            case Direction.SouthEast:
+               overrideDirection = Direction.East;
+               break;
+         }
+
+         windDashSprite.localPosition = new Vector3(0, 0, overrideDirection == Direction.South ? windDashZOffset : -windDashZOffset);
+
+         dashAnimator.SetInteger("direction", (int) overrideDirection);
+
+         dashAnimator.speed = ANIM_SPEEDUP_VALUE;
+         foreach (Animator animator in animators) {
+            animator.speed = ANIM_SPEEDUP_VALUE;
+         }
       } else {
-         speedUpEffect.SetActive(false);
+         dashAnimator.SetInteger("direction", -1);
+
       }
 
       foreach (Animator animator in animators) {
          animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
+      dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {

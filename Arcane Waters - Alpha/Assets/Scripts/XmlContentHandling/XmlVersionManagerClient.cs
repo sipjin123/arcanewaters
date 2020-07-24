@@ -346,9 +346,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
                   if (abilityType == AbilityType.Standard || abilityType == AbilityType.Stance) {
                      AttackAbilityData attackAbility = Util.xmlLoad<AttackAbilityData>(xmlSubGroup[abilityXmlContentIndex]);
+                     attackAbility.itemID = abilityId;
                      attackAbilityList.Add(attackAbility);
                   } else if (abilityType == AbilityType.BuffDebuff) {
-                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[abilityXmlContentIndex]);
+                     BuffAbilityData buffAbility = Util.xmlLoad<BuffAbilityData>(xmlSubGroup[abilityXmlContentIndex]); 
+                     buffAbility.itemID = abilityId;
                      buffAbilityList.Add(buffAbility);
                      message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[abilityXmlContentIndex];
                   }

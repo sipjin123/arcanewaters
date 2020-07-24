@@ -17,9 +17,9 @@ namespace BackgroundTool
 
       // Reference to the image manipulator
       public ImageManipulator imageManipulator;
-
+      
       // Main Directory for the image selection
-      public static string MAIN_DIRECTORY = "Resources/Sprites/BackgroundEntities/";
+      public static string MAIN_DIRECTORY = "Sprites/BackgroundEntities/";
 
       // Sub Directories for the image selection
       public static string SKIESANDGROUND_ELEMENTS_DIRECTORY = "SkiesAndGround/";

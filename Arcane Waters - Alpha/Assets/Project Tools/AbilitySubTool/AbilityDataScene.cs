@@ -105,7 +105,7 @@ public class AbilityDataScene : MonoBehaviour
             iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string hitSpritePath = "Sprites/Effects/";
+         string hitSpritePath = "Sprites/Effects/hit FX/";
          List<ImageManager.ImageData> hitSpriteIconFiles = ImageManager.getSpritesInDirectory(hitSpritePath);
 
          foreach (ImageManager.ImageData imgData in hitSpriteIconFiles) {
@@ -113,7 +113,7 @@ public class AbilityDataScene : MonoBehaviour
             hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
 
-         string castSpritePath = "Sprites/Effects/";
+         string castSpritePath = "Sprites/Effects/cast FX/";
          List<ImageManager.ImageData> castSpriteIconFiles = ImageManager.getSpritesInDirectory(castSpritePath);
 
          foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {

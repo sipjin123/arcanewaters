@@ -96,6 +96,7 @@ public class MonsterManager : MonoBehaviour {
             if (!_monsterDataList.Exists(_=>_.battler.enemyType == battlerData.enemyType)) {
                BattlerXMLContent newContent = new BattlerXMLContent {
                   battler = battlerData,
+                  battlerName = battlerData.enemyName,
                   xmlId = -1,
                   isEnabled = true
                };
@@ -131,6 +132,7 @@ public class MonsterManager : MonoBehaviour {
                   if (xmlPair.isEnabled) {
                      BattlerXMLContent newXmlContent = new BattlerXMLContent {
                         battler = monsterData,
+                        battlerName = monsterData.enemyName,
                         xmlId = xmlPair.xmlId,
                         isEnabled = true
                      };

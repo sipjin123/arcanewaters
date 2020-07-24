@@ -3,6 +3,9 @@
 [Serializable]
 public class BattlerXMLContent
 {
+   // Name of the battler
+   public string battlerName;
+
    // Id of the xml entry
    public int xmlId;
 

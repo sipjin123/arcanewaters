@@ -248,6 +248,9 @@ public class EffectManager : MonoBehaviour {
       battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
       battlerProjectile.projectileRenderer.sprite = ImageManager.getSprite(projectileSpritePath);
       genericEffect.transform.localScale = new Vector3(scale, scale, scale);
+
+      // It target is at the left side of the map, flip the sprite
+      battlerProjectile.projectileRenderer.flipX = targetPos.x < sourcePos.x;
    }
 
    #region Private Variables

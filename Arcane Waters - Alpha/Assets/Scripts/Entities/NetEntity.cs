@@ -172,6 +172,11 @@ public class NetEntity : NetworkBehaviour
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
 
+
+      foreach (Animator ignoredAnim in _ignoredAnimators) {
+         _animators.Remove(ignoredAnim);
+      }
+
       if (this.gameObject.HasComponent<Animator>()) {
          _animators.Add(GetComponent<Animator>());
       }
@@ -1215,6 +1220,9 @@ public class NetEntity : NetworkBehaviour
    protected ClickableBox _clickableBox;
    protected SpriteOutline _outline;
    protected SmoothSyncMirror _smoothSync;
+
+   [SerializeField]
+   protected List<Animator> _ignoredAnimators = new List<Animator>();
    protected List<Animator> _animators = new List<Animator>();
    protected List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
 

@@ -13,9 +13,20 @@ public class HighlightItemTemplate : MonoBehaviour, IPointerEnterHandler
    public Image previewImage;
    public Image spriteImage;
 
+   // Cached simple animation
+   public SimpleAnimation simpleAnimCache;
+
    #endregion
 
    public void OnPointerEnter (PointerEventData eventData) {
+      if (simpleAnimCache == null) {
+         simpleAnimCache = previewImage.GetComponent<SimpleAnimation>();
+      }
+
+      if (simpleAnimCache != null) {
+         simpleAnimCache.updateIndexMinMax(0, 1000);
+      }
+
       previewImage.sprite = spriteImage.sprite;
    }
 }
