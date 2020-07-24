@@ -174,7 +174,6 @@ GameObject:
   - component: {fileID: 6875767285790632524}
   - component: {fileID: 6746672022596267447}
   - component: {fileID: 579884569776078262}
-  - component: {fileID: 5116221280762936351}
   m_Layer: 5
   m_Name: NameText
   m_TagString: Untagged
@@ -224,6 +223,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -241,20 +241,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: LIZARD SKIN
---- !u!114 &5116221280762936351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7948298913393691939}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalFit: 2
-  m_VerticalFit: 0
 --- !u!1001 &7888832351092580037
 PrefabInstance:
   m_ObjectHideFlags: 0

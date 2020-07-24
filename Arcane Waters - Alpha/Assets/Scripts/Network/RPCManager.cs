@@ -4029,7 +4029,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Get props that can be used for customization
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Item[] remainingProps = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000).ToArray();
+         ItemInstance[] remainingProps = DB_Main.getItemInstances(_player.userId, ItemDefinition.Category.Prop).ToArray();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_AllowEnterMapCustomization(remainingProps);
@@ -4038,7 +4038,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   private void Target_AllowEnterMapCustomization (Item[] remainingProps) {
+   private void Target_AllowEnterMapCustomization (ItemInstance[] remainingProps) {
       MapCustomizationManager.serverAllowedEnterCustomization(remainingProps);
    }
 
@@ -4092,17 +4092,14 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // If player did not have a base map before, give him some props as a reward
-      List<Item> rewards = null;
+      List<ItemInstance> rewards = new List<ItemInstance>();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          if (manager is CustomHouseManager) {
             DB_Main.setCustomHouseBase(_player.userId, baseMapId);
 
             if (_player.customHouseBaseId == 0) {
-               rewards = new List<Item> {
-                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Table, count = 2 },
-                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Chair, count = 6 }
-               };
+               rewards = ItemInstance.getFirstHouseRewards(_player.userId);
             }
 
             _player.customHouseBaseId = baseMapId;
@@ -4111,11 +4108,7 @@ public class RPCManager : NetworkBehaviour {
 
             // If player did not have a farm before, give him some free props
             if (_player.customFarmBaseId == 0) {
-               rewards = new List<Item> {
-                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Tree, count = 5 },
-                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Stump, count = 1 },
-                  new Item { category = Item.Category.Prop, itemTypeId = (int) Prop.Type.Bush, count = 2 }
-               };
+               rewards = ItemInstance.getFirstFarmRewards(_player.userId);
             }
 
             _player.customFarmBaseId = baseMapId;
@@ -4124,11 +4117,12 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (rewards != null) {
-               giveItemRewardsToPlayer(_player.userId, rewards, false);
-            }
+         // Give rewards if user is entitled to them
+         foreach (ItemInstance reward in rewards) {
+            DB_Main.createOrAppendItemInstance(reward);
+         }
 
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (warpIntoAfterSetting) {
                _player.spawnInNewMap(customMapKey);
             }
@@ -4149,7 +4143,7 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = _player.getInstance();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Item[] remainingProps = DB_Main.getItems(_player.userId, new Item.Category[] { Item.Category.Prop }, 0, 1000).ToArray();
+         ItemInstance[] remainingProps = DB_Main.getItemInstances(_player.userId, ItemDefinition.Category.Prop).ToArray();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Check if changes are valid
@@ -4177,8 +4171,8 @@ public class RPCManager : NetworkBehaviour {
 
                   // If creating a new prefab, remove an item from the inventory
                   if (changes.created) {
-                     int itemId = remainingProps.FirstOrDefault(i => i.itemTypeId == (int) prefab.propType)?.id ?? -1;
-                     DB_Main.decreaseQuantityOrDeleteItem(_player.userId, itemId, 1);
+                     int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
+                     DB_Main.decreaseOrDeleteItemInstance(itemId, 1);
                   }
                });
             } else {

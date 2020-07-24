@@ -41,10 +41,16 @@ internal class NubisClient
    private static string buildUrl (string endpoint, string queryString, string remoteServer, int remotePort) {
       return $"http://{remoteServer}:{remotePort}/{NubisEndpoints.RPC}/{endpoint}{queryString}";
    }
-   private static async Task<string> callImpl (string function, params string[] args) {
+   private static async Task<string> requestImpl (string function, params string[] args) {
+
+#if IS_SERVER_BUILD && CLOUD_BUILD
+      string server = "127.0.0.1";
+#else
+      string server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
+#endif
+
       string endpoint = getEndpointFromFunctionName(function);
       string query = getQueryStringFromArguments(args);
-      string server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
       string url = buildUrl(endpoint, query, server, REMOTE_PORT);
       HttpRequestMessage message = new HttpRequestMessage(HttpMethod.Get, url);
       HttpClient client = new HttpClient();
@@ -53,7 +59,7 @@ internal class NubisClient
    }
    public static async Task<T> call<T> (string function, params string[] args) {
       try {
-         string result = await callImpl(function, args);
+         string result = await requestImpl(function, args);
          return JsonConvert.DeserializeObject<T>(result);
       } catch {
          return default(T);
@@ -61,7 +67,7 @@ internal class NubisClient
    }
    public static async Task<string> call (string function, params string[] args) {
       try {
-         return await callImpl(function, args);
+         return await requestImpl(function, args);
       } catch {
          return string.Empty;
       }

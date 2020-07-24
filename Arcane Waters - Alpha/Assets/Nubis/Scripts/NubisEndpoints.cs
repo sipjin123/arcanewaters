@@ -11,6 +11,9 @@
    // Log - Nubis Endpoint. Used to access Nubis logs.
    public const string LOG = "log";
 
+   // STATUS - Nubis Endpoint. Used to check Nubis' status.
+   public const string STATUS = "status";
+
    #endregion
 
 }

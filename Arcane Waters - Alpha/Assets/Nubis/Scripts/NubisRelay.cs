@@ -12,7 +12,7 @@ public class NubisRelay
    private static string getFunctionNameFromUri (Uri uri) {
       if (uri == null) return string.Empty;
       if (uri.Segments == null || uri.Segments.Length < 3) return string.Empty;
-      string funcName =  uri.Segments[2].Replace("/", "");
+      string funcName = uri.Segments[2].Replace("/", "");
       return System.Net.WebUtility.UrlDecode(funcName);
    }
 
@@ -36,19 +36,33 @@ public class NubisRelay
 
    private static string callImpl (string function, params string[] args) {
       string argString = (args != null && args.Length > 0) ? string.Join(",", args) : string.Empty;
-      NubisLogger.i($"Invoking '{function}({argString})' ...");
+      string typeName = "DB_Main";
+      NubisLogger.i($"Invoking '{typeName}.{function}({argString})' ...");
       try {
          System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-         if (assembly == null) return string.Empty;
-         Type db_main_type = assembly.GetType("DB_Main");
-         if (db_main_type == null) return string.Empty;
+         if (assembly == null) {
+            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate assembly.");
+            return string.Empty;
+         }
+         Type db_main_type = assembly.GetType(typeName);
+         if (db_main_type == null) {
+            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate type.");
+            return string.Empty;
+         }
          System.Reflection.MethodInfo methodInfo = db_main_type.GetMethod(function);
+         if (methodInfo == null) {
+            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate method.");
+            return string.Empty;
+         }
          object result = methodInfo.Invoke(null, args);
-         if (result == null) return string.Empty;
-         NubisLogger.i($"Invoking '{function}({argString})' : OK");
+         if (result == null) {
+            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - The call to the method returned null.");
+            return string.Empty;
+         }
+         NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : OK");
          return result.ToString();
       } catch (Exception ex) {
-         NubisLogger.i($"Invoking '{function}({argString})' : FAILED");
+         NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - There was an exception.");
          NubisLogger.e(ex);
       }
       return string.Empty;

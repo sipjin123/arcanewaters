@@ -56,6 +56,7 @@ namespace ItemDefinitionTool
       public void duplicateDefinition (int id) {
          XmlLoadingPanel.self.startLoading();
          ItemDefinition definition = ItemDefinitionManager.self.getDefinition(id);
+         definition.creatorUserId = MasterToolAccountManager.self.currentAccountID;
 
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             DB_Main.createNewItemDefinition(definition);

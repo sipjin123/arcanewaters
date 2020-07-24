@@ -160,7 +160,7 @@ MonoBehaviour:
   size: {x: 1, y: 2}
   editorType: 1
   isPermanent: 0
-  propType: 4
+  propDefinitionId: 10
   mapEditorState:
     id: 0
     localPosition: {x: 0, y: 0}

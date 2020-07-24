@@ -40,6 +40,11 @@ public class ItemDefinition
 
    #endregion
 
+   public virtual bool canBeStacked () {
+      // By default, items can be stacked
+      return true;
+   }
+
    public string serialize () {
       XmlSerializer serializer = new XmlSerializer(GetType());
       var sb = new System.Text.StringBuilder();
@@ -58,6 +63,8 @@ public class ItemDefinition
             return deserialize<ItemDefinition>(data);
          case Category.Weapon:
             return deserialize<WeaponDefinition>(data);
+         case Category.Prop:
+            return deserialize<PropDefinition>(data);
          default:
             D.debug($"Undefined deserialization of an item category: { category }");
             return deserialize<ItemDefinition>(data);

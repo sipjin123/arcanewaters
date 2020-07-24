@@ -24,7 +24,7 @@ public class NubisManager : MonoBehaviour
       i("NubisManager starting");
       _ = StartNubis();
    }
-   
+
    public void OnDestroy () {
       Stop();
    }
@@ -37,14 +37,13 @@ public class NubisManager : MonoBehaviour
 
    private static void Content (HttpListenerContext context, string message = "") {
       try {
-         i("Replying to client...");
+
          using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
             context.Response.StatusCode = 200;
             writer.WriteLine(message);
             writer.Flush();
          }
          context.Response.Close();
-         i("Replying to client: DONE");
       } catch {
          i("Replying to client: FAILED");
       }
@@ -52,14 +51,12 @@ public class NubisManager : MonoBehaviour
 
    private static void OK (HttpListenerContext context, string message = "OK") {
       try {
-         i("Replying to client...");
          using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
             context.Response.StatusCode = 200;
             writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
             writer.Flush();
          }
          context.Response.Close();
-         i("Replying to client: DONE");
       } catch {
          i("Replying to client: FAILED");
       }
@@ -67,14 +64,12 @@ public class NubisManager : MonoBehaviour
 
    private static void NotFound (HttpListenerContext context, string message = "Not Found") {
       try {
-         i("Replying to client...");
          using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
             context.Response.StatusCode = 404;
             writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
             writer.Flush();
          }
          context.Response.Close();
-         i("Replying to client: DONE");
       } catch {
          i("Replying to client: FAILED");
       }
@@ -82,14 +77,12 @@ public class NubisManager : MonoBehaviour
 
    private static void InternalServerError (HttpListenerContext context, string message = "Internal Server Error") {
       try {
-         i("Replying to client...");
          using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
             context.Response.StatusCode = 500;
             writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
             writer.Flush();
          }
          context.Response.Close();
-         i("Replying to client: DONE");
       } catch {
          i("Replying to client: FAILED");
       }
@@ -98,8 +91,8 @@ public class NubisManager : MonoBehaviour
       await Task.Run(() => {
          try {
             if (context.Request.Url.Segments == null || context.Request.Url.Segments.Length < 1) {
-            OK(context,"");
-            return;
+               OK(context, "");
+               return;
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
@@ -114,13 +107,16 @@ public class NubisManager : MonoBehaviour
                   Stop();
                   break;
                case NubisEndpoints.LOG:
-                  i("Log requsted.");
+                  i("Log requested.");
                   using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
                      foreach (string line in File.ReadAllLines(NubisConfiguration.LogFilePath()))
                         writer.WriteLine(line);
                   }
                   context.Response.StatusCode = 200;
                   context.Response.Close();
+                  break;
+               case NubisEndpoints.STATUS:
+                  OK(context);
                   break;
                default:
                   NotFound(context);
@@ -130,10 +126,10 @@ public class NubisManager : MonoBehaviour
             e(ex);
             InternalServerError(context);
          }
-         
+
       });
    }
-   
+
    public async Task StartNubis () {
       if (Status == NubisStatus.Starting || Status == NubisStatus.Running) return;
       Status = NubisStatus.Starting;
@@ -142,7 +138,7 @@ public class NubisManager : MonoBehaviour
       configuration = NubisConfiguration.LoadSafe();
       await CreateWebServerAsync(configuration.WebServerPort);
    }
-   
+
    private bool CheckSystemRequirements () {
       i("Checking System Requirements...");
       bool httpListenerSupported = HttpListener.IsSupported;
@@ -154,7 +150,7 @@ public class NubisManager : MonoBehaviour
       i("Checking System Requirements: DONE.");
       return true;
    }
-   
+
    private void WebServerLoop () {
       try {
          i($"{NubisStatics.AppName} waiting for requests.");
@@ -176,7 +172,7 @@ public class NubisManager : MonoBehaviour
       }
       i($"{NubisStatics.AppName} web server stopped.");
    }
-   
+
    private bool StartWebServer (HttpListener httpServer, int port) {
       // try to start web server.
       try {
@@ -199,7 +195,7 @@ public class NubisManager : MonoBehaviour
       }
       return true;
    }
-   
+
    private async Task CreateWebServerAsync (int port) {
       try {
          // create web server.
@@ -211,20 +207,20 @@ public class NubisManager : MonoBehaviour
          e(ex);
       }
    }
-   
+
    public void Stop () {
       if (Status == NubisStatus.Stopping || Status == NubisStatus.Idle) return;
       Status = NubisStatus.Stopping;
       i($"{NubisStatics.AppName} stopping...");
       httpServer?.Abort();
    }
- 
 
-#region Private Variables
+
+   #region Private Variables
 
    // Reference to the current instance of the configuration.
    private NubisConfiguration configuration;
-   
+
    // Reference to the webServer the butler is listening with.
    private HttpListener httpServer;
    // Reference to the current status of the Butler.

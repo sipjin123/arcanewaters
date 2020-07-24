@@ -887,7 +887,7 @@ public class AdminManager : NetworkBehaviour
       int usableCount = 0;
       int ingredientsCount = 0;
       int blueprintCount = 0;
-      int propCount = 0;
+      int itemDefinitionCount = 0;
 
       // Go to the background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -930,12 +930,11 @@ public class AdminManager : NetworkBehaviour
             }
          }
 
-         // Create all map customization props
-         foreach (Prop.Type type in Enum.GetValues(typeof(Prop.Type))) {
-            if (type != Prop.Type.None) {
-               if (createItemIfNotExistOrReplenishStack(Item.Category.Prop, (int) type, count)) {
-                  propCount++;
-               }
+         // Create all item definitions
+         foreach (ItemDefinition itemDefinition in ItemDefinitionManager.self.getDefinitions()) {
+            ItemInstance itemInstance = new ItemInstance { itemDefinitionId = itemDefinition.id, ownerUserId = _player.userId, count = count };
+            if (createItemIfNotExistOrReplenishStack(itemInstance)) {
+               itemDefinitionCount++;
             }
          }
 
@@ -969,8 +968,8 @@ public class AdminManager : NetworkBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation back to the player who issued the command
-            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients, {4} hats, {5} blueprints and {6} props to the inventory.",
-               weaponsCount, armorCount, usableCount, ingredientsCount, hatCount, blueprintCount, propCount);
+            string message = string.Format("Added {0} weapons, {1} armors, {2} usable items, {3} ingredients, {4} hats, {5} blueprints and {6} item definitions to the inventory.",
+               weaponsCount, armorCount, usableCount, ingredientsCount, hatCount, blueprintCount, itemDefinitionCount);
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });
@@ -992,6 +991,28 @@ public class AdminManager : NetworkBehaviour
          // If the item can be stacked and there are less items than what is requested, replenish the stack
          if (existingItem.canBeStacked() && existingItem.count < count) {
             DB_Main.updateItemQuantity(_player.userId, existingItem.id, count);
+            wasItemCreated = true;
+         }
+      }
+
+      return wasItemCreated;
+   }
+
+   [Server]
+   private bool createItemIfNotExistOrReplenishStack (ItemInstance itemInstance) {
+      bool wasItemCreated = false;
+
+      // Retrieve the item from the user inventory, if it exists
+      ItemInstance existingItem = DB_Main.getItemInstance(itemInstance.ownerUserId, itemInstance.itemDefinitionId);
+
+      if (existingItem == null) {
+         // If the item does not exist, create a new one
+         DB_Main.createOrAppendItemInstance(itemInstance);
+         wasItemCreated = true;
+      } else {
+         // If there are less items than what is requested, replenish the stack
+         if (existingItem.count < itemInstance.count) {
+            DB_Main.increaseItemInstanceCount(existingItem.id, itemInstance.count - existingItem.count);
             wasItemCreated = true;
          }
       }

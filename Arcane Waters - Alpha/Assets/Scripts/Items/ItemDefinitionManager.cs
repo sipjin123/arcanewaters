@@ -29,6 +29,10 @@ public class ItemDefinitionManager : MonoBehaviour
       return null;
    }
 
+   public IEnumerable<ItemDefinition> getDefinitions () {
+      return _itemDefinitions.Values;
+   }
+
    public List<ItemDefinition> getDefinitions (params int[] ids) {
       List<ItemDefinition> result = new List<ItemDefinition>();
 

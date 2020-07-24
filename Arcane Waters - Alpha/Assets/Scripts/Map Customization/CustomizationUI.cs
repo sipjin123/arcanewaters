@@ -112,16 +112,16 @@ namespace MapCustomization
             PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
             entry.target = data;
             entry.setImage(data.displaySprite);
-            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, data.prefab.propType);
+            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, data.prefab);
             entry.setCount(count);
             _prefabEntries.Add(entry);
          }
       }
 
-      public static void updatePropCount (Prop.Type type, int count) {
+      public static void updatePropCount (ItemInstance prop) {
          foreach (PrefabSelectionEntry entry in _prefabEntries) {
-            if (entry.target.prefab.propType == type) {
-               entry.setCount(count);
+            if (entry.target.prefab.propDefinitionId == prop.itemDefinitionId) {
+               entry.setCount(prop.count);
             }
          }
       }

@@ -27,7 +27,7 @@ public class RestartManager : MonoBehaviour
                }
 
                // Figure out when the restart is scheduled to take place
-               DateTime timePoint = DateTime.FromBinary(info.DateAsTicks);
+               DateTime timePoint = new DateTime(info.DateAsTicks);
 
                // Send a message to all players about the pending Restart
                ServerNetwork.self.server.SendGlobalChat($"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}", 0);

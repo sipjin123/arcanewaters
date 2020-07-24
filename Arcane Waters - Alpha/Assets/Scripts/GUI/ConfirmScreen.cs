@@ -64,6 +64,7 @@ public class ConfirmScreen : MonoBehaviour {
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
       this.linkText.text = "";
+      this.gameObject.SetActive(false);
    }
 
    public void openURL () {

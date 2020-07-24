@@ -155,8 +155,7 @@ public class DB_Main : DB_MainStub
          itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
             " or itmCategory = " + (int) Item.Category.Armor +
             " or itmCategory = " + (int) Item.Category.Hats +
-            " or itmCategory = " + (int) Item.Category.CraftingIngredients +
-            " or itmCategory = " + (int) Item.Category.Prop + ")";
+            " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
       }
 
       string weaponFilter = "";
@@ -229,8 +228,7 @@ public class DB_Main : DB_MainStub
          itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
             " or itmCategory = " + (int) Item.Category.Armor +
             " or itmCategory = " + (int) Item.Category.Hats +
-            " or itmCategory = " + (int) Item.Category.CraftingIngredients +
-            " or itmCategory = " + (int) Item.Category.Prop + ")";
+            " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
       }
 
       try {
@@ -1331,14 +1329,14 @@ public class DB_Main : DB_MainStub
             "INSERT INTO quest_status_v2 (npcId, usrId, questId, questNodeId, questDialogueId) " +
             "VALUES(@npcId, @usrId, @questId, @questNodeId, @questDialogueId) " +
             "ON DUPLICATE KEY UPDATE questNodeId=@questNodeId, questDialogueId=@questDialogueId", conn)) {
-            
+
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
-            cmd.Parameters.AddWithValue("@questDialogueId", dialogueId); 
+            cmd.Parameters.AddWithValue("@questDialogueId", dialogueId);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1815,8 +1813,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO quest_data_xml_v1 ("+ xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
-            "VALUES("+ xmlIdValue + "@xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
+            "INSERT INTO quest_data_xml_v1 (" + xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
+            "VALUES(" + xmlIdValue + "@xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW(), xmlName = @xmlName, isActive = @isActive", conn)) {
 
             conn.Open();
@@ -4214,11 +4212,12 @@ public class DB_Main : DB_MainStub
             definition.id = (int) id;
 
             // Populate the database entry with our definition
-            cmd.CommandText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
+            cmd.CommandText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData, creator_userID = @creatorUserId WHERE id = @id;";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@id", definition.id);
             cmd.Parameters.AddWithValue("@category", (int) definition.category);
             cmd.Parameters.AddWithValue("@serializedData", definition.serialize());
+            cmd.Parameters.AddWithValue("@creatorUserId", definition.creatorUserId);
             cmd.ExecuteNonQuery();
 
             // Commit our transaction
@@ -4253,6 +4252,128 @@ public class DB_Main : DB_MainStub
          cmd.Prepare();
 
          cmd.Parameters.AddWithValue("@id", id);
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   #endregion
+
+   #region Item Instances
+
+   public static new List<ItemInstance> getItemInstances (int ownerUserId, ItemDefinition.Category category) {
+      List<ItemInstance> result = new List<ItemInstance>();
+
+      string cmdText = "SELECT item_instances.* " +
+         "FROM item_instances JOIN item_definitions ON item_instances.itemDefinitionId = item_definitions.id " +
+         "WHERE item_instances.userId = @ownerUserId AND category = @category;";
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
+         cmd.Parameters.AddWithValue("@category", (int) category);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               result.Add(new ItemInstance(dataReader));
+            }
+         }
+      }
+
+      return result;
+   }
+
+   public static new ItemInstance getItemInstance (int userId, int itemDefinitionId) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;", conn)) {
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@userId", userId);
+         cmd.Parameters.AddWithValue("@itemDefinitionId", itemDefinitionId);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            if (dataReader.Read()) {
+               return new ItemInstance(dataReader);
+            }
+         }
+      }
+
+      return null;
+   }
+
+   public static new void createOrAppendItemInstance (ItemInstance item) {
+      if (item.getDefinition().canBeStacked()) {
+         // If item can be stacked, we want to check if it already exists
+         ItemInstance existingInstance = getItemInstance(item.ownerUserId, item.itemDefinitionId);
+
+         // If the item exist, update its count
+         if (existingInstance != null) {
+            increaseItemInstanceCount(existingInstance.id, item.count);
+
+            // Update item's fields to represent newly updated entry
+            item.id = existingInstance.id;
+            item.count = existingInstance.count + item.count;
+         } else {
+            // Otherwise, create a new stack
+            createNewItemInstance(item);
+         }
+      } else {
+         // Since the item cannot be stacked, set its count to 1
+         item.count = 1;
+
+         // Create the item
+         createNewItemInstance(item);
+      }
+   }
+
+   public static new void createNewItemInstance (ItemInstance itemInstance) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(
+         "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity) " +
+         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity) ", conn)) {
+
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
+         cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
+         cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
+         cmd.Parameters.AddWithValue("@palette1", itemInstance.palette1);
+         cmd.Parameters.AddWithValue("@palette2", itemInstance.palette2);
+         cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
+
+         // Execute the command
+         cmd.ExecuteNonQuery();
+
+         // Set the ID that was created for the instance
+         itemInstance.id = (int) cmd.LastInsertedId;
+      }
+   }
+
+   public static new void increaseItemInstanceCount (int id, int increaseBy) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand("UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;", conn)) {
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@increaseBy", increaseBy);
+         cmd.Parameters.AddWithValue("@id", id);
+
+         cmd.ExecuteNonQuery();
+      }
+   }
+
+   public static new void decreaseOrDeleteItemInstance (int id, int decreaseBy) {
+      // First query deletes the entry which has only 'decreaseBy' of item left
+      // Second query decreases the count by 'decreaseBy' if the item wasn't deleted (had more than 'decreaseBy' left)
+      string cmdText = "DELETE FROM item_instances WHERE id = @id AND count <= @decreaseBy; " +
+         "UPDATE item_instances SET count = count - @decreaseBy WHERE id = @id;";
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+         cmd.Parameters.AddWithValue("@id", id);
+         cmd.Parameters.AddWithValue("@decreaseBy", decreaseBy);
 
          cmd.ExecuteNonQuery();
       }
@@ -7330,6 +7451,59 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
          return false;
       }
+   }
+
+
+   protected static new bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
+      try {
+
+         if (string.IsNullOrEmpty(serverAddress)) return false;
+         if (string.IsNullOrEmpty(serverPort)) return false;
+         if (string.IsNullOrEmpty(keySuffix)) return false;
+
+         string keyPrefix = String.IsNullOrEmpty(machineId) ? string.Empty : machineId + "_";
+         string server_id = serverAddress + "_" + serverPort.ToString();
+         string key = keyPrefix + server_id + "_" + keySuffix;
+         using (MySqlConnection conn = getConnection()) {
+            // Open the connection.
+            conn.Open();
+            // A key is tracked if it is present in the database.
+
+            bool IsKeyAlreadyTracked = false;
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM metrics WHERE key=@key", conn)) {
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@key", key);
+               using (var reader = cmd.ExecuteReader()) {
+                  IsKeyAlreadyTracked = reader.Read();
+               }
+            }
+
+            // create a new entry for the key if it's not present already,
+            // and update the value if already present in the database.
+            string query = $"UPDATE metrics SET value=@value WHERE key=@key";
+            if (!IsKeyAlreadyTracked) {
+               query = $"INSERT INTO metrics (key,value) VALUES (@key,@value)";
+            }
+
+            using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@key", key);
+               cmd.Parameters.AddWithValue("@value", value);
+               cmd.ExecuteNonQuery();
+            }
+         }
+         return true;
+      } catch {
+         return false;
+      }
+   }
+
+   public static new bool setMetricPlayersCount (string machineId, string serverAddress, string serverPort, int playerCount) {
+      return setMetric(machineId, serverAddress, serverPort, "players_count", playerCount.ToString());
+   }
+
+   public static new bool setMetricAreaInstancesCount (string machineId, string serverAddress, string serverPort, int areaInstancesCount) {
+      return setMetric(machineId, serverAddress, serverPort, "area_instances_count", areaInstancesCount.ToString());
    }
 
    #region Mail

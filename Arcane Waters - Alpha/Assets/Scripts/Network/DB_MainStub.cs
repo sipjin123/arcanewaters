@@ -199,6 +199,26 @@ public class DB_MainStub : MonoBehaviour {
       return new List<ItemDefinition>();
    }
 
+   public static ItemInstance getItemInstance (int userId, int itemDefinitionId) {
+      return null;
+   }
+
+   public static void createOrAppendItemInstance (ItemInstance item) {
+
+   }
+
+   public static void createNewItemInstance (ItemInstance itemInstance) {
+
+   }
+
+   public static void increaseItemInstanceCount (int id, int increaseBy) {
+
+   }
+
+   public static void decreaseOrDeleteItemInstance (int id, int decreaseBy) {
+
+   }
+
    public static void createNewItemDefinition (ItemDefinition definition) {
 
    }
@@ -209,6 +229,10 @@ public class DB_MainStub : MonoBehaviour {
 
    public static void deleteItemDefinition (int id) {
 
+   }
+
+   public static List<ItemInstance> getItemInstances (int ownerUserId, ItemDefinition.Category category) {
+      return new List<ItemInstance>();
    }
 
    public static void updateCraftingXML (int xmlID, string rawData, string name, int typeId, int category) {
@@ -1118,6 +1142,19 @@ public class DB_MainStub : MonoBehaviour {
    public static bool cancelDeploySchedule () {
       return false;
    }
+
+   protected static bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
+      return false;
+   }
+
+   public static bool setMetricPlayersCount (string machineId,string serverAddress, string serverPort, int playerCount) {
+      return false;
+   }
+      
+   public static bool setMetricAreaInstancesCount (string machineId,string serverAddress, string serverPort, int areaInstancesCount) {
+      return false;
+   }
+
 
    public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
 

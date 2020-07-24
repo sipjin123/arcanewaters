@@ -34,7 +34,7 @@ namespace MapCustomization
       public static int areaOwnerId { get; private set; }
 
       // Remaining props for the user to place
-      public static Item[] remainingProps { get; private set; }
+      public static ItemInstance[] remainingProps { get; private set; }
 
       [Space(5), Tooltip("Color for outline that is used when prefab isnt selected but is ready for input")]
       public Color prefabReadyColor;
@@ -239,10 +239,10 @@ namespace MapCustomization
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
 
                   // Decrease remaining prop item that corresponds to this prefab
-                  foreach (Item item in remainingProps) {
-                     if (item.itemTypeId == (int) _newPrefab.propType) {
+                  foreach (ItemInstance item in remainingProps) {
+                     if (item.itemDefinitionId == _newPrefab.propDefinitionId) {
                         item.count--;
-                        CustomizationUI.updatePropCount(_newPrefab.propType, item.count);
+                        CustomizationUI.updatePropCount(item);
                         if (item.count <= 0) {
                            CustomizationUI.selectEntry(null);
                         }
@@ -354,7 +354,7 @@ namespace MapCustomization
          }
       }
 
-      public static void serverAllowedEnterCustomization (Item[] remainingProps) {
+      public static void serverAllowedEnterCustomization (ItemInstance[] remainingProps) {
          MapCustomizationManager.remainingProps = remainingProps;
          _waitingServerResponse = false;
       }
@@ -365,7 +365,7 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (Area area, Item[] remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
+      public static bool validatePrefabChanges (Area area, ItemInstance[] remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
          if (changes.isLocalPositionSet()) {
             int? prefabSerializationId = changes.created
                ? changes.serializationId
@@ -399,7 +399,7 @@ namespace MapCustomization
 
             // Check that the player has enough of prop remaining
             if (changes.created) {
-               if (amountOfPropLeft(remainingItems, prefab.propType) <= 0) {
+               if (amountOfPropLeft(remainingItems, prefab) <= 0) {
                   errorMessage = "Not enough of items for this object";
                   return false;
                }
@@ -410,11 +410,11 @@ namespace MapCustomization
          return true;
       }
 
-      public static int amountOfPropLeft (Item[] items, Prop.Type type) {
+      public static int amountOfPropLeft (ItemInstance[] items, CustomizablePrefab propPrefab) {
          if (items == null) return 0;
 
-         foreach (Item item in items) {
-            if (item.itemTypeId == (int) type) {
+         foreach (ItemInstance item in items) {
+            if (item.itemDefinitionId == propPrefab.propDefinitionId) {
                return item.count;
             }
          }
@@ -471,9 +471,9 @@ namespace MapCustomization
          if (_customizablePrefabs.TryGetValue(changes.id, out CustomizablePrefab changedPrefab)) {
             // If we were trying to create a new prefab, delete it
             if (changes.created) {
-               // Read this prefab to remaining prop items
-               foreach (Item item in remainingProps) {
-                  if (item.itemTypeId == (int) changedPrefab.propType) {
+               // Readd this prefab to remaining prop items
+               foreach (ItemInstance item in remainingProps) {
+                  if (item.itemDefinitionId == changedPrefab.propDefinitionId) {
                      item.count++;
                   }
                }
