@@ -62,6 +62,33 @@ public class PlayerBodyEntity : BodyEntity {
    // The offset of the wind vfx
    public float windDashZOffset = 1;
 
+   // The pivot of the jump colliders
+   public Transform jumpCollisionPivot;
+
+   // The jump end collider that indicates if the user can jump over an object
+   public CircleCollider2D jumpEndCollider;
+
+   // The collider that determines if the player is infront of an obstacle
+   public CircleCollider2D obstacleDetectionCollider;
+
+   // Size of the obstacle collider
+   public float obstacleColliderScale = .15f;
+
+   // Size of the jump end collider
+   public float jumpEndColliderScale = .15f;
+
+   // If the user is jumping over an obstacle
+   public bool isJumpingOver;
+
+   // The interpolation speed value
+   public float lerpValue;
+
+   // The speed of the interpolation
+   public float lerpSpeedValue = 1.4f;
+
+   // The target world location when jumpin over an obstacle
+   public Vector2 jumpOverWorldLocation, jumpOverSourceLocation;
+
    #endregion
 
    protected override void Awake () {
@@ -69,19 +96,18 @@ public class PlayerBodyEntity : BodyEntity {
       speedMeter = SPEEDUP_METER_MAX;
    }
 
+   private void OnDrawGizmos () {
+      Gizmos.color = Color.yellow;
+      Gizmos.DrawWireSphere(obstacleDetectionCollider.transform.position, obstacleColliderScale);
+      Gizmos.color = Color.grey;
+      Gizmos.DrawWireSphere(jumpEndCollider.transform.position, jumpEndColliderScale);
+   }
+
    protected override void FixedUpdate () {
       // Blocks user input and user movement if an enemy is within player collider radius
       if (!isWithinEnemyRadius) {
          base.FixedUpdate();
       }
-
-      float y = spritesTransform.localPosition.y;
-      if (isJumping) {
-         y += y < jumpHeightMax ? Time.fixedDeltaTime * jumpUpMagnitude : 0;
-      } else {
-         y -= y > 0 ? Time.fixedDeltaTime * jumpDownMagnitude : 0;
-      }
-      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
    }
 
    protected override void Update () {
@@ -94,6 +120,41 @@ public class PlayerBodyEntity : BodyEntity {
          return;
       }
 
+      float y = spritesTransform.localPosition.y;
+
+      // Blocks movement when unit is jumping over an obstacle
+      if (isJumpingOver) {
+         // Interpolates from source location to target location
+         lerpValue += Time.deltaTime * lerpSpeedValue;
+         Vector3 newInterpValue = Vector3.Lerp(jumpOverSourceLocation, jumpOverWorldLocation, lerpValue);
+         transform.position = new Vector3(newInterpValue.x, newInterpValue.y, transform.position.z);
+
+         if (lerpValue < .5f) {
+            float newHeight = Mathf.Lerp(0, jumpHeightMax, lerpValue * 2);
+            spritesTransform.localPosition = new Vector3(0, newHeight, 0);
+         } else {
+            float newHeight = Mathf.Lerp(jumpHeightMax, 0, lerpValue * 2);
+            spritesTransform.localPosition = new Vector3(0, newHeight, 0);
+         }
+
+         // Stops the jumping and triggers a smoke effect with sound
+         if (lerpValue >= 1) {
+            Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.None), this.sortPoint.transform.position, Quaternion.identity);
+            SoundManager.create3dSound("ledge", this.sortPoint.transform.position);
+            isJumpingOver = false;
+         }
+         return;
+      }
+
+      // Processes the jump height
+      if (isJumping) {
+         y += y < jumpHeightMax ? Time.deltaTime * jumpUpMagnitude : 0;
+      } else {
+         y -= y > 0 ? Time.deltaTime * jumpDownMagnitude : 0;
+      }
+      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
+
+      // Sets animators speed to default
       dashAnimator.speed = 1;
       foreach (Animator animator in animators) {
          animator.speed = 1;
@@ -121,16 +182,34 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (InputManager.isActionKeyPressed()) {
+         // Adjust the colider pivot
+         int currentAngle = 0;
+         if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
+            currentAngle = -90;
+         } else if (facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
+            currentAngle = 90;
+         } else if (facing == Direction.South) {
+            currentAngle = 180;
+         }
+         jumpCollisionPivot.localEulerAngles = new Vector3(0, 0, currentAngle);
+
+         // Gathers all the collider data
+         Collider2D[] obstacleCollidedEntries = Physics2D.OverlapCircleAll(obstacleDetectionCollider.transform.position, obstacleColliderScale);
+         Collider2D[] jumpEndCollidedEntries = Physics2D.OverlapCircleAll(jumpEndCollider.transform.position, jumpEndColliderScale);
+
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
              || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
             requestAnimationPlay(Anim.Type.NC_Jump_East);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_East);
+            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.North) {
             requestAnimationPlay(Anim.Type.NC_Jump_North);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_North);
+            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.South) {
             requestAnimationPlay(Anim.Type.NC_Jump_South);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
+            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }
       }
 
@@ -220,6 +299,12 @@ public class PlayerBodyEntity : BodyEntity {
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
    }
 
+   private void jumpOver (Collider2D[] obstacleCollidedEntries, Collider2D[] jumpEndCollidedEntries) {
+      if (obstacleCollidedEntries.Length > 2 && jumpEndCollidedEntries.Length < 3) {
+         Cmd_JumpOver(transform.position, jumpEndCollider.transform.position, (int) facing);
+      } 
+   }
+
    private void updateSprintEffects (bool isOn) {
       // Handle sprite effects
       if (isOn) {
@@ -275,6 +360,20 @@ public class PlayerBodyEntity : BodyEntity {
    public void Rpc_ResetMoveDisable () {
       isWithinEnemyRadius = false;
       playerBattleCollider.combatInitCollider.enabled = true;
+   }
+
+   [Command]
+   void Cmd_JumpOver (Vector3 sourceLocation, Vector3 worldLocation, int direction) {
+      Rpc_JumpOver(sourceLocation, worldLocation, direction);
+   }
+
+   [ClientRpc]
+   public void Rpc_JumpOver (Vector3 sourceLocation, Vector3 worldLocation, int direction) {
+      lerpValue = 0;
+      jumpOverSourceLocation = new Vector2(sourceLocation.x, sourceLocation.y);
+      jumpOverWorldLocation = new Vector2(worldLocation.x, worldLocation.y);
+      isJumpingOver = true;
+      requestAnimationPlay((Anim.Type) direction);
    }
 
    [Command]

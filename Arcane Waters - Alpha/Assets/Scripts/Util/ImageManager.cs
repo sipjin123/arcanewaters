@@ -112,8 +112,8 @@ public class ImageManager : ClientMonoBehaviour {
       return fetchedTexture;
    }
 
-   public static Sprite[] getSprites (Texture2D texture) {
-      Sprite[] fetchedSprites = self.getSpritesFromTexture(texture);
+   public static Sprite[] getSprites (Texture2D texture, bool logData = false) {
+      Sprite[] fetchedSprites = self.getSpritesFromTexture(texture, logData);
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
@@ -197,13 +197,13 @@ public class ImageManager : ClientMonoBehaviour {
       return tex;
    }
 
-   protected Sprite[] getSpritesFromTexture (Texture2D texture) {
+   protected Sprite[] getSpritesFromTexture (Texture2D texture, bool logData = false) {
       if (_dataByTexture.ContainsKey(texture)) {
          return _dataByTexture[texture];
       } else {
          string path = "Filepaths/" + getHashForTexture(texture);
          TextAsset textAsset = (TextAsset) Resources.Load(path, typeof(TextAsset));
-         if (textAsset == null) {
+         if (textAsset == null) { 
             return new Sprite[0];
          }
          Sprite[] sprites = getSpritesFromPath(textAsset.text);

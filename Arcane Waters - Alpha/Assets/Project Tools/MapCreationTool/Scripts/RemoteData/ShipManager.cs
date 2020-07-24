@@ -34,11 +34,11 @@ namespace MapCreationTool
             return null;
          }
 
-         return ImageManager.getTexture(idToShipData[id].spritePath);
+         return ImageManager.getSprite(idToShipData[id].spritePath).texture;
       }
 
       public Texture2D getFirstShipTexture () {
-         return ImageManager.getTexture(ships[0].spritePath);
+         return ImageManager.getSprite(ships[0].spritePath).texture;
       }
 
       public SelectOption[] formSelectionOptions () {

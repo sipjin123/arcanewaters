@@ -47,7 +47,7 @@ public class SeaMonsterDataScene : MonoBehaviour
 
       if (!hasBeenInitialized) {
          hasBeenInitialized = true;
-         string spritePath = "Sprites/Enemies/SeaMonsters";
+         string spritePath = "Sprites/Enemies/SeaMonsters/";
          List<ImageManager.ImageData> spriteIconFiles = ImageManager.getSpritesInDirectory(spritePath);
          foreach (ImageManager.ImageData imgData in spriteIconFiles) {
             Sprite sourceSprite = imgData.sprite;

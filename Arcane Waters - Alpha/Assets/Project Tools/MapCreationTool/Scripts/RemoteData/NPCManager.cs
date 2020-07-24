@@ -33,11 +33,11 @@ namespace MapCreationTool
          }
 
          NPCData data = idToNpc[npcId];
-         return ImageManager.getTexture(data.spritePath);
+         return ImageManager.getSprite(data.spritePath).texture;
       }
 
       public Texture2D getFirstNpcTexture () {
-         return npcCount == 0 ? null : ImageManager.getTexture(npcs[0].spritePath);
+         return npcCount == 0 ? null : ImageManager.getSprite(npcs[0].spritePath).texture;
       }
 
       public SelectOption[] formSelectionOptions () {

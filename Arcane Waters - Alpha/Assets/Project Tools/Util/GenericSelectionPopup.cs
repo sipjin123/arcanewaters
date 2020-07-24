@@ -139,6 +139,9 @@ public class GenericSelectionPopup : MonoBehaviour
       string shipsWakePath = "Sprites/ShipWakes/";
       setupSpriteContent(shipWakeSpriteList, shipsWakePath);
 
+      string shipsCustomWakePath = "Sprites/Ships/";
+      setupSpriteContent(shipWakeSpriteList, shipsCustomWakePath);
+
       string usableItemPath = "Sprites/Icons/UsableItems/";
       setupSpriteContent(usableItemSpriteList, usableItemPath);
 

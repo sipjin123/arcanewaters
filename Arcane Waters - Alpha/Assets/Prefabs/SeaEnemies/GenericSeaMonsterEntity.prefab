@@ -289,6 +289,7 @@ MonoBehaviour:
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  _ignoredAnimators: []
   damage: 10
   reloadDelay: 1
   attackCounter: 0
@@ -642,7 +643,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: abcd75ce3639f40438bdb378a8650efa, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

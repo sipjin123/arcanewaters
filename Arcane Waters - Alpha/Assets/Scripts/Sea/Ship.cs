@@ -85,25 +85,23 @@ public class Ship : SeaEntity {
    public static string getSkinPath (Ship.Type shipType, Ship.SkinType skinType = SkinType.None, bool isPirate = false) {
       string skinName;
       if (!isPirate) {
-         skinName = (skinType == Ship.SkinType.None) ? shipType + "_1" : skinType + "";
+         skinName = (skinType == Ship.SkinType.None) ? shipType + "_1":  skinType + "";
       } else {
          skinName = shipType + "_pirate";
       }
-      string basePath = "Ships/" + shipType + "/";
+      
+      string basePath = "Ships/"; 
       string skinPath = basePath + skinName;
-
       return skinPath;
    }
 
    public static string getRipplesPath (Ship.Type shipType) {
-      string basePath = "Ships/" + shipType + "/";
-
+      string basePath = "Ships/";
       return basePath + shipType + "_ripples";
    }
 
    public static string getRipplesMovingPath (Ship.Type shipType) {
-      string basePath = "Ships/" + shipType + "/";
-
+      string basePath = "Ships/";
       return basePath + shipType + "_ripples";
    }
 

@@ -44,11 +44,11 @@ namespace MapCreationTool
             return null;
          }
 
-         return ImageManager.getTexture(idToSeaMonster.Values.ToList().Find(_=>_.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType).seaMonsterData.defaultSpritePath);
+         return ImageManager.getSprite(idToSeaMonster.Values.ToList().Find(_=>_.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType).seaMonsterData.defaultSpritePath).texture;
       }
 
       public Texture2D getFirstLandMonsterTexture () {
-         return landMonsterCount == 0 ? null : ImageManager.getTexture(landMonsters[0].battler.imagePath);
+         return landMonsterCount == 0 ? null : ImageManager.getSprite(landMonsters[0].battler.imagePath).texture;
       }
 
       public Texture2D getFirstSeaMonsterTexture () {

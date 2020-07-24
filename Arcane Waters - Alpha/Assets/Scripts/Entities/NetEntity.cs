@@ -397,7 +397,7 @@ public class NetEntity : NetworkBehaviour
       return battleId > 0;
    }
 
-   public void requestAnimationPlay (Anim.Type animType) {
+   public void requestAnimationPlay (Anim.Type animType, bool freezeAnim = false) {
       if (interactingAnimation) {
          return;
       }
@@ -416,7 +416,9 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_South:
                animator.SetBool("jump", true); 
                isJumping = true;
-               StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
+               if (!freezeAnim) {
+                  StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
+               }
                break;
          }
       }

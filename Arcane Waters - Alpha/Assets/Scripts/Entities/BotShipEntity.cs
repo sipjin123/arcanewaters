@@ -356,7 +356,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             shipType = shipData.shipType;
             if (shipData != null) {
                if (shipData.spritePath != "") {
-                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(shipData.spritePath);
+                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
                }
             }
             Area area = GetComponentInParent<Area>();
