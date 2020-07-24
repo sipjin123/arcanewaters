@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/slash_earth
+Assets/Resources/Sprites/Effects/hit FX/slash_earth

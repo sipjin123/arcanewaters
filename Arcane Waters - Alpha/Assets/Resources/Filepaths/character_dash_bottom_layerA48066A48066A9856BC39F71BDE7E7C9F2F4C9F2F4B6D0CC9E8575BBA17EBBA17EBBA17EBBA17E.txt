@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Effects/char FX/character_dash_bottom_layer

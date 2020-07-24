@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/hit_fire
+Assets/Resources/Sprites/Effects/hit FX/hit_fire

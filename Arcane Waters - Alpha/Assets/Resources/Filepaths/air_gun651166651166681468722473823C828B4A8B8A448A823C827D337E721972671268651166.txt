@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/gun FX/air_gun
+Assets/Resources/Sprites/Effects/hit FX/air_gun

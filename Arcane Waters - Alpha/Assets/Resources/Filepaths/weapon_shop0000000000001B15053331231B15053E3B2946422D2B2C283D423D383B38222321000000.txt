@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Icons/ShopIcons 1/weapon_shop
+Assets/Resources/Sprites/Icons/Undefined/weapon_shop

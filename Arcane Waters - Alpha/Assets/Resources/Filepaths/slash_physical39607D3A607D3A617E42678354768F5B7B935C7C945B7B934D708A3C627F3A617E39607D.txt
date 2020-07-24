@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/slash_physical
+Assets/Resources/Sprites/Effects/hit FX/slash_physical

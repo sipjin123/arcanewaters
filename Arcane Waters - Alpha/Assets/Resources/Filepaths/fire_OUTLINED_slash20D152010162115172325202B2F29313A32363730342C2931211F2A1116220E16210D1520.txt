@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/slash FX/fire_OUTLINED_slash2
+Assets/Resources/Sprites/Effects/hit FX/fire_OUTLINED_slash2

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/ranged_water
+Assets/Resources/Sprites/Effects/hit FX/ranged_water
