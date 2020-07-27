@@ -18,10 +18,15 @@ public class SpriteLayer : RecoloredSprite {
       base.Awake();
       
       _renderer = GetComponent<SpriteRenderer>();
+      _spriteSwap = GetComponent<SpriteSwap>();
    }
 
    public SpriteRenderer getRenderer () {
       return _renderer;
+   }
+
+   protected SpriteSwap getSpriteSwap () {
+      return _spriteSwap ?? (_spriteSwap = GetComponent<SpriteSwap>());
    }
 
    protected IEnumerator CO_SwapTexture (Texture2D newTexture) {
@@ -52,6 +57,9 @@ public class SpriteLayer : RecoloredSprite {
 
    // The sprite renderer we use for displaying animations
    protected SpriteRenderer _renderer;
+
+   // The sprite swap used for animated sprites
+   protected SpriteSwap _spriteSwap;
 
    #endregion
 }

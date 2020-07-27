@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using SteamLoginSystem;
 using System;
+using System.Linq;
 
 public class ServerMessageManager : MonoBehaviour {
    #region Public Variables
@@ -174,7 +175,14 @@ public class ServerMessageManager : MonoBehaviour {
 
                if (armorList.Count < 1) {
                   for (int i = 1; i < 4; i++) {
-                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(i);
+                     int currentArmorId = 1;
+                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(currentArmorId);
+
+                     //Only output visually unique armors
+                     while (startingSpriteIds.Any(spriteId => startArmorData.armorType == spriteId)) {
+                        currentArmorId++;
+                        startArmorData = EquipmentXMLManager.self.getArmorData(currentArmorId);
+                     }
                      startingEquipmentIds.Add(startArmorData.sqlId);
                      startingSpriteIds.Add(startArmorData.armorType);
                   }
@@ -376,8 +384,16 @@ public class ServerMessageManager : MonoBehaviour {
          abilitySlotIndex++;
       }
 
+      int assignedPoints = msg.perks.Sum(perk => perk.points);
+      List<Perk> perks = msg.perks.ToList();
+
+      // Make sure the player doesn't send an invalid number of points
+      if (assignedPoints != CreationPerksGrid.AVAILABLE_POINTS) {         
+         perks = new List<Perk> { new Perk(0, CreationPerksGrid.AVAILABLE_POINTS) };
+      }
+
       // Add the perks to the user
-      DB_Main.addPerkPointsForUser(userId, PerkManager.self.getPerksFromAnswers(new List<int>(msg.perkAnswers)));
+      DB_Main.addPerkPointsForUser(userId, perks);
 
       // Give some additional armor and weapons to test users
       /*if (true) {

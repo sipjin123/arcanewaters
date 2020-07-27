@@ -18,7 +18,7 @@ public class PerkManager : MonoBehaviour {
       self = this;
    }
 
-   public List<Perk> getPerksFromAnswers (List<int> answers) {
+   public List<Perk> getPerksFromAnswers (int[] answers) {
       return CharacterCreationQuestionsScreen.self.getPerkResults(answers);
    }
 

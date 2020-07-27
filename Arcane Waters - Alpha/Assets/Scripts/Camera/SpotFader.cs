@@ -72,7 +72,7 @@ public class SpotFader : ClientMonoBehaviour {
 
       _currentSizeTween?.Kill();
       spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
-      spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition);
+      spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition) + _highlightPlayerOffset;
       setFadeInitialValues();
       _currentSizeTween = spotMask.rectTransform.DOSizeDelta(_highlightPlayerSpotSize, _totalEffectTime * 0.5f);
    }
@@ -154,7 +154,11 @@ public class SpotFader : ClientMonoBehaviour {
 
    // The default spot size, enough to highlight a player
    [SerializeField]
-   private Vector2 _highlightPlayerSpotSize = new Vector2(400, 400);
+   private Vector2 _highlightPlayerSpotSize = new Vector2(500, 500);
+
+   // The world position offset of the mask relative to the player
+   [SerializeField]
+   private Vector3 _highlightPlayerOffset = new Vector2(6, 100);
 
    // The default color of the background image
    [SerializeField]

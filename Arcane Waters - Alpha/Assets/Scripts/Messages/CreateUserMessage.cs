@@ -23,7 +23,7 @@ public class CreateUserMessage : MessageBase {
    public int characterSpot;
 
    // The perks for this user
-   public int[] perkAnswers;
+   public Perk[] perks;
 
    #endregion
 
@@ -33,13 +33,13 @@ public class CreateUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalette1, string armorPalette2, List<int> perks) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalette1, string armorPalette2, Perk[] perks) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
       this.armorPalette1 = armorPalette1;
       this.armorPalette2 = armorPalette2;
       this.characterSpot = userInfo.charSpot;
-      this.perkAnswers = perks.ToArray();
+      this.perks = perks;
    }
 }

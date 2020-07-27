@@ -60,6 +60,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // If we just started creating a new character, then update the panel to reflect our gender
       if (this.creationMode) {
          CharacterCreationPanel.self.setCharacterBeingCreated(this);
+         setTextsVisible(false);
       }
    }
 
@@ -80,6 +81,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    private void OnDestroy () {
       PaletteSwapManager.self.paletteCompleteEvent.RemoveAllListeners();
+   }
+
+   public void setTextsVisible (bool isVisible) {
+      levelText.gameObject.SetActive(isVisible);
+      nameText.gameObject.SetActive(isVisible);
    }
 
    private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {

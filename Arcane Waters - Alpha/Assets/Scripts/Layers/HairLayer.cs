@@ -35,7 +35,7 @@ public class HairLayer : SpriteLayer {
       _type = newType;
 
       // Update our Animated Sprite
-      GetComponent<SpriteSwap>().newTexture = getTexture(newType, isFront);
+      getSpriteSwap().newTexture = getTexture(newType, isFront);
    }
 
    public static Texture2D getTexture (Type hairType, bool isFront) {

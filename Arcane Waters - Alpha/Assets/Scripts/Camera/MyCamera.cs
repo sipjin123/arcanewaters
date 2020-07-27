@@ -11,7 +11,7 @@ public class MyCamera : BaseCamera
    #region Public Variables
 
    // The PPU scale when creating a character
-   public const float CHARACTER_CREATION_PPU_SCALE = 600.0f;
+   public const float CHARACTER_CREATION_PPU_SCALE = 1200.0f;
 
    // Reference to the main GUI canvas
    public Canvas mainGUICanvas;
@@ -40,7 +40,6 @@ public class MyCamera : BaseCamera
 
    private void setInternalOrthographicSize () {
       _orthographicSize = Screen.height / DEFAULT_PPU_SCALE;
-      _initialSettings = getVirtualCameraSettings();
 
       CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
       if (confiner != null) {
@@ -62,6 +61,9 @@ public class MyCamera : BaseCamera
             break;
          }
       }
+
+      _initialSettings = getVirtualCameraSettings();
+      _initialSettings.ppuScale = DEFAULT_PPU_SCALE;
    }
 
    void Update () {

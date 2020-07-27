@@ -9,30 +9,30 @@ public class QuestionOptionTemplate : MonoBehaviour {
    #region Public Variables
    
    // The button component
+   [HideInInspector]
    public Button button;
-
-   // The toggle
-   public Toggle toggle;
 
    // The index of this option
    public int optionIndex;
 
    #endregion
 
+   private void Awake () {
+      button = GetComponent<Button>();   
+   }
+
    public void setQuestionOption (CharacterCreationQuestionOption option, int index) {
-      string text = $"{option.option} <color=\"yellow\">(+{option.perkPoints} {option.perkCategory.ToString()})";
+      string text = $"{option.option} <color=\"yellow\">(+{option.perkPoints} {Perk.getCategoryDisplayName(option.perkCategory)})";
       _questionText.SetText(text);
       optionIndex = index;
    }
 
    public void setSelected () {
       _questionText.color = Color.green;
-      toggle.isOn = true;
    }
 
    public void setUnselected () {
       _questionText.color = Color.white;
-      toggle.isOn = false;
    }
    
    #region Private Variables
@@ -40,9 +40,6 @@ public class QuestionOptionTemplate : MonoBehaviour {
    // The question text
    [SerializeField] 
    private TextMeshProUGUI _questionText;
-
-   // The question option
-   private CharacterCreationQuestionOption _questionOption;
 
    #endregion
 }

@@ -6,49 +6,18 @@ using Mirror;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
-using System;
 
 public class CharacterCreationPanel : ClientMonoBehaviour
 {
    #region Public Variables
 
-   // The different sections in the screen
-   public enum Section
-   {
-      Appearance = 1,
-      Questions = 2
-   }
-
-   // The text to display on the "next" button to indicate there are more steps after the current one
-   public const string NEXT_STEP_BUTTON_TEXT = "Next";
-
-   // The text to display on the "next" button to indicate confirming the answer will finish the questionnaire
-   public const string CONFIRM_QUESTIONNAIRE_BUTTON_TEXT = "Finish";
-
-   // The text to display on the "back" button to indicate the player can go to the previous step
-   public const string BACK_STEP_BUTTON_TEXT = "Back";
-
-   // The text to display on the "back" button to indicate clicking it will cancel character creation
-   public const string CANCEL_CREATION_BUTTON_TEXT = "Cancel";
-
-   // The time (in seconds) for the moving panel animations
-   public const float WINDOW_TRANSITION_TIME = 0.25f;
+   [Header("Settings")]
+   // The color for the background of the spot
+   public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
 
    [Header("References")]
    // The button to go to the next screen
    public Button nextButton;
-
-   // The button to go to the previous screen
-   public Button backButton;
-
-   // The button to skip the perk questions
-   public Button skipButton;
-
-   // The text of the "next"/"finish" button
-   public Text nextButtonText;
-
-   // The text of the "back"/"cancel" button
-   public Text backButtonText;
 
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
@@ -60,27 +29,35 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public ToggleGroup armorGroup2;
    public ToggleGroup eyeGroup1;
 
+   // The male gender toggle
+   public Toggle maleToggle;
+
+   // The female gender toggle
+   public Toggle femaleToggle;
+
    // The Text that contains our name
-   public InputField nameText;
+   public TMP_InputField nameText;
 
-   // The perk questions screen
-   public CharacterCreationQuestionsScreen questionsScreen;
+   // The tabbed panel controller
+   public TabbedPanelController tabbedPanel;
 
-   // The appearance screen
-   public GameObject appearanceScreen;
+   // The perk questions grid
+   public CreationPerksGrid perksGrid;
 
-   [Header("Settings")]
-   // The color for the background of the spot
-   public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
+   [Header("Random Initial Styles")]
+   [Header("Female")]
+   // The eye types to choose randomly from when the character starts being created
+   public List<EyesLayer.Type> initialFemaleEyes;
 
-   // The material used for the "cancel" button
-   public Material cancelButtonMaterial;
+   // The hair styles to choose randomly from when the character starts being created
+   public List<HairLayer.Type> initialFemaleHair;
+         
+   [Header("Male")]
+   // The eye types to choose randomly from when the character starts being created
+   public List<EyesLayer.Type> initialMaleEyes;
 
-   // The material used for the "confirm" button
-   public Material confirmButtonMaterial;
-
-   // The material used for buttons when they're not cancel/confirm
-   public Material generalButtonMaterial;
+   // The hair styles to choose randomly from when the character starts being created
+   public List<HairLayer.Type> initialMaleHair;
 
    // Self
    public static CharacterCreationPanel self;
@@ -92,9 +69,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       self = this;
 
+      _styleGrids = GetComponentsInChildren<CharacterStyleGrid>(true).ToList();
+
       // Get the RectTransforms of our different screens to animate them
       _rectTransform = transform as RectTransform;
-      _appearanceScreenRectTransform = appearanceScreen.transform as RectTransform;
    }
 
    private void Start () {
@@ -103,35 +81,21 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          nextButton.interactable = NameUtil.isValid(name);
       });
 
-      questionsScreen.gameObject.SetActive(false);
-      initializeValues();
       hide();
    }
 
    private void initializeValues () {
-      _leftPanelPosition = -_appearanceScreenRectTransform.rect.width;
-      _rightPanelPosition = questionsScreen.rectTransform.rect.width;
-            
-      questionsScreen.rectTransform.anchoredPosition = new Vector2(_rightPanelPosition, questionsScreen.rectTransform.anchoredPosition.y);
-      _appearanceScreenRectTransform.anchoredPosition = Vector2.zero;
-
-      // "Next" button is disabled by default
       nextButton.interactable = false;
-
-      // The "Skip" button isn't shown until the perk questions step
-      skipButton.gameObject.SetActive(false);
-
-      // Set up our next/back buttons
-      setNextButtonToNormal();
-      setBackButtonToCancel();
 
       // Clear the name input field
       nameText.text = "";
 
-      canvasGroup.alpha = 1;
-      canvasGroup.interactable = true;
+      foreach (CharacterStyleGrid grid in _styleGrids) {
+         grid.initializeGrid();
+      }
 
-      _currentSection = Section.Appearance;
+      tabbedPanel.initialize();
+      perksGrid.initialize();
    }
 
    private void show () {
@@ -146,37 +110,50 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public void setCharacterBeingCreated (OfflineCharacter offlineChar) {
       _char = offlineChar;
 
-      this.genderSelected((int) _char.genderType);
-
-      questionsScreen.gameObject.SetActive(true);
-      questionsScreen.startQuestionnaire();
+      this.genderSelected(Random.Range(1, 3));
 
       SpotFader.self.setColor(circleFaderBackgroundColor);
 
       show();
    }
 
+   private void randomizeSelectedEyes () {
+      EyesLayer.Type eyes = getRandomEyes();
+      setEyesType(eyes);
+   }
+
+   private void randomizeSelectedHair () {
+      HairLayer.Type hair = getRandomHair();
+      setHairType(hair);
+   }
+
+   private void randomizeSelectedArmor () {
+      int armor = getRandomArmor();
+      setArmor(armor);
+   }
+
    public void submitCharacterCreation (bool ignorePerkQuestions = false) {
-      canvasGroup.interactable = false;
+      Perk[] chosenPerks = perksGrid.getAssignedPoints().ToArray();
+      int pointsSum = chosenPerks.Sum(perk => perk.points);
 
-      List<int> chosenAnswers = questionsScreen.chosenAnswers;
-
-      // If the perk questions are skipped, send a list with "unassigned perk" values
-      if (ignorePerkQuestions) {
-         chosenAnswers = new List<int>();
-
-         for (int i = 0; i < questionsScreen.questions.Count; i++) {
-            chosenAnswers.Add(-1);
+      if (!ignorePerkQuestions) {
+         // If any of the questions hasn't been answered, ask the player to confirm skipping the perks
+         if (pointsSum < CreationPerksGrid.AVAILABLE_POINTS) {
+            confirmSkipQuestions();
+            return;
          }
       }
 
-      // Send the creation request to the server
-      NetworkClient.Send(new CreateUserMessage(Global.netId,
-         _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalette1(), _char.armor.getPalette2(), chosenAnswers));
+      PanelManager.self.showConfirmationPanel("Finish creating your character?", () => {
+         canvasGroup.interactable = false;
+         canvasGroup.blocksRaycasts = false;
+         // Send the creation request to the server
+         NetworkClient.Send(new CreateUserMessage(Global.netId,
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalette1(), _char.armor.getPalette2(), chosenPerks));
+      });
    }
 
-   public void onCharacterCreationValid () {
-      questionsScreen.gameObject.SetActive(false);
+   public void onCharacterCreationValid () {      
       hide();
 
       SpotFader.self.fadeBackgroundColor(Color.black, 0.25f);
@@ -191,82 +168,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       canvasGroup.interactable = true;
    }
 
-   public void onNextButtonClicked () {
-      if (_currentSection == Section.Appearance) {
-
-         // Cache the user info
-         Global.userObjects = new UserObjects {
-            userInfo = _char.getUserInfo(),
-            weapon = _char.getWeapon(),
-            armor = _char.getArmor(),
-            hat = _char.getHat()
-         };
-         Global.lastUserGold = 0;
-         Global.lastUserGems = 0;
-
-         goToQuestions();
-      } else {
-         questionsScreen.confirmAnswerClicked();
-      }
+   public void onCancelButtonClicked () {
+      PanelManager.self.showConfirmationPanel("Are you sure you want to cancel the character creation?", () => cancelCreating());
    }
 
-   public void onBackButtonClicked () {
-      if (_currentSection == Section.Questions) {
-         questionsScreen.previousQuestionClicked();
-      } else {
-         PanelManager.self.showConfirmationPanel("Are you sure you want to cancel the character creation?", () => cancelCreating());
-      }
-   }
-
-   public void onSkipButtonClicked () {
-      if (_currentSection == Section.Questions) {
-         PanelManager.self.showConfirmationPanel("Are you sure you want to skip the questions?\n\nYour perk points will remain unassigned until you assign them in the game.", () => submitCharacterCreation(true));
-      }
-   }
-
-   public void goToQuestions () {
-      _currentSequence?.Kill();
-
-      _currentSequence = DOTween.Sequence();
-      _currentSequence.Join(questionsScreen.rectTransform.DOAnchorPosX(0.0f, WINDOW_TRANSITION_TIME));
-      _currentSequence.Join(_appearanceScreenRectTransform.DOAnchorPosX(_leftPanelPosition, WINDOW_TRANSITION_TIME));
-
-      _currentSequence.AppendCallback(() => {
-         // Enable the "back" button so we can return if we want to change appearance
-         setBackButtonToNormal();
-
-         skipButton.gameObject.SetActive(true);
-
-         // Update the current section
-         _currentSection = Section.Questions;
-
-         // Tell the questions screen it's being shown
-         questionsScreen.onShown();
-      });
-
-      _currentSequence.Play();
-   }
-
-   public void returnToAppearanceScreen () {
-      _currentSequence?.Kill();
-
-      _currentSequence = DOTween.Sequence();
-      _currentSequence.Join(questionsScreen.rectTransform.DOAnchorPosX(_rightPanelPosition, WINDOW_TRANSITION_TIME));
-      _currentSequence.Join(_appearanceScreenRectTransform.DOAnchorPosX(0.0f, WINDOW_TRANSITION_TIME));
-
-      _currentSequence.AppendCallback(() => {
-         setBackButtonToCancel();
-
-         // Re-enable the "next" button
-         nextButton.interactable = NameUtil.isValid(nameText.text);
-
-         // Disable the "skip" button in the appearance section
-         skipButton.gameObject.SetActive(false);
-
-         _currentSection = Section.Appearance;
-      });
-
-      _currentSequence.Play();
+   public void confirmSkipQuestions () {
+      PanelManager.self.showConfirmationPanel("You haven't finished assigning your perk points.\nThey will remain unassigned until you assign them in the game." +
+         "\n\nDo you want to continue?", () => submitCharacterCreation(true));
    }
 
    public void cancelCreating () {
@@ -276,31 +184,85 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       hide();
    }
 
-   #region Buttons Personalization
-
-   public void setNextButtonToNormal () {
-      nextButton.targetGraphic.material = generalButtonMaterial;
-      nextButtonText.text = NEXT_STEP_BUTTON_TEXT;
-   }
-
-   public void setNextButtonToFinish () {
-      nextButton.targetGraphic.material = confirmButtonMaterial;
-      nextButtonText.text = CONFIRM_QUESTIONNAIRE_BUTTON_TEXT;
-   }
-
-   public void setBackButtonToNormal () {
-      backButton.targetGraphic.material = generalButtonMaterial;
-      backButtonText.text = BACK_STEP_BUTTON_TEXT;
-   }
-
-   public void setBackButtonToCancel () {
-      backButton.targetGraphic.material = cancelButtonMaterial;
-      backButtonText.text = CANCEL_CREATION_BUTTON_TEXT;
-   }
-
-   #endregion
-
    #region Character Appearance Customization
+
+   public void setHairType (HairLayer.Type hairType) {
+      UserInfo info = _char.getUserInfo();
+      info.hairType = hairType;
+      _char.setBodyLayers(info);
+
+      updateStyleIcons();
+   }
+
+   public void setEyesType (EyesLayer.Type type) {
+      UserInfo info = _char.getUserInfo();
+      info.eyesType = type;
+      _char.setBodyLayers(info);
+
+      updateStyleIcons();
+   }
+
+   public void setBodyType (BodyLayer.Type type) {
+      UserInfo info = _char.getUserInfo();
+      info.bodyType = type;
+      _char.setBodyLayers(info);
+
+      updateStyleIcons();
+   }
+
+   public void setBodyType (int type) {      
+      if (_char == null) {
+         return;
+      }
+
+      UserInfo info = _char.getUserInfo();
+      Gender.Type gender = getGender();
+      int finalType = gender == Gender.Type.Female ? 200 : 100;
+      finalType += type;
+
+      info.bodyType = (BodyLayer.Type)finalType;
+      _char.setBodyLayers(info);
+
+      updateStyleIcons();
+   }
+
+   public void setArmor (int armorId) {
+      _char.setArmor(armorId, getUserObjects().armorPalette1, getUserObjects().armorPalette2);
+      refreshArmor();
+
+      updateStyleIcons();
+   }
+
+   public UserObjects getUserObjects () {
+      return new UserObjects {
+         userInfo = _char.getUserInfo(),
+         weapon = _char.getWeapon(),
+         armor = _char.getArmor(),
+         hat = _char.getHat(),
+         armorPalette1 = _char.armor.getPalette1(),
+         armorPalette2 = _char.armor.getPalette2()
+      };
+   }
+
+   public HairLayer.Type getHairType () {
+      return _char.getUserInfo().hairType;
+   }
+
+   public EyesLayer.Type getEyesType () {
+      return _char.getUserInfo().eyesType;
+   }
+
+   public BodyLayer.Type getBodyType () {
+      return _char.getUserInfo().bodyType;
+   }
+
+   public int getArmorId () {
+      return _char.armor.getType();
+   }
+
+   public Gender.Type getGender () {      
+      return _char != null ? _char.getUserInfo().gender : Gender.Type.Female;
+   }
 
    public void genderSelected (int newGender) {
       Gender.Type gender = (Gender.Type) newGender;
@@ -314,20 +276,49 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       info.gender = gender;
       _char.setBodyLayers(info);
 
+      updateBodyTypeGender();
+
       // The gender is special, in that we need to update the other options afterwards
+      randomizeSelectedEyes();
+      randomizeSelectedHair();
+      randomizeSelectedArmor();
+
       updateColorBoxes(info.gender);
-      changeHair(0);
-      changeEyes(0);
-      changeBody(0);
-      changeArmor(0);
+      refreshHair();
+      refreshEyes();
+      refreshBody();
+      refreshArmor();
 
       // We have to redo the colors do, since they're different for male and female
       onHairColorChanged();
       onArmorColorChanged();
       onEyeColorChanged();
+
+      updateStyleIcons();
+
+      // Show the right toggle as enabled (without triggering the OnValueChanged event)
+      maleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Male);      
+      femaleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Female);
    }
 
-   public void changeHair (int offset) {
+   private void updateStyleIcons () {
+      foreach (CharacterStyleGrid grid in _styleGrids) {
+         grid.updateAllStacks();
+      }
+   }
+
+   private void updateBodyTypeGender () {
+      Gender.Type gender = getGender();
+      BodyLayer.Type bodyType = getBodyType();
+
+      int bodyId = ((int) bodyType) % 10;
+      int genderId = gender == Gender.Type.Female ? 200 : 100;
+
+      bodyType = (BodyLayer.Type) (genderId + bodyId);
+      setBodyType(bodyType);
+   }
+
+   public void refreshHair () {
       List<HairLayer.Type> list = getOrderedHairList();
 
       // Adjust the index
@@ -335,7 +326,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       if (currentIndex == -1) {
          currentIndex = 0;
       }
-      currentIndex += offset;
+
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the Info and apply it to the character
@@ -344,7 +335,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       _char.setBodyLayers(info);
    }
 
-   public void changeEyes (int offset) {
+   public void refreshEyes () {
       List<EyesLayer.Type> list = getEyeList();
 
       // Adjust the index
@@ -352,7 +343,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       if (currentIndex == -1) {
          currentIndex = 0;
       }
-      currentIndex += offset;
+
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the Info and apply it to the character
@@ -361,7 +352,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       _char.setBodyLayers(info);
    }
 
-   public void changeBody (int offset) {
+   public void refreshBody () {
       List<BodyLayer.Type> list = getBodyList();
 
       // Adjust the index
@@ -369,7 +360,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       if (currentIndex == -1) {
          currentIndex = 0;
       }
-      currentIndex += offset;
+            
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the Info and apply it to the character
@@ -378,21 +369,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       _char.setBodyLayers(info);
    }
 
-   public void changeArmor (int offset) {
-      List<int> list = new List<int>() { 1, 2, 3 };
-      if (CharacterScreen.self.startingArmorData.Count > 0) {
-         list.Clear();
-         foreach (CharacterScreen.StartingArmorData armorData in CharacterScreen.self.startingArmorData) {
-            list.Add(armorData.spriteId);
-         }
-      }
+   public void refreshArmor () {
+      List<int> list = getArmorList();
 
       // Adjust the index
       int currentIndex = list.IndexOf(_char.armor.getType());
       if (currentIndex == -1) {
          currentIndex = 0;
       }
-      currentIndex += offset;
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the Info and apply it to the character
@@ -468,7 +452,33 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       return "";
    }
 
-   protected List<HairLayer.Type> getOrderedHairList () {
+   private HairLayer.Type getRandomHair () {
+      Gender.Type gender = getGender();
+
+      if (gender == Gender.Type.Female) {
+         return initialFemaleHair[Random.Range(0, initialFemaleHair.Count)];
+      } else {
+         return initialMaleHair[Random.Range(0, initialMaleHair.Count)];
+      }
+   }
+
+   private EyesLayer.Type getRandomEyes () {
+      Gender.Type gender = getGender();
+
+      if (gender == Gender.Type.Female) {
+         return initialFemaleEyes[Random.Range(0, initialFemaleEyes.Count)];
+      } else {
+         return initialMaleEyes[Random.Range(0, initialMaleEyes.Count)];
+      }
+   }
+
+   private int getRandomArmor () {      
+      List<int> armors = getArmorList();
+      return armors[Random.Range(0, armors.Count)];
+   }
+
+
+   public List<HairLayer.Type> getOrderedHairList () {
       List<HairLayer.Type> newList = new List<HairLayer.Type>();
 
       // Do some custom sorting for the female
@@ -494,7 +504,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       return newList;
    }
 
-   protected List<BodyLayer.Type> getBodyList () {
+   public List<BodyLayer.Type> getBodyList () {
       if (_char.genderType == Gender.Type.Female) {
          return new List<BodyLayer.Type>() {
             BodyLayer.Type.Female_Body_1, BodyLayer.Type.Female_Body_2, BodyLayer.Type.Female_Body_3, BodyLayer.Type.Female_Body_4
@@ -506,11 +516,25 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   protected List<EyesLayer.Type> getEyeList () {
+   public List<EyesLayer.Type> getEyeList () {
       if (_char.genderType == Gender.Type.Female) {
          return new List<EyesLayer.Type>() { EyesLayer.Type.Female_Eyes_1, EyesLayer.Type.Female_Eyes_2, EyesLayer.Type.Female_Eyes_3 };
       } else {
          return new List<EyesLayer.Type>() { EyesLayer.Type.Male_Eyes_1, EyesLayer.Type.Male_Eyes_2, EyesLayer.Type.Male_Eyes_3 };
+      }
+   }
+
+   public List<int> getArmorList () {
+      if (CharacterScreen.self.startingArmorData.Count > 0) {         
+         List<int> list = new List<int>();
+
+         foreach (CharacterScreen.StartingArmorData armorData in CharacterScreen.self.startingArmorData) {
+            list.Add(armorData.spriteId);
+         }
+
+         return list;
+      } else {
+         return new List<int>() { 1, 2, 3 };
       }
    }
 
@@ -522,6 +546,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour
             string paletteName = paletteList[index++];
             toggle.image.color = PaletteSwapManager.getRepresentingColor(paletteName);
 
+            // Ensure colors can only be clicked on non-transparent areas instead of using the whole rect
+            toggle.image.alphaHitTestMinimumThreshold = 0.1f;
             Text text = toggle.GetComponent<Text>() ? toggle.GetComponent<Text>() : toggle.gameObject.AddComponent<Text>();
             text.enabled = false;
             text.text = paletteName;
@@ -545,23 +571,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    protected List<string> _femaleArmorPalettes1 = new List<string>() { PaletteDef.Armor1.Brown, PaletteDef.Armor1.Red, PaletteDef.Armor1.Yellow, PaletteDef.Armor1.Blue, PaletteDef.Armor1.Teal };
    protected List<string> _femaleArmorPalettes2 = new List<string>() { PaletteDef.Armor2.Brown, PaletteDef.Armor2.White, PaletteDef.Armor2.Yellow, PaletteDef.Armor2.Blue, PaletteDef.Armor2.Teal };
 
-   // The DOTween Squence that animates the different panels
-   private Sequence _currentSequence;
-
-   // The rect transform of the appearance screen
-   private RectTransform _appearanceScreenRectTransform;
+   // The list containing all the grids for the different styles
+   private List<CharacterStyleGrid> _styleGrids = new List<CharacterStyleGrid>();
 
    // The transform as a rect transform
    private RectTransform _rectTransform;
-
-   // The position at which a panel is invisible at the right
-   private float _rightPanelPosition = 236.0f;
-
-   // The position at which a panel is invisible at the left
-   private float _leftPanelPosition = -236.0f;
-
-   // The current customization section
-   private Section _currentSection = Section.Appearance;
 
    #endregion
 }

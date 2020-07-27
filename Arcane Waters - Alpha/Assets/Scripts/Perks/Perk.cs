@@ -76,6 +76,10 @@ public class Perk
       }
    }
 
+   public static string getCategoryDisplayName (int categoryId) {
+      return getCategoryDisplayName(getCategory(categoryId));
+   }
+
 #if IS_SERVER_BUILD
    public Perk (MySqlDataReader dataReader) {
       this.perkId = dataReader.GetInt32("perkId");

@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: 5d0c9a7cd574df8e9a2ad45e892a465c, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -138,7 +139,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 802755960962764614}
   spotMask: {fileID: 802755961768482728}
-  _highlightPlayerSpotSize: {x: 400, y: 400}
+  _highlightPlayerSpotSize: {x: 500, y: 500}
+  _highlightPlayerOffset: {x: 6, y: 30, z: 0}
   _defaultColor: {r: 0, g: 0, b: 0, a: 1}
   _totalEffectTime: 1
 --- !u!1 &802755961768482710
@@ -201,6 +203,7 @@ MonoBehaviour:
   m_Material: {fileID: 2100000, guid: e1c29008afee7067f93b1870d07c04a3, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

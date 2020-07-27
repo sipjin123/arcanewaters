@@ -24,6 +24,14 @@ public class CharacterStack : MonoBehaviour {
       foreach (Image image in GetComponentsInChildren<Image>()) {
          image.material = Instantiate(image.material);
       }
+
+      _originalScale = this.transform.localScale;
+   }
+
+   private void Start () {
+      if (_setDirectionOnStart) {
+         setDirection(_direction);
+      }
    }
 
    public void updateLayers (UserObjects userObjects) {
@@ -158,7 +166,12 @@ public class CharacterStack : MonoBehaviour {
       }
 
       // We might need to flip the sprites based on our new direction
-      this.transform.localScale = (_direction == Direction.West) ? new Vector3(-2, 2, 2) : new Vector3(2, 2, 2);
+      Vector2 scale = _originalScale;
+      if (_direction == Direction.West) {
+         scale.x *= -1;
+      }
+
+      this.transform.localScale = scale;
    }
 
    public void pauseAnimation () {
@@ -198,7 +211,15 @@ public class CharacterStack : MonoBehaviour {
    #region Private Variables
 
    // The direction our character is facing
+   [SerializeField]
    protected Direction _direction = Direction.South;
+
+   // Whether the direction should be applied to sprites when the game starts
+   [SerializeField]
+   protected bool _setDirectionOnStart = false;
+
+   // The original scale of the stack
+   protected Vector2 _originalScale;
 
    #endregion
 }
