@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 using UnityEngine.Events;
+using Newtonsoft.Json;
+using System;
 
 public enum XmlSlotIndex
 {
@@ -68,13 +70,13 @@ namespace NubisDataHandling {
                + " : " + returnCode.armor.itemTypeId
                + " : " + returnCode.userInfo.username, Color.magenta);
          } catch {
-            D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.getUserInfo));
+            D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.getUserInfoJSON));
             D.debug("Return code is: " + returnCode);
          }
       }
 
       private async void processXmlVersion () {
-         string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), getSlotIndex().ToString());
+         string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), getSlotIndex());
          try {
             int xmlVersion = int.Parse(returnCode);
             xmlVersionEvent.Invoke(xmlVersion);
@@ -103,9 +105,9 @@ namespace NubisDataHandling {
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
 
-         string rawBlueprintData = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), bluePrintId.ToString(), userId.ToString());
-         string craftingIngredientData = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId.ToString());
-         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId.ToString());
+         string rawBlueprintData = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
+         string craftingIngredientData = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId);
+         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientData);
          craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients);
@@ -137,10 +139,10 @@ namespace NubisDataHandling {
          List<Item> craftableItems = new List<Item>();
          List<Blueprint.Status> blueprintStatus = new List<Blueprint.Status>();
 
-         string craftingIngredientXml = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId.ToString());
-         string armorFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableArmors), userId.ToString());
-         string weaponFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), userId.ToString());
-         string hatFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), userId.ToString());
+         string craftingIngredientXml = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId);
+         string armorFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableArmors), userId);
+         string weaponFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), userId);
+         string hatFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
          List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients);
@@ -189,25 +191,16 @@ namespace NubisDataHandling {
          this.pageIndex = pageIndex;
          this.itemsPerPage = itemsPerPage;
 
-         string itemCountResponse = await NubisClient.call(nameof(DB_Main.userInventoryCount), userId.ToString(), ((int)this.categoryFilter).ToString());
-         int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
-
-         try {
-            totalItemCount = int.Parse(itemCountResponse);
-         } catch {
-            D.editorLog("Failed to parse: " + itemCountResponse);
-         }
-
          // Process user info
-         string userRawData = await NubisClient.call(nameof(DB_Main.userData), userId.ToString());
+         string userRawData = await NubisClient.call(nameof(DB_Main.getUserInfoJSON), userId);
          if (userRawData.Length < 10) {
             D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
             D.editorLog("Content: " + userRawData, Color.red);
          } 
-         newUserInfo = UserInfoData.processUserInfo(userRawData);
+         newUserInfo = JsonUtility.FromJson<UserInfo>(userRawData);
 
          // Process user equipped items
-         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId.ToString());
+         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
          Item equippedWeapon = new Item();
          Item equippedArmor = new Item();
          Item equippedHat = new Item(); 
@@ -220,8 +213,40 @@ namespace NubisDataHandling {
          userInventory.Add(equippedArmor);
          userInventory.Add(equippedHat);
 
+         List<Item.Category> newcategoryList = new List<Item.Category>();
+         newcategoryList.Add(Item.Category.Weapon);
+         newcategoryList.Add(Item.Category.Armor);
+         newcategoryList.Add(Item.Category.CraftingIngredients);
+         newcategoryList.Add(Item.Category.Blueprint);
+
+         int[] categoryInt = Array.ConvertAll(newcategoryList.ToArray(), x => (int) x);
+         string categoryJson = JsonConvert.SerializeObject(categoryInt);
+
+         List<int> itemIdFilter = new List<int>();
+         if (equippedWeapon.itemTypeId > 0) {
+            itemIdFilter.Add(equippedWeapon.id);
+         }
+         if (equippedArmor.itemTypeId > 0) {
+            itemIdFilter.Add(equippedArmor.id);
+         }
+         if (equippedHat.itemTypeId > 0) {
+            itemIdFilter.Add(equippedHat.id);
+         }
+
+         string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
+
+         //categoryFilter;
+         string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId, categoryJson, itemIdJson, "");
+         int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
+
+         try {
+            totalItemCount = int.Parse(itemCountResponse);
+         } catch {
+            D.editorLog("Failed to parse: " + itemCountResponse);
+         }
+
          if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId.ToString(), pageIndex.ToString(), ((int) this.categoryFilter).ToString(), equippedItemData.weaponItem.id.ToString(), equippedItemData.armorItem.id.ToString(), equippedItemData.hatItem.id.ToString());
+            string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId, pageIndex, (int) this.categoryFilter, equippedItemData.weaponItem.id, equippedItemData.armorItem.id, equippedItemData.hatItem.id);
             List<Item> itemList = UserInventory.processUserInventory(inventoryData);
             foreach (Item item in itemList) {
                if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
@@ -264,7 +289,7 @@ namespace NubisDataHandling {
          }
 
          // Fetch content from Nubis
-         string abilityRawData = await NubisClient.call(nameof(DB_Main.userAbilities), userId.ToString());
+         string abilityRawData = await NubisClient.call(nameof(DB_Main.userAbilities), userId);
          List<AbilitySQLData> abilityList = UserAbilities.processUserAbilities(abilityRawData);
 
          // Update the Skill Panel with the abilities we received from the server

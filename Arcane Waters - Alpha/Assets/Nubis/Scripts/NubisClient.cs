@@ -3,6 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System;
 
 /// <summary>
 /// Allows to communicate with Nubis through reflection calls.
@@ -57,7 +58,8 @@ internal class NubisClient
       HttpResponseMessage response = await client.SendAsync(message);
       return await response.Content.ReadAsStringAsync();
    }
-   public static async Task<T> call<T> (string function, params string[] args) {
+   public static async Task<T> call<T> (string function, params object[] rawArgs) {
+      string[] args = Array.ConvertAll(rawArgs, x => x.ToString());
       try {
          string result = await requestImpl(function, args);
          return JsonConvert.DeserializeObject<T>(result);
@@ -65,7 +67,8 @@ internal class NubisClient
          return default(T);
       }
    }
-   public static async Task<string> call (string function, params string[] args) {
+   public static async Task<string> call (string function, params object[] rawArgs) {
+      string[] args = Array.ConvertAll(rawArgs, x => x.ToString());
       try {
          return await requestImpl(function, args);
       } catch {

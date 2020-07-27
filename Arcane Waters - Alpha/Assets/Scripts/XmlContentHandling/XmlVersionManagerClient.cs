@@ -157,7 +157,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
    
    private async void downloadClientData (int targetVersion) {
-      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex().ToString());
+      string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex());
       writeData(zipDataRequest, targetVersion);
    }
    

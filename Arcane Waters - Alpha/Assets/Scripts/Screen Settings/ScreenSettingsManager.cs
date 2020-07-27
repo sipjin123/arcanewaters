@@ -26,9 +26,16 @@ public class ScreenSettingsManager : MonoBehaviour {
    // The minimum screen resolution height
    public static int MIN_HEIGHT = 768;
 
+   // The cached full screen resolution
+   public static int fullScreenResolutionWidth = 1920;
+   public static int fullScreenResolutionHeight = 1080;
+
    #endregion
 
    private void Awake () {
+      // Cache this resolution at the very start to determine the monitor resolution
+      fullScreenResolutionWidth = Screen.currentResolution.width;
+      fullScreenResolutionHeight = Screen.currentResolution.height;
 
       if (PlayerPrefs.HasKey(SCREEN_RESOLUTION_H) && PlayerPrefs.HasKey(SCREEN_RESOLUTION_W)) {
          Height = PlayerPrefs.GetInt(SCREEN_RESOLUTION_H);
@@ -68,7 +75,19 @@ public class ScreenSettingsManager : MonoBehaviour {
    public static void setFullscreen (bool fullscreen) {
       FullScreenMode = fullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
       Screen.SetResolution(Width, Height, FullScreenMode);
+      //Screen.SetResolution(fullscreen ? Screen.width : Width, fullscreen ? Screen.height : Height, FullScreenMode);
+      saveSettings();
+   }
 
+   public static void setToResolutionFullscreenWindows () {
+      Screen.SetResolution(fullScreenResolutionWidth, fullScreenResolutionHeight, FullScreenMode.Windowed);
+      D.debug("Setting resolution as: " + FullScreenMode.Windowed + " : " + fullScreenResolutionWidth + " : " + fullScreenResolutionHeight);
+      saveSettings();
+   }
+
+   public static void setToResolutionFullscreenExclusive () {
+      Screen.SetResolution(fullScreenResolutionWidth, fullScreenResolutionHeight, FullScreenMode.ExclusiveFullScreen);
+      D.debug("Setting resolution as: " + FullScreenMode.ExclusiveFullScreen + " : " + fullScreenResolutionWidth + " : " + fullScreenResolutionHeight);
       saveSettings();
    }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using NubisDataHandling;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class NubisDataFetchTest : MonoBehaviour
 
    // Only run this script for this device
    public static string DEVICE_NAME = "DESKTOP-7UVTQ74";
+
+   public int testUserId = 745;
 
    #endregion
 
@@ -41,7 +44,7 @@ public class NubisDataFetchTest : MonoBehaviour
          }
          if (GUILayout.Button("User Data Directly")) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string result = DB_Main.userData("745");
+               string result = DB_Main.getUserInfoJSON("745");
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   D.editorLog("Thred: " + result);
@@ -111,7 +114,7 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisFetchAbilities () {
       D.debug("Nubis Call Start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userAbilities), "745");
+      var returnCode = await NubisClient.call(nameof(DB_Main.userAbilities), testUserId);
       D.debug("Result: " + returnCode);
    }
 
@@ -127,50 +130,57 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private async void nubisTotalItems () {
+      List<Item.Category> newCategoryList = new List<Item.Category>();
+      newCategoryList.Add(Item.Category.Weapon);
+      newCategoryList.Add(Item.Category.Armor);
+      newCategoryList.Add(Item.Category.CraftingIngredients);
+      newCategoryList.Add(Item.Category.Blueprint);
+      int[] args = Array.ConvertAll(newCategoryList.ToArray(), x => (int) x);
+      string json = JsonConvert.SerializeObject(args);
       D.debug("Get Total items");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userInventoryCount), "745", "0");
+      var returnCode = await NubisClient.call(nameof(DB_Main.getItemCount), testUserId, json, "", "");
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisUserData () {
       D.debug("Getting UserData");
-      var returnCode = await NubisClient.call<string>(nameof(DB_Main.userData), "745"); 
+      var returnCode = await NubisClient.call<string>(nameof(DB_Main.getUserInfoJSON), testUserId); 
       D.debug("User Data Result: "+ returnCode); 
    }
 
    private async void nubisWeapons () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), "745"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), testUserId); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisArmors () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableArmors), "745"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableArmors), testUserId); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisHats () {
       D.debug("Fetch Craftable Hats");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), "745");
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), testUserId);
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisIngredients () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), "745"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), testUserId); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisEquippedItems () {
       D.debug("Get Equipped Items");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), "745"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), testUserId); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisInventory () {
       D.debug("Get Inventory");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userInventory), "745", "0", "0", "0", "0", "0");
+      var returnCode = await NubisClient.call(nameof(DB_Main.userInventory), testUserId, 0, 0, 0, 0, 0);
       List<Item> itemList = UserInventory.processUserInventory(returnCode);
       D.editorLog("Fetched a total inventory of: " + itemList.Count);
       D.debug("ASync start: " + returnCode);
@@ -178,32 +188,32 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisMap () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchMapData), "burl_farm", "3"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchMapData), "burl_farm", 3); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisMap2 () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchMapData), "Shroom Ruins", "1");
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchMapData), "Shroom Ruins", 1);
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisSingleBP () {
       D.debug("Fetching Single Bp");
       string itemId = "5767";
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), itemId.ToString(), "745"); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), itemId, testUserId); 
       D.debug("Result: " + returnCode);
    }
 
    private async void nubisXmlVer () {
       D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), ((int) XmlSlotIndex.Default).ToString()); 
+      var returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), (int) XmlSlotIndex.Default); 
       D.debug("ASync start: " + returnCode);
    }
 
    private async void nubisXMLBytes () {
       D.debug("Fetching xml zip");
-      string returnCode = await NubisClient.call(nameof(DB_Main.fetchZipRawData), ((int)XmlSlotIndex.Default).ToString()); 
+      string returnCode = await NubisClient.call(nameof(DB_Main.fetchZipRawData), (int)XmlSlotIndex.Default); 
       D.debug("Result: " + returnCode.Length);
    }
 

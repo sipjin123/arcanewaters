@@ -268,7 +268,7 @@ public class PlayerBodyEntity : BodyEntity {
             miningTrigger.interactOres();
          }
       }
-
+      
       // Speed ship boost feature
       if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius) {
          isSpeedingUp = true;

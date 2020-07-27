@@ -35,7 +35,7 @@ namespace MapCreationTool
             return null;
          }
 
-         return ImageManager.getTexture(idToLandMonster[id].battler.imagePath);
+         return ImageManager.getSprite(idToLandMonster[id].battler.imagePath).texture;
       }
 
       public Texture2D getSeaMonsterTexture (int seamonsterType) {
@@ -52,7 +52,7 @@ namespace MapCreationTool
       }
 
       public Texture2D getFirstSeaMonsterTexture () {
-         return seaMonsterCount == 0 ? null : ImageManager.getTexture(seaMonsters[0].seaMonsterData.defaultSpritePath);
+         return seaMonsterCount == 0 ? null : ImageManager.getSprite(seaMonsters[0].seaMonsterData.defaultSpritePath).texture;
       }
 
       public SelectOption[] formLandMonsterSelectionOptions () {

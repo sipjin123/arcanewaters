@@ -14,10 +14,6 @@ public class DB_MainStub : MonoBehaviour {
 
    #region Nubis Requests
 
-   public static string userData (string userIdString) {
-      return "";
-   }
-
    public static string fetchSingleBlueprint (string bpId, string usrId) {
       return "";
    }
@@ -30,10 +26,6 @@ public class DB_MainStub : MonoBehaviour {
       return "";
    }
 
-   public static string userInventoryCount (string usrIdStr, string categoryFilterStr) {
-      return "";
-   }
-   
    public static string fetchXmlVersion (string slotstr) {
       return "";
    }
@@ -740,10 +732,6 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static UserInfo getUserInfo (int userId) {
-      return null;
-   }
-
    public static UserInfo getUserInfoJSON (string userId) {
       return null;
    }
@@ -840,21 +828,16 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static int getItemCount (int userId) {
+   public static int getItemCountByType (int userId, int itemCategory, int itemType) {
       return 0;
    }
 
-   public static int getItemCount (int userId, int itemCategory, int itemType) {
+   public static int getItemCountByCategory (int userId, Item.Category[] categories) {
       return 0;
    }
 
-   public static int getItemCount (int userId, Item.Category[] categories) {
-      return 0;
-   }
-
-   public static int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter,
-      List<Item.Category> categoriesToFilter) {
-      return 0;
+   public static string getItemCount (string userId, string categoriesJSON, string itemIdsToFilterJSON, string categoriesToFilterJSON) {
+      return "0";
    }
 
    public static List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {

@@ -11,6 +11,7 @@ using MapCreationTool.Serialization;
 using System.IO;
 using SimpleJSON;
 using MapCustomization;
+using Newtonsoft.Json;
 
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
@@ -18,49 +19,6 @@ using MySql.Data.MySqlClient;
 public class DB_Main : DB_MainStub
 {
    #region NubisFeatures
-
-   public static new string userData (string userIdString) {
-      int usrId = int.Parse(userIdString);
-      try {
-         using (MySqlConnection connection = getConnection()) {
-            connection.Open();
-            using (MySqlCommand command = new MySqlCommand(
-               "SELECT usrGold, accGems, usrGender, usrName, bodyType, hairType, hairPalette1, hairPalette2, eyesType, eyesPalette1, eyesPalette2, wpnId, armId, hatId " +
-               "FROM users " +
-               "JOIN accounts " +
-               "USING (accId) " +
-               "WHERE usrId=@usrId",
-               connection)) {
-               command.Parameters.AddWithValue("@usrId", usrId);
-
-               using (MySqlDataReader reader = command.ExecuteReader()) {
-                  while (reader.Read()) {
-                     int usrGold = reader.GetInt32("usrGold");
-                     int accGems = reader.GetInt32("accGems");
-                     int usrGender = reader.GetInt32("usrGender");
-                     string usrName = reader.GetString("usrName");
-                     int bodyType = reader.GetInt32("bodyType");
-                     int hairType = reader.GetInt32("hairType");
-                     string hairPalette1 = reader.GetString("hairPalette1");
-                     string hairPalette2 = reader.GetString("hairPalette2");
-                     int eyesType = reader.GetInt32("eyesType");
-                     string eyesColor1 = reader.GetString("eyesPalette1");
-                     string eyesColor2 = reader.GetString("eyesPalette2");
-                     int wpnId = reader.GetInt32("wpnId");
-                     int armId = reader.GetInt32("armId");
-                     int hatId = reader.GetInt32("hatId");
-                     string result = $"usrGold:{usrGold}[space]accGems:{accGems}[space]usrGender:{usrGender}[space]usrName:{usrName}[space]bodyType:{bodyType}[space]hairType:{hairType}[space]hairPalette1:{hairPalette1}[space]hairPalette2:{hairPalette2}[space]eyesType:{eyesType}[space]eyesPalette1:{eyesColor1}[space]eyesPalette2:{eyesColor2}[space]wpnId:{wpnId}[space]armId:{armId}[space]hatId:{hatId}\n";
-                     return result;
-                  }
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-         return "";
-      }
-      return "";
-   }
 
    public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {
       int bpId = int.Parse(bpIdStr);
@@ -216,41 +174,6 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
       return "Failed to Query";
-   }
-
-   public static new string userInventoryCount (string usrIdStr, string categoryFilterStr) {
-      int usrId = int.Parse(usrIdStr);
-      int categoryFilter = int.Parse(categoryFilterStr);
-
-      bool hasItemFilter = categoryFilter != 0;
-      string itemFilterContent = "and (itmCategory = " + categoryFilter + ")";
-      if (!hasItemFilter) {
-         itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
-            " or itmCategory = " + (int) Item.Category.Armor +
-            " or itmCategory = " + (int) Item.Category.Hats +
-            " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
-      }
-
-      try {
-         using (MySqlConnection connection = getConnection()) {
-            connection.Open();
-
-            using (MySqlCommand command = new MySqlCommand("SELECT COUNT(*) as itemCount FROM arcane.items where (usrId = @usrId " + itemFilterContent + ")", connection)) {
-               command.Parameters.AddWithValue("@usrId", usrId);
-
-               using (MySqlDataReader reader = command.ExecuteReader()) {
-                  while (reader.Read()) {
-                     int itmCount = reader.GetInt32("itemCount");
-                     return itmCount.ToString();
-                  }
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-         return "0";
-      }
-      return "0";
    }
 
    public static new string fetchXmlVersion (string slotstr) {
@@ -507,7 +430,7 @@ public class DB_Main : DB_MainStub
                   abilityList.Add(abilityData);
                }
             }
-            D.editorLog("REsult of fetch: " + Util.serialize<AbilitySQLData>(abilityList).Length);
+
             foreach (string splitString in Util.serialize<AbilitySQLData>(abilityList)) {
                stringBuilder.AppendLine(splitString + "_space_");
             }
@@ -5546,31 +5469,7 @@ public class DB_Main : DB_MainStub
       return userObjects;
    }
 
-   public static new UserInfo getUserInfo (int userId) {
-      UserInfo userInfo = null;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  userInfo = new UserInfo(dataReader);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return userInfo;
-   }
-
-   public static new UserInfo getUserInfoJSON (string userId) {
+   public static new string getUserInfoJSON (string userId) {
       UserInfo userInfo = null;
 
       try {
@@ -5592,7 +5491,7 @@ public class DB_Main : DB_MainStub
       }
 
 
-      return userInfo;
+      return JsonUtility.ToJson(userInfo);
    }
 
    public static new UserInfo getUserInfo (string userName) {
@@ -5998,31 +5897,7 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int getItemCount (int userId) {
-      int itemCount = 0;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as itemCount FROM items WHERE usrId=@usrId", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", userId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  itemCount = dataReader.GetInt32("itemCount");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return itemCount;
-   }
-
-   public static new int getItemCount (int userId, int itemCategory, int itemType) {
+   public static new int getItemCountByType (int userId, int itemCategory, int itemType) {
       int itemCount = 0;
 
       try {
@@ -6050,12 +5925,17 @@ public class DB_Main : DB_MainStub
       return itemCount;
    }
 
-   public static new int getItemCount (int userId, Item.Category[] categories) {
-      return getItemCount(userId, categories, new List<int>(), new List<Item.Category>());
+   public static new int getItemCountByCategory (int userId, Item.Category[] categories) {
+      int[] categoryInt = Array.ConvertAll(categories.ToArray(), x => (int) x);
+      string categoryJson = JsonConvert.SerializeObject(categoryInt);
+      return int.Parse(getItemCount(userId.ToString(), categoryJson, "", ""));
    }
 
-   public static new int getItemCount (int userId, Item.Category[] categories, List<int> itemIdsToFilter,
-      List<Item.Category> categoriesToFilter) {
+   public static new string getItemCount (string userId, string categoriesJSON, string itemIdsToFilterJSON, string categoriesToFilterJSON) {
+      int[] categories = categoriesJSON.Length > 1 ? JsonConvert.DeserializeObject<int[]>(categoriesJSON) : new int[0];
+      int[] itemIdsToFilter = itemIdsToFilterJSON.Length > 1 ? JsonConvert.DeserializeObject<int[]>(itemIdsToFilterJSON) : new int[0];
+      int[] categoriesToFilter = categoriesToFilterJSON.Length > 1 ? JsonConvert.DeserializeObject<int[]>(categoriesToFilterJSON) : new int[0];
+
       // Initialize the count
       int itemCount = 0;
 
@@ -6064,7 +5944,7 @@ public class DB_Main : DB_MainStub
       query.Append("SELECT count(*) AS itemCount FROM items WHERE usrId=@usrId ");
 
       // Add the category filter only if the first is not 'none' or if there are many
-      if (categories[0] != Item.Category.None || categories.Length > 1) {
+      if ((Item.Category) categories[0] != Item.Category.None || categories.Length > 1) {
          // Setup multiple categories
          query.Append("AND (itmCategory=@itmCategory0");
          for (int i = 1; i < categories.Length; i++) {
@@ -6074,9 +5954,9 @@ public class DB_Main : DB_MainStub
       }
 
       // Filter categories
-      if (categoriesToFilter.Count > 0) {
+      if (categoriesToFilter.Length > 0) {
          query.Append("AND itmCategory NOT IN (");
-         for (int i = 0; i < categoriesToFilter.Count; i++) {
+         for (int i = 0; i < categoriesToFilter.Length; i++) {
             query.Append("@filteredCategory" + i + ", ");
          }
 
@@ -6087,9 +5967,9 @@ public class DB_Main : DB_MainStub
       }
 
       // Filter given item ids
-      if (itemIdsToFilter != null && itemIdsToFilter.Count > 0) {
+      if (itemIdsToFilter != null && itemIdsToFilter.Length > 0) {
          query.Append("AND itmId NOT IN (");
-         for (int i = 0; i < itemIdsToFilter.Count; i++) {
+         for (int i = 0; i < itemIdsToFilter.Length; i++) {
             query.Append("@filteredItemId" + i + ", ");
          }
 
@@ -6110,11 +5990,11 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@itmCategory" + i, (int) categories[i]);
             }
 
-            for (int i = 0; i < itemIdsToFilter.Count; i++) {
+            for (int i = 0; i < itemIdsToFilter.Length; i++) {
                cmd.Parameters.AddWithValue("@filteredItemId" + i, itemIdsToFilter[i]);
             }
 
-            for (int i = 0; i < categoriesToFilter.Count; i++) {
+            for (int i = 0; i < categoriesToFilter.Length; i++) {
                cmd.Parameters.AddWithValue("@filteredCategory" + i, categoriesToFilter[i]);
             }
 
@@ -6129,7 +6009,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return itemCount;
+      return itemCount.ToString();
    }
 
    public static new List<Item> getItems (int userId, Item.Category[] categories, int page, int itemsPerPage) {
@@ -6798,8 +6678,10 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      // Look up the members
-      info.guildMembers = DB_Main.getUsersForGuild(guildId).ToArray();
+      // Look up the members only if guild id is valid
+      if (guildId > 0) {
+         info.guildMembers = DB_Main.getUsersForGuild(guildId).ToArray();
+      } 
 
       return info;
    }
@@ -7452,7 +7334,6 @@ public class DB_Main : DB_MainStub
          return false;
       }
    }
-
 
    protected static new bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
       try {

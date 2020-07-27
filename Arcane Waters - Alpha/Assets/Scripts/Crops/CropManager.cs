@@ -324,7 +324,7 @@ public class CropManager : NetworkBehaviour {
             _player.Target_GainedXP(_player.connectionToClient, totalXP, jobs, Jobs.Type.Trader, 0, true);
 
             // Find the flagship id
-            int flagshipId = DB_Main.getUserInfo(_player.userId).flagshipId;
+            int flagshipId = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(_player.userId.ToString())).flagshipId;
 
             // Add the exchange to the trade history
             TradeHistoryInfo tradeInfo = new TradeHistoryInfo(_player.userId, flagshipId, AreaManager.self.getArea(_player.areaKey).townAreaKey,

@@ -224,7 +224,7 @@ public class MyNetworkManager : NetworkManager
          // Get information about owned map
          string baseMapAreaKey = previousAreaKey;
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
-         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : DB_Main.getUserInfo(mapOwnerId));
+         UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(mapOwnerId.ToString())));
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

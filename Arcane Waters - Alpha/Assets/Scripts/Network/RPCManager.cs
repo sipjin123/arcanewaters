@@ -14,6 +14,7 @@ using MapCustomization;
 using NubisDataHandling;
 using MapCreationTool.Serialization;
 using MapCreationTool;
+using Newtonsoft.Json;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -765,12 +766,14 @@ public class RPCManager : NetworkBehaviour {
          Jobs jobs = DB_Main.getJobXP(userId);
          UserObjects userObjects = DB_Main.getUserObjects(userId);
          UserInfo userInfo = userObjects.userInfo;
-         GuildInfo guildInfo = DB_Main.getGuildInfo(userInfo.guildId);
+         GuildInfo guildInfo = userInfo.guildId > 0 ? DB_Main.getGuildInfo(userInfo.guildId) : null;
          Perk[] perks = DB_Main.getPerkPointsForUser(userId).ToArray();
+
+         string guildName = userInfo.guildId > 0 ? guildInfo.guildName : "";
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveCharacterInfo(_player.connectionToClient, userObjects, stats, jobs, guildInfo.guildName, perks);
+            _player.rpc.Target_ReceiveCharacterInfo(_player.connectionToClient, userObjects, stats, jobs, guildName, perks);
          });
       });
    }
@@ -904,7 +907,6 @@ public class RPCManager : NetworkBehaviour {
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
          UserInfo userInfo = userObjects.userInfo;
 
-         int totalItemCount;
          List<Item> items;
 
          // Add equipped items to the list of item ids to filter
@@ -914,8 +916,14 @@ public class RPCManager : NetworkBehaviour {
             itemIdsToFilter.Add(userInfo.armorId);
          }
 
+         int[] categoryInt = Array.ConvertAll(categoryArray.ToArray(), x => (int) x);
+         string categoryJson = JsonConvert.SerializeObject(categoryInt);
+         
+         string idFilterJson = JsonConvert.SerializeObject(itemIdsToFilter.ToArray());
+
          // Get the item count and item list from the database
-         totalItemCount = DB_Main.getItemCount(_player.userId, categoryArray, itemIdsToFilter, new List<Item.Category>());
+         string totalItemCountStr = DB_Main.getItemCount(_player.userId.ToString(), categoryJson, idFilterJson, "");
+
          items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, itemIdsToFilter, new List<Item.Category>());
 
          // Back to the Unity thread to send the results back to the client
@@ -923,7 +931,7 @@ public class RPCManager : NetworkBehaviour {
             List<Item> processedItemList = EquipmentXMLManager.setEquipmentData(items);
 
             InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, new Item.Category[] { category },
-               pageNumber, userInfo.gold, userInfo.gems, totalItemCount, userInfo.armorId, userInfo.weaponId, processedItemList.ToArray());
+               pageNumber, userInfo.gold, userInfo.gems, int.Parse(totalItemCountStr), userInfo.armorId, userInfo.weaponId, processedItemList.ToArray());
             Target_ReceiveInventoryItemsForItemSelection(_player.connectionToClient, inventoryMessage);
          });
       });
@@ -995,7 +1003,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
+         UserInfo userInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(_player.userId.ToString()));
 
          // Check if this is an equipped armor or weapon
          bool wasEquippedArmor = (itemId == userInfo.armorId);
@@ -1221,7 +1229,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
+         UserInfo userInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(_player.userId.ToString()));
 
          // Back to Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -1611,7 +1619,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the friend user info
-         UserInfo friendUserInfo = DB_Main.getUserInfo(friendUserId);
+         UserInfo friendUserInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(friendUserId.ToString()));
          if (friendUserInfo == null) {
             D.error(string.Format("The user {0} does not exist.", friendUserId));
             return;
@@ -1693,7 +1701,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the user info of the friend
-         UserInfo friendInfo = DB_Main.getUserInfo(friendUserId);
+         UserInfo friendInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(friendUserId.ToString()));
 
          // Verify that there is a pending invite
          FriendshipInfo friendshipInfo = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
@@ -1882,7 +1890,7 @@ public class RPCManager : NetworkBehaviour {
                }
 
                // Verify that the item is not equipped
-               UserInfo userInfo = DB_Main.getUserInfo(_player.userId);
+               UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
 
                if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
                   feedbackMessage = "You cannot send an equipped item!";

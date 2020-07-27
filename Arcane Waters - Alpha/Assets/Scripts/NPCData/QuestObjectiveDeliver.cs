@@ -47,7 +47,7 @@ public class QuestObjectiveDeliver : QuestObjective
    public override bool canObjectiveBeCompletedDB (int userId) {
       if (category != Item.Category.Currency) {
          // Retrieve the number of items the users has in inventory
-         int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+         int itemsInInventory = DB_Main.getItemCountByType(userId, (int) category, itemTypeId);
 
          // Determines if the objective is completed
          return canObjectiveBeCompleted(itemsInInventory);
@@ -63,7 +63,7 @@ public class QuestObjectiveDeliver : QuestObjective
    public override void completeObjective (int userId) {
       if (category != Item.Category.Currency) {
          // Retrieve the number of items the users has in inventory
-         int itemsInInventory = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+         int itemsInInventory = DB_Main.getItemCountByType(userId, (int) category, itemTypeId);
 
          // Retrieve the item ID
          int itemId = DB_Main.getItemID(userId, (int) category, itemTypeId);
@@ -80,7 +80,7 @@ public class QuestObjectiveDeliver : QuestObjective
    public override int getObjectiveProgress (int userId) {
       if (category != Item.Category.Currency) {
          // Retrieve the number of items the users has in inventory
-         int itemsForObjective = DB_Main.getItemCount(userId, (int) category, itemTypeId);
+         int itemsForObjective = DB_Main.getItemCountByType(userId, (int) category, itemTypeId);
 
          // Clamp the number of items to the required amount
          if (itemsForObjective > count) {

@@ -35,6 +35,11 @@ public class TitleScreen : MonoBehaviour {
    // The canvas reference
    public CanvasGroup titleScreenCanvas;
 
+   // Debug UI for resolution testing of MAC
+   public Button setToMaxScreenWindows;
+   public Button setToMaxScreenExclusive;
+   public Text windowResolutionText, monitorResolutionText;
+
    #endregion
 
    private void Awake () {
@@ -46,12 +51,22 @@ public class TitleScreen : MonoBehaviour {
 
       defaultLoginPanel.SetActive(!SteamManager.Initialized);
       steamLoginPanel.SetActive(SteamManager.Initialized);
+
+      setToMaxScreenWindows.onClick.AddListener(() => {
+         ScreenSettingsManager.setToResolutionFullscreenWindows();
+      });
+      setToMaxScreenExclusive.onClick.AddListener(() => {
+         ScreenSettingsManager.setToResolutionFullscreenExclusive();
+      });
    }
 
    private void Update () {
       if (Util.isBatch()) {
          return;
       }
+
+      windowResolutionText.text = "Your Window is: W: " + Screen.width + " H: " + Screen.height;
+      monitorResolutionText.text = "Your Screen is: W: " + Screen.currentResolution.width + " H: " + Screen.currentResolution.height;
 
       // Make the canvas disabled while the client is running
       bool disabled = !isActive();
