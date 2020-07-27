@@ -14,6 +14,7 @@ namespace MapCreationTool
       public PolygonCollider2D camBounds;
       public CinemachineConfiner confiner;
       public Transform rugMarkerParent;
+      public FlockManager flockManager;
    }
 }
 

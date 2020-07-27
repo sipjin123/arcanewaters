@@ -180,6 +180,14 @@ public class MapManager : MonoBehaviour
 
          MapImporter.setCameraBounds(result, bounds);
          MapImporter.addEdgeColliders(result, bounds);
+
+         // Set up Flock Manager if it's a sea map, delete otherwise
+         if (exportedProject.editorType == EditorType.Sea) {
+            result.flockManager.spawnBox.size = bounds.size * 0.16f;
+         } else {
+            Destroy(result.flockManager.gameObject);
+         }
+
          yield return null;
 
          if (customizationData != null) {

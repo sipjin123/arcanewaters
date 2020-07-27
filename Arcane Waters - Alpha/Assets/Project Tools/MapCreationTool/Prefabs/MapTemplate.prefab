@@ -487,6 +487,7 @@ Transform:
   - {fileID: 325350921020266170}
   - {fileID: 1642774252992135975}
   - {fileID: 7758793860600656536}
+  - {fileID: 1653473025005386994}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -511,6 +512,7 @@ MonoBehaviour:
   camBounds: {fileID: 5006032918482514862}
   confiner: {fileID: 816953405780111430}
   rugMarkerParent: {fileID: 8269701891779436707}
+  flockManager: {fileID: 2126564388526801667}
 --- !u!114 &7307660222695324248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -524,6 +526,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   areaKey: 
+  baseAreaKey: 
   townAreaKey: 
   biome: 0
   cameraBounds: {fileID: 5006032918482514862}
@@ -651,6 +654,85 @@ Transform:
   m_Father: {fileID: 9161421361191220153}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8523303322810993949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1653473025005386994}
+  - component: {fileID: 2126564388526801667}
+  - component: {fileID: 6796861216618508055}
+  m_Layer: 0
+  m_Name: Flock Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1653473025005386994
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523303322810993949}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9161421361191220153}
+  m_RootOrder: 16
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2126564388526801667
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523303322810993949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9983b9703dc978b4aac42fcc31b30530, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flockPrefabs:
+  - {fileID: 114897154171541070, guid: 6a171e8d109b29242ad00d6189127a55, type: 3}
+  - {fileID: 114330317176090526, guid: cb5f620f3cd3f1b48a30b55f60d28359, type: 3}
+  - {fileID: 114586885560775576, guid: a75b553aa3748514aafa1e10ecbb3981, type: 3}
+  spawnBox: {fileID: 6796861216618508055}
+  birdCoastSprite: {fileID: 21300004, guid: d4ed21f2a8863d343b8b7b5e5ed83be3, type: 3}
+  shadowCoastSprite: {fileID: 21300004, guid: eaebc2f65ddde8640b2023b7aedf1290, type: 3}
+  maxFlocks: 10
+  flockChance: 0.5
+--- !u!61 &6796861216618508055
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8523303322810993949}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1}
+  m_EdgeRadius: 0
 --- !u!1001 &1870087027974303312
 PrefabInstance:
   m_ObjectHideFlags: 0
