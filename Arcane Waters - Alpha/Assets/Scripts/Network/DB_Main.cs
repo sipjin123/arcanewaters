@@ -6340,6 +6340,76 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void updateItemShortcut (int userId, int slotNumber, int itemId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO item_shortcuts(userId, slotNumber, itemId) " +
+            "VALUES (@userId, @slotNumber, @itemId) " +
+            "ON DUPLICATE KEY UPDATE itemId=values(itemId)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@slotNumber", slotNumber);
+            cmd.Parameters.AddWithValue("@itemId", itemId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void deleteItemShortcut (int userId, int slotNumber) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM item_shortcuts WHERE userId=@userId AND slotNumber=@slotNumber", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@slotNumber", slotNumber);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<ItemShortcutInfo> getItemShortcutList (int userId) {
+      List<ItemShortcutInfo> shortcutList = new List<ItemShortcutInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM item_shortcuts JOIN items ON item_shortcuts.itemId = items.itmId " +
+            "WHERE item_shortcuts.userId=@userId AND items.usrId = @userId " +
+            "ORDER BY item_shortcuts.slotNumber", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  ItemShortcutInfo shortcut = new ItemShortcutInfo(dataReader);
+                  shortcutList.Add(shortcut);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return shortcutList;
+   }
+
    #endregion
 
    public static new void deleteAllFromTable (int accountId, int userId, string table) {

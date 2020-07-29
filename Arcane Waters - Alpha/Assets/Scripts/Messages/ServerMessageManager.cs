@@ -395,6 +395,14 @@ public class ServerMessageManager : MonoBehaviour {
       // Add the perks to the user
       DB_Main.addPerkPointsForUser(userId, perks);
 
+      // Add the default starting items
+      int slotNumber = 1;
+      foreach (int itemTypeId in InventoryManager.STARTING_WEAPON_TYPE_IDS) {
+         int itemId = DB_Main.insertNewWeapon(userId, itemTypeId, "", "");
+         DB_Main.updateItemShortcut(userId, slotNumber, itemId);
+         slotNumber++;
+      }
+
       // Give some additional armor and weapons to test users
       /*if (true) {
          DB_Main.addGold(userId, 800);

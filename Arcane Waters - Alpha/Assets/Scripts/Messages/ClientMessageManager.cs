@@ -316,14 +316,6 @@ public class ClientMessageManager : MonoBehaviour {
       store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
    }
 
-   public static void On_Equip (NetworkConnection conn, EquipMessage msg) {
-      // Get a reference to the Inventory Panel
-      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
-
-      // Refresh the panel
-      panel.refreshPanel();
-   }
-
    #region Private Variables
 
    #endregion

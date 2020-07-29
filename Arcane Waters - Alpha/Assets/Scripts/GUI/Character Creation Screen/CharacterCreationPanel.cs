@@ -136,6 +136,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       Perk[] chosenPerks = perksGrid.getAssignedPoints().ToArray();
       int pointsSum = chosenPerks.Sum(perk => perk.points);
 
+      /* Temporarily disabled as it's not working as intended
       if (!ignorePerkQuestions) {
          // If any of the questions hasn't been answered, ask the player to confirm skipping the perks
          if (pointsSum < CreationPerksGrid.AVAILABLE_POINTS) {
@@ -143,6 +144,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
             return;
          }
       }
+      */
 
       PanelManager.self.showConfirmationPanel("Finish creating your character?", () => {
          canvasGroup.interactable = false;

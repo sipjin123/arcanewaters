@@ -14,6 +14,9 @@ public class BaseCamera : MonoBehaviour {
    // The Camera quake effect
    public CameraFilterPack_FX_EarthQuake quakeEffect;
 
+   // Allows increasing or decreasing the orthographic size of the camera
+   public float scaleModifier = 1.0f;
+
    #endregion
 
    public virtual void Awake () {

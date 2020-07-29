@@ -527,6 +527,25 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
+   public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
+      // Refresh the inventory panel
+      InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+      if (panel.isShowing()) {
+         panel.refreshPanel();
+      }
+
+      // Update the equipped items cache
+      Global.userObjects.weapon = equippedWeapon;
+      Global.userObjects.armor = equippedArmor;
+      Global.userObjects.hat = equippedHat;
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveItemShortcuts (NetworkConnection connection, ItemShortcutInfo[] shortcuts) {
+      PanelManager.self.itemShortcutPanel.updatePanelWithShortcuts(shortcuts);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveFriendshipInfo (NetworkConnection connection, FriendshipInfo[] friendshipInfo,
       Friendship.Status friendshipStatus, int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
       List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
@@ -1038,9 +1057,82 @@ public class RPCManager : NetworkBehaviour {
 
                // Send the confirmation message so the player updates their inventory panel
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ConfirmDeleteItem, _player, itemId + "");
+
+               // Update the shortcuts panel in case the deleted item was set in a slot
+               sendItemShortcutList();
             } else {
                D.warning(string.Format("Player {0} tried to delete item {1}, but the DB query affected {2} rows?!", _player, itemId, rowsAffected));
             }
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_UpdateItemShortcut (int slotNumber, int itemId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Check that the player has the item in his inventory
+         Item inventoryItem = DB_Main.getItem(_player.userId, itemId);
+         if (inventoryItem == null) {
+            return;
+         }
+
+         DB_Main.updateItemShortcut(_player.userId, slotNumber, itemId);
+         List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated shortcuts to the client
+            Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_DeleteItemShortcut (int slotNumber) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.deleteItemShortcut(_player.userId, slotNumber);
+         List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated shortcuts to the client
+            Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestItemShortcutListFromServer () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      sendItemShortcutList();
+   }
+
+   [Server]
+   public void sendItemShortcutList () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated shortcuts to the client
+            Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
          });
       });
    }
@@ -1890,7 +1982,8 @@ public class RPCManager : NetworkBehaviour {
                }
 
                // Verify that the item is not equipped
-               UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
+               string userInfoString = DB_Main.getUserInfoJSON(_player.userId.ToString());
+               UserInfo userInfo = JsonUtility.FromJson<UserInfo>(userInfoString);
 
                if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
                   feedbackMessage = "You cannot send an equipped item!";
@@ -1942,6 +2035,11 @@ public class RPCManager : NetworkBehaviour {
             if (success) {
                // Let the player know that the mail was sent
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, feedbackMessage);
+
+               if (attachedItemsIds.Length > 0) {
+                  // Update the shortcuts panel in case the transferred items were set in slots
+                  sendItemShortcutList();
+               }
             } else {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
@@ -3842,30 +3940,19 @@ public class RPCManager : NetworkBehaviour {
                body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
             }
 
-            // Let the client know that we're done
-            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
-            NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
          });
       });
    }
 
    [Server]
    protected void requestSetHatId (int hatId) {
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.setHatId(_player.userId, hatId);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            processUserData();
-         });
-      });
-   }
-
-   private void processUserData () {
       // They may be in an island scene, or at sea
       BodyEntity body = _player.GetComponent<BodyEntity>();
 
+      // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.setHatId(_player.userId, hatId);
          UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
 
          // Back to Unity
@@ -3875,9 +3962,7 @@ public class RPCManager : NetworkBehaviour {
                body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
             }
 
-            // Let the client know that we're done
-            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
-            NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
          });
       });
    }
@@ -3901,9 +3986,7 @@ public class RPCManager : NetworkBehaviour {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id);
             }
 
-            // Let the client know that we're done
-            EquipMessage equipMessage = new EquipMessage(_player.netId, userObjects.armor.id, userObjects.weapon.id, userObjects.hat.id);
-            NetworkServer.SendToClientOfPlayer(_player.netIdent, equipMessage);
+            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
          });
       });
    }

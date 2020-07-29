@@ -39,7 +39,7 @@ public class MyCamera : BaseCamera
    }
 
    private void setInternalOrthographicSize () {
-      _orthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+      _orthographicSize = Screen.height / DEFAULT_PPU_SCALE * scaleModifier;
 
       CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
       if (confiner != null) {

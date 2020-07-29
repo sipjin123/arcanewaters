@@ -119,6 +119,9 @@ public class MapManager : MonoBehaviour
          area.version = mapInfo.version;
          area.biome = exportedProject.biome;
 
+         area.cloudManager.enabled = false;
+         area.cloudShadowManager.enabled = false;
+
          if (exportedProject.editorType == EditorType.Sea) {
             area.isSea = true;
          } else if (exportedProject.editorType == EditorType.Interior) {
@@ -192,6 +195,12 @@ public class MapManager : MonoBehaviour
 
          if (customizationData != null) {
             setCustomizations(area, customizationData);
+         }
+
+         if (exportedProject.editorType == EditorType.Sea) {
+            area.cloudManager.enabled = true;
+         } else if (exportedProject.editorType == EditorType.Area) {
+            area.cloudShadowManager.enabled = true;
          }
 
          // Destroy the template component

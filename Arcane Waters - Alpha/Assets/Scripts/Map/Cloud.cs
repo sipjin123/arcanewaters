@@ -36,7 +36,7 @@ public class Cloud : ClientMonoBehaviour {
       shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType + "_shadow"));
 
       // Check for nearby objects
-      InvokeRepeating("checkNearby", 0f, .5f);
+      InvokeRepeating(nameof(checkNearby), 0f, .7f);
    }
 
    void Update () {
@@ -64,7 +64,7 @@ public class Cloud : ClientMonoBehaviour {
 
    protected void checkNearby () {
       Collider2D[] results = new Collider2D[1];
-      int count = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, .6f, results, LayerMask.GetMask("Ships"));
+      int count = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, .7f, results, LayerMask.GetMask(LayerUtil.SHIPS));
 
       // If we found a ship, then there's something near us
       hasSomethingNearby = count > 0;

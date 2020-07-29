@@ -375,6 +375,16 @@ public class NetEntity : NetworkBehaviour
       this.eyesType = userInfo.eyesType;
       this.eyesPalette1 = userInfo.eyesPalette1;
       this.bodyType = userInfo.bodyType;
+
+      // Update the user info cache
+      if (Global.userObjects == null) {
+         Global.userObjects = new UserObjects();
+      }
+
+      Global.userObjects.userInfo = userInfo;
+      Global.userObjects.weapon = weapon;
+      Global.userObjects.armor = armor;
+      Global.userObjects.hat = hat;
    }
 
    public bool isMale () {

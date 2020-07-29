@@ -18,7 +18,6 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.RegisterHandler<LogInCompleteMessage>(ClientMessageManager.On_LoginIsComplete);
       NetworkClient.RegisterHandler<CharacterCreationValidMessage>(ClientMessageManager.On_CharacterCreationValid);
       NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
-      NetworkClient.RegisterHandler<EquipMessage>(ClientMessageManager.On_Equip);
       NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
    }
 

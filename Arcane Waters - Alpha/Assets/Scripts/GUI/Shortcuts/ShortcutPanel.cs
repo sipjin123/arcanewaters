@@ -21,17 +21,76 @@ public class ShortcutPanel : ClientMonoBehaviour {
    private void Start () {
       // Look up components
       _canvasGroup = GetComponent<CanvasGroup>();
-      _boxes = GetComponentsInChildren<ShortcutBox>();
+      _boxes = new List<ShortcutBox>(GetComponentsInChildren<ShortcutBox>());
+
+      // Start hidden
+      _canvasGroup.Hide();
+      disableShortcuts();
    }
 
    private void Update () {
       // Hide this panel when we don't have a body
-      _canvasGroup.alpha = (Global.player == null || !(Global.player is PlayerBodyEntity) || Global.isInBattle()) ? 0f : 1f;
-      _canvasGroup.blocksRaycasts = _canvasGroup.alpha > 0f;
+      if (Global.player == null || !(Global.player is PlayerBodyEntity) || Global.isInBattle()) {
+         _canvasGroup.Hide();
+         disableShortcuts();
+      } else {
+         _canvasGroup.Show();
 
-      // Hide any shortcut boxes that aren't relevant yet
+         // Disable shortcuts when a panel is opened
+         if (PanelManager.self.hasPanelInStack()) {
+            disableShortcuts();
+         } else {
+            enableShortcuts();
+         }
+      }
+   }
+
+   public void updatePanelWithShortcuts (ItemShortcutInfo[] shortcuts) {
+      // Clear the boxes
       foreach (ShortcutBox box in _boxes) {
-         box.gameObject.SetActive((int)TutorialManager.currentStep >= (int)box.requiredTutorialStep);
+         box.clear();
+      }
+
+      // Set the items in the corresponding boxes
+      foreach (ItemShortcutInfo shortcut in shortcuts) {
+         ShortcutBox box = _boxes.Find(b => b.slotNumber == shortcut.slotNumber);
+         if (box != null) {
+            box.setItem(shortcut.item);
+         }
+      }
+   }
+
+   public void activateShortcut (int slotNumber) {
+      ShortcutBox box = _boxes.Find(b => b.slotNumber == slotNumber);
+      if (box != null) {
+         box.onShortcutPress();
+      }
+   }
+
+   public ShortcutBox getShortcutBoxAtPosition (Vector2 screenPoint) {
+      foreach (ShortcutBox box in _boxes) {
+         if (box.isInDropZone(screenPoint)) {
+            return box;
+         }
+      }
+      return null;
+   }
+
+   private void enableShortcuts () {
+      if (!_areShortcutsEnabled) {
+         foreach (ShortcutBox box in _boxes) {
+            box.button.interactable = true;
+         }
+         _areShortcutsEnabled = true;
+      }
+   }
+
+   private void disableShortcuts () {
+      if (_areShortcutsEnabled) {
+         foreach (ShortcutBox box in _boxes) {
+            box.button.interactable = false;
+         }
+         _areShortcutsEnabled = false;
       }
    }
 
@@ -41,7 +100,10 @@ public class ShortcutPanel : ClientMonoBehaviour {
    protected CanvasGroup _canvasGroup;
 
    // Our shortcut boxes
-   protected ShortcutBox[] _boxes;
+   protected List<ShortcutBox> _boxes;
+
+   // Gets set to true when the shortcuts can be used
+   protected bool _areShortcutsEnabled = true;
 
    #endregion
 }

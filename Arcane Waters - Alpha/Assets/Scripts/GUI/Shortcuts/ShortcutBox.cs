@@ -3,15 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.EventSystems;
 
-public class ShortcutBox : MonoBehaviour {
+public class ShortcutBox : MonoBehaviour, IPointerClickHandler
+{
    #region Public Variables
 
-   // The required tutorial step before this box becomes available (if any)
-   public int requiredTutorialStep = 0;
+   // The number associated with this shortcut
+   public int slotNumber = 0;
 
-   // The item number associated with this shortcut
-   public int itemNumber = 0;
+   // The prefab we use for creating item cells
+   public ItemCell itemCellPrefab;
+
+   // The container of the item cell
+   public GameObject itemCellContainer;
+
+   // The box button
+   public Button button;
+
+   // The zone where grabbed items can be dropped
+   public ItemDropZone dropZone;
 
    #endregion
 
@@ -19,30 +30,55 @@ public class ShortcutBox : MonoBehaviour {
       // Look up components
       _button = GetComponent<Button>();
       _containerImage = GetComponent<Image>();
+
+      itemCellContainer.DestroyChildren();
    }
 
    private void Update () {
-      // Check what type of weapon the player has equipped
-      int weaponType = 0;
-      Weapon.ActionType actionType = Weapon.ActionType.None;
-      if (Global.player is PlayerBodyEntity) {
-         PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
-         weaponType = body.weaponManager.weaponType;
-         actionType = body.weaponManager.actionType;
+      if (_itemCell == null || _itemCell.getItem() == null) {
+         return;
       }
 
       // Make the box highlighted if we've equipped the associated weapon
       _containerImage.color = Color.white;
-      if ((itemNumber == 1 && actionType == Weapon.ActionType.PlantCrop) ||
-         (itemNumber == 2 && actionType == Weapon.ActionType.WaterCrop) ||
-         (itemNumber == 3 && actionType == Weapon.ActionType.HarvestCrop)) {
+      if (InventoryManager.isEquipped(_itemCell.getItem().id)) {
          _containerImage.color = Util.getColor(255, 160, 160);
       }
    }
 
-   public void equipWeapon () {
-      PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
-      body.Cmd_EquipWeapon(itemNumber);
+   public void onShortcutPress () {
+      if (_itemCell != null && button.interactable) {
+         InventoryManager.tryEquipOrUseItem(_itemCell.getItem());
+      }
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      if (_itemCell != null && ((InventoryPanel) PanelManager.self.get(Panel.Type.Inventory)).isShowing()
+         && eventData.button == PointerEventData.InputButton.Right) {
+         Global.player.rpc.Cmd_DeleteItemShortcut(slotNumber);
+      }
+   }
+
+   public void setItem(Item item) {
+      clear();
+
+      _itemCell = Instantiate(itemCellPrefab, itemCellContainer.transform, false);
+      _itemCell.setCellForItem(item);
+
+      _itemCell.disablePointerEvents();
+      _itemCell.hideBackground();
+      _itemCell.hideItemCount();
+      _itemCell.hideSelectedBox();
+   }
+
+   public void clear () {
+      itemCellContainer.DestroyChildren();
+      _itemCell = null;
+      _containerImage.color = Color.white;
+   }
+
+   public bool isInDropZone (Vector2 screenPoint) {
+      return dropZone.isInZone(screenPoint);
    }
 
    #region Private Variables
@@ -52,6 +88,9 @@ public class ShortcutBox : MonoBehaviour {
 
    // Our container image
    protected Image _containerImage;
+
+   // The item cell contained in the shortcut box
+   protected ItemCell _itemCell = null;
 
    #endregion
 }

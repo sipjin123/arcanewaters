@@ -37,7 +37,7 @@ public class CloudShadowManager : ClientMonoBehaviour
       _shadows = new List<CloudShadow>(GetComponentsInChildren<CloudShadow>());
 
       // How spread out things are
-      const float SPREAD = 2.7f;
+      const float SPREAD = 2.3f;
 
       // Create clouds in a random grid
       for (float y = expandedBounds.min.y; y < expandedBounds.max.y; y += SPREAD) {

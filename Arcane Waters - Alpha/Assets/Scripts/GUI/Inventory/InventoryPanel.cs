@@ -193,9 +193,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
       loadBlocker.SetActive(false);
-      _equippedWeaponId = userObjects.weapon.id;
-      _equippedArmorId = userObjects.armor.id;
-      _equippedHatId = userObjects.hat.id;
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
 
@@ -253,19 +250,20 @@ public class InventoryPanel : Panel, IPointerClickHandler {
                // Instantiates the cell
                ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
 
-               // Initializes the cell, cast if it is ingredient type
-               cell.setCellForItem(item.category == Item.Category.CraftingIngredients ? item.getCastItem() : item);
+               // Initializes the cell
+               cell.setCellForItem(item);
 
-               // If the item is equipped, place the item cell in the equipped slots
-               if (item.id == _equippedWeaponId && item.id != 0) {
-                  cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-                  refreshStats(Weapon.castItemToWeapon(item));
-               } else if (item.id == _equippedArmorId && item.id != 0) {
-                  cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-                  refreshStats(Armor.castItemToArmor(item));
-               } else if (item.id == _equippedHatId && item.id != 0) {
-                  cell.transform.SetParent(equippedHatCellContainer.transform, false);
-                  refreshStats(Hat.castItemToHat(item));
+               if (InventoryManager.isEquipped(item.id)) {
+                  if (item.category == Item.Category.Weapon) {
+                     cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
+                     refreshStats(Weapon.castItemToWeapon(item));
+                  } else if (item.category == Item.Category.Armor) {
+                     cell.transform.SetParent(equippedArmorCellContainer.transform, false);
+                     refreshStats(Armor.castItemToArmor(item));
+                  } else if (item.category == Item.Category.Hats) {
+                     cell.transform.SetParent(equippedHatCellContainer.transform, false);
+                     refreshStats(Hat.castItemToHat(item));
+                  }
                }
 
                // Set the cell click events
@@ -273,7 +271,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
                cell.rightClickEvent.RemoveAllListeners();
                cell.doubleClickEvent.RemoveAllListeners();
                cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-               cell.doubleClickEvent.AddListener(() => tryEquipOrUseItem(cell.getItem()));
+               cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
             } else {
                D.editorLog("Warning, Item Type is 0", Color.red);
             }
@@ -447,14 +445,10 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    public void setStatModifiers (Item item) {
       // Skip equipped items
-      if (item == null) {
+      if (InventoryManager.isEquipped(item.id)) {
          return;
       }
-
-      if (item.id == _equippedArmorId || item.id == _equippedWeaponId || item.id == _equippedHatId) {
-         return;
-      }
-
+      
       // Determine if the hovered item is a weapon or an armor
       if (item.category == Item.Category.Weapon) {
          Weapon weapon = Weapon.castItemToWeapon(item);
@@ -487,33 +481,33 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    }
 
    public void showContextMenu (ItemCell itemCell) {
-      // Set the selected item
-      _selectedItem = itemCell.getItem();
+      // Get the selected item
+      Item castedItem = itemCell.getItem();
 
       // If the item cannot be interacted with in any way, don't show the menu
-      if (!_selectedItem.canBeEquipped() &&
-         !_selectedItem.canBeUsed() &&
-         !_selectedItem.canBeTrashed()) {
+      if (!castedItem.canBeEquipped() &&
+         !castedItem.canBeUsed() &&
+         !castedItem.canBeTrashed()) {
          return;
       }
 
       PanelManager.self.contextMenuPanel.clearButtons();
 
       // Add the context menu buttons
-      if (_selectedItem.canBeEquipped()) {
-         if (isEquipped(_selectedItem.id)) {
-            PanelManager.self.contextMenuPanel.addButton("Unequip", () => equipOrUnequipSelected());
+      if (castedItem.canBeEquipped()) {
+         if (InventoryManager.isEquipped(castedItem.id)) {
+            PanelManager.self.contextMenuPanel.addButton("Unequip", () => InventoryManager.equipOrUnequipItem(castedItem));
          } else {
-            PanelManager.self.contextMenuPanel.addButton("Equip", () => equipOrUnequipSelected());
+            PanelManager.self.contextMenuPanel.addButton("Equip", () => InventoryManager.equipOrUnequipItem(castedItem));
          }
       }
 
-      if (_selectedItem.canBeUsed()) {
-         PanelManager.self.contextMenuPanel.addButton("Use", () => useSelected());
+      if (castedItem.canBeUsed()) {
+         PanelManager.self.contextMenuPanel.addButton("Use", () => InventoryManager.useItem(castedItem));
       }
 
-      if (_selectedItem.canBeTrashed()) {
-         PanelManager.self.contextMenuPanel.addButton("Trash", () => trashSelected());
+      if (castedItem.canBeTrashed()) {
+         PanelManager.self.contextMenuPanel.addButton("Trash", () => InventoryManager.trashItem(castedItem));
       }
 
       PanelManager.self.contextMenuPanel.show("");
@@ -547,113 +541,39 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    public void tryDropGrabbedItem (Vector2 screenPosition) {
      if (_grabbedItemCell != null) {
-         // Determine which action was performed
-         bool equipped = isEquipped(_grabbedItemCell.getItem().id);
+         // Check if the item was dropped over a shortcut slot
+         ShortcutBox box = PanelManager.self.itemShortcutPanel.getShortcutBoxAtPosition(screenPosition);
+         if (box != null) {
+            Global.player.rpc.Cmd_UpdateItemShortcut(box.slotNumber, _grabbedItemCell.getItem().id);
+            stopGrabbingItem();
+            return;
+         }
+
+         // Items can also be dragged from the equipment slots to the inventory or vice-versa
+         bool equipped = InventoryManager.isEquipped(_grabbedItemCell.getItem().id);
          bool droppedInInventory = inventoryDropZone.isInZone(screenPosition);
          bool droppedInEquipmentSlots = equipmentDropZone.isInZone(screenPosition);
-
-         // Items can be dragged from the equipment slots to the inventory or vice-versa
+         
          if ((equipped && droppedInInventory) ||
             (!equipped && droppedInEquipmentSlots)) {
 
-            // Select the item
-            _selectedItem = _grabbedItemCell.getItem();
-
             // Equip or unequip the item
-            equipOrUnequipSelected();
+            InventoryManager.equipOrUnequipItem(_grabbedItemCell.getItem());
 
             // Deactivate the grabbed item object
             grabbedItem.deactivate();
             _grabbedItemCell = null;
-         } else {
-            // Otherwise, simply stop grabbing
-            stopGrabbingItem();
+
+            return;
          }
+
+         // Otherwise, simply stop grabbing
+         stopGrabbingItem();
       }
    }
 
-   public void tryEquipOrUseItem(Item castedItem) {
-      _selectedItem = castedItem;
-
-      // Equip the item if it is equippable
-      if (castedItem.canBeEquipped()) {
-         equipOrUnequipSelected();
-         return;
-      }
-
-      // Use the item if it is usable
-      if (castedItem.canBeUsed()) {
-         useSelected();
-         return;
-      }
-   }
-
-   public void equipOrUnequipSelected () {
-      // Check which type of item we requested to equip/unequip
-      if (_selectedItem is Weapon) {
-         loadBlocker.SetActive(true);
-
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
-
-         // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
-      } else if (_selectedItem is Armor) {
-         loadBlocker.SetActive(true);
-
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
-
-         // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetArmorId(itemIdToSend);
-      } else if (_selectedItem is Hat) {
-         loadBlocker.SetActive(true);
-
-         // Check if it's currently equipped or not
-         int itemIdToSend = isEquipped(_selectedItem.id) ? 0 : _selectedItem.id;
-
-         // Equip or unequip the item
-         Global.player.rpc.Cmd_RequestSetHatId(itemIdToSend);
-      }
-   }
-
-   public void useSelected () {
-      // Show an error panel if the item cannot be used
-      if (!_selectedItem.canBeUsed()) {
-         PanelManager.self.noticeScreen.show("This item can not be used.");
-         return;
-      }
-
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmUseSelectedItem());
-
-      // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to use your " + _selectedItem.getName() + "?");
-   }
-
-   public void confirmUseSelectedItem () {
-      PanelManager.self.confirmScreen.hide();
-      Global.player.rpc.Cmd_UseItem(_selectedItem.id);
-   }
-
-   public void trashSelected () {
-      // Show an error panel if the item cannot be trashed
-      if (!_selectedItem.canBeTrashed()) {
-         PanelManager.self.noticeScreen.show("This item can not be trashed.");
-         return;
-      }
-
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmTrashSelectedItem());
-
-      // Show a confirmation panel with the user name
-      PanelManager.self.confirmScreen.show("Are you sure you want to trash " + _selectedItem.getName() + "?");
-   }
-
-   protected void confirmTrashSelectedItem () {
-      Global.player.rpc.Cmd_DeleteItem(_selectedItem.id);
+   public void enableLoadBlocker () {
+      loadBlocker.SetActive(true);
    }
 
    public void nextPage () {
@@ -691,18 +611,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
    }
 
-   protected bool isEquipped (int itemId) {
-      if (itemId <= 0) {
-         return false;
-      }
-
-      if (itemId == _equippedArmorId || itemId == _equippedWeaponId || itemId == _equippedHatId) {
-         return true;
-      }
-
-      return false;
-   }
-
    #region Private Variables
 
    // The index of the current page
@@ -717,20 +625,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    // The list of categories listed by the 'others' tab
    private List<Item.Category> _othersTabCategories;
 
-   // The item for which the context menu was activated
-   private Item _selectedItem;
-
    // The cell from which an item was grabbed
    private ItemCellInventory _grabbedItemCell;
 
-   // The currently equipped armor id
-   protected static int _equippedArmorId;
-
-   // The current equipped weapon id
-   protected static int _equippedWeaponId;
-
-   // The current equipped hat id
-   protected static int _equippedHatId;
-   
    #endregion
 }

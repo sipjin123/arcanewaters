@@ -86,16 +86,20 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             }
             break;
          case Item.Category.Potion:
+            item = item.getCastItem();
             icon.sprite = foodIcon;
             break;
          case Item.Category.Usable:
+            item = item.getCastItem();
             icon.sprite = defaultItemIcon;
             break;
          case Item.Category.CraftingIngredients:
+            item = item.getCastItem();
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             icon.sprite =  ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
+            item = item.getCastItem();
             icon.sprite = ImageManager.getSprite(item.getIconPath());
             break;
          default:
@@ -167,6 +171,10 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
    public void hideBackground () {
       backgroundImage.enabled = false;
+   }
+
+   public void hideItemCount () {
+      itemCountText.gameObject.SetActive(false);
    }
 
    #region Private Variables

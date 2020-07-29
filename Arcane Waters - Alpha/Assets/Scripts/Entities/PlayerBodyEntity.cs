@@ -170,14 +170,15 @@ public class PlayerBodyEntity : BodyEntity {
 
       if (!isInBattle()) {
          if (Input.GetKeyUp(KeyCode.Alpha1)) {
-            D.editorLog("Equipping Seeds!", Color.blue);
-            Cmd_EquipWeapon(1);
+            PanelManager.self.itemShortcutPanel.activateShortcut(1);
          } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
-            D.editorLog("Equipping Watering Can!", Color.blue);
-            Cmd_EquipWeapon(2);
+            PanelManager.self.itemShortcutPanel.activateShortcut(2);
          } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
-            D.editorLog("Equipping Pitch Fork!", Color.blue);
-            Cmd_EquipWeapon(3);
+            PanelManager.self.itemShortcutPanel.activateShortcut(3);
+         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(4);
+         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(5);
          }
       }
 
@@ -422,41 +423,6 @@ public class PlayerBodyEntity : BodyEntity {
       } else {
          npcList.Clear();
       }
-   }
-
-   [Command]
-   public void Cmd_EquipWeapon (int keyNumber) {
-      List<Weapon> weaponList = new List<Weapon>();
-      Weapon newWeapon = new Weapon();
-
-      // Look up the weapons that this user has in the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         weaponList = DB_Main.getWeaponsForUser(this.userId);
-
-         foreach (Weapon weapon in weaponList) {
-            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-            if (keyNumber == 1 && weaponData.actionType == Weapon.ActionType.PlantCrop) {
-               newWeapon = weapon;
-            }
-            if (keyNumber == 2 && weaponData.actionType == Weapon.ActionType.WaterCrop) {
-               newWeapon = weapon;
-            }
-            if (keyNumber == 3 && weaponData.actionType == Weapon.ActionType.HarvestCrop) {
-               newWeapon = weapon;
-            }
-         }
-
-         if (newWeapon.id > 0) {
-            DB_Main.setWeaponId(this.userId, newWeapon.id);
-         }
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (newWeapon.itemTypeId != 0) {
-               this.weaponManager.updateWeaponSyncVars(newWeapon.itemTypeId, newWeapon.id);
-            }
-         });
-      });
    }
 
    [Command]

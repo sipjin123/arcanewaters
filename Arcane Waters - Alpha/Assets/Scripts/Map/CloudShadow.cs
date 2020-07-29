@@ -61,7 +61,7 @@ public class CloudShadow : MonoBehaviour {
    protected float _randomOffset;
 
    // The max opacity
-   protected static float MAX_OPACITY = .15f;
+   protected static float MAX_OPACITY = .2f;
 
    // How fast we changed opacity
    protected static float OPACITY_CHANGE_SPEED = .05f;

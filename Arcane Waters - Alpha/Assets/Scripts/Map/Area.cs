@@ -77,6 +77,12 @@ public class Area : MonoBehaviour
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
 
+   // The cloud manager
+   public CloudManager cloudManager;
+
+   // The cloud shadow manager
+   public CloudShadowManager cloudShadowManager;
+
    // The value that determines if the screen is too wide for the area
    public static float WIDE_RESOLUTION_VALUE = 1920;
 

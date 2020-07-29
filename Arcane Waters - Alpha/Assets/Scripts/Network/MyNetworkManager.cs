@@ -327,6 +327,7 @@ public class MyNetworkManager : NetworkManager
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
+            player.rpc.sendItemShortcutList();
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());

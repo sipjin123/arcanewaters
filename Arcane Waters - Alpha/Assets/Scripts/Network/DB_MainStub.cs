@@ -866,6 +866,18 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
+   public static void updateItemShortcut (int userId, int slotNumber, int itemId) {
+
+   }
+
+   public static void deleteItemShortcut (int userId, int slotNumber) {
+
+   }
+
+   public static List<ItemShortcutInfo> getItemShortcutList (int userId) {
+      return null;
+   }
+
    public static void addGems (int accountId, int amount) {
 
    }

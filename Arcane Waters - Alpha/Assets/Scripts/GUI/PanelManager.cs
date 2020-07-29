@@ -24,6 +24,7 @@ public class PanelManager : MonoBehaviour {
    public LoadingScreen loadingScreen;
    public CountdownScreen countdownScreen;
    public ContextMenuPanel contextMenuPanel;
+   public ShortcutPanel itemShortcutPanel;
 
    // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;
