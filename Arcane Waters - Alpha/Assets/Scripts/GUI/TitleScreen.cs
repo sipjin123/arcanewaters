@@ -82,21 +82,6 @@ public class TitleScreen : MonoBehaviour {
          Util.clickButton(loginButton);
       }
 
-      if (Input.GetKeyDown(KeyCode.Mouse0) && titleScreenCanvas.alpha > .1f) {
-         EventSystem clickedObj = EventSystem.current;
-         if (clickedObj != null) {
-            PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-            eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-            string hierarchyString = "(";
-            foreach (RaycastResult result in results) {
-               hierarchyString += result.gameObject.name + ") -> (";
-            }
-            D.debug("Mouse clicked on object: " + hierarchyString + ")");
-         }
-      }
-
       // Check for an assortment of keys
       bool moveToNextField = Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.DownArrow);
 

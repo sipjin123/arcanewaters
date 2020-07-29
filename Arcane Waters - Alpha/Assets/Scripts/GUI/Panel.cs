@@ -17,7 +17,7 @@ public class Panel : MonoBehaviour {
       NPC_Panel = 21, Overworld = 22, Craft = 23, Reward = 24, TradeHistory = 25, RandomMaps = 26,
       LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31,
       Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35, NewTutorial = 36, NewTutorialDetails = 37,
-      CustomMaps = 38, StepCompletedNotification = 39, MapCustomization = 40
+      CustomMaps = 38, StepCompletedNotification = 39, MapCustomization = 40, Auction = 41
    }
 
    // The type of Panel this is

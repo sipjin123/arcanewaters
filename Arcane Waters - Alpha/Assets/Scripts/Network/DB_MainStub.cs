@@ -60,6 +60,10 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static string fetchAuctionData (string userId, string pageNumber, string itemCountLimit, string filterData) {
+      return "";
+   }
+
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {
    }
 
@@ -732,8 +736,8 @@ public class DB_MainStub : MonoBehaviour {
       return 0;
    }
 
-   public static UserInfo getUserInfoJSON (string userId) {
-      return null;
+   public static string getUserInfoJSON (string userId) {
+      return "";
    }
 
    public static UserInfo getUserInfo (string userName) {

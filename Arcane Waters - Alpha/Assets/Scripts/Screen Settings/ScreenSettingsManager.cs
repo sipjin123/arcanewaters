@@ -75,19 +75,18 @@ public class ScreenSettingsManager : MonoBehaviour {
    public static void setFullscreen (bool fullscreen) {
       FullScreenMode = fullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
       Screen.SetResolution(Width, Height, FullScreenMode);
-      //Screen.SetResolution(fullscreen ? Screen.width : Width, fullscreen ? Screen.height : Height, FullScreenMode);
       saveSettings();
    }
 
    public static void setToResolutionFullscreenWindows () {
-      Screen.SetResolution(fullScreenResolutionWidth, fullScreenResolutionHeight, FullScreenMode.Windowed);
-      D.debug("Setting resolution as: " + FullScreenMode.Windowed + " : " + fullScreenResolutionWidth + " : " + fullScreenResolutionHeight);
+      FullScreenMode = FullScreenMode.Windowed;
+      Screen.SetResolution(Width, Height, FullScreenMode);
       saveSettings();
    }
 
    public static void setToResolutionFullscreenExclusive () {
-      Screen.SetResolution(fullScreenResolutionWidth, fullScreenResolutionHeight, FullScreenMode.ExclusiveFullScreen);
-      D.debug("Setting resolution as: " + FullScreenMode.ExclusiveFullScreen + " : " + fullScreenResolutionWidth + " : " + fullScreenResolutionHeight);
+      FullScreenMode = FullScreenMode.ExclusiveFullScreen;
+      Screen.SetResolution(fullScreenResolutionWidth, fullScreenResolutionHeight, FullScreenMode);
       saveSettings();
    }
 
@@ -96,7 +95,7 @@ public class ScreenSettingsManager : MonoBehaviour {
       PlayerPrefs.SetInt(SCREEN_RESOLUTION_H, Height);
       PlayerPrefs.SetInt(SCREEN_RESOLUTION_FULLSCREEN_MODE, (int) FullScreenMode);
    }
-   
+
    #region Private Variables
 
    // The screen resolution width PlayerPrefs key

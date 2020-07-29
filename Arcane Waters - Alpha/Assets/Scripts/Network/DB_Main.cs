@@ -16,8 +16,39 @@ using Newtonsoft.Json;
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
 
-public class DB_Main : DB_MainStub
-{
+public class DB_Main : DB_MainStub {
+   public static new string fetchAuctionData (string userIdStr, string pageNumberStr, string itemCountLimitStr, string filterData) {
+      int itemCountLimit = int.Parse(itemCountLimitStr);
+      int userId = int.Parse(userIdStr);
+      int pageNumber = int.Parse(pageNumberStr);
+      int offset = pageNumber * itemCountLimit;
+
+      D.editorLog("Data: " + itemCountLimit + " : " + userId + " : " + pageNumber + " : " + offset);
+      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.auction_table_v1 where sellerId != " + userId + " order by auctionId limit " + itemCountLimit + " offset " + offset, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
+                  auctionContentList.Add(newAuctionItem);
+                  D.editorLog("Added: " + newAuctionItem.auctionId + " : " + newAuctionItem.sellerId + " : " + newAuctionItem.itemCategory + " : " + newAuctionItem.itemTypeId);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return AuctionItemData.getXmlDataGroup(auctionContentList);
+   }
+
    #region NubisFeatures
 
    public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {

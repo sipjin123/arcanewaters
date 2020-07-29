@@ -23,17 +23,16 @@ public class TitleScreenOptions : MonoBehaviour {
    // The available resolutions dropdown
    public Dropdown resolutionsDropdown;
 
-   // The fullscreen toggle
-   public Toggle fullscreenToggle;
-
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
+
+   // Resolution Buttons
+   public Button setToWindowsButton, setToFullscreenButton;
 
    #endregion
 
    private void Start () {
       initializeResolutionsDropdown();
-      initializeFullScreenToggle();
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
@@ -42,15 +41,22 @@ public class TitleScreenOptions : MonoBehaviour {
       guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
 
       _lastShownTime = Time.time;
+
+      setToWindowsButton.onClick.AddListener(() => {
+         ScreenSettingsManager.setToResolutionFullscreenWindows();
+         updateButtons();
+      });
+      setToFullscreenButton.onClick.AddListener(() => {
+         ScreenSettingsManager.setToResolutionFullscreenExclusive();
+         updateButtons();
+      });
+      updateButtons();
    }
 
-   private void initializeFullScreenToggle () {
-      fullscreenToggle.SetIsOnWithoutNotify(ScreenSettingsManager.IsFullScreen);
-      fullscreenToggle.onValueChanged.AddListener(setFullScreen);
-   }
-
-   private void setFullScreen (bool fullscreen) {
-      ScreenSettingsManager.setFullscreen(fullscreen);
+   private void updateButtons () {
+      bool isFullScreen = ScreenSettingsManager.FullScreenMode == FullScreenMode.ExclusiveFullScreen;
+      setToWindowsButton.gameObject.SetActive(isFullScreen);
+      setToFullscreenButton.gameObject.SetActive(!isFullScreen);
    }
 
    private void setResolution (int resolutionIndex) {

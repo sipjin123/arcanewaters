@@ -307,6 +307,31 @@ public class EquipmentXMLManager : MonoBehaviour {
       return newName;
    }
 
+   public string getItemIconPath (Item item) {
+      string iconPath = "";
+
+      switch (item.category) {
+         case Item.Category.Hats:
+            HatStatData hatData = getHatData(item.itemTypeId);
+            iconPath = hatData.equipmentIconPath;
+            break;
+         case Item.Category.Armor:
+            ArmorStatData armorData = getArmorData(item.itemTypeId);
+            iconPath = armorData.equipmentIconPath;
+            break;
+         case Item.Category.Weapon:
+            WeaponStatData weaponData = getWeaponData(item.itemTypeId);
+            iconPath = weaponData.equipmentIconPath;
+            break;
+         case Item.Category.CraftingIngredients:
+            CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+            iconPath = CraftingIngredients.getIconPath(ingredientType);
+            break;
+      }
+
+      return iconPath;
+   }
+
    #region Private Variables
 
    // Stores the list of all weapon data
