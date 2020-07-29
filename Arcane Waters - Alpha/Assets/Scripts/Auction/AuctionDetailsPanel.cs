@@ -22,7 +22,7 @@ public class AuctionDetailsPanel : MonoBehaviour {
    public Text dateExpiry;
 
    #endregion
-
+   
    public void loadItemData (AuctionItemData data) {
       auctionItemData = data;
 
@@ -39,7 +39,11 @@ public class AuctionDetailsPanel : MonoBehaviour {
    }
 
    public void clearContent () {
-
+      itemName.text = "";
+      itemIcon.sprite = ImageManager.self.blankSprite;
+      itemPrice.text = "";
+      datePosted.text = "";
+      sellerName.text = "";
    }
 
    #region Private Variables

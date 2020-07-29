@@ -13,11 +13,8 @@ using MySql.Data.MySqlClient;
 #endif
 
 [Serializable]
-public class AuctionItemData
-{
-   public AuctionItemData () {
-   
-   }
+public class AuctionItemData {
+   #region Public Variables
 
    // Name of the item
    public string itemName;
@@ -43,6 +40,11 @@ public class AuctionItemData
    public string auctionDateExpiry;
    public string auctionDatePurchase;
 
+   #endregion
+
+   public AuctionItemData () {
+
+   }
 
 #if IS_SERVER_BUILD
 

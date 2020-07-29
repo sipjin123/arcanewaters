@@ -234,8 +234,6 @@ namespace NubisDataHandling {
          }
 
          string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
-
-         //categoryFilter;
          string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId, categoryJson, itemIdJson, "");
          int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
 

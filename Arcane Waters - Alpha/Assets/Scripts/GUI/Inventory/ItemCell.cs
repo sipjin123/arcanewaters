@@ -46,9 +46,13 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // Item sprite id
    public int itemSpriteId;
 
+   // The cahed item data
+   public Item itemCache;
+
    #endregion
 
    public void setCellForItem (Item item) {
+      itemCache = item;
       setCellForItem(item, item.count);
    }
 

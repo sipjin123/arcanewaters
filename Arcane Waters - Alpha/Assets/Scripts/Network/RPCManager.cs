@@ -25,6 +25,70 @@ public class RPCManager : NetworkBehaviour {
       _player = GetComponent<NetEntity>();
    }
 
+   #region Auction Features
+
+   [Command]
+   public void Cmd_RequestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetched data from db_main
+         string userItemData = DB_Main.fetchEquippedItems(_player.userId.ToString());
+         Item equippedWeapon = new Item();
+         Item equippedArmor = new Item();
+         Item equippedHat = new Item();
+
+         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
+         equippedWeapon = equippedItemData.weaponItem;
+         equippedArmor = equippedItemData.armorItem;
+         equippedHat = equippedItemData.hatItem;
+
+         string returnCode = DB_Main.userInventory(_player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveAuctionUserItems(_player.connectionToClient, returnCode);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAuctionUserItems (NetworkConnection connection, string rawInfo) {
+      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+
+      if (panel.isShowing()) {
+         List<Item> itemList = UserInventory.processUserInventory(rawInfo);
+         panel.userPanel.gameObject.SetActive(true);
+         panel.userPanel.loadUserItemList(itemList);
+         panel.show();
+      }
+   }
+
+
+   [Command]
+   public void Cmd_RequestAuctionItemData (int pageIndex, Item.Category[] categoryFilters) {
+      List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
+      string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Fetched data from db_main
+         string result = DB_Main.fetchAuctionData(_player.userId.ToString(), pageIndex.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), jsonFilter, "0");
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveAuctionItemsData(_player.connectionToClient, result);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAuctionItemsData (NetworkConnection connection, string rawInfo) {
+      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+   
+      if (panel.isShowing()) {
+         List<AuctionItemData> actualData = Util.xmlLoad<List<AuctionItemData>>(rawInfo);
+         panel.marketPanel.loadAuctionItems(actualData);
+         panel.setBlockers(false);
+         panel.show();
+      }
+   }
+
+   #endregion
+
    [TargetRpc]
    public void Target_GrantAdminAccess (NetworkConnection connection, bool isEnabled) {
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
@@ -1321,7 +1385,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(_player.userId.ToString()));
+         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
 
          // Back to Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

@@ -17,38 +17,6 @@ using Newtonsoft.Json;
 using MySql.Data.MySqlClient;
 
 public class DB_Main : DB_MainStub {
-   public static new string fetchAuctionData (string userIdStr, string pageNumberStr, string itemCountLimitStr, string filterData) {
-      int itemCountLimit = int.Parse(itemCountLimitStr);
-      int userId = int.Parse(userIdStr);
-      int pageNumber = int.Parse(pageNumberStr);
-      int offset = pageNumber * itemCountLimit;
-
-      D.editorLog("Data: " + itemCountLimit + " : " + userId + " : " + pageNumber + " : " + offset);
-      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.auction_table_v1 where sellerId != " + userId + " order by auctionId limit " + itemCountLimit + " offset " + offset, conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
-                  auctionContentList.Add(newAuctionItem);
-                  D.editorLog("Added: " + newAuctionItem.auctionId + " : " + newAuctionItem.sellerId + " : " + newAuctionItem.itemCategory + " : " + newAuctionItem.itemTypeId);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return AuctionItemData.getXmlDataGroup(auctionContentList);
-   }
-
    #region NubisFeatures
 
    public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {
@@ -181,7 +149,7 @@ public class DB_Main : DB_MainStub {
                      try {
                         itmData = reader.GetString("itmData");
                      } catch {
-                        D.editorLog("Blank item data");
+                        //D.editorLog("Blank item data");
                      }
                      try {
                         itmPalette1 = reader.GetString("itmPalette1");
@@ -7753,6 +7721,58 @@ public class DB_Main : DB_MainStub {
       }
 
       return minVersion;
+   }
+
+   #endregion
+
+   #region Auction Features
+
+   public static new string fetchAuctionData (string userIdStr, string pageNumberStr, string itemCountLimitStr, string filterData, string fetchSelfData) {
+      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
+
+      // Param translation
+      int itemCountLimit = int.Parse(itemCountLimitStr);
+      int userId = int.Parse(userIdStr);
+      int pageNumber = int.Parse(pageNumberStr);
+      int offset = pageNumber * itemCountLimit;
+      bool fetchSelf = fetchSelfData == "0" ? false : true;
+
+      // Determine if should fetch own auctioned items or others
+      string userIdFilter = fetchSelf ? "sellerId == " + userId : "sellerId != " + userId;
+
+      // Filter Setup
+      List<int> categoryInt = JsonConvert.DeserializeObject<List<int>>(filterData);
+      string categoryFilters = categoryInt.Count > 0 ? " and (" : "";
+      int index = 0;
+      foreach (int categ in categoryInt) {
+         if (index > 0) {
+            categoryFilters += " or ";
+         }
+         categoryFilters += "itemCategory = " + categ;
+         index++;
+      }
+      categoryFilters += categoryInt.Count > 0 ? ")" : "";
+
+      string query = "SELECT * FROM arcane.auction_table_v1 where (" + userIdFilter + categoryFilters + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
+                  auctionContentList.Add(newAuctionItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return AuctionItemData.getXmlDataGroup(auctionContentList);
    }
 
    #endregion

@@ -14,6 +14,9 @@ public class AuctionRootPanel : Panel {
    public AuctionMarketPanel marketPanel;
    public AuctionUserPanel userPanel;
 
+   // The loading blockers
+   public GameObject[] loadBlockers;
+
    #endregion
 
    public override void Awake () {
@@ -24,6 +27,12 @@ public class AuctionRootPanel : Panel {
 
    public override void show () {
       base.show();
+   }
+
+   public void setBlockers (bool isOn) {
+      foreach (GameObject obj in loadBlockers) {
+         obj.SetActive(isOn);
+      }
    }
 
    #region Private Variables

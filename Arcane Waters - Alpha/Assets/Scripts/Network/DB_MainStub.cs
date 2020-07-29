@@ -60,7 +60,7 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
-   public static string fetchAuctionData (string userId, string pageNumber, string itemCountLimit, string filterData) {
+   public static string fetchAuctionData (string userId, string pageNumber, string itemCountLimit, string filterData, string fetchSelf) {
       return "";
    }
 
