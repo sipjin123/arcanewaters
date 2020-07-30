@@ -28,62 +28,104 @@ public class RPCManager : NetworkBehaviour {
    #region Auction Features
 
    [Command]
-   public void Cmd_RequestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
+   public void Cmd_RequestPostBid (Item item, int startingBid, int buyoutBid) {
+      D.editorLog("The item id is: " + item.id);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetched data from db_main
-         string userItemData = DB_Main.fetchEquippedItems(_player.userId.ToString());
-         Item equippedWeapon = new Item();
-         Item equippedArmor = new Item();
-         Item equippedHat = new Item();
+         int newId = DB_Main.createAuctionEntry(_player.nameText.text, _player.userId, item, startingBid, buyoutBid);
 
-         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
-         equippedWeapon = equippedItemData.weaponItem;
-         equippedArmor = equippedItemData.armorItem;
-         equippedHat = equippedItemData.hatItem;
+         if (item.category == Item.Category.CraftingIngredients) {
+            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, item.count);
+         } else {
+            DB_Main.deleteItem(_player.userId, item.id);
+         }
 
-         string returnCode = DB_Main.userInventory(_player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveAuctionUserItems(_player.connectionToClient, returnCode);
+            D.editorLog("SuccessfullyCreated: " + newId, Color.green);
+            Target_ReceivePostBidResult(_player.connectionToClient, newId, AuctionRequestResult.Successfull);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveAuctionUserItems (NetworkConnection connection, string rawInfo) {
-      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-
-      if (panel.isShowing()) {
-         List<Item> itemList = UserInventory.processUserInventory(rawInfo);
-         panel.userPanel.gameObject.SetActive(true);
-         panel.userPanel.loadUserItemList(itemList);
-         panel.show();
-      }
+   public void Target_ReceivePostBidResult (NetworkConnection connection, int auctionId, AuctionRequestResult requestResult) {
+      PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+      PanelManager.self.noticeScreen.show("Item successfully submitted item for auction, auction Id: " + auctionId);
+      PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+      D.editorLog("Bid has been posted");
    }
-
 
    [Command]
-   public void Cmd_RequestAuctionItemData (int pageIndex, Item.Category[] categoryFilters) {
-      List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
-      string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
+   public void Cmd_RequestItemBid (int bidId, int bidPrice) {
+      AuctionRequestResult resultToSend = AuctionRequestResult.None;
+      Item newItem = new Item();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Fetched data from db_main
-         string result = DB_Main.fetchAuctionData(_player.userId.ToString(), pageIndex.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), jsonFilter, "0");
+         string rawAuctionData = DB_Main.fetchAuctionDataById(bidId.ToString());
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveAuctionItemsData(_player.connectionToClient, result);
+            AuctionItemData auctionData = JsonConvert.DeserializeObject<AuctionItemData>(rawAuctionData);
+            newItem.category = (Item.Category) auctionData.itemCategory;
+            newItem.itemTypeId = auctionData.itemTypeId;
+            newItem.count = auctionData.itemCount;
+            newItem.id = auctionData.itemId;
+
+            D.editorLog("Received auction data: " + auctionData.auctionId + " : " + auctionData.itemPrice);
+            D.editorLog("Received item data: " + newItem.category + " : " + newItem.itemTypeId +" : "+ newItem.id);
+
+            if (bidPrice >= auctionData.itembuyOutPrice) {
+               resultToSend = AuctionRequestResult.Buyout;
+               D.editorLog("Buyout!");
+               processAuctionTransaction(_player.userId, auctionData, bidPrice, newItem);
+            } else {
+               if (bidPrice > auctionData.highestBidPrice) {
+                  resultToSend = AuctionRequestResult.HighestBidder;
+                  D.editorLog("Highest Bid!");
+                  processAuctionReplacement(_player.userId, auctionData, bidPrice);
+               }
+            }
+
+            Target_ReceiveBidRequestResult(_player.connectionToClient, JsonConvert.SerializeObject(newItem), resultToSend);
+         });
+      });
+   }
+
+   [Server]
+   public void processAuctionReplacement (int buyerId, AuctionItemData auctionData, int buyerFinalPrice) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         DB_Main.modifyAuctionData(auctionData.auctionId.ToString(), buyerId.ToString(), buyerFinalPrice.ToString());
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Done");
+         });
+      });
+   }
+
+   [Server]
+   public void processAuctionTransaction (int buyerId, AuctionItemData auctionData, int buyerFinalPrice, Item item) {
+      D.editorLog("The buyer is: " + buyerId + " : Seller is: " + auctionData.sellerId, Color.green);
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.createNewItem(buyerId, item);
+         DB_Main.addGold(auctionData.sellerId, buyerFinalPrice);
+         DB_Main.addGold(buyerId, -buyerFinalPrice);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Done");
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveAuctionItemsData (NetworkConnection connection, string rawInfo) {
-      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-   
-      if (panel.isShowing()) {
-         List<AuctionItemData> actualData = Util.xmlLoad<List<AuctionItemData>>(rawInfo);
-         panel.marketPanel.loadAuctionItems(actualData);
-         panel.setBlockers(false);
-         panel.show();
+   public void Target_ReceiveBidRequestResult (NetworkConnection connection, string rawInfo, AuctionRequestResult requestResult) {
+      Item receivedItem = JsonConvert.DeserializeObject<Item>(rawInfo);
+
+      switch (requestResult) {
+         case AuctionRequestResult.HighestBidder:
+            PanelManager.self.noticeScreen.show("You have successfully bid the item: " + EquipmentXMLManager.self.getItemName(receivedItem));
+            break;
+         case AuctionRequestResult.Buyout:
+            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+            panel.show();
+            RewardManager.self.showItemInRewardPanel(receivedItem);
+            break;
       }
    }
 
