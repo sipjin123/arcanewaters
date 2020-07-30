@@ -110,7 +110,7 @@ public class WaterChecker : ClientMonoBehaviour {
          List<TilemapLayer> layers = area.getTilemapLayers();
          for (int i = layers.Count - 1; i >= 0; i--) {
             TileBase tile = layers[i].tilemap.GetTile(cellPos);
-            if (tile != null) {
+            if (tile != null && !_nonBlockingTiles.Contains(tile.name)) {
                if (layers[i].name.ToLower().EndsWith("water")) {
                   this.currentTile = tile.name;
                   isInFullWater = _fullWaterTiles.Contains(currentTile) || _waterFallTiles.Contains(currentTile);
@@ -126,6 +126,16 @@ public class WaterChecker : ClientMonoBehaviour {
 
    // Our associated player
    protected NetEntity _player;
+
+   // Tiles that should not block player from being considered 'in water'
+   protected static HashSet<string> _nonBlockingTiles = new HashSet<string> {
+      "desert_tiles_161", "desert_tiles_258", "desert_tiles_261",
+      "forest_tiles_155", "forest_tiles_252", "forest_tiles_255",
+      "lava_tiles_151", "lava_tiles_248", "lava_tiles_251",
+      "pine_tiles_153", "pine_tiles_250", "pine_tiles_253",
+      "mushroom_tiles_151", "mushroom_tiles_252", "mushroom_tiles_255",
+      "snow_tiles_153", "snow_tiles_250", "snow_tiles_253"
+   };
 
    // The names of the full water tiles
    protected static HashSet<string> _fullWaterTiles = new HashSet<string>() {
@@ -145,7 +155,7 @@ public class WaterChecker : ClientMonoBehaviour {
 
    // The names of the partial water tiles
    protected static HashSet<string> _partialWaterTiles = new HashSet<string>() {
-      "water_3","water_12", "water_18", "water_27", "water_0", "water_6", "water_24", "water_30"
+      "water_3","water_12", "water_18", "water_27", "water_0", "water_6", "water_24", "water_30", "water_36", "water_48"
    };
 
    #endregion;

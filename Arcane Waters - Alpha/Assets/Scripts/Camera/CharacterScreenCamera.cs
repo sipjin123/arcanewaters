@@ -1,17 +1,18 @@
 ﻿using UnityEngine;
 
-public class CharacterScreenCamera : BaseCamera
+public class CharacterScreenCamera : MyCamera
 {
    #region Public Variables
 
    #endregion
 
-   private void Start () {
+   protected override void Start () {
+      base.Start();
       onResolutionChanged();
    }
 
    public override void onResolutionChanged () {
-      _vcam.m_Lens.OrthographicSize = (Screen.height / 300f) * 0.5f;
+      base.onResolutionChanged();
    }
 
    #region Private Variables

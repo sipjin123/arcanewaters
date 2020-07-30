@@ -135,6 +135,8 @@ namespace MapCreationTool
                };
             }
          }
+
+         customDataFields = new CustomDataField[0];
       }
 
       [Serializable]

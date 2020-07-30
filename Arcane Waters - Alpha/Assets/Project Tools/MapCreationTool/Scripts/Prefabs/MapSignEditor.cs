@@ -17,8 +17,9 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
 
    #endregion
 
-   private void Awake () {
-      mapSign.transform.localScale = new Vector3(2, 2, 2);
+   public override void createdInPalette () {
+      // Don't show sign label in palette
+      mapSign.directionLabelUI.SetActive(false);
    }
 
    public void dataFieldChanged (DataField field) {

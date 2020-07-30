@@ -78,12 +78,7 @@ public class CameraManager : ClientMonoBehaviour {
       Debug.Log("Updating cam size");
 
       foreach (BaseCamera baseCam in _baseCameras) {
-         try {
-            MyCamera myCam = (MyCamera) baseCam;
-            myCam.onResolutionChanged();
-         } catch {
-            baseCam.onResolutionChanged();
-         }
+         baseCam.onResolutionChanged();
       }
 
       StartCoroutine(CO_ResetObjects());

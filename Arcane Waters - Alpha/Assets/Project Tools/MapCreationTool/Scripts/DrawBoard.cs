@@ -216,7 +216,7 @@ namespace MapCreationTool
 
          foreach (var pc in change.prefabChanges) {
             if (pc.prefabToPlace != null) {
-               var pref = instantiatePlacedPrefab(pc.prefabToPlace, pc.positionToPlace, false);
+               var pref = instantiatePlacedPrefab(pc, false);
 
                undoChange.prefabChanges.Add(new PrefabChange {
                   prefabToDestroy = pc.prefabToPlace,
@@ -338,15 +338,17 @@ namespace MapCreationTool
          prefab.setData(key, value);
 
          var listener = prefab.placedInstance.GetComponent<IPrefabDataListener>();
-         if (listener != null)
+         if (listener != null) {
             listener.dataFieldChanged(new DataField { k = key, v = value });
+            Tools.setDefaultData(prefab.original, key, value);
+         }
 
          PrefabDataChanged(prefab);
       }
 
-      private GameObject instantiatePlacedPrefab (GameObject original, Vector3 position, bool preview) {
-         var instance = Instantiate(original, position, Quaternion.identity, prefabLayer);
-         instance.name = original.name;
+      private GameObject instantiatePlacedPrefab (PrefabChange fromChange, bool preview) {
+         var instance = Instantiate(fromChange.prefabToPlace, fromChange.positionToPlace, Quaternion.identity, prefabLayer);
+         instance.name = fromChange.prefabToPlace.name;
 
          ZSnap snap = instance.GetComponent<ZSnap>();
          if (snap != null) {
@@ -508,7 +510,7 @@ namespace MapCreationTool
          foreach (PrefabChange prefChange in change.prefabChanges) {
             if (prefChange.prefabToPlace != null) {
                PlacedPrefab newPref = new PlacedPrefab {
-                  placedInstance = instantiatePlacedPrefab(prefChange.prefabToPlace, prefChange.positionToPlace, true),
+                  placedInstance = instantiatePlacedPrefab(prefChange, true),
                   original = prefChange.prefabToPlace
                };
 
@@ -516,6 +518,26 @@ namespace MapCreationTool
 
                foreach (SpriteSwapper swapper in newPref.placedInstance.GetComponentsInChildren<SpriteSwapper>())
                   swapper.Update();
+
+               // Set the data for the preview prefab
+               var pdd = newPref.placedInstance.GetComponent<PrefabDataDefinition>();
+               IPrefabDataListener listener = newPref.placedInstance.GetComponent<IPrefabDataListener>();
+
+               if (pdd != null) {
+                  pdd.restructureCustomFields();
+                  if (listener != null) {
+                     foreach (var kv in pdd.dataFields)
+                        listener.dataFieldChanged(new DataField { k = kv.name, v = kv.defaultValue });
+                     foreach (var kv in pdd.selectDataFields)
+                        listener.dataFieldChanged(new DataField { k = kv.name, v = kv.options[kv.defaultOption].value });
+                  }
+               }
+
+               if (prefChange.dataToSet != null && listener != null) {
+                  foreach (var d in prefChange.dataToSet) {
+                     listener.dataFieldChanged(new DataField { k = d.Key, v = d.Value });
+                  }
+               }
             } else if (prefChange.prefabToDestroy != null) {
                PlacedPrefab target = placedPrefabs.FirstOrDefault(pp => pp.isOriginalAtPosition(prefChange.prefabToDestroy, prefChange.positionToDestroy));
                if (target != null) {
@@ -634,11 +656,13 @@ namespace MapCreationTool
          float minZ = float.MaxValue;
 
          foreach (var pp in placedPrefabs) {
-            var col = pp.placedInstance.GetComponent<Collider2D>();
-            if (col != null && col.OverlapPoint(pointerPos)) {
-               if (col.transform.position.z < minZ) {
-                  minZ = col.transform.position.z;
-                  target = pp;
+            foreach (Collider2D col in pp.placedInstance.GetComponents<Collider2D>()) {
+               if (col != null && col.OverlapPoint(pointerPos)) {
+                  if (col.transform.position.z < minZ) {
+                     minZ = col.transform.position.z;
+                     target = pp;
+                     break;
+                  }
                }
             }
          }

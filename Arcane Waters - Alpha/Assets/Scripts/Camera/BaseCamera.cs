@@ -14,8 +14,11 @@ public class BaseCamera : MonoBehaviour {
    // The Camera quake effect
    public CameraFilterPack_FX_EarthQuake quakeEffect;
 
-   // Allows increasing or decreasing the orthographic size of the camera
-   public float scaleModifier = 1.0f;
+   // Whether to use a custom PPU scale or the default one
+   public bool useCustomPPUScale = false;
+
+   // The PPU scale of this camera
+   public float customPPUScale = -1.0f;
 
    #endregion
 
@@ -23,6 +26,10 @@ public class BaseCamera : MonoBehaviour {
       _cam = GetComponent<Camera>();
       _vcam = GetComponent<CinemachineVirtualCamera>();
       _pixelFadeEffect = GetComponent<PixelFadeEffect>();
+   }
+
+   protected virtual void Start () {
+
    }
 
    public Camera getCamera () {
@@ -65,10 +72,14 @@ public class BaseCamera : MonoBehaviour {
 
    public virtual void onResolutionChanged () {
       if (_vcam != null) {
-         _vcam.m_Lens.OrthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+         _vcam.m_Lens.OrthographicSize = Screen.height / getPPUScale();
       } else if (_cam != null) {
-         _cam.orthographicSize = Screen.height / DEFAULT_PPU_SCALE;
+         _cam.orthographicSize = Screen.height / getPPUScale();
       }
+   }
+
+   public virtual float getPPUScale () {
+      return useCustomPPUScale ? customPPUScale : DEFAULT_PPU_SCALE;
    }
 
    #region Private Variables

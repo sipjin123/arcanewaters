@@ -531,6 +531,50 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 4114754636950874248, guid: f985445cfb77f1744865046554ba2f96, type: 3}
+--- !u!1 &1175592271942541769
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5566625156990769780}
+  - component: {fileID: 6675203816645983989}
+  m_Layer: 0
+  m_Name: Secrets
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5566625156990769780
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175592271942541769}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 13.5, y: 28.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 67
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6675203816645983989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175592271942541769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 6524891404889324934, guid: 70cda15d0832614499f3c0e6b577e9f9, type: 3}
 --- !u!1 &1269653759873049157
 GameObject:
   m_ObjectHideFlags: 0
@@ -1156,6 +1200,7 @@ Transform:
   - {fileID: 2262156085978653396}
   - {fileID: 6658145983105771047}
   - {fileID: 2610120246435146020}
+  - {fileID: 5566625156990769780}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7967,15 +8012,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -8087,15 +8132,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: furniture
       sublayer: 0
@@ -8207,15 +8252,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 1
       collisionType: 0
     - layer: furniture
       sublayer: 0

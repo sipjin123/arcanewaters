@@ -26,14 +26,14 @@ public class InputManager : MonoBehaviour
    }
 
    private void Update () {
-      // Show tutorial
-      if (Input.GetKeyDown(KeyCode.F12)) {
-         if (NewTutorialManager.self.isTutorialAreaKey(Global.player.areaKey)) {
-            Global.player.rpc.Cmd_ShowTutorialDetail(Global.player.areaKey);
-         } else {
-            NewTutorialManager.self.showTutorialPanel();
-         }
-      }
+      //// Show tutorial
+      //if (Input.GetKeyDown(KeyCode.F12)) {
+      //   if (NewTutorialManager.self.isTutorialAreaKey(Global.player.areaKey)) {
+      //      Global.player.rpc.Cmd_ShowTutorialDetail(Global.player.areaKey);
+      //   } else {
+      //      NewTutorialManager.self.showTutorialPanel();
+      //   }
+      //}
    }
 
    #region Private Variables

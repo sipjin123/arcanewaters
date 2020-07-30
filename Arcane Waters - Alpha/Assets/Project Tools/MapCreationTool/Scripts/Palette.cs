@@ -1,4 +1,5 @@
 ﻿using MapCreationTool.PaletteTilesData;
+using MapCreationTool.Serialization;
 using MapCreationTool.UndoSystem;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,7 +22,9 @@ namespace MapCreationTool
       private Camera paletteCamera = null;
       private Tilemap tilemap = null;
       private SpriteRenderer selectionMarker = null;
-      private List<GameObject> prefabs = new List<GameObject>();
+
+      // List of prefabs in the palette currently
+      private List<PlacedPrefab> prefabs = new List<PlacedPrefab>();
 
       public PaletteData paletteData { get; private set; }
 
@@ -80,6 +83,15 @@ namespace MapCreationTool
             pointerScroll(Input.mouseScrollDelta.y);
       }
 
+      public void updatePrefabData (GameObject prefab, string key, string value) {
+         foreach (PlacedPrefab placed in prefabs) {
+            if (placed.original == prefab) {
+               IPrefabDataListener listener = placed.placedInstance.GetComponent<IPrefabDataListener>();
+               listener.dataFieldChanged(new DataField { k = key, v = value });
+            }
+         }
+      }
+
       public Dictionary<TileBase, TileCollisionType> formCollisionDictionary () {
          return paletteData.formCollisionDictionary();
       }
@@ -89,9 +101,11 @@ namespace MapCreationTool
          Tools.changeTileGroup(null, registerUndo: false);
          tilemap.ClearAllTiles();
 
-         foreach (var pref in prefabs)
-            if (pref != null)
-               Destroy(pref);
+         foreach (PlacedPrefab pref in prefabs) {
+            if (pref != null) {
+               Destroy(pref.placedInstance);
+            }
+         }
          prefabs.Clear();
 
 
@@ -127,7 +141,26 @@ namespace MapCreationTool
 
             p.GetComponent<SpriteOutline>()?.setNewColor(new Color(0, 0, 0, 0));
 
-            prefabs.Add(p);
+            prefabs.Add(new PlacedPrefab { original = pref.refPref, placedInstance = p });
+
+            // Set the data for the prefab
+            var pdd = p.GetComponent<PrefabDataDefinition>();
+            IPrefabDataListener listener = p.GetComponent<IPrefabDataListener>();
+
+            if (pdd != null && listener != null) {
+               pdd.restructureCustomFields();
+               foreach (var kv in pdd.dataFields)
+                  listener.dataFieldChanged(new DataField { k = kv.name, v = kv.defaultValue });
+               foreach (var kv in pdd.selectDataFields)
+                  listener.dataFieldChanged(new DataField { k = kv.name, v = kv.options[kv.defaultOption].value });
+
+               Dictionary<string, string> defaultData = Tools.getDefaultData(pref);
+               if (defaultData != null) {
+                  foreach (KeyValuePair<string, string> d in defaultData) {
+                     listener.dataFieldChanged(new DataField { k = d.Key, v = d.Value });
+                  }
+               }
+            }
          }
 
          //Calculate bounds, where regular tiles are placed and can be selected by dragging

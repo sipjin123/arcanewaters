@@ -2,6 +2,9 @@
 using System;
 using MapCreationTool.UndoSystem;
 using UnityEngine;
+using System.Collections.Generic;
+using MapCreationTool.Serialization;
+
 namespace MapCreationTool
 {
    public class Tools
@@ -35,6 +38,9 @@ namespace MapCreationTool
       public static Vector2Int boardSize { get; private set; }
       public static bool snapToGrid { get; set; }
 
+      // Default data to set for prefabs when placing them, indexed by the type of prefab
+      public static Dictionary<Type, Dictionary<string, string>> defaultPrefabData = new Dictionary<Type, Dictionary<string, string>>();
+
       public static GameObject selectedPrefab
       {
          get
@@ -49,6 +55,48 @@ namespace MapCreationTool
                    : (tileGroup as TreePrefabGroup).refPref;
             }
             return null;
+         }
+      }
+
+      // Gets the default prefab data which should be applied to prefabs when placing them
+      public static Dictionary<string, string> getDefaultData (PrefabGroup group) {
+         try {
+            // Find out the type of prefab
+            Type type = group.getPrefab().GetComponent<IPrefabDataListener>().GetType();
+
+            // Get the data for this type
+            if (defaultPrefabData.TryGetValue(type, out var data)) {
+               return data.Clone();
+            }
+         } catch (Exception ex) {
+            D.warning("Unable to get default prefab data: " + ex);
+         }
+
+         return null;
+      }
+
+      public static void setDefaultData (GameObject prefab, string key, string value) {
+         try {
+            // Find out the type of prefab
+            Type type = prefab.GetComponent<IPrefabDataListener>().GetType();
+
+            // Set the data for this type
+            if (!defaultPrefabData.ContainsKey(type)) {
+               defaultPrefabData.Add(type, new Dictionary<string, string>());
+            }
+
+            if (defaultPrefabData[type].ContainsKey(key)) {
+               defaultPrefabData[type][key] = value;
+            } else {
+               defaultPrefabData[type].Add(key, value);
+            }
+
+            // Update prefab in palette
+            if (Palette.instance != null) {
+               Palette.instance.updatePrefabData(prefab, key, value);
+            }
+         } catch (Exception ex) {
+            D.warning("Unable to set default prefab data: " + ex);
          }
       }
 

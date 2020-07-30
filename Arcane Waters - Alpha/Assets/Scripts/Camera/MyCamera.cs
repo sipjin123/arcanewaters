@@ -27,7 +27,7 @@ public class MyCamera : BaseCamera
       _vcam = GetComponent<Cinemachine.CinemachineVirtualCamera>();
    }
 
-   private void Start () {
+   protected override void Start () {
       CameraManager.self.registerCamera(this);
       setInternalOrthographicSize();
    }
@@ -39,7 +39,7 @@ public class MyCamera : BaseCamera
    }
 
    private void setInternalOrthographicSize () {
-      _orthographicSize = Screen.height / DEFAULT_PPU_SCALE * scaleModifier;
+      _orthographicSize = Screen.height / getPPUScale();
 
       CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
       if (confiner != null) {
@@ -63,7 +63,7 @@ public class MyCamera : BaseCamera
       }
 
       _initialSettings = getVirtualCameraSettings();
-      _initialSettings.ppuScale = DEFAULT_PPU_SCALE;
+      _initialSettings.ppuScale = getPPUScale();
    }
 
    void Update () {

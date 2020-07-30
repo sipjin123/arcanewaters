@@ -237,13 +237,31 @@ public class PanelManager : MonoBehaviour {
       }
    }
 
-   public void showConfirmationPanel(string message, UnityAction action, bool hideOnConfirmation = true) {
+   public void showConfirmationPanel (string message, UnityAction onConfirm, UnityAction onCancel, bool hideOnConfirmation = true) {
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      confirmScreen.confirmButton.onClick.AddListener(action);
+      confirmScreen.confirmButton.onClick.AddListener(onConfirm);
 
       if (hideOnConfirmation) {
          confirmScreen.confirmButton.onClick.AddListener(() => confirmScreen.hide());
       }
+
+      confirmScreen.cancelButton.onClick.RemoveAllListeners();
+      confirmScreen.cancelButton.onClick.AddListener(onCancel);
+      confirmScreen.cancelButton.onClick.AddListener(() => confirmScreen.hide());
+
+      confirmScreen.show(message);
+   }
+
+   public void showConfirmationPanel (string message, UnityAction onConfirm, bool hideOnConfirmation = true) {
+      confirmScreen.confirmButton.onClick.RemoveAllListeners();
+      confirmScreen.confirmButton.onClick.AddListener(onConfirm);
+
+      if (hideOnConfirmation) {
+         confirmScreen.confirmButton.onClick.AddListener(() => confirmScreen.hide());
+      }
+
+      confirmScreen.cancelButton.onClick.RemoveAllListeners();
+      confirmScreen.cancelButton.onClick.AddListener(() => confirmScreen.hide());
 
       confirmScreen.show(message);
    }

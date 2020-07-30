@@ -17,7 +17,8 @@ public class BattleCamera : BaseCamera {
       self = this;
    }
 
-   private void Start () {
+   protected override void Start () {
+      base.Start();
       onResolutionChanged();
    }
 

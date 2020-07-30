@@ -23,7 +23,7 @@ namespace MapCreationTool
       private TileBase[,] modifiedTiles;
       private TileBase[,] modifiedTiles2;
       private Dictionary<Layer, TileBase>[,] modifiedTilesDict;
-      private Dictionary<Vector3, GameObject> placedPrefabs;
+      private Dictionary<Vector3, StrokePrefab> placedPrefabs;
       private (int x, int y) rectFrom;
 
       public BrushStroke () {
@@ -33,7 +33,7 @@ namespace MapCreationTool
          modifiedTiles = new TileBase[matrixSize.x, matrixSize.y];
          modifiedTiles2 = new TileBase[matrixSize.x, matrixSize.y];
          modifiedTilesDict = new Dictionary<Layer, TileBase>[matrixSize.x, matrixSize.y];
-         placedPrefabs = new Dictionary<Vector3, GameObject>();
+         placedPrefabs = new Dictionary<Vector3, StrokePrefab>();
 
          for (int i = 0; i < matrixSize.x; i++) {
             for (int j = 0; j < matrixSize.y; j++) {
@@ -171,8 +171,9 @@ namespace MapCreationTool
          if (type == Type.Prefab) {
             return new BoardChange {
                prefabChanges = placedPrefabs.Select(pp => new PrefabChange {
-                  positionToPlace = pp.Key,
-                  prefabToPlace = pp.Value
+                  positionToPlace = pp.Value.position,
+                  prefabToPlace = pp.Value.original,
+                  dataToSet = pp.Value.data,
                }).ToList()
             };
          }
@@ -272,9 +273,9 @@ namespace MapCreationTool
             return;
 
          if (placedPrefabs.ContainsKey(position)) {
-            placedPrefabs.Add(position, (tileGroup as PrefabGroup).getPrefab());
+            placedPrefabs.Add(position, new StrokePrefab { original = group.getPrefab(), position = position, data = Tools.getDefaultData(group) });
          } else {
-            placedPrefabs[position] = (tileGroup as PrefabGroup).getPrefab();
+            placedPrefabs[position] = new StrokePrefab { original = group.getPrefab(), position = position, data = Tools.getDefaultData(group) };
          }
       }
 
@@ -1090,6 +1091,18 @@ namespace MapCreationTool
          RegularTilePlacement = 3,
          TileRect = 4,
          Prefab = 5
+      }
+
+      public class StrokePrefab
+      {
+         // Position at which prefab is placed
+         public Vector3 position;
+
+         // The original prefab which is placed
+         public GameObject original;
+
+         // Data to set for the placed prefab
+         public Dictionary<string, string> data;
       }
    }
 }

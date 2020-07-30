@@ -14,7 +14,8 @@ public class DefaultCamera : BaseCamera {
       
    #endregion
 
-   void Start() {
+   protected override void Start() {
+      base.Start();
       if (Util.isBatch()) {
          var cinemachineBrain = GetComponent<CinemachineBrain>();
          if (cinemachineBrain) {

@@ -17,6 +17,7 @@ public class ConfirmScreen : MonoBehaviour {
    public Text costText;
    public Text linkText;
    public Button confirmButton;
+   public Button cancelButton;
    public GameObject costRow;
 
    #endregion

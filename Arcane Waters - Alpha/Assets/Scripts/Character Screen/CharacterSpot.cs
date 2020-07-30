@@ -79,12 +79,8 @@ public class CharacterSpot : ClientMonoBehaviour {
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
 
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => sendDeleteUserRequest(character.userId));
-
-      // Show a confirmation panel with the user name
-      PanelManager.self.confirmScreen.show("Are you sure you want to delete " + character.nameText.text + "?");
+      // Ask the player for confirmation. Reenable the canvas group if cancelled deletion.
+      PanelManager.self.showConfirmationPanel("Are you sure you want to delete " + character.nameText.text + "?", () => sendDeleteUserRequest(character.userId), () => CharacterScreen.self.canvasGroup.interactable = true);
    }
 
    public void startNewCharacterButtonWasPressed () {

@@ -21,6 +21,12 @@ public class CloudShadowManager : ClientMonoBehaviour
    #endregion
 
    private void Start () {
+      // There is no need to create cloud shadows on servers
+      if (Util.isServerNonHost()) {
+         this.enabled = false;
+         return;
+      }
+
       // Look up components
       _area = GetComponentInParent<Area>();
 
@@ -51,7 +57,7 @@ public class CloudShadowManager : ClientMonoBehaviour
       }
    }
 
-   private void FixedUpdate () {
+   private void Update () {
       // Slowly change the direction over time
       direction = Quaternion.Euler(0, 0, Time.smoothDeltaTime) * direction;
 
