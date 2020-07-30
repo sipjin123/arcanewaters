@@ -16,6 +16,8 @@ public class AuctionItemTemplate : MonoBehaviour {
    public Text itemName;
    public Image itemIcon;
    public Text sellerName;
+   public Text highestBid;
+   public Text buyoutPrice;
 
    // Date info
    public Text datePosted;
@@ -46,6 +48,8 @@ public class AuctionItemTemplate : MonoBehaviour {
       itemPrice.text = data.itemPrice.ToString();
       datePosted.text = data.auctionDateCreated;
       sellerName.text = data.sellerName;
+      highestBid.text = data.highestBidPrice.ToString();
+      buyoutPrice.text = data.itembuyOutPrice.ToString();
    }
 
    #region Private Variables

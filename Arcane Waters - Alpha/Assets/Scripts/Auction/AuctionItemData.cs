@@ -30,10 +30,16 @@ public class AuctionItemData {
    public int itemCategory;
    public int itemTypeId;
    public int itemPrice;
+   public int itembuyOutPrice;
+   public int itemCount;
 
    // User Ids
    public int sellerId;
    public int buyerId;
+
+   // Bidding data
+   public int highestBidPrice;
+   public int highestBidUser;
 
    // Date related to the auctioned item
    public string auctionDateCreated;
@@ -57,6 +63,8 @@ public class AuctionItemData {
       this.itemCategory = dataReader.GetInt32("itemCategory");
       this.itemTypeId = dataReader.GetInt32("itemType");
       this.itemPrice = dataReader.GetInt32("itemPrice");
+      this.itembuyOutPrice = dataReader.GetInt32("itembuyOutPrice");
+      this.itemCount = dataReader.GetInt32("itemCount");
 
       this.sellerId = dataReader.GetInt32("sellerId");
       this.buyerId = dataReader.GetInt32("buyerId");
@@ -64,6 +72,9 @@ public class AuctionItemData {
       this.auctionDateCreated = dataReader.GetString("datePosted");
       this.auctionDateExpiry = dataReader.GetString("dateExpiry");
       this.auctionDatePurchase = dataReader.GetString("dateSold");
+
+      this.highestBidPrice = dataReader.GetInt32("highestBidPrice");
+      this.highestBidUser = dataReader.GetInt32("highestBidUser");
    }
 
 #endif

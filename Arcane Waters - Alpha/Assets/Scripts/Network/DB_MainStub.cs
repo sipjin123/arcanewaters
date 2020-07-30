@@ -60,7 +60,30 @@ public class DB_MainStub : MonoBehaviour {
 
    #endregion
 
+   public static string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
+      return "";
+   }
+
+   public static void removeAuctionEntry (int auctionData) {
+
+   }
+
+   public static void addToAuctionHistory (AuctionItemData auctionData) {
+
+   }
+
+   public static int createAuctionEntry (string sellerName, int userId, Item item, int startingPrice, int buyoutPrice) {
+      return 0;
+   }
+
+   public static void modifyAuctionData (string auctionId, string bidderUserId, string bidderPrice) {
+   }
+
    public static string fetchAuctionData (string userId, string pageNumber, string itemCountLimit, string filterData, string fetchSelf) {
+      return "";
+   }
+
+   public static string fetchAuctionDataById (string auctionId) {
       return "";
    }
 

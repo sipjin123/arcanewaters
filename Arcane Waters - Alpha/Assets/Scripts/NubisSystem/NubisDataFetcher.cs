@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using UnityEngine.Events;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 
 public enum XmlSlotIndex
 {
@@ -49,6 +50,27 @@ namespace NubisDataHandling {
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
       }
 
+      private void Update () {
+#if UNITY_EDITOR
+         if (Input.GetKeyDown(KeyCode.Alpha8)) {
+            D.editorLog("Fetching auction data for user", Color.green);
+            List<Item.Category> categoryFilters = new List<Item.Category>();
+            categoryFilters.Add(Item.Category.Weapon);
+            categoryFilters.Add(Item.Category.Armor);
+            categoryFilters.Add(Item.Category.Hats);
+
+            List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
+            string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               var returnData = DB_Main.fetchAuctionData(Global.player.userId.ToString(), "0", "5", jsonFilter, "1");
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Return data is: " + returnData, Color.green);
+               });
+            });
+         }
+#endif
+      }
+
       public static int getSlotIndex () {
          return (int) XmlSlotIndex.Default;
       }
@@ -84,6 +106,69 @@ namespace NubisDataHandling {
             xmlVersionEvent.Invoke(0);
             D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.fetchXmlVersion));
             D.debug("Return code is: " + returnCode);
+         }
+      }
+
+      public void fetchAuctionHistory (int page) {
+         processFetchAuctionHistory(page);
+      }
+
+      private async void processFetchAuctionHistory (int page) {
+         string result = await NubisClient.call(nameof(DB_Main.fetchAuctionPurchaseHistory), Global.player.userId.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), page.ToString());
+         List<AuctionItemData> auctionItemList = Util.xmlLoad<List<AuctionItemData>>(result);
+
+         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+         panel.marketPanel.loadAuctionHistory(auctionItemList);
+      }
+
+      public void requestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
+         processUserItemsForAuction(pageIndex, categoryFilters);
+      }
+
+      private async void processUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
+         // Fetched data from db_main
+         string userItemData = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), Global.player.userId.ToString());
+         Item equippedWeapon = new Item();
+         Item equippedArmor = new Item();
+         Item equippedHat = new Item();
+
+         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
+         equippedWeapon = equippedItemData.weaponItem;
+         equippedArmor = equippedItemData.armorItem;
+         equippedHat = equippedItemData.hatItem;
+
+         string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
+
+         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+         if (panel.isShowing()) {
+            List<Item> itemList = UserInventory.processUserInventory(returnCode);
+            panel.userPanel.gameObject.SetActive(true);
+            panel.userPanel.loadUserItemList(itemList);
+            panel.show();
+         }
+      }
+
+      public void checkAuctionMarket (int pageIndex, Item.Category[] categoryFilters, bool checkOwnItems) {
+         processAuctionMarket (pageIndex, categoryFilters, checkOwnItems);
+      }
+
+      private async void processAuctionMarket (int pageIndex, Item.Category[] categoryFilters, bool checkOwnItems) {
+         List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
+         string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
+
+         string result = await NubisClient.call(nameof(DB_Main.fetchAuctionData), Global.player.userId.ToString(), pageIndex.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), jsonFilter, checkOwnItems ? "1" : "0");
+         if (result.Length > 10) {
+            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+
+            if (panel.isShowing()) {
+               List<AuctionItemData> actualData = Util.xmlLoad<List<AuctionItemData>>(result);
+
+               panel.marketPanel.loadAuctionItems(actualData, checkOwnItems);
+               panel.setBlockers(false);
+               panel.show();
+            }
+         } else {
+            D.editorLog("Something went wrong with Nubis Fetch:: " + nameof(DB_Main.fetchAuctionData), Color.red);
          }
       }
 

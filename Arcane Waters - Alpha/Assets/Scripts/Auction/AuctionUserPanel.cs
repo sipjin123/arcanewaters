@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using NubisDataHandling;
 
 public class AuctionUserPanel : MonoBehaviour {
    #region Public Variables
@@ -31,13 +32,10 @@ public class AuctionUserPanel : MonoBehaviour {
    public UserItemTemplate selectedTemplate;
 
    // The item price
-   public InputField itemPrice;
+   public InputField itemPrice, buyoutPrice;
 
    // Popup Buttons for posting auctioned item
-   public Button postAuction, confirmButton, cancelButton, exitButton;
-
-   // The confirmation modal
-   public GameObject confirmationModal;
+   public Button postAuction, exitButton;
 
    // Filter buttons
    public Button allFilterButton, armorFilterButton, weaponFilterButton, hatFilterButton, ingredientFilterButton;
@@ -48,19 +46,34 @@ public class AuctionUserPanel : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      cancelButton.onClick.AddListener(() => {
-         confirmationModal.SetActive(false);
-      });
-
       postAuction.onClick.AddListener(() => {
-         confirmationModal.SetActive(true);
-      });
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.show();
+         PanelManager.self.confirmScreen.showYesNo("Auction item?");
 
-      confirmButton.onClick.AddListener(() => {
-         confirmationModal.SetActive(false);
-         gameObject.SetActive(false);
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+            int currItemPrice = int.Parse(itemPrice.text);
+            int currBuyoutPrice = int.Parse(buyoutPrice.text);
 
-         // Do server logic here
+            if (currItemPrice < 0) {
+               PanelManager.self.noticeScreen.show("Price must be more than 0!");
+               PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+               PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+               return;
+            }
+
+            if (currBuyoutPrice < currItemPrice) {
+               PanelManager.self.noticeScreen.show("Buyout price must be more than the current price!");
+               PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+               PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+               return;
+            }
+
+            PanelManager.self.confirmScreen.hide();
+            gameObject.SetActive(false);
+
+            Global.player.rpc.Cmd_RequestPostBid(selectedTemplate.itemCache, currItemPrice, currBuyoutPrice);
+         });
       });
 
       exitButton.onClick.AddListener(() => {
@@ -69,27 +82,34 @@ public class AuctionUserPanel : MonoBehaviour {
 
       allFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         Global.player.rpc.Cmd_RequestUserItemsForAuction(currentPage, Item.Category.None);
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.None);
       });
       armorFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         Global.player.rpc.Cmd_RequestUserItemsForAuction(currentPage, Item.Category.Armor);
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Armor);
       });
       weaponFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         Global.player.rpc.Cmd_RequestUserItemsForAuction(currentPage, Item.Category.Weapon);
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Weapon);
       });
       ingredientFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         Global.player.rpc.Cmd_RequestUserItemsForAuction(currentPage, Item.Category.CraftingIngredients);
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.CraftingIngredients);
       });
       hatFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         Global.player.rpc.Cmd_RequestUserItemsForAuction(currentPage, Item.Category.Hats);
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Hats);
       });
    }
 
    public void loadUserItemList (List<Item> userItemList) {
+      itemImage.sprite = ImageManager.self.blankSprite;
+      itemName.text = "";
+      itemDescription.text = "";
+      itemRarity.text = "";
+      itemQuantity.text = "";
+      itemCategory.text = "";
+
       setBlockers(false);
       itemParent.gameObject.DestroyChildren();
       userItemTemplateList = new List<UserItemTemplate>();

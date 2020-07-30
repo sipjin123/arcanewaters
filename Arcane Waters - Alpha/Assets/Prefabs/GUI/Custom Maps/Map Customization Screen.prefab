@@ -743,7 +743,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 77dbe2a0020f76c4f96eec6f4c87398b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 48ab72a89f68ebe439ce76706cead57a, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1092,12 +1092,12 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 76
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -75
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
@@ -1117,7 +1117,7 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
@@ -1127,7 +1127,7 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}

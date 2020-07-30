@@ -39,3 +39,14 @@ public class AuctionRootPanel : Panel {
 
    #endregion
 }
+
+// Auction request Enum states
+public enum AuctionRequestResult
+{
+   None = 0,
+   Successfull = 1,
+   InsufficientBid = 2,
+   ItemUnavailable = 3,
+   Buyout = 4,
+   HighestBidder =5
+}

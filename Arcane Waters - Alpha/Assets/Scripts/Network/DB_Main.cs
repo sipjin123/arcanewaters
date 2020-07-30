@@ -7727,6 +7727,116 @@ public class DB_Main : DB_MainStub {
 
    #region Auction Features
 
+   public static new string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
+      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
+
+      // Param translation
+      int itemCountLimit = int.Parse(itemCountLimitStr);
+      int pageNumber = int.Parse(pageNumberStr);
+      int offset = pageNumber * itemCountLimit;
+
+      string query = "SELECT * FROM arcane.auction_table_v1 where (buyerId = " + userIdStr + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
+                  auctionContentList.Add(newAuctionItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return AuctionItemData.getXmlDataGroup(auctionContentList);
+   }
+
+   public static new void addToAuctionHistory (AuctionItemData auctionData) {
+      Item newItem = new Item { category = (Item.Category) auctionData.itemCategory, id = auctionData.itemId, itemTypeId = auctionData.itemTypeId, count = auctionData.itemCount };
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO auction_history_v1 (sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount, datePosted, dateExpiry) " +
+            "VALUES(@sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount, @datePosted, @dateExpiry)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@sellerName", auctionData.sellerName);
+            cmd.Parameters.AddWithValue("@sellerId", auctionData.sellerId);
+            cmd.Parameters.AddWithValue("@itemPrice", auctionData.itemPrice);
+            cmd.Parameters.AddWithValue("@itembuyOutPrice", auctionData.itembuyOutPrice);
+            cmd.Parameters.AddWithValue("@itemName", EquipmentXMLManager.self.getItemName(newItem));
+
+            cmd.Parameters.AddWithValue("@itemCategory", newItem.category);
+            cmd.Parameters.AddWithValue("@itemType", newItem.itemTypeId);
+            cmd.Parameters.AddWithValue("@itemId", newItem.id);
+            cmd.Parameters.AddWithValue("@itemCount", newItem.count);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void removeAuctionEntry (int auctionId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "DELETE FROM auction_table_v1 WHERE auctionId=@auctionId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int createAuctionEntry (string sellerName, int userId, Item item, int startingPrice, int buyoutPrice) {
+      int auctionId = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO auction_table_v1 (sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount) " + //, datePosted, dateExpiry
+            "VALUES(@sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount)", conn)) { //, @datePosted, @dateExpiry
+
+            conn.Open();
+            cmd.Prepare(); 
+            cmd.Parameters.AddWithValue("@sellerName", sellerName);
+            cmd.Parameters.AddWithValue("@sellerId", userId);
+            cmd.Parameters.AddWithValue("@itemPrice", startingPrice);
+            cmd.Parameters.AddWithValue("@itembuyOutPrice", buyoutPrice);
+            cmd.Parameters.AddWithValue("@itemName", EquipmentXMLManager.self.getItemName(item));
+
+            cmd.Parameters.AddWithValue("@itemCategory", item.category);
+            cmd.Parameters.AddWithValue("@itemType", item.itemTypeId);
+            cmd.Parameters.AddWithValue("@itemId", item.id);
+            cmd.Parameters.AddWithValue("@itemCount", item.count);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            auctionId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return auctionId;
+   }
+
    public static new string fetchAuctionData (string userIdStr, string pageNumberStr, string itemCountLimitStr, string filterData, string fetchSelfData) {
       List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
 
@@ -7738,7 +7848,7 @@ public class DB_Main : DB_MainStub {
       bool fetchSelf = fetchSelfData == "0" ? false : true;
 
       // Determine if should fetch own auctioned items or others
-      string userIdFilter = fetchSelf ? "sellerId == " + userId : "sellerId != " + userId;
+      string userIdFilter = fetchSelf ? "sellerId = " + userId : "sellerId != " + userId;
 
       // Filter Setup
       List<int> categoryInt = JsonConvert.DeserializeObject<List<int>>(filterData);
@@ -7773,6 +7883,49 @@ public class DB_Main : DB_MainStub {
       }
 
       return AuctionItemData.getXmlDataGroup(auctionContentList);
+   }
+
+   public static new void modifyAuctionData (string auctionId, string bidderUserId, string bidderPrice) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE arcane.auction_table_v1 SET highestBidPrice=@highestBidPrice, highestBidUser=@highestBidUser WHERE auctionId=@auctionId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@highestBidPrice", int.Parse(bidderPrice));
+            cmd.Parameters.AddWithValue("@highestBidUser", int.Parse(bidderUserId));
+            cmd.Parameters.AddWithValue("@auctionId", int.Parse(auctionId)); 
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new string fetchAuctionDataById (string auctionId) {
+      string query = "SELECT * FROM arcane.auction_table_v1 where auctionId = " + auctionId;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
+                  return JsonConvert.SerializeObject(newAuctionItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return "";
    }
 
    #endregion
