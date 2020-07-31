@@ -68,6 +68,9 @@ public class AuctionMarketPanel : MonoBehaviour {
    // The prefab holders for the auction history templates
    public Transform auctionHistoryItemHolder;
 
+   // The current filter that is selected
+   public Item.Category[] currentItemCategory;
+
    #endregion
 
    private void Awake () {
@@ -76,13 +79,17 @@ public class AuctionMarketPanel : MonoBehaviour {
             obj.SetActive(true);
          }
          auctionHistoryPanel.SetActive(true);
+
+         NubisDataFetcher.self.fetchAuctionHistory(0);
       });
       checkUserAuctionItemButton.onClick.AddListener(() => {
          auctionHistoryPanel.SetActive(false);
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, true);
       });
 
       closeAuctionedItemsButton.onClick.AddListener(() => {
          auctionedItemPanel.SetActive(false);
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       });
 
       closeMainPanelButton.onClick.AddListener(() => {
@@ -92,7 +99,8 @@ public class AuctionMarketPanel : MonoBehaviour {
       checkAuctionedItemsButton.onClick.AddListener(() => {
          auctionedItemPanel.SetActive(true);
          toggleAuctionedUserItemLoader(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[4] { Item.Category.CraftingIngredients, Item.Category.Armor, Item.Category.Weapon, Item.Category.Hats }, true);
+         currentItemCategory = new Item.Category[4] { Item.Category.CraftingIngredients, Item.Category.Armor, Item.Category.Weapon, Item.Category.Hats };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, true);
       });
 
       auctionItemButton.onClick.AddListener(() => {
@@ -103,27 +111,32 @@ public class AuctionMarketPanel : MonoBehaviour {
 
       allFilterButton.onClick.AddListener(() => {
          rootPanel.setBlockers(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[4] { Item.Category.CraftingIngredients, Item.Category.Armor, Item.Category.Weapon, Item.Category.Hats }, false);
+         currentItemCategory = new Item.Category[4] { Item.Category.CraftingIngredients, Item.Category.Armor, Item.Category.Weapon, Item.Category.Hats };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       });
       armorFilterButton.onClick.AddListener(() => {
          rootPanel.setBlockers(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[1] { Item.Category.Armor }, false);
+         currentItemCategory = new Item.Category[1] { Item.Category.Armor };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       });
       weaponFilterButton.onClick.AddListener(() => {
          rootPanel.setBlockers(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[1] { Item.Category.Weapon }, false);
+         currentItemCategory = new Item.Category[1] { Item.Category.Weapon };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       });
       ingredientFilterButton.onClick.AddListener(() => {
          rootPanel.setBlockers(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[1] { Item.Category.CraftingIngredients }, false);
+         currentItemCategory = new Item.Category[1] { Item.Category.CraftingIngredients };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       });
       hatFilterButton.onClick.AddListener(() => {
          rootPanel.setBlockers(true);
-         NubisDataFetcher.self.checkAuctionMarket(currentPage, new Item.Category[1] { Item.Category.Hats }, false);
+         currentItemCategory = new Item.Category[1] { Item.Category.Hats };
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
       }); 
    }
 
-   private void toggleAuctionedUserItemLoader (bool isActive) {
+   public void toggleAuctionedUserItemLoader (bool isActive) {
       foreach (GameObject obj in userAuctionedItemBlockers) {
          obj.SetActive(isActive);
       }
@@ -131,6 +144,7 @@ public class AuctionMarketPanel : MonoBehaviour {
 
    public void loadAuctionItems (List<AuctionItemData> loadedItemList, bool isUserData) {
       Transform currentParent = transform;
+      auctionDetailPanel.auctionItemData = null;
 
       if (isUserData) {
          currentParent = userAuctionedItemHolder;
@@ -144,13 +158,31 @@ public class AuctionMarketPanel : MonoBehaviour {
       auctionItemTemplateList = new List<AuctionItemTemplate>();
       foreach (AuctionItemData itemData in loadedItemList) {
          AuctionItemTemplate newTemplate = Instantiate(auctionItemPrefab, currentParent).GetComponent<AuctionItemTemplate>();
-         newTemplate.setTemplate(itemData);
-         newTemplate.selectTemplateButton.onClick.AddListener(() => {
-            clearItemHighlights();
-            selectiedItemTemplate = newTemplate;
-            auctionDetailPanel.loadItemData(newTemplate.auctionItemData);
-            selectiedItemTemplate.toggleHighlight(true);
-         });
+         newTemplate.setTemplate(itemData, isUserData);
+
+         if (isUserData) {
+            // Adds logic to the cancel auction button
+            newTemplate.cancelAuctionButton.onClick.AddListener(() => {
+               PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+               PanelManager.self.confirmScreen.show();
+               PanelManager.self.confirmScreen.showYesNo("Cancel item auction?");
+
+               PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+                  PanelManager.self.confirmScreen.hide();
+                  Global.player.rpc.Cmd_RequestCancelBid(newTemplate.auctionItemData.auctionId);
+                  NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, true);
+               });
+            });
+         } else {
+            // Selects the auction template for data viewing in auction details panel
+            newTemplate.selectTemplateButton.onClick.AddListener(() => {
+               clearItemHighlights();
+               selectiedItemTemplate = newTemplate;
+               auctionDetailPanel.loadItemData(newTemplate.auctionItemData);
+               selectiedItemTemplate.toggleHighlight(true);
+            });
+         }
+
          auctionItemTemplateList.Add(newTemplate);
       }
    }

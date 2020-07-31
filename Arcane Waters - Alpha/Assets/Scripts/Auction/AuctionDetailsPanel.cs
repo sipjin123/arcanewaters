@@ -7,6 +7,9 @@ using Mirror;
 public class AuctionDetailsPanel : MonoBehaviour {
    #region Public Variables
 
+   // The market panel
+   public AuctionMarketPanel marketPanel;
+
    // Cached item data
    public AuctionItemData auctionItemData;
 
@@ -19,6 +22,7 @@ public class AuctionDetailsPanel : MonoBehaviour {
    public Text highestBid;
    public Text buyoutPrice;
    public InputField userBid;
+   public Text itemCount;
 
    // Date info
    public Text datePosted;
@@ -31,33 +35,45 @@ public class AuctionDetailsPanel : MonoBehaviour {
 
    private void Awake () {
       bidButton.onClick.AddListener(() => {
-         int userBidPrice = int.Parse(userBid.text);
-         if (userBidPrice < auctionItemData.itemPrice) {
-            PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
-            PanelManager.self.noticeScreen.show("Price must be higher than the initial bid price");
-            PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
-            return;
-         }
+         if (auctionItemData != null) {
+            int userBidPrice = int.Parse(userBid.text);
+            if (userBidPrice < auctionItemData.itemPrice) {
+               PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+               PanelManager.self.noticeScreen.show("Price must be higher than the initial bid price");
+               PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+               return;
+            }
 
-         if (userBidPrice < auctionItemData.highestBidPrice) {
-            PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
-            PanelManager.self.noticeScreen.show("Price must be higher than the current highest bid price");
-            PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
-            return;
-         }
+            if (userBidPrice < auctionItemData.highestBidPrice) {
+               PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+               PanelManager.self.noticeScreen.show("Price must be higher than the current highest bid price");
+               PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+               return;
+            }
 
-         Global.player.rpc.Cmd_RequestItemBid(auctionItemData.auctionId, userBidPrice);
+            Global.player.rpc.Cmd_RequestItemBid(auctionItemData.auctionId, userBidPrice);
+         } else {
+            PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+            PanelManager.self.noticeScreen.show("Please select an item to bid on");
+            PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+         }
       });
 
       buyoutButton.onClick.AddListener(() => {
-         PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
-         PanelManager.self.confirmScreen.show();
-         PanelManager.self.confirmScreen.showYesNo("Buy out item for: " + auctionItemData.itembuyOutPrice + "?");
+         if (auctionItemData != null) {
+            PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+            PanelManager.self.confirmScreen.show();
+            PanelManager.self.confirmScreen.showYesNo("Buy out item for: " + auctionItemData.itembuyOutPrice + "?");
 
-         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
-            Global.player.rpc.Cmd_RequestItemBid(auctionItemData.auctionId, auctionItemData.itembuyOutPrice);
-            PanelManager.self.confirmScreen.hide();
-         });
+            PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+               Global.player.rpc.Cmd_RequestItemBid(auctionItemData.auctionId, auctionItemData.itembuyOutPrice);
+               PanelManager.self.confirmScreen.hide();
+            });
+         } else {
+            PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
+            PanelManager.self.noticeScreen.show("Please select an item to buyout");
+            PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
+         }
       });
    }
 
@@ -76,6 +92,7 @@ public class AuctionDetailsPanel : MonoBehaviour {
       sellerName.text = data.sellerName;
       highestBid.text = data.highestBidPrice.ToString();
       buyoutPrice.text = data.itembuyOutPrice.ToString();
+      itemCount.text = data.itemCount.ToString();
    }
 
    public void clearContent () {
@@ -86,6 +103,7 @@ public class AuctionDetailsPanel : MonoBehaviour {
       sellerName.text = "";
       highestBid.text = "";
       buyoutPrice.text = "";
+      itemCount.text = "";
    }
 
    #region Private Variables

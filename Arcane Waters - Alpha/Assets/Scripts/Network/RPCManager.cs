@@ -28,8 +28,45 @@ public class RPCManager : NetworkBehaviour {
    #region Auction Features
 
    [Command]
+   public void Cmd_RequestCancelBid (int auctionId) {
+      processCancelBid(auctionId);
+   }
+
+   [Server]
+   private void processCancelBid (int auctionId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string rawAuctionData = DB_Main.fetchAuctionDataById(auctionId.ToString());
+         if (rawAuctionData.Length > 10) {
+            AuctionItemData auctionData = JsonConvert.DeserializeObject<AuctionItemData>(rawAuctionData);
+
+            Item newItem = new Item();
+            newItem.category = (Item.Category) auctionData.itemCategory;
+            newItem.itemTypeId = auctionData.itemTypeId;
+            newItem.id = auctionData.itemId;
+            newItem.count = auctionData.itemCount;
+
+            Item item = DB_Main.createItemOrUpdateItemCount(auctionData.sellerId, newItem);
+            item.count = auctionData.itemCount;
+
+            DB_Main.removeAuctionEntry(auctionData.auctionId);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               Target_ReceiveCancelAutionResult(_player.connectionToClient, JsonConvert.SerializeObject(item), AuctionRequestResult.Cancelled);
+            });
+         }
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCancelAutionResult (NetworkConnection connection, string rawItemData, AuctionRequestResult requestResult) {
+      Item receivedItem = JsonConvert.DeserializeObject<Item>(rawItemData);
+
+      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+      panel.show();
+      RewardManager.self.showItemInRewardPanel(receivedItem);
+   }
+
+   [Command]
    public void Cmd_RequestPostBid (Item item, int startingBid, int buyoutBid) {
-      D.editorLog("The item id is: " + item.id);
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int newId = DB_Main.createAuctionEntry(_player.nameText.text, _player.userId, item, startingBid, buyoutBid);
 
@@ -40,7 +77,6 @@ public class RPCManager : NetworkBehaviour {
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("SuccessfullyCreated: " + newId, Color.green);
             Target_ReceivePostBidResult(_player.connectionToClient, newId, AuctionRequestResult.Successfull);
          });
       });
@@ -51,7 +87,6 @@ public class RPCManager : NetworkBehaviour {
       PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.noticeScreen.show("Item successfully submitted item for auction, auction Id: " + auctionId);
       PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
-      D.editorLog("Bid has been posted");
    }
 
    [Command]
@@ -68,17 +103,12 @@ public class RPCManager : NetworkBehaviour {
             newItem.count = auctionData.itemCount;
             newItem.id = auctionData.itemId;
 
-            D.editorLog("Received auction data: " + auctionData.auctionId + " : " + auctionData.itemPrice);
-            D.editorLog("Received item data: " + newItem.category + " : " + newItem.itemTypeId +" : "+ newItem.id);
-
             if (bidPrice >= auctionData.itembuyOutPrice) {
                resultToSend = AuctionRequestResult.Buyout;
-               D.editorLog("Buyout!");
                processAuctionTransaction(_player.userId, auctionData, bidPrice, newItem);
             } else {
                if (bidPrice > auctionData.highestBidPrice) {
                   resultToSend = AuctionRequestResult.HighestBidder;
-                  D.editorLog("Highest Bid!");
                   processAuctionReplacement(_player.userId, auctionData, bidPrice);
                }
             }
@@ -94,21 +124,35 @@ public class RPCManager : NetworkBehaviour {
 
          DB_Main.modifyAuctionData(auctionData.auctionId.ToString(), buyerId.ToString(), buyerFinalPrice.ToString());
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Done");
+            // Do Server Logic Here
+            D.editorLog("Done Loading Auction Bid update");
          });
       });
    }
 
    [Server]
    public void processAuctionTransaction (int buyerId, AuctionItemData auctionData, int buyerFinalPrice, Item item) {
-      D.editorLog("The buyer is: " + buyerId + " : Seller is: " + auctionData.sellerId, Color.green);
+      auctionData.buyerId = buyerId;
+      Item newItem = new Item();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.createNewItem(buyerId, item);
+         if (Item.Category.CraftingIngredients == (Item.Category) auctionData.itemCategory) {
+            newItem = DB_Main.createItemOrUpdateItemCount(buyerId, item);
+         } else {
+            newItem = DB_Main.createNewItem(buyerId, item);
+         }
+
          DB_Main.addGold(auctionData.sellerId, buyerFinalPrice);
          DB_Main.addGold(buyerId, -buyerFinalPrice);
+         int result = DB_Main.addToAuctionHistory(auctionData);
+         if (result == 1) {
+            DB_Main.removeAuctionEntry(auctionData.auctionId);
+         } else {
+            D.debug("Could not properly add auction to history: " + auctionData.auctionId);
+         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Done");
+            // Do Server Logic Here
+            D.editorLog("Done Loading Auction Transaction update");
          });
       });
    }
@@ -116,14 +160,15 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveBidRequestResult (NetworkConnection connection, string rawInfo, AuctionRequestResult requestResult) {
       Item receivedItem = JsonConvert.DeserializeObject<Item>(rawInfo);
-
+      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
       switch (requestResult) {
          case AuctionRequestResult.HighestBidder:
+            NubisDataFetcher.self.checkAuctionMarket(panel.marketPanel.currentPage, panel.marketPanel.currentItemCategory, false);
             PanelManager.self.noticeScreen.show("You have successfully bid the item: " + EquipmentXMLManager.self.getItemName(receivedItem));
             break;
          case AuctionRequestResult.Buyout:
-            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
             panel.show();
+            NubisDataFetcher.self.checkAuctionMarket(panel.marketPanel.currentPage, panel.marketPanel.currentItemCategory, false);
             RewardManager.self.showItemInRewardPanel(receivedItem);
             break;
       }

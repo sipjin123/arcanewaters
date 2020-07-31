@@ -19,6 +19,9 @@ public class AuctionItemTemplate : MonoBehaviour {
    public Text highestBid;
    public Text buyoutPrice;
 
+   // Cancel auction button
+   public Button cancelAuctionButton;
+
    // Date info
    public Text datePosted;
    public Text dateExpiry;
@@ -29,13 +32,24 @@ public class AuctionItemTemplate : MonoBehaviour {
    // Item that highlights this template
    public GameObject highlightItem;
 
+   // Optional tabs depending if the fetched data is the user's or other users
+   public GameObject ownerNameTab, cancelTab;
+
+   // The number of item being auctioned
+   public Text itemCount;
+
    #endregion
 
    public void toggleHighlight (bool isOn) {
       highlightItem.SetActive(isOn);
    }
 
-   public void setTemplate (AuctionItemData data) {
+   public void setTemplate (AuctionItemData data, bool hasDeleteButton = false) {
+      cancelAuctionButton.gameObject.SetActive(hasDeleteButton);
+      cancelTab.SetActive(hasDeleteButton);
+      ownerNameTab.SetActive(!hasDeleteButton);
+      selectTemplateButton.gameObject.SetActive(!hasDeleteButton);
+
       auctionItemData = data;
 
       Item newItem = new Item {
@@ -50,6 +64,7 @@ public class AuctionItemTemplate : MonoBehaviour {
       sellerName.text = data.sellerName;
       highestBid.text = data.highestBidPrice.ToString();
       buyoutPrice.text = data.itembuyOutPrice.ToString();
+      itemCount.text = data.itemCount.ToString();
    }
 
    #region Private Variables

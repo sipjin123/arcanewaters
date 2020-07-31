@@ -7735,7 +7735,7 @@ public class DB_Main : DB_MainStub {
       int pageNumber = int.Parse(pageNumberStr);
       int offset = pageNumber * itemCountLimit;
 
-      string query = "SELECT * FROM arcane.auction_table_v1 where (buyerId = " + userIdStr + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
+      string query = "SELECT * FROM arcane.auction_history_v1 where (buyerId = " + userIdStr + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
@@ -7757,18 +7757,20 @@ public class DB_Main : DB_MainStub {
       return AuctionItemData.getXmlDataGroup(auctionContentList);
    }
 
-   public static new void addToAuctionHistory (AuctionItemData auctionData) {
+   public static new int addToAuctionHistory (AuctionItemData auctionData) {
       Item newItem = new Item { category = (Item.Category) auctionData.itemCategory, id = auctionData.itemId, itemTypeId = auctionData.itemTypeId, count = auctionData.itemCount };
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO auction_history_v1 (sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount, datePosted, dateExpiry) " +
-            "VALUES(@sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount, @datePosted, @dateExpiry)", conn)) {
+            "INSERT INTO auction_history_v1 (buyerId, sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount, auctionId) " +
+            "VALUES(@buyerId, @sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount, @auctionId)", conn)) {
 
             conn.Open();
-            cmd.Prepare();
+            cmd.Prepare(); 
+            cmd.Parameters.AddWithValue("@auctionId", auctionData.auctionId);
             cmd.Parameters.AddWithValue("@sellerName", auctionData.sellerName);
             cmd.Parameters.AddWithValue("@sellerId", auctionData.sellerId);
+            cmd.Parameters.AddWithValue("@buyerId", auctionData.buyerId);
             cmd.Parameters.AddWithValue("@itemPrice", auctionData.itemPrice);
             cmd.Parameters.AddWithValue("@itembuyOutPrice", auctionData.itembuyOutPrice);
             cmd.Parameters.AddWithValue("@itemName", EquipmentXMLManager.self.getItemName(newItem));
@@ -7780,9 +7782,12 @@ public class DB_Main : DB_MainStub {
 
             // Execute the command
             cmd.ExecuteNonQuery();
+
+            return 1;
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+         return 0;
       }
    }
 

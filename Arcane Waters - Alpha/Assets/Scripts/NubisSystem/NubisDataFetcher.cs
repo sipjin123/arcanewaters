@@ -43,6 +43,9 @@ namespace NubisDataHandling {
       // Space syntax for data sending
       public static string SPACER = "_space_";
 
+      // The valid length of an xml data
+      public static int VALID_XML_LENGTH = 10;
+
       #endregion
 
       private void Awake () {
@@ -68,6 +71,15 @@ namespace NubisDataHandling {
                });
             });
          }
+         if (Input.GetKeyDown(KeyCode.Alpha0)) {
+            D.editorLog("Fetching auction data history", Color.green);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               var returnData = DB_Main.fetchAuctionPurchaseHistory(Global.player.userId.ToString(), "5", "0");
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  D.editorLog("Return data is: " + returnData, Color.green);
+               });
+            });
+         }
 #endif
       }
 
@@ -75,9 +87,7 @@ namespace NubisDataHandling {
          return (int) XmlSlotIndex.Default;
       }
 
-      public void fetchXmlVersion () {
-         processXmlVersion();
-      }
+      #region Debug Function
 
       public void testNubisFunction () {
          processTestNubisFunction();
@@ -97,6 +107,14 @@ namespace NubisDataHandling {
          }
       }
 
+      #endregion
+
+      #region Xml Version Features
+
+      public void fetchXmlVersion () {
+         processXmlVersion();
+      }
+
       private async void processXmlVersion () {
          string returnCode = await NubisClient.call(nameof(DB_Main.fetchXmlVersion), getSlotIndex());
          try {
@@ -109,16 +127,24 @@ namespace NubisDataHandling {
          }
       }
 
+      #endregion
+
+      #region Auction Features
+
       public void fetchAuctionHistory (int page) {
          processFetchAuctionHistory(page);
       }
 
       private async void processFetchAuctionHistory (int page) {
          string result = await NubisClient.call(nameof(DB_Main.fetchAuctionPurchaseHistory), Global.player.userId.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), page.ToString());
-         List<AuctionItemData> auctionItemList = Util.xmlLoad<List<AuctionItemData>>(result);
+         if (result.Length > VALID_XML_LENGTH) {
+            List<AuctionItemData> auctionItemList = Util.xmlLoad<List<AuctionItemData>>(result);
 
-         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-         panel.marketPanel.loadAuctionHistory(auctionItemList);
+            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+            panel.marketPanel.loadAuctionHistory(auctionItemList);
+         } else {
+            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchAuctionPurchaseHistory));
+         }
       }
 
       public void requestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
@@ -128,27 +154,41 @@ namespace NubisDataHandling {
       private async void processUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
          // Fetched data from db_main
          string userItemData = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), Global.player.userId.ToString());
-         Item equippedWeapon = new Item();
-         Item equippedArmor = new Item();
-         Item equippedHat = new Item();
+         if (userItemData.Length > VALID_XML_LENGTH) {
+            Item equippedWeapon = new Item();
+            Item equippedArmor = new Item();
+            Item equippedHat = new Item();
 
-         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
-         equippedWeapon = equippedItemData.weaponItem;
-         equippedArmor = equippedItemData.armorItem;
-         equippedHat = equippedItemData.hatItem;
+            EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
+            equippedWeapon = equippedItemData.weaponItem;
+            equippedArmor = equippedItemData.armorItem;
+            equippedHat = equippedItemData.hatItem;
 
-         string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
-
-         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-         if (panel.isShowing()) {
-            List<Item> itemList = UserInventory.processUserInventory(returnCode);
-            panel.userPanel.gameObject.SetActive(true);
-            panel.userPanel.loadUserItemList(itemList);
-            panel.show();
+            string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
+            if (returnCode.Length > VALID_XML_LENGTH) {
+               AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+               if (panel.isShowing()) {
+                  List<Item> itemList = UserInventory.processUserInventory(returnCode);
+                  panel.userPanel.gameObject.SetActive(true);
+                  panel.userPanel.loadUserItemList(itemList);
+                  panel.show();
+               }
+            } else {
+               D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.userInventory));
+            }
+         } else {
+            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchEquippedItems));
          }
       }
 
       public void checkAuctionMarket (int pageIndex, Item.Category[] categoryFilters, bool checkOwnItems) {
+         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+         if (checkOwnItems) {
+            panel.marketPanel.toggleAuctionedUserItemLoader(true);
+         } else {
+            panel.setBlockers(true);
+         }
+
          processAuctionMarket (pageIndex, categoryFilters, checkOwnItems);
       }
 
@@ -157,7 +197,7 @@ namespace NubisDataHandling {
          string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
 
          string result = await NubisClient.call(nameof(DB_Main.fetchAuctionData), Global.player.userId.ToString(), pageIndex.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), jsonFilter, checkOwnItems ? "1" : "0");
-         if (result.Length > 10) {
+         if (result.Length > VALID_XML_LENGTH) {
             AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
 
             if (panel.isShowing()) {
@@ -168,9 +208,13 @@ namespace NubisDataHandling {
                panel.show();
             }
          } else {
-            D.editorLog("Something went wrong with Nubis Fetch:: " + nameof(DB_Main.fetchAuctionData), Color.red);
+            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchAuctionData));
          }
       }
+
+      #endregion
+
+      #region Crafting Features
 
       public void checkCraftingInfo (int bluePrintId) {
          processCraftingInfo(bluePrintId);
@@ -248,6 +292,10 @@ namespace NubisDataHandling {
          }
          craftingPanel.updatePanelWithBlueprintList(craftableItems.ToArray(), blueprintStatus.ToArray(), pageIndex, itemsPerPage);
       }
+
+      #endregion
+
+      #region Equipment Features
 
       public void fetchEquipmentData (int pageIndex = 1, int itemsPerPage = 42, Item.Category[] categoryFilter = null) {
          if (itemsPerPage > 200) {
@@ -357,6 +405,10 @@ namespace NubisDataHandling {
          inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount);
       }
 
+      #endregion
+
+      #region Ability Features
+
       public void fetchUserAbilities () {
          processUserAbilities();
       }
@@ -378,5 +430,7 @@ namespace NubisDataHandling {
          // Update the Skill Panel with the abilities we received from the server
          panel.receiveDataFromServer(abilityList.ToArray());
       }
+
+      #endregion
    }
 }

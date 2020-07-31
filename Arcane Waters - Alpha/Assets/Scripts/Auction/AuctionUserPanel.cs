@@ -8,6 +8,9 @@ using NubisDataHandling;
 public class AuctionUserPanel : MonoBehaviour {
    #region Public Variables
 
+   // Reference to the root panel
+   public AuctionRootPanel rootPanel;
+
    // The loading blockers
    public GameObject[] loadBlockers;
 
@@ -32,7 +35,7 @@ public class AuctionUserPanel : MonoBehaviour {
    public UserItemTemplate selectedTemplate;
 
    // The item price
-   public InputField itemPrice, buyoutPrice;
+   public InputField itemPrice, buyoutPrice, itemQuantityInput;
 
    // Popup Buttons for posting auctioned item
    public Button postAuction, exitButton;
@@ -72,12 +75,18 @@ public class AuctionUserPanel : MonoBehaviour {
             PanelManager.self.confirmScreen.hide();
             gameObject.SetActive(false);
 
+            if (selectedTemplate.itemCache.category == Item.Category.CraftingIngredients) {
+               selectedTemplate.itemCache.count = int.Parse(itemQuantityInput.text);
+            } else {
+               selectedTemplate.itemCache.count = 1;
+            }
             Global.player.rpc.Cmd_RequestPostBid(selectedTemplate.itemCache, currItemPrice, currBuyoutPrice);
          });
       });
 
       exitButton.onClick.AddListener(() => {
          gameObject.SetActive(false);
+         NubisDataFetcher.self.checkAuctionMarket(rootPanel.marketPanel.currentPage, rootPanel.marketPanel.currentItemCategory, false);
       });
 
       allFilterButton.onClick.AddListener(() => {
@@ -123,6 +132,7 @@ public class AuctionUserPanel : MonoBehaviour {
    }
 
    public void selectItem (UserItemTemplate itemTemplate) {
+      itemQuantityInput.gameObject.SetActive(itemTemplate.itemCache.category == Item.Category.CraftingIngredients);
       selectedTemplate = itemTemplate;
 
       foreach (UserItemTemplate template in userItemTemplateList) {

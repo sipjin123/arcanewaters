@@ -8,6 +8,7 @@ public class UserItemTemplate : ItemCell, IPointerDownHandler, IPointerEnterHand
 
    #region Public Variables
 
+   // Reference to the user auction panel
    public AuctionUserPanel userAuctionPanel;
 
    // The canvas group component
@@ -23,13 +24,9 @@ public class UserItemTemplate : ItemCell, IPointerDownHandler, IPointerEnterHand
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
-      if (_interactable) {
-      }
    }
 
    public void OnPointerExit (PointerEventData eventData) {
-      if (_interactable) {
-      }
    }
 
    public void setPanel (AuctionUserPanel panel) {

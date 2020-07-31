@@ -29,6 +29,13 @@ public class AuctionRootPanel : Panel {
       base.show();
    }
 
+   public override void hide () {
+      userPanel.gameObject.SetActive(false);
+      marketPanel.auctionedItemPanel.SetActive(false);
+      marketPanel.auctionHistoryPanel.SetActive(false);
+      base.hide();
+   }
+
    public void setBlockers (bool isOn) {
       foreach (GameObject obj in loadBlockers) {
          obj.SetActive(isOn);
@@ -48,5 +55,6 @@ public enum AuctionRequestResult
    InsufficientBid = 2,
    ItemUnavailable = 3,
    Buyout = 4,
-   HighestBidder =5
+   HighestBidder = 5,
+   Cancelled = 6
 }

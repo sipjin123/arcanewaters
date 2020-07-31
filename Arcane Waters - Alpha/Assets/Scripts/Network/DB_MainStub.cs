@@ -68,8 +68,8 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void addToAuctionHistory (AuctionItemData auctionData) {
-
+   public static int addToAuctionHistory (AuctionItemData auctionData) {
+      return 0;
    }
 
    public static int createAuctionEntry (string sellerName, int userId, Item item, int startingPrice, int buyoutPrice) {
