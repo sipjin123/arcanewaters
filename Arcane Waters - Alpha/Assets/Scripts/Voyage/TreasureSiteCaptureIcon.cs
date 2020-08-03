@@ -39,7 +39,7 @@ public class TreasureSiteCaptureIcon : MonoBehaviour
    public void Update () {
       // Only active on clients
       if (_treasureSite == null || !_treasureSite.isClient || Global.player == null ||
-         !VoyageManager.isInVoyage(Global.player)) {
+         !VoyageManager.isInGroup(Global.player)) {
          return;
       }
 

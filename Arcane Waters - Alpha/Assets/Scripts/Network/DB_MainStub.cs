@@ -1108,6 +1108,10 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
+   public static void updateVoyageInVoyageGroup (int groupId, int voyageId) {
+
+   }
+
    public static void deleteVoyageGroup (int groupId) {
 
    }

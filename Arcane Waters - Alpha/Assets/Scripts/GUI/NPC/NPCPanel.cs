@@ -6,7 +6,8 @@ using Mirror;
 using System.Text;
 using System.Xml.XPath;
 
-public class NPCPanel : Panel {
+public class NPCPanel : Panel
+{
    #region Public Variables
 
    // The mode of the panel
@@ -77,6 +78,9 @@ public class NPCPanel : Panel {
    // Sends a command to hire the npc as a companion
    public Button hireButton;
 
+   // CanvasGroup that shows the panel's content
+   public CanvasGroup ContentCanvasGroup;
+
    // Self
    public static NPCPanel self;
 
@@ -101,11 +105,22 @@ public class NPCPanel : Panel {
    public override void show () {
       base.show();
 
+      // If we're already active and visible, then there's nothing to do
+      if (this.gameObject.activeSelf && canvasGroup.alpha == 1) {
+         return;
+      }
+
+      // Start invisible initially
+      canvasGroup.alpha = 0f;
+      canvasGroup.interactable = true;
+
+      // Then turn on the game object so that everything gets positioned
+      this.gameObject.SetActive(true);
+
+      this.ContentCanvasGroup.alpha = 0f;
+
       // Get the head image from the npc and update it
       headAnim.setNewTexture(_npc.getHeadIconSprite().texture);
-
-      // Start typing out our intro text
-      AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
    }
 
    public void initLoadBlockers (bool isActive) {
@@ -116,6 +131,11 @@ public class NPCPanel : Panel {
          questNodeSection.SetActive(false);
          giftOfferSection.SetActive(false);
          npcDialogueText.enabled = false;
+      } else {
+         this.ContentCanvasGroup.alpha = 1f;
+
+         // Start typing out our intro text
+         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
       }
 
       foreach (GameObject obj in loadBlockers) {
@@ -284,7 +304,7 @@ public class NPCPanel : Panel {
 
       // Clear out the old clickable options
       clearDialogueOptions();
-      
+
       // Create a clickable text row with the user's answer
       if (userText == null) {
          addDialogueOptionRow(Mode.QuestNode, userTextType,
@@ -367,7 +387,7 @@ public class NPCPanel : Panel {
       }
    }
 
-   private void setCommonPanelContent(string npcText, int friendshipLevel, bool hasFinishedAchievements = true, QuestActionRequirement[] actionRequirements = null) {
+   private void setCommonPanelContent (string npcText, int friendshipLevel, bool hasFinishedAchievements = true, QuestActionRequirement[] actionRequirements = null) {
       // If the friendship level changed, play an animation
       if (_friendshipLevel != -1 && _friendshipLevel != friendshipLevel) {
          friendshipIncreaseAnimator.SetTrigger("friendshipChanged");
@@ -375,7 +395,7 @@ public class NPCPanel : Panel {
          // If the friendship rank increased, notice the player
          if (_friendshipRank != NPCFriendship.Rank.None &&
             friendshipLevel > _friendshipLevel &&
-            _friendshipRank != NPCFriendship.getRank(friendshipLevel))  {
+            _friendshipRank != NPCFriendship.getRank(friendshipLevel)) {
             PanelManager.self.noticeScreen.show(string.Format("Your friendship with {0} raised to {1}", _npc.getName(), NPCFriendship.getRankName(friendshipLevel)));
          }
       }
@@ -415,7 +435,7 @@ public class NPCPanel : Panel {
       questObjectivesGO.SetActive(false);
    }
 
-   public void setNPC(int npcId, string npcName, int friendshipLevel) {
+   public void setNPC (int npcId, string npcName, int friendshipLevel) {
       _npc = NPCManager.self.getNPC(npcId);
 
       // Fill in the details for this NPC
@@ -432,7 +452,7 @@ public class NPCPanel : Panel {
       friendshipRankText.text = NPCFriendship.getRankName(_friendshipRank);
    }
 
-   private void configurePanelForMode(Mode mode) {
+   private void configurePanelForMode (Mode mode) {
       switch (mode) {
          /*case Mode.QuestList:
             questListSection.SetActive(true);
@@ -475,7 +495,7 @@ public class NPCPanel : Panel {
       // Create a clickable text row
       ClickableText row = Instantiate(dialogueOptionRowPrefab);
       row.transform.SetParent(container.transform);
-      
+
       // Set the text
       if (text == null) {
          row.initData(clickableType);

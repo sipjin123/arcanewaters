@@ -161,7 +161,7 @@ public class InstanceManager : MonoBehaviour {
 
    public void removeEntityFromInstance (NetEntity entity) {
       if (entity == null || entity.instanceId == 0) {
-         D.log("No need to remove entity from instance: " + entity);
+         D.debug("No need to remove entity from instance: " + entity);
          return;
       }
 

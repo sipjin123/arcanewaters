@@ -47,7 +47,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void Update () {
       // Hide the panel when there is no player or he doesn't belong to a group
-      if (!VoyageManager.isInVoyage(Global.player)) {
+      if (!VoyageManager.isInGroup(Global.player)) {
          hide();
          return;
       }
@@ -72,7 +72,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void updatePanelWithGroupMembers (List<int> groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
-      if (!VoyageManager.isInVoyage(Global.player) || groupMembers.Count <= 0) {
+      if (!VoyageManager.isInGroup(Global.player) || groupMembers.Count <= 0) {
          // Clear out any old info
          memberContainer.DestroyChildren();
          _memberCells.Clear();

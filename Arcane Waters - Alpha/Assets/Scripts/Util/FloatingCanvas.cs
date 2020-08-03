@@ -13,6 +13,9 @@ public class FloatingCanvas : MonoBehaviour {
    // How fast this should float up
    public static float RISE_SPEED = .0025f;
 
+   // Main text component of this canvas
+   public Text text;
+
    #endregion
 
    void Start () {
@@ -41,6 +44,26 @@ public class FloatingCanvas : MonoBehaviour {
 
       // Also fade out
       _canvasGroup.alpha = 1f - (timeAlive / lifetime);
+   }
+
+   public static FloatingCanvas instantiateAt (Vector2 position) {
+      return Instantiate(PrefabsManager.self.floatingCanvasPrefab, position, Quaternion.identity);
+   }
+
+   public FloatingCanvas asTooFar () {
+      if (text != null) {
+         text.text = "Too Far...";
+      }
+
+      return this;
+   }
+
+   public FloatingCanvas asNoResponse () {
+      if (text != null) {
+         text.text = "No Response...";
+      }
+
+      return this;
    }
 
    #region Private Variables

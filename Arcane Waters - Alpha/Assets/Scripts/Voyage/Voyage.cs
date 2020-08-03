@@ -19,6 +19,11 @@ public class Voyage
    // The maximum number of players per instance
    public static int MAX_PLAYERS_PER_INSTANCE = 50;
 
+   // The maximum number of players in a group for each map difficulty
+   public static int MAX_PLAYERS_PER_GROUP_EASY= 2;
+   public static int MAX_PLAYERS_PER_GROUP_MEDIUM = 4;
+   public static int MAX_PLAYERS_PER_GROUP_HARD = 6;
+
    // The voyage difficulty
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
 
@@ -75,13 +80,13 @@ public class Voyage
    public static int getMaxGroupSize (Difficulty voyageDifficulty) {
       switch (voyageDifficulty) {
          case Difficulty.Easy:
-            return 2;
+            return MAX_PLAYERS_PER_GROUP_EASY;
          case Difficulty.Medium:
-            return 4;
+            return MAX_PLAYERS_PER_GROUP_MEDIUM;
          case Difficulty.Hard:
-            return 6;
+            return MAX_PLAYERS_PER_GROUP_HARD;
          default:
-            return 6;
+            return MAX_PLAYERS_PER_GROUP_HARD;
       }
    }
 

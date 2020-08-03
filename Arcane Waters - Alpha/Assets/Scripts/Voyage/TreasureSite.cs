@@ -168,7 +168,7 @@ public class TreasureSite : NetworkBehaviour
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
-         if (ship != null && ship.instanceId == instanceId && VoyageManager.isInVoyage(ship)) {
+         if (ship != null && ship.instanceId == instanceId && VoyageManager.isInGroup(ship)) {
             // Add the ship to the list of capturing ships
             _capturingShips.Add(ship);
          }

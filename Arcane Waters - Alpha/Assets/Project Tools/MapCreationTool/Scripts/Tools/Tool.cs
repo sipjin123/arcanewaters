@@ -39,5 +39,13 @@ namespace MapCreationTool
       protected virtual void unregisterUIEvents () { }
 
       protected virtual void cancelAction () { }
+
+      private void OnDestroy () {
+         // When switching scene, we want to unregister static events
+         if (active) {
+            unregisterUIEvents();
+            cancelAction();
+         }
+      }
    }
 }

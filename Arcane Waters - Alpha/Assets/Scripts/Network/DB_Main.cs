@@ -8075,6 +8075,25 @@ public class DB_Main : DB_MainStub {
       return voyageToGroupCount;
    }
 
+   public static new void updateVoyageInVoyageGroup (int groupId, int voyageId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE voyage_groups SET voyageId=@voyageId WHERE groupId=@groupId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+            cmd.Parameters.AddWithValue("@voyageId", voyageId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
       try {
          using (MySqlConnection conn = getConnection())

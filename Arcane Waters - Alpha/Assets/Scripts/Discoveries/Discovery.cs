@@ -79,7 +79,7 @@ public class Discovery : NetworkBehaviour
    private void openDiscoveryPanel () {
       // Make sure the player is close enough
       if (!_isLocalPlayerInside) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
          return;
       }
 

@@ -273,7 +273,7 @@ public class PlayerBodyEntity : BodyEntity {
       // Speed ship boost feature
       if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius) {
          isSpeedingUp = true;
-         if (speedMeter > 0) {
+         if (speedMeter > 0 && !waterChecker.inWater()) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
             Cmd_UpdateSpeedupDisplay(true);

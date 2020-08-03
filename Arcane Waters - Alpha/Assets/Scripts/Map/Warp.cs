@@ -154,7 +154,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       TreasureSite site;
       if (_treasureSites.TryGetValue(player.instanceId, out site)) {
          // Verify that the player is allowed to use the warp
-         if (site != null && !(VoyageManager.isInVoyage(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
+         if (site != null && !(VoyageManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
             return false;
          }
       }

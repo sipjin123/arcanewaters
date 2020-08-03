@@ -34,7 +34,7 @@ public class TreasureSiteBars : MonoBehaviour
    }
 
    void Update () {
-      if (_treasureSite == null || Global.player == null || !VoyageManager.isInVoyage(Global.player)) {
+      if (_treasureSite == null || Global.player == null || !VoyageManager.isInGroup(Global.player)) {
          barContainer.SetActive(false);
          alliedIcon.SetActive(false);
          enemyIcon.SetActive(false);

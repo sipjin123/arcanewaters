@@ -102,6 +102,10 @@ MonoBehaviour:
     index: 16
     zOffset: 0
     layerType: 0
+  - layer: ceiling
+    index: 90
+    zOffset: -100
+    layerType: 0
   seaLayerIndexes:
   - layer: ground
     index: 0
@@ -203,12 +207,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3d4af12e1decb244d923e5b4244d9f49, type: 2}
   - {fileID: 11400000, guid: 17b0499d42b50ff4d9517b30315f6994, type: 2}
   interiorPreset: {fileID: 11400000, guid: 515f535e507b0ae45be1008516b9bce1, type: 2}
-  rugLookup:
-  - {r: 0, g: 0, b: 0, a: 0}
-  - {r: 0.6627451, g: 0.18823531, b: 0.22352943, a: 1}
-  - {r: 0.64705884, g: 0.5019608, b: 0, a: 1}
-  - {r: 0.21960786, g: 0.3647059, b: 0.25490198, a: 1}
-  - {r: 0.3137255, g: 0.36078432, b: 0.7254902, a: 1}
   rugLookupForest:
   - {r: 0, g: 0, b: 0, a: 0}
   - {r: 0.6627451, g: 0.18823531, b: 0.22352943, a: 1}

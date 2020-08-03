@@ -49,7 +49,7 @@ public class CraftingAnvil : MonoBehaviour
    public void openCraftingPanel () {
       // The player has to be close enough
       if (!_isGlobalPlayerNearby) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, this.transform.position + new Vector3(0f, .24f), Quaternion.identity);
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
          return;
       }
 

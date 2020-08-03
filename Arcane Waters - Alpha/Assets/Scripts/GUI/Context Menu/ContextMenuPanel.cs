@@ -93,7 +93,7 @@ public class ContextMenuPanel : MonoBehaviour
       addButton("Info", () => Global.player.rpc.Cmd_RequestCharacterInfoFromServer(userId));
       
       if (Global.player.userId != userId) {
-         if (VoyageManager.isInVoyage(Global.player)) {
+         if (VoyageManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
             if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
                PanelManager.self.contextMenuPanel.addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
@@ -107,6 +107,8 @@ public class ContextMenuPanel : MonoBehaviour
          }
 
          PanelManager.self.contextMenuPanel.addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
+      } else if (!VoyageManager.isInGroup(Global.player)) {
+         PanelManager.self.contextMenuPanel.addButton("Create Group", () => VoyageManager.self.createPrivateGroup());
       }
 
       show(userName);

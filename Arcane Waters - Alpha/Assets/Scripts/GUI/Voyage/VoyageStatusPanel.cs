@@ -68,7 +68,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    public void Update () {
       // Hide the panel in certain situations
-      if (Global.player == null || !VoyageManager.isInVoyage(Global.player) || Global.player.isInBattle()) {
+      if (Global.player == null || !VoyageManager.isInGroup(Global.player) || Global.player.isInBattle()) {
          hide();
          return;
       }

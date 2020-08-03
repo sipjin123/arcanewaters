@@ -5,7 +5,7 @@ public class Spawn : MonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
 
    // Hardcoded spawn keys
-   public static string STARTING_SPAWN = "main";
+   public static string STARTING_SPAWN = "Tutorial Town Start";
 
    // The key determining the type of spawn this is
    public string spawnKey;

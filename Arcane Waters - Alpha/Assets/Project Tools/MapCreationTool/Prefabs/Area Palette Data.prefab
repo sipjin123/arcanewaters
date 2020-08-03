@@ -2113,7 +2113,7 @@ Tilemap:
       m_TileMatrixIndex: 0
       m_TileColorIndex: 527
       m_TileObjectToInstantiateIndex: 65535
-      m_AllTileFlags: 1
+      m_AllTileFlags: 1073741825
   - first: {x: 9, y: 2, z: 0}
     second:
       serializedVersion: 2
@@ -4598,6 +4598,15 @@ Tilemap:
       m_TileColorIndex: 527
       m_TileObjectToInstantiateIndex: 65535
       m_AllTileFlags: 1
+  - first: {x: 1, y: 31, z: 0}
+    second:
+      serializedVersion: 2
+      m_TileIndex: 796
+      m_TileSpriteIndex: 516
+      m_TileMatrixIndex: 0
+      m_TileColorIndex: 527
+      m_TileObjectToInstantiateIndex: 65535
+      m_AllTileFlags: 1073741825
   - first: {x: 2, y: 31, z: 0}
     second:
       serializedVersion: 2
@@ -7137,8 +7146,8 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 2d67499ad67a10540808b7a16a12e606, type: 2}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 11400000, guid: bd36d3d7ba51fe342ab00c0c39bf79d3, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 2a4f3496e850cd34ab39be12e96beb92, type: 2}
   - m_RefCount: 1
@@ -8219,8 +8228,8 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  - m_RefCount: 1
+    m_Data: {fileID: 613977331325868367, guid: 728678c8294c72442a80b2b1c42e5d0e, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -6869846723088416038, guid: 6f826cb866ed3e54e9511e56b554fa36,
       type: 3}
@@ -9068,7 +9077,7 @@ Tilemap:
     m_Data: {fileID: -2659194296666355026, guid: 6f826cb866ed3e54e9511e56b554fa36,
       type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 399
+  - m_RefCount: 400
     m_Data:
       e00: 1
       e01: 0
@@ -10141,7 +10150,7 @@ Tilemap:
     m_Data: {r: -2.7125575e+28, g: -2.7125575e+28, b: -2.7125575e+28, a: -2.7125575e+28}
   - m_RefCount: 0
     m_Data: {r: 5.5348453e+16, g: 5.5348453e+16, b: 5.5348453e+16, a: 5.5348453e+16}
-  - m_RefCount: 399
+  - m_RefCount: 400
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -10623,7 +10632,7 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
-    - layer: bush
+    - layer: ceiling
       sublayer: 0
       cluster: 0
       collisionType: 0
@@ -12022,7 +12031,7 @@ MonoBehaviour:
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 1
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 4

@@ -119,7 +119,7 @@ public class VoyageManager : MonoBehaviour {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }
 
-   public static bool isInVoyage (NetEntity entity) {
+   public static bool isInGroup (NetEntity entity) {
       return entity != null && entity.voyageGroupId != -1;
    }
 
@@ -141,41 +141,41 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   public static bool isGroupFull (VoyageGroupInfo group) {
+      if (group.voyageId <= 0) {
+         // If the group has not joined a map, the limit is the maximum
+         if (group.memberCount >= Voyage.MAX_PLAYERS_PER_GROUP_HARD) {
+            return true;
+         }
+      } else {
+         // If the group has joined a map, we enforce the limit set by the map difficulty
+         Voyage voyage = VoyageManager.self.getVoyage(group.voyageId);
+         if (voyage != null && group.memberCount >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+            return true;
+         }
+      }
+      return false;
+   }
+
    public void showVoyagePanel (NetEntity entity) {
       if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
       }
 
-      // Check if the player is in a voyage group
-      if (isInVoyage(entity)) {
-         displayWarpToVoyageConfirmScreen();
-      } else {
-         // Get the voyages panel
-         PanelManager.self.selectedPanel = Panel.Type.Voyage;
-         VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
-
-         // If the panel is not showing, send a request to the server to get the panel data
-         if (!panel.isShowing()) {
-            panel.displayVoyagesSelection();
-         }
-      }
+      Global.player.rpc.Cmd_RequestVoyageListFromServer();
    }
 
    public void displayWarpToVoyageConfirmScreen () {
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmWarpToVoyageMap());
-
-      // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Do you want to warp to your current voyage?");
+      PanelManager.self.showConfirmationPanel("Do you want to warp to your current voyage?",
+         () => confirmWarpToVoyageMap(), () => PanelManager.self.confirmScreen.hide(), true);
    }
 
    public void confirmWarpToVoyageMap () {
-      // Hide the confirm panel
-      PanelManager.self.confirmScreen.hide();
-
-      // Warp the player to its voyage
       Global.player.rpc.Cmd_WarpToCurrentVoyageMap();
+   }
+
+   public void createPrivateGroup () {
+      Global.player.rpc.Cmd_CreatePrivateVoyageGroup();
    }
 
    public void handleInviteCommand (string inputString) {
@@ -222,7 +222,7 @@ public class VoyageManager : MonoBehaviour {
          return;
       }
 
-      if (isInVoyage(Global.player)) {
+      if (isInGroup(Global.player)) {
          PanelManager.self.noticeScreen.show("You must leave your current group before joining another");
          return;
       }
@@ -326,7 +326,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Check if the player is not in a group
-      if (!isInVoyage(Global.player)) {
+      if (!isInGroup(Global.player)) {
          // If the player just left his group, request an update from the server
          if (_visibleGroupMembers.Count > 0) {
             _visibleGroupMembers.Clear();

@@ -658,7 +658,7 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      if (VoyageManager.isInVoyage(this) && VoyageManager.isInVoyage(otherEntity)) {
+      if (VoyageManager.isInGroup(this) && VoyageManager.isInGroup(otherEntity)) {
          // In PvE voyage instances, players from other groups are not enemies
          Instance instance = getInstance();
          if (instance != null && !instance.isPvP) {
@@ -684,7 +684,7 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      if (VoyageManager.isInVoyage(this) && VoyageManager.isInVoyage(otherEntity)) {
+      if (VoyageManager.isInGroup(this) && VoyageManager.isInGroup(otherEntity)) {
          if (this.voyageGroupId == otherEntity.voyageGroupId) {
             return true;
          } else {

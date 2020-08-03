@@ -131,8 +131,8 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating ship skins
    public StoreShipBox shipBoxPrefab;
 
-   // A prefab we can use for showing that an object is too far away
-   public GameObject tooFarPrefab;
+   // A prefab we can use for showing minor generic messages, ex. that an object is too far away
+   public FloatingCanvas floatingCanvasPrefab;
 
    // The prefab we use to create a cancel icon
    public GameObject cancelIconPrefab;

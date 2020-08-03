@@ -38,6 +38,9 @@ public class NPCData
    // The npc text when the gift is not liked
    public string giftNotLikedText = "";
 
+   // Can players interact (talk) with this NPC
+   public bool interactable = true;
+
    // Gets set to true when the NPC has the crop rumor dialogue option
    public bool hasTradeGossipDialogue = true;
 
@@ -74,7 +77,7 @@ public class NPCData
 
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
-      string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
+      string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool interactable, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
       int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
@@ -86,6 +89,7 @@ public class NPCData
       this.giftLikedText = giftLikedText;
       this.giftNotLikedText = giftNotLikedText;
       this.name = name;
+      this.interactable = interactable;
       this.hasTradeGossipDialogue = hasTradeGossipDialogue;
       this.hasGoodbyeDialogue = hasGoodbyeDialogue;
       this.lastUsedQuestId = lastUsedQuestId;

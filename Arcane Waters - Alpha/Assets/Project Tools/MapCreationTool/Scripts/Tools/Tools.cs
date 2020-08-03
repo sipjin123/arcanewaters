@@ -76,6 +76,9 @@ namespace MapCreationTool
       }
 
       public static void setDefaultData (GameObject prefab, string key, string value) {
+         // We do not want a default value for the ID of the prefab
+         if (key.Equals(DataField.PLACED_PREFAB_ID)) return;
+
          try {
             // Find out the type of prefab
             Type type = prefab.GetComponent<IPrefabDataListener>().GetType();

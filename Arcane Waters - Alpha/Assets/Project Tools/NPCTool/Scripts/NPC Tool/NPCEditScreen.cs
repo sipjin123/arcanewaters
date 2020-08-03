@@ -17,6 +17,7 @@ public class NPCEditScreen : MonoBehaviour
    // The main parameters of the NPC
    public Text npcIdText;
    public InputField npcName;
+   public Toggle interactable;
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
    public Toggle isActive;
@@ -231,6 +232,7 @@ public class NPCEditScreen : MonoBehaviour
       // Fill all the fields with the values from the data file
       npcIdText.text = npcData.npcId.ToString();
       npcName.text = npcData.name;
+      interactable.isOn = npcData.interactable;
       hasTradeGossip.isOn = npcData.hasTradeGossipDialogue;
       hasGoodbye.isOn = npcData.hasGoodbyeDialogue;
       greetingStranger.text = npcData.greetingTextStranger;
@@ -310,7 +312,7 @@ public class NPCEditScreen : MonoBehaviour
       // Create a new npcData object and initialize it with the values from the UI
       NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
-         giftLiked.text, giftNotLiked.text, npcName.text, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
+         giftLiked.text, giftNotLiked.text, npcName.text, interactable.isOn, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
          int.Parse(questIdText.text), newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text), isActive.isOn);
 
       if (startingID != int.Parse(npcID.text)) {
