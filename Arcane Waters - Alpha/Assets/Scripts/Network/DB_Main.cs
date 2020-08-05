@@ -97,15 +97,16 @@ public class DB_Main : DB_MainStub {
       return "";
    }
 
-   public static new string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr) {
+   public static new string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr, string inventoryCountLimit) {
       int usrId = int.Parse(usrIdStr);
       int currentPage = int.Parse(currentPageStr);
       int category = int.Parse(categoryStr);
       int weaponId = int.Parse(weaponIdStr);
       int armorId = int.Parse(armorIdStr);
       int hatId = int.Parse(hatIdStr);
+      int inventoryCountMax = int.Parse(inventoryCountLimit);
 
-      int offset = currentPage * InventoryPanel.ITEMS_PER_PAGE;
+      int offset = currentPage * inventoryCountMax;
       bool hasItemFilter = category != 0;
       string itemFilterContent = "and (itmCategory = " + category + ")";
       if (!hasItemFilter) {
@@ -132,7 +133,7 @@ public class DB_Main : DB_MainStub {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-            "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId " + itemFilterContent + weaponFilter + armorFilter + hatFilter + ") order by itmCategory limit " + InventoryPanel.ITEMS_PER_PAGE + " offset " + offset, connection)) {
+            "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId " + itemFilterContent + weaponFilter + armorFilter + hatFilter + ") order by itmCategory limit " + inventoryCountMax + " offset " + offset, connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
 
                StringBuilder stringBuilder = new StringBuilder();
@@ -5517,6 +5518,30 @@ public class DB_Main : DB_MainStub {
       return userInfo;
    }
 
+   public static new string getUserInfoNubisTest (string userName) {
+      UserInfo userInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrName=@usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", userName);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userInfo = new UserInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return JsonConvert.SerializeObject(userInfo);
+   }
+
    public static new Stats getStats (int userId) {
       Stats stats = new Stats(userId);
 
@@ -5977,7 +6002,6 @@ public class DB_Main : DB_MainStub {
 
          query.Append(") ");
       }
-
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
@@ -7726,6 +7750,61 @@ public class DB_Main : DB_MainStub {
    #endregion
 
    #region Auction Features
+
+   public static new string getMarketAuctionItemCount (string rawData, string filteredCategory) {
+      // Filter Setup
+      List<int> categoryInt = JsonConvert.DeserializeObject<List<int>>(filteredCategory);
+      string categoryFilters = categoryInt.Count > 0 ? " and (" : "";
+      int index = 0;
+      foreach (int categ in categoryInt) {
+         if (index > 0) {
+            categoryFilters += " or ";
+         }
+         categoryFilters += "itemCategory = " + categ;
+         index++;
+      }
+      categoryFilters += categoryInt.Count > 0 ? ")" : "";
+
+      string query = "SELECT count(*) as marketItemCount FROM auction_table_v1 WHERE sellerId != 0" + categoryFilters;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("marketItemCount").ToString();
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return "0";
+   }
+
+   public static new string getAuctionItemHistoryCount (string userId) {
+      string query = "SELECT count(*) as historyItemCount FROM auction_history_v1 WHERE buyerId = " + int.Parse(userId);
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  return dataReader.GetInt32("historyItemCount").ToString();
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return "0";
+   }
 
    public static new string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
       List<AuctionItemData> auctionContentList = new List<AuctionItemData>();

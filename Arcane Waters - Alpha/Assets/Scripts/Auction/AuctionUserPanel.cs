@@ -46,9 +46,27 @@ public class AuctionUserPanel : MonoBehaviour {
    // The current user inventory page
    public int currentPage = 0;
 
+   // The total items the user has
+   public int totalUserItemCount = 0;
+
+   // The page navigation buttons
+   public Button previousButton, nextButton;
+
+   // The text displaying the page
+   public Text pageStatusText;
+
+   // Max inventory count per page
+   public static int MAX_PAGE_COUNT = 30;
+
+   // The cached category filter
+   public Item.Category currentCategoryFilter;
+
    #endregion
 
    private void Awake () {
+      nextButton.onClick.AddListener(() => goToNextPage());
+      previousButton.onClick.AddListener(() => goToPreviousPage());
+
       postAuction.onClick.AddListener(() => {
          PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
          PanelManager.self.confirmScreen.show();
@@ -91,27 +109,34 @@ public class AuctionUserPanel : MonoBehaviour {
 
       allFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.None);
+         currentCategoryFilter = Item.Category.None;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
       });
       armorFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Armor);
+         currentCategoryFilter = Item.Category.Armor;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
       });
       weaponFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Weapon);
+         currentCategoryFilter = Item.Category.Weapon;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
       });
       ingredientFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.CraftingIngredients);
+         currentCategoryFilter = Item.Category.CraftingIngredients;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
       });
       hatFilterButton.onClick.AddListener(() => {
          setBlockers(true);
-         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, Item.Category.Hats);
+         currentCategoryFilter = Item.Category.Hats;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
       });
    }
 
-   public void loadUserItemList (List<Item> userItemList) {
+   public void loadUserItemList (List<Item> userItemList, int totalItemCount) {
+      pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalItemCount / MAX_PAGE_COUNT) + 1);
+      totalUserItemCount = totalItemCount;
       itemImage.sprite = ImageManager.self.blankSprite;
       itemName.text = "";
       itemDescription.text = "";
@@ -128,6 +153,22 @@ public class AuctionUserPanel : MonoBehaviour {
          itemInventoryTemplate.setPanel(this);
 
          userItemTemplateList.Add(itemInventoryTemplate);
+      }
+   }
+
+   private void goToNextPage () {
+      if (totalUserItemCount > MAX_PAGE_COUNT) {
+         currentPage++;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
+         pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalUserItemCount / MAX_PAGE_COUNT) + 1);
+      }
+   }
+
+   private void goToPreviousPage () {
+      if (currentPage > 0) {
+         currentPage--;
+         NubisDataFetcher.self.requestUserItemsForAuction(currentPage, currentCategoryFilter);
+         pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalUserItemCount / MAX_PAGE_COUNT) + 1);
       }
    }
 

@@ -44,6 +44,9 @@ public class Global {
    // The ID of the currently selected user for our account
    public static int currentlySelectedUserId = 0;
 
+   // If the game is set to single player mode
+   public static bool isSinglePlayer = false;
+
    // Keeps track of the last account name we provided
    public static string lastUsedAccountName;
 

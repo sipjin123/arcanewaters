@@ -29,7 +29,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Sign
-  dataFields: []
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: sign type
+    defaultValue: Item Shop
+    toolTip: 
+    type: 2
   selectDataFields: []
   customDataFields: []
 --- !u!114 &-858919702952059726
@@ -126,12 +133,12 @@ PrefabInstance:
     - target: {fileID: 658876814095563183, guid: 7a71b00c48db70b4dae79094388bec21,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 852583141076585437, guid: 7a71b00c48db70b4dae79094388bec21,
         type: 3}
       propertyPath: m_Name
-      value: Item Shop Sign Forest Variant
+      value: Item Shop Sign Variant
       objectReference: {fileID: 0}
     - target: {fileID: 855535727202236689, guid: 7a71b00c48db70b4dae79094388bec21,
         type: 3}

@@ -47,6 +47,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 
+   // Player pref key for gui scale
+   public static string PREF_GUI_SCALE = "pref_gui_scale";
+
    #endregion
 
    public override void Awake () {
@@ -64,8 +67,12 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
 
-      guiScaleSlider.value = mainGameCanvas.scaleFactor;
-      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
+      // Loads the saved gui scale
+      float guiScaleValue = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100);
+      guiScaleLabel.text = (guiScaleValue).ToString("f1") + " %";
+      mainGameCanvas.scaleFactor = guiScaleValue / 100;
+      guiScaleSlider.value = guiScaleValue / 100;
+      guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
    }
 
    private void initializeFullScreenToggle () {
@@ -164,6 +171,7 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    public void guiScaleSliderChanged () {
       mainGameCanvas.scaleFactor = guiScaleSlider.value;
       guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
+      PlayerPrefs.SetFloat(PREF_GUI_SCALE, guiScaleSlider.value * 100);
    }
 
    public void onLogOutButtonPress () {

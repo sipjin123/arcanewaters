@@ -269,9 +269,9 @@ public class PlayerBodyEntity : BodyEntity {
             miningTrigger.interactOres();
          }
       }
-      
+
       // Speed ship boost feature
-      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius) {
+      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius && getVelocity().magnitude > .2f) {
          isSpeedingUp = true;
          if (speedMeter > 0 && !waterChecker.inWater()) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;

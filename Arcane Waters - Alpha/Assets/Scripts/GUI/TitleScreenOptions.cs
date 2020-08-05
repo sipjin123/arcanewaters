@@ -37,8 +37,12 @@ public class TitleScreenOptions : MonoBehaviour {
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
 
-      guiScaleSlider.value = mainGameCanvas.scaleFactor;
-      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
+      // Loads the saved gui scale
+      float guiScaleValue = PlayerPrefs.GetFloat(OptionsPanel.PREF_GUI_SCALE, 100);
+      guiScaleLabel.text = (guiScaleValue).ToString("f1") + " %";
+      mainGameCanvas.scaleFactor = guiScaleValue / 100;
+      guiScaleSlider.value = guiScaleValue / 100;
+      guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
 
       _lastShownTime = Time.time;
 
@@ -119,7 +123,9 @@ public class TitleScreenOptions : MonoBehaviour {
 
    public void guiScaleSliderChanged () {
       mainGameCanvas.scaleFactor = guiScaleSlider.value;
-      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
+      float newScaleValue = guiScaleSlider.value * 100;
+      guiScaleLabel.text = newScaleValue.ToString("f1") + " %";
+      PlayerPrefs.SetFloat(OptionsPanel.PREF_GUI_SCALE, newScaleValue);
    }
 
    #region Private Variables

@@ -83,12 +83,17 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public bool isDisabled = true;
 
+   // Reference to the sprite swap
+   public SpriteSwap spriteSwap;
+
    #endregion
 
    protected override bool isBot () { return false; }
 
    protected override void Start () {
       base.Start();
+
+      spriteSwap = spritesContainer.GetComponent<SpriteSwap>();
 
       // Player ships spawn hidden and invulnerable, until the client finishes loading the area
       if (isDisabled) {
@@ -158,6 +163,7 @@ public class PlayerShipEntity : ShipEntity {
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
+            spriteSwap.newTexture = _shipBoostSprites;
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
@@ -173,6 +179,7 @@ public class PlayerShipEntity : ShipEntity {
 
          if (speedMeter < SPEEDUP_METER_MAX) {
             speedMeter += Time.deltaTime * fuelRecoverValue;
+            spriteSwap.newTexture = _shipSprites;
          } else {
             isReadyToSpeedup = true;
          }

@@ -17,6 +17,8 @@ public class TitleScreen : MonoBehaviour {
    // The login button
    public Button loginButton, steamLoginButton;
 
+   public Toggle isSinglePlayerToggleDefault, isSinglePlayerToggleSteam;
+
    // The drop down menu to select the database server - debug only
    public Dropdown dbServerDropDown;
 
@@ -44,6 +46,13 @@ public class TitleScreen : MonoBehaviour {
 
    private void Awake () {
       self = this;
+
+      isSinglePlayerToggleDefault.onValueChanged.AddListener(_ => {
+         Global.isSinglePlayer = _;
+      });
+      isSinglePlayerToggleSteam.onValueChanged.AddListener(_ => {
+         Global.isSinglePlayer = _;
+      });
    }
 
    void Start () {

@@ -301,8 +301,14 @@ public class ShipEntity : SeaEntity
       _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
 
+      // Cache ship boost sprite
+      string shipBoostSpritePath = Ship.getSkinPath(true, shipType, skinType, isBotShip());
+      _shipBoostSprites = ImageManager.getSprite(shipBoostSpritePath).texture;
+
       // Set the initial idle sprites
-      spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(Ship.getSkinPath(shipType, skinType, isBotShip()));
+      string skinPath = Ship.getSkinPath(isSpeedingUp, shipType, skinType, isBotShip());
+      _shipSprites = ImageManager.getTexture(skinPath);
+      spritesContainer.GetComponent<SpriteSwap>().newTexture = _shipSprites;
    }
 
    protected override void onStartMoving () {
@@ -322,6 +328,8 @@ public class ShipEntity : SeaEntity
    // Ship Ripple SpriteSheets
    protected Texture2D _ripplesStillSprites;
    protected Texture2D _ripplesMovingSprites;
+   protected Texture2D _shipBoostSprites;
+   protected Texture2D _shipSprites;
 
    #endregion
 }

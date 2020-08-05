@@ -188,7 +188,7 @@ namespace MapCreationTool
          SecretStartSprite,
          SecretInteractSprite,
          Ship,
-         TreasureType
+         TreasureType,
       }
    }
 }

@@ -51,6 +51,10 @@ public class QuickLaunchPanel : MonoBehaviour {
 
       // We only show this panel if it's a server build, never in the production client
       this.gameObject.SetActive(Util.isServerBuild());
+
+      singlePlayerToggle.onValueChanged.AddListener(_ => {
+         Global.isSinglePlayer = _;
+      });
    }
 
    private void Start () {

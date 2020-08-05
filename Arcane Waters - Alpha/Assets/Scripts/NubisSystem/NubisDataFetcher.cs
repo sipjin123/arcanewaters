@@ -44,43 +44,13 @@ namespace NubisDataHandling {
       public static string SPACER = "_space_";
 
       // The valid length of an xml data
-      public static int VALID_XML_LENGTH = 10;
+      public static int VALID_XML_LENGTH = 5;
 
       #endregion
 
       private void Awake () {
          self = this;
          webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
-      }
-
-      private void Update () {
-#if UNITY_EDITOR
-         if (Input.GetKeyDown(KeyCode.Alpha8)) {
-            D.editorLog("Fetching auction data for user", Color.green);
-            List<Item.Category> categoryFilters = new List<Item.Category>();
-            categoryFilters.Add(Item.Category.Weapon);
-            categoryFilters.Add(Item.Category.Armor);
-            categoryFilters.Add(Item.Category.Hats);
-
-            List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
-            string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               var returnData = DB_Main.fetchAuctionData(Global.player.userId.ToString(), "0", "5", jsonFilter, "1");
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Return data is: " + returnData, Color.green);
-               });
-            });
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha0)) {
-            D.editorLog("Fetching auction data history", Color.green);
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               var returnData = DB_Main.fetchAuctionPurchaseHistory(Global.player.userId.ToString(), "5", "0");
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  D.editorLog("Return data is: " + returnData, Color.green);
-               });
-            });
-         }
-#endif
       }
 
       public static int getSlotIndex () {
@@ -148,6 +118,8 @@ namespace NubisDataHandling {
       }
 
       public void requestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
+         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
+         panel.userPanel.setBlockers (true);
          processUserItemsForAuction(pageIndex, categoryFilters);
       }
 
@@ -164,17 +136,49 @@ namespace NubisDataHandling {
             equippedArmor = equippedItemData.armorItem;
             equippedHat = equippedItemData.hatItem;
 
-            string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId.ToString(), pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id.ToString(), equippedArmor.id.ToString(), equippedHat.id.ToString());
+            List<Item.Category> newcategoryList = new List<Item.Category>();
+            if (categoryFilters == Item.Category.None) {
+               newcategoryList.Add(Item.Category.Weapon);
+               newcategoryList.Add(Item.Category.Armor);
+               newcategoryList.Add(Item.Category.CraftingIngredients);
+               newcategoryList.Add(Item.Category.Blueprint);
+            }
+
+            int[] categoryInt = Array.ConvertAll(newcategoryList.ToArray(), x => (int) x);
+            string categoryJson = JsonConvert.SerializeObject(categoryInt);
+
+            List<int> itemIdFilter = new List<int>();
+            if (equippedWeapon.itemTypeId > 0) {
+               itemIdFilter.Add(equippedWeapon.id);
+            }
+            if (equippedArmor.itemTypeId > 0) {
+               itemIdFilter.Add(equippedArmor.id);
+            }
+            if (equippedHat.itemTypeId > 0) {
+               itemIdFilter.Add(equippedHat.id);
+            }
+
+            int totalItemCount = 10;
+            string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
+            string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), Global.player.userId.ToString(), categoryJson, itemIdJson, "0");
+
+            try {
+               totalItemCount = int.Parse(itemCountResponse);
+            } catch {
+               D.editorLog("Failed to parse: " + itemCountResponse);
+            }
+
+            string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId, pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id, equippedArmor.id, equippedHat.id, AuctionUserPanel.MAX_PAGE_COUNT.ToString());
             if (returnCode.Length > VALID_XML_LENGTH) {
                AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
                if (panel.isShowing()) {
                   List<Item> itemList = UserInventory.processUserInventory(returnCode);
                   panel.userPanel.gameObject.SetActive(true);
-                  panel.userPanel.loadUserItemList(itemList);
+                  panel.userPanel.loadUserItemList(itemList, totalItemCount);
                   panel.show();
                }
             } else {
-               D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.userInventory));
+               D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.userInventory) +" : "+returnCode);
             }
          } else {
             D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchEquippedItems));
@@ -203,7 +207,13 @@ namespace NubisDataHandling {
             if (panel.isShowing()) {
                List<AuctionItemData> actualData = Util.xmlLoad<List<AuctionItemData>>(result);
 
-               panel.marketPanel.loadAuctionItems(actualData, checkOwnItems);
+               int totalAuctionedItems = 10;
+               string totalAuctonedItemsRaw = await NubisClient.call(nameof(DB_Main.getMarketAuctionItemCount), "0", jsonFilter);
+               if (totalAuctonedItemsRaw.Length > 0) {
+                  totalAuctionedItems = int.Parse(totalAuctonedItemsRaw);
+               }
+
+               panel.marketPanel.loadAuctionItems(actualData, checkOwnItems, totalAuctionedItems);
                panel.setBlockers(false);
                panel.show();
             }
@@ -367,7 +377,7 @@ namespace NubisDataHandling {
          }
 
          string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
-         string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId, categoryJson, itemIdJson, "");
+         string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId.ToString(), categoryJson, itemIdJson, "0");
          int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
 
          try {
@@ -377,7 +387,7 @@ namespace NubisDataHandling {
          }
 
          if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId, pageIndex, (int) this.categoryFilter, equippedItemData.weaponItem.id, equippedItemData.armorItem.id, equippedItemData.hatItem.id);
+            string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId, pageIndex, (int) this.categoryFilter, equippedItemData.weaponItem.id, equippedItemData.armorItem.id, equippedItemData.hatItem.id, InventoryPanel.ITEMS_PER_PAGE);
             List<Item> itemList = UserInventory.processUserInventory(inventoryData);
             foreach (Item item in itemList) {
                if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {

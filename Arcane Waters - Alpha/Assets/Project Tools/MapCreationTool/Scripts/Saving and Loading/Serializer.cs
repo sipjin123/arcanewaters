@@ -315,6 +315,10 @@ namespace MapCreationTool.Serialization
       public const string SECRETS_TYPE_ID = "secret type";
       public const string SECRETS_START_SPRITE = "secret start sprite";
       public const string SECRETS_INTERACT_SPRITE = "secret interact sprite";
+      public const string SECRETS_COLLIDER_SCALE_X = "secret collider size x";
+      public const string SECRETS_COLLIDER_SCALE_Y = "secret collider size y";
+      public const string SECRETS_COLLIDER_OFFSET_X = "secret collider offset x";
+      public const string SECRETS_COLLIDER_OFFSET_Y = "secret collider offset y";
 
       public const string NPC_DATA_KEY = "npc data";
       public const string NPC_SHOP_NAME_KEY = "shop name";
@@ -346,6 +350,8 @@ namespace MapCreationTool.Serialization
       public const string IS_PERMANENT_KEY = "is permanent";
 
       public const string SHIP_GUILD_ID = "guild id";
+
+      public const string SIGN_TYPE = "sign type";
 
       public string k; // Key
       public string v; // Value

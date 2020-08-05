@@ -30,12 +30,22 @@ public class ScreenSettingsManager : MonoBehaviour {
    public static int fullScreenResolutionWidth = 1920;
    public static int fullScreenResolutionHeight = 1080;
 
+   // The screen size to determine if the ui scale should be altered
+   public static int largeScreenGUIWidth = 2048;
+   public static int largeScreenGUIHeight = 1536;
+
    #endregion
 
    private void Awake () {
       // Cache this resolution at the very start to determine the monitor resolution
       fullScreenResolutionWidth = Screen.currentResolution.width;
       fullScreenResolutionHeight = Screen.currentResolution.height;
+      bool ifExceedsWidth = fullScreenResolutionWidth > largeScreenGUIWidth;
+      bool ifExceedsHeight = fullScreenResolutionHeight > largeScreenGUIHeight;
+      if (ifExceedsWidth && ifExceedsHeight && !PlayerPrefs.HasKey(OptionsPanel.PREF_GUI_SCALE)) {
+         // Doubles the size of the GUI if the screen is wide and the user has not set the gui scale yet 
+         PlayerPrefs.SetFloat(OptionsPanel.PREF_GUI_SCALE, 200);
+      }
 
       if (PlayerPrefs.HasKey(SCREEN_RESOLUTION_H) && PlayerPrefs.HasKey(SCREEN_RESOLUTION_W)) {
          Height = PlayerPrefs.GetInt(SCREEN_RESOLUTION_H);

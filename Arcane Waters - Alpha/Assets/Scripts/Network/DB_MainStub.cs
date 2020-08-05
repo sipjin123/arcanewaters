@@ -22,7 +22,7 @@ public class DB_MainStub : MonoBehaviour {
       return "";
    }
    
-   public static string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr) {
+   public static string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr, string inventoryCountLimit) {
       return "";
    }
 
@@ -59,6 +59,14 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    #endregion
+
+   public static string getAuctionItemHistoryCount (string userId) {
+      return "0";
+   }
+
+   public static string getMarketAuctionItemCount (string rawData, string filteredCategory) {
+      return "0";
+   }
 
    public static string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
       return "";
@@ -765,6 +773,10 @@ public class DB_MainStub : MonoBehaviour {
 
    public static UserInfo getUserInfo (string userName) {
       return null;
+   }
+
+   public static string getUserInfoNubisTest (string userName) {
+      return "";
    }
 
    public static ShipInfo getShipInfo (int userId) {

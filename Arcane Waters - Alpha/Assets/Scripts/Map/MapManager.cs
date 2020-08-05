@@ -200,10 +200,12 @@ public class MapManager : MonoBehaviour
          if (exportedProject.editorType == EditorType.Sea) {
             area.cloudManager.enabled = true;
          } else if (exportedProject.editorType == EditorType.Area) {
+            // TODO: Confirm if this is still necessary since there is a new weather manager
+            /*
             Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
             if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
                area.cloudShadowManager.enabled = true;
-            }
+            }*/
          }
 
          // Destroy the template component

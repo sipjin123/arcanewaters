@@ -138,7 +138,7 @@ public class NubisDataFetchTest : MonoBehaviour
       int[] args = Array.ConvertAll(newCategoryList.ToArray(), x => (int) x);
       string json = JsonConvert.SerializeObject(args);
       D.debug("Get Total items");
-      var returnCode = await NubisClient.call(nameof(DB_Main.getItemCount), testUserId, json, "", "");
+      var returnCode = await NubisClient.call(nameof(DB_Main.getItemCount), testUserId, json, "0", "0");
       D.debug("ASync start: " + returnCode);
    }
 
@@ -180,7 +180,7 @@ public class NubisDataFetchTest : MonoBehaviour
 
    private async void nubisInventory () {
       D.debug("Get Inventory");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userInventory), testUserId, 0, 0, 0, 0, 0);
+      var returnCode = await NubisClient.call(nameof(DB_Main.userInventory), testUserId, 0, 0, 0, 0, 0, InventoryPanel.ITEMS_PER_PAGE);
       List<Item> itemList = UserInventory.processUserInventory(returnCode);
       D.editorLog("Fetched a total inventory of: " + itemList.Count);
       D.debug("ASync start: " + returnCode);

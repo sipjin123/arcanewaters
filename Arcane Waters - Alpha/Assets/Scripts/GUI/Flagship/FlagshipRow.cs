@@ -37,7 +37,7 @@ public class FlagshipRow : MonoBehaviour {
       this.shipInfo = shipInfo;
 
       // Update the icon name and text
-      Sprite[] sprites = ImageManager.getSprites(Ship.getSkinPath(shipInfo.shipType, shipInfo.skinType));
+      Sprite[] sprites = ImageManager.getSprites(Ship.getSkinPath(false, shipInfo.shipType, shipInfo.skinType));
       if (sprites.Length >= 9) {
          iconImage.sprite = sprites[9];
       } else {

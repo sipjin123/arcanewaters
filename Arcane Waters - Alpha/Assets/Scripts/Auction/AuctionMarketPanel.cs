@@ -71,9 +71,21 @@ public class AuctionMarketPanel : MonoBehaviour {
    // The current filter that is selected
    public Item.Category[] currentItemCategory;
 
+   // The page navigation buttons
+   public Button previousButton, nextButton;
+
+   // The total items in the market
+   public int totalMarketItemCount = 0;
+
+   // The text displaying the page
+   public Text pageStatusText;
+
    #endregion
 
    private void Awake () {
+      nextButton.onClick.AddListener(() => goToNextPage());
+      previousButton.onClick.AddListener(() => goToPreviousPage());
+
       checkAuctionHistoryButton.onClick.AddListener(() => {
          foreach (GameObject obj in userAuctionHistoryBlockers) {
             obj.SetActive(true);
@@ -136,15 +148,33 @@ public class AuctionMarketPanel : MonoBehaviour {
       }); 
    }
 
+   private void goToNextPage () {
+      if (totalMarketItemCount > MAX_PAGE_COUNT) {
+         currentPage++;
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
+         pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalMarketItemCount / MAX_PAGE_COUNT) + 1);
+      }
+   }
+
+   private void goToPreviousPage () {
+      if (currentPage > 0) {
+         currentPage--;
+         NubisDataFetcher.self.checkAuctionMarket(currentPage, currentItemCategory, false);
+         pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalMarketItemCount / MAX_PAGE_COUNT) + 1);
+      }
+   }
+
    public void toggleAuctionedUserItemLoader (bool isActive) {
       foreach (GameObject obj in userAuctionedItemBlockers) {
          obj.SetActive(isActive);
       }
    }
 
-   public void loadAuctionItems (List<AuctionItemData> loadedItemList, bool isUserData) {
+   public void loadAuctionItems (List<AuctionItemData> loadedItemList, bool isUserData, int totalItemCount) {
+      totalMarketItemCount = totalItemCount;
       Transform currentParent = transform;
       auctionDetailPanel.auctionItemData = null;
+      pageStatusText.text = (currentPage + 1) + "/" + ((int) (totalItemCount / MAX_PAGE_COUNT) + 1);
 
       if (isUserData) {
          currentParent = userAuctionedItemHolder;

@@ -78,6 +78,13 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public bool isFinishedAnimating;
 
+   // Collider altering values
+   [SyncVar]
+   public Vector2 colliderScale, colliderOffset;
+
+   // The sprite that has a collider that blocks the user collision
+   public SpriteRenderer blockerSprite;
+
    #endregion
 
    private void Awake () {
@@ -94,6 +101,10 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       // Make the node a child of the Area
       StartCoroutine(CO_SetAreaParent());
 
+      blockerSprite.transform.localPosition = colliderOffset;
+      blockerSprite.transform.localScale = colliderScale;
+      blockerSprite.enabled = false;
+      blockerSprite.gameObject.SetActive(!isInteracted);
       if (!Util.isBatch()) {
          try {
             mainSprite = ImageManager.getSprite(initSpritePath);
@@ -202,6 +213,38 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
                   newFacingDirection = dir;
                }
                break;
+            case DataField.SECRETS_COLLIDER_OFFSET_X:
+               try {
+                  float newVal = float.Parse(field.v);
+                  colliderOffset.x = newVal;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_COLLIDER_OFFSET_Y:
+               try {
+                  float newVal = float.Parse(field.v);
+                  colliderOffset.y = newVal;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_COLLIDER_SCALE_X:
+               try {
+                  float newValue = float.Parse(field.v);
+                  colliderScale.x = newValue;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_COLLIDER_SCALE_Y:
+               try {
+                  float newValue = float.Parse(field.v);
+                  colliderScale.y = newValue;
+               } catch {
+
+               }
+               break;
          }
       }
    }
@@ -286,6 +329,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
       isFinishedAnimating = true;
+      blockerSprite.gameObject.SetActive(false);
    }
 
    private IEnumerator CO_SetAreaParent () {
