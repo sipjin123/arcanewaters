@@ -66,6 +66,7 @@ public class PaletteSwapManager : MonoBehaviour {
          return null;
       }
 
+      name = name.Trim();
       PaletteToolData data = _paletteDataList.Find((PaletteToolData toolData) => toolData.paletteName.Equals(name));
       if (data == null) {
          return null;

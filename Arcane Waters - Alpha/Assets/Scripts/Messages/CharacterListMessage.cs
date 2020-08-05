@@ -18,8 +18,7 @@ public class CharacterListMessage : MessageBase {
    public Item[] hatArray;
 
    // We have to deal with these separately because of a Unity bug
-   public string[] armorPalettes1;
-   public string[] armorPalettes2;
+   public string[] armorPalettes;
 
    // The equipment xml Id's of the starting armor
    public int[] equipmentIds;
@@ -35,13 +34,12 @@ public class CharacterListMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
+   public CharacterListMessage (uint netId, UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       this.netId = netId;
       this.userArray = userArray;
       this.armorArray = armorArray;
       this.weaponArray = weaponArray;
-      this.armorPalettes1 = armorPalettes1;
-      this.armorPalettes2 = armorPalettes2;
+      this.armorPalettes = armorPalettes;
       this.equipmentIds = equipmentIds;
       this.spriteIds = spriteIds;
       this.hatArray = hatArray;

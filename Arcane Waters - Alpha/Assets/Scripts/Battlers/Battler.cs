@@ -167,9 +167,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // Our colors
    [SyncVar]
-   public string eyesPalette1;
+   public string eyesPalettes;
    [SyncVar]
-   public string hairPalette1;
+   public string hairPalettes;
 
    // The time at which this Battler was last damaged
    [HideInInspector]
@@ -557,15 +557,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             bodyLayer.setType(bodyType);
 
             // We only call recolor on the body because we want the material to be instanced like all the others
-            bodyLayer.recolor("", "");
+            bodyLayer.recolor("");
          }
          foreach (EyesLayer eyesLayer in GetComponentsInChildren<EyesLayer>()) {
             eyesLayer.setType(eyesType);
-            eyesLayer.recolor(eyesPalette1);
+            eyesLayer.recolor(eyesPalettes);
          }
          foreach (HairLayer hairLayer in GetComponentsInChildren<HairLayer>()) {
             hairLayer.setType(hairType);
-            hairLayer.recolor(hairPalette1);
+            hairLayer.recolor(hairPalettes);
          }
 
          // Update the Armor, hat and Weapon

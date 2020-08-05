@@ -37,8 +37,10 @@ namespace NubisDataHandling {
                int itmType = int.Parse(dataGroup[2]);
                int itmCount = int.Parse(dataGroup[3]);
                string itmData = dataGroup[4];
-               string itmPalette1 = dataGroup[5];
-               string itmPalette2 = dataGroup[6];
+               //string itmPalette1 = dataGroup[5];
+               //string itmPalette2 = dataGroup[6];
+               //string itmPalettes = Item.parseItmPalette(new string[2] { itmPalette1, itmPalette2 });
+
                Item.Category categoryType = (Item.Category) itmCategory;
 
                switch (categoryType) {
@@ -53,8 +55,7 @@ namespace NubisDataHandling {
                            itemName = weaponData.equipmentName,
                            iconPath = weaponData.equipmentIconPath,
                            data = WeaponStatData.serializeWeaponStatData(weaponData),
-                           paletteName1 = itmPalette1,
-                           paletteName2 = itmPalette2
+                           paletteNames = ""
                         };
 
                         newItemList.Add(weaponItem);
@@ -73,8 +74,7 @@ namespace NubisDataHandling {
                            itemName = armorData.equipmentName,
                            iconPath = armorData.equipmentIconPath,
                            data = ArmorStatData.serializeArmorStatData(armorData),
-                           paletteName1 = itmPalette1,
-                           paletteName2 = itmPalette2
+                           paletteNames = ""
                         };
 
                         newItemList.Add(armorItem);
@@ -93,8 +93,7 @@ namespace NubisDataHandling {
                            itemName = hatData.equipmentName,
                            iconPath = hatData.equipmentIconPath,
                            data = HatStatData.serializeHatStatData(hatData),
-                           paletteName1 = itmPalette1,
-                           paletteName2 = itmPalette2
+                           paletteNames = ""
                         };
 
                         newItemList.Add(hatItem);
@@ -108,8 +107,7 @@ namespace NubisDataHandling {
                         itemTypeId = itmType,
                         id = itmId,
                         data = "",
-                        paletteName1 = itmPalette1,
-                        paletteName2 = itmPalette2
+                        paletteNames = ""
                      };
 
                      Item castedItem = craftingIngredient.getCastItem();

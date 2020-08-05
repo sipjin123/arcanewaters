@@ -34,41 +34,59 @@ public class CharacterStack : MonoBehaviour {
       }
    }
 
-   public void updateLayers (UserObjects userObjects) {
+   public void updateLayers (UserObjects userObjects, bool updatePalettes = true) {
       UserInfo info = userObjects.userInfo;
 
       bodyLayer.setType(info.bodyType);
       eyesLayer.setType(info.eyesType);
-      eyesLayer.recolor(info.eyesPalette1, info.eyesPalette1);
-      updateHair(info.hairType, info.hairPalette1, info.hairPalette2);
+      eyesLayer.recolor(info.eyesPalettes);
+      updateHair(info.hairType, info.hairPalettes);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (userObjects.armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
+         if (updatePalettes) {
+            if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().armorManager) {
+               ArmorManager armorManager = Global.player.GetComponent<BodyEntity>().armorManager;
+               armorData.palettes = armorManager.palettes;
+            }
+         }
       }
-      updateArmor(info.gender, armorData.armorType, armorData.palette1, armorData.palette2);
+      updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
 
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
       if (userObjects.weapon.data != "") {
          try {
             weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
+            if (updatePalettes) {
+               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().weaponManager) {
+                  WeaponManager weaponManager = Global.player.GetComponent<BodyEntity>().weaponManager;
+                  weaponData.palettes = weaponManager.palettes;
+               }
+            }
          } catch {
             D.editorLog("Failed to translate xml data!", Color.red);
             D.editorLog(userObjects.weapon.data, Color.red);
          }
       }
-      updateWeapon(info.gender, weaponData.weaponType, weaponData.palette1, weaponData.palette2);
+      updateWeapon(info.gender, weaponData.weaponType, weaponData.palettes, updatePalettes);
 
       HatStatData hatData = HatStatData.getDefaultData();
       if (userObjects.hat.data != "") {
          try {
             hatData = Util.xmlLoad<HatStatData>(userObjects.hat.data);
+            if (updatePalettes) {
+               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().hatsManager) {
+                  HatManager hatsManager = Global.player.GetComponent<BodyEntity>().hatsManager;
+                  hatData.palettes = hatsManager.palettes;
+               }
+            }
          } catch {
             D.editorLog("Failed to translate xml data!", Color.red);
             D.editorLog(userObjects.hat.data, Color.red);
          }
       }
-      updateHats(info.gender, hatData.hatType, hatData.palette1, hatData.palette2);
+      updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
    }
 
    public void updateLayers (NetEntity entity) {
@@ -78,37 +96,45 @@ public class CharacterStack : MonoBehaviour {
 
       bodyLayer.setType(entity.bodyType);
       eyesLayer.setType(entity.eyesType);
-      eyesLayer.recolor(entity.eyesPalette1, entity.eyesPalette1);
-      updateHair(entity.hairType, entity.hairPalette1, entity.hairPalette2);
-      updateArmor(entity.gender,  armor.itemTypeId, armor.paletteName1, armor.paletteName2);
-      updateWeapon(entity.gender, weapon.itemTypeId, weapon.paletteName1, weapon.paletteName2);
-      updateHats(entity.gender, hat.itemTypeId, hat.paletteName1, hat.paletteName2);
+      eyesLayer.recolor(entity.eyesPalettes);
+      updateHair(entity.hairType, entity.hairPalettes);
+      updateArmor(entity.gender,  armor.itemTypeId, armor.paletteNames);
+      updateWeapon(entity.gender, weapon.itemTypeId, weapon.paletteNames);
+      updateHats(entity.gender, hat.itemTypeId, hat.paletteNames);
    }
 
-   public void updateWeapon (Gender.Type gender, int weaponType, string palette1, string palette2) {
+   public void updateWeapon (Gender.Type gender, int weaponType, string palettes, bool updatePalettes = true) {
       if (weaponFrontLayer.gameObject.activeInHierarchy) {
          weaponBackLayer.setType(gender, weaponType);
-         weaponBackLayer.recolor(palette1, palette2);
+         if (updatePalettes) {
+            weaponBackLayer.recolor(palettes);
+         }
          weaponFrontLayer.setType(gender, weaponType);
-         weaponFrontLayer.recolor(palette1, palette2);
+         if (updatePalettes) {
+            weaponFrontLayer.recolor(palettes);
+         }
       } 
    }
 
-   public void updateHats (Gender.Type gender, int hatType, string palette1, string palette2) {
+   public void updateHats (Gender.Type gender, int hatType, string palettes, bool updatePalettes = true) {
       if (hatLayer != null) {
          if (hatLayer.gameObject.activeInHierarchy) {
             hatLayer.setType(gender, hatType);
-            hatLayer.recolor(palette1, palette2);
+            if (updatePalettes) {
+               hatLayer.recolor(palettes);
+            }
          } 
       } else {
          D.editorLog("Hat Layer is not set!", Color.red);
       }
    }
 
-   public void updateArmor (Gender.Type gender, int armorType, string palette1, string palette2) {
+   public void updateArmor (Gender.Type gender, int armorType, string palettes, bool updatePalettes = true) {
       if (armorLayer.gameObject.activeInHierarchy) {
          armorLayer.setType(gender, armorType);
-         armorLayer.recolor(palette1, palette2);
+         if (updatePalettes) {
+            armorLayer.recolor(palettes);
+         }
       } 
 
       // Only process this when the user is in avatar mode and not in ship mode
@@ -117,15 +143,15 @@ public class CharacterStack : MonoBehaviour {
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
          PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
 
-         armorLayer.recolor(playerEntity.armorManager.palette1, playerEntity.armorManager.palette2);
+         armorLayer.recolor(playerEntity.armorManager.palettes);
       }
    }
 
-   public void updateHair (HairLayer.Type hairType, string palette1, string palette2) {
+   public void updateHair (HairLayer.Type hairType, string palettes) {
       hairBackLayer.setType(hairType);
-      hairBackLayer.recolor(palette1, palette2);
+      hairBackLayer.recolor(palettes);
       hairFrontLayer.setType(hairType);
-      hairFrontLayer.recolor(palette1, palette2);
+      hairFrontLayer.recolor(palettes);
    }
 
    public void rotateDirectionClockWise () {

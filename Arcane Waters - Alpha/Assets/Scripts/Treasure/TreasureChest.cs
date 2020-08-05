@@ -288,7 +288,7 @@ public class TreasureChest : NetworkBehaviour {
          image.material = new Material(sourceMaterial);
 
          // Recolor
-         floatingIcon.GetComponentInChildren<RecoloredSprite>().recolor(item.paletteName1, item.paletteName2);
+         floatingIcon.GetComponentInChildren<RecoloredSprite>().recolor(item.paletteNames);
       }
 
       // Set the name text

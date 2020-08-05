@@ -48,6 +48,7 @@ public class AdminManager : NetworkBehaviour
    protected static string INTERACT_ANVIL = "interact_anvil";
    protected static string SCHEDULE_SERVER_RESTART = "restart";
    protected static string CANCEL_SERVER_RESTART = "cancel";
+   protected static string FREE_WEAPON = "free_weapon";
 
    #endregion
 
@@ -142,6 +143,8 @@ public class AdminManager : NetworkBehaviour
          requestScheduleServerRestart(parameters);
       } else if (CANCEL_SERVER_RESTART.Equals(adminCommand)) {
          Cmd_CancelServerRestart();
+      } else if (FREE_WEAPON.Equals(adminCommand)) {
+         freeWeapon(parameters);
       }
    }
 
@@ -445,6 +448,46 @@ public class AdminManager : NetworkBehaviour
 
       // Send the request to the server
       Cmd_CreateAllItems(count);
+   }
+   
+   protected void freeWeapon(string parameters) {
+      string[] sections = parameters.Split(' ');
+      string itemName = "";
+      const int count = 1;
+
+      if (sections.Length == 0) {
+         ChatManager.self.addChat("Please specify parameters - weapon_name, palette_names", ChatInfo.Type.Log);
+         return;
+      }
+      itemName = sections[0];
+
+      // Set the category
+      Item.Category category = Item.Category.Weapon;
+
+      // Search for the item name in lower case
+      itemName = itemName.ToLower();
+
+      // Get the item type
+      int itemTypeId = -1;
+
+      foreach (WeaponStatData weaponStat in EquipmentXMLManager.self.weaponStatList) {
+         if (weaponStat.equipmentName.ToLower() == itemName) {
+            itemTypeId = weaponStat.sqlId;
+         }
+      }
+
+      List<string> paletteNames = new List<string>();
+      for (int i = 1; i < sections.Length; i++) {
+         paletteNames.Add(sections[i]);
+      }
+
+      if (itemTypeId == -1) {
+         ChatManager.self.addChat("Could not find the weapon " + itemName, ChatInfo.Type.Error);
+         return;
+      }
+
+      // Send the request to the server
+      Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
    }
 
    [Command]
@@ -858,7 +901,34 @@ public class AdminManager : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Create the item object
-         Item item = new Item(-1, category, itemTypeId, count, "", "", "");
+         Item item = new Item(-1, category, itemTypeId, count, "", "");
+
+         // Write the item in the DB
+         Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send confirmation back to the player who issued the command
+            int createdItemCount = databaseItem.count < count ? databaseItem.count : count;
+            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, databaseItem.getName());
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
+         });
+      });
+   }
+
+   [Command]
+   protected void Cmd_CreateItemWithPalettes (Item.Category category, int itemTypeId, int count, string paletteNames) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Go to the background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         // Create the item object
+         Item item = new Item(-1, category, itemTypeId, count, paletteNames, "");
 
          // Write the item in the DB
          Item databaseItem = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
@@ -984,7 +1054,7 @@ public class AdminManager : NetworkBehaviour
 
       if (existingItem == null) {
          // If the item does not exist, create a new one
-         Item baseItem = new Item(-1, category, itemTypeId, count, "", "", "").getCastItem();
+         Item baseItem = new Item(-1, category, itemTypeId, count, "", "").getCastItem();
          DB_Main.createItemOrUpdateItemCount(_player.userId, baseItem);
          wasItemCreated = true;
       } else {
@@ -1050,7 +1120,7 @@ public class AdminManager : NetworkBehaviour
 
    private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId) {
       // Create a base item
-      Item baseItem = new Item(-1, category, itemTypeId, 1, "", "", "");
+      Item baseItem = new Item(-1, category, itemTypeId, 1, "", "");
       baseItem = baseItem.getCastItem();
 
       // Get the item name in lower case

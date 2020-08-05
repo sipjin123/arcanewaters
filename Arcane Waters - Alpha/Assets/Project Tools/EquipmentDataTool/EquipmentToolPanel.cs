@@ -358,8 +358,8 @@ public class EquipmentToolPanel : MonoBehaviour {
       _canBeTrashed.isOn = equipmentData.canBeTrashed;
       _iconPath.text = equipmentData.equipmentIconPath;
 
-      _paletteName1Text.text = equipmentData.palette1.ToString();
-      _paletteName2Text.text = equipmentData.palette2.ToString();
+      _paletteName1Text.text = equipmentData.palettes;
+      _paletteName2Text.text = "UNUSED";
 
       _materialType.value = 0;
       _materialTypeText.text = "MATERIAL TYPE is no longer used. Please remove this from UI";
@@ -495,8 +495,7 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       equipmentData.setAllColors = _declareAllColors.isOn;
 
-      equipmentData.palette1 = _paletteName1Text.text;
-      equipmentData.palette2 = _paletteName2Text.text;
+      equipmentData.palettes = _paletteName1Text.text;
 
       equipmentData.rarityModifiers = getRarityModifiers();
       equipmentData.elementModifiers = getElementalModifiers();

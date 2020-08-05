@@ -803,11 +803,11 @@ public class DB_MainStub : MonoBehaviour {
       return null;
    }
 
-   public static int insertNewArmor (int userId, int armorType, string palette1, string palette2) {
+   public static int insertNewArmor (int userId, int armorType, string palettes) {
       return 0;
    }
 
-   public static int insertNewWeapon (int userId, int weaponType, string palette1, string palette2) {
+   public static int insertNewWeapon (int userId, int weaponType, string palettes) {
       return 0;
    }
 
@@ -921,7 +921,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static int insertNewUsableItem (int userId, UsableItem.Type itemType, string palette1, string palette2) {
+   public static int insertNewUsableItem (int userId, UsableItem.Type itemType, string palettes) {
       return 0;
    }
 
@@ -1194,7 +1194,7 @@ public class DB_MainStub : MonoBehaviour {
    }
 
 
-   public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
+   public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, int subcategory) {
 
    }
 
@@ -1208,6 +1208,30 @@ public class DB_MainStub : MonoBehaviour {
 
    public static List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       return new List<XMLPair>();
+   }
+
+   public static void updatePaletteCategory (int type, string subcategory, int id, string srcColors) {
+
+   }
+
+   public static int getPaletteCategoryIndex (int type, string subcategory) {
+      return -1;
+   }
+
+   public static List<string> getPaletteSubcategoryNames (int type) {
+      return new List<string>();
+   }
+
+   public static List<string> getPaletteSubcategorySrcColors (int id) {
+      return new List<string>();
+   }
+
+   public static int getPaletteSubcategoryIndexFromPaletteTable (int paletteId) {
+      return -1;
+   }
+
+   public static string getPaletteSubcategoryName (int id) {
+      return "";
    }
 
    public static int createAccount (string accountName, string accountPassword, string accountEmail, int validated) {

@@ -120,8 +120,7 @@ public class ServerMessageManager : MonoBehaviour {
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
                // We have to deal with these separately because of a bug in Unity
-               string[] armorPalettes1 = new string[armorList.Count];
-               string[] armorPalettes2 = new string[armorList.Count];
+               string[] armorPalettes = new string[armorList.Count];
 
                // Must be casted to items because data transfer using inherited variables loses its data
                List<Item> weaponItemList = new List<Item>();
@@ -134,8 +133,7 @@ public class ServerMessageManager : MonoBehaviour {
                      ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
                      if (armorList[i].data != null) {
                         armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
-                        armorPalettes1[i] = armorStat.palette1;
-                        armorPalettes2[i] = armorStat.palette2;
+                        armorPalettes[i] = armorStat.palettes;
                      } else {
                         D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
                      }
@@ -189,7 +187,7 @@ public class ServerMessageManager : MonoBehaviour {
                }
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes1, armorPalettes2, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
             } else {
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -346,7 +344,7 @@ public class ServerMessageManager : MonoBehaviour {
       });
 
       // Need to create their Armor first
-      int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorPalette1, msg.armorPalette2);
+      int armorId = DB_Main.insertNewArmor(0, msg.armorType, msg.armorPalettes);
 
       // Get search the database to determine whether or not the account has admin privileges
       int adminFlag = DB_Main.getUsrAdminFlag(accountId);
@@ -398,7 +396,7 @@ public class ServerMessageManager : MonoBehaviour {
       // Add the default starting items
       int slotNumber = 1;
       foreach (int itemTypeId in InventoryManager.STARTING_WEAPON_TYPE_IDS) {
-         int itemId = DB_Main.insertNewWeapon(userId, itemTypeId, "", "");
+         int itemId = DB_Main.insertNewWeapon(userId, itemTypeId, "");
          DB_Main.updateItemShortcut(userId, slotNumber, itemId);
          slotNumber++;
       }

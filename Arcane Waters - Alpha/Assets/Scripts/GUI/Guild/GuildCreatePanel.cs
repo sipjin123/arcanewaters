@@ -123,7 +123,7 @@ public class GuildCreatePanel : Panel {
    public void createGuildConfirmed () {
       PanelManager.self.confirmScreen.hide();
       Global.player.rpc.Cmd_CreateGuild(_inputField.text, _borders[_borderIndex], _backgrounds[_backgroundIndex],
-         _sigils[_sigilIndex], _backgroundPalette1, _backgroundPalette2, _sigilPalette1, _sigilPalette2);
+         _sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _backgroundPalette1, _backgroundPalette2 }), Item.parseItmPalette(new string[2]{_sigilPalette1, _sigilPalette2}));
    }
 
    public void onGuildNameChange() {
@@ -226,13 +226,13 @@ public class GuildCreatePanel : Panel {
    }
 
    private void refreshBackground () {
-      guildIcon.setBackground(_backgrounds[_backgroundIndex], _backgroundPalette1, _backgroundPalette2);
-      backgroundSelection.setBackground(_backgrounds[_backgroundIndex], _backgroundPalette1, _backgroundPalette2);
+      guildIcon.setBackground(_backgrounds[_backgroundIndex], Item.parseItmPalette(new string[2] { _backgroundPalette1, _backgroundPalette2 }));
+      backgroundSelection.setBackground(_backgrounds[_backgroundIndex], Item.parseItmPalette(new string[2] { _backgroundPalette1, _backgroundPalette2 }));
    }
 
    private void refreshSigil () {
-      guildIcon.setSigil(_sigils[_sigilIndex], _sigilPalette1, _sigilPalette2);
-      sigilSelection.setSigil(_sigils[_sigilIndex], _sigilPalette1, _sigilPalette2);
+      guildIcon.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
+      sigilSelection.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
    }
 
    #region Private Variables

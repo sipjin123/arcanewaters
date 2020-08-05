@@ -22,7 +22,7 @@ public class GrabbedItem : MonoBehaviour
       icon.sprite = itemSprite;
 
       // Recolor
-      recoloredSprite.recolor(item.paletteName1, item.paletteName2);
+      recoloredSprite.recolor(item.paletteNames);
 
       // Place under the mouse
       transform.position = Input.mousePosition;

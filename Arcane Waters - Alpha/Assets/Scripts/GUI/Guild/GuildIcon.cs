@@ -47,8 +47,8 @@ public class GuildIcon : MonoBehaviour
          show();
          tooltip.text = guildInfo.guildName;
          setBorder(guildInfo.iconBorder);
-         setBackground(guildInfo.iconBackground, guildInfo.iconBackPalette1, guildInfo.iconBackPalette2);
-         setSigil(guildInfo.iconSigil, guildInfo.iconSigilPalette1, guildInfo.iconSigilPalette2);
+         setBackground(guildInfo.iconBackground, guildInfo.iconBackPalettes);
+         setSigil(guildInfo.iconSigil, guildInfo.iconSigilPalettes);
       } else {
          hide();
       }
@@ -59,9 +59,9 @@ public class GuildIcon : MonoBehaviour
       mask.sprite = getMaskSprite(borderName);
    }
 
-   public void setBackground (string backgroundName, string palette1, string palette2) {
+   public void setBackground (string backgroundName, string palettes) {
       background.sprite = getBackgroundSprite(backgroundName);
-      backgroundRecolored.recolor(palette1, palette2);
+      backgroundRecolored.recolor(palettes);
 
       // The mask applied to the image uses a copy of the material to draw
       // To force an update, we disable and enable the image
@@ -69,9 +69,9 @@ public class GuildIcon : MonoBehaviour
       background.enabled = true;
    }
 
-   public void setSigil (string sigilName, string palette1, string palette2) {
+   public void setSigil (string sigilName, string palettes) {
       sigil.sprite = getSigilSprite(sigilName);
-      sigilRecolored.recolor(palette1, palette2);
+      sigilRecolored.recolor(palettes);
 
       // The mask applied to the image uses a copy of the material to draw
       // To force an update, we disable and enable the image

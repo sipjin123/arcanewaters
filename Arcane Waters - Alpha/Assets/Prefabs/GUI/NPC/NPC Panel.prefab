@@ -4495,6 +4495,7 @@ MonoBehaviour:
   defaultTexture: {fileID: 0}
   isHireableNotification: {fileID: 3401357035093156617}
   hireButton: {fileID: 3930325811735929132}
+  ContentCanvasGroup: {fileID: 0}
   loadBlockers:
   - {fileID: 3441078816119228807}
   - {fileID: 148962734865771573}
@@ -4724,7 +4725,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 77dbe2a0020f76c4f96eec6f4c87398b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c764166c6c38b1a4781881827cd9ccbb, type: 3}
   m_Type: 2
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6793,6 +6794,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7628187383587867788, guid: 34b0e1d5fc19b28429bc6b8b27d3fbb6,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7628187383587867788, guid: 34b0e1d5fc19b28429bc6b8b27d3fbb6,
+        type: 3}
+      propertyPath: m_firstOverflowCharacterIndex
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 34b0e1d5fc19b28429bc6b8b27d3fbb6, type: 3}

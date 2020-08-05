@@ -65,8 +65,7 @@ public class HatStatData : EquipmentStatData
    public static HatStatData getDefaultData () {
       return new HatStatData {
          hatType = 0,
-         palette1 = "",
-         palette2 = "",
+         palettes = ""
       };
    }
 }

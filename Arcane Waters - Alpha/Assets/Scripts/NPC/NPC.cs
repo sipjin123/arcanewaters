@@ -241,7 +241,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Only works when the player is close enough
       if (Vector2.Distance(transform.position, Global.player.transform.position) > TALK_DISTANCE) {
-         Instantiate(PrefabsManager.self.tooFarPrefab, transform.position + new Vector3(0f, .24f), Quaternion.identity);
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
+         return;
+      }
+
+      // Only works if npc is interactable
+      if (!NPCManager.self.getNPCData(npcId).interactable) {
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asNoResponse();
          return;
       }
 

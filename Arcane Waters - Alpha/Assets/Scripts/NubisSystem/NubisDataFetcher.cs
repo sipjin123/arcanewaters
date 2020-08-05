@@ -392,18 +392,15 @@ namespace NubisDataHandling {
             foreach (Item item in itemList) {
                if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
                   WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-                  item.paletteName1 = weaponData.palette1;
-                  item.paletteName2 = weaponData.palette2;
+                  item.paletteNames = weaponData.palettes;
                }
                if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
                   ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-                  item.paletteName1 = armorData.palette1;
-                  item.paletteName2 = armorData.palette2;
+                  item.paletteNames = armorData.palettes;
                }
                if (item.category == Item.Category.Hats) {
                   HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-                  item.paletteName1 = hatData.palette1;
-                  item.paletteName2 = hatData.palette2;
+                  item.paletteNames = hatData.palettes;
                }
                if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId && item.id != newUserInfo.hatId) {
                   userInventory.Add(item);

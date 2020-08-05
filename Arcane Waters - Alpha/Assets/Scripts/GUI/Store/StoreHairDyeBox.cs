@@ -20,7 +20,7 @@ public class StoreHairDyeBox : StoreItemBox {
       }
       
       this.imageIcon.material = new Material(this.imageIcon.material);
-      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.paletteName, this.paletteName);
+      this.imageIcon.GetComponent<RecoloredSprite>().recolor(this.paletteName);
    }
 
    #region Private Variables

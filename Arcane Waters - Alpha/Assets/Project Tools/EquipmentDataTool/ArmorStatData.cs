@@ -64,8 +64,7 @@ public class ArmorStatData : EquipmentStatData
    public static ArmorStatData getDefaultData () {
       return new ArmorStatData {
          armorType = 0,
-         palette1 = "",
-         palette2 = "",
+         palettes = ""
       };
    }
 }

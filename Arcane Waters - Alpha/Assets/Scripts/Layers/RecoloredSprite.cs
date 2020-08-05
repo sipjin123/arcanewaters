@@ -21,28 +21,40 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (string paletteName1, string paletteName2) {
-      if (paletteName1 == "") {
-         recolor(paletteName2);
+   public void recolor (string paletteNames) {
+      if (paletteNames == null) {
          return;
       }
-      if (paletteName2 == "") {
-         recolor(paletteName1);
+
+      string[] paletteNamesArray = Item.parseItmPalette(paletteNames);
+      List<string> palettesToUse = new List<string>();
+      for (int i = 0; i < paletteNamesArray.Length; i++) {
+         paletteNamesArray[i] = paletteNamesArray[i].Trim();
+         if (paletteNamesArray[i] != "") {
+            palettesToUse.Add(paletteNamesArray[i]);
+         }
+      }
+
+      if (palettesToUse.Count == 0) {
          return;
       }
-      // Two palettes should be probably used only for armor (or similar sprites which have "two parts")
-      _palette1 = paletteName1;
-      _palette2 = paletteName2;
+
+      if (palettesToUse.Count > 4) {
+         D.warning("Currently more than 4 palettes are not supported! Only 4 first palettes will be used");
+      }
+
+      // Fill list to four palettes, to make sure that old one gets reset, once this function got called with smaller number of palettes
+      while (palettesToUse.Count < 4) {
+         palettesToUse.Add("");
+      }
 
       checkMaterialAvailability();
-      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(paletteName1));
-      getMaterial().SetTexture("_Palette2", PaletteSwapManager.generateTexture2D(paletteName2));
-   }
+      _palettes = Item.parseItmPalette(palettesToUse.ToArray());
 
-   public void recolor (string paletteName) {
-      _palette1 = paletteName;
-      checkMaterialAvailability();
-      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(paletteName));
+      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(palettesToUse[0]));
+      getMaterial().SetTexture("_Palette2", PaletteSwapManager.generateTexture2D(palettesToUse[1]));
+      getMaterial().SetTexture("_Palette3", PaletteSwapManager.generateTexture2D(palettesToUse[2]));
+      getMaterial().SetTexture("_Palette4", PaletteSwapManager.generateTexture2D(palettesToUse[3]));
    }
 
    public void setNewMaterial (Material oldMaterial) {
@@ -75,16 +87,13 @@ public class RecoloredSprite : MonoBehaviour {
       return null;
    }
 
-   public string getPalette1 () {
-      return _palette1;
-   }
-
-   public string getPalette2 () {
-      return _palette2;
+   public string getPalettes () {
+      return _palettes;
    }
 
    private void checkMaterialAvailability () {
-      if (getMaterial() == null) {
+      Material oldMaterial = getMaterial();
+      if (oldMaterial == null || !oldMaterial.HasProperty("_Palette")) {
          // We get a different material for GUI Images
          Material material = (_image != null) ?
             MaterialManager.self.getGUIMaterial() : MaterialManager.self.get();
@@ -100,8 +109,7 @@ public class RecoloredSprite : MonoBehaviour {
    protected Sprite _sprite;
 
    // Our colors
-   protected string _palette1 = "";
-   protected string _palette2 = "";
+   protected string _palettes = "";
 
    // Our Sprite Renderer or Image, whichever we have
    protected SpriteRenderer _spriteRenderer;

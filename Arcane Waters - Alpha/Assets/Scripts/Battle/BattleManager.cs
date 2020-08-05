@@ -285,8 +285,8 @@ public class BattleManager : MonoBehaviour {
       battler.bodyType = player.bodyType;
       battler.eyesType = player.eyesType;
       battler.hairType = player.hairType;
-      battler.hairPalette1 = player.hairPalette1;
-      battler.eyesPalette1 = player.eyesPalette1;
+      battler.hairPalettes = player.hairPalettes;
+      battler.eyesPalettes = player.eyesPalettes;
 
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
@@ -299,41 +299,35 @@ public class BattleManager : MonoBehaviour {
 
       // Copy the Armor Info
       if (player.armorManager.armorType < 1) {
-         battler.armorManager.updateArmorSyncVars(0, 0);
+         battler.armorManager.updateArmorSyncVars(0, 0, "");
          battler.armorManager.armorType = 0;
-         battler.armorManager.palette1 = "";
-         battler.armorManager.palette2 = "";
+         battler.armorManager.palettes = "";
       } else {
-         battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId);
+         battler.armorManager.updateArmorSyncVars(player.armorManager.equipmentDataId, player.armorManager.equippedArmorId, player.armorManager.palettes);
          battler.armorManager.armorType = player.armorManager.armorType;
-         battler.armorManager.palette1 = player.armorManager.palette1;
-         battler.armorManager.palette2 = player.armorManager.palette2;
+         battler.armorManager.palettes = player.armorManager.palettes;
       }
 
       // Copy the Weapon Info
       if (player.weaponManager.weaponType < 1) {
-         battler.weaponManager.updateWeaponSyncVars(0, 0);
+         battler.weaponManager.updateWeaponSyncVars(0, 0, "");
          battler.weaponManager.weaponType = 0;
-         battler.weaponManager.palette1 = "";
-         battler.weaponManager.palette2 = "";
+         battler.weaponManager.palettes = "";
       } else {
-         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId);
+         battler.weaponManager.updateWeaponSyncVars(player.weaponManager.equipmentDataId, player.weaponManager.equippedWeaponId, player.weaponManager.palettes);
          battler.weaponManager.weaponType = player.weaponManager.weaponType;
-         battler.weaponManager.palette1 = player.weaponManager.palette1;
-         battler.weaponManager.palette2 = player.weaponManager.palette2;
+         battler.weaponManager.palettes = player.weaponManager.palettes;
       }
 
       // Copy the Hat Info
       if (player.hatsManager.hatType < 1) {
          battler.hatManager.updateHatSyncVars(0, 0);
          battler.hatManager.hatType = 0;
-         battler.hatManager.palette1 = "";
-         battler.hatManager.palette2 = "";
+         battler.hatManager.palettes = "";
       } else {
          battler.hatManager.updateHatSyncVars(player.hatsManager.equipmentDataId, player.hatsManager.equippedHatId);
          battler.hatManager.hatType = player.hatsManager.hatType;
-         battler.hatManager.palette1 = player.hatsManager.palette1;
-         battler.hatManager.palette2 = player.hatsManager.palette2;
+         battler.hatManager.palettes = player.hatsManager.palettes;
       }
 
       return battler;

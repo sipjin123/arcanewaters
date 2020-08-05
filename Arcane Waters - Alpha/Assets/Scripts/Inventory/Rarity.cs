@@ -9,7 +9,13 @@ public class Rarity : MonoBehaviour {
 
    // The Type of Rarity
    public enum Type {  None = 0, Common = 1, Uncommon = 2, Rare = 3, Epic = 4, Legendary = 5 }
-      
+
+   // The paths to the rarity star images
+   public static string BACKGROUND_STAR_PATH = "Sprites/GUI/Shop/star_base_brown";
+   public static string BRONZE_STAR_PATH = "Sprites/GUI/Shop/star_bronze_brown";
+   public static string SILVER_STAR_PATH = "Sprites/GUI/Shop/star_silver_brown";
+   public static string DIAMOND_STAR_PATH = "Sprites/GUI/Shop/star_diamond_brown";
+
    #endregion
 
    public static Color getColor (Type rarityType) {
@@ -158,7 +164,40 @@ public class Rarity : MonoBehaviour {
       return Util.getBellCurveFloat(mean, stdDev, min, max);
    }
 
+   public static Sprite[] getRarityStars (Type rarity) {
+      // Load the sprites if not already done
+      if (_backgroundStar == null) {
+         _backgroundStar = ImageManager.getSprite(BACKGROUND_STAR_PATH);
+         _bronzeStar = ImageManager.getSprite(BRONZE_STAR_PATH);
+         _silverStar = ImageManager.getSprite(SILVER_STAR_PATH);
+         _diamondStar = ImageManager.getSprite(DIAMOND_STAR_PATH);
+      }
+
+      switch (rarity) {
+         case Rarity.Type.None:
+            return new Sprite[] { _backgroundStar, _backgroundStar, _backgroundStar };
+         case Rarity.Type.Common:
+            return new Sprite[] { _bronzeStar, _backgroundStar, _backgroundStar };
+         case Rarity.Type.Uncommon:
+            return new Sprite[] { _bronzeStar, _bronzeStar, _backgroundStar };
+         case Rarity.Type.Rare:
+            return new Sprite[] { _bronzeStar, _bronzeStar, _bronzeStar };
+         case Rarity.Type.Epic:
+            return new Sprite[] { _silverStar, _silverStar, _silverStar };
+         case Rarity.Type.Legendary:
+            return new Sprite[] { _diamondStar, _diamondStar, _diamondStar };
+         default:
+            return new Sprite[] { _backgroundStar, _backgroundStar, _backgroundStar };
+      }
+   }
+
    #region Private Variables
+
+   // The references to the rarity star sprites
+   private static Sprite _backgroundStar = null;
+   private static Sprite _bronzeStar = null;
+   private static Sprite _silverStar = null;
+   private static Sprite _diamondStar = null;
 
    #endregion
 }

@@ -7,14 +7,22 @@ using Mirror;
 public class AdventureItemRow : MonoBehaviour {
    #region Public Variables
 
-   // The icon
-   public Image iconImage;
+   // The icon of the item
+   public Image icon;
 
-   // The text
+   // The shadow of the icon
+   public Image iconShadow;
+
+   // The recolored sprite component on the icon
+   public RecoloredSprite recoloredSprite;
+
+   // The item name
    public Text itemName;
 
-   // The number available in stock
-   public Text stockCountText;
+   // The rarity stars
+   public Image star1Image;
+   public Image star2Image;
+   public Image star3Image;
 
    // The gold amount
    public Text goldAmount;
@@ -23,25 +31,31 @@ public class AdventureItemRow : MonoBehaviour {
    public Button buyButton;
 
    // The Item associated with this row
+   [HideInInspector]
    public Item item;
 
    // The tooltip on the image
    public Tooltipped tooltip;
-      
+
    #endregion
 
    public void setRowForItem (Item item) {
       this.item = item;
 
       string path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath();
-      iconImage.sprite = ImageManager.getSprite(path);
+      icon.sprite = ImageManager.getSprite(path);
+      iconShadow.sprite = icon.sprite;
       itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
-      itemName.color = Rarity.getColor(item.getRarity());
-      stockCountText.text = Item.getColoredStockCount(item.count);
       goldAmount.text = item.getSellPrice() + "";
 
+      // Rarity stars
+      Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());
+      star1Image.sprite = rarityStars[0];
+      star2Image.sprite = rarityStars[1];
+      star3Image.sprite = rarityStars[2];
+
       // Recolor
-      iconImage.GetComponent<RecoloredSprite>().recolor(item.paletteName1, item.paletteName2);
+      recoloredSprite.recolor(item.paletteNames);
 
       // Sets the tooltip when hovering the image
       tooltip.text = Item.isUsingEquipmentXML(item.category) ? item.itemDescription : item.getDescription();

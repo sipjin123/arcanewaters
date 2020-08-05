@@ -1,11 +1,12 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 using System.Linq;
+using Mirror;
+using UnityEngine;
+using UnityEngine.UI;
 
-public class PlayerShipEntity : ShipEntity {
+public class PlayerShipEntity : ShipEntity
+{
    #region Public Variables
 
    // The ID of this ship in the database
@@ -25,25 +26,19 @@ public class PlayerShipEntity : ShipEntity {
    [SyncVar]
    public int weaponType = 0;
    [SyncVar]
-   public string weaponColor1;
-   [SyncVar]
-   public string weaponColor2;
+   public string weaponColors;
 
    // The equipped armor characteristics
    [SyncVar]
    public int armorType = 0;
    [SyncVar]
-   public string armorColor1;
-   [SyncVar]
-   public string armorColor2;
+   public string armorColors;
 
    // The equipped hat characteristics
    [SyncVar]
    public int hatType = 0;
    [SyncVar]
-   public string hatColor1;
-   [SyncVar]
-   public string hatColor2;
+   public string hatColors;
 
    // The guild icon layers
    [SyncVar]
@@ -55,13 +50,9 @@ public class PlayerShipEntity : ShipEntity {
 
    // The guild icon colors
    [SyncVar]
-   public string guildIconBackPalette1;
+   public string guildIconBackPalettes;
    [SyncVar]
-   public string guildIconBackPalette2;
-   [SyncVar]
-   public string guildIconSigilPalette1;
-   [SyncVar]
-   public string guildIconSigilPalette2;
+   public string guildIconSigilPalettes;
 
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffect;
@@ -224,7 +215,7 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    [Command]
-   void Cmd_UpdateSpeedupDisplay (bool isOn) {
+   private void Cmd_UpdateSpeedupDisplay (bool isOn) {
       Rpc_UpdateSpeedupDisplay(isOn);
    }
 
@@ -265,28 +256,25 @@ public class PlayerShipEntity : ShipEntity {
       weaponType = weapon.itemTypeId;
       armorType = armor.itemTypeId;
       hatType = hat.itemTypeId;
-      armorColor1 = armor.paletteName1;
-      armorColor2 = armor.paletteName2;
+      armorColors = armor.paletteNames;
 
       // Store the guild icon layers and colors
       guildIconBorder = guildInfo.iconBorder;
       guildIconBackground = guildInfo.iconBackground;
       guildIconSigil = guildInfo.iconSigil;
-      guildIconBackPalette1 = guildInfo.iconBackPalette1;
-      guildIconBackPalette2 = guildInfo.iconBackPalette2;
-      guildIconSigilPalette1 = guildInfo.iconSigilPalette1;
-      guildIconSigilPalette2 = guildInfo.iconSigilPalette2;
+      guildIconBackPalettes = guildInfo.iconBackPalettes;
+      guildIconSigilPalettes = guildInfo.iconSigilPalettes;
    }
 
    public override Armor getArmorCharacteristics () {
-      return new Armor(0, armorType, armorColor1, armorColor2);
+      return new Armor(0, armorType, armorColors);
    }
 
    public override Weapon getWeaponCharacteristics () {
-      return new Weapon(0, weaponType, weaponColor1, weaponColor2);
+      return new Weapon(0, weaponType, weaponColors);
    }
 
-   protected void adjustMovementAudio() {
+   protected void adjustMovementAudio () {
       float volumeModifier = isMoving() ? Time.deltaTime * .5f : -Time.deltaTime * .5f;
       _movementAudioSource.volume += volumeModifier;
    }
@@ -315,6 +303,9 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    protected override void handleArrowsMoveMode () {
+      // Make note of the time
+      _lastMoveChangeTime = Time.time;
+
       // Check if enough time has passed for us to change our facing direction
       bool canChangeDirection = (Time.time - _lastAngleChangeTime > getAngleDelay());
 
@@ -328,13 +319,38 @@ public class PlayerShipEntity : ShipEntity {
          }
       }
 
-      // Figure out the force vector we should apply
-      if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-         Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up;
-         _body.AddForce(forceToApply.normalized * getMoveSpeed());
+      if (Time.time - _lastInputChangeTime > getInputDelay()) {
+         _lastInputChangeTime = Time.time;
 
-         // Make note of the time
-         _lastMoveChangeTime = Time.time;
+         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+            Cmd_RequestMovement();
+         }
+      }
+   }
+
+   protected override void handleServerAuthoritativeMode () {
+      // Make note of the time
+      _lastMoveChangeTime = Time.time;
+
+      // Check if enough time has passed for us to change our facing direction
+      bool canChangeDirection = (Time.time - _lastAngleChangeTime > getAngleDelay());
+
+      if (canChangeDirection) {
+         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+            Cmd_ModifyAngle(+1);
+            _lastAngleChangeTime = Time.time;
+         } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+            Cmd_ModifyAngle(-1);
+            _lastAngleChangeTime = Time.time;
+         }
+      }
+
+      if (Time.time - _lastInputChangeTime > getInputDelay()) {
+         _lastInputChangeTime = Time.time;
+
+         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+            Cmd_RequestMovement();
+         }
       }
    }
 
@@ -435,7 +451,7 @@ public class PlayerShipEntity : ShipEntity {
          if (shipAbilityData != null) {
             abilityId = shipAbilityData.abilityId;
          }
-      } 
+      }
       netBall.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position);
 
       // Add velocity to the ball
@@ -477,8 +493,27 @@ public class PlayerShipEntity : ShipEntity {
       }
    }
 
+   protected IEnumerator CO_AddForce (double timestamp, Vector2 force) {
+      while (NetworkTime.time < timestamp) {
+         yield return null;
+      }
+
+      _body.AddForce(force);
+   }
+
    [Command]
-   void Cmd_FireTimedCannonBall (Vector2 mousePos) {
+   protected void Cmd_RequestMovement () {
+      Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up;
+      Rpc_AddForce(NetworkTime.time + getAddForceDelay(), forceToApply * getMoveSpeed());
+   }
+
+   [ClientRpc]
+   protected void Rpc_AddForce (double timestamp, Vector2 force) {
+      StartCoroutine(CO_AddForce(timestamp, force));
+   }
+
+   [Command]
+   private void Cmd_FireTimedCannonBall (Vector2 mousePos) {
       if (isDead() || !hasReloaded()) {
          return;
       }
@@ -512,7 +547,7 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    [Command]
-   void Cmd_RequestRespawn () {
+   private void Cmd_RequestRespawn () {
       this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
 
       // Set the ship health back to max
@@ -536,7 +571,7 @@ public class PlayerShipEntity : ShipEntity {
    }
 
    [Command]
-   void Cmd_FireAtTarget (GameObject target) {
+   private void Cmd_FireAtTarget (GameObject target) {
       if (isDead() || !hasReloaded() || target == null) {
          return;
       }
@@ -545,7 +580,7 @@ public class PlayerShipEntity : ShipEntity {
 
       // The target point is clamped to the attack range
       spot = clampToRange(spot);
-      
+
       // Note the time at which we last successfully attacked
       _lastAttackTime = Time.time;
 

@@ -229,10 +229,10 @@ public class CharacterStyleGrid : MonoBehaviour
       // For mysterious Unity UI reasons, image materials don't get refreshed until deactivated and reactivated
       stack.gameObject.SetActive(false);
 
-      stack.eyesLayer.recolor(userInfo.eyesPalette1, userInfo.eyesPalette2);
-      stack.hairBackLayer.recolor(userInfo.hairPalette1, userInfo.hairPalette2);
-      stack.hairFrontLayer.recolor(userInfo.hairPalette1, userInfo.hairPalette2);
-      stack.armorLayer.recolor(userObjects.armorPalette1, userObjects.armorPalette2);
+      stack.eyesLayer.recolor(userInfo.eyesPalettes);
+      stack.hairBackLayer.recolor(userInfo.hairPalettes);
+      stack.hairFrontLayer.recolor(userInfo.hairPalettes);
+      stack.armorLayer.recolor(userObjects.armorPalettes);
 
       stack.gameObject.SetActive(true);
    }

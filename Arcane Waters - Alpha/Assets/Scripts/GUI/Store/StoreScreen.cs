@@ -115,7 +115,8 @@ public class StoreScreen : Panel, IPointerClickHandler {
          StoreItemBox storeItemBox = recoloredSprite.GetComponentInParent<StoreItemBox>();
          if (storeItemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) storeItemBox;
-            recoloredSprite.recolor(hairBox.paletteName, hairBox.paletteName);
+            List<string> values = updateHairDyeBox(hairBox);
+            recoloredSprite.recolor(Item.parseItmPalette(values.ToArray()));
          }
       }
 
@@ -173,12 +174,27 @@ public class StoreScreen : Panel, IPointerClickHandler {
 
          if (itemBox is StoreHairDyeBox) {
             StoreHairDyeBox hairBox = (StoreHairDyeBox) itemBox;
-            characterStack.updateHair(_userObjects.userInfo.hairType, hairBox.paletteName, _userObjects.userInfo.hairPalette2);
+            List<string> values = updateHairDyeBox(hairBox);
+
+            characterStack.updateHair(_userObjects.userInfo.hairType, Item.parseItmPalette(values.ToArray()));
          } else if (itemBox is StoreHaircutBox) {
             StoreHaircutBox hairBox = (StoreHaircutBox) itemBox;
-            characterStack.updateHair(hairBox.hairType, _userObjects.userInfo.hairPalette1, _userObjects.userInfo.hairPalette2);
+            characterStack.updateHair(hairBox.hairType, _userObjects.userInfo.hairPalettes);
          }
       }
+   }
+
+   private List<string> updateHairDyeBox (StoreHairDyeBox hairBox) {
+      if (_paletteHairDye.ContainsKey(hairBox.GetHashCode())) {
+         _paletteHairDye[hairBox.GetHashCode()] = hairBox.paletteName;
+      } else {
+         _paletteHairDye.Add(hairBox.GetHashCode(), hairBox.paletteName);
+      }
+      List<string> values = new List<string>();
+      foreach (string value in _paletteHairDye.Values) {
+         values.Add(value);
+      }
+      return values;
    }
 
    public void buyItem () {
@@ -237,6 +253,9 @@ public class StoreScreen : Panel, IPointerClickHandler {
 
    // The last user objects that we received
    protected UserObjects _userObjects;
+
+   // Store values of all boxes used for choosing hair palette; Key is box hashes
+   private Dictionary<int, string> _paletteHairDye = new Dictionary<int, string>();
 
    #endregion
 }

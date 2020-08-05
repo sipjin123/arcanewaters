@@ -107,10 +107,9 @@ public class ShopManager : MonoBehaviour {
                   Item item = new Item {
                      category = (Item.Category) rawItemData.shopItemCategoryIndex,
                      itemTypeId = rawItemData.shopItemTypeIndex,
-                     count = 99,
+                     count = 1,
                      id = _itemId++,
-                     paletteName1 = "",
-                     paletteName2 = "",
+                     paletteNames = "",
                      data = ""
                   };
 
@@ -126,7 +125,6 @@ public class ShopManager : MonoBehaviour {
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Hats) {
                      data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   }
-                  item.count = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
 
                   item.data = data;
 
@@ -407,16 +405,6 @@ public class ShopManager : MonoBehaviour {
       } 
 
       return list;
-   }
-
-   public void decreaseItemCount (int shopItemId) {
-      // Make sure we can find the specified item
-      if (!_items.ContainsKey(shopItemId)) {
-         D.debug("Could not find item: " + shopItemId);
-         return;
-      }
-
-      _items[shopItemId].count--;
    }
 
    public void decreaseOfferCount (int offerId, int amount) {

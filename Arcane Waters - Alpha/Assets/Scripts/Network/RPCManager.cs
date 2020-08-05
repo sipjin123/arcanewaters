@@ -244,10 +244,10 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   protected void Rpc_UpdateHair (HairLayer.Type newHairType, string newHairPalette1, string newHairPalette2) {
+   protected void Rpc_UpdateHair (HairLayer.Type newHairType, string newHairPalettes) {
       if (_player is BodyEntity) {
          BodyEntity body = (BodyEntity) _player;
-         body.updateHair(newHairType, newHairPalette1, newHairPalette2);
+         body.updateHair(newHairType, newHairPalettes);
 
          // If the Inventory panel is showing, update it
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
@@ -1311,7 +1311,7 @@ public class RPCManager : NetworkBehaviour {
             // Insert the different item types here
             if (itemBox is StoreHairDyeBox) {
                StoreHairDyeBox dyeBox = (StoreHairDyeBox) itemBox;
-               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, dyeBox.paletteName, dyeBox.paletteName);
+               DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.HairDye, dyeBox.paletteName);
             } else if (itemBox is StoreShipBox) {
                StoreShipBox box = (StoreShipBox) itemBox;
                DB_Main.insertNewUsableItem(_player.userId, UsableItem.Type.ShipSkin, box.skinType);
@@ -1356,7 +1356,7 @@ public class RPCManager : NetworkBehaviour {
             UsableItem usable = (UsableItem) item;
 
             if (usable.itemType == UsableItem.Type.HairDye) {
-               string newPalette = usable.paletteName1;
+               string newPalette = usable.paletteNames;
 
                // The player shouldn't be on a ship
                if (body == null) {
@@ -1374,10 +1374,10 @@ public class RPCManager : NetworkBehaviour {
 
                // Back to Unity
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  body.hairPalette1 = newPalette;
+                  body.hairPalettes = newPalette;
 
                   // Update the body sheets on all clients
-                  body.rpc.Rpc_UpdateHair(body.hairType, body.hairPalette1, body.hairPalette2);
+                  body.rpc.Rpc_UpdateHair(body.hairType, body.hairPalettes);
 
                   // Let the client know the item was used
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHairDye, _player, itemId + "");
@@ -1448,7 +1448,7 @@ public class RPCManager : NetworkBehaviour {
                   body.hairType = newHairType;
 
                   // Update the ship on all clients
-                  body.rpc.Rpc_UpdateHair(newHairType, body.hairPalette1, body.hairPalette2);
+                  body.rpc.Rpc_UpdateHair(newHairType, body.hairPalettes);
 
                   // Let the client know the item was used
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.UsedHaircut, _player, itemId + "");
@@ -2332,13 +2332,6 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Make sure it's still available
-      if (shopItem.count <= 0) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "That item has sold out!");
-         getItemsForArea(ShopManager.DEFAULT_SHOP_NAME);
-         return;
-      }
-
       int price = shopItem.getSellPrice();
 
       // Make sure the player has enough money
@@ -2382,9 +2375,6 @@ public class RPCManager : NetworkBehaviour {
             if (shopItem.category == Item.Category.Hats) {
                AchievementManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
             }
-
-            // Decrease the item count
-            ShopManager.self.decreaseItemCount(shopItemId);
 
             // Let the client know that it was successful
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + shopItem.getName() + "!");
@@ -2454,7 +2444,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_CreateGuild (string guildName, string iconBorder, string iconBackground, string iconSigil,
-      string iconBackPalette1, string iconBackPalette2, string iconSigilPalette1, string iconSigilPalette2) {
+      string iconBackPalettes, string iconSigilPalettes) {
       if (_player.guildId > 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "You are already in a guild.");
          return;
@@ -2468,7 +2458,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Try to create the guild in the database
          GuildInfo guildInfo = new GuildInfo(guildName, iconBorder, iconBackground, iconSigil,
-            iconBackPalette1, iconBackPalette2, iconSigilPalette1, iconSigilPalette2);
+            iconBackPalettes, iconSigilPalettes);
          int guildId = DB_Main.createGuild(guildInfo);
 
          // Assign the guild to the player
@@ -2556,8 +2546,7 @@ public class RPCManager : NetworkBehaviour {
          resultItem.itemTypeId = blueprint.itemTypeId;
 
          // Initialize pallete names to empty string
-         resultItem.paletteName1 = "";
-         resultItem.paletteName2 = "";
+         resultItem.paletteNames = "";
 
          // Get the crafting requirement data
          CraftableItemRequirements craftingRequirements = CraftingManager.self.getCraftableData(
@@ -4094,7 +4083,7 @@ public class RPCManager : NetworkBehaviour {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
 
             if (body != null) {
-               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
+               body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
             }
 
             Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
@@ -4140,7 +4129,7 @@ public class RPCManager : NetworkBehaviour {
             Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
 
             if (body != null) {
-               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id);
+               body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
             }
 
             Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);

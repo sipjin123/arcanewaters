@@ -29,8 +29,7 @@ public class Hat : EquippableItem
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.paletteNames = DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -49,23 +48,21 @@ public class Hat : EquippableItem
 
 #endif
 
-   public Hat (int id, int hatType, string paletteName1, string paletteName2) {
+   public Hat (int id, int hatType, string paletteNames) {
       this.category = Category.Hats;
       this.id = id;
       this.itemTypeId = hatType;
       this.count = 1;
-      this.paletteName1 = paletteName1;
-      this.paletteName2 = paletteName2;
+      this.paletteNames = paletteNames;
       this.data = "";
    }
 
-   public Hat (int id, int itemTypeId, string paletteName1, string paletteName2, string data, int count = 1) {
+   public Hat (int id, int itemTypeId, string paletteNames, string data, int count = 1) {
       this.category = Category.Hats;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.paletteName1 = paletteName1;
-      this.paletteName2 = paletteName2;
+      this.paletteNames = paletteNames;
       this.data = data;
    }
 
@@ -74,8 +71,7 @@ public class Hat : EquippableItem
       this.id = id;
       this.count = 1;
       this.itemTypeId = hatType;
-      this.paletteName1 = "";
-      this.paletteName2 = "";
+      this.paletteNames = "";
       this.data = "";
    }
 
@@ -91,8 +87,10 @@ public class Hat : EquippableItem
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}\n\nHat = <color=red>{5}</color>",
-         "#" + colorHex, getName(), paletteName1, paletteName2, getDescription(), getHatDefense());
+      string palettes = Item.trimItmPalette(paletteNames);
+
+      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nHat = <color=red>{3}</color>",
+         "#" + colorHex, getName(), getDescription(), getHatDefense());
    }
 
    public override string getName () {
@@ -194,7 +192,7 @@ public class Hat : EquippableItem
    }
 
    public static Hat getEmpty () {
-      return new Hat(0, 0, "", "");
+      return new Hat(0, 0, "");
    }
 
    public override string getIconPath () {
@@ -222,7 +220,7 @@ public class Hat : EquippableItem
 
       string data = string.Format("hat={0}, rarity={1}, price={2}", defenseValue, (int) rarity, price);
       int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Hat hat = new Hat(itemId, hatType, PaletteDef.Armor.Black, PaletteDef.Armor.White, data, stockCount);
+      Hat hat = new Hat(itemId, hatType, (PaletteDef.Armor.Black + ", " + PaletteDef.Armor.White), data, stockCount);
 
       return hat;
    }
@@ -236,8 +234,7 @@ public class Hat : EquippableItem
          itemDescription = item.itemDescription,
          itemName = item.itemName,
          data = item.data,
-         paletteName1 = item.paletteName1,
-         paletteName2 = item.paletteName2
+         paletteNames = item.paletteNames,
       };
 
       return newHat;

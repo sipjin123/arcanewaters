@@ -20,10 +20,8 @@ public class UserObjects {
    public Item hat;
 
    // We have to send these separately because of a Unity serialization bug with class inheritance
-   public string armorPalette1;
-   public string armorPalette2;
-   public string weaponPalette1;
-   public string weaponPalette2;
+   public string armorPalettes = "";
+   public string weaponPalettes = "";
 
    #endregion
 

@@ -24,9 +24,7 @@ public class ArmorManager : EquipmentManager {
 
    // Armor colors
    [SyncVar]
-   public string palette1;
-   [SyncVar]
-   public string palette2;
+   public string palettes;
 
    // The current armor data
    public ArmorStatData cachedArmorData;
@@ -49,21 +47,21 @@ public class ArmorManager : EquipmentManager {
          return ArmorStatData.translateDataToArmor(cachedArmorData);
       }
 
-      return new Armor(0, 0, "", "");
+      return new Armor(0, 0, "");
    }
 
    public void updateSprites () {
-      this.updateSprites(this.armorType, this.palette1, this.palette2);
+      this.updateSprites(this.armorType, this.palettes);
    }
 
-   public void updateSprites (int armorType, string palette1, string palette2) {
+   public void updateSprites (int armorType, string palettes) {
       Gender.Type gender = getGender();
 
       // Set the correct sheet for our gender and armor type
       armorLayer.setType(gender, armorType);
 
       // Update our Material
-      armorLayer.recolor(palette1, palette2);
+      armorLayer.recolor(palettes);
 
       // Sync up all our animations
       if (_body != null) {
@@ -72,20 +70,20 @@ public class ArmorManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipArmor (string rawArmorData, string palette1, string palette2) {
+   public void Rpc_EquipArmor (string rawArmorData, string palettes) {
       ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(rawArmorData);
       cachedArmorData = armorData;
 
       // Update the sprites for the new armor type
       int newType = armorData == null ? 0 : armorData.armorType;
-      updateSprites(newType, palette1, palette2);
+      updateSprites(newType, palettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
    }
 
    [Server]
-   public void updateArmorSyncVars (int armorTypeId, int armorId) {
+   public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorTypeId);
 
       if (armorData == null) {
@@ -96,7 +94,7 @@ public class ArmorManager : EquipmentManager {
          // No armor to equip
          equippedArmorId = 0;
          armorType = 0;
-         updateSprites(0, "", "");
+         updateSprites(0, "");
          return;
       }
 
@@ -108,11 +106,10 @@ public class ArmorManager : EquipmentManager {
       // Set the Sync Vars so they get sent to the clients
       this.equipmentDataId = armorData.sqlId;
       this.armorType = armorData.armorType;
-      this.palette1 = armorData.palette1;
-      this.palette2 = armorData.palette2;
+      this.palettes = palettes;
 
       // Send the Info to all clients
-      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), armorData.palette1, armorData.palette2);
+      Rpc_EquipArmor(ArmorStatData.serializeArmorStatData(armorData), palettes);
    }
 
    #region Private Variables

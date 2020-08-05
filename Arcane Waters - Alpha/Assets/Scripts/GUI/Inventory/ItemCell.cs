@@ -116,7 +116,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       iconShadow.sprite = icon.sprite;
 
       // Recolor
-      recoloredSprite.recolor(item.paletteName1, item.paletteName2);
+      recoloredSprite.recolor(item.paletteNames);
 
       // Show the item count when relevant
       if (count > 1 || item.category == Item.Category.CraftingIngredients) {

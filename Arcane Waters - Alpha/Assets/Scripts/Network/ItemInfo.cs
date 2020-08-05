@@ -25,8 +25,7 @@ public class ItemInfo {
    public string itemData;
 
    // Colors
-   public string palette1;
-   public string palette2;
+   public string palettes;
 
    // Quantity of fetched item
    public int itemCount;
@@ -45,8 +44,7 @@ public class ItemInfo {
       this.itemCount = DataUtil.getInt(dataReader, "itmCount");
 
       // Defaults
-      this.palette1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.palette2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.palettes = DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in itemData.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -70,8 +68,7 @@ public class ItemInfo {
       this.itemCategory = itemInfo.itemCategory;
       this.itemType = itemInfo.itemType;
       this.itemData = itemInfo.itemData;
-      this.palette1 = itemInfo.palette1;
-      this.palette2 = itemInfo.palette2;
+      this.palettes = itemInfo.palettes;
       this.itemCount = itemInfo.itemCount;
    }
 

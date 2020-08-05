@@ -9,10 +9,10 @@ public class SeaManager : MonoBehaviour {
    #region Public Variables
 
    // The movement modes
-   public enum MoveMode { Instant = 1, Delay = 2, Arrows = 4, }
+   public enum MoveMode { Instant = 1, Delay = 2, Arrows = 4, ServerAuthoritative = 5 }
 
    // The current movement mode
-   public static MoveMode moveMode = MoveMode.Instant;
+   public static MoveMode moveMode = MoveMode.Delay;
 
    // The combat modes
    public enum CombatMode { Circle = 1, Straight = 2, Select = 3 }
@@ -74,6 +74,13 @@ public class SeaManager : MonoBehaviour {
       if (Input.GetKeyUp(KeyCode.F4)) {
          Global.player.Cmd_ChangeMass(true);
          moveMode = MoveMode.Arrows;
+      }
+      if (Input.GetKeyUp(KeyCode.F5)) {
+         Global.player.Cmd_SetServerAuthoritativeMode();
+         moveMode = MoveMode.ServerAuthoritative;
+      }
+      if (Input.GetKeyUp(KeyCode.F12)) {
+         Global.player.Cmd_ToggleVelocityDrivenTransform();
       }
 
       // Allow spawning a pirate ship

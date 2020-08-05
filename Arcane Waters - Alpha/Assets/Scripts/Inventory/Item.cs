@@ -20,11 +20,8 @@ public class Item {
    // The item type ID, which will be properly cast by subclasses
    public int itemTypeId;
 
-   // Name of palette that changes color of item
-   public string paletteName1 = "";
-
-   // Name of palette that changes color of item
-   public string paletteName2 = "";
+   // Name of palettes that changes color of item
+   public string paletteNames = "";
 
    // The item data string from the database
    public string data = "";
@@ -53,12 +50,11 @@ public class Item {
       this.iconPath = iconPath;
    }
 
-   public Item (int id, Category category, int itemTypeId, int count, string paletteName1, string paletteName2, string data) {
+   public Item (int id, Category category, int itemTypeId, int count, string paletteNames, string data) {
       this.id = id;
       this.category = category;
       this.itemTypeId = itemTypeId;
-      this.paletteName1 = paletteName1;
-      this.paletteName2 = paletteName2;
+      this.paletteNames = paletteNames;
       this.count = count;
       this.data = data;
    }
@@ -66,19 +62,19 @@ public class Item {
    public Item getCastItem () {
       switch (this.category) {
          case Category.Hats:
-            return new Hat(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new Hat(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Armor:
-            return new Armor(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new Armor(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Weapon:
-            return new Weapon(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new Weapon(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Usable:
-            return new UsableItem(this.id, category, this.itemTypeId, count, paletteName1, paletteName2, data);
+            return new UsableItem(this.id, category, this.itemTypeId, count, paletteNames, data);
          case Category.CraftingIngredients:
-            return new CraftingIngredients(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new CraftingIngredients(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Blueprint:
-            return new Blueprint(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new Blueprint(this.id, this.itemTypeId, paletteNames, data, count);
          case Category.Quest_Item:
-            return new QuestItem(this.id, this.itemTypeId, paletteName1, paletteName2, data, count);
+            return new QuestItem(this.id, this.itemTypeId, paletteNames, data, count);
          default:
             D.debug("Unknown item category: " + category);
             return null;
@@ -230,6 +226,48 @@ public class Item {
       }
 
       return false;
+   }
+
+   public static string trimItmPalette (string paletteRawString) {
+      if (paletteRawString == null) {
+         return "";
+      }
+
+      string palettes = paletteRawString.Trim();
+      if (palettes.EndsWith(",")) {
+         palettes = palettes.Remove(palettes.Length - 1);
+      }
+      return palettes;
+   }
+
+   public static string[] parseItmPalette (string paletteRawString) {
+      if (paletteRawString == null || paletteRawString == "") {
+         return new string[0];
+      }
+
+      List<string> toReturn = new List<string>();
+      string[] palettes = paletteRawString.Split(',');
+      for (int i = 0; i < palettes.Length; i++) {
+         string p = palettes[i].Trim();
+         if (p != "") {
+            toReturn.Add(p);
+         }
+      }
+
+      return toReturn.ToArray();
+   }
+
+   public static string parseItmPalette (string[] paletteList) {
+      string palettes = "";
+      if (paletteList != null && paletteList.Length > 0) {
+         foreach (string p in paletteList) {
+            palettes += p + ", ";
+         }
+         palettes = palettes.Trim();
+         palettes = palettes.Remove(palettes.Length - 1);
+      }
+
+      return palettes;
    }
 
    #region Private Variables

@@ -27,9 +27,7 @@ public class WeaponManager : EquipmentManager {
 
    // Weapon colors
    [SyncVar]
-   public string palette1;
-   [SyncVar]
-   public string palette2;
+   public string palettes;
 
    // The type of action this weapon is associated with
    [SyncVar]
@@ -60,16 +58,16 @@ public class WeaponManager : EquipmentManager {
    }
 
    public void updateSprites () {
-      this.updateSprites(this.weaponType, this.palette1, this.palette2);
+      this.updateSprites(this.weaponType, this.palettes);
    }
 
-   public void updateSprites (int weaponType, string newPalette1, string newPalette2) {
+   public void updateSprites (int weaponType, string newPalettes) {
       Gender.Type gender = getGender();
 
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
          weaponLayer.setType(gender, weaponType);
-         weaponLayer.recolor(newPalette1, newPalette2);
+         weaponLayer.recolor(newPalettes);
       }
 
       // Sync up all our animations
@@ -87,20 +85,20 @@ public class WeaponManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipWeapon (string rawReaponData, string newPalette1, string newPalette2) {
+   public void Rpc_EquipWeapon (string rawReaponData, string newPalettes) {
       WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(rawReaponData);
       cachedWeaponData = weaponData;
 
       // Update the sprites for the new weapon type
       int newType = weaponData == null ? 0 : weaponData.weaponType;
-      updateSprites(newType, newPalette1, newPalette2);
+      updateSprites(newType, newPalettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
    }
 
    [Server]
-   public void updateWeaponSyncVars (int weaponDataId, int weaponId) {
+   public void updateWeaponSyncVars (int weaponDataId, int weaponId, string palettes) {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponDataId);
 
       if (weaponData == null) {
@@ -112,7 +110,7 @@ public class WeaponManager : EquipmentManager {
          // No weapon to equip
          equippedWeaponId = 0;
          weaponType = 0;
-         updateSprites(0, "", "");
+         updateSprites(0, "");
          return;
       }
 
@@ -125,12 +123,11 @@ public class WeaponManager : EquipmentManager {
       // Set the Sync Vars so they get sent to the clients
       this.equipmentDataId = weaponData.sqlId;
       this.weaponType = weaponData.weaponType;
-      this.palette1 = weaponData.palette1;
-      this.palette2 = weaponData.palette2;
+      this.palettes = palettes;
       this.actionType = weaponData == null ? Weapon.ActionType.None : weaponData.actionType;
 
       // Send the Weapon Info to all clients
-      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), palette1, palette2);
+      Rpc_EquipWeapon(WeaponStatData.serializeWeaponStatData(weaponData), this.palettes);
    }
 
    #region Private Variables

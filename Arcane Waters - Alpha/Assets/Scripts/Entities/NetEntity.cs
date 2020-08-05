@@ -46,11 +46,9 @@ public class NetEntity : NetworkBehaviour
 
    // Our colors
    [SyncVar]
-   public string eyesPalette1;
+   public string eyesPalettes;
    [SyncVar]
-   public string hairPalette1;
-   [SyncVar]
-   public string hairPalette2;
+   public string hairPalettes;
 
    // The Name of this entity
    [SyncVar]
@@ -320,7 +318,9 @@ public class NetEntity : NetworkBehaviour
          handleDelayMoveMode();
       } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Arrows) {
          handleArrowsMoveMode();
-      } else {
+      } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.ServerAuthoritative) {
+         handleServerAuthoritativeMode();
+      } else { 
          handleInstantMoveMode(updateEveryFrame);
       }
    }
@@ -363,11 +363,10 @@ public class NetEntity : NetworkBehaviour
 
       // Body
       this.gender = userInfo.gender;
-      this.hairPalette1 = userInfo.hairPalette1;
-      this.hairPalette2 = userInfo.hairPalette2;
+      this.hairPalettes = userInfo.hairPalettes;
       this.hairType = userInfo.hairType;
       this.eyesType = userInfo.eyesType;
-      this.eyesPalette1 = userInfo.eyesPalette1;
+      this.eyesPalettes = userInfo.eyesPalettes;
       this.bodyType = userInfo.bodyType;
 
       // Update the user info cache
@@ -530,6 +529,14 @@ public class NetEntity : NetworkBehaviour
 
    public virtual float getAngleDelay () {
       return .10f;
+   }
+
+   public virtual float getInputDelay () {
+      return .25f;
+   }
+
+   public virtual double getAddForceDelay () {
+      return .2;
    }
 
    public Rigidbody2D getRigidbody () {
@@ -712,7 +719,7 @@ public class NetEntity : NetworkBehaviour
       this.transform.SetParent(area.transform, worldPositionStays);
    }
 
-   protected void handleInstantMoveMode (bool updatingEveryFrame) {
+   protected virtual void handleInstantMoveMode (bool updatingEveryFrame) {
       // Calculate by how much to reduce the movement speed due to differing update steps
       float frameRateMultiplier = updatingEveryFrame ? 1 / Mathf.Ceil(MOVE_CHANGE_INTERVAL / Time.deltaTime) : 1f;
 
@@ -762,7 +769,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   protected void handleDelayMoveMode () {
+   protected virtual void handleDelayMoveMode () {
       // Check if enough time has passed for us to change our facing direction
       bool canChangeDirection = (Time.time - _lastFacingChangeTime > getTurnDelay());
 
@@ -787,6 +794,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void handleArrowsMoveMode () {
+      // Handled by the PlayerShipEntity class
+   }
+
+   protected virtual void handleServerAuthoritativeMode () {
       // Handled by the PlayerShipEntity class
    }
 
@@ -1017,7 +1028,37 @@ public class NetEntity : NetworkBehaviour
       if (this is PlayerShipEntity) {
          PlayerShipEntity ship = (PlayerShipEntity) this;
          ship.desiredAngle = DirectionUtil.getAngle(this.facing);
+
+         _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Owner;
       }
+   }
+
+   [Command]
+   public void Cmd_SetServerAuthoritativeMode () {
+      // Update the desired angle Sync Var based on our current facing direction
+      if (this is PlayerShipEntity) {
+         PlayerShipEntity ship = (PlayerShipEntity) this;
+         ship.desiredAngle = DirectionUtil.getAngle(this.facing);
+
+         Rpc_SetServerAuthoritativeMode();
+      }      
+   }
+
+   [Command]
+   public void Cmd_ToggleVelocityDrivenTransform () {
+      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = !_smoothSync.setVelocityInsteadOfPositionOnNonOwners;
+   }
+
+   [ClientRpc]
+   private void Rpc_SetServerAuthoritativeMode () {
+      _body.mass = 1f;
+      _body.drag = 2.5f;
+      _body.angularDrag = 10f;
+
+      ((PlayerShipEntity)this).speed = 15;
+
+      // The server controls the final position of the object instead of the owner
+      _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
    }
 
    [Command]
@@ -1154,7 +1195,7 @@ public class NetEntity : NetworkBehaviour
             Item item = JsonUtility.FromJson<Item>(completedStep.rawDataJson);
 
             if (item.category == Item.Category.Weapon) {
-               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP);
+               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, Item.parseItmPalette(new string[2]{ PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP }));
             }
          }
          if (completedStep.actionType == ActionType.HarvestCrop) {
@@ -1240,6 +1281,9 @@ public class NetEntity : NetworkBehaviour
 
    // The time at which we last changed our movement angle
    protected float _lastAngleChangeTime;
+
+   // The time at which we last sent our input to the server
+   protected float _lastInputChangeTime;
 
    // The nameText that follows us around
    protected Text _nameText;

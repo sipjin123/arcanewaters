@@ -37,8 +37,7 @@ public class QuestItem : Item
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.paletteNames =  DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -49,14 +48,13 @@ public class QuestItem : Item
 
 #endif
 
-   public QuestItem (int id, int recipeType, string newPalette1, string newPalette2, string data = "", int count = 0) {
+   public QuestItem (int id, int recipeType, string newPalettes, string data = "", int count = 0) {
       this.category = Category.Quest_Item;
       this.id = id;
       this.questItemType = (Type) recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
-      this.paletteName1 = newPalette1;
-      this.paletteName2 = newPalette2;
+      this.paletteNames = newPalettes;
       this.data = data;
    }
 
@@ -68,8 +66,10 @@ public class QuestItem : Item
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}",
-         "#" + colorHex, getName(), paletteName1, paletteName2, getDescription());
+      string palettes = Item.trimItmPalette(paletteNames);
+
+      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{4}",
+         "#" + colorHex, getName(), getDescription());
    }
 
    public override string getName () {
@@ -87,8 +87,7 @@ public class QuestItem : Item
          questItemType = (Type) questTypeID,
          itemTypeId = questTypeID,
          count = 0,
-         paletteName1 = "",
-         paletteName2 = "",
+         paletteNames = "",
          category = Category.Quest_Item,
          data = "",
          id = 0

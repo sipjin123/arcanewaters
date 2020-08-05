@@ -77,7 +77,7 @@ public class CharacterScreen : MonoBehaviour
       return false;
    }
 
-   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes1, string[] armorPalettes2, int[] equipmentIds, int[] spriteIds) {
+   public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
       for (int i = 0; i < spriteIds.Length; i++) {
@@ -95,8 +95,7 @@ public class CharacterScreen : MonoBehaviour
       _armorArray = new Armor[armorArray.Length];
       for (int i = 0; i < armorArray.Length; i++) {
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
-         _armorArray[i].paletteName1 = armorPalettes1[i];
-         _armorArray[i].paletteName2 = armorPalettes2[i];
+         _armorArray[i].paletteNames = armorPalettes[i];
       }
 
       if (_armorArray.Length == 0) {
@@ -112,8 +111,7 @@ public class CharacterScreen : MonoBehaviour
 
          HatStatData hatData = EquipmentXMLManager.self.getHatData(_hatArray[i].itemTypeId);
          if (hatData != null) {
-            _hatArray[i].paletteName1 = hatData.palette1;
-            _hatArray[i].paletteName2 = hatData.palette2;
+            _hatArray[i].paletteNames = hatData.palettes;
          }
       }
       if (_hatArray.Length == 0) {
@@ -146,7 +144,7 @@ public class CharacterScreen : MonoBehaviour
             OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
             Global.lastUserGold = userArray[i].gold;
             Global.lastUserGems = userArray[i].gems;
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes1[i], armorPalettes2[i]);
+            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
             spot.assignCharacter(offlineChar);
          }
       }

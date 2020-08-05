@@ -151,7 +151,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          canvasGroup.blocksRaycasts = false;
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalette1(), _char.armor.getPalette2(), chosenPerks));
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks));
       });
    }
 
@@ -229,7 +229,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void setArmor (int armorId) {
-      _char.setArmor(armorId, getUserObjects().armorPalette1, getUserObjects().armorPalette2);
+      _char.setArmor(armorId, getUserObjects().armorPalettes);
       refreshArmor();
 
       updateStyleIcons();
@@ -241,8 +241,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          weapon = _char.getWeapon(),
          armor = _char.getArmor(),
          hat = _char.getHat(),
-         armorPalette1 = _char.armor.getPalette1(),
-         armorPalette2 = _char.armor.getPalette2()
+         armorPalettes = _char.armor.getPalettes(),
       };
    }
 
@@ -389,10 +388,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
          int armorSpriteId = armorData.spriteId;
          _char.armor.equipmentId = armorData.equipmentId;
-         _char.setArmor(armorSpriteId, armor.paletteName1, armor.paletteName2);
+         _char.setArmor(armorSpriteId, armor.paletteNames);
       } else {
          armor.itemTypeId = list[currentIndex];
-         _char.setArmor(armor.itemTypeId, armor.paletteName1, armor.paletteName2);
+         _char.setArmor(armor.itemTypeId, armor.paletteNames);
       }
    }
 
@@ -402,12 +401,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       // Figure out which ColorType that corresponds to
-      string palette1 = getSelected(hairGroup1);
-      //string palette2 = getSelected(hairGroup2);
+      string palettes = Item.parseItmPalette(new string[2] { getSelected(hairGroup1), getSelected(hairGroup2) });
 
       // Update the character stack image
-      _char.hairBack.recolor(palette1);
-      _char.hairFront.recolor(palette1);
+      _char.hairBack.recolor(palettes);
+      _char.hairFront.recolor(palettes);
    }
 
    public void onArmorColorChanged () {
@@ -416,11 +414,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
 
       // Figure out which ColorType that corresponds to
-      string palette1 = getSelected(armorGroup1);
-      string palette2 = getSelected(armorGroup2);
+      string palettes = Item.parseItmPalette(new string[2] { getSelected(armorGroup1), getSelected(armorGroup2) });
 
       // Update the character stack image
-      _char.armor.recolor(palette1, palette2);
+      _char.armor.recolor(palettes);
    }
 
    public void onEyeColorChanged () {

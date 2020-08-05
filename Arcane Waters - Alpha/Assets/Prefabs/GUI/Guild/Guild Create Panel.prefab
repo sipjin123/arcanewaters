@@ -446,7 +446,7 @@ MonoBehaviour:
   sigilColorGroup2: {fileID: 9197008359973293528}
   nameValidIcon: {fileID: 5506900040760003862}
   nameValidSprite: {fileID: 21300000, guid: a625a6e9779c8b34d99e8b76ecb649cd, type: 3}
-  nameInvalidSprite: {fileID: 21300000, guid: 7f04c22f3de375a42916de7749a3c7ff, type: 3}
+  nameInvalidSprite: {fileID: 21300000, guid: f21f354cfccd910448214a76482578ad, type: 3}
   nameErrorText: {fileID: 2026639804830840906}
 --- !u!225 &497188760788003744
 CanvasGroup:
@@ -1679,7 +1679,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7f04c22f3de375a42916de7749a3c7ff, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f21f354cfccd910448214a76482578ad, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

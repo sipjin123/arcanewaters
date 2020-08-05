@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 #if IS_SERVER_BUILD
 
@@ -50,8 +51,7 @@ public class Blueprint : RecipeItem
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.paletteNames = DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -62,28 +62,26 @@ public class Blueprint : RecipeItem
 
 #endif
 
-   public Blueprint (int id, int recipeType, string newPalette1, string newPalette2) {
+   public Blueprint (int id, int recipeType, string newPalettes) {
       this.category = Category.Blueprint;
       this.id = id;
       this.itemTypeId = recipeType;
       this.count = 1;
-      this.paletteName1 = newPalette1;
-      this.paletteName2 = newPalette2;
+      this.paletteNames = newPalettes;
       this.data = "";
    }
 
-   public Blueprint (int id, int itemTypeId, string newPalette1, string newPalette2, string data, int count = 1) {
+   public Blueprint (int id, int itemTypeId, string newPalettes, string data, int count = 1) {
       this.category = Category.Blueprint;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.paletteName1 = newPalette1;
-      this.paletteName2 = newPalette2;
+      this.paletteNames = newPalettes;
       this.data = data;
    }
 
    public static Blueprint getEmpty () {
-      return new Blueprint(0, 1000, "", "");
+      return new Blueprint(0, 1000, "");
    }
 
    public static Item.Category getEquipmentType (string data) {

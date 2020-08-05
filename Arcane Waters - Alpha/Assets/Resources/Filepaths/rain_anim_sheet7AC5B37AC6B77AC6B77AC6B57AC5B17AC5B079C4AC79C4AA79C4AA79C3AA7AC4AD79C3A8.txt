@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Weather/rain_anim_sheet

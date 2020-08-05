@@ -77,8 +77,8 @@ public class ShipBarsPlayer : ShipBars
       if (_entity.guildId > 0) {
          PlayerShipEntity shipEntity = (PlayerShipEntity) _entity;
          guildIcon.setBorder(shipEntity.guildIconBorder);
-         guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalette1, shipEntity.guildIconBackPalette2);
-         guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalette1, shipEntity.guildIconSigilPalette2);
+         guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalettes);
+         guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalettes);
       } else {
          guildIcon.gameObject.SetActive(false);
       }

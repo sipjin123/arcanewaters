@@ -75,8 +75,7 @@ public class WeaponStatData : EquipmentStatData
    public static WeaponStatData getDefaultData () {
       return new WeaponStatData { 
          weaponType = 0,
-         palette1 = "",
-         palette2 = "",
+         palettes = "",
          actionType = Weapon.ActionType.None,
       };
    }

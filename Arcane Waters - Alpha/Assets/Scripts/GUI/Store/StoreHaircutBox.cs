@@ -25,7 +25,7 @@ public class StoreHaircutBox : StoreItemBox {
 
       if (Global.player is BodyEntity) {
          BodyEntity body = (BodyEntity) Global.player;
-         hairColor = body.hairPalette1;
+         hairColor = body.hairPalettes;
       }
 
       string gender = Global.player != null && Global.player.isMale() ? "Male" : "Female";
@@ -40,7 +40,7 @@ public class StoreHaircutBox : StoreItemBox {
          }
          image.sprite = sprites[8];
          image.material = new Material(this.imageIcon.material);
-         image.GetComponent<RecoloredSprite>().recolor(hairColor, hairColor);
+         image.GetComponent<RecoloredSprite>().recolor(hairColor);
       }
    }
 

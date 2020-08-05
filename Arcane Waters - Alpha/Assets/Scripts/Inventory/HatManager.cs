@@ -24,9 +24,7 @@ public class HatManager : EquipmentManager {
 
    // Hat colors
    [SyncVar]
-   public string palette1;
-   [SyncVar]
-   public string palette2;
+   public string palettes;
 
    // The current hat data
    public HatStatData cachedHatData;
@@ -49,21 +47,21 @@ public class HatManager : EquipmentManager {
          return HatStatData.translateDataToHat(cachedHatData);
       }
 
-      return new Hat(0, 0, "", "");
+      return new Hat(0, 0, "");
    }
 
    public void updateSprites () {
-      this.updateSprites(this.hatType, this.palette1, this.palette2);
+      this.updateSprites(this.hatType, this.palettes);
    }
 
-   public void updateSprites (int hatType, string palette1, string palette2) {
+   public void updateSprites (int hatType, string palettes) {
       Gender.Type gender = getGender();
 
       // Set the correct sheet for our gender and hat type
       hatLayer.setType(gender, hatType);
 
       // Update our Material
-      hatLayer.recolor(palette1, palette2);
+      hatLayer.recolor(palettes);
 
       // Sync up all our animations
       if (_body != null) {
@@ -72,13 +70,13 @@ public class HatManager : EquipmentManager {
    }
 
    [ClientRpc]
-   public void Rpc_EquipHat (string rawHatData, string palette1, string palette2) {
+   public void Rpc_EquipHat (string rawHatData, string palettes) {
       HatStatData hatData = Util.xmlLoad<HatStatData>(rawHatData);
       cachedHatData = hatData;
 
       // Update the sprites for the new hat type
       int newType = hatData == null ? 0 : hatData.hatType;
-      updateSprites(newType, palette1, palette2);
+      updateSprites(newType, palettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
@@ -96,7 +94,7 @@ public class HatManager : EquipmentManager {
          // No Hat to equip
          equippedHatId = 0;
          hatType = 0;
-         updateSprites(0, "", "");
+         updateSprites(0, "");
          return;
       }
 
@@ -108,11 +106,10 @@ public class HatManager : EquipmentManager {
       // Set the Sync Vars so they get sent to the clients
       this.equipmentDataId = hatData.sqlId;
       this.hatType = hatData.hatType;
-      this.palette1 = hatData.palette1;
-      this.palette2 = hatData.palette2;
+      this.palettes = hatData.palettes;
 
       // Send the Info to all clients
-      Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), hatData.palette1, hatData.palette2);
+      Rpc_EquipHat(HatStatData.serializeHatStatData(hatData), palettes);
    }
 
    #region Private Variables

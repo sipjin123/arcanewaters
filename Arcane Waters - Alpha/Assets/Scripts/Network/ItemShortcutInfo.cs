@@ -35,12 +35,11 @@ public class ItemShortcutInfo
       int itemId = dataReader.GetInt32("itmId");
       Item.Category itemCategory = (Item.Category) dataReader.GetInt32("itmCategory");
       int itemTypeId = dataReader.GetInt32("itmType");
-      string palette1 = dataReader.GetString("itmPalette1");
-      string palette2 = dataReader.GetString("itmPalette2");
+      string palettes = dataReader.GetString("itmPalettes");
       string data = dataReader.GetString("itmData");
       int count = dataReader.GetInt32("itmCount");
 
-      this.item = new Item(itemId, itemCategory, itemTypeId, count, palette1, palette2, data);
+      this.item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
    }
 
 #endif

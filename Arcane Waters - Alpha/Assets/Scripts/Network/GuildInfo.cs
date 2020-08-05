@@ -25,10 +25,8 @@ public class GuildInfo
    public string iconSigil;
 
    // The guild icon palettes
-   public string iconBackPalette1;
-   public string iconBackPalette2;
-   public string iconSigilPalette1;
-   public string iconSigilPalette2;
+   public string iconBackPalettes;
+   public string iconSigilPalettes;
 
    // The list of people in the guild
    public UserInfo[] guildMembers;
@@ -48,26 +46,21 @@ public class GuildInfo
       this.iconBorder = DataUtil.getString(dataReader, "gldIconBorder");
       this.iconBackground = DataUtil.getString(dataReader, "gldIconBackground");
       this.iconSigil = DataUtil.getString(dataReader, "gldIconSigil");
-      this.iconBackPalette1 = DataUtil.getString(dataReader, "gldIconBackPalette1");
-      this.iconBackPalette2 = DataUtil.getString(dataReader, "gldIconBackPalette2");
-      this.iconSigilPalette1 = DataUtil.getString(dataReader, "gldIconSigilPalette1");
-      this.iconSigilPalette2 = DataUtil.getString(dataReader, "gldIconSigilPalette2");
+      this.iconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
+      this.iconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
       this.creationTime = DataUtil.getDateTime(dataReader, "gldCreationTime").ToBinary();
    }
 
 #endif
 
    public GuildInfo (string guildName, string iconBorder, string iconBackground,
-      string iconSigil, string iconBackPalette1, string iconBackPalette2, string iconSigilPalette1,
-      string iconSigilPalette2) {
+      string iconSigil, string iconBackPalettes, string iconSigilPalettes) {
       this.guildName = guildName;
       this.iconBorder = iconBorder;
       this.iconBackground = iconBackground;
       this.iconSigil = iconSigil;
-      this.iconBackPalette1 = iconBackPalette1;
-      this.iconBackPalette2 = iconBackPalette2;
-      this.iconSigilPalette1 = iconSigilPalette1;
-      this.iconSigilPalette2 = iconSigilPalette2;
+      this.iconBackPalettes = iconBackPalettes;
+      this.iconSigilPalettes = iconSigilPalettes;
    }
 
    public override bool Equals (object rhs) {

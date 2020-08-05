@@ -435,7 +435,7 @@ public class PlayerBodyEntity : BodyEntity {
 
             // Back to Unity
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               armorManager.updateArmorSyncVars(0, 0);
+               armorManager.updateArmorSyncVars(0, 0, "");
             });
          });
       } else {
@@ -448,7 +448,7 @@ public class PlayerBodyEntity : BodyEntity {
 
                // Back to Unity
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
+                  armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
                });
             }
          });

@@ -30,6 +30,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Button which initiates resetting palette scene
    public Button resetPaletteButton;
 
+   // Button which initiates removing all currently set colors
+   public Button deleteColorsButton;
+
    [Header("Prefabs")]
    // Palette prefab which is present in the form of scrolldown list
    public GameObject paletteButtonRowPrefab;
@@ -102,11 +105,8 @@ public class PaletteToolManager : XmlDataToolManager {
    public Button cancelResettingButton;
 
    [Header("Size buttons")]
-   public Button setSize8;
-   public Button setSize16;
-   public Button setSize32;
-   public Button setSize64;
-   public Button setSize128;
+   public Button increaseSize;
+   public Button decreaseSize;
 
    [Header("Choose file dropdown")]
    // Parent of elements used to choose file from user HDD
@@ -130,12 +130,33 @@ public class PaletteToolManager : XmlDataToolManager {
       public PaletteToolData paletteData;
    }
 
-   [Header("Palette type dropwdown")]
-   // Parent of elements used to pick palette type
-   public GameObject dropdownPaletteTypeParent;
+   [Header("Palette category")]
+   // Dropdown element to populate with palette categories to choose from
+   public TMPro.TMP_Dropdown dropdownPaletteCategory;
 
-   // Dropdown element to populate with palette types to choose from
-   public TMPro.TMP_Dropdown dropdownPaletteType;
+   // Dropdown element to populate with palette subcategories to choose from
+   public TMPro.TMP_Dropdown dropdownPaletteSubcategory;
+
+   // Adding new palette subcategory coupled to currently chosen category
+   public Button addPaletteSubcategory;
+
+   // Modify currently chosen subcategory
+   public Button modifyPaletteSubcategory;
+
+   // Add/modify category scene
+   public GameObject addSubcategoryScene;
+
+   // Field to enter or modify subcategory name
+   public InputField newSubcategoryName;
+
+   // Accept changes in name of subcategory
+   public Button confirmSubcategory;
+
+   // Reject changes in name of subcategory
+   public Button cancelSubcategory;
+
+   // Update changes in source colors of subcategory and store it in database
+   public Button updateSubcategoryColors;
 
    [Header("Sprite references")]
    // Checkbox checked sprite for enabled palette
@@ -208,20 +229,11 @@ public class PaletteToolManager : XmlDataToolManager {
       });
 
       // Changing size of currently edited palette (available in edit scene)
-      setSize8.onClick.AddListener(() => {
-         changeArraySize(8, false);
+      increaseSize.onClick.AddListener(() => {
+         changeArraySize(_srcColors.Count * 2, false);
       });
-      setSize16.onClick.AddListener(() => {
-         changeArraySize(16, false);
-      });
-      setSize32.onClick.AddListener(() => {
-         changeArraySize(32, false);
-      });
-      setSize64.onClick.AddListener(() => {
-         changeArraySize(64, false);
-      });
-      setSize128.onClick.AddListener(() => {
-         changeArraySize(128, false);
+      decreaseSize.onClick.AddListener(() => {
+         changeArraySize(_srcColors.Count / 2, false);
       });
 
       // Call function when changing hue slider value
@@ -250,9 +262,70 @@ public class PaletteToolManager : XmlDataToolManager {
          confirmResettingPaletteScene.gameObject.SetActive(false);
       });
 
+      deleteColorsButton.onClick.AddListener(() => {
+         _srcColors.Clear();
+         _dstColors.Clear();
+         changeArraySize(MINIMUM_ALLOWED_SIZE, true);
+         showPalettePreview();
+      });
+
       // Start picking color from current sprite preview
       pickColorButton.onClick.AddListener(() => {
          startPickingColorFromSprite();
+      });
+
+      // Add/modify subcategory to currently chosen palette category
+      addPaletteSubcategory.onClick.AddListener(() => {
+         addSubcategoryScene.gameObject.SetActive(true);
+         _currentSubcategoryIndex = -1;
+         newSubcategoryName.text = "";
+      });
+      modifyPaletteSubcategory.onClick.AddListener(() => {
+         addSubcategoryScene.gameObject.SetActive(true);
+         updateSubcategoryName();
+      });
+      dropdownPaletteSubcategory.onValueChanged.AddListener((int index) => {
+         newSubcategoryName.text = dropdownPaletteSubcategory.options[dropdownPaletteSubcategory.value].text;
+         fillColorsBasedOnSubcategory();
+      });
+      
+      confirmSubcategory.onClick.AddListener(() => {
+         // Empty subcategory name is not allowed - reserved for first element
+         if (newSubcategoryName.text == "") {
+            return;
+         }
+
+         XmlLoadingPanel.self.startLoading();
+
+         string[] colors = new string[8];
+         for (int i = 0; i < colors.Length; i++) {
+            colors[i] = "000000";
+         }
+         
+         XmlSerializer ser = new XmlSerializer(colors.GetType());
+         var sb = new StringBuilder();
+         using (var writer = XmlWriter.Create(sb)) {
+            ser.Serialize(writer, colors);
+         }
+         string longString = sb.ToString();
+
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // If new (index == -1) - pass XML with black srcColors; otherwise - do not update srcColors
+               DB_Main.updatePaletteCategory(dropdownPaletteCategory.value, newSubcategoryName.text, _currentSubcategoryIndex, _currentSubcategoryIndex == -1 ? longString : "");
+               prepareSubcategoryDropdown(_currentRow);
+               XmlLoadingPanel.self.finishLoading();
+            });
+         });
+         addSubcategoryScene.gameObject.SetActive(false);
+      });
+      cancelSubcategory.onClick.AddListener(() => {
+         addSubcategoryScene.gameObject.SetActive(false);
+      });
+
+      updateSubcategoryColors.onClick.AddListener(() => {
+         updateSubcategoryName();
+         updateSubcategoryColorsInDatabase();
       });
 
       // Fill dropdown, used for choosing preview sprite, with filenames
@@ -260,6 +333,9 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Fill dropdown, used for choosing palette types, with values based on palette type enum
       preparePaletteTypeDropdown();
+
+      // Fill dropdown based on currently chosen category
+      prepareSubcategoryDropdown(_currentRow);
    }
 
    public void generateList () {
@@ -334,12 +410,14 @@ public class PaletteToolManager : XmlDataToolManager {
       }
       _paletteImageType = (PaletteImageType) data.paletteType;
       string dropdownTextToFind = System.Enum.GetName(typeof(PaletteImageType), _paletteImageType);
-      int paletteTypeIndex = dropdownPaletteType.options.FindIndex((TMPro.TMP_Dropdown.OptionData optionData) => optionData.text.Equals(dropdownTextToFind));
+      int paletteTypeIndex = dropdownPaletteCategory.options.FindIndex((TMPro.TMP_Dropdown.OptionData optionData) => optionData.text.Equals(dropdownTextToFind));
       if (paletteTypeIndex >= 0) {
-         dropdownPaletteType.value = paletteTypeIndex;
+         dropdownPaletteCategory.value = paletteTypeIndex;
       } else {
-         dropdownPaletteType.value = 0;
+         dropdownPaletteCategory.value = 0;
       }
+
+      prepareSubcategoryDropdown(row);
 
       // Present edit scene with downloaded data
       _currentRow = row;
@@ -350,9 +428,76 @@ public class PaletteToolManager : XmlDataToolManager {
       _isEditingRow = true;
    }
 
+   private void fillColorsBasedOnSubcategory () {
+      int id = DB_Main.getPaletteCategoryIndex(dropdownPaletteCategory.value, newSubcategoryName.text);
+      List<string> colors = DB_Main.getPaletteSubcategorySrcColors(id);
+
+      List<Color> src = new List<Color>();
+      List<Color> dst = new List<Color>();
+
+      if (colors != null) {
+         for (int i = 0; i < colors.Count; i++) {
+            src.Add(convertHexToRGB(colors[i]));
+            dst.Add(convertHexToRGB(colors[i]));
+         }
+      }
+
+      while (src.Count < MINIMUM_ALLOWED_SIZE) {
+         src.Add(convertHexToRGB("000000"));
+         dst.Add(convertHexToRGB("000000"));
+      }
+
+      bool[] isStatic = new bool[Mathf.Min(_staticColors.Count, src.Count)];
+      for (int i = 0; i < isStatic.Length; i++) {
+         isStatic[i] = _staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? true : false;
+      }
+
+      int newSize = !Mathf.IsPowerOfTwo(src.Count) ? Mathf.NextPowerOfTwo(src.Count) : src.Count;
+      generatePaletteColorImages(src, dst, newSize, isStatic);
+      hueSlider.value = 0;
+      showPalettePreview();
+   }
+
+   private void updateSubcategoryColorsInDatabase () {
+      if (newSubcategoryName.text == "") {
+         return;
+      }
+
+      XmlLoadingPanel.self.startLoading();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            List<string> colorsList = new List<string>();
+            for (int i = 0; i < _srcColors.Count; i++) {
+               colorsList.Add(convertRGBToHex(_srcColors[i].color));
+            }
+            string[] colors = colorsList.ToArray();
+
+            XmlSerializer ser = new XmlSerializer(colors.GetType());
+            var sb = new StringBuilder();
+            using (var writer = XmlWriter.Create(sb)) {
+               ser.Serialize(writer, colors);
+            }
+            string longString = sb.ToString();
+
+            DB_Main.updatePaletteCategory(dropdownPaletteCategory.value, newSubcategoryName.text, _currentSubcategoryIndex, longString);
+            prepareSubcategoryDropdown(newSubcategoryName.text);
+            XmlLoadingPanel.self.finishLoading();
+         });
+      });
+   }
+
    private void changeArraySize (int size, bool clearColors) {
       // Get current colors and pass to function generating new scene
       if (!clearColors) {
+         if (size > MAXIMUM_ALLOWED_SIZE) {
+            D.warning("Maximum allowed size reached (" + MAXIMUM_ALLOWED_SIZE + "), specified size of " + size + " is too big for palette");
+            return;
+         }
+         if (size < MINIMUM_ALLOWED_SIZE) {
+            D.warning("Minimum allowed size reached (" + MINIMUM_ALLOWED_SIZE + "), specified size of " + size + " is too small for palette");
+            return;
+         }
+
          List<Color> src = new List<Color>();
          List<Color> dst = new List<Color>();
          bool[] isStatic = new bool[_staticColors.Count];
@@ -389,8 +534,10 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       string longString = sb.ToString();
+
+      updateSubcategoryName();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => { 
-         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled);
+         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled, _currentSubcategoryIndex);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -680,15 +827,19 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void preparePaletteTypeDropdown () {
-      dropdownPaletteType.options.Clear();
+      dropdownPaletteCategory.options.Clear();
 
       for (int i = (int) PaletteImageType.None + 1; i < (int) PaletteImageType.MAX; i++) {
          string text = System.Enum.GetName(typeof(PaletteImageType), (PaletteImageType) i);
          TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(text);
-         dropdownPaletteType.options.Add(optionData);
+         dropdownPaletteCategory.options.Add(optionData);
       }
 
-      dropdownPaletteType.onValueChanged.AddListener((int index) => {
+      dropdownPaletteCategory.onValueChanged.AddListener((int index) => {
+         prepareSubcategoryDropdown(_currentRow);
+      });
+
+      dropdownPaletteCategory.onValueChanged.AddListener((int index) => {
          _paletteImageType = (PaletteImageType) (index + 1);
          prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
       });
@@ -721,6 +872,44 @@ public class PaletteToolManager : XmlDataToolManager {
          choosePreviewSprite(0);
          dropdownFileChoose.value = 0;
       }
+   }
+
+   private void updateSubcategoryName () {
+      if (dropdownPaletteSubcategory.options.Count > 0) {
+         newSubcategoryName.text = dropdownPaletteSubcategory.options[dropdownPaletteSubcategory.value].text;
+         _currentSubcategoryIndex = DB_Main.getPaletteCategoryIndex(dropdownPaletteCategory.value, newSubcategoryName.text);
+      } else {
+         newSubcategoryName.text = "";
+         _currentSubcategoryIndex = -1;
+      }
+   }
+
+   private void prepareSubcategoryDropdown (PaletteButtonRow row) {
+      int subcategoryId = row == null ? -1 : DB_Main.getPaletteSubcategoryIndexFromPaletteTable(_paletteDataList[row.dataIndex].paletteId);
+      string subcategoryName = DB_Main.getPaletteSubcategoryName(subcategoryId);
+      prepareSubcategoryDropdown(subcategoryName);
+   }
+
+   private void prepareSubcategoryDropdown (string subcategoryName) {
+      dropdownPaletteSubcategory.options.Clear();
+
+      // First element is empty to ensure that we can reset field to nothing
+      dropdownPaletteSubcategory.options.Add(new TMPro.TMP_Dropdown.OptionData(""));
+      dropdownPaletteSubcategory.value = 0;
+
+      int newValue = 0;
+
+      foreach (string name in DB_Main.getPaletteSubcategoryNames(dropdownPaletteCategory.value)) {
+         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(name);
+         dropdownPaletteSubcategory.options.Add(optionData);
+
+         if (name == subcategoryName) {
+            newValue = dropdownPaletteSubcategory.options.Count - 1;
+         }
+      }
+
+      dropdownPaletteSubcategory.value = newValue;
+      dropdownPaletteSubcategory.RefreshShownValue();
    }
 
    private void choosePreviewSprite (int dropdownIndex) {
@@ -792,7 +981,7 @@ public class PaletteToolManager : XmlDataToolManager {
          _dstColors[colorIndex].color = colorA;
          colorIndex++;
          if (colorIndex >= _srcColors.Count) {
-            if (allColors.Count > 128) {
+            if (allColors.Count > MAXIMUM_ALLOWED_SIZE) {
                D.warning("User is trying to generate palette of size " + allColors.Count + ". Maximum palette size allowed is 128");
             }
             break;
@@ -1162,6 +1351,15 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Initial name of palette which can be changed by user
    private static string _initialPaletteName = "Choose name";
+
+   // Maximum allowed size of palette
+   private const int MAXIMUM_ALLOWED_SIZE = 128;
+
+   // Minimum allowed size of palette
+   private const int MINIMUM_ALLOWED_SIZE = 4;
+
+   // Index of subcategory dropdown
+   private int _currentSubcategoryIndex;
 
    #endregion
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 #if IS_SERVER_BUILD
 
@@ -42,8 +43,7 @@ public class CraftingIngredients : RecipeItem
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.paletteNames = DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -54,25 +54,23 @@ public class CraftingIngredients : RecipeItem
 
 #endif
 
-   public CraftingIngredients (int id, CraftingIngredients.Type recipeType, string newPalette1, string newPalette2) {
+   public CraftingIngredients (int id, CraftingIngredients.Type recipeType, string newPalettes) {
       this.category = Category.CraftingIngredients;
       this.id = id;
       this.type = recipeType;
       this.itemTypeId = (int) recipeType;
       this.count = 1;
-      this.paletteName1 = newPalette1;
-      this.paletteName2 = newPalette2;
+      this.paletteNames = newPalettes;
       this.data = "";
    }
 
-   public CraftingIngredients (int id, int itemTypeId, string newPalette1, string newPalette2, string data, int count = 1) {
+   public CraftingIngredients (int id, int itemTypeId, string newPalettes, string data, int count = 1) {
       this.category = Category.CraftingIngredients;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
       this.type = (Type) itemTypeId;
-      this.paletteName1 = newPalette1;
-      this.paletteName2 = newPalette2;
+      this.paletteNames = newPalettes;
       this.data = data;
    }
 
@@ -202,8 +200,10 @@ public class CraftingIngredients : RecipeItem
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}",
-         "#" + colorHex, getName(), paletteName1, paletteName2, getDescription());
+      string palettes = Item.trimItmPalette(paletteNames);
+
+      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}",
+         "#" + colorHex, getName(), getDescription());
    }
 
    public override string getName () {
@@ -333,7 +333,7 @@ public class CraftingIngredients : RecipeItem
    }
 
    public static CraftingIngredients getEmpty () {
-      return new CraftingIngredients(0, CraftingIngredients.Type.None, "", "");
+      return new CraftingIngredients(0, CraftingIngredients.Type.None, "");
    }
 
    public override bool canBeTrashed () {

@@ -69,12 +69,12 @@ public class OfflineCharacter : ClientMonoBehaviour {
       creationCanvasGroup.blocksRaycasts = creationMode;
    }
 
-   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {
+   public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalettes) {
       if (PaletteSwapManager.self.hasInitialized) {
-         setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalette1, armorPalette2);
+         setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
       } else {
          PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
-            setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalette1, armorPalette2);
+            setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
          });
       }
    }
@@ -88,7 +88,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       nameText.gameObject.SetActive(isVisible);
    }
 
-   private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalette1, string armorPalette2) {
+   private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalettes) {
       contentHolder.SetActive(true);
       contentLoader.SetActive(false);
     
@@ -98,15 +98,17 @@ public class OfflineCharacter : ClientMonoBehaviour {
       ArmorStatData armorData = ArmorStatData.getDefaultData();
       if (armor.data != "") {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
+         armorData.palettes = armor.paletteNames;
       }
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
       if (hatData == null) {
          hatData = HatStatData.getDefaultData();
+         hatData.palettes = hat.paletteNames;
       }
 
-      setArmor(armorData.armorType, armorData.palette1, armorData.palette2, ArmorStatData.serializeArmorStatData(armorData));
-      setHat(hatData.hatType, hatData.palette1, hatData.palette2, HatStatData.serializeHatStatData(hatData));
+      setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
+      setHat(hatData.hatType, hatData.palettes, HatStatData.serializeHatStatData(hatData));
       setWeapon(userInfo, weapon);
    }
 
@@ -128,11 +130,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
          hairLayer.setType(userInfo.hairType);
 
          // Update colors
-         hairLayer.recolor(userInfo.hairPalette1);
+         hairLayer.recolor(userInfo.hairPalettes);
       }
 
       // Update colors
-      eyes.recolor(userInfo.eyesPalette1);
+      eyes.recolor(userInfo.eyesPalettes);
    }
 
    public void setWeapon (UserInfo userInfo, Item weapon) {
@@ -147,11 +149,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
-         weaponLayer.recolor(weaponData.palette1, weaponData.palette2);
+         weaponLayer.recolor(weapon.paletteNames);
       }
    }
 
-   public void setHat (int hatType, string paletteName1, string paletteName2, string data = "") {
+   public void setHat (int hatType, string paletteNames, string data = "") {
       // Set the correct sheet for our gender and hat type
       hatLayer.setType(this.genderType, hatType, true);
 
@@ -159,10 +161,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
       _hatData = data;
 
       // Update our Material
-      hatLayer.recolor(paletteName1, paletteName2);
+      hatLayer.recolor(paletteNames);
    }
 
-   public void setArmor (int armorType, string paletteName1, string paletteName2, string data = "") {
+   public void setArmor (int armorType, string paletteNames, string data = "") {
       // Set the correct sheet for our gender and armor type
       armor.setType(this.genderType, armorType, true);
 
@@ -170,7 +172,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       _armorData = data;
 
       // Update our Material
-      armor.recolor(paletteName1, paletteName2);
+      armor.recolor(paletteNames);
    }
 
    public void cancelCreating () {
@@ -186,11 +188,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
       info.username = CharacterCreationPanel.self.nameText.text;
       info.charSpot = spot.number;
       info.hairType = this.hairFront.getType();
-      info.hairPalette1 = this.hairFront.getPalette1();
-      info.hairPalette2 = this.hairFront.getPalette2();
+      info.hairPalettes = this.hairFront.getPalettes();
       info.eyesType = this.eyes.getType();
-      info.eyesPalette1 = this.eyes.getPalette1();
-      info.eyesPalette2 = this.eyes.getPalette2();
+      info.eyesPalettes = this.eyes.getPalettes();
       info.bodyType = this.body.getType();
 
       return info;
@@ -199,8 +199,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public Armor getArmor() {
       Armor armor = new Armor();
       armor.itemTypeId = this.armor.getType();
-      armor.paletteName1 = this.armor.getPalette1();
-      armor.paletteName2 = this.armor.getPalette2();
+      armor.paletteNames = this.armor.getPalettes();
       armor.category = Item.Category.Armor;
       armor.count = 1;
       armor.data = _armorData;
@@ -215,8 +214,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public Weapon getWeapon () {
       Weapon weapon = new Weapon();
       weapon.itemTypeId = this.weaponFront.getType();
-      weapon.paletteName1 = this.weaponFront.getPalette1();
-      weapon.paletteName2 = this.weaponFront.getPalette2();
+      weapon.paletteNames = this.weaponFront.getPalettes();
       weapon.category = Item.Category.Weapon;
       weapon.count = 1;
       weapon.data = _weaponData;
@@ -231,8 +229,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public Hat getHat () {
       Hat hat = new Hat();
       hat.itemTypeId = this.hatLayer.getType();
-      hat.paletteName1 = this.hatLayer.getPalette1();
-      hat.paletteName2 = this.hatLayer.getPalette2();
+      hat.paletteNames = this.hatLayer.getPalettes();
       hat.category = Item.Category.Hats;
       hat.count = 1;
       hat.data = _hatData;

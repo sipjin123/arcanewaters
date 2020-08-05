@@ -45,8 +45,7 @@ public class Weapon : EquippableItem {
       this.data = DataUtil.getString(dataReader, "itmData");
 
       // Defaults
-      this.paletteName1 = DataUtil.getString(dataReader, "itmPalette1");
-      this.paletteName2 = DataUtil.getString(dataReader, "itmPalette2");
+      this.paletteNames = DataUtil.getString(dataReader, "itmPalettes");
 
       foreach (string kvp in this.data.Split(',')) {
          if (!kvp.Contains("=")) {
@@ -65,23 +64,21 @@ public class Weapon : EquippableItem {
 
    #endif
 
-   public Weapon (int id, int weaponType, string palette1, string palette2) {
+   public Weapon (int id, int weaponType, string paletteNames) {
       this.category = Category.Weapon;
       this.id = id;
       this.itemTypeId = weaponType;
       this.count = 1;
-      this.paletteName1 = palette1;
-      this.paletteName2 = palette2;
+      this.paletteNames = paletteNames;
       this.data = "";
    }
 
-   public Weapon (int id, int itemTypeId, string palette1, string palette2, string data, int count = 1) {
+   public Weapon (int id, int itemTypeId, string paletteNames, string data, int count = 1) {
       this.category = Category.Weapon;
       this.id = id;
       this.count = count;
       this.itemTypeId = itemTypeId;
-      this.paletteName1 = palette1;
-      this.paletteName2 = palette2; ;
+      this.paletteNames = paletteNames;
       this.data = data;
    }
 
@@ -90,8 +87,7 @@ public class Weapon : EquippableItem {
       this.id = id;
       this.count = 1;
       this.itemTypeId = weaponType;
-      this.paletteName1 = "";
-      this.paletteName2 = "";
+      this.paletteNames = "";
       this.data = "";
    }
 
@@ -107,8 +103,10 @@ public class Weapon : EquippableItem {
       Color color = Rarity.getColor(getRarity());
       string colorHex = ColorUtility.ToHtmlStringRGBA(color);
 
-      return string.Format("<color={0}>{1}</color> ({2}, {3})\n\n{4}\n\nDamage = <color=red>{5}</color>",
-         "#" +colorHex, getName(), paletteName1, paletteName2, getDescription(), getDamage());
+      string palettes = Item.trimItmPalette(paletteNames);
+
+      return string.Format("<color={0}>{1}</color> (" + palettes + ")\n\n{2}\n\nDamage = <color=red>{3}</color>",
+         "#" +colorHex, getName(), getDescription(), getDamage());
    }
 
    public override string getName () {
@@ -200,7 +198,7 @@ public class Weapon : EquippableItem {
    }
 
    public static Weapon getEmpty() {
-      return new Weapon(0, 0, "", "");
+      return new Weapon(0, 0, "");
    }
 
    public static Weapon generateRandom (int itemId, int weaponType) {
@@ -220,8 +218,7 @@ public class Weapon : EquippableItem {
       price = Util.roundToPrettyNumber(price);
 
       string data = string.Format("damage={0}, rarity={1}, price={2}", damage, (int) rarity, price);
-      int stockCount = Rarity.getRandomItemStockCount(rarity);
-      Weapon weapon = new Weapon(itemId, (int) weaponType, "", "", data, stockCount);
+      Weapon weapon = new Weapon(itemId, (int) weaponType, "", data, 1);
 
       return weapon;
    }
@@ -251,8 +248,7 @@ public class Weapon : EquippableItem {
          itemDescription = item.itemDescription,
          itemName = item.itemName,
          data = item.data,
-         paletteName1 = item.paletteName1,
-         paletteName2 = item.paletteName2,
+         paletteNames = item.paletteNames,
       };
 
       return newWeapon;

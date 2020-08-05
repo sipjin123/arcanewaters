@@ -71,7 +71,7 @@ public class BlueprintRow : MonoBehaviour
       iconShadow.sprite = icon.sprite;
 
       // Recolor
-      recoloredSprite.recolor(resultItem.paletteName1, resultItem.paletteName2);
+      recoloredSprite.recolor(resultItem.paletteNames);
       switch (status) {
          case Blueprint.Status.Craftable:
             canBeCraftedImage.enabled = true;

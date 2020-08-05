@@ -16,8 +16,7 @@ public class CreateUserMessage : MessageBase {
 
    // The armor type we'll start with
    public int armorType;
-   public string armorPalette1;
-   public string armorPalette2;
+   public string armorPalettes;
 
    // The spot for this character
    public int characterSpot;
@@ -33,12 +32,11 @@ public class CreateUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalette1, string armorPalette2, Perk[] perks) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
-      this.armorPalette1 = armorPalette1;
-      this.armorPalette2 = armorPalette2;
+      this.armorPalettes = armorPalettes;
       this.characterSpot = userInfo.charSpot;
       this.perks = perks;
    }

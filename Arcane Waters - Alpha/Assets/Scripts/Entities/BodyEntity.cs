@@ -48,29 +48,29 @@ public class BodyEntity : NetEntity
 
    public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo) {
       base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo);
-      this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id);
-      this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id);
+      this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
+      this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
       this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
    }
 
    public override Armor getArmorCharacteristics () {
-      return new Armor(0, armorManager.armorType, armorManager.palette1, armorManager.palette2);
+      return new Armor(0, armorManager.armorType, armorManager.palettes);
    }
 
    public override Weapon getWeaponCharacteristics () {
-      return new Weapon(0, weaponManager.weaponType, weaponManager.palette1, weaponManager.palette2);
+      return new Weapon(0, weaponManager.weaponType, weaponManager.palettes);
    }
 
    public override Hat getHatCharacteristics () {
-      return new Hat(0, hatsManager.hatType, hatsManager.palette1, hatsManager.palette2);
+      return new Hat(0, hatsManager.hatType, hatsManager.palettes);
    }
 
-   public void updateHair (HairLayer.Type newHairType, string newHairPalette1, string newHairPalette2) {
+   public void updateHair (HairLayer.Type newHairType, string newHairPalettes) {
       foreach (HairLayer hairLayer in _hairLayers) {
          hairLayer.setType(newHairType);
 
          // Update colors
-         hairLayer.recolor(newHairPalette1, newHairPalette2);
+         hairLayer.recolor(newHairPalettes);
       }
    }
 
@@ -84,11 +84,11 @@ public class BodyEntity : NetEntity
          hairLayer.setType(hairType);
 
          // Update colors
-         hairLayer.recolor(hairPalette1);
+         hairLayer.recolor(hairPalettes);
       }
 
       // Update colors
-      _eyesLayer.recolor(eyesPalette1);
+      _eyesLayer.recolor(eyesPalettes);
 
       if (!Util.isEmpty(this.entityName)) {
          this.nameText.text = this.entityName;
@@ -119,9 +119,9 @@ public class BodyEntity : NetEntity
       }
 
       updateBodySpriteSheets();
-      this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palette1, this.armorManager.palette2);
-      this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.palette1, this.weaponManager.palette2);
-      this.hatsManager.updateSprites(this.hatsManager.hatType, this.hatsManager.palette1, this.hatsManager.palette2);
+      this.armorManager.updateSprites(this.armorManager.armorType, this.armorManager.palettes);
+      this.weaponManager.updateSprites(this.weaponManager.weaponType, this.weaponManager.palettes);
+      this.hatsManager.updateSprites(this.hatsManager.hatType, this.hatsManager.palettes);
    }
 
    protected IEnumerator CO_ShowFallEffect () {
