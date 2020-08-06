@@ -1987,6 +1987,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WeatherManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1723334850833386430, guid: 95984ce9bf901ac4085e231d7f113930,
+        type: 3}
+      propertyPath: direction
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1723334850833386431, guid: 95984ce9bf901ac4085e231d7f113930,
         type: 3}
       propertyPath: m_LocalPosition.x

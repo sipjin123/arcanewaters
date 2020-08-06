@@ -197,15 +197,18 @@ public class MapManager : MonoBehaviour
             setCustomizations(area, customizationData);
          }
 
+         WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
          if (exportedProject.editorType == EditorType.Sea) {
             area.cloudManager.enabled = true;
+            WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
          } else if (exportedProject.editorType == EditorType.Area) {
-            // TODO: Confirm if this is still necessary since there is a new weather manager
-            /*
             Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
             if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
                area.cloudShadowManager.enabled = true;
-            }*/
+               WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
+            } else {
+               WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
+            }
          }
 
          // Destroy the template component

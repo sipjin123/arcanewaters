@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Xml.Serialization;
 
 #if IS_SERVER_BUILD
 using MySql.Data.MySqlClient;
@@ -23,9 +24,11 @@ public class UserInfo {
    public string username;
 
    // Our Gender
+   [XmlElement(Namespace = "GenderType")]
    public Gender.Type gender;
 
    // The Body type
+   [XmlElement(Namespace = "BodyType")]
    public BodyLayer.Type bodyType;
 
    // The Facing direction
@@ -62,12 +65,14 @@ public class UserInfo {
    public int hatId;
 
    // The hair type
+   [XmlElement(Namespace = "HairType")]
    public HairLayer.Type hairType;
 
    // The primary hair color id
    public string hairPalettes = "";
 
    // The eyes ID
+   [XmlElement(Namespace = "EyesType")]
    public EyesLayer.Type eyesType;
 
    // The primary eyes color id

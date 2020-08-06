@@ -686,9 +686,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Update the equipped items cache
-      Global.userObjects.weapon = equippedWeapon;
-      Global.userObjects.armor = equippedArmor;
-      Global.userObjects.hat = equippedHat;
+      Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
    }
 
    [TargetRpc]
@@ -3542,7 +3540,8 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Retrieve the skill list from database
-         List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(localBattler.userId);
+         string rawUserAbilityData = DB_Main.userAbilities(localBattler.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
+         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawUserAbilityData);
          List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
 
          // Cache Attackers Info
@@ -3788,7 +3787,8 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
-            List<AbilitySQLData> abilityDataList = DB_Main.getAllAbilities(entity.userId);
+            string rawAbilityData = DB_Main.userAbilities(entity.userId.ToString(), ((int) AbilityEquipStatus.ALL).ToString());
+            List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
 
             // Set user to only use skill if no weapon is equipped
             if (entity.weaponManager.weaponType == 0) {

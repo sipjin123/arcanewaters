@@ -31,6 +31,9 @@ public class CloudObject : MonoBehaviour {
    // The root position
    public Vector2 rootPosition;
 
+   // The shadow object
+   public GameObject shadowObj;
+
    #endregion
 
    public void resetObject (WeatherEffectType weatherType, Direction direction, Vector2 startPosition, Vector2 rootPosition) {
@@ -44,6 +47,8 @@ public class CloudObject : MonoBehaviour {
       Sprite[] sprites = WeatherManager.self.cloudSpriteList.Find(_ => _.weatherType == weatherType).spriteReferences;
       spriteRenderer.sprite = sprites[Random.Range(0, sprites.Length)];
       isActive = true;
+
+      shadowObj.SetActive(weatherType != WeatherEffectType.Mist);
    }
 
    public void move () {

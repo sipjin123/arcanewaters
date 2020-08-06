@@ -19,8 +19,14 @@ public class WeatherManager : MonoBehaviour {
    // Screen effects
    public GameObject rainEffectObj, snowEffectObj;
 
+   // The type of directions the weather entities can move towards
+   public Direction[] weatherDirections = new Direction[4] { Direction.North, Direction.South, Direction.East, Direction.West };
+
    // The parent of the separate entities 
-   public Transform mistParent, darkMistParent, cloudParent, genericCloudHolder;
+   public Transform mistParent, darkMistParent, cloudParent, genericCloudHolder, sunRayHolder;
+
+   // The sun ray effect prefab
+   public GameObject sunRayPrefab;
 
    // The moving objects
    public CloudObject[] cloudObjects;
@@ -46,26 +52,46 @@ public class WeatherManager : MonoBehaviour {
    // The main camera reference
    public Camera mainCam;
 
+   // The sunray angles
+   public static float SunRayRightAngle = -135;
+   public static float SunRayLeftAngle = 135;
+
+   // The max and min sunrays
+   public static int MAX_SUNRAYS = 10;
+   public static int MIN_SUNRAYS = 5;
+
    #endregion
 
    private void Awake () {
       self = this;
-      initializeCloudObjects(WeatherEffectType.DarkMist);
+      initializeCloudObjects();
 
       mainCam = Camera.main;
    }
 
-   public void setWeatherSimulation (WeatherEffectType weatherEffect) {
+   public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {
+      this.weatherEffectType = weatherEffect;
+      spawnRoot = rootObj;
+      rainEffectObj.SetActive(false);
+      snowEffectObj.SetActive(false);
+      foreach (CloudObject cloudObj in cloudObjects) {
+         cloudObj.gameObject.SetActive(false);
+      }
+      direction = weatherDirections[Random.Range(0, weatherDirections.Length)];
+
       foreach (CloudObject cloudObj in cloudObjects) {
          switch (weatherEffect) {
             case WeatherEffectType.Mist:
                cloudObj.transform.SetParent(mistParent);
+               resetWeatherSimulation();
                break;
             case WeatherEffectType.DarkMist:
                cloudObj.transform.SetParent(darkMistParent);
+               resetWeatherSimulation();
                break;
             case WeatherEffectType.Cloud:
                cloudObj.transform.SetParent(cloudParent);
+               resetWeatherSimulation();
                break;
             case WeatherEffectType.Snow:
                snowEffectObj.transform.position = mainCam.transform.position;
@@ -73,26 +99,64 @@ public class WeatherManager : MonoBehaviour {
                break;
             case WeatherEffectType.Rain:
                rainEffectObj.transform.position = mainCam.transform.position;
-               rainEffectObj.gameObject.SetActive(true);
+               rainEffectObj.SetActive(true);
+               break;
+            case WeatherEffectType.Sunny:
+               sunRayHolder.gameObject.DestroyChildren();
+               int randomizedSunRayCount = Random.Range(MIN_SUNRAYS, MAX_SUNRAYS);
+               for (int i = 0; i < randomizedSunRayCount; i++) {
+                  GameObject sunRayObj = Instantiate(sunRayPrefab, sunRayHolder);
+                  switch (direction) {
+                     case Direction.East:
+                     case Direction.North:
+                        sunRayObj.transform.GetComponentInChildren<SpriteRenderer>().flipX = false;
+                        sunRayObj.transform.GetChild(0).localEulerAngles = new Vector3(0, 0, SunRayRightAngle);
+                        break;
+                     case Direction.West:
+                     case Direction.South:
+                        sunRayObj.transform.GetComponentInChildren<SpriteRenderer>().flipX = true;
+                        sunRayObj.transform.GetChild(0).localEulerAngles = new Vector3(0, 0, SunRayLeftAngle);
+                        break;
+                  }
+
+                  float newXPosition = 0;
+                  float newYPosition = 0;
+                  if (spawnRoot != null) {
+                     newXPosition = Random.Range(spawnRoot.transform.position.x + maxLeftPos, spawnRoot.transform.position.x + maxRightPos);
+                     newYPosition = Random.Range(spawnRoot.transform.position.y + maxDownPos, spawnRoot.transform.position.y + maxUpPos);
+                  } else {
+                     newXPosition = Random.Range(maxLeftPos, maxRightPos);
+                     newYPosition = Random.Range(maxDownPos, maxUpPos);
+                  }
+
+                  sunRayObj.transform.position = new Vector3(newXPosition, newYPosition, 0);
+               }
                break;
          }
       }
+      startWeatherSimulation = true;
    }
 
-   private void initializeCloudObjects (WeatherEffectType weatherEffect) {
+   private void initializeCloudObjects () {
       List<CloudObject> newCloudObjs = new List<CloudObject>();
       foreach (Transform child in genericCloudHolder) {
          newCloudObjs.Add(child.GetComponent<CloudObject>());
+         child.gameObject.SetActive(false);
       }
       cloudObjects = newCloudObjs.ToArray();
    }
 
    private void resetWeatherSimulation () {
+      direction = weatherDirections[Random.Range(0, weatherDirections.Length)];
+      
       switch (weatherEffectType) {
          case WeatherEffectType.DarkMist:
          case WeatherEffectType.Mist:
          case WeatherEffectType.Cloud:
+            rainEffectObj.SetActive(false);
+            snowEffectObj.SetActive(false);
             foreach (CloudObject cloudObj in cloudObjects) {
+               cloudObj.gameObject.SetActive(true);
                float spawnXPosition = 0;
                float spawnYPosition = 0;
                if (spawnRoot != null) {
@@ -105,35 +169,34 @@ public class WeatherManager : MonoBehaviour {
                cloudObj.resetObject(weatherEffectType, direction, new Vector2(spawnXPosition, spawnYPosition), spawnRoot ? new Vector2(spawnRoot.position.x, spawnRoot.position.y) : Vector2.zero);
             }
             break;
+         case WeatherEffectType.Rain:
+         case WeatherEffectType.Snow:
+            foreach (CloudObject cloudObj in cloudObjects) {
+               cloudObj.gameObject.SetActive(false);
+            }
+            break;
       }
    }
 
    private void Update () {
       if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
          if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            weatherEffectType = WeatherEffectType.DarkMist;
-            resetWeatherSimulation();
-            startWeatherSimulation = true;
+            setWeatherSimulation(WeatherEffectType.DarkMist);
          }
          if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            weatherEffectType = WeatherEffectType.Mist;
-            resetWeatherSimulation();
-            startWeatherSimulation = true;
+            setWeatherSimulation(WeatherEffectType.Mist);
          }
          if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            weatherEffectType = WeatherEffectType.Cloud;
-            resetWeatherSimulation();
-            startWeatherSimulation = true;
+            setWeatherSimulation(WeatherEffectType.Cloud);
          }
          if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            weatherEffectType = WeatherEffectType.Rain;
             setWeatherSimulation(WeatherEffectType.Rain);
-            startWeatherSimulation = true;
          }
          if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            weatherEffectType = WeatherEffectType.Snow;
             setWeatherSimulation(WeatherEffectType.Snow);
-            startWeatherSimulation = true;
+         }
+         if (Input.GetKeyDown(KeyCode.Alpha6)) {
+            setWeatherSimulation(WeatherEffectType.Sunny);
          }
 
          if (startWeatherSimulation) {

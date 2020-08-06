@@ -46,16 +46,15 @@ public class DB_MainTester : MonoBehaviour {
          });
       }
 
+      if (GUILayout.Button("Fetch User Info by ID JSON DBMain")) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            string result = DB_Main.getUserInfoJSON("745");
 
-      if (GUILayout.Button("Fetch UserInfo JSON")) {
-         testAsync();
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               D.editorLog("Thred: " + result);
+            });
+         });
       }
-   }
-
-   private async void testAsync () {
-      D.editorLog("Test fetch");
-      UserInfo hatFetch = await NubisClient.call<UserInfo>(nameof(DB_Main.getUserInfoNubisTest), "745");
-      D.editorLog("Return string is: " + hatFetch);
    }
 
    #region Private Variables

@@ -73,3 +73,9 @@ public class AbilitySQLData
 
    #endif
 }
+
+public enum AbilityEquipStatus {
+   ALL = 0,
+   Equipped = 1,
+   Unequipped = 2
+}

@@ -30,9 +30,6 @@ public class NubisDataFetchTest : MonoBehaviour
                });
             });
          }
-         if (GUILayout.Button("User Data")) {
-            nubisUserData();
-         }
          if (GUILayout.Button("Fetch DB_Main")) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                var result = DB_Main.getArmor(745);
@@ -87,19 +84,6 @@ public class NubisDataFetchTest : MonoBehaviour
          if (GUILayout.Button("Directly Fetch Xml Data")) {
             directFetchXmlData();
          }
-         if (GUILayout.Button("Fetch Abilities")) {
-            //nubisFetchAbilities();
-            
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               string abilityContent = DB_Main.userAbilities("745");
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  List<AbilitySQLData> abilityList = UserAbilities.processUserAbilities(abilityContent);
-                  D.editorLog("Result: " + abilityContent);
-               });
-            });
-         }
-
          if (GUILayout.Button("Fetch Map Directly from Nubis")) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string abilityContent = DB_Main.fetchMapData("burl_farm", "3");
@@ -110,12 +94,6 @@ public class NubisDataFetchTest : MonoBehaviour
             });
          }
       }
-   }
-
-   private async void nubisFetchAbilities () {
-      D.debug("Nubis Call Start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.userAbilities), testUserId);
-      D.debug("Result: " + returnCode);
    }
 
    private void directFetchXmlData () {
@@ -142,12 +120,6 @@ public class NubisDataFetchTest : MonoBehaviour
       D.debug("ASync start: " + returnCode);
    }
 
-   private async void nubisUserData () {
-      D.debug("Getting UserData");
-      var returnCode = await NubisClient.call<string>(nameof(DB_Main.getUserInfoJSON), testUserId); 
-      D.debug("User Data Result: "+ returnCode); 
-   }
-
    private async void nubisWeapons () {
       D.debug("ASync start");
       var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableWeapons), testUserId); 
@@ -163,12 +135,6 @@ public class NubisDataFetchTest : MonoBehaviour
    private async void nubisHats () {
       D.debug("Fetch Craftable Hats");
       var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), testUserId);
-      D.debug("ASync start: " + returnCode);
-   }
-
-   private async void nubisIngredients () {
-      D.debug("ASync start");
-      var returnCode = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), testUserId); 
       D.debug("ASync start: " + returnCode);
    }
 

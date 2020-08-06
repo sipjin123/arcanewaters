@@ -58,11 +58,29 @@ internal class NubisClient
       HttpResponseMessage response = await client.SendAsync(message);
       return await response.Content.ReadAsStringAsync();
    }
-   public static async Task<T> call<T> (string function, params object[] rawArgs) {
+   public static async Task<T> callXml<T> (string function, params object[] rawArgs) {
+      string[] args = Array.ConvertAll(rawArgs, x => x.ToString());
+      try {
+         string result = await requestImpl(function, args);
+         return Util.xmlLoad<T>(result);
+      } catch {
+         return default(T);
+      }
+   }
+   public static async Task<T> callJSONList<T> (string function, params object[] rawArgs) {
       string[] args = Array.ConvertAll(rawArgs, x => x.ToString());
       try {
          string result = await requestImpl(function, args);
          return JsonConvert.DeserializeObject<T>(result);
+      } catch {
+         return default(T);
+      }
+   }
+   public static async Task<T> callJSONClass<T> (string function, params object[] rawArgs) {
+      string[] args = Array.ConvertAll(rawArgs, x => x.ToString());
+      try {
+         string result = await requestImpl(function, args);
+         return JsonUtility.FromJson<T>(result);
       } catch {
          return default(T);
       }

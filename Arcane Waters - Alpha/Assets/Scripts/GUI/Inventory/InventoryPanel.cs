@@ -182,9 +182,12 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             cell.transform.SetParent(equippedArmorCellContainer.transform, false);
             refreshStats(Armor.castItemToArmor(newArmor));
          } else if (item.category == Item.Category.Hats) {
-            cell.setCellForItem(item);
+            HatStatData hatData = Util.xmlLoad<HatStatData>(item.data);
+            Hat newHat = HatStatData.translateDataToHat(hatData);
+
+            cell.setCellForItem(newHat);
             cell.transform.SetParent(equippedHatCellContainer.transform, false);
-            refreshStats(Hat.castItemToHat(item));
+            refreshStats(Hat.castItemToHat(newHat));
          }
       } catch {
          D.editorLog("Failed to process item: " + item.data, Color.red);
@@ -218,9 +221,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       characterStack.updateLayers(userObjects);
 
       // Update cached user object equipment
-      Global.userObjects.weapon = userObjects.weapon;
-      Global.userObjects.armor = userObjects.armor;
-      Global.userObjects.hat = userObjects.hat;
+      Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat);
 
       // Insert the player's name
       if (Global.player != null) {

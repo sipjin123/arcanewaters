@@ -54,7 +54,7 @@ public class DB_MainStub : MonoBehaviour {
       return "";
    }
 
-   public static string userAbilities (string userIdString) {
+   public static string userAbilities (string userIdString, string abilityEquipStatusString) {
       return "";
    }
 
@@ -558,10 +558,6 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<AbilitySQLData> getAllAbilities (int userID) {
-      return new List<AbilitySQLData>();
-   }
-
    public static List<AbilityXMLContent> getDefaultAbilities () {
       return new List<AbilityXMLContent>();
    }
@@ -773,10 +769,6 @@ public class DB_MainStub : MonoBehaviour {
 
    public static UserInfo getUserInfo (string userName) {
       return null;
-   }
-
-   public static string getUserInfoNubisTest (string userName) {
-      return "";
    }
 
    public static ShipInfo getShipInfo (int userId) {

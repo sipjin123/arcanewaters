@@ -17,6 +17,7 @@ public class TitleScreen : MonoBehaviour {
    // The login button
    public Button loginButton, steamLoginButton;
 
+   // The toggle for the login panels that determine if the game is single player mode
    public Toggle isSinglePlayerToggleDefault, isSinglePlayerToggleSteam;
 
    // The drop down menu to select the database server - debug only

@@ -73,6 +73,12 @@ public class Global {
    public static int BASIC_ATTACK_ID = 9;
    #endregion
 
+   public static void setUserEquipment (Item weapon, Item armor, Item hat) {
+      userObjects.weapon = weapon;
+      userObjects.armor = armor;
+      userObjects.hat = hat;
+   }
+
    public static string getAddress (ServerType server) {
       switch (server) {
          case ServerType.Localhost:

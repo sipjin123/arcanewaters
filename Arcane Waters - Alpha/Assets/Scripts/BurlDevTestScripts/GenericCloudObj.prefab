@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 9036134151173180586}
   - component: {fileID: 6581138748884142592}
-  - component: {fileID: 1216429360081988906}
   m_Layer: 0
   m_Name: CloudShadowObj
   m_TagString: Untagged
@@ -26,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1353551150787486780}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.69, z: 1}
+  m_LocalPosition: {x: 0, y: -0.69, z: -2}
   m_LocalScale: {x: 0.8728425, y: 0.8728425, z: 0.8728425}
   m_Children: []
   m_Father: {fileID: 8710179488950118621}
@@ -82,22 +81,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1216429360081988906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1353551150787486780}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetZ: 0.5
-  inheritedOffsetZ: 0
-  isActive: 0
-  sortPoint: {fileID: 0}
 --- !u!1 &8710179488950118618
 GameObject:
   m_ObjectHideFlags: 0
@@ -150,6 +133,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 8710179489364497236}
   isActive: 0
   rootPosition: {x: 0, y: 0}
+  shadowObj: {fileID: 1353551150787486780}
 --- !u!1 &8710179489364497234
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +144,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8710179489364497237}
   - component: {fileID: 8710179489364497236}
-  - component: {fileID: 6179959292962345135}
   m_Layer: 0
   m_Name: WeatherSprite
   m_TagString: Untagged
@@ -176,7 +159,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8710179489364497234}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8710179488950118621}
@@ -232,19 +215,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6179959292962345135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8710179489364497234}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offsetZ: 0
-  inheritedOffsetZ: 0
-  isActive: 0
-  sortPoint: {fileID: 0}

@@ -57,28 +57,6 @@ namespace NubisDataHandling {
          return (int) XmlSlotIndex.Default;
       }
 
-      #region Debug Function
-
-      public void testNubisFunction () {
-         processTestNubisFunction();
-      }
-
-      private async void processTestNubisFunction () {
-         UserObjects returnCode = await NubisClient.call<UserObjects>(nameof(DB_Main.getUserInfoJSON), Global.player.userId.ToString());
-         try {
-            D.editorLog("The return code is: "
-               + returnCode.accountId
-               + " : " + returnCode.weapon.itemTypeId
-               + " : " + returnCode.armor.itemTypeId
-               + " : " + returnCode.userInfo.username, Color.magenta);
-         } catch {
-            D.debug("Something went wrong with xml version fetching! Report: " + nameof(DB_Main.getUserInfoJSON));
-            D.debug("Return code is: " + returnCode);
-         }
-      }
-
-      #endregion
-
       #region Xml Version Features
 
       public void fetchXmlVersion () {
@@ -335,12 +313,10 @@ namespace NubisDataHandling {
          this.itemsPerPage = itemsPerPage;
 
          // Process user info
-         string userRawData = await NubisClient.call(nameof(DB_Main.getUserInfoJSON), userId);
-         if (userRawData.Length < 10) {
+         newUserInfo = await NubisClient.callJSONClass<UserInfo>(nameof(DB_Main.getUserInfoJSON), userId);
+         if (newUserInfo == null) {
             D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
-            D.editorLog("Content: " + userRawData, Color.red);
-         } 
-         newUserInfo = JsonUtility.FromJson<UserInfo>(userRawData);
+         }
 
          // Process user equipped items
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
@@ -431,8 +407,7 @@ namespace NubisDataHandling {
          }
 
          // Fetch content from Nubis
-         string abilityRawData = await NubisClient.call(nameof(DB_Main.userAbilities), userId);
-         List<AbilitySQLData> abilityList = UserAbilities.processUserAbilities(abilityRawData);
+         List<AbilitySQLData> abilityList = await NubisClient.callJSONList<List<AbilitySQLData>>(nameof(DB_Main.userAbilities), userId, (int) AbilityEquipStatus.ALL);
 
          // Update the Skill Panel with the abilities we received from the server
          panel.receiveDataFromServer(abilityList.ToArray());

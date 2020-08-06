@@ -404,14 +404,21 @@ public class DB_Main : DB_MainStub {
       }
    }
 
-   public static new string userAbilities (string userIdString) {
+   public static new string userAbilities (string userIdString, string abilityEquipStatusString) {
+      AbilityEquipStatus abilityEquipStatus = (AbilityEquipStatus) int.Parse(abilityEquipStatusString);
       int usrId = int.Parse(userIdString);
+      string addedCondition = "";
+
+      if (abilityEquipStatus == AbilityEquipStatus.Equipped) {
+         addedCondition = " and abilityEquipSlot != -1";
+      } else if (abilityEquipStatus == AbilityEquipStatus.Unequipped) {
+         addedCondition = " and abilityEquipSlot = -1";
+      }
       List<AbilitySQLData> abilityList = new List<AbilitySQLData>();
-      StringBuilder stringBuilder = new StringBuilder();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_table_v2 WHERE (userID=@userID)", conn)) {
+            "SELECT * FROM ability_table_v2 WHERE (userID=@userID" + addedCondition + ")", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -425,10 +432,7 @@ public class DB_Main : DB_MainStub {
                }
             }
 
-            foreach (string splitString in Util.serialize<AbilitySQLData>(abilityList)) {
-               stringBuilder.AppendLine(splitString + "_space_");
-            }
-            return stringBuilder.ToString();
+            return JsonConvert.SerializeObject(abilityList);
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -719,31 +723,6 @@ public class DB_Main : DB_MainStub {
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
-   }
-
-   public static new List<AbilitySQLData> getAllAbilities (int userID) {
-      List<AbilitySQLData> abilityList = new List<AbilitySQLData>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_table_v2 WHERE (userID=@userID and abilityEquipSlot != -1)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@userID", userID);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  AbilitySQLData abilityData = new AbilitySQLData(dataReader);
-                  abilityList.Add(abilityData);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return new List<AbilitySQLData>(abilityList);
    }
 
    #endregion
@@ -5647,7 +5626,6 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-
       return JsonUtility.ToJson(userInfo);
    }
 
@@ -5673,30 +5651,6 @@ public class DB_Main : DB_MainStub {
       }
 
       return userInfo;
-   }
-
-   public static new string getUserInfoNubisTest (string userName) {
-      UserInfo userInfo = null;
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrName=@usrName", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrName", userName);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  userInfo = new UserInfo(dataReader);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return JsonConvert.SerializeObject(userInfo);
    }
 
    public static new Stats getStats (int userId) {
@@ -7577,9 +7531,9 @@ public class DB_Main : DB_MainStub {
          if (string.IsNullOrEmpty(serverPort)) return false;
          if (string.IsNullOrEmpty(keySuffix)) return false;
 
-         string keyPrefix = String.IsNullOrEmpty(machineId) ? string.Empty : machineId + "_";
-         string server_id = serverAddress + "_" + serverPort.ToString();
-         string key = keyPrefix + server_id + "_" + keySuffix;
+         string keyPrefix = String.IsNullOrEmpty(machineId) ? string.Empty : machineId + "/";
+         string server_id = serverAddress + "/" + serverPort.ToString();
+         string key = keyPrefix + server_id + "/" + keySuffix;
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();

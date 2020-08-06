@@ -375,9 +375,17 @@ public class NetEntity : NetworkBehaviour
       }
 
       Global.userObjects.userInfo = userInfo;
-      Global.userObjects.weapon = weapon;
-      Global.userObjects.armor = armor;
-      Global.userObjects.hat = hat;
+
+      WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+      weapon.data = WeaponStatData.serializeWeaponStatData(weaponStatData);
+
+      ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(armor.itemTypeId);
+      armor.data = ArmorStatData.serializeArmorStatData(armorStatData);
+
+      HatStatData hatStatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+      hat.data = HatStatData.serializeHatStatData(hatStatData);
+
+      Global.setUserEquipment(weapon, armor, hat);
    }
 
    public bool isMale () {
