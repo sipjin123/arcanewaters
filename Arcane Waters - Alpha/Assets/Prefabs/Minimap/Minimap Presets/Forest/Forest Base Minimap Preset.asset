@@ -212,7 +212,7 @@ MonoBehaviour:
     topDownBorderColor: {r: 0.37254903, g: 0.67058825, b: 0.89019614, a: 1}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
+    useBorder: 1
     borderColor: {r: 0.37254903, g: 0.67058825, b: 0.89019614, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
@@ -245,8 +245,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -278,8 +278,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -311,8 +311,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 1
@@ -322,7 +322,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: mountain
-    color: {r: 0, g: 0, b: 0, a: 1}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 1
     useFullName: 0
@@ -344,8 +344,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 1
     lateralColor: {r: 0.30980393, g: 0.29803923, b: 0.5686275, a: 1}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -377,8 +377,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -410,8 +410,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -443,8 +443,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -485,8 +485,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 1}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -527,8 +527,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 1
     lateralColor: {r: 0, g: 0, b: 0, a: 1}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -538,7 +538,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 1}
   - Name: bush
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -560,8 +560,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -571,7 +571,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: stump
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -593,8 +593,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -604,7 +604,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: detail
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -626,8 +626,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -637,7 +637,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: vine
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -659,8 +659,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -670,7 +670,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: prop
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -692,8 +692,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -703,7 +703,7 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: grass
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -725,8 +725,8 @@ MonoBehaviour:
     topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
-    useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0
@@ -736,7 +736,40 @@ MonoBehaviour:
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
   - Name: ceiling
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
+    description: 
+    isOnlyBorder: 0
+    useFullName: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0, g: 0, b: 0, a: 0}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    topPixelCount: 0
+    useDownBorder: 0
+    downBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    downPixelCount: 0
+    useAnotherDownBorder: 0
+    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    anotherDownPixelCount: 0
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 1
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: absolute-top
+    color: {r: 0.23529413, g: 0.43137258, b: 0.7568628, a: 1}
     description: 
     isOnlyBorder: 0
     useFullName: 0
@@ -759,7 +792,7 @@ MonoBehaviour:
     useLateralBorder: 0
     lateralColor: {r: 0, g: 0, b: 0, a: 0}
     useBorder: 0
-    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    borderColor: {r: 0.2392157, g: 0.54509807, b: 0.8431373, a: 0.007843138}
     useAlternatingColor: 0
     alternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useVerticalAlternatingColor: 0

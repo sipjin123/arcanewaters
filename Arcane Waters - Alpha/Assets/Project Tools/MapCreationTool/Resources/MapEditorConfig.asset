@@ -106,6 +106,10 @@ MonoBehaviour:
     index: 90
     zOffset: -100
     layerType: 0
+  - layer: absolute-top
+    index: 100
+    zOffset: -101
+    layerType: 0
   seaLayerIndexes:
   - layer: ground
     index: 0
@@ -146,6 +150,10 @@ MonoBehaviour:
   - layer: tree
     index: 45
     zOffset: 0
+    layerType: 0
+  - layer: absolute-top
+    index: 100
+    zOffset: -101
     layerType: 0
   interiorLayerIndexes:
   - layer: ground
@@ -191,6 +199,10 @@ MonoBehaviour:
   - layer: door-frame
     index: 45
     zOffset: -100
+    layerType: 0
+  - layer: absolute-top
+    index: 100
+    zOffset: -101
     layerType: 0
   areaPresets:
   - {fileID: 11400000, guid: f79d39fe699e007479ad5fd4037e4235, type: 2}

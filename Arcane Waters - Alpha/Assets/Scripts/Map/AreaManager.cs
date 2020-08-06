@@ -103,6 +103,14 @@ public class AreaManager : MonoBehaviour
       return Area.SpecialType.None;
    }
 
+   public WeatherEffectType getAreaWeatherEffectType (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+         return map.weatherEffectType;
+      }
+
+      return WeatherEffectType.None;
+   }
+
    public bool isSeaArea (string areaKey) {
       if (hasArea(areaKey)) {
          return getArea(areaKey).isSea;

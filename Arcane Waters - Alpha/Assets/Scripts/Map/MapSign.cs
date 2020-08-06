@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
+using TMPro;
 
 public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    #region Public Variables
-
-   // The starting index of the sign icon in the sprite sheet Assets/Sprites/Map/signs
-   public static int MAP_SIGN_START_INDEX = 7;
 
    // Type of sign this object is
    public int mapSignType;
@@ -27,7 +25,7 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    public GameObject directionLabelUI;
 
    // The content of the sign
-   public Text signLabel;
+   public TextMeshProUGUI signLabel;
 
    // If this prefab is in map editor mode
    public bool isEditorMode = false;
@@ -64,24 +62,31 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    }
 
    public void receiveData (DataField[] dataFields) {
-      Sprite[] mapSignSprites = ImageManager.getSprites(mapSignIcon.sprite.texture);
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.MAP_SIGN_TYPE_KEY:
-               int mapTypeIndex = int.Parse(field.v);
-               mapTypeIndex = Mathf.Clamp(mapTypeIndex, 0, MapSign.MAP_SIGN_START_INDEX);
-               mapSignPost.sprite = mapSignSprites[mapTypeIndex];
+               setPostType(field.intValue);
                break;
             case DataField.MAP_ICON_KEY:
-               int mapIconIndex = int.Parse(field.v);
-               mapIconIndex = Mathf.Clamp(mapIconIndex, 0, (mapSignSprites.Length - 1) - MapSign.MAP_SIGN_START_INDEX);
-               mapSignIcon.sprite = mapSignSprites[MapSign.MAP_SIGN_START_INDEX + mapIconIndex];
+               setIconType(field.intValue);
                break;
             case DataField.MAP_SIGN_LABEL:
-               signLabel.text = field.v;
+               signLabel.SetText(field.v);
                break;
          }
       }
+   }
+
+   public void setPostType (int type) {
+      Sprite[] postSprites = ImageManager.getSprites(mapSignPost.sprite.texture);
+      int mapTypeIndex = Mathf.Clamp(type, 0, postSprites.Length - 1);
+      mapSignPost.sprite = postSprites[mapTypeIndex];
+   }
+
+   public void setIconType (int type) {
+      Sprite[] iconSprites = ImageManager.getSprites(mapSignIcon.sprite.texture);
+      int mapIconIndex = Mathf.Clamp(type, 0, iconSprites.Length - 1);
+      mapSignIcon.sprite = iconSprites[mapIconIndex];
    }
 
    #region Private Variables

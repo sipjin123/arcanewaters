@@ -368,6 +368,7 @@ namespace MapCreationTool
             } catch (Exception ex) {
                saveButton.interactable = true;
                messagePanel.displayError(ex.Message);
+               Debug.Log(ex);
             }
          }
       }

@@ -16,6 +16,7 @@ namespace MapCreationTool.Serialization
       public EditorType editorType;
       public Biome.Type biome;
       public Area.SpecialType specialType;
+      public WeatherEffectType weatherEffectType;
 
       public string creatorName;
    }

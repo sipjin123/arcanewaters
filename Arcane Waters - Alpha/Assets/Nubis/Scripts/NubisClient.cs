@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Allows to communicate with Nubis through reflection calls.
@@ -45,9 +46,14 @@ internal class NubisClient
    private static async Task<string> requestImpl (string function, params string[] args) {
 
 #if IS_SERVER_BUILD && CLOUD_BUILD
-      string server = "127.0.0.1";
+      string server = Global.getAddress(MyNetworkManager.ServerType.Localhost);
 #else
       string server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
+      
+#endif
+
+#if UNITY_EDITOR
+      server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
 #endif
 
       string endpoint = getEndpointFromFunctionName(function);

@@ -213,6 +213,19 @@ public class InstanceManager : MonoBehaviour {
       return areaArray;
    }
 
+   public string[] getAreas() {
+      HashSet<string> areas = new HashSet<string>();
+
+      foreach (Instance instance in _instances.Values) {
+            areas.Add(instance.areaKey);
+      }
+
+      string[] areaArray = new string[areas.Count];
+      areas.CopyTo(areaArray);
+      
+      return areaArray;
+   }
+
    public List<Instance> getVoyageInstances () {
       List<Instance> voyages = new List<Instance>();
 

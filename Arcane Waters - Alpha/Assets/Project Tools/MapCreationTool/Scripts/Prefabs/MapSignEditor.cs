@@ -23,27 +23,16 @@ public class MapSignEditor : MapEditorPrefab, IPrefabDataListener, IHighlightabl
    }
 
    public void dataFieldChanged (DataField field) {
-      Sprite[] mapSignSprites = ImageManager.getSprites(mapSign.mapSignIcon.sprite.texture);
-      if (field.k.CompareTo(DataField.MAP_SIGN_TYPE_KEY) == 0) {
-         try {
-            int mapTypeIndex = int.Parse(field.v);
-            mapTypeIndex = Mathf.Clamp(mapTypeIndex, 0, MapSign.MAP_SIGN_START_INDEX);
-            mapSign.mapSignPost.sprite = mapSignSprites[mapTypeIndex];
-            highlight.sprite = mapSignSprites[mapTypeIndex];
-         } catch { }
-      }
-      if (field.k.CompareTo(DataField.MAP_ICON_KEY) == 0) {
-         try {
-            int mapIconIndex = int.Parse(field.v);
-            mapIconIndex = Mathf.Clamp(mapIconIndex, 0, (mapSignSprites.Length - 1) - MapSign.MAP_SIGN_START_INDEX);
-            mapSign.mapSignIcon.sprite = mapSignSprites[MapSign.MAP_SIGN_START_INDEX + mapIconIndex];
-         } catch { }
-      }
-      if (field.k.CompareTo(DataField.MAP_SIGN_LABEL) == 0) {
-         try {
+      try {
+         if (field.k.CompareTo(DataField.MAP_SIGN_TYPE_KEY) == 0) {
+            mapSign.setPostType(field.intValue);
+            highlight.sprite = mapSign.mapSignPost.sprite;
+         } else if (field.k.CompareTo(DataField.MAP_ICON_KEY) == 0) {
+            mapSign.setIconType(field.intValue);
+         } else if (field.k.CompareTo(DataField.MAP_SIGN_LABEL) == 0) {
             mapSign.signLabel.text = field.v;
-         } catch { }
-      }
+         }
+      } catch { }
    }
 
    public void setHighlight (bool hovered, bool selected, bool deleting) {

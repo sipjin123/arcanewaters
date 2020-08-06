@@ -297,7 +297,7 @@ public class PaletteToolManager : XmlDataToolManager {
 
          XmlLoadingPanel.self.startLoading();
 
-         string[] colors = new string[8];
+         string[] colors = new string[MINIMUM_ALLOWED_SIZE];
          for (int i = 0; i < colors.Length; i++) {
             colors[i] = "000000";
          }
@@ -453,8 +453,8 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       int newSize = !Mathf.IsPowerOfTwo(src.Count) ? Mathf.NextPowerOfTwo(src.Count) : src.Count;
+      hueSlider.value = hueSlider.minValue;
       generatePaletteColorImages(src, dst, newSize, isStatic);
-      hueSlider.value = 0;
       showPalettePreview();
    }
 

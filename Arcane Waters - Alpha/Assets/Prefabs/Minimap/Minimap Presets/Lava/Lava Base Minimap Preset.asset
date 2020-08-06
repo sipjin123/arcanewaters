@@ -768,6 +768,39 @@ MonoBehaviour:
     horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
     useOutline: 0
     outlineColor: {r: 0, g: 0, b: 0, a: 0}
+  - Name: absolute-top
+    color: {r: 0, g: 0, b: 0, a: 0}
+    description: 
+    isOnlyBorder: 0
+    useFullName: 0
+    isSubLayer: 0
+    subLayerSpriteSuffixNames: []
+    sprites: []
+    useRandomColor: 0
+    randomColor: {r: 0.4251958, g: 0.45520353, b: 0.46226418, a: 1}
+    useTopBorder: 0
+    topBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    topPixelCount: 0
+    useDownBorder: 0
+    downBorderColor: {r: 0.6, g: 0.36078432, b: 0.29803923, a: 1}
+    downPixelCount: 0
+    useAnotherDownBorder: 0
+    anotherDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    anotherDownPixelCount: 0
+    useTopDownBorder: 0
+    topDownBorderColor: {r: 0, g: 0, b: 0, a: 0}
+    useLateralBorder: 0
+    lateralColor: {r: 0, g: 0, b: 0, a: 0}
+    useBorder: 0
+    borderColor: {r: 0, g: 0, b: 0, a: 0.007843138}
+    useAlternatingColor: 0
+    alternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useVerticalAlternatingColor: 0
+    verticalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useHorizontalAlternatingColor: 0
+    horizontalAlternatingColor: {r: 0, g: 0, b: 0, a: 0}
+    useOutline: 0
+    outlineColor: {r: 0, g: 0, b: 0, a: 0}
   _tileIconLayers:
   - iconLayerName: Bounce
     spriteIcon: {fileID: 21300000, guid: be0087f293f06fa47b49f23f1fd8cb99, type: 3}

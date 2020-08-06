@@ -1965,7 +1965,7 @@ public class DB_Main : DB_MainStub {
    public static new List<Map> getMaps () {
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName " +
+      string cmdText = "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName, weatherEffectType " +
          "FROM maps_v2 " +
             "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
          "ORDER BY name;";
@@ -1991,7 +1991,8 @@ public class DB_Main : DB_MainStub {
                   notes = dataReader.GetString("notes"),
                   editorType = (EditorType) dataReader.GetInt32("editorType"),
                   biome = (Biome.Type) dataReader.GetInt32("biome"),
-                  specialType = (Area.SpecialType) dataReader.GetInt32("specialType")
+                  specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
+                  weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
                });
             }
          }
@@ -2297,7 +2298,7 @@ public class DB_Main : DB_MainStub {
 
    public static new void updateMapDetails (Map map) {
       string cmdText = "UPDATE maps_v2 " +
-         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName " +
+         "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, weatherEffectType = @weatherEffect " +
          "WHERE id = @mapId;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
@@ -2310,6 +2311,7 @@ public class DB_Main : DB_MainStub {
          cmd.Parameters.AddWithValue("@notes", map.notes);
          cmd.Parameters.AddWithValue("@specialType", map.specialType);
          cmd.Parameters.AddWithValue("@displayName", map.displayName);
+         cmd.Parameters.AddWithValue("@weatherEffect", map.weatherEffectType);
 
          // Execute the command
          cmd.ExecuteNonQuery();

@@ -147,8 +147,10 @@ public class PrefabsManager : MonoBehaviour {
    public Status statusPrefab;
 
    [Header("Texture prefabs")]
-   // Prefab used to create new palette texture for material
-   public Texture2D texturePrefab;
+   // Prefabs used to create new palette texture for material - using different sizes
+   public Texture2D texturePrefab128;
+   public Texture2D texturePrefab256;
+   public Texture2D texturePrefab512;
 
    // Self
    public static PrefabsManager self;

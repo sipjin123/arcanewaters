@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class ToolTipSign : MonoBehaviour {
    #region Public Variables
@@ -14,12 +15,12 @@ public class ToolTipSign : MonoBehaviour {
    public GameObject toolTipPanel;
 
    // The text of the tooltip
-   public Text toolTipText;
+   public TextMeshProUGUI toolTipText;
 
    #endregion
 
    private void Awake () {
-      toolTipText.text = toolTipMessage;
+      toolTipText.SetText(toolTipMessage);
    }
 
    public void toggleToolTip (bool isActive) {

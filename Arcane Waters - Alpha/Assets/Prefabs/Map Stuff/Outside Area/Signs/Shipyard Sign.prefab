@@ -187,8 +187,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   toolTipMessage: Shipyard
-  toolTipPanel: {fileID: 357093888171687554}
-  toolTipText: {fileID: 7981888707509990614}
+  toolTipPanel: {fileID: 3653827092330869024}
+  toolTipText: {fileID: 4544298159129342917}
 --- !u!1001 &1679710545138041140
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -324,21 +324,21 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1679710545138041140}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &357093888171687554 stripped
+--- !u!1 &3653827092330869024 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 1421766566059573174, guid: 855227c06fce79540bc93dde802e88aa,
+  m_CorrespondingSourceObject: {fileID: 2736648942916349972, guid: 855227c06fce79540bc93dde802e88aa,
     type: 3}
   m_PrefabInstance: {fileID: 1679710545138041140}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7981888707509990614 stripped
+--- !u!114 &4544298159129342917 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8758052849989711330, guid: 855227c06fce79540bc93dde802e88aa,
+  m_CorrespondingSourceObject: {fileID: 2909062362196865777, guid: 855227c06fce79540bc93dde802e88aa,
     type: 3}
   m_PrefabInstance: {fileID: 1679710545138041140}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

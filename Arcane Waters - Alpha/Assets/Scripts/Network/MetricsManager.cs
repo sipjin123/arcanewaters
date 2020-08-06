@@ -31,8 +31,8 @@ namespace Assets.Scripts.Network
 
             string machineIdentifier = string.Empty;
 
-#if UNITY_WINDOWS
-            string machineIdentifier = System.Environment.MachineName + "_" + System.Environment.OSVersion;
+#if UNITY_STANDALONE_WIN
+            machineIdentifier = System.Environment.MachineName + "_" + System.Environment.OSVersion;
 #endif
 
             // Update the player count for each (server) and the area instances count.
@@ -45,9 +45,8 @@ namespace Assets.Scripts.Network
                   DB_Main.setMetricPlayersCount(machineIdentifier,address.ToString(), port.ToString(), server.connectedUserIds.Count);
                }
 
-               // The API seems to expose only Open Areas for now.
-               var openAreaInstances = InstanceManager.self.getOpenAreas(); 
-               DB_Main.setMetricAreaInstancesCount(machineIdentifier,address.ToString(), port.ToString(),openAreaInstances.Count());
+               var areaInstances = InstanceManager.self.getAreas(); 
+               DB_Main.setMetricAreaInstancesCount(machineIdentifier,address.ToString(), port.ToString(),areaInstances.Count());
             });
          } catch (Exception ex) {
             D.warning("MetricsManager: Couldn't update metrics. " + ex);

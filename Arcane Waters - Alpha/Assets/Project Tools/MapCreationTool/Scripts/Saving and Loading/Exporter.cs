@@ -48,6 +48,18 @@ namespace MapCreationTool.Serialization
                  }
              ).ToArray();
 
+         // Switch layer for the tiles that are set to absolute top
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               for (int k = 0; k < cellMatrix[i, j].tiles.Length; k++) {
+                  if (cellMatrix[i, j].tiles[k].forceAbsoluteTop) {
+                     cellMatrix[i, j].tiles[k].layer = Layer.ABSOLUTE_TOP_KEY;
+                     break;
+                  }
+               }
+            }
+         }
+
          // Gather tile columns to layers and turn them into exported layers
          ExportedLayer001[] exportedLayers = getAllTiles()
             .GroupBy(t => (t.layer, t.sublayer))
@@ -110,21 +122,32 @@ namespace MapCreationTool.Serialization
 
                // If this is a ceiling tile and it is not at the edge of a map, check for doorframes
                if (cellMatrix[i, j].hasCeiling && i > 0 && i < editorSize.x - 1 && j > 0 && j < editorSize.y - 1) {
-                  // Check top and bot
-                  if (cellMatrix[i, j - 1].hasDoorframe && cellMatrix[i, j + 1].hasDoorframe) {
-                     TileInLayer bot = cellMatrix[i, j - 1].getTileFromTop(Layer.DOORFRAME_KEY);
-                     TileInLayer top = cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY);
+                  // Check top and bot (vertical path doorframe)
+                  if (tryGetBotTopDoorframes(i, j, 4, cellMatrix, out TileInLayer bot, out TileInLayer top)) {
                      if (bot.collisionType == TileCollisionType.Enabled && top.collisionType == TileCollisionType.Enabled) {
                         // If we have a ceiling with doorframes with colliders on top and bottom, we want to extend that collider to the ceiling
-                        additionalTileColliders.Add((bot.tileBase, new Vector2Int(i, j)));
+                        for (int y = bot.position.y + 1 - editorOrigin.y; y < top.position.y - editorOrigin.y; y++) {
+                           if (!additionalTileColliders.Any(pair => pair.Item2 == new Vector2Int(i, y))) {
+                              additionalTileColliders.Add((bot.tileBase, new Vector2Int(i, y)));
+                           }
+                        }
                      }
                      continue;
                   }
 
-                  // Check left and right
-                  if (cellMatrix[i + 1, j].hasDoorframe && cellMatrix[i - 1, j].hasDoorframe &&
-                     cellMatrix[i + 1, j].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelDisabled &&
-                     cellMatrix[i - 1, j].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelDisabled) {
+                  // Check 1 above, left and right (horizontal path doorframe)
+                  if (tryGetLeftRightDoorframes(i, j + 1, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
+                     if (left.collisionType == TileCollisionType.CancelEnabled && right.collisionType == TileCollisionType.CancelEnabled) {
+                        continue;
+                     }
+                  }
+               }
+
+               // If this is a wall tile, check if it has a horizontal doorframe on top
+               if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
+                  if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
+                     // Force this wall tile to be rendered on top of player
+                     cellMatrix[i, j].getTileFromTopRef(Layer.WALL_KEY).forceAbsoluteTop = true;
 
                      continue;
                   }
@@ -152,6 +175,92 @@ namespace MapCreationTool.Serialization
                }
             }
          }
+      }
+
+      // Given a position, searches for doorframe tiles up and down from the position
+      private bool tryGetBotTopDoorframes (int x, int y, int maxDist, BoardCell[,] matrix, out TileInLayer bot, out TileInLayer top) {
+         bot = top = default;
+
+         // Start of marking tiles as not found
+         int topIndex = -1;
+         int botIndex = -1;
+
+         // iterate over possible distances
+         for (int l = 1; l < maxDist; l++) {
+            // Check top tile
+            if (topIndex == -1 && y + l < editorSize.y) {
+               // If we have a doorframe tile or reached the edge of the map, it is a valid doorframe
+               if (matrix[x, y + l].hasDoorframe) {
+                  topIndex = y + l;
+               } else if (!matrix[x, y + l].hasCeiling) {
+                  // If we are didnt find a doorframe and we are no longer on ceiling, stop searching
+                  return false;
+               }
+            }
+
+            // Check bot tile
+            if (botIndex == -1 && y - l >= 0) {
+               // If we have a doorframe tile or reached the edge of the map, it is a valid doorframe
+               if (matrix[x, y - l].hasDoorframe) {
+                  botIndex = y - l;
+               } else if (!matrix[x, y - l].hasCeiling) {
+                  // If we are didnt find a doorframe and we are no longer on ceiling, stop searching
+                  return false;
+               }
+            }
+         }
+
+         // Check that we found both tiles and didn't exceed maximum distance
+         if (botIndex == -1 || topIndex == -1 || topIndex - botIndex > maxDist) {
+            return false;
+         }
+
+         bot = matrix[x, botIndex].getTileFromTop(Layer.DOORFRAME_KEY);
+         top = matrix[x, topIndex].getTileFromTop(Layer.DOORFRAME_KEY);
+         return true;
+      }
+
+      // Given a position, searches for doorframe tiles left and right from the position
+      private bool tryGetLeftRightDoorframes (int x, int y, int maxDist, BoardCell[,] matrix, out TileInLayer left, out TileInLayer right) {
+         left = right = default;
+
+         // Start of marking tiles as not found
+         int leftIndex = -1;
+         int rightIndex = -1;
+
+         // iterate over possible distances
+         for (int l = 1; l < maxDist; l++) {
+            // Check top tile
+            if (rightIndex == -1 && x + l < editorSize.x) {
+               // If we have a doorframe tile or reached the edge of the map, it is a valid doorframe
+               if (matrix[x + l, y].hasDoorframe) {
+                  rightIndex = x + l;
+               } else if (!matrix[x + l, y].hasCeiling) {
+                  // If we are didnt find a doorframe and we are no longer on ceiling, stop searching
+                  return false;
+               }
+            }
+
+            // Check bot tile
+            if (leftIndex == -1 && x - l >= 0) {
+               // If we have a doorframe tile or reached the edge of the map, it is a valid doorframe
+               if (matrix[x - l, y].hasDoorframe) {
+                  leftIndex = x - l;
+               } else if (!matrix[x - l, y].hasCeiling) {
+                  // If we are didnt find a doorframe and we are no longer on ceiling, stop searching
+                  return false;
+               }
+            }
+         }
+
+         // Check that we found both tiles and didn't exceed maximum distance
+         if (leftIndex == -1 || rightIndex == -1 || rightIndex - leftIndex > maxDist) {
+            return false;
+         }
+
+         left = matrix[leftIndex, y].getTileFromTop(Layer.DOORFRAME_KEY);
+         right = matrix[rightIndex, y].getTileFromTop(Layer.DOORFRAME_KEY);
+         return true;
       }
 
       private HashSet<Vector2Int> getCancelledTileCollisions (List<PlacedPrefab> prefabs) {
@@ -190,6 +299,10 @@ namespace MapCreationTool.Serialization
 
                   if (Layer.isCeiling(columns[i, j].tiles[z].layer)) {
                      columns[i, j].hasCeiling = true;
+                  }
+
+                  if (Layer.isWall(columns[i, j].tiles[z].layer)) {
+                     columns[i, j].hasWall = true;
                   }
 
                   if (Layer.isDoorframe(columns[i, j].tiles[z].layer)) {
@@ -517,6 +630,7 @@ namespace MapCreationTool.Serialization
          public bool hasWater { get; set; }
          public bool hasDock { get; set; }
          public bool hasCeiling { get; set; }
+         public bool hasWall { get; set; }
          public bool hasDoorframe { get; set; }
          public bool hasStair { get; set; }
          public bool hasVine { get; set; }
@@ -534,6 +648,16 @@ namespace MapCreationTool.Serialization
 
             throw new Exception("No such tile.");
          }
+
+         public ref TileInLayer getTileFromTopRef (string layer) {
+            for (int i = tiles.Length - 1; i >= 0; i--) {
+               if (tiles[i].layer.Equals(layer)) {
+                  return ref tiles[i];
+               }
+            }
+
+            throw new Exception("No such tile.");
+         }
       }
 
       private struct TileInLayer
@@ -543,6 +667,10 @@ namespace MapCreationTool.Serialization
          public string layer { get; set; }
          public int sublayer { get; set; }
          public bool shouldHaveCollider { get; set; }
+
+         // Force tile to be rendered above other tiles and player
+         public bool forceAbsoluteTop { get; set; }
+
          public TileCollisionType collisionType { get; set; }
       }
    }

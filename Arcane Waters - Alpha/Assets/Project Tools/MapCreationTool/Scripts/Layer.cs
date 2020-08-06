@@ -15,7 +15,9 @@ namespace MapCreationTool
       public const string RUG_KEY = "rug";
       public const string DOCK_KEY = "dock";
       public const string CEILING_KEY = "ceiling";
+      public const string WALL_KEY = "wall";
       public const string DOORFRAME_KEY = "door-frame";
+      public const string ABSOLUTE_TOP_KEY = "absolute-top";
 
       public Layer[] subLayers { get; private set; }
 
@@ -354,6 +356,10 @@ namespace MapCreationTool
 
       public static bool isCeiling (string layer) {
          return layer.CompareTo(CEILING_KEY) == 0;
+      }
+
+      public static bool isWall (string layer) {
+         return layer.CompareTo(WALL_KEY) == 0;
       }
 
       public static bool isDoorframe (string layer) {

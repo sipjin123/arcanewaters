@@ -21,10 +21,13 @@ namespace MapCreationTool
       private InputField notesInput = null;
       [SerializeField]
       private Dropdown typeDropdown = null;
+      [SerializeField]
+      private Dropdown weatherEffectDropdown = null;
 
       private Map targetMap;
       private (int id, string displayText)[] sourceOptions;
       private List<(Area.SpecialType type, string displayText)> typeOptions;
+      private List<(WeatherEffectType type, string displayText)> weatherOptions;
 
       private void OnEnable () {
          // Set the type options and their values in the dropdown
@@ -34,6 +37,14 @@ namespace MapCreationTool
          }
 
          typeDropdown.options = typeOptions.Select(to => new Dropdown.OptionData { text = to.displayText }).ToList();
+
+         // Set weather options and their values in the dropdown
+         weatherOptions = new List<(WeatherEffectType type, string displayText)>();
+         foreach (WeatherEffectType type in Enum.GetValues(typeof(WeatherEffectType))) {
+            weatherOptions.Add((type, type.ToString()));
+         }
+
+         weatherEffectDropdown.options = weatherOptions.Select(to => new Dropdown.OptionData { text = to.displayText }).ToList();
       }
 
       public void open (Map map) {
@@ -66,6 +77,12 @@ namespace MapCreationTool
          }
          typeDropdown.SetValueWithoutNotify(index);
 
+         int weatherIndex = weatherOptions.FindIndex(to => map.weatherEffectType == to.type);
+         if (weatherIndex == -1) {
+            weatherIndex = 0;
+         }
+         weatherEffectDropdown.SetValueWithoutNotify(weatherIndex);
+
          topLabel.text = $"Editing details of map { targetMap.name }";
          show();
       }
@@ -78,7 +95,8 @@ namespace MapCreationTool
                displayName = displayNameInput.text,
                notes = notesInput.text,
                sourceMapId = sourceOptions[sourceMapDropdown.value].id,
-               specialType = typeOptions[typeDropdown.value].type
+               specialType = typeOptions[typeDropdown.value].type,
+               weatherEffectType = weatherOptions[weatherEffectDropdown.value].type
             };
 
             if (string.IsNullOrWhiteSpace(newMap.name)) {
