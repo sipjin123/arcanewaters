@@ -26,7 +26,7 @@ public class DB_MainTester : MonoBehaviour {
             var result = DB_Main.getMapInfo("desert town lite");
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               D.editorLog("Thred: " + result + " : " + result.gameData);
+               D.editorLog("Thred: " + result);
 
             });
          });

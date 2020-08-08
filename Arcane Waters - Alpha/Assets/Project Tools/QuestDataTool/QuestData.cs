@@ -58,7 +58,7 @@ public class QuestDialogueNode {
    public Item[] itemRewards;
 
    // Rewarded ability
-   public int abilityIdReward;
+   public int abilityIdReward = -1;
 
    // The required job type to proceed with dialogue
    public int jobTypeRequirement = 0;

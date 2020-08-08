@@ -30,13 +30,35 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
    public GenericSelectionPopup genericSelectionPopup;
 
    // Dropdown selection of the item to create
-   public Dropdown rewardDropdown, requirementDropDown;
+   public Dropdown rewardDropdown, requirementDropDown, abilityRewardDropdown;
+
+   // The text containing the ability id
+   public Text abilityIdText;
+
+   // The index of the ability dropdown rewards
+   public List<int> abilityDropDownRewardIndex;
 
    // Job requirement ui
    public Dropdown jobTypeDropdown;
    public InputField jobLevelField;
 
    private void Awake () {
+      abilityDropDownRewardIndex = new List<int>();
+      List<Dropdown.OptionData> abilityOptionsList = new List<Dropdown.OptionData>();
+
+      // Add default data
+      abilityOptionsList.Add(new Dropdown.OptionData { text = "None" });
+      abilityDropDownRewardIndex.Add(-1);
+
+      foreach (BasicAbilityData ability in QuestDataToolManager.instance.basicAbilityList) {
+         abilityOptionsList.Add(new Dropdown.OptionData { text = ability.itemName.ToString() });
+         abilityDropDownRewardIndex.Add(ability.itemID);
+      }
+      abilityRewardDropdown.options = abilityOptionsList;
+      abilityRewardDropdown.onValueChanged.AddListener(_ => {
+         abilityIdText.text = abilityDropDownRewardIndex[_].ToString();
+      });
+
       List<Dropdown.OptionData> optionsList = new List<Dropdown.OptionData>();
       foreach (Jobs.Type category in Enum.GetValues(typeof(Jobs.Type))) {
          optionsList.Add(new Dropdown.OptionData { text = category.ToString() });
@@ -76,8 +98,13 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       friendshipRewardPts.text = dialogueData.friendshipRewardPts.ToString();
       jobLevelField.text = dialogueData.jobLevelRequirement.ToString();
       jobTypeDropdown.value = dialogueData.jobTypeRequirement;
-
-
+      abilityIdText.text = dialogueData.abilityIdReward.ToString();
+      if (dialogueData.abilityIdReward > 0) {
+         BasicAbilityData fetchedAbilityData = QuestDataToolManager.instance.basicAbilityList.Find(_ => _.itemID == dialogueData.abilityIdReward);
+         if (fetchedAbilityData != null) {
+            abilityRewardDropdown.value = abilityDropDownRewardIndex.FindIndex(_ => _ == dialogueData.abilityIdReward);
+         }
+      }
       if (dialogueData.itemRewards != null) {
          foreach (Item item in dialogueData.itemRewards) {
             loadItemTemplate(item, questRewardParent);
@@ -104,6 +131,8 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       newDialogue.jobLevelRequirement = int.Parse(jobLevelField.text);
       newDialogue.jobTypeRequirement = (int) Enum.Parse(typeof(Jobs.Type), jobTypeDropdown.options[jobTypeDropdown.value].text);
 
+      newDialogue.abilityIdReward = int.Parse(abilityIdText.text);
+
       return newDialogue;
    }
 
@@ -127,6 +156,7 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
       GenericItemUITemplate itemTemplate = Instantiate(itemUITemplate.gameObject, parent).GetComponent<GenericItemUITemplate>();
       itemTemplate.itemCategory.text = ((int) item.category).ToString();
       itemTemplate.itemId.text = item.itemTypeId.ToString();
+      itemTemplate.itemCount.text = item.count.ToString();
       switch (item.category) {
          case Item.Category.Weapon:
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);

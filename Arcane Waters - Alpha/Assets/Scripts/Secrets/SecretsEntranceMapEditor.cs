@@ -17,7 +17,7 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
    public Text warpText;
 
    // Collider debug preview
-   public SpriteRenderer mapEditorColliderPreview;
+   public SpriteRenderer mapEditorColliderPreview, mapEditorPostColliderPreview;
 
    // Reference to the prefab data definition
    public PrefabDataDefinition dataDefinition;
@@ -29,10 +29,17 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
 
    private void Awake () {
       _secretEntrance = GetComponent<SecretEntrance>();
-      _secretEntrance.transform.localScale = new Vector3(EDITOR_SCALE, EDITOR_SCALE, 1);
       _text = GetComponentInChildren<Text>();
       _text.text = "Secrets ID: -";
       dataDefinition = GetComponent<PrefabDataDefinition>();
+   }
+
+   private void Start () {
+      if (transform.parent.GetComponent<Palette>() == null) {
+         _secretEntrance.transform.localScale = new Vector3(EDITOR_SCALE, EDITOR_SCALE, 1);
+      } else {
+         _secretEntrance.transform.localScale = new Vector3(2, 2, 1);
+      }
    }
 
    public void dataFieldChanged (DataField field) {
@@ -93,6 +100,38 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
             float value = float.Parse(field.v);
             Vector2 localScale = mapEditorColliderPreview.transform.localScale;
             mapEditorColliderPreview.transform.localScale = new Vector2(localScale.x, value);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_POST_COLLIDER_OFFSET_X) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localPos = mapEditorPostColliderPreview.transform.localPosition;
+            mapEditorPostColliderPreview.transform.localPosition = new Vector2(value, localPos.y);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_POST_COLLIDER_OFFSET_Y) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localPos = mapEditorPostColliderPreview.transform.localPosition;
+            mapEditorPostColliderPreview.transform.localPosition = new Vector2(localPos.x, value);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_POST_COLLIDER_SCALE_X) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localScale = mapEditorPostColliderPreview.transform.localScale;
+            mapEditorPostColliderPreview.transform.localScale = new Vector2(value, localScale.y);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_POST_COLLIDER_SCALE_Y) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localScale = mapEditorPostColliderPreview.transform.localScale;
+            mapEditorPostColliderPreview.transform.localScale = new Vector2(localScale.x, value);
          } catch {
 
          }

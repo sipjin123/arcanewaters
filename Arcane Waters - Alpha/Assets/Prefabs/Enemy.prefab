@@ -251,9 +251,8 @@ MonoBehaviour:
   bodyType: 0
   eyesType: 0
   hairType: 0
-  eyesPalette1: 
-  hairPalette1: 
-  hairPalette2: 
+  eyesPalettes: 
+  hairPalettes: 
   entityName: Enemy
   currentHealth: 1000
   maxHealth: 1000
@@ -282,6 +281,7 @@ MonoBehaviour:
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  _ignoredAnimators: []
   animGroupType: 0
   enemyType: 205
   isDefeated: 0
@@ -609,7 +609,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5706357931382499518
 Transform:
   m_ObjectHideFlags: 0
@@ -618,8 +618,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2548054682750233640}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.185, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalPosition: {x: 0, y: -0.17, z: 0.1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_Children: []
   m_Father: {fileID: 4000012745727500}
   m_RootOrder: 6

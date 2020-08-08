@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.Linq;
+using System.Threading;
 
 public class PlayerBodyEntity : BodyEntity {
    #region Public Variables
@@ -60,7 +61,7 @@ public class PlayerBodyEntity : BodyEntity {
    public Transform windDashSprite;
 
    // The offset of the wind vfx
-   public float windDashZOffset = 1;
+   public const float windDashZOffset = 0.002f;
 
    // The pivot of the jump colliders
    public Transform jumpCollisionPivot;
@@ -88,6 +89,9 @@ public class PlayerBodyEntity : BodyEntity {
 
    // The target world location when jumpin over an obstacle
    public Vector2 jumpOverWorldLocation, jumpOverSourceLocation;
+
+   // The dust particle when sprinting
+   public ParticleSystem dustTrailParticleObj;
 
    #endregion
 
@@ -277,6 +281,9 @@ public class PlayerBodyEntity : BodyEntity {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
             Cmd_UpdateSpeedupDisplay(true);
+            Direction overrideDirection = getOverrideDirection();
+            dashAnimator.SetInteger("direction", (int) overrideDirection);
+            setDustParticles(true);
          } else {
             isReadyToSpeedup = false;
             isSpeedingUp = false;
@@ -295,9 +302,14 @@ public class PlayerBodyEntity : BodyEntity {
             isReadyToSpeedup = true;
          }
          dashAnimator.SetInteger("direction", -1);
+         setDustParticles(false);
       }
 
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+   }
+
+   private void setDustParticles (bool isActive) {
+      dustTrailParticleObj.enableEmission = isActive;
    }
 
    private void jumpOver (Collider2D[] obstacleCollidedEntries, Collider2D[] jumpEndCollidedEntries) {
@@ -309,21 +321,12 @@ public class PlayerBodyEntity : BodyEntity {
    private void updateSprintEffects (bool isOn) {
       // Handle sprite effects
       if (isOn) {
-         Direction overrideDirection = facing;
-         switch (overrideDirection) {
-            case Direction.NorthWest:
-            case Direction.SouthWest:
-               overrideDirection = Direction.West;
-               break;
-            case Direction.NorthEast:
-            case Direction.SouthEast:
-               overrideDirection = Direction.East;
-               break;
-         }
+         Direction overrideDirection = getOverrideDirection();
 
          windDashSprite.localPosition = new Vector3(0, 0, overrideDirection == Direction.South ? windDashZOffset : -windDashZOffset);
 
          dashAnimator.SetInteger("direction", (int) overrideDirection);
+         setDustParticles(true);
 
          dashAnimator.speed = ANIM_SPEEDUP_VALUE;
          foreach (Animator animator in animators) {
@@ -331,13 +334,28 @@ public class PlayerBodyEntity : BodyEntity {
          }
       } else {
          dashAnimator.SetInteger("direction", -1);
-
+         setDustParticles(false);
       }
 
       foreach (Animator animator in animators) {
          animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
       dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
+   }
+
+   private Direction getOverrideDirection () {
+      Direction overrideDirection = facing;
+      switch (overrideDirection) {
+         case Direction.NorthWest:
+         case Direction.SouthWest:
+            overrideDirection = Direction.West;
+            break;
+         case Direction.NorthEast:
+         case Direction.SouthEast:
+            overrideDirection = Direction.East;
+            break;
+      }
+      return overrideDirection;
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {

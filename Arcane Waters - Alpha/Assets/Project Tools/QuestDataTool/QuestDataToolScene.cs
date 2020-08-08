@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class QuestDataToolScene : MonoBehaviour {
    #region Public Variables
@@ -17,15 +18,25 @@ public class QuestDataToolScene : MonoBehaviour {
    // Creates a new template
    public Button createNewTemplate;
 
+   // Returns the user to main menu
+   public Button mainMenuButton;
+
    #endregion
 
    private void Awake () {
+      mainMenuButton.onClick.AddListener(() => {
+         SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
       createNewTemplate.onClick.AddListener(() => {
          QuestDataGroupTemplate newQuestTemplate = Instantiate(questGroupTemplate.gameObject, questGroupHolder).GetComponent<QuestDataGroupTemplate>();
          newQuestTemplate.isActiveToggle.isOn = false;
+         newQuestTemplate.duplicateButton.gameObject.SetActive(false);
          newQuestTemplate.editButton.onClick.AddListener(() => {
             questToolPanel.gameObject.SetActive(true);
             questToolPanel.loadPanel(new QuestData());
+         }); 
+         newQuestTemplate.deleteButton.onClick.AddListener(() => {
+            Destroy(newQuestTemplate.gameObject);
          });
       });
       questToolPanel.gameObject.SetActive(false);
@@ -50,6 +61,12 @@ public class QuestDataToolScene : MonoBehaviour {
          newQuestTemplate.editButton.onClick.AddListener(() => {
             questToolPanel.gameObject.SetActive(true);
             questToolPanel.loadPanel(questGroup.xmlData);
+         });
+         newQuestTemplate.duplicateButton.onClick.AddListener(() => {
+            QuestDataToolManager.instance.duplicateData(questGroup.xmlData);
+         });
+         newQuestTemplate.deleteButton.onClick.AddListener(() => {
+            QuestDataToolManager.instance.deleteDataFile(questGroup.xmlId);
          });
       }
    }

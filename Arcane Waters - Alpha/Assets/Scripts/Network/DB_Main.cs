@@ -2001,7 +2001,7 @@ public class DB_Main : DB_MainStub {
       return result;
    }
 
-   public static new MapInfo getMapInfo (string areaKey) {
+   public static new string getMapInfo (string areaKey) {
       MapInfo mapInfo = null;
 
       string cmdText = "SELECT * FROM maps_v2 JOIN map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version) AND maps_v2.name=@mapName";
@@ -2025,7 +2025,7 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return mapInfo;
+      return JsonUtility.ToJson(mapInfo);
    }
 
    public static new Dictionary<string, MapInfo> getLiveMaps () {
@@ -5386,6 +5386,13 @@ public class DB_Main : DB_MainStub {
                   } else {
                      int userId = dataReader.GetInt32("usrId");
                      string senderName = userId == 0 ? "Server" : "User";
+                     if (userId != 0) {
+                        try {
+                           senderName = dataReader.GetString("usrName");
+                        } catch {
+                           D.editorLog("No data for usrName", Color.red);
+                        }
+                     }
                      int senderGuild = 0;
                      ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
                      info.guildId = senderGuild;

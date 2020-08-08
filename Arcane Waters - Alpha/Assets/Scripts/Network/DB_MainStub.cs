@@ -436,7 +436,7 @@ public class DB_MainStub : MonoBehaviour {
       return new List<Map>();
    }
 
-   public static MapInfo getMapInfo (string areaKey) {
+   public static string getMapInfo (string areaKey) {
       return null;
    }
 

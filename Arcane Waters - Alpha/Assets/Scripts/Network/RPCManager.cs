@@ -1687,6 +1687,9 @@ public class RPCManager : NetworkBehaviour {
                      giveItemRewardsToPlayer(_player.userId, new List<Item>(questDialogue.itemRewards), true);
                   }
                }
+               if (questDialogue.abilityIdReward > 0) {
+                  giveAbilityToPlayer(_player.userId, new int[1] { questDialogue.abilityIdReward });
+               }
             });
          });
       }
@@ -3139,6 +3142,14 @@ public class RPCManager : NetworkBehaviour {
    #region Item Rewards for Combat and Crafting
 
    [TargetRpc]
+   public void Target_ReceiveAbilityRewards (NetworkConnection connection, int[] abilityIds) {
+      if (abilityIds.Length == 1) {
+         BasicAbilityData abilityInfo = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityIds[0]);
+         RewardManager.self.showRecruitmentNotice(abilityInfo.itemName, abilityInfo.itemIconPath);
+      }
+   }
+
+   [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
       RewardManager.self.showItemsInRewardPanel(itemList.ToList());
    }
@@ -3321,6 +3332,29 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [Server]
+   private void giveAbilityToPlayer (int userID, int[] abilityIds) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Create or update the database ability
+         foreach (int abilityId in abilityIds) {
+            BasicAbilityData cachedAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityId);
+            AbilitySQLData abilityData = new AbilitySQLData {
+               abilityID = cachedAbilityData.itemID, 
+               abilityLevel = cachedAbilityData.abilityLevel,
+               abilityType = cachedAbilityData.abilityType,
+               description = cachedAbilityData.itemDescription,
+               equipSlotIndex = -1,
+               name = cachedAbilityData.itemName
+            };
+            DB_Main.updateAbilitiesData(userID, abilityData);
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveAbilityRewards(_player.connectionToClient, abilityIds);
+         });
+      });
+   }
+   
    [Server]
    private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

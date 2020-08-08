@@ -34,6 +34,16 @@ public class RewardScreen : Panel
       rewardRows[0].setDisplayRow(recruitmentName, iconPath);
    }
 
+   public void setAbilityReward (string abilityName, string iconPath) {
+      // Disable all the rows
+      disableAll();
+
+      text.text = "You have received ability:";
+      rewardRows[0].gameObject.SetActive(true);
+      rewardRows[0].rewardName.text = abilityName;
+      rewardRows[0].setDisplayRow(abilityName, iconPath);
+   }
+
    public void setItemData (Item item) {
       // Get the casted item
       Item castedItem = item.getCastItem();

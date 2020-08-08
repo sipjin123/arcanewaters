@@ -31,6 +31,13 @@ public class RewardManager : MonoBehaviour {
       PanelManager.self.pushPanel(Panel.Type.Reward);
    }
 
+   public void showAbilityRewardNotice (string abilityName, string abilityIconPath) {
+      // Calls the panel and injects the info of the rewarded ability
+      RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);
+      rewardPanel.setAbilityReward(abilityName, abilityIconPath);
+      PanelManager.self.pushPanel(Panel.Type.Reward);
+   }
+
    public void showItemInRewardPanel (Item loot) {
       // Calls the panel and injects the List of items
       RewardScreen rewardPanel = (RewardScreen) PanelManager.self.get(Panel.Type.Reward);

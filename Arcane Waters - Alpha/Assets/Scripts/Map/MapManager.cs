@@ -73,7 +73,8 @@ public class MapManager : MonoBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Read the map data
          if (mapInfo.gameData == null) {
-            mapInfo = DB_Main.getMapInfo(mapInfo.mapName);
+            string rawMapInfo = DB_Main.getMapInfo(mapInfo.mapName);
+            mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
          }
 
          // Fetch map customization data if required
@@ -85,7 +86,10 @@ public class MapManager : MonoBehaviour
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (mapInfo == null) {
-               D.error($"Could not find entry for map { areaKey } in the database");
+               D.debug($"Could not find entry for map { areaKey } in the database");
+
+               // If db_main fails to return due to connection issues, attempt nubis connection
+               processNubisData(areaKey, mapPosition, customizationData);
             } else if (string.IsNullOrEmpty(mapInfo.gameData)) {
                D.error($"Could not find gameData from map { areaKey } in the database. Ensure that the map has a published version available.");
             } else {
@@ -98,6 +102,25 @@ public class MapManager : MonoBehaviour
             }
          });
       });
+   }
+
+   private async void processNubisData (string areaKey , Vector3 mapPosition, MapCustomizationData customizationData) {
+      D.editorLog("Attempting to fetch using Nubis Data", Color.green);
+
+      // Request the map from Nubis Cloud
+      string mapData = await NubisClient.call(nameof(DB_Main.getMapInfo), areaKey);
+      D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
+      MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
+      if (string.IsNullOrWhiteSpace(mapData)) {
+         D.debug("Error in retrieving map data from NUBIS");
+      } else {
+         // Deserialize the map
+         ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
+
+         if (exportedProject != null) {
+            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
+         }
+      }
    }
 
    private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
@@ -345,7 +368,7 @@ public class MapManager : MonoBehaviour
          MapCache.storeMapData(baseMapAreaKey, version, mapData);
 
          // TODO: Do not Remove until this issue is completely fixed
-         D.debug("Map Log: Creating map data fetched from Nubis: Ver: " + version);
+         D.debug("Map Log: Creating map data fetched from Nubis: (" + areaKey + ") Ver: " + version);
 
          // Spawn the Area using the map data
          createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);

@@ -25,6 +25,10 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public int spawnId;
 
+   // If the sprites can blend with the assets behind it
+   [SyncVar]
+   public bool canBlend;
+
    // The position the sprite should be set after interacting
    public Transform interactPosition;
 
@@ -82,8 +86,15 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    [SyncVar]
    public Vector2 colliderScale, colliderOffset;
 
-   // The sprite that has a collider that blocks the user collision
+   // Collider altering values of the post interact collision
+   [SyncVar]
+   public Vector2 postColliderScale, postColliderOffset;
+
+   // The sprite that has a collider that blocks the user collision before the path is revealed
    public SpriteRenderer blockerSprite;
+
+   // The sprite that has a collider that blocks the user collision after path is revealed
+   public SpriteRenderer postBlockerSprite;
 
    #endregion
 
@@ -91,6 +102,11 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       // Look up components
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
+   }
+
+   private void OnEnable () {
+      blockerSprite.enabled = false;
+      postBlockerSprite.enabled = false;
    }
 
    private void Start () {
@@ -101,11 +117,20 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       // Make the node a child of the Area
       StartCoroutine(CO_SetAreaParent());
 
+      // Collision Setup
       blockerSprite.transform.localPosition = colliderOffset;
       blockerSprite.transform.localScale = colliderScale;
+      postBlockerSprite.transform.localPosition = postColliderOffset;
+      postBlockerSprite.transform.localScale = postColliderScale;
+
+      // Sprite and collision enabled/disabled
       blockerSprite.enabled = false;
+      postBlockerSprite.enabled = false;
       blockerSprite.gameObject.SetActive(!isInteracted);
+      postBlockerSprite.gameObject.SetActive(isInteracted);
       if (!Util.isBatch()) {
+         checkBlending();
+
          try {
             mainSprite = ImageManager.getSprite(initSpritePath);
             subSprite = ImageManager.getSprites(interactSpritePath)[0];
@@ -165,6 +190,15 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       });
    }
 
+   private void checkBlending () {
+      if (canBlend) {
+         Color tmp = spriteRenderer.color;
+         tmp.a = isInteracted ? 1 : 0;
+         spriteRenderer.color = tmp;
+         subSpriteRenderer.color = tmp;
+      }
+   }
+
    public void Update () {
       if (isMapEditorMode) {
          return;
@@ -181,7 +215,11 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
       // Only show our outline when the mouse is over us
       bool isHovering = MouseManager.self.isHoveringOver(_clickableBox);
-      _outline.setVisibility(isHovering);
+      if (isHovering && isGlobalPlayerNearby()) {
+         _outline.setVisibility(true);
+      } else {
+         _outline.setVisibility(false);
+      }
    }
 
    public void receiveData (DataField[] dataFields) {
@@ -245,12 +283,47 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
                }
                break;
+            case DataField.SECRETS_POST_COLLIDER_OFFSET_X:
+               try {
+                  float newVal = float.Parse(field.v);
+                  postColliderOffset.x = newVal;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_POST_COLLIDER_OFFSET_Y:
+               try {
+                  float newVal = float.Parse(field.v);
+                  postColliderOffset.y = newVal;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_POST_COLLIDER_SCALE_X:
+               try {
+                  float newValue = float.Parse(field.v);
+                  postColliderScale.x = newValue;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_POST_COLLIDER_SCALE_Y:
+               try {
+                  float newValue = float.Parse(field.v);
+                  postColliderScale.y = newValue;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_CAN_BLEND:
+               canBlend = field.v.ToLower() == "true";
+               break; 
          }
       }
    }
 
    public void tryToInteract () {
-      if (Global.player != null) {
+      if (isGlobalPlayerNearby()) {
          Global.player.rpc.Cmd_InteractSecretEntrance(instanceId, spawnId);
       }
    }
@@ -265,6 +338,14 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          // Let the animation play before enabling the warp object
          StartCoroutine(CO_ProcessInteraction());
       }
+   }
+
+   public bool isGlobalPlayerNearby () {
+      if (Global.player == null) {
+         return false;
+      }
+
+      return (Vector2.Distance(Global.player.transform.position, this.transform.position) <= 1);
    }
 
    public void setAreaParent (Area area, bool worldPositionStays) {
@@ -296,6 +377,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          _outline = null;
          InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
          InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
+         blockerSprite.gameObject.SetActive(false);
+         postBlockerSprite.gameObject.SetActive(true);
+         checkBlending();
       }
    }
 
@@ -330,6 +414,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       warp.gameObject.SetActive(true);
       isFinishedAnimating = true;
       blockerSprite.gameObject.SetActive(false);
+      postBlockerSprite.gameObject.SetActive(true);
    }
 
    private IEnumerator CO_SetAreaParent () {

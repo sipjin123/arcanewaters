@@ -58,6 +58,7 @@ public class QuestDataToolPanel : MonoBehaviour {
 
    private void Awake () {
       saveButton.onClick.AddListener(() => {
+         saveDialogueDataToNode();
          processSavingData();
          gameObject.SetActive(false);
       });
