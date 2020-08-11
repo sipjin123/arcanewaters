@@ -43,6 +43,9 @@ public class MyNetworkManager : NetworkManager
    // Self
    public static MyNetworkManager self;
 
+   // Reference to the server communication handler
+   public ServerCommunicationHandler serverCommunicationHandler;
+
    #endregion
 
    public override void Awake () {
@@ -67,6 +70,7 @@ public class MyNetworkManager : NetworkManager
          if (arg.Contains("port=")) {
             string[] split = arg.Split('=');
             telepathy.port = ushort.Parse(split[1]);
+            serverCommunicationHandler.setPort(telepathy.port);
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
@@ -232,7 +236,7 @@ public class MyNetworkManager : NetworkManager
             Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
 
-            if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.ourPort) {
+            if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.getport()) {
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);
                conn.Send(redirectMessage);
@@ -304,7 +308,7 @@ public class MyNetworkManager : NetworkManager
                MapCustomizationData customizationData = new MapCustomizationData();
                if (mapOwnerId != -1) {
                   int baseMapId = DB_Main.getMapId(baseMapAreaKey);
-                  customizationData = DB_Main.getMapCustomizationData(baseMapId, mapOwnerId) ?? customizationData;
+                  customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, mapOwnerId) ?? customizationData);
                }
 
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {

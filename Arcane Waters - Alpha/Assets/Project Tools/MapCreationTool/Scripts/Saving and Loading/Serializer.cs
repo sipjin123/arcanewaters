@@ -325,6 +325,9 @@ namespace MapCreationTool.Serialization
       public const string SECRETS_POST_COLLIDER_OFFSET_X = "secret post collider offset x";
       public const string SECRETS_POST_COLLIDER_OFFSET_Y = "secret post collider offset y";
       public const string SECRETS_CAN_BLEND = "can blend";
+      public const string SECRETS_CAN_BLEND_INTERACTED = "can blend interacted";
+      public const string SECRETS_SWITCH_OFFSET_X = "secret switch offset x";
+      public const string SECRETS_SWITCH_OFFSET_Y = "secret switch offset y";
 
       public const string NPC_DATA_KEY = "npc data";
       public const string NPC_SHOP_NAME_KEY = "shop name";

@@ -23,7 +23,7 @@ public class CloudObject : MonoBehaviour {
    public WeatherEffectType weatherType;
 
    // Reference to the sprite renderer
-   public SpriteRenderer spriteRenderer;
+   public SpriteRenderer spriteRenderer, shadowSpriteRenderer;
 
    // If this obj is active
    public bool isActive;
@@ -45,7 +45,12 @@ public class CloudObject : MonoBehaviour {
       transform.position = startPosition;
 
       Sprite[] sprites = WeatherManager.self.cloudSpriteList.Find(_ => _.weatherType == weatherType).spriteReferences;
-      spriteRenderer.sprite = sprites[Random.Range(0, sprites.Length)];
+      Sprite[] shadowSprites = WeatherManager.self.cloudSpriteList.Find(_ => _.weatherType == weatherType).spriteShadowReferences;
+      int spriteRandomIndex = Random.Range(0, sprites.Length);
+      spriteRenderer.sprite = sprites[spriteRandomIndex];
+      if (shadowSprites.Length > 0) {
+         shadowSpriteRenderer.sprite = shadowSprites[spriteRandomIndex];
+      }
       isActive = true;
 
       shadowObj.SetActive(weatherType != WeatherEffectType.Mist);

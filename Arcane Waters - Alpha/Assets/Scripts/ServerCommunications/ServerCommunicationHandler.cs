@@ -54,6 +54,15 @@ namespace ServerCommunicationHandlerv2 {
          self = this;
       }
 
+      public void setPort (int port) {
+         D.debug("Server Communication Handler local port is set to: " + port);
+         ourPort = port;
+      }
+
+      public int getport () {
+         return ourPort;
+      }
+
       public void initializeServers () {
          initializeLocalServer();
       }
@@ -311,6 +320,8 @@ namespace ServerCommunicationHandlerv2 {
                D.editorLog("This server is recently active, Caching now: " + newServerData.port, Color.green);
                addNewServer(newServerData, false);
             }
+         } else {
+            D.editorLog("The server was not active for: " + SERVER_ACTIVE_TIME + " Choosing to ignore this server as a remote");
          }
       }
 

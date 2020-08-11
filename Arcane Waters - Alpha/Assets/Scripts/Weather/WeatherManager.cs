@@ -71,6 +71,7 @@ public class WeatherManager : MonoBehaviour {
 
    public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {
       this.weatherEffectType = weatherEffect;
+      sunRayHolder.gameObject.DestroyChildren();
       spawnRoot = rootObj;
       rainEffectObj.SetActive(false);
       snowEffectObj.SetActive(false);
@@ -85,7 +86,7 @@ public class WeatherManager : MonoBehaviour {
                cloudObj.transform.SetParent(mistParent);
                resetWeatherSimulation();
                break;
-            case WeatherEffectType.DarkMist:
+            case WeatherEffectType.DarkCloud:
                cloudObj.transform.SetParent(darkMistParent);
                resetWeatherSimulation();
                break;
@@ -102,7 +103,6 @@ public class WeatherManager : MonoBehaviour {
                rainEffectObj.SetActive(true);
                break;
             case WeatherEffectType.Sunny:
-               sunRayHolder.gameObject.DestroyChildren();
                int randomizedSunRayCount = Random.Range(MIN_SUNRAYS, MAX_SUNRAYS);
                for (int i = 0; i < randomizedSunRayCount; i++) {
                   GameObject sunRayObj = Instantiate(sunRayPrefab, sunRayHolder);
@@ -150,7 +150,7 @@ public class WeatherManager : MonoBehaviour {
       direction = weatherDirections[Random.Range(0, weatherDirections.Length)];
       
       switch (weatherEffectType) {
-         case WeatherEffectType.DarkMist:
+         case WeatherEffectType.DarkCloud:
          case WeatherEffectType.Mist:
          case WeatherEffectType.Cloud:
             rainEffectObj.SetActive(false);
@@ -180,28 +180,36 @@ public class WeatherManager : MonoBehaviour {
 
    private void Update () {
       if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            setWeatherSimulation(WeatherEffectType.DarkMist);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            setWeatherSimulation(WeatherEffectType.Mist);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            setWeatherSimulation(WeatherEffectType.Cloud);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            setWeatherSimulation(WeatherEffectType.Rain);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            setWeatherSimulation(WeatherEffectType.Snow);
-         }
-         if (Input.GetKeyDown(KeyCode.Alpha6)) {
-            setWeatherSimulation(WeatherEffectType.Sunny);
+         if (Input.GetKey(KeyCode.PageDown)) {
+            if (Input.GetKeyDown(KeyCode.Alpha1)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.DarkCloud, Color.green);
+               setWeatherSimulation(WeatherEffectType.DarkCloud, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.Mist, Color.green);
+               setWeatherSimulation(WeatherEffectType.Mist, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.Cloud, Color.green);
+               setWeatherSimulation(WeatherEffectType.Cloud, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.Rain, Color.green);
+               setWeatherSimulation(WeatherEffectType.Rain, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha5)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.Snow, Color.green);
+               setWeatherSimulation(WeatherEffectType.Snow, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha6)) {
+               D.editorLog("Setting weather: " + WeatherEffectType.Sunny, Color.green);
+               setWeatherSimulation(WeatherEffectType.Sunny, AreaManager.self.getArea(Global.player.areaKey).transform);
+            }
          }
 
          if (startWeatherSimulation) {
             switch (weatherEffectType) {
-               case WeatherEffectType.DarkMist:
+               case WeatherEffectType.DarkCloud:
                case WeatherEffectType.Mist:
                case WeatherEffectType.Cloud:
                   foreach (CloudObject cloudObj in cloudObjects) {
@@ -223,7 +231,7 @@ public enum WeatherEffectType {
    Sunny = 1,
    Rain = 2,
    Mist = 3,
-   DarkMist = 4,
+   DarkCloud = 4,
    Snow = 5, 
    Cloud = 6
 }
@@ -235,4 +243,7 @@ public class CloudSpritePair {
 
    // Reference to the sprite
    public Sprite[] spriteReferences;
+
+   // Reference to the sprite shadow
+   public Sprite[] spriteShadowReferences;
 }

@@ -60,12 +60,18 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
          _targetSpawn = field.v;
          updateText();
       } else if (field.k.CompareTo(DataField.SECRETS_START_SPRITE) == 0) {
+         if (field.v != "none") {
+            _secretEntrance.spriteRenderer.GetComponent<SimpleAnimation>().updateIndexMinMax(0, 1000);
+         }
          _secretEntrance.mainSprite = ImageManager.getSprite(field.v);
          _secretEntrance.spriteRenderer.sprite = _secretEntrance.mainSprite;
          spriteOutline.Regenerate();
          spriteOutline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
       } else if (field.k.CompareTo(DataField.SECRETS_INTERACT_SPRITE) == 0) {
          try {
+            if (field.v != "none") {
+               _secretEntrance.subSpriteRenderer.GetComponent<SimpleAnimation>().updateIndexMinMax(0, 1000);
+            }
             _secretEntrance.subSprite = ImageManager.getSprites(field.v)[0];
             _secretEntrance.subSpriteRenderer.sprite = _secretEntrance.subSprite;
          } catch (System.Exception ex) {
@@ -132,6 +138,22 @@ public class SecretsEntranceMapEditor : MapEditorPrefab, IPrefabDataListener, IH
             float value = float.Parse(field.v);
             Vector2 localScale = mapEditorPostColliderPreview.transform.localScale;
             mapEditorPostColliderPreview.transform.localScale = new Vector2(localScale.x, value);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_SWITCH_OFFSET_X) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localPos = spriteOutline.transform.localPosition;
+            spriteOutline.transform.localPosition = new Vector2(value, localPos.y);
+         } catch {
+
+         }
+      } else if (field.k.CompareTo(DataField.SECRETS_SWITCH_OFFSET_Y) == 0) {
+         try {
+            float value = float.Parse(field.v);
+            Vector2 localPos = spriteOutline.transform.localPosition;
+            spriteOutline.transform.localPosition = new Vector2(localPos.x, value);
          } catch {
 
          }

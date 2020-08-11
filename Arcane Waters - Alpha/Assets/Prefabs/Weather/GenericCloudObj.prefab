@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 6dfcc2e7af8d78843b361ab860927cc7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.3529412}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1.31, y: 0.9}
@@ -131,6 +131,7 @@ MonoBehaviour:
   currentThresold: 0
   weatherType: 0
   spriteRenderer: {fileID: 8710179489364497236}
+  shadowSpriteRenderer: {fileID: 6581138748884142592}
   isActive: 0
   rootPosition: {x: 0, y: 0}
   shadowObj: {fileID: 1353551150787486780}

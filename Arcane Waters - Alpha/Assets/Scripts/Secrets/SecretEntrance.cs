@@ -27,7 +27,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
    // If the sprites can blend with the assets behind it
    [SyncVar]
-   public bool canBlend;
+   public bool canBlend, canBlendInteract2;
 
    // The position the sprite should be set after interacting
    public Transform interactPosition;
@@ -84,7 +84,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
    // Collider altering values
    [SyncVar]
-   public Vector2 colliderScale, colliderOffset;
+   public Vector2 colliderScale, colliderOffset, switchOffset;
 
    // Collider altering values of the post interact collision
    [SyncVar]
@@ -123,6 +123,10 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       postBlockerSprite.transform.localPosition = postColliderOffset;
       postBlockerSprite.transform.localScale = postColliderScale;
 
+      // Switch offset
+      spriteRenderer.transform.localPosition = switchOffset;
+      _clickableBox.transform.position = spriteRenderer.transform.position;
+
       // Sprite and collision enabled/disabled
       blockerSprite.enabled = false;
       postBlockerSprite.enabled = false;
@@ -136,6 +140,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
             subSprite = ImageManager.getSprites(interactSpritePath)[0];
             if (!isInteracted) {
                spriteRenderer.sprite = mainSprite;
+               subSpriteRenderer.sprite = subSprite;
             } else {
                int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
                Sprite[] mainSprites = ImageManager.getSprites(interactSpritePath);
@@ -195,6 +200,11 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          Color tmp = spriteRenderer.color;
          tmp.a = isInteracted ? 1 : 0;
          spriteRenderer.color = tmp;
+         subSpriteRenderer.color = tmp;
+      }
+      if (canBlendInteract2) {
+         Color tmp = subSpriteRenderer.color;
+         tmp.a = isInteracted ? 1 : 0;
          subSpriteRenderer.color = tmp;
       }
    }
@@ -317,6 +327,25 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
                break;
             case DataField.SECRETS_CAN_BLEND:
                canBlend = field.v.ToLower() == "true";
+               break;
+            case DataField.SECRETS_CAN_BLEND_INTERACTED:
+               canBlendInteract2 = field.v.ToLower() == "true";
+               break;
+            case DataField.SECRETS_SWITCH_OFFSET_X:
+               try {
+                  float newVal = float.Parse(field.v);
+                  switchOffset.x = newVal;
+               } catch {
+
+               }
+               break;
+            case DataField.SECRETS_SWITCH_OFFSET_Y:
+               try {
+                  float newVal = float.Parse(field.v);
+                  switchOffset.y = newVal;
+               } catch {
+
+               }
                break; 
          }
       }
@@ -325,6 +354,8 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    public void tryToInteract () {
       if (isGlobalPlayerNearby()) {
          Global.player.rpc.Cmd_InteractSecretEntrance(instanceId, spawnId);
+      } else {
+         D.editorLog("Player it Too far from the secret entrance!", Color.red);
       }
    }
 
@@ -410,7 +441,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
    private IEnumerator CO_ProcessInteraction () {
       yield return new WaitForSeconds(2);
-      spriteRenderer.transform.position = interactPosition.position;
+      //spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
       isFinishedAnimating = true;
       blockerSprite.gameObject.SetActive(false);
@@ -433,6 +464,8 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
    // Our various components
    protected SpriteOutline _outline;
+
+   [SerializeField]
    protected ClickableBox _clickableBox;
 
    #endregion
