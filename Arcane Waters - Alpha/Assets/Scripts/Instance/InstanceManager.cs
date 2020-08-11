@@ -93,7 +93,7 @@ public class InstanceManager : MonoBehaviour {
       botShip.instanceId = instance.id;
    }
 
-   public void addSeaMonsterToInstance (SeaMonsterEntity seaMonster, Instance instance) {
+   public void addSeaMonsterToInstance (SeaEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;
       instance.seaMonsterCount++;

@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using System;
 using Random = UnityEngine.Random;
+using System.Xml;
 
 public class WeatherManager : MonoBehaviour {
    #region Public Variables
@@ -95,11 +96,11 @@ public class WeatherManager : MonoBehaviour {
                resetWeatherSimulation();
                break;
             case WeatherEffectType.Snow:
-               snowEffectObj.transform.position = mainCam.transform.position;
+               snowEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);
                snowEffectObj.gameObject.SetActive(true);
                break;
             case WeatherEffectType.Rain:
-               rainEffectObj.transform.position = mainCam.transform.position;
+               rainEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);
                rainEffectObj.SetActive(true);
                break;
             case WeatherEffectType.Sunny:
@@ -148,7 +149,16 @@ public class WeatherManager : MonoBehaviour {
 
    private void resetWeatherSimulation () {
       direction = weatherDirections[Random.Range(0, weatherDirections.Length)];
-      
+
+      if (weatherEffectType == WeatherEffectType.Mist) {
+         // Mist weather can only move left and right
+         if (direction == Direction.North) {
+            direction = Direction.East;
+         } else if (direction == Direction.South) {
+            direction = Direction.West;
+         }
+      }
+
       switch (weatherEffectType) {
          case WeatherEffectType.DarkCloud:
          case WeatherEffectType.Mist:

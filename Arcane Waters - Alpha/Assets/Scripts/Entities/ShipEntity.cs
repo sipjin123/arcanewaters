@@ -31,6 +31,10 @@ public class ShipEntity : SeaEntity
    [SyncVar]
    public int sailors;
 
+   // The primary ability id used by this ship
+   [SyncVar]
+   public int primaryAbilityId = -1;
+
    // The Rarity of the ship
    public Rarity.Type rarity;
 
@@ -243,7 +247,7 @@ public class ShipEntity : SeaEntity
          attackType, AttackManager.self.getColorForDistance(normalizedDistance), shipData, normalizedDistance);
 
       // Have the server check for collisions after the AOE projectile reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier, currentImpactMagnitude));
+      StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier, currentImpactMagnitude, primaryAbilityId));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();

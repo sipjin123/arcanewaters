@@ -399,6 +399,10 @@ public class SeaEntity : NetEntity
       return (int) (this.damage * Attack.getDamageModifier(attackType) * distanceModifier);
    }
 
+   public int getDamageForShot (int baseDamage, float distanceModifier) {
+      return (int) (this.damage * baseDamage * distanceModifier);
+   }
+
    protected IEnumerator CO_UpdateAllSprites () {
       // Wait until we receive data of the player, but if we're a bot we skip the wait as we already have the data
       while (!isBot() && Util.isEmpty(entityName)) {
@@ -431,7 +435,7 @@ public class SeaEntity : NetEntity
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
 
       // Have the server check for collisions after the attack reaches the target
-      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true, 1f, currentImpactMagnitude));
+      StartCoroutine(CO_CheckCircleForCollisions(this, delay, spot, attackType, true, 1f, currentImpactMagnitude, -1));
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();
@@ -508,7 +512,7 @@ public class SeaEntity : NetEntity
       bool targetPlayersOnly = this is SeaMonsterEntity;
 
       spawnProjectileAndIndicatorsOnClients(spot, abilityId, spawnPosition, launchDelay + timeToReachTarget);
-      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f, currentImpactMagnitude));
+      StartCoroutine(CO_CheckCircleForCollisions(this, launchDelay + timeToReachTarget, spot, attackType, targetPlayersOnly, 1f, currentImpactMagnitude, abilityId));
    }
 
    [Server]
@@ -524,7 +528,7 @@ public class SeaEntity : NetEntity
 
    [Server]
    protected IEnumerator CO_CheckCircleForCollisions (SeaEntity attacker, float delay, Vector2 circleCenter, Attack.Type attackType, bool targetPlayersOnly,
-      float distanceModifier, Attack.ImpactMagnitude impactMagnitude) {
+      float distanceModifier, Attack.ImpactMagnitude impactMagnitude, int abilityId) {
       // Wait until the cannon ball reaches the target
       yield return new WaitForSeconds(delay);
 
@@ -562,6 +566,10 @@ public class SeaEntity : NetEntity
 
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
+                     if (abilityId > 0) {
+                        int baseSkillDamage = ShipAbilityManager.self.getAbility(abilityId).damage;
+                        damage = getDamageForShot(baseSkillDamage, distanceModifier);
+                     }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
 
                      if (this is PlayerShipEntity) {

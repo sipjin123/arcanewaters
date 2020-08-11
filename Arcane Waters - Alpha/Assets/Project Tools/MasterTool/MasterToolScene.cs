@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 using System;
+using System.Linq;
 
 public class MasterToolScene : MonoBehaviour {
    #region Public Variables
@@ -48,6 +49,12 @@ public class MasterToolScene : MonoBehaviour {
    // Undefined template name
    public static string UNDEFINED = "Undefined";
 
+   // The parent of the tool selections
+   public Transform toolTemplateHolder, toolTemplateFinalHolder;
+
+   // List of children in the content holder
+   public List<Transform> childList = new List<Transform>();
+
    // Button triggers to open scene
    public Button clickAbilityScene,
       clickMonsterScene,
@@ -78,6 +85,15 @@ public class MasterToolScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      childList = new List<Transform>();
+      foreach (Transform child in toolTemplateHolder) {
+         childList.Add(child);
+      }
+
+      foreach (Transform child in childList.OrderBy(_=>_.name)) {
+         child.SetParent(toolTemplateFinalHolder);
+      }
+
       exitButton.onClick.AddListener(() => {
          Application.Quit();
       });

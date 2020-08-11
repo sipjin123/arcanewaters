@@ -44,6 +44,10 @@ namespace MapCreationTool
             return null;
          }
 
+         if (!SeaMonsterEntity.isSeaMonster((SeaMonsterEntity.Type) seamonsterType)) {
+            Ship.Type shipType = (Ship.Type) seamonsterType;
+            return ShipManager.instance.getShipTexture(seamonsterType);
+         }
          return ImageManager.getSprite(idToSeaMonster.Values.ToList().Find(_=>_.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType).seaMonsterData.defaultSpritePath).texture;
       }
 

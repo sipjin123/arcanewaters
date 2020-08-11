@@ -62,6 +62,7 @@ public class CropsDataPanel : MonoBehaviour {
       _cropGrowthRate.text = cropData.growthRate.ToString();
       _cropCost.text = cropData.cost.ToString();
       _cropMaxGrowth.text = cropData.maxGrowthLevel.ToString();
+      _maxCrops.text = cropData.maxCrop.ToString();
 
       if (cropData.iconPath != "") {
          _cropImage.sprite = ImageManager.getSprite(cropData.iconPath);
@@ -81,6 +82,7 @@ public class CropsDataPanel : MonoBehaviour {
       cropData.cost = int.Parse(_cropCost.text);
       cropData.growthRate = float.Parse(_cropGrowthRate.text);
       cropData.rewardXp = int.Parse(_cropXP.text);
+      cropData.maxCrop = int.Parse(_maxCrops.text);
 
       return cropData;
    }
@@ -95,6 +97,10 @@ public class CropsDataPanel : MonoBehaviour {
    // The info of the crop
    [SerializeField]
    private InputField _cropDescriptionField;
+
+   // The max crops
+   [SerializeField]
+   private InputField _maxCrops;
 
    // The crop type if it is a tomato etc
    [SerializeField]

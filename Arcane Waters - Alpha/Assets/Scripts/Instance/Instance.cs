@@ -200,28 +200,32 @@ public class Instance : NetworkBehaviour
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
                   SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
 
-                  SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
+                  if (!SeaMonsterEntity.isSeaMonster(seaMonsterType)) {
+                     BotShipEntity botShip = spawnBotShip((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
+                  } else {
+                     SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
 
-                  // Special case of the 'horror' boss
-                  if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
-                     seaMonster.isStationary = true;
+                     // Special case of the 'horror' boss
+                     if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
+                        seaMonster.isStationary = true;
 
-                     float distanceGap = .25f;
-                     float diagonalDistanceGap = .35f;
+                        float distanceGap = .25f;
+                        float diagonalDistanceGap = .35f;
 
-                     SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
-                     SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
-                     SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
-                     SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
-                     SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
-                     SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
+                        SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
+                        SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
+                        SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
+                        SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
+                        SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
+                        SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
 
-                     childSeaMonster1.isStationary = true;
-                     childSeaMonster2.isStationary = true;
-                     childSeaMonster3.isStationary = true;
-                     childSeaMonster4.isStationary = true;
-                     childSeaMonster5.isStationary = true;
-                     childSeaMonster6.isStationary = true;
+                        childSeaMonster1.isStationary = true;
+                        childSeaMonster2.isStationary = true;
+                        childSeaMonster3.isStationary = true;
+                        childSeaMonster4.isStationary = true;
+                        childSeaMonster5.isStationary = true;
+                        childSeaMonster6.isStationary = true;
+                     }
                   }
                }
             }
@@ -418,6 +422,36 @@ public class Instance : NetworkBehaviour
       NetworkServer.Spawn(seaMonster.gameObject);
 
       return seaMonster;
+   }
+
+   private BotShipEntity spawnBotShip (SeaMonsterEntity.Type seaMonsterType, Vector3 localPos, Area area) {
+      if (SeaMonsterManager.self.getMonster(seaMonsterType) == null) {
+         D.debug("Sea monster is null! " + seaMonsterType);
+         return null;
+      }
+
+      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterType);
+      BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
+      botShip.areaKey = this.areaKey;
+      botShip.facing = Direction.South;
+      botShip.transform.localPosition = localPos;
+
+      botShip.seaEntityData = seaMonsterData;
+      botShip.maxHealth = seaMonsterData.maxHealth;
+      botShip.currentHealth = seaMonsterData.maxHealth;
+      botShip.shipType = (Ship.Type) seaMonsterData.seaMonsterType;
+      if (seaMonsterData.skillIdList.Count > 0) {
+         botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
+      }
+      botShip.guildId = BotShipEntity.PIRATES_GUILD_ID;
+
+      botShip.setAreaParent(area, false);
+
+      InstanceManager.self.addSeaMonsterToInstance(botShip, this);
+
+      NetworkServer.Spawn(botShip.gameObject);
+
+      return botShip;
    }
 
    private SeaMonsterEntity spawnSeaMonsterChild (SeaMonsterEntity.Type seaMonsterType, Vector2 localPos, Area area, SeaMonsterEntity parentSeaMonster, int xVal, int yVal, int variety) {

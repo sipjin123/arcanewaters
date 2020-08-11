@@ -20,6 +20,13 @@ public class Cloud : ClientMonoBehaviour {
    // Gets set to true when we have a sea entity nearby
    public bool hasSomethingNearby = false;
 
+   // The weather effect type
+   public WeatherEffectType weatherEffectType;
+
+   // The dark cloud sprite
+   public Sprite darkCloudSprite, darkCloudShadow;
+   public const int darkCloudAnimSpriteMax = 5;
+
    #endregion
 
    void Start () {
@@ -32,8 +39,14 @@ public class Cloud : ClientMonoBehaviour {
 
       // Pick a random sprite type
       int randomType = new List<int>() { 3, 4 }.ChooseRandom();
-      cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType));
-      shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType + "_shadow"));
+      if (weatherEffectType == WeatherEffectType.Cloud) {
+         cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType));
+         shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType + "_shadow"));
+      } else {
+         cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(darkCloudSprite.texture);
+         shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(darkCloudShadow.texture); 
+         cloudSprite.GetComponent<SimpleAnimation>().updateIndexMinMax(0, darkCloudAnimSpriteMax);
+      }
 
       // Check for nearby objects
       InvokeRepeating(nameof(checkNearby), 0f, .7f);

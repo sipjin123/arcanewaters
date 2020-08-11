@@ -53,6 +53,14 @@ public class SeaMonsterDataScene : MonoBehaviour
             Sprite sourceSprite = imgData.sprite;
             monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
          }
+         string shipSpritePath = "Sprites/Ships/";
+         List<ImageManager.ImageData> shipSpriteIconFiles = ImageManager.getSpritesInDirectory(shipSpritePath);
+         foreach (ImageManager.ImageData imgData in shipSpriteIconFiles) {
+            if (imgData.imageName.ToLower().Contains("pirate")) {
+               Sprite sourceSprite = imgData.sprite;
+               monsterPanel.iconSpriteList.Add(imgData.imagePath, sourceSprite);
+            }
+         }
 
          string hitSpritePath = "Sprites/Effects/";
          List<ImageManager.ImageData> hitSpriteIconFiles = ImageManager.getSpritesInDirectory(hitSpritePath);

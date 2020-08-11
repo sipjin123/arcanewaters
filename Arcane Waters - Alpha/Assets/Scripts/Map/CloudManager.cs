@@ -17,6 +17,9 @@ public class CloudManager : ClientMonoBehaviour {
    [HideInInspector]
    public Bounds expandedBounds;
 
+   // The weather effect type
+   public WeatherEffectType weatherEffectType = WeatherEffectType.Cloud;
+
    #endregion
 
    void Start () {
@@ -41,6 +44,7 @@ public class CloudManager : ClientMonoBehaviour {
          for (float x = expandedBounds.min.x; x <= expandedBounds.max.x; x += 2f) {
             Vector2 spawnPos = Util.randFromCenter(x, y, .75f);
             Cloud cloud = Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
+            cloud.weatherEffectType = weatherEffectType;
             cloud.transform.parent = this.transform;
             _clouds.Add(cloud);
          }

@@ -10,6 +10,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 {
    #region Public Variables
 
+   // The data edited in the sea monster tool
+   public SeaMonsterEntityData seaEntityData;
+
    // The guild ids for the bot ship guilds
    public static int PRIVATEERS_GUILD_ID = 1;
    public static int PIRATES_GUILD_ID = 2;
@@ -324,8 +327,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
             Vector2 attackerPosition = attacker.transform.position;
             if (isInRange(attackerPosition)) {
-               ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
-               fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
+               if (primaryAbilityId > 0) {
+                  ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(primaryAbilityId);
+                  fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
+               } else {
+                  ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Cannon);
+                  fireAtSpot(attackerPosition, shipAbilityData.abilityId, 0, 0, transform.position);
+               }
                attacked = true;
                break;
             }
