@@ -145,6 +145,9 @@ public class PlayerShipEntity : ShipEntity
                Cmd_CastAbility(SeaManager.selectedAttackType);
             } else {
                Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, transform.position);
+
+               // Trigger the tutorial
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             }
          }
       }
@@ -160,12 +163,18 @@ public class PlayerShipEntity : ShipEntity
             isReadyToSpeedup = false;
             isSpeedingUp = false;
             Cmd_UpdateSpeedupDisplay(false);
+
+            // Trigger the tutorial
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
          }
       } else {
          // Only notify other clients once if disabling
          if (isSpeedingUp) {
             Cmd_UpdateSpeedupDisplay(false);
             isSpeedingUp = false;
+
+            // Trigger the tutorial
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
          }
 
          if (speedMeter < SPEEDUP_METER_MAX) {

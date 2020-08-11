@@ -52,7 +52,7 @@ public class AdventureShopScreen : Panel {
 
    public override void show () {
       base.show();
-
+      
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetItemsForArea(shopName);
 
@@ -114,6 +114,9 @@ public class AdventureShopScreen : Panel {
 
       // Send the request to the server
       Global.player.rpc.Cmd_BuyItem(itemId, shopName);
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.BuyWeapon);
    }
 
    public void updateGreetingText (string text) {
@@ -140,6 +143,9 @@ public class AdventureShopScreen : Panel {
          row.transform.SetParent(rowsContainer.transform, false);
          row.setRowForItem(item);
       }
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.TalkShopOwner);
    }
 
    protected Item getItem (int itemId) {

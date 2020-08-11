@@ -1249,6 +1249,11 @@ public class NetEntity : NetworkBehaviour
          // Show the Area name
          LocationBanner.self.setText(Area.getName(this.areaKey));
 
+         // Trigger the tutorial
+         if (AreaManager.self.isSeaArea(this.areaKey)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInSeaArea);
+         }
+
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }

@@ -145,7 +145,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
       // Cache string data
       _weaponData = WeaponStatData.serializeWeaponStatData(weaponData);
-
+      
       // Update our Material
       foreach (WeaponLayer weaponLayer in weaponLayers) {
          weaponLayer.setType(userInfo.gender, weaponData.weaponType);
@@ -197,6 +197,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public Armor getArmor() {
+      if (_armorData == null) {
+         _armorData = "";
+      }
+
       Armor armor = new Armor();
       armor.itemTypeId = this.armor.getType();
       armor.paletteNames = this.armor.getPalettes();
@@ -212,6 +216,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public Weapon getWeapon () {
+      if (_weaponData == null) {
+         _weaponData = WeaponStatData.serializeWeaponStatData(WeaponStatData.getDefaultData());
+      }
+
       Weapon weapon = new Weapon();
       weapon.itemTypeId = this.weaponFront.getType();
       weapon.paletteNames = this.weaponFront.getPalettes();
@@ -227,6 +235,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public Hat getHat () {
+      if (_hatData == null) {
+         _hatData = "";
+      }
+
       Hat hat = new Hat();
       hat.itemTypeId = this.hatLayer.getType();
       hat.paletteNames = this.hatLayer.getPalettes();

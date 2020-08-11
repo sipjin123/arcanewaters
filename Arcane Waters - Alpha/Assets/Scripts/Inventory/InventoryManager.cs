@@ -41,6 +41,11 @@ public class InventoryManager : MonoBehaviour
 
          // Equip or unequip the item
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
+
+         // Trigger the tutorial
+         if (itemIdToSend != 0) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipWeapon);
+         }
       } else if (castedItem.category == Item.Category.Armor) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.enableLoadBlocker();

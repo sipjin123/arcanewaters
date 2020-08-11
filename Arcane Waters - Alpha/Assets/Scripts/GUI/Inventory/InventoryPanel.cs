@@ -278,6 +278,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
             }
          } 
       }
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenInventory);
    }
 
    private void updateCategoryTabs (Item.Category itemCategory) {

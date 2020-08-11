@@ -215,6 +215,10 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       }
    }
 
+   public void onTutorialButtonPress () {
+      TutorialManager3.self.panel.openPanel();
+   }
+
    public void logOut () {
       if (Global.player == null) {
          return;

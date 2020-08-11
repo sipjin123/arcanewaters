@@ -43,26 +43,17 @@ namespace MapCreationTool
          showMyMapsToggle.SetIsOnWithoutNotify(MapListPanelState.self.showOnlyMyMaps);
       }
 
-      private void loadList () {
-         UnityThreading.Task task = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            loadedMaps = null;
-            string error = "";
-            try {
-               loadedMaps = DB_Main.getMaps();
-            } catch (Exception ex) {
-               error = ex.Message;
-            }
+      private async void loadList () {
+         loadedMaps = null;
 
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (loadedMaps == null) {
-                  UI.messagePanel.displayError(error);
-               } else {
-                  updateShowedMaps();
-               }
-            });
-         });
-
-         UI.loadingPanel.display("Loading maps", task);
+         try {
+            var task = DB_Main.execAsync(DB_Main.getMaps);
+            UI.loadingPanel.display("Loading maps", task);
+            loadedMaps = await task;
+            updateShowedMaps();
+         } catch (Exception ex) {
+            UI.messagePanel.displayError(ex.Message);
+         }
       }
 
       private void updateShowedMaps () {

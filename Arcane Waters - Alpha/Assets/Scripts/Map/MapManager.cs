@@ -80,7 +80,7 @@ public class MapManager : MonoBehaviour
          // Fetch map customization data if required
          if (ownerId != -1 && customizationData == null) {
             int baseMapId = DB_Main.getMapId(mapInfo.mapName);
-            customizationData = DB_Main.getMapCustomizationData(baseMapId, ownerId);
+            customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
          }
 
          // Back to the Unity thread
@@ -104,7 +104,7 @@ public class MapManager : MonoBehaviour
       });
    }
 
-   private async void processNubisData (string areaKey , Vector3 mapPosition, MapCustomizationData customizationData) {
+   private async void processNubisData (string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
       D.editorLog("Attempting to fetch using Nubis Data", Color.green);
 
       // Request the map from Nubis Cloud

@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/NPCs/Bodies/lizard
+Assets/Resources/Sprites/Enemies/LandMonsters/lizard

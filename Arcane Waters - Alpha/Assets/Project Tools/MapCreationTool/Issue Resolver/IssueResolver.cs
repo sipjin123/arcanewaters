@@ -34,7 +34,7 @@ namespace MapCreationTool.IssueResolving
          instance = this;
       }
 
-      public static void run (bool alterData, bool saveMaps, bool createNewVersion) {
+      public static async void run (bool alterData, bool saveMaps, bool createNewVersion) {
          if (running) {
             UI.messagePanel.displayError("Issue resolver is already running.");
             return;
@@ -69,11 +69,12 @@ namespace MapCreationTool.IssueResolving
 
          UI.loadingPanel.display("Resolving Issues");
 
-         Utilities.doBackgroundTask(
-            () => maps = DB_Main.getMaps().Where(m => m.editorType == EditorType.Area).ToList(),
-            receivedMaps,
-            encounteredError
-         );
+         try {
+            maps = (await DB_Main.execAsync(DB_Main.getMaps)).Where(m => m.editorType == EditorType.Area).ToList();
+            receivedMaps();
+         } catch (Exception ex) {
+            encounteredError(ex);
+         }
       }
 
       private static void receivedMaps () {

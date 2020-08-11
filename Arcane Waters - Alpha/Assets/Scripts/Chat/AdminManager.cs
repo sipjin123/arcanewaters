@@ -1073,16 +1073,16 @@ public class AdminManager : NetworkBehaviour
       bool wasItemCreated = false;
 
       // Retrieve the item from the user inventory, if it exists
-      ItemInstance existingItem = DB_Main.getItemInstance(itemInstance.ownerUserId, itemInstance.itemDefinitionId);
+      ItemInstance existingItem = DB_Main.exec((cmd) => DB_Main.getItemInstance(cmd, itemInstance.ownerUserId, itemInstance.itemDefinitionId));
 
       if (existingItem == null) {
          // If the item does not exist, create a new one
-         DB_Main.createOrAppendItemInstance(itemInstance);
+         DB_Main.exec((cmd) => DB_Main.createOrAppendItemInstance(cmd, itemInstance));
          wasItemCreated = true;
       } else {
          // If there are less items than what is requested, replenish the stack
          if (existingItem.count < itemInstance.count) {
-            DB_Main.increaseItemInstanceCount(existingItem.id, itemInstance.count - existingItem.count);
+            DB_Main.exec((cmd) => DB_Main.increaseItemInstanceCount(cmd, existingItem.id, itemInstance.count - existingItem.count));
             wasItemCreated = true;
          }
       }

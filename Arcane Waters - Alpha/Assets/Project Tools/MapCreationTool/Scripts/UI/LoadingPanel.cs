@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace MapCreationTool
@@ -7,6 +8,13 @@ namespace MapCreationTool
    {
       [SerializeField]
       private Text titleText = null;
+
+      private void Update () {
+         if (targetTask != null && targetTask.IsCompleted) {
+            targetTask = null;
+            hide();
+         }
+      }
 
       public void display (string title) {
          titleText.text = title;
@@ -20,6 +28,11 @@ namespace MapCreationTool
          displayWhileTask.TaskEnded += (handler) => UnityThreadHelper.UnityDispatcher.Dispatch(() => hide());
       }
 
+      public void display (string title, Task displayWhileTask) {
+         display(title);
+         targetTask = displayWhileTask;
+      }
+
       public void close () {
          hide();
       }
@@ -27,5 +40,8 @@ namespace MapCreationTool
       public void closeButton_click () {
          hide();
       }
+
+      // Task, for which we are showing loading panel
+      private Task targetTask = null;
    }
 }

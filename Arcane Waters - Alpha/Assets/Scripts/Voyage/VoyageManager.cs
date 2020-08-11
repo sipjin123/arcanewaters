@@ -167,7 +167,7 @@ public class VoyageManager : MonoBehaviour {
 
    public void displayWarpToVoyageConfirmScreen () {
       PanelManager.self.showConfirmationPanel("Do you want to warp to your current voyage?",
-         () => confirmWarpToVoyageMap(), () => PanelManager.self.confirmScreen.hide(), true);
+         () => confirmWarpToVoyageMap());
    }
 
    public void confirmWarpToVoyageMap () {

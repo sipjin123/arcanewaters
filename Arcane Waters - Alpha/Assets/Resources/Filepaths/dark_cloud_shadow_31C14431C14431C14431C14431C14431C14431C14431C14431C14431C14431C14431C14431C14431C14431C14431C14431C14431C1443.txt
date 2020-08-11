@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/Weather/dark_cloud_shadow_3

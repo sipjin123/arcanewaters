@@ -45,18 +45,15 @@ public class VoyagePanel : Panel
    }
 
    public void selectVoyageMap (Voyage voyage) {
-      // Make sure the variables are captured for the click events
-      int voyageId = voyage.voyageId;
-
       PanelManager.self.showConfirmationPanel("Please confirm your destination: " + Area.getName(voyage.areaKey) + ".",
-         () => confirmJoinVoyage(voyageId), () => PanelManager.self.confirmScreen.hide(), true);
+         () => confirmJoinVoyage(voyage));
    }
 
-   public void confirmJoinVoyage (int voyageId) {
+   public void confirmJoinVoyage (Voyage voyage) {
       if (VoyageManager.isInGroup(Global.player)) {
-         Global.player.rpc.Cmd_JoinVoyageWithGroup(voyageId);
+         Global.player.rpc.Cmd_JoinVoyageWithGroup(voyage.voyageId);
       } else {
-         Global.player.rpc.Cmd_JoinVoyageAlone(voyageId);
+         Global.player.rpc.Cmd_JoinVoyageAlone(voyage.voyageId);
       }
    }
 

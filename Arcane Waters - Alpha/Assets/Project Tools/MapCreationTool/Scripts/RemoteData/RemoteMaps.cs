@@ -16,7 +16,8 @@ namespace MapCreationTool
       }
 
       protected override List<Map> fetchData () {
-         return DB_Main.getMaps();
+         // TODO: make this run using async operator
+         return DB_Main.exec(DB_Main.getMaps);
       }
 
       protected override void setData (List<Map> data) {

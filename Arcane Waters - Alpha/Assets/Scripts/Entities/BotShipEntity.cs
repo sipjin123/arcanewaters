@@ -86,6 +86,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          // Destroy the object
          NetworkServer.Destroy(gameObject);
       }
+
+      // If the tutorial is waiting for a bot ship defeat, test if the conditions are met
+      if (isClient && isDead() && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.DefeatPirateShip) {
+         if (Global.player != null && hasBeenAttackedBy(Global.player)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.DefeatPirateShip);
+         }
+      }
    }
 
    protected override void FixedUpdate () {

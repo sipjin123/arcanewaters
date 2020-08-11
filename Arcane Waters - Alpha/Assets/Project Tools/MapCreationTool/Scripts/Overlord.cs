@@ -80,6 +80,10 @@ namespace MapCreationTool
          loadAllRemoteData();
       }
 
+      private async void t() {
+         List<Map> maps = await NubisClient.callJSONList<List<Map>>(nameof(DB_Main.getMaps));
+      }
+
       private void OnEnable () {
          Tools.BiomeChanged += onBiomeChanged;
 

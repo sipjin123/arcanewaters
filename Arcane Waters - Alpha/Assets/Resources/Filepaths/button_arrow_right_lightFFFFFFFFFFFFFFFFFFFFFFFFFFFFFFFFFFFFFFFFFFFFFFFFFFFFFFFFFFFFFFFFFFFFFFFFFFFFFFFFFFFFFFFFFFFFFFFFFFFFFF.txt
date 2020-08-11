@@ -1,0 +1,1 @@
+Assets/Resources/Sprites/GUI/Tutorial/button_arrow_right_light

@@ -4273,7 +4273,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestEnterMapCustomization (string areaKey) {
+   public async void Cmd_RequestEnterMapCustomization (string areaKey) {
       // Find the player
       if (_player == null) {
          Target_DenyEnterMapCustomization("Player doesn't exist");
@@ -4299,13 +4299,9 @@ public class RPCManager : NetworkBehaviour {
       instance.playerMakingCustomizations = _player;
 
       // Get props that can be used for customization
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         ItemInstance[] remainingProps = DB_Main.getItemInstances(_player.userId, ItemDefinition.Category.Prop).ToArray();
+      ItemInstance[] remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToArray());
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_AllowEnterMapCustomization(remainingProps);
-         });
-      });
+      Target_AllowEnterMapCustomization(remainingProps);
    }
 
    [TargetRpc]
@@ -4351,7 +4347,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
+   public async void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
       // Check if this is a custom map key
       if (!AreaManager.self.tryGetCustomMapManager(customMapKey, out CustomMapManager manager)) {
          return;
@@ -4365,42 +4361,37 @@ public class RPCManager : NetworkBehaviour {
       // If player did not have a base map before, give him some props as a reward
       List<ItemInstance> rewards = new List<ItemInstance>();
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         if (manager is CustomHouseManager) {
-            DB_Main.setCustomHouseBase(_player.userId, baseMapId);
+      if (manager is CustomHouseManager) {
+         await DB_Main.execAsync((cmd) => DB_Main.setCustomHouseBase(cmd, _player.userId, baseMapId));
 
-            if (_player.customHouseBaseId == 0) {
-               rewards = ItemInstance.getFirstHouseRewards(_player.userId);
-            }
-
-            _player.customHouseBaseId = baseMapId;
-         } else if (manager is CustomFarmManager) {
-            DB_Main.setCustomFarmBase(_player.userId, baseMapId);
-
-            // If player did not have a farm before, give him some free props
-            if (_player.customFarmBaseId == 0) {
-               rewards = ItemInstance.getFirstFarmRewards(_player.userId);
-            }
-
-            _player.customFarmBaseId = baseMapId;
-         } else {
-            D.error("Unrecoginzed custom map manager");
-            return;
+         if (_player.customHouseBaseId == 0) {
+            rewards = ItemInstance.getFirstHouseRewards(_player.userId);
          }
 
-         // Give rewards if user is entitled to them
-         foreach (ItemInstance reward in rewards) {
-            DB_Main.createOrAppendItemInstance(reward);
+         _player.customHouseBaseId = baseMapId;
+      } else if (manager is CustomFarmManager) {
+         await DB_Main.execAsync((cmd) => DB_Main.setCustomFarmBase(cmd, _player.userId, baseMapId));
+
+         if (_player.customFarmBaseId == 0) {
+            rewards = ItemInstance.getFirstFarmRewards(_player.userId);
          }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (warpIntoAfterSetting) {
-               _player.spawnInNewMap(customMapKey);
-            }
+         _player.customFarmBaseId = baseMapId;
+      } else {
+         D.error("Unrecoginzed custom map manager");
+         return;
+      }
 
-            Target_BaseMapUpdated(customMapKey, baseMapId);
-         });
-      });
+      // Give rewards if user is entitled to them
+      foreach (ItemInstance reward in rewards) {
+         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, reward));
+      }
+
+      if (warpIntoAfterSetting) {
+         _player.spawnInNewMap(customMapKey);
+      }
+
+      Target_BaseMapUpdated(customMapKey, baseMapId);
    }
 
    [TargetRpc]
@@ -4409,48 +4400,44 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
+   public async void Cmd_AddPrefabCustomization (int areaOwnerId, string areaKey, PrefabState changes) {
       Area area = AreaManager.self.getArea(areaKey);
       Instance instance = _player.getInstance();
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         ItemInstance[] remainingProps = DB_Main.getItemInstances(_player.userId, ItemDefinition.Category.Prop).ToArray();
+      // Get list of props of the user
+      ItemInstance[] remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToArray());
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Check if changes are valid
-            if (MapCustomizationManager.validatePrefabChanges(area, remainingProps, changes, true, out string errorMessage)) {
-               // Set changes in the server
-               MapManager.self.addCustomizations(area, changes);
+      // Check if changes are valid
+      if (!MapCustomizationManager.validatePrefabChanges(area, remainingProps, changes, true, out string errorMessage)) {
+         Target_FailAddPrefabCustomization(changes, errorMessage);
+         return;
 
-               // Notify all clients about them
-               Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
+      }
 
-               // Find the customizable prefab that is being targeted
-               CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome).GetComponent<CustomizablePrefab>();
+      // Figure out the base map of area
+      AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
+      NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
+      int baseMapId = customMapManager.getBaseMapId(areaOwner);
 
-               // Figure out the base map of area
-               AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager);
-               NetEntity areaOwner = EntityManager.self.getEntity(areaOwnerId);
-               int baseMapId = customMapManager.getBaseMapId(areaOwner);
+      // Find the customizable prefab that is being targeted
+      CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome).GetComponent<CustomizablePrefab>();
 
-               // Set changes in the database
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  // Update changes in the database
-                  PrefabState currentState = DB_Main.getMapCustomizationChanges(baseMapId, areaOwnerId, changes.id);
-                  currentState = currentState.id == -1 ? changes : currentState.add(changes);
-                  DB_Main.setMapCustomizationChanges(baseMapId, areaOwnerId, currentState);
+      // Set changes in the database
+      PrefabState currentState = await DB_Main.execAsync((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
+      currentState = currentState.id == -1 ? changes : currentState.add(changes);
+      await DB_Main.execAsync((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
 
-                  // If creating a new prefab, remove an item from the inventory
-                  if (changes.created) {
-                     int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
-                     DB_Main.decreaseOrDeleteItemInstance(itemId, 1);
-                  }
-               });
-            } else {
-               Target_FailAddPrefabCustomization(changes, errorMessage);
-            }
-         });
-      });
+      // If creating a new prefab, remove an item from the inventory
+      if (changes.created) {
+         int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
+         await DB_Main.execAsync((cmd) => DB_Main.decreaseOrDeleteItemInstance(cmd, itemId, 1));
+      }
+
+      // Set changes in the server
+      MapManager.self.addCustomizations(area, changes);
+
+      // Notify all clients about them
+      Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
    }
 
    [TargetRpc]
