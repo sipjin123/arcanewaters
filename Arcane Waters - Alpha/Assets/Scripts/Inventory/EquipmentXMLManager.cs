@@ -302,6 +302,21 @@ public class EquipmentXMLManager : MonoBehaviour {
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             newName = CraftingIngredients.getName(ingredientType);
             break;
+         case Item.Category.Blueprint:
+            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingItem.resultItem.category == Item.Category.Weapon) {
+               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentName + " Bluerprint";
+            }
+            if (craftingItem.resultItem.category == Item.Category.Armor) {
+               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentName + " Bluerprint";
+            }
+            if (craftingItem.resultItem.category == Item.Category.Hats) {
+               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentName + " Bluerprint";
+            }
+            break;
       }
 
       return newName;
@@ -329,6 +344,21 @@ public class EquipmentXMLManager : MonoBehaviour {
             newItem.itemTypeId = item.itemTypeId;
             newDescription = newItem.getCastItem().getDescription();
             break;
+         case Item.Category.Blueprint:
+            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingItem.resultItem.category == Item.Category.Weapon) {
+               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentDescription;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Armor) {
+               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentDescription;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Hats) {
+               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentDescription;
+            }
+            break;
       }
 
       return newDescription;
@@ -353,6 +383,21 @@ public class EquipmentXMLManager : MonoBehaviour {
          case Item.Category.CraftingIngredients:
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
             iconPath = CraftingIngredients.getIconPath(ingredientType);
+            break;
+         case Item.Category.Blueprint:
+            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingItem.resultItem.category == Item.Category.Weapon) {
+               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentIconPath;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Armor) {
+               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentIconPath;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Hats) {
+               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               return fetchedData.equipmentIconPath;
+            }
             break;
       }
 

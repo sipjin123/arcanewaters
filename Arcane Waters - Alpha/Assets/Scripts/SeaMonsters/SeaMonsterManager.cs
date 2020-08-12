@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Linq;
 
 public class SeaMonsterManager : MonoBehaviour {
    #region Public Variables
@@ -67,10 +68,10 @@ public class SeaMonsterManager : MonoBehaviour {
                   TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                   try {
                      SeaMonsterEntityData newSeaData = Util.xmlLoad<SeaMonsterEntityData>(newTextAsset);
-                     SeaMonsterEntity.Type typeID = (SeaMonsterEntity.Type) newSeaData.seaMonsterType;
 
-                     if (!_seaMonsterData.ContainsKey(typeID) && xmlPair.isEnabled) {
-                        _seaMonsterData.Add(typeID, newSeaData);
+                     if (!_seaMonsterData.ContainsKey(xmlPair.xmlId) && xmlPair.isEnabled) {
+                        newSeaData.xmlId = xmlPair.xmlId;
+                        _seaMonsterData.Add(xmlPair.xmlId, newSeaData);
                         seaMonsterDataList.Add(newSeaData);
                      }
                   } catch {
@@ -83,11 +84,22 @@ public class SeaMonsterManager : MonoBehaviour {
    }
    
    public SeaMonsterEntityData getMonster (SeaMonsterEntity.Type enemyType) {
-      if (_seaMonsterData.ContainsKey(enemyType)) {
-         return _seaMonsterData[enemyType];
+      SeaMonsterEntityData fetchedData = _seaMonsterData.Values.ToList().Find(_ => _.seaMonsterType == enemyType);
+      if (fetchedData != null) {
+         return fetchedData;
       }
 
       D.editorLog("This sea monster does not exist in the database: " + enemyType, Color.red);
+      return null;
+   }
+
+   public SeaMonsterEntityData getMonster (int xmlId) {
+      SeaMonsterEntityData dafetchedData = _seaMonsterData.Values.ToList().Find(_ => _.xmlId == xmlId);
+      if (dafetchedData != null) {
+         return dafetchedData;
+      }
+
+      D.editorLog("This sea monster does not exist in the database xml id: " + xmlId, Color.red);
       return null;
    }
 
@@ -97,13 +109,16 @@ public class SeaMonsterManager : MonoBehaviour {
          seaMonsterDataList = new List<SeaMonsterEntityData>();
          foreach (SeaMonsterEntityData seaMonsterData in seamonsterDataList) {
             seaMonsterDataList.Add(seaMonsterData);
+            if (!_seaMonsterData.ContainsKey(seaMonsterData.xmlId)) {
+               _seaMonsterData.Add(seaMonsterData.xmlId, seaMonsterData);
+            }
          }
       }
    }
 
    public List<SeaMonsterEntityData> getAllSeaMonsterData () {
       List<SeaMonsterEntityData> seaMonsterList = new List<SeaMonsterEntityData>();
-      foreach (KeyValuePair<SeaMonsterEntity.Type, SeaMonsterEntityData> item in _seaMonsterData) {
+      foreach (KeyValuePair<int, SeaMonsterEntityData> item in _seaMonsterData) {
          seaMonsterList.Add(item.Value);
       }
       return seaMonsterList;
@@ -117,7 +132,7 @@ public class SeaMonsterManager : MonoBehaviour {
    protected Dictionary<string, List<SeaMonsterSpawner>> _spawners = new Dictionary<string, List<SeaMonsterSpawner>>();
 
    // The cached sea monster data 
-   private Dictionary<SeaMonsterEntity.Type, SeaMonsterEntityData> _seaMonsterData = new Dictionary<SeaMonsterEntity.Type, SeaMonsterEntityData>();
+   private Dictionary<int, SeaMonsterEntityData> _seaMonsterData = new Dictionary<int, SeaMonsterEntityData>();
 
    #endregion
 }

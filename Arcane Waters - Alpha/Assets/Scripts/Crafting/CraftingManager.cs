@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using System.Linq;
 
 public class CraftingManager : MonoBehaviour {
    #region Public Variables
@@ -29,6 +30,10 @@ public class CraftingManager : MonoBehaviour {
       }
    }
 
+   public CraftableItemRequirements getCraftableData (int xmlId) {
+      return _craftingData.Values.ToList().Find(_ => _.xmlId == xmlId);
+   }
+
    public List<CraftableItemRequirements> getAllCraftableData () {
       List<CraftableItemRequirements> craftableList = new List<CraftableItemRequirements>();
       foreach(KeyValuePair<string, CraftableItemRequirements> item in _craftingData) {
@@ -46,7 +51,8 @@ public class CraftingManager : MonoBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlData in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlData.rawXmlData);
-               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset); 
+               CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
+               craftingData.xmlId = xmlData.xmlId;
                string keyName = getKey(craftingData.resultItem.category, craftingData.resultItem.itemTypeId);
                
                // Save the Crafting data in the memory cache

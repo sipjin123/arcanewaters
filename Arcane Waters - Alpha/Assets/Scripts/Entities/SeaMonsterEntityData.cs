@@ -20,6 +20,11 @@ public class SeaMonsterEntityData
    [XmlElement(Namespace = "AttackType")]
    public Attack.Type attackType;
 
+   // The xml id
+   public int xmlId;
+
+   // The id used when the entity is a bot ship instead of a monster
+   public int subVarietyTypeId = -1;
 
    // Shows the gizmos indicating the ranges of each sea monster
    public bool showDebugGizmo;

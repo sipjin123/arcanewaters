@@ -103,8 +103,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite =  ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
-            item = item.getCastItem();
-            icon.sprite = ImageManager.getSprite(item.getIconPath());
+            icon.sprite = ImageManager.getSprite(EquipmentXMLManager.self.getItemIconPath(item));
             break;
          default:
             D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);

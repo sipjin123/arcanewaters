@@ -82,7 +82,7 @@ namespace ServerCommunicationHandlerv2 {
          List<VoyageInviteData> voyageSerializer = Util.unserialize<VoyageInviteData>(voyageString);
 
          // Fetch only the invites that is relevant to our port
-         List<VoyageInviteData> newInvites = voyageSerializer.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.getport());
+         List<VoyageInviteData> newInvites = voyageSerializer.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.getPort());
          return newInvites;
       }
 

@@ -799,6 +799,8 @@ public class BattleManager : MonoBehaviour {
          if (!battler.isMonster()) {
             if (battler.player is PlayerBodyEntity) {
                PlayerBodyEntity body = (PlayerBodyEntity) battler.player;
+               bool isLeveledUp = LevelUtil.gainedLevel(body.XP, body.XP + xpWon);
+               body.rpc.checkForLevelUp(body.userId, body.XP, body.XP + xpWon);
                body.XP += xpWon;
 
                foreach (Battler companionBattlers in winningBattlers) {

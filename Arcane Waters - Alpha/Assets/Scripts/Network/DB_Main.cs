@@ -678,6 +678,35 @@ public class DB_Main : DB_MainStub {
 
    #region Abilities
 
+   public static new bool hasAbility (int userId, int abilityId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT count(*) as itemCount FROM ability_table_v2 WHERE (userID=@userID and abilityId=@abilityId)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userId);
+            cmd.Parameters.AddWithValue("@abilityId", abilityId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  int itemCount = DataUtil.getInt(dataReader, "itemCount");
+                  if (itemCount < 1) {
+                     return false;
+                  } else {
+                     return true;
+                  }
+               }
+            }
+            return true;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return false;
+      }
+   }
+
    public static new void updateAbilitySlot (int userID, int abilityId, int slotNumber) {
       try {
          using (MySqlConnection conn = getConnection())

@@ -454,6 +454,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int monsterId = int.Parse(xmlSubGroup[0]);
                   SeaMonsterEntityData seaMonsterData = Util.xmlLoad<SeaMonsterEntityData>(xmlSubGroup[1]);
+                  seaMonsterData.xmlId = monsterId;
                   seaMonsterDataList.Add(seaMonsterData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }

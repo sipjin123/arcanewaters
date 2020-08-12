@@ -196,12 +196,17 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    }
 
    private void checkBlending () {
+      // This feature will set the alpha of the primary sprite to zero if its true
+      // The primary sprite is designed to be used as the sprite that the user interacts to reveal the second sprite that shows the actual entrance {bookcase / waterfall}
       if (canBlend) {
          Color tmp = spriteRenderer.color;
          tmp.a = isInteracted ? 1 : 0;
          spriteRenderer.color = tmp;
          subSpriteRenderer.color = tmp;
       }
+
+      // This feature will set the alpha of the secondary sprite to zero if its true
+      // The secondary sprite is designed to be used as the sprite that animated once the path is revealed {trapdoor / boulder / tree stump}
       if (canBlendInteract2) {
          Color tmp = subSpriteRenderer.color;
          tmp.a = isInteracted ? 1 : 0;

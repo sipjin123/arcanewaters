@@ -11,25 +11,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    public enum Type
    {
-      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6, Horror_Tentacle = 7,
-
-      // Copy directly from ship.type (ship.cs)
-      Type_1 = 100, Type_2 = 101, Type_3 = 102, Type_4 = 103, Type_5 = 104, Type_6 = 105, Type_7 = 106, Type_8 = 107,
+      None = 0, Tentacle = 1, Horror = 2, Worm = 3, Reef_Giant = 4, Fishman = 5, SeaSerpent = 6, Horror_Tentacle = 7, PirateShip = 8
    }
 
-   public static bool isSeaMonster (Type type) {
-      switch (type) {
-         case Type.Type_1:
-         case Type.Type_2:
-         case Type.Type_3:
-         case Type.Type_4:
-         case Type.Type_5:
-         case Type.Type_6:
-         case Type.Type_7:
-         case Type.Type_8:
-            return false;
-         default: return true;
-      }
+   public static bool isSeaMonster (int subVarietyId) {
+      return subVarietyId < 1;
    }
 
    // List of children dependencies

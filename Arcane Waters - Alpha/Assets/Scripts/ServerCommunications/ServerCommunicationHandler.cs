@@ -59,7 +59,7 @@ namespace ServerCommunicationHandlerv2 {
          ourPort = port;
       }
 
-      public int getport () {
+      public int getPort () {
          return ourPort;
       }
 

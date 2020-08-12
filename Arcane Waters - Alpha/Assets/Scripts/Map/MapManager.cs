@@ -223,16 +223,12 @@ public class MapManager : MonoBehaviour
          WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
          if (exportedProject.editorType == EditorType.Sea) {
             if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
+               WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
                area.cloudManager.weatherEffectType = weatherType;
+               area.cloudManager.enabled = true;
+            } else if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+               WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
             }
-
-            WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
-            if (weatherType == WeatherEffectType.Rain) {
-               // Rain and dark clouds can co-exist
-               area.cloudManager.weatherEffectType = WeatherEffectType.DarkCloud;
-               WeatherManager.self.setWeatherSimulation(WeatherEffectType.Rain, area.transform);
-            }
-            area.cloudManager.enabled = true;
          } else if (exportedProject.editorType == EditorType.Area) {
             Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
             if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {

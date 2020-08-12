@@ -7,7 +7,6 @@ using System.Linq;
 using Crosstales.BWF.Manager;
 using System;
 using System.Text;
-using BackgroundTool;
 using Random = UnityEngine.Random;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
@@ -346,6 +345,44 @@ public class RPCManager : NetworkBehaviour {
    }
 
    #endregion
+
+   [Server]
+   public void checkForLevelUp (int userId, int oldXp, int newXp) {
+      // This function handles the different type of logic that will take place when a user reaches a certain level
+      int playerLevel = LevelUtil.levelForXp(newXp);
+      if (playerLevel == 2) {
+         addAbilityByLevel(userId, 2);
+      }
+   }
+
+   [Server]
+   public void addAbilityByLevel (int userId, int currentLevel) {
+      switch (currentLevel) {
+         case 2:
+            // The player receives a new ability at level 2
+            int windSlashId = 6;
+            AttackAbilityData attackAbilitydata = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == windSlashId);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               bool hasAbility = DB_Main.hasAbility(userId, windSlashId);
+               if (!hasAbility) {
+                  DB_Main.updateAbilitiesData(userId, new AbilitySQLData { 
+                     abilityID = windSlashId,
+                     abilityLevel = 1,
+                     abilityType= AbilityType.Standard,
+                     description = "",
+                     equipSlotIndex = -1,
+                     name = attackAbilitydata.itemName
+                  });
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     D.editorLog("Added player ability! " + attackAbilitydata.itemName, Color.green);
+                  });
+               } else {
+                  D.editorLog("Already has this ability! ", Color.red);
+               }
+            });
+            break;
+      }
+   }
 
    [Server]
    public void updateCompanionExp (int companionId, int exp) {
@@ -3337,16 +3374,20 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create or update the database ability
          foreach (int abilityId in abilityIds) {
-            BasicAbilityData cachedAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityId);
-            AbilitySQLData abilityData = new AbilitySQLData {
-               abilityID = cachedAbilityData.itemID, 
-               abilityLevel = cachedAbilityData.abilityLevel,
-               abilityType = cachedAbilityData.abilityType,
-               description = cachedAbilityData.itemDescription,
-               equipSlotIndex = -1,
-               name = cachedAbilityData.itemName
-            };
-            DB_Main.updateAbilitiesData(userID, abilityData);
+            if (!DB_Main.hasAbility(_player.userId, abilityId)) {
+               BasicAbilityData cachedAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityId);
+               AbilitySQLData abilityData = new AbilitySQLData {
+                  abilityID = cachedAbilityData.itemID,
+                  abilityLevel = 1,
+                  abilityType = cachedAbilityData.abilityType,
+                  description = cachedAbilityData.itemDescription,
+                  equipSlotIndex = -1,
+                  name = cachedAbilityData.itemName
+               };
+               DB_Main.updateAbilitiesData(userID, abilityData);
+            } else {
+               D.editorLog("The player already has the ability: " + abilityId, Color.red);
+            }
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -3360,6 +3401,20 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create or update the database item
          foreach (Item item in rewardList) {
+            if (item.category == Item.Category.Blueprint) {
+               CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
+               switch (itemCache.resultItem.category) {
+                  case Item.Category.Weapon:
+                     item.data = Blueprint.WEAPON_DATA_PREFIX;
+                     break;
+                  case Item.Category.Armor:
+                     item.data = Blueprint.ARMOR_DATA_PREFIX;
+                     break;
+                  case Item.Category.Hats:
+                     item.data = Blueprint.HAT_DATA_PREFIX;
+                     break;
+               }
+            }
             DB_Main.createItemOrUpdateItemCount(userID, item);
          }
 

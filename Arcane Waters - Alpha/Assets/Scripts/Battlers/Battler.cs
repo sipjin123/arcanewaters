@@ -1148,10 +1148,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
-            float offsetX = -.38f;
-            float offsetY = .28f;
-            Vector2 sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
-            Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
+            float projectileSpawnOffsetX = sourceBattler.isAttacker() ? .38f : -.38f;
+            float projectileSpawnOffsetY = .28f;
+            Vector2 sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
+            Vector2 targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
 
             // Determines the animation speed modification when playing shoot animation
             float shootAnimSpeed = 1.5f;
@@ -1247,10 +1247,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             float castAnimSpeed = 1.5f;
-            offsetX = -.38f;
-            offsetY = .28f;
-            sourcePos = getMagicGroundPosition() + new Vector2(offsetX, offsetY);
-            targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, offsetY);
+            projectileSpawnOffsetX = sourceBattler.isAttacker() ? .38f : -.38f;
+            projectileSpawnOffsetY = .28f;
+            sourcePos = getMagicGroundPosition() + new Vector2(projectileSpawnOffsetX, projectileSpawnOffsetY);
+            targetPos = targetBattler.getMagicGroundPosition() + new Vector2(0, projectileSpawnOffsetY);
 
             // Start the attack animation that will eventually create the magic effect
             if (isFirstAction) {

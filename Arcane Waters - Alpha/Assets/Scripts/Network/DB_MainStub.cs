@@ -554,6 +554,10 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
+   public static bool hasAbility (int userId, int abilityId) {
+      return false;
+   }
+
    public static void updateAbilitySlot (int userID, int abilityId, int slotNumber) {
 
    }
