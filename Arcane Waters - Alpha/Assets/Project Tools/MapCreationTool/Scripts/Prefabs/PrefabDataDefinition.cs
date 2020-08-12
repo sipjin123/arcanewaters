@@ -89,7 +89,7 @@ namespace MapCreationTool
                selectDataFields[selectDataFields.Length - 1] = new SelectDataField {
                   name = customData.name,
                   toolTip = customData.toolTip,
-                  options = ShipManager.instance.formSelectionOptions()
+                  options = MonsterManager.instance.formPirateShipOptions()
                };
             } else if (customData.type == CustomFieldType.ActionName) {
                Array.Resize(ref selectDataFields, selectDataFields.Length + 1);

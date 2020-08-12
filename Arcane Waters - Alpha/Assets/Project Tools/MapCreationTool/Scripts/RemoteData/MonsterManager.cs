@@ -44,10 +44,6 @@ namespace MapCreationTool
             return null;
          }
 
-         if (!SeaMonsterEntity.isSeaMonster((SeaMonsterEntity.Type) seamonsterType)) {
-            Ship.Type shipType = (Ship.Type) seamonsterType;
-            return ShipManager.instance.getShipTexture(seamonsterType);
-         }
          return ImageManager.getSprite(idToSeaMonster.Values.ToList().Find(_=>_.seaMonsterData.seaMonsterType == (SeaMonsterEntity.Type) seamonsterType).seaMonsterData.defaultSpritePath).texture;
       }
 
@@ -67,10 +63,25 @@ namespace MapCreationTool
       }
 
       public SelectOption[] formSeaMonsterSelectionOptions () {
-         return seaMonsters.Where(sm => sm.seaMonsterData.roleType != RoleType.Minion).Select(n => new SelectOption(
+         return seaMonsters.Where(sm => sm.seaMonsterData.roleType != RoleType.Minion && sm.seaMonsterData.seaMonsterType != SeaMonsterEntity.Type.PirateShip).Select(n => new SelectOption(
             ((int) n.seaMonsterData.seaMonsterType).ToString(),
             (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName)
          ).ToArray();
+      }
+
+      public SelectOption[] formPirateShipOptions () {
+         List<SelectOption> returnOptions = new List<SelectOption>();
+         List<SelectOption> extractedOptions = seaMonsters.Where(sm => sm.seaMonsterData.seaMonsterType == SeaMonsterEntity.Type.PirateShip).Select(n => new SelectOption(
+            ((int) n.xmlId).ToString(),
+            (int) n.seaMonsterData.seaMonsterType + ": " + n.seaMonsterData.monsterName)
+         ).ToList();
+
+         returnOptions.Add(new SelectOption("None", "-1"));
+         foreach (SelectOption option in extractedOptions) {
+            returnOptions.Add(option);
+         }
+
+         return returnOptions.ToArray();
       }
 
       public int seaMonsterCount

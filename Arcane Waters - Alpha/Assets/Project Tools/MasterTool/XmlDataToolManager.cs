@@ -63,6 +63,7 @@ public class XmlDataToolManager : MonoBehaviour {
             foreach (XMLPair xmlData in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlData.rawXmlData);
                CraftableItemRequirements craftingData = Util.xmlLoad<CraftableItemRequirements>(newTextAsset);
+               craftingData.xmlId = xmlData.xmlId;
 
                // Save the Crafting data in the memory cache
                craftingDataList.Add(craftingData);

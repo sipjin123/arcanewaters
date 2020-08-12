@@ -518,6 +518,29 @@ public class GenericSelectionPopup : MonoBehaviour
                }
             }
             break;
+         case Item.Category.Blueprint: {
+               foreach (CraftableItemRequirements craftingItem in QuestDataToolManager.instance.craftingDataList) {
+                  string iconPath = "";
+                  string itemName = "";
+                  if (craftingItem.resultItem.category == Item.Category.Weapon) {
+                     WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+                     iconPath = fetchedData.equipmentIconPath;
+                     itemName = fetchedData.equipmentName;
+                  }
+                  if (craftingItem.resultItem.category == Item.Category.Armor) {
+                     ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+                     iconPath = fetchedData.equipmentIconPath;
+                     itemName = fetchedData.equipmentName;
+                  }
+                  if (craftingItem.resultItem.category == Item.Category.Hats) {
+                     HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+                     iconPath = fetchedData.equipmentIconPath;
+                     itemName = fetchedData.equipmentName;
+                  }
+                  createItemTextTemplate(itemName, (int) craftingItem.xmlId, textUI, indexUI, iconPath, icon, changeEvent, itemIconPath);
+               }
+            }
+            break;
       }
    }
 

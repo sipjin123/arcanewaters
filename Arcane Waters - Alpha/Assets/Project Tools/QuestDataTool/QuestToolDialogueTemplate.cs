@@ -178,6 +178,30 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
             itemTemplate.itemName.text = CraftingIngredients.getName(ingredientType);
             itemTemplate.itemIcon.sprite = ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
             break;
+         case Item.Category.Blueprint:
+            CraftableItemRequirements craftingItem = QuestDataToolManager.instance.craftingDataList.Find(_ => _.xmlId == item.itemTypeId);
+
+            string iconPath = "";
+            string itemName = "";
+            if (craftingItem.resultItem.category == Item.Category.Weapon) {
+               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               iconPath = fetchedData.equipmentIconPath;
+               itemName = fetchedData.equipmentName;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Armor) {
+               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               iconPath = fetchedData.equipmentIconPath;
+               itemName = fetchedData.equipmentName;
+            }
+            if (craftingItem.resultItem.category == Item.Category.Hats) {
+               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               iconPath = fetchedData.equipmentIconPath;
+               itemName = fetchedData.equipmentName;
+            }
+
+            itemTemplate.itemName.text = itemName;
+            itemTemplate.itemIcon.sprite = ImageManager.getSprite(iconPath);
+            break;
       }
       itemTemplate.deleteButton.onClick.AddListener(() => {
          Destroy(itemTemplate.gameObject);

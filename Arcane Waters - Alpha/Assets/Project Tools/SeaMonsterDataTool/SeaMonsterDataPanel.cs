@@ -6,6 +6,7 @@ using Mirror;
 using System;
 using System.Linq;
 using UnityEngine.Events;
+using System.Globalization;
 
 public class SeaMonsterDataPanel : MonoBehaviour
 {
@@ -70,6 +71,12 @@ public class SeaMonsterDataPanel : MonoBehaviour
    public ShipSkillTemplate skillTemplate;
    public Button addSkillButton;
    public Button closeSkillSelectionButton;
+
+   // If dropdown is initialized
+   public bool initDropDownValues;
+
+   // The list of the sub varieties
+   public List<int> subVarietyIdList = new List<int>();
 
    public enum DirectoryType
    {
@@ -248,6 +255,19 @@ public class SeaMonsterDataPanel : MonoBehaviour
    #region Save and Load Data
 
    public void loadData (SeaMonsterEntityData seaMonsterData, int xml_id, bool isEnabled) {
+      if (!initDropDownValues) {
+         List<Dropdown.OptionData> newOptionList = new List<Dropdown.OptionData>();
+         subVarietyIdList = new List<int>();
+         foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
+            newOptionList.Add(new Dropdown.OptionData {
+               text = shipType.ToString()
+            });
+            subVarietyIdList.Add((int) shipType);
+         }
+         pirateShipTypeDropdown.options = newOptionList;
+         initDropDownValues = true;
+      }
+
       xml_toggler.isOn = isEnabled;
       currentXmlId = xml_id;
       startingName = seaMonsterData.monsterName;
@@ -285,6 +305,13 @@ public class SeaMonsterDataPanel : MonoBehaviour
       avatarIconPath.text = seaMonsterData.avatarSpritePath;
       rippleOffsetX.text = seaMonsterData.rippleLocOffset.x.ToString();
       rippleOffsetY.text = seaMonsterData.rippleLocOffset.y.ToString();
+      dropdownHolder.SetActive(seaMonsterData.seaMonsterType == SeaMonsterEntity.Type.PirateShip);
+
+      if (seaMonsterData.subVarietyTypeId > 0) {
+         int loadedSubVarietyId = subVarietyIdList.Find(_=>_ == seaMonsterData.subVarietyTypeId);
+         int indexFound = subVarietyIdList.IndexOf(loadedSubVarietyId);
+         pirateShipTypeDropdown.value = indexFound;
+      } 
 
       animGroup.onValueChanged.Invoke(animGroup.value);
       roleType.onValueChanged.Invoke(roleType.value);
@@ -375,8 +402,14 @@ public class SeaMonsterDataPanel : MonoBehaviour
       seaMonsterData.animationSpeedOverride = float.Parse(animationSpeedOverride.text);
       seaMonsterData.rippleAnimationSpeedOverride = float.Parse(rippleAnimationSpeedOverride.text);
       seaMonsterData.rippleLocOffset = new Vector3(float.Parse(rippleOffsetX.text), float.Parse(rippleOffsetY.text), 0);
-
       seaMonsterData.lootGroupId = lootGroupIdSelected;
+
+      if (seaMonsterData.seaMonsterType == SeaMonsterEntity.Type.PirateShip) {
+         int idSelected = subVarietyIdList[pirateShipTypeDropdown.value];
+         seaMonsterData.subVarietyTypeId = idSelected;
+      } else {
+         seaMonsterData.subVarietyTypeId = -1;
+      }
 
       if (projectileSpawnRowList.Count > 0) {
          seaMonsterData.projectileSpawnLocations = new List<DirectionalPositions>();
@@ -484,6 +517,7 @@ public class SeaMonsterDataPanel : MonoBehaviour
          iconTemp.itemTypeText.text = enemyType.ToString();
          iconTemp.selectButton.onClick.AddListener(() => {
             seaMonsterType.text = enemyType.ToString();
+            dropdownHolder.SetActive(enemyType == SeaMonsterEntity.Type.PirateShip);
             closeAvatarSelectionButton.onClick.Invoke();
          });
       }
@@ -610,6 +644,8 @@ public class SeaMonsterDataPanel : MonoBehaviour
    [SerializeField] private InputField animationSpeedOverride;
    [SerializeField] private InputField rippleAnimationSpeedOverride;
    [SerializeField] private InputField rippleOffsetX, rippleOffsetY;
+   [SerializeField] private Dropdown pirateShipTypeDropdown;
+   [SerializeField] private GameObject dropdownHolder;
 
 #pragma warning restore 0649 
 

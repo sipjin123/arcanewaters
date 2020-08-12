@@ -36,6 +36,7 @@ public class QuestDataToolManager : XmlDataToolManager {
          Invoke("loadXMLData", MasterToolScene.loadDelay);
       });
 
+      fetchRecipe();
       EquipmentXMLManager.self.initializeDataCache();
    }
 
