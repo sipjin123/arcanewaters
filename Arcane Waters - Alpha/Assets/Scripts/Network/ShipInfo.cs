@@ -169,6 +169,7 @@ public class ShipInfo {
    #endregion
 }
 
+[Serializable]
 public class ShipAbilityInfo
 {
    // The default attack ability of the ship

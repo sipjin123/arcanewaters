@@ -328,6 +328,7 @@ namespace NubisDataHandling {
          equippedWeapon = equippedItemData.weaponItem;
          equippedArmor = equippedItemData.armorItem;
          equippedHat = equippedItemData.hatItem;
+
          userInventory.Add(equippedWeapon);
          userInventory.Add(equippedArmor);
          userInventory.Add(equippedHat);

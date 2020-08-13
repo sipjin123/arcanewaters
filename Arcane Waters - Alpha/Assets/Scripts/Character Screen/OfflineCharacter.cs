@@ -110,6 +110,13 @@ public class OfflineCharacter : ClientMonoBehaviour {
       setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
       setHat(hatData.hatType, hatData.palettes, HatStatData.serializeHatStatData(hatData));
       setWeapon(userInfo, weapon);
+
+      Global.setUserObject(new UserObjects {
+         userInfo = userInfo,
+         weapon = new Weapon { itemTypeId = weapon.itemTypeId },
+         armor = new Armor { itemTypeId = armor.itemTypeId },
+         hat = new Hat { itemTypeId = hat.itemTypeId },
+      });
    }
 
    public void setBodyLayers (UserInfo userInfo) {
@@ -135,6 +142,13 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
       // Update colors
       eyes.recolor(userInfo.eyesPalettes);
+      if (Global.getUserObjects() != null) {
+         Global.userObjects.userInfo = userInfo;
+      } else {
+         Global.setUserObject(new UserObjects { 
+            userInfo = userInfo,
+         });
+      }
    }
 
    public void setWeapon (UserInfo userInfo, Item weapon) {
@@ -173,6 +187,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
       // Update our Material
       armor.recolor(paletteNames);
+
+      if (Global.getUserObjects() != null) {
+         Global.userObjects.armor = getArmor();
+      }
    }
 
    public void cancelCreating () {

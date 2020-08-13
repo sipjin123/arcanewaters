@@ -109,11 +109,11 @@ public class InventoryManager : MonoBehaviour
    }
 
    public static bool isEquipped (int itemId) {
-      if (itemId <= 0 || Global.userObjects == null) {
+      if (itemId <= 0 || Global.getUserObjects() == null) {
          return false;
       }
 
-      if (itemId == Global.userObjects.weapon.id || itemId == Global.userObjects.armor.id || itemId == Global.userObjects.hat.id) {
+      if (itemId == Global.getUserObjects().weapon.id || itemId == Global.getUserObjects().armor.id || itemId == Global.getUserObjects().hat.id) {
          return true;
       }
 

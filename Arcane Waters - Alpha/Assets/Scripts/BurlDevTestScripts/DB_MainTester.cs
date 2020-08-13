@@ -12,6 +12,10 @@ public class DB_MainTester : MonoBehaviour {
    #endregion
 
    private void OnGUI () {
+      if (GUILayout.Button("Create Account")) {
+         DB_Main.createAccount("burlin1", "test", "burlin1@codecommode.com", 1);
+      }
+
       if (GUILayout.Button("Fetch armor")) {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             var result = DB_Main.getArmor(745);

@@ -203,7 +203,7 @@ public class DB_Main : DB_MainStub {
             using (MySqlCommand command = new MySqlCommand(
                "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_hat_xml_v1.xmlContent AS equipmentXML " +
                "FROM arcane.items " +
-               "RIGHT JOIN arcane.crafting_xml_v2 ON(itmType = crafting_xml_v2.xml_id AND itmData LIKE '%blueprintType=hat%' AND crafting_xml_v2.equipmentCategory = 3) " +
+               "RIGHT JOIN arcane.crafting_xml_v2 ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=hat%' AND crafting_xml_v2.equipmentCategory = 3) " +
                "RIGHT JOIN arcane.equipment_hat_xml_v1 ON(itmType = equipment_hat_xml_v1.xml_id AND itmData LIKE '%blueprintType=hat%') " +
                "WHERE(itmCategory = 7) AND items.usrId = @usrId",
                connection)) {

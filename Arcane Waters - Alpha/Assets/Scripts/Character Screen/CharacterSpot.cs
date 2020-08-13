@@ -64,12 +64,12 @@ public class CharacterSpot : ClientMonoBehaviour {
       Global.currentlySelectedUserId = character.userId;
 
       // Cache the user info
-      Global.userObjects = new UserObjects {
+      Global.setUserObject(new UserObjects {
          userInfo = character.getUserInfo(),
          weapon = character.getWeapon(),
          armor = character.getArmor(),
          hat = character.getHat()
-      };
+      });
 
       // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
       ClientManager.sendAccountNameAndUserId();
@@ -108,7 +108,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
       armor.paletteNames = Item.parseItmPalette(new string[2] { PaletteDef.Armor1.Brown, PaletteDef.Armor2.Blue });
       Hat hat = new Hat();
-
+      
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteNames);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {

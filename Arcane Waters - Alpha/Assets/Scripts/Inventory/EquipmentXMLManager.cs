@@ -306,15 +306,15 @@ public class EquipmentXMLManager : MonoBehaviour {
             CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
                WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Bluerprint";
+               return fetchedData.equipmentName + " Blueprint";
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
                ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Bluerprint";
+               return fetchedData.equipmentName + " Blueprint";
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {
                HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Bluerprint";
+               return fetchedData.equipmentName + " Blueprint";
             }
             break;
       }

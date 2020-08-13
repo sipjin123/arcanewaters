@@ -382,6 +382,11 @@ public class Instance : NetworkBehaviour
                   }
 
                   BotShipEntity botShip = spawnBotShip(shipXmlKey, guildId, targetLocalPos, area);
+                  IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
+                  if (receiver != null && dataField.d != null) {
+                     receiver.receiveData(dataField.d);
+                  }
+
                }
             }
 
@@ -432,11 +437,13 @@ public class Instance : NetworkBehaviour
       botShip.maxHealth = seaMonsterData.maxHealth;
       botShip.currentHealth = seaMonsterData.maxHealth;
 
-      botShip.shipType = (Ship.Type) seaMonsterData.subVarietyTypeId;
+      Ship.Type shipType = (Ship.Type) seaMonsterData.subVarietyTypeId;
+      botShip.shipType = shipType;
       if (seaMonsterData.skillIdList.Count > 0) {
          botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
       }
       botShip.guildId = guildId;
+      botShip.setShipData(shipType);
 
       botShip.setAreaParent(area, false);
 

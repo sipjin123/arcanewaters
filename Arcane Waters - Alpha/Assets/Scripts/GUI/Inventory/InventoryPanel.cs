@@ -134,9 +134,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
 
       // Load the character stack using the cached user info
-      if (Global.userObjects != null) {
+      if (Global.getUserObjects() != null) {
          characterStack.gameObject.SetActive(true);
-         characterStack.updateLayers(Global.userObjects, false);
+         characterStack.updateLayers(Global.getUserObjects(), false);
 
          // Clear old data
          equippedWeaponCellContainer.DestroyChildren();
@@ -144,7 +144,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
          equippedHatCellContainer.DestroyChildren();
 
          // Quick load the cached equipment
-         UserObjects userObj = Global.userObjects;
+         UserObjects userObj = Global.getUserObjects();
          if (userObj.weapon.itemTypeId != 0) {
             loadCachedEquipment(userObj.weapon);
          }

@@ -367,28 +367,31 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             int type = int.Parse(field.v.Split(':')[0]);
             isDebug = true;
 
-            ShipData shipData = ShipDataManager.self.getShipData((Ship.Type) type);
-            shipType = shipData.shipType;
-            if (shipData != null) {
-               if (shipData.spritePath != "") {
-                  spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
-               }
-            }
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
 
-            initialize(shipData);
-
-            // Assign ripple sprites
-            _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
-            _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
-            if (shipData.rippleSpritePath != "") {
-               ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
-            }
          } else if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
             int id = int.Parse(field.v.Split(':')[0]);
             guildId = id;
          }
+      }
+   }
+
+   public void setShipData (Ship.Type type) {
+      ShipData shipData = ShipDataManager.self.getShipData(type);
+      shipType = shipData.shipType;
+      if (shipData != null) {
+         if (shipData.spritePath != "") {
+            spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
+         }
+      }
+      initialize(shipData);
+
+      // Assign ripple sprites
+      _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
+      _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
+      if (shipData.rippleSpritePath != "") {
+         ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
       }
    }
 

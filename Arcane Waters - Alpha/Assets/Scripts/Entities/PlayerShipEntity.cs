@@ -20,7 +20,7 @@ public class PlayerShipEntity : ShipEntity
    public Vector2 nextShotTarget = new Vector2(0, 0);
 
    // Ability Reference
-   public ShipAbilityInfo shipAbilities = new ShipAbilityInfo();
+   public SyncListInt shipAbilities = new SyncListInt();
 
    // The equipped weapon characteristics
    [SyncVar]
@@ -259,7 +259,14 @@ public class PlayerShipEntity : ShipEntity
       // Ship stuff
       initialize(shipInfo);
       shipId = shipInfo.shipId;
-      shipAbilities = shipInfo.shipAbilities;
+
+      foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
+         shipAbilities.Add(newShipAbility);
+      }
+
+      if (shipAbilities.Count > 0) {
+         primaryAbilityId = shipAbilities[0];
+      }
 
       // Store the equipped items characteristics
       weaponType = weapon.itemTypeId;
@@ -455,8 +462,8 @@ public class PlayerShipEntity : ShipEntity
       NetworkedCannonBall netBall = ballObject.GetComponent<NetworkedCannonBall>();
 
       int abilityId = -1;
-      if (shipAbilities.ShipAbilities.Length > 0) {
-         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities.ShipAbilities[0]);
+      if (shipAbilities.Count > 0) {
+         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
          if (shipAbilityData != null) {
             abilityId = shipAbilityData.abilityId;
          }

@@ -370,7 +370,7 @@ public class NetEntity : NetworkBehaviour
       this.bodyType = userInfo.bodyType;
 
       // Update the user info cache
-      if (Global.userObjects == null) {
+      if (Global.getUserObjects() == null) {
          Global.userObjects = new UserObjects();
       }
 
@@ -378,17 +378,29 @@ public class NetEntity : NetworkBehaviour
 
       if (weapon.itemTypeId > 0) {
          WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-         weapon.data = WeaponStatData.serializeWeaponStatData(weaponStatData);
+         if (weaponStatData != null) {
+            weapon.data = WeaponStatData.serializeWeaponStatData(weaponStatData);
+         } else {
+            D.debug("Weapon was null! error here");
+         }
       }
 
       if (armor.itemTypeId > 0) {
          ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(armor.itemTypeId);
-         armor.data = ArmorStatData.serializeArmorStatData(armorStatData);
+         if (armorStatData != null) {
+            armor.data = ArmorStatData.serializeArmorStatData(armorStatData);
+         } else {
+            D.debug("Armor was null! error here");
+         }
       }
 
       if (hat.itemTypeId > 0) {
          HatStatData hatStatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
-         hat.data = HatStatData.serializeHatStatData(hatStatData);
+         if (hatStatData != null) {
+            hat.data = HatStatData.serializeHatStatData(hatStatData);
+         } else {
+            D.debug("Hat was null! error here");
+         }
       }
 
       Global.setUserEquipment(weapon, armor, hat);

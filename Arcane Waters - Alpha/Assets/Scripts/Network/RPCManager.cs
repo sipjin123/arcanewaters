@@ -3401,21 +3401,28 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create or update the database item
          foreach (Item item in rewardList) {
+            Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = 1, data = "" };
             if (item.category == Item.Category.Blueprint) {
                CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
                switch (itemCache.resultItem.category) {
                   case Item.Category.Weapon:
+                     newDatabaseItem.data = Blueprint.WEAPON_DATA_PREFIX;
                      item.data = Blueprint.WEAPON_DATA_PREFIX;
                      break;
                   case Item.Category.Armor:
+                     newDatabaseItem.data = Blueprint.ARMOR_DATA_PREFIX;
                      item.data = Blueprint.ARMOR_DATA_PREFIX;
                      break;
                   case Item.Category.Hats:
+                     newDatabaseItem.data = Blueprint.HAT_DATA_PREFIX;
                      item.data = Blueprint.HAT_DATA_PREFIX;
                      break;
                }
+               newDatabaseItem.itemTypeId = itemCache.resultItem.itemTypeId;
+            } else {
+               newDatabaseItem = item;
             }
-            DB_Main.createItemOrUpdateItemCount(userID, item);
+            DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
          }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

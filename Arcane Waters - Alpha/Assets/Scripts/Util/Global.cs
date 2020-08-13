@@ -79,6 +79,14 @@ public class Global {
       userObjects.hat = hat;
    }
 
+   public static void setUserObject (UserObjects newUserObj) {
+      userObjects = newUserObj;
+   }
+
+   public static UserObjects getUserObjects () {
+      return userObjects;
+   }
+
    public static string getAddress (ServerType server) {
       switch (server) {
          case ServerType.Localhost:

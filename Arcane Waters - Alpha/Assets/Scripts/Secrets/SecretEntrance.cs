@@ -195,12 +195,15 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       });
    }
 
-   private void checkBlending () {
+   private void checkBlending (bool isInteractOverride = false) {
       // This feature will set the alpha of the primary sprite to zero if its true
       // The primary sprite is designed to be used as the sprite that the user interacts to reveal the second sprite that shows the actual entrance {bookcase / waterfall}
       if (canBlend) {
          Color tmp = spriteRenderer.color;
          tmp.a = isInteracted ? 1 : 0;
+         if (isInteractOverride) {
+            tmp.a = 1;
+         }
          spriteRenderer.color = tmp;
          subSpriteRenderer.color = tmp;
       }
@@ -210,6 +213,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       if (canBlendInteract2) {
          Color tmp = subSpriteRenderer.color;
          tmp.a = isInteracted ? 1 : 0;
+         if (isInteractOverride) {
+            tmp.a = 1;
+         }
          subSpriteRenderer.color = tmp;
       }
    }
@@ -415,7 +421,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
          blockerSprite.gameObject.SetActive(false);
          postBlockerSprite.gameObject.SetActive(true);
-         checkBlending();
+         checkBlending(true);
       }
    }
 

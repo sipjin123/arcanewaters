@@ -66,9 +66,9 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
       loadingBlocker.SetActive(true);
 
       // Load the character stack using the cached user info
-      if (Global.userObjects != null) {
+      if (Global.getUserObjects() != null) {
          characterStack.gameObject.SetActive(true);
-         characterStack.updateLayers(Global.userObjects);
+         characterStack.updateLayers(Global.getUserObjects());
       }
    }
 
