@@ -170,7 +170,6 @@ public class NetEntity : NetworkBehaviour
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
 
-
       foreach (Animator ignoredAnim in _ignoredAnimators) {
          _animators.Remove(ignoredAnim);
       }
@@ -892,7 +891,7 @@ public class NetEntity : NetworkBehaviour
       int newXP = jobs.getXP(jobType);
       int oldXP = newXP - xpGained;
       int levelsGained = LevelUtil.levelsGained(oldXP, newXP);
-
+      
       // If they gained a level, show a special message
       if (levelsGained > 0) {
          GameObject levelUpCanvas = Instantiate(PrefabsManager.self.levelGainPrefab);
@@ -1066,13 +1065,25 @@ public class NetEntity : NetworkBehaviour
          PlayerShipEntity ship = (PlayerShipEntity) this;
          ship.desiredAngle = DirectionUtil.getAngle(this.facing);
 
+         _body.mass = 1f;
+         _body.drag = 2.5f;
+         _body.angularDrag = 10f;
+
+         ((PlayerShipEntity) this).speed = 15;
+
+         // The server controls the final position of the object instead of the owner
+         _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
+
          Rpc_SetServerAuthoritativeMode();
       }      
    }
 
    [Command]
    public void Cmd_ToggleVelocityDrivenTransform () {
-      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = !_smoothSync.setVelocityInsteadOfPositionOnNonOwners;
+      bool useVelocity = !_smoothSync.setVelocityInsteadOfPositionOnNonOwners;
+      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = useVelocity;
+      _smoothSync.transformSource = useVelocity ? SmoothSyncMirror.TransformSource.Server : SmoothSyncMirror.TransformSource.Owner;
+      Rpc_SetVelocityDrivenTransform(_smoothSync.setVelocityInsteadOfPositionOnNonOwners);
    }
 
    [ClientRpc]
@@ -1085,6 +1096,11 @@ public class NetEntity : NetworkBehaviour
 
       // The server controls the final position of the object instead of the owner
       _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
+   }
+
+   [ClientRpc]
+   private void Rpc_SetVelocityDrivenTransform (bool useVelocityDriven) {
+      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = useVelocityDriven;
    }
 
    [Command]
@@ -1314,7 +1330,7 @@ public class NetEntity : NetworkBehaviour
    protected float _lastAngleChangeTime;
 
    // The time at which we last sent our input to the server
-   protected float _lastInputChangeTime;
+   protected double _lastInputChangeTime;
 
    // The nameText that follows us around
    protected Text _nameText;

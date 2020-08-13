@@ -95,10 +95,8 @@ public class Global {
             return "18.217.126.169";
          case ServerType.AmazonSydney:
             return "13.55.171.249";
-         case ServerType.ProductionWindows:
-            return "3.18.71.75";
-         case ServerType.ProductionLinux:
-            return "3.12.195.190";
+         case ServerType.AmazonPerformance:
+            return "3.19.199.220";
          default:
             return "";
       }

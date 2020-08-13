@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using MapCreationTool.Serialization;
 using MapCustomization;
+using System.Threading.Tasks;
 
 public class DB_MainStub : MonoBehaviour {
    #region Public Variables
@@ -226,23 +227,23 @@ public class DB_MainStub : MonoBehaviour {
       return new List<ItemDefinition>();
    }
 
-   public static ItemInstance getItemInstance (int userId, int itemDefinitionId) {
+   public static ItemInstance getItemInstance (object command, int userId, int itemDefinitionId) {
       return null;
    }
 
-   public static void createOrAppendItemInstance (ItemInstance item) {
+   public static void createOrAppendItemInstance (object command, ItemInstance item) {
 
    }
 
-   public static void createNewItemInstance (ItemInstance itemInstance) {
+   public static void createNewItemInstance (object command, ItemInstance itemInstance) {
 
    }
 
-   public static void increaseItemInstanceCount (int id, int increaseBy) {
+   public static void increaseItemInstanceCount (object command, int id, int increaseBy) {
 
    }
 
-   public static void decreaseOrDeleteItemInstance (int id, int decreaseBy) {
+   public static void decreaseOrDeleteItemInstance (object command, int id, int decreaseBy) {
 
    }
 
@@ -258,7 +259,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static List<ItemInstance> getItemInstances (int ownerUserId, ItemDefinition.Category category) {
+   public static List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
       return new List<ItemInstance>();
    }
 
@@ -408,23 +409,23 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void setCustomHouseBase (int userId, int baseMapId) {
+   public static void setCustomHouseBase (object command, int userId, int baseMapId) {
 
    }
 
-   public static void setCustomFarmBase (int userId, int baseMapId) {
+   public static void setCustomFarmBase (object command, int userId, int baseMapId) {
 
    }
 
-   public static MapCustomizationData getMapCustomizationData (int mapId, int userId) {
+   public static MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
       return null;
    }
 
-   public static PrefabState getMapCustomizationChanges (int mapId, int userId, int prefabId) {
+   public static PrefabState getMapCustomizationChanges (object command, int mapId, int userId, int prefabId) {
       return default;
    }
 
-   public static void setMapCustomizationChanges (int mapId, int userId, PrefabState changes) {
+   public static void setMapCustomizationChanges (object command, int mapId, int userId, PrefabState changes) {
 
    }
 
@@ -432,7 +433,7 @@ public class DB_MainStub : MonoBehaviour {
       return -1;
    }
 
-   public static List<Map> getMaps () {
+   public static List<Map> getMaps (object command) {
       return new List<Map>();
    }
 
@@ -1162,6 +1163,23 @@ public class DB_MainStub : MonoBehaviour {
 
    public static void saveJsonEnum (string jsonName, string jsonContent) {
 
+   }
+
+   public static T exec<T> (Func<object, T> action) {
+      return default;
+   }
+
+   public static void exec (Action<object> action) {
+      
+   }
+
+   public static async Task<T> execAsync<T> (Func<object, T> action) {
+      await Task.CompletedTask;
+      return default;
+   }
+
+   public static async Task execAsync (Action<object> action) {
+      await Task.CompletedTask;
    }
 
    public static bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {

@@ -40,7 +40,7 @@ public class CustomMapsPanel : Panel
          // Get the preview image for the entry
          Sprite sprite = ImageManager.getSprite($"GUI/Map Customization/Preview Images/{ manager.typeDisplayName }_map_{ baseMap.name.ToLower().Replace(" ", "_") }");
 
-         cell.setData(baseMap.name, sprite, 0, 0, () => selectBaseMap(baseMap.id));
+         cell.setData(baseMap.displayName, sprite, 0, 0, () => selectBaseMap(baseMap.id));
       }
 
       // TODO: highlight the entry, which is owned by user

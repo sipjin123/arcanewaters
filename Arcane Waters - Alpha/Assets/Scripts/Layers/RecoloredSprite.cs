@@ -21,7 +21,7 @@ public class RecoloredSprite : MonoBehaviour {
       }
    }
 
-   public void recolor (string paletteNames) {
+   public void recolor (string paletteNames, int slot = 0) {
       if (paletteNames == null) {
          return;
       }
@@ -33,10 +33,6 @@ public class RecoloredSprite : MonoBehaviour {
          if (paletteNamesArray[i] != "") {
             palettesToUse.Add(paletteNamesArray[i]);
          }
-      }
-
-      if (palettesToUse.Count == 0) {
-         return;
       }
 
       if (palettesToUse.Count > 4) {
@@ -51,7 +47,7 @@ public class RecoloredSprite : MonoBehaviour {
       checkMaterialAvailability();
       _palettes = Item.parseItmPalette(palettesToUse.ToArray());
 
-      getMaterial().SetTexture("_Palette", PaletteSwapManager.generateTexture2D(palettesToUse.ToArray()));
+      getMaterial().SetTexture(slot == 0 ? "_Palette" : "_Palette2", PaletteSwapManager.generateTexture2D(palettesToUse.ToArray()));
    }
 
    public void setNewMaterial (Material oldMaterial) {
@@ -88,9 +84,9 @@ public class RecoloredSprite : MonoBehaviour {
       return _palettes;
    }
 
-   private void checkMaterialAvailability () {
+   public void checkMaterialAvailability () {
       Material oldMaterial = getMaterial();
-      if (oldMaterial == null || !oldMaterial.HasProperty("_Palette")) {
+      if (oldMaterial == null || !oldMaterial.HasProperty("_Palette") || !oldMaterial.HasProperty("_Palette2")) {
          // We get a different material for GUI Images
          Material material = (_image != null) ?
             MaterialManager.self.getGUIMaterial() : MaterialManager.self.get();

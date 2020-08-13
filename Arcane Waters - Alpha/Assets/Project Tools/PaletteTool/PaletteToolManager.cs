@@ -20,6 +20,9 @@ public class PaletteToolManager : XmlDataToolManager {
    // Button initiates new palette creation process
    public Button createPaletteButton;
 
+   // Dropdown sorting palette rows by type
+   public TMPro.TMP_Dropdown mainMenuCategoryDropdown;
+
    [Header("Palette edit screen buttons")]
    // Button takes user to list of already created palettes
    public Button backToListButton;
@@ -171,6 +174,70 @@ public class PaletteToolManager : XmlDataToolManager {
    // Checkbox unchecked sprite for not static color box
    public Sprite checkboxUncheckedBoxSprite;
 
+   [Header("Preview multiple layers")]
+   // Turn on/off character preview in place of sprite preview
+   public Button previewCharacterButton;
+
+   // Show options of character preview
+   public Button previewCharacterOptions;
+
+   // GameObject containing all preview character options
+   public GameObject multipleLayersScene;
+
+   // Preview of player character - main window
+   public Image playerBody;
+   public Image playerHairBack;
+   public Image playerHairFront;
+   public Image playerEyes;
+   public Image playerArmor;
+   public Image playerWeaponFront;
+   public Image playerWeaponBack;
+
+   // Preview of player character - option screen
+   public Image previewBody;
+   public Image previewHairBack;
+   public Image previewHairFront;
+   public Image previewEyes;
+   public Image previewArmor;
+   public Image previewWeaponFront;
+   public Image previewWeaponBack;
+
+   [Header("Character preview - buttons")]
+   // Buttons used to navigate between character preview options
+   public Button showHairOptions;
+   public Button showEyesOptions;
+   public Button showArmorOptions;
+   public Button showWeaponOptions;
+   public Button hideOptions;
+   public Button closeMultipleLayersPreview;
+
+   [Header("Character preview - option containers")]
+   // Objects containing UI of character preview options
+   public GameObject optionHair;
+   public GameObject optionEyes;
+   public GameObject optionArmor;
+   public GameObject optionWeapon;
+
+   [Header("Character preview - dropdowns")]
+   // Dropdowns allowing to choose different sprites for character preview
+   public TMPro.TMP_Dropdown chooseSpriteHair;
+   public TMPro.TMP_Dropdown chooseSpriteEyes;
+   public TMPro.TMP_Dropdown chooseSpriteArmor;
+   public TMPro.TMP_Dropdown chooseSpriteWeapon;
+
+   // Dropdowns allowing to choose different palettes for character preview
+   public TMPro.TMP_Dropdown[] palettesHair;
+   public TMPro.TMP_Dropdown[] palettesEyes;
+   public TMPro.TMP_Dropdown[] palettesArmor;
+   public TMPro.TMP_Dropdown[] palettesWeapon;
+
+   [Header("Character preview - dropdown buttons")]
+   // After pressing these buttons, user can navigate to palette currently chosen in dropdown
+   public Button[] palettesHairButton;
+   public Button[] palettesEyesButton;
+   public Button[] palettesArmorButton;
+   public Button[] palettesWeaponButton;
+
    public enum PaletteImageType
    {
       None = 0,
@@ -214,6 +281,7 @@ public class PaletteToolManager : XmlDataToolManager {
       backToListButton.onClick.AddListener(() => {
          _isEditingRow = false;
          changePaletteScene.gameObject.SetActive(false);
+         mainMenuCategoryDropdown.transform.parent.gameObject.SetActive(true);
          loadXMLData();
       });
 
@@ -226,6 +294,15 @@ public class PaletteToolManager : XmlDataToolManager {
       // Back to master tool
       mainMenuButton.onClick.AddListener(() => {
          SceneManager.LoadScene(MasterToolScene.masterScene);
+      });
+
+      // Sort palette rows by type
+      mainMenuCategoryDropdown.onValueChanged.AddListener((int index) => {
+         if (index <= 0) {
+            generateList(PaletteImageType.None);
+         } else {
+            generateList((PaletteImageType) index);
+         }
       });
 
       // Changing size of currently edited palette (available in edit scene)
@@ -328,6 +405,214 @@ public class PaletteToolManager : XmlDataToolManager {
          updateSubcategoryColorsInDatabase();
       });
 
+      // Preview character with multiple layers
+      previewCharacterButton.onClick.AddListener(() => {
+         if (!playerBody.gameObject.activeSelf) {
+            previewSprite.gameObject.SetActive(false);
+
+            playerBody.gameObject.SetActive(true);
+            playerHairBack.gameObject.SetActive(true);
+            playerHairFront.gameObject.SetActive(true);
+            playerEyes.gameObject.SetActive(true);
+            playerArmor.gameObject.SetActive(true);
+            playerWeaponFront.gameObject.SetActive(true);
+            playerWeaponBack.gameObject.SetActive(true);
+
+            updatePlayerCharacterSprite();
+         } else {
+            previewSprite.gameObject.SetActive(true);
+
+            playerBody.gameObject.SetActive(false);
+            playerHairBack.gameObject.SetActive(false);
+            playerHairFront.gameObject.SetActive(false);
+            playerEyes.gameObject.SetActive(false);
+            playerArmor.gameObject.SetActive(false);
+            playerWeaponFront.gameObject.SetActive(false);
+            playerWeaponBack.gameObject.SetActive(false);
+         }
+      });
+      previewCharacterOptions.onClick.AddListener(() => {
+         multipleLayersScene.SetActive(true);
+
+         optionHair.SetActive(false);
+         optionEyes.SetActive(false);
+         optionArmor.SetActive(false);
+         optionWeapon.SetActive(false);
+
+         showHairOptions.gameObject.SetActive(true);
+         showEyesOptions.gameObject.SetActive(true);
+         showArmorOptions.gameObject.SetActive(true);
+         showWeaponOptions.gameObject.SetActive(true);
+      });
+      closeMultipleLayersPreview.onClick.AddListener(() => {
+         updatePlayerCharacterSprite();
+         bool updateHair, updateWeapon, updateArmor, updateEyes;
+         checkIfPreviewContainsEditedColor(out updateHair, out updateWeapon, out updateArmor, out updateEyes);
+         updateCharacterPreviewHue(updateHair, updateWeapon, updateArmor, updateEyes);
+         multipleLayersScene.SetActive(false);
+
+         optionHair.SetActive(false);
+         optionEyes.SetActive(false);
+         optionArmor.SetActive(false);
+         optionWeapon.SetActive(false);
+
+         showHairOptions.gameObject.SetActive(false);
+         showEyesOptions.gameObject.SetActive(false);
+         showArmorOptions.gameObject.SetActive(false);
+         showWeaponOptions.gameObject.SetActive(false);
+      });
+      showHairOptions.onClick.AddListener(() => {
+         optionHair.SetActive(true);
+
+         hideShowOptionButtons();
+         hideOptions.gameObject.SetActive(true);
+      });
+      showEyesOptions.onClick.AddListener(() => {
+         optionEyes.SetActive(true);
+
+         hideShowOptionButtons();
+         hideOptions.gameObject.SetActive(true);
+      });
+      showArmorOptions.onClick.AddListener(() => {
+         optionArmor.SetActive(true);
+
+         hideShowOptionButtons();
+         hideOptions.gameObject.SetActive(true);
+      });
+      showWeaponOptions.onClick.AddListener(() => {
+         optionWeapon.SetActive(true);
+
+         hideShowOptionButtons();
+         hideOptions.gameObject.SetActive(true);
+      });
+
+      hideOptions.onClick.AddListener(() => {
+         optionHair.SetActive(false);
+         optionEyes.SetActive(false);
+         optionArmor.SetActive(false);
+         optionWeapon.SetActive(false);
+
+         showHairOptions.gameObject.SetActive(true);
+         showEyesOptions.gameObject.SetActive(true);
+         showArmorOptions.gameObject.SetActive(true);
+         showWeaponOptions.gameObject.SetActive(true);
+
+         hideOptions.gameObject.SetActive(false);
+      });
+      prepareSpriteDropdown(PaletteImageType.Hair, chooseSpriteHair);
+      prepareSpriteDropdown(PaletteImageType.Eyes, chooseSpriteEyes);
+      prepareSpriteDropdown(PaletteImageType.Armor, chooseSpriteArmor);
+      prepareSpriteDropdown(PaletteImageType.Weapon, chooseSpriteWeapon);
+
+      chooseSpriteHair.onValueChanged.AddListener((int index) => {
+         var list = ImageManager.getSpritesInDirectory(paletteImageTypePaths[(int) PaletteImageType.Hair]);
+         List<ImageManager.ImageData> finalList = new List<ImageManager.ImageData>();
+         
+         foreach (ImageManager.ImageData imageData in list) {
+            TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(imageData.imageName);
+            if (imageData.imageName.ToLower().Contains("back")) {
+               continue;
+            }
+            if (imageData.imagePath.ToLower().Contains(_isFemale ? "male" : "female")) {
+               if (_isFemale) {
+                  if (!imageData.imagePath.ToLower().Contains("female")) {
+                     continue;
+                  }
+               } else {
+                  continue;
+               }
+            }
+            finalList.Add(imageData);
+         }
+         previewHairFront.sprite = finalList[index].sprites[INDEX_OF_FRONT_PREVIEW];
+
+         string backPath = finalList[index].imagePath.Replace("front", "back");
+         ImageManager.ImageData backSpriteData = list.Find((ImageManager.ImageData data) => data.imagePath.Equals(backPath));
+         if (backSpriteData.sprites != null) {
+            previewHairBack.enabled = true;
+            previewHairBack.sprite = backSpriteData.sprites[INDEX_OF_FRONT_PREVIEW];
+         } else {
+            previewHairBack.enabled = false;
+         }
+         if (previewHairBack.sprite == null) {
+            previewHairBack.enabled = false;
+         }
+      });
+      chooseSpriteEyes.onValueChanged.AddListener((int index) => {
+         var list = ImageManager.getSpritesInDirectory(paletteImageTypePaths[(int) PaletteImageType.Eyes]);
+         List<ImageManager.ImageData> finalList = new List<ImageManager.ImageData>();
+
+         foreach (ImageManager.ImageData imageData in list) {
+            if (imageData.imagePath.ToLower().Contains(_isFemale ? "male" : "female")) {
+               if (_isFemale) {
+                  if (!imageData.imagePath.ToLower().Contains("female")) {
+                     continue;
+                  }
+               } else {
+                  continue;
+               }
+            }
+            finalList.Add(imageData);
+         }
+
+         previewEyes.sprite = finalList[index].sprites[INDEX_OF_FRONT_PREVIEW];
+      });
+      chooseSpriteArmor.onValueChanged.AddListener((int index) => {
+         var list = ImageManager.getSpritesInDirectory(paletteImageTypePaths[(int) PaletteImageType.Armor]);
+         List<ImageManager.ImageData> finalList = new List<ImageManager.ImageData>();
+
+         foreach (ImageManager.ImageData imageData in list) {
+            if (imageData.imagePath.ToLower().Contains(_isFemale ? "male" : "female")) {
+               if (_isFemale) {
+                  if (!imageData.imagePath.ToLower().Contains("female")) {
+                     continue;
+                  }
+               } else {
+                  continue;
+               }
+            }
+            finalList.Add(imageData);
+         }
+
+         previewArmor.sprite = finalList[index].sprites[INDEX_OF_FRONT_PREVIEW];
+      });
+      chooseSpriteWeapon.onValueChanged.AddListener((int index) => {
+         var list = ImageManager.getSpritesInDirectory(paletteImageTypePaths[(int) PaletteImageType.Weapon]);
+         List<ImageManager.ImageData> finalList = new List<ImageManager.ImageData>();
+
+         foreach (ImageManager.ImageData imageData in list) {
+            TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(imageData.imageName);
+            if (imageData.imageName.ToLower().Contains("back")) {
+               continue;
+            }
+            if (imageData.imagePath.ToLower().Contains(_isFemale ? "male" : "female")) {
+               if (_isFemale) {
+                  if (!imageData.imagePath.ToLower().Contains("female")) {
+                     continue;
+                  }
+               } else {
+                  continue;
+               }
+            }
+            finalList.Add(imageData);
+         }
+         previewWeaponFront.sprite = finalList[index].sprites[INDEX_OF_FRONT_PREVIEW];
+
+         string backPath = finalList[index].imagePath.Replace("front", "back");
+         ImageManager.ImageData backSpriteData = list.Find((ImageManager.ImageData data) => data.imagePath.Equals(backPath));
+         if (backSpriteData.sprites != null) {
+            previewWeaponBack.enabled = true;
+            previewWeaponBack.sprite = backSpriteData.sprites[INDEX_OF_FRONT_PREVIEW];
+         } else {
+            previewWeaponBack.enabled = false;
+         }
+         if (previewWeaponBack.sprite == null) {
+            previewWeaponBack.enabled = false;
+         }
+      });
+
+      prepareCharacterPreviewPaletteChoose();
+
       // Fill dropdown, used for choosing preview sprite, with filenames
       prepareSpriteChooseDropdown();
 
@@ -338,7 +623,14 @@ public class PaletteToolManager : XmlDataToolManager {
       prepareSubcategoryDropdown(_currentRow);
    }
 
-   public void generateList () {
+   private void hideShowOptionButtons () {
+      showHairOptions.gameObject.SetActive(false);
+      showEyesOptions.gameObject.SetActive(false);
+      showArmorOptions.gameObject.SetActive(false);
+      showWeaponOptions.gameObject.SetActive(false);
+   }
+
+   public void generateList (PaletteImageType type = PaletteImageType.None) {
       // Ignore first element which is a prefab
       for (int i = 1; i < paletteRowParent.childCount; i++) {
          Destroy(paletteRowParent.GetChild(i).gameObject);
@@ -346,35 +638,44 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Prepare rows and buttons based on data downloaded from database
       for (int i = 0; i < _paletteDataList.Count; i++) {
-         PaletteButtonRow row = GameObject.Instantiate(paletteButtonRowPrefab).GetComponent<PaletteButtonRow>();
          PaletteDataPair data = _paletteDataList[i];
-
-         row.paletteName.text = data.paletteData.paletteName;
-         row.dataIndex = i;
-         row.size.text = data.paletteData.size.ToString();
-         row.editButton.onClick.AddListener(() => {
-            showSingleRowEditor(row);
-         });
-         row.deleteButton.onClick.AddListener(() => {
-            showDeleteConfirmation(row);
-         });
-         row.duplicateButton.onClick.AddListener(() => {
-            duplicateSingleRow(row);
-         });
-         row.enableButton.onClick.AddListener(() => {
-            if (row.enableButton.image.sprite == checkboxCheckedPaletteSprite) {
-               row.enableButton.image.sprite = checkboxUncheckedPaletteSprite;
-            } else {
-               row.enableButton.image.sprite = checkboxCheckedPaletteSprite;
-            }
-            enableSingleRow(row);
-         });
-
-         row.enableButton.image.sprite = data.isEnabled ? checkboxCheckedPaletteSprite : checkboxUncheckedPaletteSprite;
-         row.gameObject.GetComponent<RectTransform>().SetParent(paletteRowParent);
-         row.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-         row.gameObject.SetActive(true);
+         if (type != PaletteImageType.None && (PaletteImageType)data.paletteData.paletteType != type) {
+            continue;
+         }
+         createRow(data, i);
       }
+   }
+
+   private PaletteButtonRow createRow (PaletteDataPair data, int index) {
+      PaletteButtonRow row = GameObject.Instantiate(paletteButtonRowPrefab).GetComponent<PaletteButtonRow>();
+
+      row.paletteName.text = data.paletteData.paletteName;
+      row.dataIndex = index;
+      row.size.text = data.paletteData.size.ToString();
+      row.editButton.onClick.AddListener(() => {
+         showSingleRowEditor(row);
+      });
+      row.deleteButton.onClick.AddListener(() => {
+         showDeleteConfirmation(row);
+      });
+      row.duplicateButton.onClick.AddListener(() => {
+         duplicateSingleRow(row);
+      });
+      row.enableButton.onClick.AddListener(() => {
+         if (row.enableButton.image.sprite == checkboxCheckedPaletteSprite) {
+            row.enableButton.image.sprite = checkboxUncheckedPaletteSprite;
+         } else {
+            row.enableButton.image.sprite = checkboxCheckedPaletteSprite;
+         }
+         enableSingleRow(row);
+      });
+
+      row.enableButton.image.sprite = data.isEnabled ? checkboxCheckedPaletteSprite : checkboxUncheckedPaletteSprite;
+      row.gameObject.GetComponent<RectTransform>().SetParent(paletteRowParent);
+      row.gameObject.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
+      row.gameObject.SetActive(true);
+
+      return row;
    }
 
    private void duplicateSingleRow (PaletteButtonRow row) {
@@ -395,8 +696,12 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private void showSingleRowEditor (PaletteButtonRow row) {
+      _isEditingRow = false;
+      mainMenuCategoryDropdown.value = 0;
+
       hueSlider.value = hueSlider.minValue;
       changePaletteScene.gameObject.SetActive(true);
+      mainMenuCategoryDropdown.transform.parent.gameObject.SetActive(false);
 
       // Convert data from string (hex format RRGGBB) to Unity.Color
       PaletteToolData data = _paletteDataList[row.dataIndex].paletteData;
@@ -418,6 +723,7 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       prepareSubcategoryDropdown(row);
+      prepareCharacterPreviewPaletteChoose();
 
       // Present edit scene with downloaded data
       _currentRow = row;
@@ -571,7 +877,12 @@ public class PaletteToolManager : XmlDataToolManager {
                };
                _paletteDataList.Add(newDataPair);
             }
+            PaletteSwapManager.self.updateData();
             generateList();
+
+            // Update palette categories after saving palette
+            prepareCharacterPreviewPaletteChoose();
+
             XmlLoadingPanel.self.finishLoading();
          });
       });
@@ -788,6 +1099,69 @@ public class PaletteToolManager : XmlDataToolManager {
       }
       _hueShiftValue = newHueShift;
       showPalettePreview();
+
+      // Modify elements for character preview, if they're using currently edited palette
+      bool updateHair, updateWeapon, updateArmor, updateEyes;
+      checkIfPreviewContainsEditedColor(out updateHair, out updateWeapon, out updateArmor, out updateEyes);
+      updateCharacterPreviewHue(updateHair, updateWeapon, updateArmor, updateEyes);
+   }
+
+   private void checkIfPreviewContainsEditedColor (out bool hair, out bool weapon, out bool armor, out bool eyes) {
+      hair = false;
+      weapon = false;
+      armor = false;
+      eyes = false;
+
+      if (_currentRow == null) {
+         return;
+      }
+      string currentName = _paletteDataList[_currentRow.dataIndex].paletteData.paletteName;
+
+      foreach (TMPro.TMP_Dropdown dropdown in palettesHair) {
+         if (dropdown.options[dropdown.value].text == _paletteDataList[_currentRow.dataIndex].paletteData.paletteName) {
+            hair = true;
+         }
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesEyes) {
+         if (dropdown.options[dropdown.value].text == _paletteDataList[_currentRow.dataIndex].paletteData.paletteName) {
+            eyes = true;
+         }
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesArmor) {
+         if (dropdown.options[dropdown.value].text == _paletteDataList[_currentRow.dataIndex].paletteData.paletteName) {
+            armor = true;
+         }
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesWeapon) {
+         if (dropdown.options[dropdown.value].text == _paletteDataList[_currentRow.dataIndex].paletteData.paletteName) {
+            weapon = true;
+         }
+      }
+   }
+
+   private void updateCharacterPreviewHue (bool updateHair, bool updateWeapon, bool updateArmor, bool updateEyes) {
+      Texture tex = generateTexture2D();
+      const string texParam = "_Palette";
+
+      // Weapon
+      previewWeaponBack.material.SetTexture(texParam, _useCurrentPaletteWeapon || updateWeapon ? tex : null);
+      previewWeaponFront.material.SetTexture(texParam, _useCurrentPaletteWeapon || updateWeapon ? tex : null);
+      playerWeaponBack.material.SetTexture(texParam, _useCurrentPaletteWeapon || updateWeapon ? tex : null);
+      playerWeaponFront.material.SetTexture(texParam, _useCurrentPaletteWeapon || updateWeapon ? tex : null);
+
+      // Armor
+      previewArmor.material.SetTexture(texParam, _useCurrentPaletteArmor || updateArmor ? tex : null);
+      playerArmor.material.SetTexture(texParam, _useCurrentPaletteArmor || updateArmor ? tex : null);
+
+      // Eyes
+      previewEyes.material.SetTexture(texParam, _useCurrentPaletteEyes || updateEyes ? tex : null);
+      playerEyes.material.SetTexture(texParam, _useCurrentPaletteEyes || updateEyes ? tex : null);
+
+      // Hair
+      previewHairBack.material.SetTexture(texParam, _useCurrentPaletteHair || updateHair ? tex : null);
+      previewHairFront.material.SetTexture(texParam, _useCurrentPaletteHair || updateHair ? tex : null);
+      playerHairBack.material.SetTexture(texParam, _useCurrentPaletteHair || updateHair ? tex : null);
+      playerHairFront.material.SetTexture(texParam, _useCurrentPaletteHair || updateHair ? tex : null);
    }
 
    private void startPickingColorFromSprite () {
@@ -826,6 +1200,91 @@ public class PaletteToolManager : XmlDataToolManager {
       finalizePickingColorFromSprite(ignoreColorChange);      
    }
 
+   private void updatePlayerCharacterSprite () {
+      // Update sprites
+      playerBody.sprite = previewBody.sprite;
+      playerHairBack.sprite = previewHairBack.sprite;
+      playerHairFront.sprite = previewHairFront.sprite;
+      playerEyes.sprite = previewEyes.sprite;
+      playerArmor.sprite = previewArmor.sprite;
+      playerWeaponFront.sprite = previewWeaponFront.sprite;
+      playerWeaponBack.sprite = previewWeaponBack.sprite;
+
+      // Update material if current one, doesn't allow recoloring with palette
+      playerBody.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerHairBack.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerHairFront.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerEyes.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerArmor.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerWeaponFront.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      playerWeaponBack.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+
+      previewBody.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewHairBack.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewHairFront.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewEyes.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewArmor.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewWeaponFront.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+      previewWeaponBack.GetComponent<RecoloredSprite>().checkMaterialAvailability();
+
+      // Copy palette texture
+      const string texName = "_Palette2";
+      if (playerBody.material.HasProperty(texName) && previewBody.material.HasProperty(texName)) {
+         playerBody.material.SetTexture(texName, previewBody.material.GetTexture(texName));
+         playerHairBack.material.SetTexture(texName, previewHairBack.material.GetTexture(texName));
+         playerHairFront.material.SetTexture(texName, previewHairFront.material.GetTexture(texName));
+         playerEyes.material.SetTexture(texName, previewEyes.material.GetTexture(texName));
+         playerArmor.material.SetTexture(texName, previewArmor.material.GetTexture(texName));
+         playerWeaponFront.material.SetTexture(texName, previewWeaponFront.material.GetTexture(texName));
+         playerWeaponBack.material.SetTexture(texName, previewWeaponBack.material.GetTexture(texName));
+      }
+
+      // Enable or disable sprite based on preview objects
+      playerBody.enabled = previewBody.enabled;
+      playerHairBack.enabled = previewHairBack.enabled;
+      playerHairFront.enabled = previewHairFront.enabled;
+      playerEyes.enabled = previewEyes.enabled;
+      playerArmor.enabled = playerArmor.enabled;
+      playerWeaponFront.enabled = previewWeaponFront.enabled;
+      playerWeaponBack.enabled = previewWeaponBack.enabled;
+   }
+
+   private void prepareSpriteDropdown (PaletteImageType type, TMPro.TMP_Dropdown dropdown) {
+      dropdown.options.Clear();
+
+      var list = ImageManager.getSpritesInDirectory(paletteImageTypePaths[(int) type]);
+
+      foreach (ImageManager.ImageData imageData in list) {
+         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(imageData.imageName);
+         if (imageData.imageName.ToLower().Contains("back")) {
+            continue;
+         }
+         if (imageData.imagePath.ToLower().Contains(_isFemale ? "male" : "female")) {
+            if (_isFemale) {
+               if (!imageData.imagePath.ToLower().Contains("female")) {
+                  continue;
+               }
+            } else {
+               continue;
+            }
+         }
+         dropdown.options.Add(optionData);
+      }
+   }
+
+   private void preparePalleteDropdown (TMPro.TMP_Dropdown dropdown, PaletteImageType type) {
+      dropdown.options.Clear();
+
+      dropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("BASE"));
+      dropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("CURRENT PALETTE"));
+      foreach (PaletteDataPair pair in _paletteDataList) {
+         if (type == PaletteImageType.None || (PaletteImageType)pair.paletteData.paletteType == type) {
+            TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(pair.paletteData.paletteName);
+            dropdown.options.Add(optionData);
+         }
+      }
+   }
+
    private void preparePaletteTypeDropdown () {
       dropdownPaletteCategory.options.Clear();
 
@@ -845,6 +1304,177 @@ public class PaletteToolManager : XmlDataToolManager {
       });
       _paletteImageType = (PaletteImageType)1;
       prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
+
+      // Available dropdown values should be the same in row view as well as, when editing single row
+      mainMenuCategoryDropdown.options.Clear();
+      mainMenuCategoryDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("All"));
+      mainMenuCategoryDropdown.options.AddRange(dropdownPaletteCategory.options);
+   }
+
+   private void prepareCharacterPreviewPaletteChoose () {
+      foreach (TMPro.TMP_Dropdown dropdown in palettesHair) {
+         dropdown.onValueChanged.RemoveAllListeners();
+         preparePalleteDropdown(dropdown, PaletteImageType.Hair);
+
+         dropdown.onValueChanged.AddListener((int index) => {
+            if (!previewHairBack.GetComponent<RecoloredSprite>()) {
+               previewHairBack.gameObject.AddComponent<RecoloredSprite>();
+            }
+            if (!previewHairFront.GetComponent<RecoloredSprite>()) {
+               previewHairFront.gameObject.AddComponent<RecoloredSprite>();
+            }
+            List<string> paletteNames = new List<string>();
+            _useCurrentPaletteHair = false;
+            foreach (TMPro.TMP_Dropdown d in palettesHair) {
+               // Add names of correct palettes (skip base and currently edited palette)
+               if (d.value > 1) {
+                  paletteNames.Add(d.options[d.value].text);
+               } else if (d.value == 1) {
+                  _useCurrentPaletteHair = true;
+               }
+            }
+
+            previewHairBack.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+            previewHairFront.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+
+            previewHairBack.material.SetTexture("_Palette", _useCurrentPaletteHair ? generateTexture2D() : null);
+            previewHairFront.material.SetTexture("_Palette", _useCurrentPaletteHair ? generateTexture2D() : null);
+         });
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesEyes) {
+         dropdown.onValueChanged.RemoveAllListeners();
+         preparePalleteDropdown(dropdown, PaletteImageType.Eyes);
+
+         dropdown.onValueChanged.AddListener((int index) => {
+            if (!previewEyes.GetComponent<RecoloredSprite>()) {
+               previewEyes.gameObject.AddComponent<RecoloredSprite>();
+            }
+            List<string> paletteNames = new List<string>();
+            _useCurrentPaletteEyes = false;
+            foreach (TMPro.TMP_Dropdown d in palettesEyes) {
+               // Add names of correct palettes (skip base and currently edited palette)
+               if (d.value > 1) {
+                  paletteNames.Add(d.options[d.value].text);
+               } else if (d.value == 1) {
+                  _useCurrentPaletteEyes = true;
+               }
+            }
+
+            previewEyes.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+
+            previewEyes.material.SetTexture("_Palette", _useCurrentPaletteEyes ? generateTexture2D() : null);
+         });
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesArmor) {
+         dropdown.onValueChanged.RemoveAllListeners();
+         preparePalleteDropdown(dropdown, PaletteImageType.Armor);
+
+         dropdown.onValueChanged.AddListener((int index) => {
+            if (!previewArmor.GetComponent<RecoloredSprite>()) {
+               previewArmor.gameObject.AddComponent<RecoloredSprite>();
+            }
+            List<string> paletteNames = new List<string>();
+            _useCurrentPaletteArmor = false;
+            foreach (TMPro.TMP_Dropdown d in palettesArmor) {
+               // Add names of correct palettes (skip base and currently edited palette)
+               if (d.value > 1) {
+                  paletteNames.Add(d.options[d.value].text);
+               } else if (d.value == 1) {
+                  _useCurrentPaletteArmor = true;
+               }
+            }
+
+            previewArmor.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+
+            previewArmor.material.SetTexture("_Palette", _useCurrentPaletteArmor ? generateTexture2D() : null);
+         });
+      }
+      foreach (TMPro.TMP_Dropdown dropdown in palettesWeapon) {
+         dropdown.onValueChanged.RemoveAllListeners();
+         preparePalleteDropdown(dropdown, PaletteImageType.Weapon);
+
+         dropdown.onValueChanged.AddListener((int index) => {
+            if (!previewWeaponBack.GetComponent<RecoloredSprite>()) {
+               previewWeaponBack.gameObject.AddComponent<RecoloredSprite>();
+            }
+            if (!previewWeaponFront.GetComponent<RecoloredSprite>()) {
+               previewWeaponFront.gameObject.AddComponent<RecoloredSprite>();
+            }
+            List<string> paletteNames = new List<string>();
+            _useCurrentPaletteWeapon = false;
+            foreach (TMPro.TMP_Dropdown d in palettesWeapon) {
+               // Add names of correct palettes (skip base and currently edited palette)
+               if (d.value > 1) {
+                  paletteNames.Add(d.options[d.value].text);
+               } else if (d.value == 1) {
+                  _useCurrentPaletteWeapon = true;
+               }
+            }
+
+            previewWeaponBack.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+            previewWeaponFront.GetComponent<RecoloredSprite>().recolor(Item.parseItmPalette(paletteNames.ToArray()), 1);
+
+            previewWeaponBack.material.SetTexture("_Palette", _useCurrentPaletteWeapon ? generateTexture2D() : null);
+            previewWeaponFront.material.SetTexture("_Palette", _useCurrentPaletteWeapon ? generateTexture2D() : null);
+         });
+      }
+
+      // Prepare buttons to move to chosen palette
+      foreach (Button button in palettesHairButton) {
+         button.onClick.AddListener(() => {
+            for (int i = 0; i < palettesHairButton.Length; i++) {
+               if (button == palettesHairButton[i] && palettesHair[i].value > 1) {
+                  string text = palettesHair[i].options[palettesHair[i].value].text;
+                  int indexPair = _paletteDataList.FindIndex((PaletteDataPair data) => data.paletteData.paletteName == text);
+                  showSingleRowEditor(createRow(_paletteDataList[indexPair], indexPair));
+                  multipleLayersScene.SetActive(false);
+                  break;
+               }
+            }
+         });
+      }
+
+      foreach (Button button in palettesArmorButton) {
+         button.onClick.AddListener(() => {
+            for (int i = 0; i < palettesArmorButton.Length; i++) {
+               if (button == palettesArmorButton[i] && palettesArmor[i].value > 1) {
+                  string text = palettesArmor[i].options[palettesArmor[i].value].text;
+                  int indexPair = _paletteDataList.FindIndex((PaletteDataPair data) => data.paletteData.paletteName == text);
+                  showSingleRowEditor(createRow(_paletteDataList[indexPair], indexPair));
+                  multipleLayersScene.SetActive(false);
+                  break;
+               }
+            }
+         });
+      }
+
+      foreach (Button button in palettesEyesButton) {
+         button.onClick.AddListener(() => {
+            for (int i = 0; i < palettesEyesButton.Length; i++) {
+               if (button == palettesEyesButton[i] && palettesEyes[i].value > 1) {
+                  string text = palettesEyes[i].options[palettesEyes[i].value].text;
+                  int indexPair = _paletteDataList.FindIndex((PaletteDataPair data) => data.paletteData.paletteName == text);
+                  showSingleRowEditor(createRow(_paletteDataList[indexPair], indexPair));
+                  multipleLayersScene.SetActive(false);
+                  break;
+               }
+            }
+         });
+      }
+
+      foreach (Button button in palettesWeaponButton) {
+         button.onClick.AddListener(() => {
+            for (int i = 0; i < palettesWeaponButton.Length; i++) {
+               if (button == palettesWeaponButton[i] && palettesWeapon[i].value > 1) {
+                  string text = palettesWeapon[i].options[palettesWeapon[i].value].text;
+                  int indexPair = _paletteDataList.FindIndex((PaletteDataPair data) => data.paletteData.paletteName == text);
+                  showSingleRowEditor(createRow(_paletteDataList[indexPair], indexPair));
+                  multipleLayersScene.SetActive(false);
+                  break;
+               }
+            }
+         });
+      }
    }
 
    private void prepareSpriteChooseDropdown (string path = "") {
@@ -1341,7 +1971,7 @@ public class PaletteToolManager : XmlDataToolManager {
    private List<ImageManager.ImageData> _cachedSpriteIconFiles = new List<ImageManager.ImageData>();
 
    // Current palette image type
-   private PaletteImageType _paletteImageType;
+   private PaletteImageType _paletteImageType = PaletteImageType.None;
 
    // Value of hue shift in current palette;
    private int _hueShiftValue;
@@ -1360,6 +1990,18 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Index of subcategory dropdown
    private int _currentSubcategoryIndex;
+
+   // Index in spritesheet which indicate frontfacing element
+   private int INDEX_OF_FRONT_PREVIEW = 8;
+
+   // Sex of currently previewed character
+   private bool _isFemale = true;
+
+   // Check if character preview is using current palette
+   private bool _useCurrentPaletteHair = false;
+   private bool _useCurrentPaletteEyes = false;
+   private bool _useCurrentPaletteArmor = false;
+   private bool _useCurrentPaletteWeapon = false;
 
    #endregion
 }

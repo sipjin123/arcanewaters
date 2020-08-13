@@ -361,11 +361,18 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
-      if (Time.time - _lastInputChangeTime > getInputDelay()) {
-         _lastInputChangeTime = Time.time;
+      if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+         // If the ship wasn't moving, apply a small force locally to make up for delay
+         if (_body.velocity.sqrMagnitude < 0.025f) {          
+            _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * _clientSideForce);
+         }
+      }
+
+      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
+         _lastInputChangeTime = NetworkTime.time;
 
          if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            Cmd_RequestMovement();
+            Cmd_RequestServerAddForce();
          }
       }
    }
@@ -523,6 +530,15 @@ public class PlayerShipEntity : ShipEntity
       Rpc_AddForce(NetworkTime.time + getAddForceDelay(), forceToApply * getMoveSpeed());
    }
 
+   [Command]
+   protected void Cmd_RequestServerAddForce () {
+      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {       
+         Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed();
+         _body.AddForce(forceToApply);
+         _lastInputChangeTime = NetworkTime.time;
+      }
+   }
+
    [ClientRpc]
    protected void Rpc_AddForce (double timestamp, Vector2 force) {
       StartCoroutine(CO_AddForce(timestamp, force));
@@ -621,6 +637,10 @@ public class PlayerShipEntity : ShipEntity
 
    // Our ship movement sound
    protected AudioSource _movementAudioSource;
+
+   // A multiplier for the force added locally in order to mask delay
+   [SerializeField]
+   private float _clientSideForce = 0.1f;
 
    #endregion
 }

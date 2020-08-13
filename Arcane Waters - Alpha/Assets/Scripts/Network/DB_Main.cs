@@ -12,11 +12,13 @@ using System.IO;
 using SimpleJSON;
 using MapCustomization;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
 
-public class DB_Main : DB_MainStub {
+public class DB_Main : DB_MainStub
+{
    #region NubisFeatures
 
    public static new string fetchSingleBlueprint (string bpIdStr, string usrIdStr) {
@@ -1878,95 +1880,72 @@ public class DB_Main : DB_MainStub {
 
    #region Custom Maps
 
-   public static new void setCustomHouseBase (int userId, int baseMapId) {
-      string cmdText = "UPDATE users SET customHouseBase = @baseMapId WHERE usrId = @userId;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@userId", userId);
-         cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.ExecuteNonQuery();
-      }
+   public static new void setCustomHouseBase (object command, int userId, int baseMapId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE users SET customHouseBase = @baseMapId WHERE usrId = @userId;";
+      cmd.Parameters.AddWithValue("@userId", userId);
+      cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      cmd.ExecuteNonQuery();
    }
 
-   public static new void setCustomFarmBase (int userId, int baseMapId) {
-      string cmdText = "UPDATE users SET customFarmBase = @baseMapId WHERE usrId = @userId;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@userId", userId);
-         cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
-         conn.Open();
-         cmd.Prepare();
-
-         cmd.ExecuteNonQuery();
-      }
+   public static new void setCustomFarmBase (object command, int userId, int baseMapId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE users SET customFarmBase = @baseMapId WHERE usrId = @userId;";
+      cmd.Parameters.AddWithValue("@userId", userId);
+      cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      cmd.ExecuteNonQuery();
    }
 
    #endregion
 
    #region Map Customization
 
-   public static new MapCustomizationData getMapCustomizationData (int mapId, int userId) {
-      string cmdText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@map_id", mapId);
-         cmd.Parameters.AddWithValue("@user_id", userId);
-         conn.Open();
-         cmd.Prepare();
+   public static new MapCustomizationData getMapCustomizationData (object command, int mapId, int userId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
+      cmd.Parameters.AddWithValue("@map_id", mapId);
+      cmd.Parameters.AddWithValue("@user_id", userId);
 
-         List<PrefabState> changes = new List<PrefabState>();
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            while (dataReader.Read()) {
-               changes.Add(PrefabState.deserialize(dataReader.GetString("data")));
-            }
+      List<PrefabState> changes = new List<PrefabState>();
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            changes.Add(PrefabState.deserialize(dataReader.GetString("data")));
          }
-
-         return new MapCustomizationData {
-            mapId = mapId,
-            userId = userId,
-            prefabChanges = changes.ToArray()
-         };
       }
+
+      return new MapCustomizationData {
+         mapId = mapId,
+         userId = userId,
+         prefabChanges = changes.ToArray()
+      };
    }
 
-   public static new PrefabState getMapCustomizationChanges (int mapId, int userId, int prefabId) {
-      string cmdText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id AND prefab_id = @prefab_id;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@map_id", mapId);
-         cmd.Parameters.AddWithValue("@user_id", userId);
-         cmd.Parameters.AddWithValue("@prefab_id", prefabId);
-         conn.Open();
-         cmd.Prepare();
+   public static new PrefabState getMapCustomizationChanges (object command, int mapId, int userId, int prefabId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id AND prefab_id = @prefab_id;";
+      cmd.Parameters.AddWithValue("@map_id", mapId);
+      cmd.Parameters.AddWithValue("@user_id", userId);
+      cmd.Parameters.AddWithValue("@prefab_id", prefabId);
 
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            if (dataReader.Read()) {
-               return PrefabState.deserialize(dataReader.GetString("data"));
-            }
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         if (dataReader.Read()) {
+            return PrefabState.deserialize(dataReader.GetString("data"));
          }
       }
 
       return new PrefabState { id = -1 };
    }
 
-   public static new void setMapCustomizationChanges (int mapId, int userId, PrefabState changes) {
-      string cmdText = "INSERT INTO map_customization_changes(user_id, map_id, prefab_id, data) Values(@user_id, @map_id, @prefab_id, @data) " +
+   public static new void setMapCustomizationChanges (object command, int mapId, int userId, PrefabState changes) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "INSERT INTO map_customization_changes(user_id, map_id, prefab_id, data) Values(@user_id, @map_id, @prefab_id, @data) " +
          "ON DUPLICATE KEY UPDATE data = @data;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         cmd.Parameters.AddWithValue("@map_id", mapId);
-         cmd.Parameters.AddWithValue("@user_id", userId);
-         cmd.Parameters.AddWithValue("@prefab_id", changes.id);
-         cmd.Parameters.AddWithValue("@data", changes.serialize());
-         conn.Open();
-         cmd.Prepare();
+      cmd.Parameters.AddWithValue("@map_id", mapId);
+      cmd.Parameters.AddWithValue("@user_id", userId);
+      cmd.Parameters.AddWithValue("@prefab_id", changes.id);
+      cmd.Parameters.AddWithValue("@data", changes.serialize());
 
-         cmd.ExecuteNonQuery();
-      }
+      cmd.ExecuteNonQuery();
    }
 
    #endregion
@@ -1991,39 +1970,37 @@ public class DB_Main : DB_MainStub {
       return -1;
    }
 
-   public static new List<Map> getMaps () {
+   public static new List<Map> getMaps (object command) {
+      MySqlCommand cmd = command as MySqlCommand;
+
+      cmd.CommandText =
+            "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
+               "editorType, biome, specialType, accName, weatherEffectType " +
+            "FROM maps_v2 " +
+               "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
+            "ORDER BY name;";
+
       List<Map> result = new List<Map>();
 
-      string cmdText = "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, editorType, biome, specialType, accName, weatherEffectType " +
-         "FROM maps_v2 " +
-            "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
-         "ORDER BY name;";
-
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            while (dataReader.Read()) {
-               result.Add(new Map {
-                  id = dataReader.GetInt32("id"),
-                  name = dataReader.GetString("name"),
-                  displayName = dataReader.GetString("displayName"),
-                  createdAt = dataReader.GetDateTime("createdAt"),
-                  publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
-                     ? -1
-                     : dataReader.GetInt32("publishedVersion"),
-                  creatorID = dataReader.GetInt32("creatorUserId"),
-                  creatorName = dataReader.GetString("accName"),
-                  sourceMapId = dataReader.GetInt32("sourceMapId"),
-                  notes = dataReader.GetString("notes"),
-                  editorType = (EditorType) dataReader.GetInt32("editorType"),
-                  biome = (Biome.Type) dataReader.GetInt32("biome"),
-                  specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
-                  weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
-               });
-            }
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            result.Add(new Map {
+               id = dataReader.GetInt32("id"),
+               name = dataReader.GetString("name"),
+               displayName = dataReader.GetString("displayName"),
+               createdAt = dataReader.GetDateTime("createdAt"),
+               publishedVersion = dataReader.IsDBNull(dataReader.GetOrdinal("publishedVersion"))
+                  ? -1
+                  : dataReader.GetInt32("publishedVersion"),
+               creatorID = dataReader.GetInt32("creatorUserId"),
+               creatorName = dataReader.GetString("accName"),
+               sourceMapId = dataReader.GetInt32("sourceMapId"),
+               notes = dataReader.GetString("notes"),
+               editorType = (EditorType) dataReader.GetInt32("editorType"),
+               biome = (Biome.Type) dataReader.GetInt32("biome"),
+               specialType = (Area.SpecialType) dataReader.GetInt32("specialType"),
+               weatherEffectType = (WeatherEffectType) dataReader.GetInt32("weatherEffectType")
+            });
          }
       }
 
@@ -4355,121 +4332,105 @@ public class DB_Main : DB_MainStub {
 
    #region Item Instances
 
-   public static new List<ItemInstance> getItemInstances (int ownerUserId, ItemDefinition.Category category) {
-      List<ItemInstance> result = new List<ItemInstance>();
-
-      string cmdText = "SELECT item_instances.* " +
+   public static new List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT item_instances.* " +
          "FROM item_instances JOIN item_definitions ON item_instances.itemDefinitionId = item_definitions.id " +
          "WHERE item_instances.userId = @ownerUserId AND category = @category;";
+      cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
+      cmd.Parameters.AddWithValue("@category", (int) category);
 
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
-         cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
-         cmd.Parameters.AddWithValue("@category", (int) category);
-
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            while (dataReader.Read()) {
-               result.Add(new ItemInstance(dataReader));
-            }
+      List<ItemInstance> result = new List<ItemInstance>();
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         while (dataReader.Read()) {
+            result.Add(new ItemInstance(dataReader));
          }
       }
 
       return result;
    }
 
-   public static new ItemInstance getItemInstance (int userId, int itemDefinitionId) {
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;", conn)) {
-         conn.Open();
-         cmd.Prepare();
-         cmd.Parameters.AddWithValue("@userId", userId);
-         cmd.Parameters.AddWithValue("@itemDefinitionId", itemDefinitionId);
+   public static new ItemInstance getItemInstance (object command, int userId, int itemDefinitionId) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;";
+      cmd.Parameters.AddWithValue("@userId", userId);
+      cmd.Parameters.AddWithValue("@itemDefinitionId", itemDefinitionId);
 
-         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-            if (dataReader.Read()) {
-               return new ItemInstance(dataReader);
-            }
+      using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+         if (dataReader.Read()) {
+            return new ItemInstance(dataReader);
          }
       }
-
       return null;
    }
 
-   public static new void createOrAppendItemInstance (ItemInstance item) {
+   public static new void createOrAppendItemInstance (object command, ItemInstance item) {
+      MySqlCommand cmd = command as MySqlCommand;
       if (item.getDefinition().canBeStacked()) {
          // If item can be stacked, we want to check if it already exists
-         ItemInstance existingInstance = getItemInstance(item.ownerUserId, item.itemDefinitionId);
+         ItemInstance existingInstance = getItemInstance(cmd, item.ownerUserId, item.itemDefinitionId);
+         cmd.Parameters.Clear();
 
          // If the item exist, update its count
          if (existingInstance != null) {
-            increaseItemInstanceCount(existingInstance.id, item.count);
+            increaseItemInstanceCount(cmd, existingInstance.id, item.count);
 
             // Update item's fields to represent newly updated entry
             item.id = existingInstance.id;
             item.count = existingInstance.count + item.count;
          } else {
             // Otherwise, create a new stack
-            createNewItemInstance(item);
+            createNewItemInstance(cmd, item);
          }
       } else {
          // Since the item cannot be stacked, set its count to 1
          item.count = 1;
 
          // Create the item
-         createNewItemInstance(item);
+         createNewItemInstance(cmd, item);
       }
    }
 
-   public static new void createNewItemInstance (ItemInstance itemInstance) {
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(
-         "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity) " +
-         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity) ", conn)) {
+   public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity) " +
+         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity);";
+      cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
+      cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
+      cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
+      cmd.Parameters.AddWithValue("@palette1", itemInstance.palette1);
+      cmd.Parameters.AddWithValue("@palette2", itemInstance.palette2);
+      cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
+      cmd.ExecuteNonQuery();
 
-         conn.Open();
-         cmd.Prepare();
-         cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
-         cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
-         cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
-         cmd.Parameters.AddWithValue("@palette1", itemInstance.palette1);
-         cmd.Parameters.AddWithValue("@palette2", itemInstance.palette2);
-         cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
-
-         // Execute the command
-         cmd.ExecuteNonQuery();
-
-         // Set the ID that was created for the instance
-         itemInstance.id = (int) cmd.LastInsertedId;
-      }
+      // Set the ID that was created for the instance
+      itemInstance.id = (int) cmd.LastInsertedId;
    }
 
-   public static new void increaseItemInstanceCount (int id, int increaseBy) {
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand("UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;", conn)) {
-         conn.Open();
-         cmd.Prepare();
-         cmd.Parameters.AddWithValue("@increaseBy", increaseBy);
-         cmd.Parameters.AddWithValue("@id", id);
-
-         cmd.ExecuteNonQuery();
-      }
+   public static new void increaseItemInstanceCount (object command, int id, int increaseBy) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.CommandText = "UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;";
+      cmd.Parameters.AddWithValue("@increaseBy", increaseBy);
+      cmd.Parameters.AddWithValue("@id", id);
+      cmd.ExecuteNonQuery();
    }
 
-   public static new void decreaseOrDeleteItemInstance (int id, int decreaseBy) {
-      // First query deletes the entry which has only 'decreaseBy' of item left
-      // Second query decreases the count by 'decreaseBy' if the item wasn't deleted (had more than 'decreaseBy' left)
-      string cmdText = "DELETE FROM item_instances WHERE id = @id AND count <= @decreaseBy; " +
-         "UPDATE item_instances SET count = count - @decreaseBy WHERE id = @id;";
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
-         conn.Open();
-         cmd.Prepare();
+   public static new void decreaseOrDeleteItemInstance (object command, int id, int decreaseBy) {
+      MySqlCommand cmd = command as MySqlCommand;
+      cmd.Transaction = cmd.Connection.BeginTransaction();
+      try {
+         // First query deletes the entry which has only 'decreaseBy' of item left
+         // Second query decreases the count by 'decreaseBy' if the item wasn't deleted (had more than 'decreaseBy' left)
+         cmd.CommandText = "DELETE FROM item_instances WHERE id = @id AND count <= @decreaseBy; " +
+            "UPDATE item_instances SET count = count - @decreaseBy WHERE id = @id;";
+
          cmd.Parameters.AddWithValue("@id", id);
          cmd.Parameters.AddWithValue("@decreaseBy", decreaseBy);
-
          cmd.ExecuteNonQuery();
+         cmd.Transaction.Commit();
+      } catch (Exception ex) {
+         cmd.Transaction.Rollback();
+         throw ex;
       }
    }
 
@@ -5419,7 +5380,7 @@ public class DB_Main : DB_MainStub {
                         try {
                            senderName = dataReader.GetString("usrName");
                         } catch {
-                           D.editorLog("No data for usrName", Color.red);
+                           //D.editorLog("No data for usrName", Color.red);
                         }
                      }
                      int senderGuild = 0;
@@ -6910,7 +6871,7 @@ public class DB_Main : DB_MainStub {
       // Look up the members only if guild id is valid
       if (guildId > 0) {
          info.guildMembers = DB_Main.getUsersForGuild(guildId).ToArray();
-      } 
+      }
 
       return info;
    }
@@ -7572,14 +7533,15 @@ public class DB_Main : DB_MainStub {
          string keyPrefix = String.IsNullOrEmpty(machineId) ? string.Empty : machineId + "/";
          string server_id = serverAddress + "/" + serverPort.ToString();
          string key = keyPrefix + server_id + "/" + keySuffix;
+         key = key.Replace(" ", "_");
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
             conn.Open();
             // A key is tracked if it is present in the database.
 
             bool IsKeyAlreadyTracked = false;
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM metrics WHERE key=@key", conn)) {
-               cmd.Prepare();
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `metrics` WHERE `key`=@key", conn)) {
+               //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                using (var reader = cmd.ExecuteReader()) {
                   IsKeyAlreadyTracked = reader.Read();
@@ -7588,20 +7550,21 @@ public class DB_Main : DB_MainStub {
 
             // create a new entry for the key if it's not present already,
             // and update the value if already present in the database.
-            string query = $"UPDATE metrics SET value=@value WHERE key=@key";
-            if (!IsKeyAlreadyTracked) {
-               query = $"INSERT INTO metrics (key,value) VALUES (@key,@value)";
+            string query = $"INSERT INTO `metrics` (`key`,`value`) VALUES (@key,@value)";
+            if (IsKeyAlreadyTracked) {
+               query = $"UPDATE `metrics` SET `value`=@value WHERE `key`=@key";
             }
 
             using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
-               cmd.Prepare();
+               //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                cmd.Parameters.AddWithValue("@value", value);
                cmd.ExecuteNonQuery();
             }
          }
          return true;
-      } catch {
+      } catch (Exception ex) {
+         D.error(ex.Message);
          return false;
       }
    }
@@ -7924,7 +7887,7 @@ public class DB_Main : DB_MainStub {
             "VALUES(@buyerId, @sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount, @auctionId)", conn)) {
 
             conn.Open();
-            cmd.Prepare(); 
+            cmd.Prepare();
             cmd.Parameters.AddWithValue("@auctionId", auctionData.auctionId);
             cmd.Parameters.AddWithValue("@sellerName", auctionData.sellerName);
             cmd.Parameters.AddWithValue("@sellerId", auctionData.sellerId);
@@ -7981,7 +7944,7 @@ public class DB_Main : DB_MainStub {
             "VALUES(@sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount)", conn)) { //, @datePosted, @dateExpiry
 
             conn.Open();
-            cmd.Prepare(); 
+            cmd.Prepare();
             cmd.Parameters.AddWithValue("@sellerName", sellerName);
             cmd.Parameters.AddWithValue("@sellerId", userId);
             cmd.Parameters.AddWithValue("@itemPrice", startingPrice);
@@ -8067,7 +8030,7 @@ public class DB_Main : DB_MainStub {
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@highestBidPrice", int.Parse(bidderPrice));
             cmd.Parameters.AddWithValue("@highestBidUser", int.Parse(bidderUserId));
-            cmd.Parameters.AddWithValue("@auctionId", int.Parse(auctionId)); 
+            cmd.Parameters.AddWithValue("@auctionId", int.Parse(auctionId));
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8630,6 +8593,54 @@ public class DB_Main : DB_MainStub {
          D.error("MySQL Error: " + e.ToString());
       }
    }
+
+   #region Wrapper Call Methods
+
+   public static new T exec<T> (Func<object, T> action) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.OpenAsync();
+         cmd.Connection = conn;
+         T result = action.Invoke(cmd);
+         return result;
+      }
+   }
+
+   public static new void exec (Action<object> action) {
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = conn.CreateCommand()) {
+         conn.OpenAsync();
+         cmd.Connection = conn;
+
+         action.Invoke(cmd);
+      }
+   }
+
+   public static async new Task<T> execAsync<T> (Func<object, T> action) {
+      return await Task.Run(async () => {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = conn.CreateCommand()) {
+            await conn.OpenAsync();
+            cmd.Connection = conn;
+            T result = action.Invoke(cmd);
+            return result;
+         }
+      });
+   }
+
+   public static async new Task execAsync (Action<object> action) {
+      await Task.Run(async () => {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = conn.CreateCommand()) {
+            await conn.OpenAsync();
+            cmd.Connection = conn;
+
+            action.Invoke(cmd);
+         }
+      });
+   }
+
+   #endregion
 
    public static MySqlConnection getConnection () {
       // Throws a warning if used in the main thread

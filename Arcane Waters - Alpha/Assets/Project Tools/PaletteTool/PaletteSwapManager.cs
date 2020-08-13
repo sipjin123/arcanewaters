@@ -26,8 +26,20 @@ public class PaletteSwapManager : MonoBehaviour {
    private void Awake () {
       if (self == null) {
          self = this;
+
+         // In Palette Tool - load all data locally
+         updateData();
       } else {
          Destroy(this);
+      }
+   }
+
+   public void updateData () {
+      // Only for usage inside palette tool, because data changes during single session
+      if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name.Contains("Palette Tool")) {
+         fetchPaletteData();
+         paletteCompleteEvent.Invoke();
+         hasInitialized = true;
       }
    }
 
@@ -45,6 +57,8 @@ public class PaletteSwapManager : MonoBehaviour {
    }
 
    public void fetchPaletteData () {
+      _paletteDataList = new List<PaletteToolData>();
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getPaletteXML(true);
 
