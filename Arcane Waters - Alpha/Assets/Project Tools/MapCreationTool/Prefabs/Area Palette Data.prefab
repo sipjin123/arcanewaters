@@ -846,6 +846,7 @@ Transform:
   - {fileID: 2044129818849976533}
   - {fileID: 5530310649620154129}
   - {fileID: 4355259370764162361}
+  - {fileID: 6623517600872383136}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1057,6 +1058,50 @@ Transform:
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3719956352278549375
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6623517600872383136}
+  - component: {fileID: 1106927895860034865}
+  m_Layer: 0
+  m_Name: Sign0 (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6623517600872383136
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3719956352278549375}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.5, y: 53.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 46
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1106927895860034865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3719956352278549375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 8424881060437011547, guid: d24f69ca9ab9fe44dbb9a83d42ac1378, type: 3}
 --- !u!1 &3721525265671514572
 GameObject:
   m_ObjectHideFlags: 0
@@ -10508,6 +10553,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
@@ -10724,6 +10773,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 1
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
@@ -10952,6 +11005,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: grass
       sublayer: 1
       cluster: 0
@@ -11168,6 +11225,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: grass
       sublayer: 1
       cluster: 0
@@ -11371,6 +11432,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -11592,6 +11657,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: bush
       sublayer: 0
       cluster: 0
@@ -11803,6 +11872,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -12014,11 +12087,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -12230,11 +12307,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -12446,11 +12527,15 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -12672,6 +12757,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
@@ -12879,6 +12968,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -13091,6 +13184,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 4
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -13332,6 +13429,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: stump
       sublayer: 0
       cluster: 0
@@ -13548,6 +13649,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: stump
       sublayer: 0
       cluster: 0
@@ -13764,6 +13869,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: stump
       sublayer: 0
       cluster: 0
@@ -13980,6 +14089,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: stump
       sublayer: 0
       cluster: 0
@@ -14196,6 +14309,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: bush
       sublayer: 0
       cluster: 3
@@ -14412,6 +14529,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: bush
       sublayer: 0
       cluster: 3
@@ -14611,6 +14732,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -14872,6 +14997,10 @@ MonoBehaviour:
       sublayer: 0
       cluster: 0
       collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
     - layer: detail
       sublayer: 0
       cluster: 0
@@ -15206,6 +15335,10 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
+      cluster: 0
+      collisionType: 0
+    - layer: 
+      sublayer: 0
       cluster: 1
       collisionType: 0
     - layer: 
@@ -15259,6 +15392,10 @@ MonoBehaviour:
     - layer: 
       sublayer: 0
       cluster: 3
+      collisionType: 0
+    - layer: 
+      sublayer: 0
+      cluster: 0
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -15476,7 +15613,11 @@ MonoBehaviour:
       sublayer: 0
       cluster: 3
       collisionType: 0
-    matrixHeight: 54
+    - layer: 
+      sublayer: 0
+      cluster: 0
+      collisionType: 0
+    matrixHeight: 55
 --- !u!1 &6133486463552484482
 GameObject:
   m_ObjectHideFlags: 0
