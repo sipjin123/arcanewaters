@@ -3759,11 +3759,50 @@ public class RPCManager : NetworkBehaviour {
             // Add the player to the Battle
             BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
-            // Provides all the abilities for the players in the party
-            setupAbilitiesForPlayers(bodyEntities);
-
             // Provides the client with the info of the Equipped Abilities
-            Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(abilityDataList.FindAll(_ => _.equipSlotIndex >= 0)));
+            int weaponId = localBattler.weaponManager.getWeapon().itemTypeId;
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
+            Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
+            WeaponCategory weaponCategory = WeaponCategory.None;
+
+            // Determine if the abilities match the current weapon type
+            int validAbilities = 0;
+            List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
+            foreach (AbilitySQLData abilitySql in equippedAbilityList) {
+               if (abilitySql.abilityType == AbilityType.Standard) {
+                  AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
+                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee()) || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())) {
+                     validAbilities++;
+                  }
+               }
+            }
+
+            // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
+            if (validAbilities < 1) {
+               if (weaponId < 1) {
+                  weaponCategory = WeaponCategory.None;
+                  equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+               } else {
+                  if (weaponData != null) {
+                     if (weaponClass == Weapon.Class.Melee) {
+                        weaponCategory = WeaponCategory.Blade;
+                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.slashAbility());
+                     }
+                     if (weaponClass == Weapon.Class.Ranged) {
+                        weaponCategory = WeaponCategory.Gun;
+                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
+                     }
+                  } else {
+                     weaponCategory = WeaponCategory.None;
+                     equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+                  }
+               }
+            }
+
+            // Provides all the abilities for the players in the party
+            setupAbilitiesForPlayers(bodyEntities, validAbilities > 0, weaponCategory);
+
+            Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
 
             // Send Battle Bg data
             int bgXmlID = battle.battleBoard.xmlID;
@@ -3879,7 +3918,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities) {
+   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
@@ -3903,6 +3942,22 @@ public class RPCManager : NetworkBehaviour {
 
                   // Set server data
                   List<BasicAbilityData> basicAbilityList = getAbilityRecord(equippedAbilityDataList.ToArray());
+
+                  // Set the default ability if weapon mismatches the abilities
+                  if (!playerHasValidAbilities) {
+                     switch (weaponCategory) {
+                        case WeaponCategory.None:
+                           basicAbilityList[0] = AbilityManager.self.punchAbility();
+                           break;
+                        case WeaponCategory.Blade:
+                           basicAbilityList[0] = AbilityManager.self.slashAbility();
+                           break;
+                        case WeaponCategory.Gun:
+                           basicAbilityList[0] = AbilityManager.self.shootAbility();
+                           break;
+                     }
+                  }
+
                   battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
                }
             });
@@ -3929,12 +3984,12 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities) {
+   public void Target_UpdateBattleAbilityUI (NetworkConnection connection, string[] rawAttackAbilities, int weaponClass, bool hasValidAbilities) {
       // Translate data
       List<AbilitySQLData> attackAbilityDataList = Util.unserialize<AbilitySQLData>(rawAttackAbilities);
 
       // Updates the combat UI 
-      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray());
+      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray(), weaponClass, hasValidAbilities);
    }
 
    #endregion
@@ -3963,12 +4018,16 @@ public class RPCManager : NetworkBehaviour {
       Battler targetBattler = null;
       BasicAbilityData abilityData = new BasicAbilityData();
 
-      if (abilityType == AbilityType.Standard) {
-         // Get the ability from the battler abilities.
-         abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+      if (abilityInventoryIndex > -1) {
+         if (abilityType == AbilityType.Standard) {
+            // Get the ability from the battler abilities.
+            abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+         } else {
+            // Get the ability from the battler abilities.
+            abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
+         }
       } else {
-         // Get the ability from the battler abilities.
-         abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];
+         abilityData = AbilityManager.self.punchAbility();
       }
 
       foreach (Battler participant in battle.getParticipants()) {

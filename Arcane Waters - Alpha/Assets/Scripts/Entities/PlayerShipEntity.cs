@@ -20,7 +20,7 @@ public class PlayerShipEntity : ShipEntity
    public Vector2 nextShotTarget = new Vector2(0, 0);
 
    // Ability Reference
-   public SyncListInt shipAbilities = new SyncListInt();
+   public List<int> shipAbilities = new List<int>();
 
    // The equipped weapon characteristics
    [SyncVar]
@@ -99,6 +99,7 @@ public class PlayerShipEntity : ShipEntity
 
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
+         Cmd_RequestAbilityList();
       }
    }
 
@@ -201,6 +202,16 @@ public class PlayerShipEntity : ShipEntity
       if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
       }
+   }
+
+   [Command]
+   private void Cmd_RequestAbilityList () {
+      Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
+      shipAbilities = new List<int>(abilityIds);
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {

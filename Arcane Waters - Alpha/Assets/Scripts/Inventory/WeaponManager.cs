@@ -102,7 +102,6 @@ public class WeaponManager : EquipmentManager {
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponDataId);
 
       if (weaponData == null) {
-         D.debug("Weapon is null");
          weaponData = WeaponStatData.getDefaultData();
       }
 

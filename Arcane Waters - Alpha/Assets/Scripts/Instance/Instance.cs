@@ -382,11 +382,14 @@ public class Instance : NetworkBehaviour
                   }
 
                   BotShipEntity botShip = spawnBotShip(shipXmlKey, guildId, targetLocalPos, area);
-                  IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
-                  if (receiver != null && dataField.d != null) {
-                     receiver.receiveData(dataField.d);
+                  if (botShip != null) {
+                     IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
+                     if (receiver != null && dataField.d != null) {
+                        receiver.receiveData(dataField.d);
+                     }
+                  } else {
+                     D.debug("Failed to spawn bot ship: " + shipXmlKey);
                   }
-
                }
             }
 

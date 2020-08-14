@@ -163,7 +163,8 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public void SetupAbilityUI (AbilitySQLData[] abilitydata) {
+   public void SetupAbilityUI (AbilitySQLData[] abilitydata, int weaponClassInt, bool hasValidAbilities) {
+      Weapon.Class weaponClass = (Weapon.Class) weaponClassInt;
       int indexCounter = 0;
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
@@ -173,7 +174,7 @@ public class BattleUIManager : MonoBehaviour {
             AbilityType abilityType = abilitydata[indexCounter].abilityType;
             if (abilityType == AbilityType.Standard || abilityType == AbilityType.BuffDebuff) {
                BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilityType);
-
+    
                if (currentAbility != null) {
                   // Setup Button Display
                   string iconPath = currentAbility.itemIconPath;
@@ -189,6 +190,7 @@ public class BattleUIManager : MonoBehaviour {
                   abilityButton.abilityIndex = indexCounter;
                   abilityButton.setAbility(abilityType);
                   if (abilityType == AbilityType.Standard) {
+                     AttackAbilityData attackAbility = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitydata[indexCounter].abilityID);
                      abilityButton.abilityTypeIndex = attackAbilityIndex;
                      attackAbilityIndex++;
                   }
@@ -213,6 +215,12 @@ public class BattleUIManager : MonoBehaviour {
                      }
                   }); 
                   
+                  if (indexCounter > 0 && !hasValidAbilities) {
+                     D.editorLog("Not valid ability!", Color.red);
+                     abilityButton.disableButton();
+                     abilityButton.isInvalidAbility = true;
+                  }
+
                   abilityButton.cancelButton.onClick.AddListener(() => {
                      deselectOtherAbilities();
 

@@ -53,6 +53,9 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // Type of sprites to activate depending on the ability type
    public GameObject[] buffTypeSprites, attackTypeSprites;
 
+   // If is an invalid ability based on the weapon equipped
+   public bool isInvalidAbility;
+
    #endregion
 
    public void setAbility (AbilityType abilityType) {
@@ -205,6 +208,10 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    }
 
    public void enableButton () {
+      if (isInvalidAbility) {
+         return;
+      }
+
       Image buttonImage = GetComponent<Image>();
       if (buttonImage != null) {
          buttonImage.raycastTarget = true;

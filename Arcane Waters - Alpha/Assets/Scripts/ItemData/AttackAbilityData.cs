@@ -199,3 +199,10 @@ public enum AbilityActionType
    StanceChange = 5,
    CastToTarget = 6
 }
+
+public enum WeaponCategory {
+   None = 0,
+   Blade = 1,
+   Gun = 2,
+   Blunt = 3
+}

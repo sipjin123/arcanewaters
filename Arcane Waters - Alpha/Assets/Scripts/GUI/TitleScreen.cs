@@ -88,7 +88,7 @@ public class TitleScreen : MonoBehaviour {
       _canvasGroup.alpha = disabled ? currentAlpha - Time.smoothDeltaTime : 1f;
 
       // If they press Enter in the password field, activate the Play button
-      if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "") {
+      if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
          Util.clickButton(loginButton);
       }
 
@@ -102,8 +102,12 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void startUpNetworkClient () {
-      // Start up the Network Client, which triggers the rest of the login process
-      MyNetworkManager.self.StartClient();
+      if (passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {      
+         // Start up the Network Client, which triggers the rest of the login process
+         MyNetworkManager.self.StartClient();
+      } else {
+         displayError(ErrorMessage.Type.FailedUserOrPass);
+      }
    }
 
    public bool isShowing () {

@@ -62,10 +62,10 @@ namespace MapCreationTool
       public static Dictionary<string, string> getDefaultData (PrefabGroup group) {
          try {
             // Find out the type of prefab
-            Type type = group.getPrefab().GetComponent<IPrefabDataListener>().GetType();
+            Type type = group.getPrefab().GetComponent<IPrefabDataListener>()?.GetType();
 
             // Get the data for this type
-            if (defaultPrefabData.TryGetValue(type, out var data)) {
+            if (type != null && defaultPrefabData.TryGetValue(type, out var data)) {
                return data.Clone();
             }
          } catch (Exception ex) {

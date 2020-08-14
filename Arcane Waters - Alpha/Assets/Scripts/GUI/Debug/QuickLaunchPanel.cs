@@ -9,6 +9,9 @@ using ServerCommunicationHandlerv2;
 public class QuickLaunchPanel : MonoBehaviour {
    #region Public Variables
 
+   // Title screen reference
+   public TitleScreen titleScreen;
+
    // The Account to use for our quick launch
    public InputField accountInputField;
 
@@ -77,27 +80,31 @@ public class QuickLaunchPanel : MonoBehaviour {
    }
 
    public void launch () {
-      // Store the values we've specified
-      PlayerPrefs.SetString(ACCOUNT_KEY, this.accountInputField.text);
-      PlayerPrefs.SetString(PASSWORD_KEY, this.passwordInputField.text);
-      if (SteamManager.Initialized) {
-         Steamworks.CSteamID steamId = Steamworks.SteamUser.GetSteamID();
-         Global.isSteamLogin = true;
-         Global.lastSteamId = steamId.ToString();
-         PlayerPrefs.SetString(STEAM_ID_KEY, steamId.ToString());
-      }
+      if (passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
+         // Store the values we've specified
+         PlayerPrefs.SetString(ACCOUNT_KEY, this.accountInputField.text);
+         PlayerPrefs.SetString(PASSWORD_KEY, this.passwordInputField.text);
+         if (SteamManager.Initialized) {
+            Steamworks.CSteamID steamId = Steamworks.SteamUser.GetSteamID();
+            Global.isSteamLogin = true;
+            Global.lastSteamId = steamId.ToString();
+            PlayerPrefs.SetString(STEAM_ID_KEY, steamId.ToString());
+         }
 
-      // Fill in the fields in the actual login panel
-      TitleScreen.self.accountInputField.text = this.accountInputField.text;
-      TitleScreen.self.passwordInputField.text = this.passwordInputField.text;
+         // Fill in the fields in the actual login panel
+         TitleScreen.self.accountInputField.text = this.accountInputField.text;
+         TitleScreen.self.passwordInputField.text = this.passwordInputField.text;
 
-      // Launch into the appropriate mode, depending on which toggle was selected
-      if (hostToggle.isOn) {
-         MyNetworkManager.self.StartHost();
-      } else if (clientToggle.isOn) {
-         MyNetworkManager.self.StartClient();
-      } else if (serverToggle.isOn) {
-         MyNetworkManager.self.StartServer();
+         // Launch into the appropriate mode, depending on which toggle was selected
+         if (hostToggle.isOn) {
+            MyNetworkManager.self.StartHost();
+         } else if (clientToggle.isOn) {
+            MyNetworkManager.self.StartClient();
+         } else if (serverToggle.isOn) {
+            MyNetworkManager.self.StartServer();
+         }
+      } else {
+         titleScreen.displayError(ErrorMessage.Type.FailedUserOrPass);
       }
    }
 

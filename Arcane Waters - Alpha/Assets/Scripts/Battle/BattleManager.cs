@@ -516,7 +516,7 @@ public class BattleManager : MonoBehaviour {
             Element element = abilityData.elementType;
 
             float sourceDamageElement = source.getDamage(element);
-            float damage = sourceDamageElement * attackAbilityData.getModifier;
+            float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
 
             float targetDefenseElement = target.getDefense(element);
 

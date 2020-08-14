@@ -12,6 +12,10 @@ public class DB_MainTester : MonoBehaviour {
    #endregion
 
    private void OnGUI () {
+      if (GUILayout.Button("Add player skill")) {
+         giveProjectileAbilities();
+      }
+
       if (GUILayout.Button("Create Account")) {
          DB_Main.createAccount("burlin1", "test", "burlin1@codecommode.com", 1);
       }
@@ -59,6 +63,49 @@ public class DB_MainTester : MonoBehaviour {
             });
          });
       }
+   }
+
+   private void giveProjectileAbilities () {
+      DB_Main.updateAbilitiesData(745, new AbilitySQLData {
+         abilityID = 78,
+         abilityLevel = 1,
+         abilityType = AbilityType.Standard,
+         description = "Piercing Attack",
+         equipSlotIndex = -1,
+         name = "Piercing Bullet"
+      });
+      DB_Main.updateAbilitiesData(745, new AbilitySQLData {
+         abilityID = 79,
+         abilityLevel = 1,
+         abilityType = AbilityType.Standard,
+         description = "Stone Bullet",
+         equipSlotIndex = -1,
+         name = "Stone Bullet"
+      });
+      DB_Main.updateAbilitiesData(745, new AbilitySQLData {
+         abilityID = 80,
+         abilityLevel = 1,
+         abilityType = AbilityType.Standard,
+         description = "Explosive Bullet",
+         equipSlotIndex = -1,
+         name = "Explosive Bullet"
+      });
+      DB_Main.updateAbilitiesData(745, new AbilitySQLData {
+         abilityID = 81,
+         abilityLevel = 1,
+         abilityType = AbilityType.Standard,
+         description = "Red Pellet",
+         equipSlotIndex = -1,
+         name = "Red Pellet"
+      });
+      DB_Main.updateAbilitiesData(745, new AbilitySQLData {
+         abilityID = 27,
+         abilityLevel = 1,
+         abilityType = AbilityType.Standard,
+         description = "Bullet Fire",
+         equipSlotIndex = -1,
+         name = "Bullet Fire"
+      });
    }
 
    #region Private Variables

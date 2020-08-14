@@ -22,6 +22,12 @@ public class AbilityManager : MonoBehaviour
    // The id of the punch ability
    public static int PUNCH_ID = 66;
 
+   // The id of the slash ability
+   public static int SLASH_ID = 9;
+
+   // The id of the shoot ability
+   public static int SHOOT_ID = 27;
+
    // A convenient self reference
    public static AbilityManager self;
 
@@ -42,6 +48,14 @@ public class AbilityManager : MonoBehaviour
 
    public AttackAbilityData punchAbility () {
       return allAttackbilities.Find(_ => _.itemID == PUNCH_ID);
+   }
+
+   public AttackAbilityData slashAbility () {
+      return allAttackbilities.Find(_ => _.itemID == SLASH_ID);
+   }
+
+   public AttackAbilityData shootAbility () {
+      return allAttackbilities.Find(_ => _.itemID == SHOOT_ID);
    }
 
    public void initializeAbilities () {

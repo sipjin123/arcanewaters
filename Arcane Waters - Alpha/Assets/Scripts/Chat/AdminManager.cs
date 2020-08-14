@@ -49,6 +49,7 @@ public class AdminManager : NetworkBehaviour
    protected static string SCHEDULE_SERVER_RESTART = "restart";
    protected static string CANCEL_SERVER_RESTART = "cancel";
    protected static string FREE_WEAPON = "free_weapon";
+   protected static string GUN_ABILITIES = "gun_abilities";
 
    #endregion
 
@@ -488,6 +489,39 @@ public class AdminManager : NetworkBehaviour
 
       // Send the request to the server
       Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
+   }
+
+   [Command]
+   protected void Cmd_AddGunAbilities () {
+      List<AbilitySQLData> newAbilityList = getAbilityDataSQL(new List<int> { 27, 78, 79, 80, 81 });
+      string abilityIdStr = "";
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (AbilitySQLData ability in newAbilityList) {
+            DB_Main.updateAbilitiesData(Global.player.userId, ability);
+            abilityIdStr += ability.abilityID + " ";
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.editorLog("Added new abilities: " + ABILITY, Color.green);
+         });
+      });
+   }
+
+   private List<AbilitySQLData> getAbilityDataSQL (List<int> abilityIds) {
+      List<AbilitySQLData> newAbility = new List<AbilitySQLData>();
+      foreach (int abilityId in abilityIds) {
+
+         AttackAbilityData abilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilityId);
+         newAbility.Add(new AbilitySQLData {
+            abilityID = abilityData.itemID,
+            abilityLevel = 1,
+            abilityType = AbilityType.Standard,
+            description = abilityData.itemDescription,
+            name = abilityData.itemName,
+            equipSlotIndex = -1
+         });
+      }
+      return newAbility;
    }
 
    [Command]
