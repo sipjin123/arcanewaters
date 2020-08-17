@@ -412,35 +412,19 @@ public class CropManager : NetworkBehaviour {
          Destroy(cropSpot.crop.gameObject);
       }
 
-      // If we're on the harvest step, we can move on to the next step
-      if (TutorialManager.self != null) {
-         bool ifHarvestCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.HarvestCrop;
-         if (Global.player != null && cropInfo.userId == Global.player.userId && ifHarvestCrops) {
-            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-         }
-      }
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.HarvestCrop);
    }
 
    [TargetRpc]
    public void Target_ReceiveCrop (NetworkConnection connection, CropInfo cropInfo, bool justGrew) {
-      // If we're on the planting step and just received one of our own crops, we can move on to the next step
-      if (TutorialManager.self != null) {
-         bool ifPlantSeeds = TutorialManager.self.currentTutorialData().actionType == ActionType.PlantCrop;
-         if (Global.player != null && cropInfo.userId == Global.player.userId && ifPlantSeeds) {
-            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-         }
+      // Trigger the tutorial
+      if (cropInfo.growthLevel == 0) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.PlantCrop);
+      }
 
-         // If we're on the watering step and the crop grew, we can move on to the next step
-         bool ifStartedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement == 1;
-         if (Global.player != null && cropInfo.userId == Global.player.userId && ifStartedWateringCrops && justGrew) {
-            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-         }
-
-         // If we're on the watering step and the crop finished, we can move on to the next step
-         bool ifFinishedWateringCrops = TutorialManager.self.currentTutorialData().actionType == ActionType.WaterCrop && TutorialManager.self.currentTutorialData().countRequirement > 1;
-         if (Global.player != null && cropInfo.userId == Global.player.userId && ifFinishedWateringCrops && justGrew && cropInfo.isMaxLevel()) {
-            Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-         }
+      if (cropInfo.isMaxLevel()) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.CropGrewToMaxLevel);
       }
 
       createCrop(cropInfo, justGrew, true);

@@ -32,14 +32,11 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The fullscreen toggle
    public Toggle fullscreenToggle;
 
-   // Log Out Button
-   public Button logoutButton;
-
-   // Go Home Button
-   public Button goHomeButton;
-
    // Self
    public static OptionsPanel self;
+
+   // The section that only appears when a user is logged in
+   public GameObject loggedInOnlySection;
 
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
@@ -91,8 +88,8 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    public override void show () {
       base.show();
 
-      logoutButton.gameObject.SetActive(NetworkServer.active || NetworkClient.active);
-      goHomeButton.gameObject.SetActive(NetworkServer.active || NetworkClient.active);
+      // Hide some options when called from the title screen
+      loggedInOnlySection.SetActive(NetworkServer.active || NetworkClient.active);
    }
 
    private void initializeResolutionsDropdown () {

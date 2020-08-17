@@ -31,15 +31,30 @@ public class TutorialData3 : MonoBehaviour
       //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
       //}),
 
-      //new Tutorial3("PlantCrops", "Plant, water, and harvest some crops",
-      //new List<TutorialStep3>() {
-      //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
-      //}),
+      new Tutorial3("PickFarmLayout", "Pick your farm layout",
+      new List<TutorialStep3>() {
+         new TutorialStep3(TutorialTrigger.OpenFarmLayoutSelectionPanel, "To choose your farm layout, go to your farm by exiting the starting town from the north road."),
+         new TutorialStep3(TutorialTrigger.SpawnInFarm, "The first time you enter your farm, you will be asked to choose your layout. Do so now!"),
+         new TutorialStep3(TutorialTrigger.Manual, "This is your farm. Have a look around!"),
+      }),
 
-      //new Tutorial3("PickHouseLayout", "Pick your house layout",
-      //new List<TutorialStep3>() {
-      //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
-      //}),
+      new Tutorial3("PickHouseLayout", "Pick your house layout",
+      new List<TutorialStep3>() {
+         new TutorialStep3(TutorialTrigger.OpenHouseLayoutSelectionPanel, "To choose your house layout, enter the house located in your farm."),
+         new TutorialStep3(TutorialTrigger.SpawnInHouse, "Choose your house layout!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Welcome home! Have a look around!"),
+      }),
+
+      new Tutorial3("PlantCrops", "Plant, water, and harvest some crops",
+      new List<TutorialStep3>() {
+         new TutorialStep3(TutorialTrigger.EquipSeedBag, "Let me show you how to grow crops. You should have a seed bag in your first shortcut. Press 1 to equip it. You can also search it in your inventory by pressing I."),
+         new TutorialStep3(TutorialTrigger.PlantCrop, "Look around your farm. There are some holes in the dirt ready for seeds. Stand next to the holes and press right click to plant the seeds."),
+         new TutorialStep3(TutorialTrigger.PlantCrop, "Great! Plant a few more.", 4),
+         new TutorialStep3(TutorialTrigger.CropGrewToMaxLevel, "Press 2 to equip the watering pot and right click to use it. The crops will need to be watered a few times before they are ready for harvest.", 5),
+         new TutorialStep3(TutorialTrigger.HarvestCrop, "The crops are ready to be harvested! Press 3 to equip the pitchfork and collect the vegetables!", 5),
+         new TutorialStep3(TutorialTrigger.Manual, "Well done! Harvests can be sold in general stores. You will find them in most villages."),
+         new TutorialStep3(TutorialTrigger.Manual, "This is all for crops! To start the next tutorial, click on the right arrow."),
+      }),
 
       new Tutorial3("SailShip", "Sail your ship",
       new List<TutorialStep3>() {
@@ -63,12 +78,24 @@ public class TutorialData3 : MonoBehaviour
       //new List<TutorialStep3>() {
       //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
       //}),
+      
+      new Tutorial3("JoinVoyage", "Join a voyage",
+      new List<TutorialStep3>() {
+         new TutorialStep3(TutorialTrigger.OpenVoyagePanel, "Great adventures await you at sea! Near most docks, you will find a voyage signboard. Look for one and click on it!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Voyages are set in distant, unexplored seas. The destinations regularly change."),
+         new TutorialStep3(TutorialTrigger.SpawnInVoyage, "By selecting a map, you will be automatically matched with other players. Choose a PvE map and join the expedition!"),
+         new TutorialStep3(TutorialTrigger.Manual, "The group composition is displayed on the left of your screen. You can interact with the members through the chat."),
+         new TutorialStep3(TutorialTrigger.Manual, "Your goal is to find and capture treasure sites before rival groups do. Once captured, a treasure site can be explored in search of riches!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Be careful, though! These seas are full of monsters and pirates!"),
+         new TutorialStep3(TutorialTrigger.Manual, "You can leave your group at any time by pressing the X button above the group members."),
+         new TutorialStep3(TutorialTrigger.Manual, "This is all for voyages. To continue with other tutorials, click on the right arrow."),
+      }),
 
-      //new Tutorial3("JoinPvPVoyage", "Join a PvP voyage",
-      //new List<TutorialStep3>() {
-      //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
-      //}),
 
+
+      // ----------------------------------------
+      // This must always be the last tutorial!
+      // ----------------------------------------
       new Tutorial3("EndNotice", "Explore the world",
       new List<TutorialStep3>() {
          new TutorialStep3(TutorialTrigger.None, "Congratulations! You have completed all the tutorials. You are now ready to freely roam the world!"),
@@ -96,4 +123,14 @@ public enum TutorialTrigger
    ShipSpeedUp = 8,
    FireShipCannon = 9,
    DefeatPirateShip = 10,
+   EquipSeedBag = 11,
+   PlantCrop = 12,
+   CropGrewToMaxLevel = 13,
+   HarvestCrop = 14,
+   OpenFarmLayoutSelectionPanel = 15,
+   SpawnInFarm = 16,
+   OpenHouseLayoutSelectionPanel = 17,
+   SpawnInHouse = 18,
+   OpenVoyagePanel = 19,
+   SpawnInVoyage = 20,
 };

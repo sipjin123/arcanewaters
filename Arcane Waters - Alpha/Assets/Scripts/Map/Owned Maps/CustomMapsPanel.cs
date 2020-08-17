@@ -43,6 +43,13 @@ public class CustomMapsPanel : Panel
          cell.setData(baseMap.displayName, sprite, 0, 0, () => selectBaseMap(baseMap.id));
       }
 
+      // Trigger the tutorial
+      if (manager is CustomHouseManager) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenHouseLayoutSelectionPanel);
+      } else if (manager is CustomFarmManager) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenFarmLayoutSelectionPanel);
+      }
+
       // TODO: highlight the entry, which is owned by user
    }
 

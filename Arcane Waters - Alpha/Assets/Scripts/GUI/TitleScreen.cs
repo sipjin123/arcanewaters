@@ -110,6 +110,10 @@ public class TitleScreen : MonoBehaviour {
       }
    }
 
+   public void openOptionsPanel () {
+      PanelManager.self.pushIfNotShowing(Panel.Type.Options);
+   }
+
    public bool isShowing () {
       if (_canvasGroup == null) {
          return false;

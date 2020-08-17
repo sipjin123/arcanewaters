@@ -209,6 +209,32 @@ public class AreaManager : MonoBehaviour
       return false;
    }
 
+   public bool isHouseOfUser (string areaKey, int userId) {
+      // Check if the area is a custom house map
+      if (tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomHouseManager) {
+            // Check if it belongs to the given user
+            int areaUserId = CustomMapManager.getUserId(areaKey);
+            return areaUserId == userId;
+         }
+      }
+
+      return false;
+   }
+
+   public bool isFarmOfUser (string areaKey, int userId) {
+      // Check if the area is a custom map
+      if (tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomFarmManager) {
+            // Check if it belongs to the given user
+            int areaUserId = CustomMapManager.getUserId(areaKey);
+            return areaUserId == userId;
+         }
+      }
+
+      return false;
+   }
+
    protected void toggleAreaCollidersForPerformanceImprovement () {
       foreach (Area area in _areas.Values) {
          // We only need colliders for the area that the player is in

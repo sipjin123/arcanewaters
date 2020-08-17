@@ -19,11 +19,11 @@ public class ToolTipSign : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   protected virtual void Awake () {
       toolTipText.SetText(toolTipMessage);
    }
 
-   public void toggleToolTip (bool isActive) {
+   public virtual void toggleToolTip (bool isActive) {
       toolTipPanel.SetActive(isActive);
    }
 

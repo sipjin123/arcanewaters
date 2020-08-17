@@ -76,6 +76,15 @@ public class AdminManager : NetworkBehaviour
       if (!ChatPanel.self.inputField.isFocused) {
          _historyIndex = -1;
       }
+
+      // Move play to position on ceratain key combination
+      if (_player.isLocalPlayer && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetMouseButtonDown(0)) {
+         Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
+         if (!_player.isInBattle() && area != null) {
+            Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(Input.mousePosition);
+            warpToPosition(area.transform.InverseTransformPoint(wPos));
+         }
+      }
    }
 
    public void handleAdminCommandString (string inputString) {
@@ -450,8 +459,8 @@ public class AdminManager : NetworkBehaviour
       // Send the request to the server
       Cmd_CreateAllItems(count);
    }
-   
-   protected void freeWeapon(string parameters) {
+
+   protected void freeWeapon (string parameters) {
       string[] sections = parameters.Split(' ');
       string itemName = "";
       const int count = 1;
@@ -857,6 +866,31 @@ public class AdminManager : NetworkBehaviour
 
    protected void warpRandomly () {
       handleAdminCommandString("warp");
+   }
+
+   public void warpToPosition (Vector3 localPosition) {
+      // Set position locally
+      _player.transform.localPosition = localPosition;
+
+      // Set it in the server
+      Cmd_WarpToPosition(localPosition);
+   }
+
+   [Command]
+   public void Cmd_WarpToPosition (Vector3 localPosition) {
+      // localPosition is the local position inside the map the player is currently in
+
+      // Check that requester is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      // Check that player is currently in an area and it exists
+      Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
+      if (area != null) {
+         _player.transform.localPosition = localPosition;
+      }
    }
 
    [Command]

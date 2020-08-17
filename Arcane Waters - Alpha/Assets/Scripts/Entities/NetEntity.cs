@@ -1282,6 +1282,18 @@ public class NetEntity : NetworkBehaviour
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInSeaArea);
          }
 
+         if (VoyageManager.self.isVoyageArea(this.areaKey)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
+         }
+
+         if (AreaManager.self.isHouseOfUser(this.areaKey, userId)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInHouse);
+         }
+
+         if (AreaManager.self.isFarmOfUser(this.areaKey, userId)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInFarm);
+         }
+
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }

@@ -17,6 +17,7 @@ namespace MapCreationTool.Serialization
 
       private BoardCell[,] cellMatrix;
       private List<(TileBase, Vector2Int)> additionalTileColliders;
+      private List<SpecialTileChunk> vineChunks;
 
 
       public Exporter (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Biome.Type biome, EditorType eType, Vector2Int eOrigin, Vector2Int eSize) {
@@ -91,7 +92,7 @@ namespace MapCreationTool.Serialization
             version = "0.0.1",
             biome = biome,
             layers = exportedLayers,
-            specialTileChunks = formSpecialTileChunks(),
+            specialTileChunks = formSpecialTileChunks().Union(vineChunks).ToArray(),
             editorType = editorType,
             prefabs = prefabsSerialized,
             additionalTileColliders = exportedAddtionalColliders
@@ -107,6 +108,9 @@ namespace MapCreationTool.Serialization
 
          // Handle collisions
          setCollisions(cellMatrix);
+
+         // Handle vines differently
+         vineChunks = handleVines().ToList();
       }
 
       private void setCollisions (BoardCell[,] cellMatrix) {
@@ -136,22 +140,22 @@ namespace MapCreationTool.Serialization
                   }
 
                   // Check 1 above, left and right (horizontal path doorframe)
-                  if (tryGetLeftRightDoorframes(i, j + 1, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
-                     if (left.collisionType == TileCollisionType.CancelEnabled && right.collisionType == TileCollisionType.CancelEnabled) {
+                  if (tryGetLeftRightDoorframes(i, j, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
+                     if (left.collisionType == TileCollisionType.CancelDisabled && right.collisionType == TileCollisionType.CancelDisabled) {
                         continue;
                      }
                   }
                }
 
-               // If this is a wall tile, check if it has a horizontal doorframe on top
-               if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
-                  if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
-                     // Force this wall tile to be rendered on top of player
-                     cellMatrix[i, j].getTileFromTopRef(Layer.WALL_KEY).forceAbsoluteTop = true;
-
-                     continue;
-                  }
-               }
+               //// If this is a wall tile, check if it has a horizontal doorframe on top
+               //if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
+               //   if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
+               //      // Force this wall tile to be rendered on top of player
+               //      cellMatrix[i, j].getTileFromTopRef(Layer.WALL_KEY).forceAbsoluteTop = true;
+               //
+               //      continue;
+               //   }
+               //}
 
                BoardCell column = cellMatrix[i, j];
                for (int z = column.tiles.Length - 1; z >= 0; z--) {
@@ -396,10 +400,51 @@ namespace MapCreationTool.Serialization
          }
       }
 
+      private IEnumerable<SpecialTileChunk> handleVines () {
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 1; j < editorSize.y - 1; j++) {
+               // If there is a tile underneath blocking, don't place vines behaviour
+               if (cellMatrix[i, j - 1].shouldHaveAnyColliders()) continue;
+
+               Vector2Int size = new Vector2Int(1, 0);
+               // Try to find a line of vines
+               while (cellMatrix[i, j].hasVine && j < editorSize.y - 1) {
+                  size.y++;
+                  j++;
+               }
+
+               // If we didn't find any vines, continue
+               if (size.y == 0) continue;
+
+               // We want to make vine behaviour if there is either 0 or 1 tiles with colliders on top of vines
+               bool top1 = j < editorSize.y && cellMatrix[i, j].shouldHaveAnyColliders();
+               bool top2 = j < editorSize.y - 1 && cellMatrix[i, j + 1].shouldHaveAnyColliders();
+
+               if (top1 && top2) continue;
+
+               // If there is only 1 tile on top, include it in the behaviour
+               if (top1) {
+                  j++;
+                  size.y++;
+               }
+
+               // Force remove colliders underneath the vines
+               for (int k = j - size.y; k < j; k++) {
+                  cellMatrix[i, k].removeAllColliders();
+               }
+
+               yield return new SpecialTileChunk {
+                  type = SpecialTileChunk.Type.Vine,
+                  position = new Vector2(i, j - size.y) + (Vector2) size * 0.5f - (Vector2) editorSize * 0.5f,
+                  size = size
+               };
+            }
+         }
+      }
+
       private SpecialTileChunk[] formSpecialTileChunks () {
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(SpecialTileChunk.Type.Stair, (c) => c.hasStair);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(SpecialTileChunk.Type.Waterfall, (c) => c.hasWater4 && editorType == EditorType.Area);
-         IEnumerable<SpecialTileChunk> vines = formSquareChunks(SpecialTileChunk.Type.Vine, (c) => c.hasVine);
 
          IEnumerable<SpecialTileChunk> currents = Enumerable.Empty<SpecialTileChunk>();
 
@@ -419,7 +464,7 @@ namespace MapCreationTool.Serialization
                (c) => c.hasRug && tileToRug.ContainsKey(c.getTileFromTop(Layer.RUG_KEY).tileBase) && tileToRug[c.getTileFromTop(Layer.RUG_KEY).tileBase] == type);
          });
 
-         return stairs.Union(waterfalls).Union(vines).Union(currents).Union(rugs).ToArray();
+         return stairs.Union(waterfalls).Union(currents).Union(rugs).ToArray();
       }
 
       private IEnumerable<SpecialTileChunk> formWaterCurrentChunk (Func<BoardCell, bool> columnSelector, Direction dir) {
@@ -657,6 +702,21 @@ namespace MapCreationTool.Serialization
             }
 
             throw new Exception("No such tile.");
+         }
+
+         public bool shouldHaveAnyColliders () {
+            for (int i = 0; i < tiles.Length; i++) {
+               if (tiles[i].shouldHaveCollider) {
+                  return true;
+               }
+            }
+            return false;
+         }
+
+         public void removeAllColliders () {
+            for (int i = 0; i < tiles.Length; i++) {
+               tiles[i].shouldHaveCollider = false;
+            }
          }
       }
 

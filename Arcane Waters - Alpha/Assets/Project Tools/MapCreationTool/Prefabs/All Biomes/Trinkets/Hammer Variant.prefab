@@ -62,6 +62,7 @@ MonoBehaviour:
   title: Hammer
   canInheritPosition: 1
   canControlPosition: 0
+  positionStep: {x: 0, y: 0}
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -110,6 +111,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -227,7 +229,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Hammer Variant
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 2252040011064897690, guid: 140da15c6a6d4cd40a011c11e87e14c6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 140da15c6a6d4cd40a011c11e87e14c6, type: 3}
 --- !u!1 &5649798440303732876 stripped
 GameObject:

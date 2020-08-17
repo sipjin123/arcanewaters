@@ -16,7 +16,7 @@ public class VersionInfoUI : MonoBehaviour {
       if (gameVersion != int.MaxValue) {
          _text.SetText($"v { Util.getGameVersion() }");
       } else {
-         gameObject.SetActive(false);
+         transform.parent.gameObject.SetActive(false);
       }
    }
 

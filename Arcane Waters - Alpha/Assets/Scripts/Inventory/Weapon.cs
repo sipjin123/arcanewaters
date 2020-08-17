@@ -145,6 +145,15 @@ public class Weapon : EquippableItem {
       return weaponData.equipmentName;
    }
 
+   public ActionType getActionType () {
+      WeaponStatData weaponData = getWeaponData();
+      if (weaponData != null) {
+         return weaponData.actionType;
+      } else {
+         return ActionType.None;
+      }
+   }
+
    public int getDamage () {
       if (getWeaponData() != null) {
          return getWeaponData().weaponBaseDamage;

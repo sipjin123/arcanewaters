@@ -45,6 +45,10 @@ public class InventoryManager : MonoBehaviour
          // Trigger the tutorial
          if (itemIdToSend != 0) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipWeapon);
+
+            if (((Weapon)castedItem).getActionType() == Weapon.ActionType.PlantCrop) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipSeedBag);
+            }
          }
       } else if (castedItem.category == Item.Category.Armor) {
          if (inventoryPanel.isShowing()) {

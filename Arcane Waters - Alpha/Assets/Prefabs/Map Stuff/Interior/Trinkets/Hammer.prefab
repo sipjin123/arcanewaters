@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1323507454987738857}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.029, z: 0}
+  m_LocalPosition: {x: 0, y: -0.0481, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 415896837793080714}
@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 2487589163251341271}
   - component: {fileID: 3397652243083895789}
   - component: {fileID: 2652861302308174766}
+  - component: {fileID: 2252040011064897690}
   m_Layer: 0
   m_Name: Hammer
   m_TagString: Untagged
@@ -78,6 +79,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
@@ -144,3 +146,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   includeChildren: 0
   currentBiome: 1
+--- !u!58 &2252040011064897690
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7076830771912146571}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.017395735, y: -0.032636195}
+  serializedVersion: 2
+  m_Radius: 0.035171464

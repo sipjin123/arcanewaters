@@ -42,6 +42,9 @@ public class VoyagePanel : Panel
          VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellsContainer.transform, false);
          cell.setCellForVoyage(voyage);
       }
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenVoyagePanel);
    }
 
    public void selectVoyageMap (Voyage voyage) {

@@ -85,6 +85,7 @@ public class TutorialManager3 : MonoBehaviour {
 
       _currentTutorial = tutorial;
       _currentStep = 0;
+      _triggerCount = 0;
       refreshPanel();
    }
 
@@ -96,6 +97,7 @@ public class TutorialManager3 : MonoBehaviour {
          _currentStep = 0;
       }
 
+      _triggerCount = 0;
       refreshPanel();
    }
 
@@ -105,6 +107,7 @@ public class TutorialManager3 : MonoBehaviour {
          completeTutorial();
       }
 
+      _triggerCount = 0;
       refreshPanel();
    }
 
@@ -114,7 +117,11 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       if (key == _currentTutorial.steps[_currentStep].completionTrigger) {
-         nextStep();
+         // Some steps require multiple repetitions of the action
+         _triggerCount++;
+         if (_triggerCount >= _currentTutorial.steps[_currentStep].countRequirement) {
+            nextStep();
+         }
       }
    }
 
@@ -137,6 +144,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       _currentStep = 0;
+      _triggerCount = 0;
       saveConfigAndProgress();
    }
 
@@ -176,8 +184,8 @@ public class TutorialManager3 : MonoBehaviour {
          }
       }
 
-      // First look down in the list
-      for (int i = currentIndex; i < TutorialData3.tutorials.Count; i++) {
+      // First look down in the list - but leave out the last one, which is the end notice
+      for (int i = currentIndex; i < TutorialData3.tutorials.Count - 1; i++) {
          if (!TutorialData3.tutorials[i].isCompleted) {
             return TutorialData3.tutorials[i];
          }
@@ -212,6 +220,9 @@ public class TutorialManager3 : MonoBehaviour {
 
    // The index of the current step in the tutorial
    private int _currentStep = 0;
+
+   // The number of times the completion trigger has been set off for the current step
+   private int _triggerCount = 0;
 
    #endregion
 }
