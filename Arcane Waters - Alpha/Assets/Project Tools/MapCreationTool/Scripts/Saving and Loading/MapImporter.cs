@@ -248,7 +248,7 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   secretsData.Add(prefab);
                }
-            } else {
+            } else { 
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
                var pref = UnityEngine.Object.Instantiate(

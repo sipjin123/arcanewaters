@@ -20,7 +20,7 @@ public class DBZipTester : MonoBehaviour {
    #endregion
 
    private void Update () {
-      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1) {
          if (Input.GetKeyDown(KeyCode.Alpha5)) {
             byte[] rawdata = File.ReadAllBytes(ServerDataZip);
             string base64 = Convert.ToBase64String(rawdata);

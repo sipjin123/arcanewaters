@@ -69,6 +69,12 @@ public class NPCData
    // If this object is active in the database
    public bool isActive;
 
+   // The offset of the shadow
+   public float shadowOffsetY = -0.15f;
+
+   // Shadow size
+   public float shadowScale = 1;
+
    #endregion
 
    public NPCData () {
@@ -78,7 +84,7 @@ public class NPCData
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool interactable, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive) {
+      int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive, float shadowOffsetY, float shadowScale) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -101,6 +107,8 @@ public class NPCData
       this.landMonsterId = landMonsterId;
       this.achievementIdHiringRequirement = achievementIdHiringRequirement;
       this.isActive = isActive;
+      this.shadowOffsetY = shadowOffsetY;
+      this.shadowScale = shadowScale;
    }
 
    #region Private Variables

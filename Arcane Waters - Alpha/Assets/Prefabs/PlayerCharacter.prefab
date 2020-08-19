@@ -1995,6 +1995,7 @@ MonoBehaviour:
   waterRippleFront: {fileID: 1316063719556658}
   lastWaterTime: -3.4028235e+38
   waterWadingSound: {fileID: 82102829024873760}
+  shadowObj: {fileID: 3722542199485167435}
 --- !u!114 &114840136468941616
 MonoBehaviour:
   m_ObjectHideFlags: 0

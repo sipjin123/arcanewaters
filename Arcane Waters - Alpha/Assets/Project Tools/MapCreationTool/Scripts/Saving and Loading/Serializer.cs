@@ -361,6 +361,7 @@ namespace MapCreationTool.Serialization
       public const string SHIP_GUILD_ID = "guild id";
 
       public const string SIGN_TYPE = "sign type";
+      public const string GRAVE_NAME = "grave name";
 
       public string k; // Key
       public string v; // Value

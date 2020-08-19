@@ -29,7 +29,7 @@ public class SteamTester : MonoBehaviour {
    #endregion
 
    private void Awake () {
-      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1) {
          m_GetAuthSessionTicketResponse = Callback<GetAuthSessionTicketResponse_t>.Create(OnAuthSessionTickerResponse);
          //m_GetAuthSessionstatus = Callback<SteamNetAuthenticationStatus_t>.Create(OnSteamNetAuthenticationStatus); 
          OnEncryptedAppTicketResponseCallResult = CallResult<EncryptedAppTicketResponse_t>.Create(OnEncryptedAppTicketResponse);
@@ -37,7 +37,7 @@ public class SteamTester : MonoBehaviour {
    }
    
    private void OnGUI () {
-      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1) {
          if (GUILayout.Button("Check my Friends")) {
             int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
             Debug.LogError("[STEAM-FRIENDS] Listing " + friendCount + " Friends.");

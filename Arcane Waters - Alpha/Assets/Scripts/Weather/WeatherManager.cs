@@ -61,6 +61,13 @@ public class WeatherManager : MonoBehaviour {
    public static int MAX_SUNRAYS = 10;
    public static int MIN_SUNRAYS = 5;
 
+   // Parameters for snow generation
+   public float snowStartPosX, snowStartPosY = 0;
+   public int snowCellCountX, snowCellCountY;
+   public float cellSpacing = 0;
+   public GameObject snowCellPrefab;
+   public float[] snowRandomSpeed = new float[72];
+
    #endregion
 
    private void Awake () {
@@ -68,6 +75,10 @@ public class WeatherManager : MonoBehaviour {
       initializeCloudObjects();
 
       mainCam = Camera.main;
+
+      for (int i = 0; i < snowRandomSpeed.Length; i++) {
+         snowRandomSpeed[i] = Random.Range(.2f, .6f);
+      }
    }
 
    public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {
@@ -96,7 +107,7 @@ public class WeatherManager : MonoBehaviour {
                resetWeatherSimulation();
                break;
             case WeatherEffectType.Snow:
-               snowEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);
+               snowEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);//rootObj.position;//
                snowEffectObj.gameObject.SetActive(true);
                break;
             case WeatherEffectType.Rain:
@@ -136,6 +147,24 @@ public class WeatherManager : MonoBehaviour {
          }
       }
       startWeatherSimulation = true;
+   }
+
+   private void generateSnowCells () {
+      snowEffectObj.DestroyChildren();
+      int indexCount = 0;
+      int intervalCount = 0;
+      for (int snowIndexHorizontal = 0; snowIndexHorizontal < snowCellCountX; snowIndexHorizontal++) {
+         for (int snowIndexVertical = 0; snowIndexVertical < snowCellCountY; snowIndexVertical++) {
+            GameObject snowCellObj = Instantiate(snowCellPrefab, snowEffectObj.transform);
+            snowCellObj.transform.localPosition = new Vector3(snowStartPosX + (snowIndexHorizontal * cellSpacing), snowStartPosY + (snowIndexVertical * cellSpacing), 0);
+            snowCellObj.SetActive(true);
+            indexCount++;
+            if (indexCount % 2 == 0) {
+               snowCellObj.GetComponent<SimpleAnimation>().modifyAnimSpeed(snowRandomSpeed[intervalCount]);
+               intervalCount++;
+            }
+         }
+      }
    }
 
    private void initializeCloudObjects () {
@@ -189,8 +218,8 @@ public class WeatherManager : MonoBehaviour {
    }
 
    private void Update () {
-      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME) {
-         if (Input.GetKey(KeyCode.PageDown)) {
+      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1 || SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME2) {
+         if (Input.GetKey(KeyCode.F11)) {
             if (Input.GetKeyDown(KeyCode.Alpha1)) {
                D.editorLog("Setting weather: " + WeatherEffectType.DarkCloud, Color.green);
                setWeatherSimulation(WeatherEffectType.DarkCloud, AreaManager.self.getArea(Global.player.areaKey).transform);
@@ -210,6 +239,7 @@ public class WeatherManager : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Alpha5)) {
                D.editorLog("Setting weather: " + WeatherEffectType.Snow, Color.green);
                setWeatherSimulation(WeatherEffectType.Snow, AreaManager.self.getArea(Global.player.areaKey).transform);
+               generateSnowCells();
             }
             if (Input.GetKeyDown(KeyCode.Alpha6)) {
                D.editorLog("Setting weather: " + WeatherEffectType.Sunny, Color.green);

@@ -9,8 +9,9 @@ public class NubisDataFetchTest : MonoBehaviour
    #region Public Variables
 
    // Only run this script for this device
-   public static string DEVICE_NAME = "DESKTOP-7UVTQ74";
-
+   public static string DEVICE_NAME1 = "DESKTOP-7UVTQ74";
+   public static string DEVICE_NAME2 = "DESKTOP-N7K3SH1";
+   
    public int testUserId = 745;
 
    #endregion
@@ -19,7 +20,7 @@ public class NubisDataFetchTest : MonoBehaviour
    }
 
    private void OnGUI () {
-      if (SystemInfo.deviceName == DEVICE_NAME) {
+      if (SystemInfo.deviceName == DEVICE_NAME1) {
          if (GUILayout.Button("Get XML Version Directly from Nubis")) {
 
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

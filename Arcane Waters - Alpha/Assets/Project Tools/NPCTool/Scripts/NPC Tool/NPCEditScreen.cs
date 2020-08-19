@@ -31,6 +31,22 @@ public class NPCEditScreen : MonoBehaviour
    public InputField giftNotLiked;
    public InputField npcID;
 
+   // Sliders that alter shadow transform
+   public Slider shadowScale;
+   public Slider shadowOffsetY;
+
+   // Reference to the shadow
+   public Transform shadowTransform;
+
+   // The indication on how big is the offset adjustment of the shadow
+   public Text shadowOffsetYText;
+
+   // The indication on how big is the shadow is
+   public Text shadowScaleText;
+
+   // The npc preview in game
+   public SpriteRenderer npcGamePreview;
+
    // The quest id
    public Button changeQuestButton;
    public Text questNameText;
@@ -162,6 +178,15 @@ public class NPCEditScreen : MonoBehaviour
    #endregion
 
    public void Awake () {
+      shadowOffsetY.onValueChanged.AddListener(_ => {
+         shadowOffsetYText.text = _.ToString("f2");
+         shadowTransform.localPosition = new Vector3(0, _, 0);
+      });
+      shadowScale.onValueChanged.AddListener(_ => {
+         shadowScaleText.text = _.ToString("f2");
+         shadowTransform.localScale = new Vector3(_, _, _);
+      });
+
       foreach (InputField inputField in longTextInputfields) {
          inputField.characterLimit = 60;
       }
@@ -222,6 +247,7 @@ public class NPCEditScreen : MonoBehaviour
    public void updatePanelWithNPC (NPCData npcData) {
       avatarIcon.sprite = ImageManager.getSprite(npcData.iconPath);
       avatarSprite.sprite = ImageManager.getSprite(npcData.spritePath);
+      npcGamePreview.sprite = ImageManager.getSprite(npcData.spritePath);
 
       npcIconPath = npcData.iconPath;
       npcSpritePath = npcData.spritePath;
@@ -248,6 +274,8 @@ public class NPCEditScreen : MonoBehaviour
       selectedBattlerIndex.text = npcData.landMonsterId.ToString();
       achievementRequirementHireID.text = npcData.achievementIdHiringRequirement.ToString();
       isActive.isOn = npcData.isActive;
+      shadowOffsetY.value = npcData.shadowOffsetY;
+      shadowScale.value = npcData.shadowScale;
       if (NPCToolManager.instance.achievementCollection.ContainsKey(npcData.achievementIdHiringRequirement)) {
          achievmentRequirementHireName.text = NPCToolManager.instance.achievementCollection[npcData.achievementIdHiringRequirement].achievementName;
       } else {
@@ -313,7 +341,8 @@ public class NPCEditScreen : MonoBehaviour
       NPCData npcData = new NPCData(int.Parse(npcID.text), greetingStranger.text, greetingAcquaintance.text,
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, interactable.isOn, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
-         int.Parse(questIdText.text), newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), int.Parse(achievementRequirementHireID.text), isActive.isOn);
+         int.Parse(questIdText.text), newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), 
+         int.Parse(achievementRequirementHireID.text), isActive.isOn, shadowOffsetY.value, shadowScale.value);
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc
@@ -429,6 +458,7 @@ public class NPCEditScreen : MonoBehaviour
          iconTemp.selectButton.onClick.AddListener(() => {
             npcSpritePath = sourceSprite.Key;
             avatarSprite.sprite = sourceSprite.Value;
+            npcGamePreview.sprite = sourceSprite.Value;
             closeAvatarSelectionButton.onClick.Invoke();
          });
 

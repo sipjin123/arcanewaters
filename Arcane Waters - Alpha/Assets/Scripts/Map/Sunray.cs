@@ -36,9 +36,11 @@ public class Sunray : ClientMonoBehaviour
          // Perform the animation
          for (float timer = 0; timer < animationDuration; timer += Time.deltaTime) {
             // If it's not below the top of the screen, it proceeds the animation. If else it dissapears
-            if (Global.player.transform.position.y + distaceFromTheTop < transform.position.y) {
-               // Evaluated opacity based on opacityCurve and timer values
-               Util.setAlpha(rend, opacityCurve.Evaluate(timer / animationDuration) * targetOpacity);
+            if (Global.player != null) {
+               if (Global.player.transform.position.y + distaceFromTheTop < transform.position.y) {
+                  // Evaluated opacity based on opacityCurve and timer values
+                  Util.setAlpha(rend, opacityCurve.Evaluate(timer / animationDuration) * targetOpacity);
+               }
             } else {
                break;
             }

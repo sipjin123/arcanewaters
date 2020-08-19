@@ -58,7 +58,7 @@ public class EquipmentXMLManager : MonoBehaviour {
       if (_armorStatList.ContainsKey(armorType)) {
          return _armorStatList[armorType];
       }
-      D.warning("Does not exist: " + armorType);
+      D.warning("Armor Does not exist: " + armorType);
       return null;
    }
 

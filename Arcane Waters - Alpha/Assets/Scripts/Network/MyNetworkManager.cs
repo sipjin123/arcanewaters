@@ -352,7 +352,7 @@ public class MyNetworkManager : NetworkManager
             npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
             npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, 
             npcData.interactable, npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, npcData.questId, new List<NPCGiftData>(),
-            npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.landMonsterId, npcData.achievementIdHiringRequirement, npcData.isActive);
+            npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.landMonsterId, npcData.achievementIdHiringRequirement, npcData.isActive, npcData.shadowOffsetY, npcData.shadowScale);
 
          newNPCDataList.Add(newNPCData);
       }
