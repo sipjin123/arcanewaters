@@ -305,6 +305,7 @@ public class BattleUIManager : MonoBehaviour {
    public void prepareBattleUI () {
       // Enable UI
       playerBattleCG.Show();
+      abilitiesCG.gameObject.SetActive(true);
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
       setStanceGraphics(Battler.Stance.Balanced);
@@ -316,6 +317,7 @@ public class BattleUIManager : MonoBehaviour {
 
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
+      abilitiesCG.gameObject.SetActive(false);
 
       // If any of these are null, then we do not call anything.
       if (playerStanceFrame != null) {

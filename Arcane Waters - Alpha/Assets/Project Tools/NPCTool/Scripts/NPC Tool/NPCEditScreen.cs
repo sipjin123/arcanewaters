@@ -274,8 +274,12 @@ public class NPCEditScreen : MonoBehaviour
       selectedBattlerIndex.text = npcData.landMonsterId.ToString();
       achievementRequirementHireID.text = npcData.achievementIdHiringRequirement.ToString();
       isActive.isOn = npcData.isActive;
+
       shadowOffsetY.value = npcData.shadowOffsetY;
       shadowScale.value = npcData.shadowScale;
+      shadowOffsetYText.text = npcData.shadowOffsetY.ToString("f2");
+      shadowScaleText.text = npcData.shadowScale.ToString("f2");
+
       if (NPCToolManager.instance.achievementCollection.ContainsKey(npcData.achievementIdHiringRequirement)) {
          achievmentRequirementHireName.text = NPCToolManager.instance.achievementCollection[npcData.achievementIdHiringRequirement].achievementName;
       } else {

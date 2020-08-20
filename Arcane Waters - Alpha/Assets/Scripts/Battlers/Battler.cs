@@ -720,7 +720,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
       if (teamType != winningTeam) {
-
          if (isMonster()) {
             // Monster battler
             Enemy enemy = (Enemy) player;
@@ -728,7 +727,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (!enemy.isDefeated) {
                enemy.isDefeated = true;
             }
-
          } else {
             // Player battler
             if (isLocalBattler()) {

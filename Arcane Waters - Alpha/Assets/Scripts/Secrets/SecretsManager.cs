@@ -55,7 +55,7 @@ public class SecretsManager : MonoBehaviour {
          foreach (SecretsData secretArea in allSecretAreas) {
             if (secretArea.userIdList.Exists(_=>_ == userId)) {
                // Remove the user from the secret area registry so they can enter the area again
-               secretArea.secretArea.userIds.Remove(userId);
+               secretArea.secretArea.secretEntranceHolder.userIds.Remove(userId);
                secretArea.userIdList.Remove(userId);
             }
          }

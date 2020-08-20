@@ -73,7 +73,7 @@ public class NPCData
    public float shadowOffsetY = -0.15f;
 
    // Shadow size
-   public float shadowScale = 1;
+   public float shadowScale = 1.25f;
 
    #endregion
 

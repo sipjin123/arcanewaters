@@ -25,7 +25,7 @@ public class PrefabsManager : MonoBehaviour {
    public NPC npcPrefab;
 
    // The prefab for spawning secret entrace objects
-   public SecretEntrance secretEntrancePrefab;
+   public SecretEntranceHolder secretEntrancePrefab;
 
    [Header("Harvesting Prefabs")]
    // The Prefab we use for creating ore drop effect for mining

@@ -5,11 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 
-public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
+public class SecretEntrance : MonoBehaviour {
    #region Public Variables
-
-   // The id of this node
-   public int secretsId;
 
    // Sprite appropriate for the current state of this node
    public Sprite mainSprite, subSprite;
@@ -17,50 +14,17 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    // The current sprite renderer
    public SpriteRenderer spriteRenderer, subSpriteRenderer;
 
-   // The instance that this node is in
-   [SyncVar]
-   public int instanceId;
+   // Sprites for animation
+   public Sprite[] mainSpritesArray, subSpriteArray;
 
-   // The unique id for each secret entrance per instance id
-   [SyncVar]
-   public int spawnId;
-
-   // If the sprites can blend with the assets behind it
-   [SyncVar]
-   public bool canBlend, canBlendInteract2;
+   // The secret entrance holder
+   public SecretEntranceHolder secretEntranceHolder;
 
    // The position the sprite should be set after interacting
    public Transform interactPosition;
 
-   // The area for this warp
-   public string areaTarget;
-
-   // The spawn for this warp
-   public string spawnTarget;
-
-   // Information about targeted map, can be null if unset
-   public Map targetInfo;
-
-   // The facing direction we should have after spawning
-   public Direction newFacingDirection = Direction.South;
-
-   // The number of user's inside the secret area
-   public SyncListInt userIds = new SyncListInt();
-
-   // The area key assigned to this node
-   [SyncVar]
-   public string areaKey;
-
    // If this object is being used in the map editor
    public bool isMapEditorMode;
-
-   // The sprite paths of this node
-   [SyncVar]
-   public string initSpritePath, interactSpritePath;
-
-   // Determines if the object is interacted
-   [SyncVar]
-   public bool isInteracted = false;
 
    // The warp associated with this secret entrance
    public Warp warp;
@@ -77,18 +41,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
    // The base number of animation sprites in a sheet
    public static int DEFAULT_SPRITESHEET_COUNT = 24;
-
-   // If the animation is finished
-   [SyncVar]
-   public bool isFinishedAnimating;
-
-   // Collider altering values
-   [SyncVar]
-   public Vector2 colliderScale, colliderOffset, switchOffset;
-
-   // Collider altering values of the post interact collision
-   [SyncVar]
-   public Vector2 postColliderScale, postColliderOffset;
 
    // The sprite that has a collider that blocks the user collision before the path is revealed
    public SpriteRenderer blockerSprite;
@@ -114,40 +66,24 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
          return;
       }
 
-      // Make the node a child of the Area
-      StartCoroutine(CO_SetAreaParent());
-
-      // Collision Setup
-      blockerSprite.transform.localPosition = colliderOffset;
-      blockerSprite.transform.localScale = colliderScale;
-      postBlockerSprite.transform.localPosition = postColliderOffset;
-      postBlockerSprite.transform.localScale = postColliderScale;
-
       // Switch offset
-      spriteRenderer.transform.localPosition = switchOffset;
       _clickableBox.transform.position = spriteRenderer.transform.position;
 
       // Sprite and collision enabled/disabled
       blockerSprite.enabled = false;
       postBlockerSprite.enabled = false;
-      blockerSprite.gameObject.SetActive(!isInteracted);
-      postBlockerSprite.gameObject.SetActive(isInteracted);
+      blockerSprite.gameObject.SetActive(!secretEntranceHolder.isInteracted);
+      postBlockerSprite.gameObject.SetActive(secretEntranceHolder.isInteracted);
       if (!Util.isBatch()) {
          checkBlending();
 
          try {
-            mainSprite = ImageManager.getSprite(initSpritePath);
-            subSprite = ImageManager.getSprites(interactSpritePath)[0];
-            if (!isInteracted) {
+            if (!secretEntranceHolder.isInteracted) {
                spriteRenderer.sprite = mainSprite;
                subSpriteRenderer.sprite = subSprite;
             } else {
-               int spriteLength = ImageManager.getSprites(interactSpritePath).Length;
-               Sprite[] mainSprites = ImageManager.getSprites(interactSpritePath);
-               spriteRenderer.sprite = mainSprites[spriteLength - 1];
-
                // Multiplies the animation speed depending on the number of sprites in the sprite sheet (the more the sprites the faster the animation)
-               animationSpeed *= mainSprites.Length / DEFAULT_SPRITESHEET_COUNT;
+               animationSpeed *= mainSpritesArray.Length / DEFAULT_SPRITESHEET_COUNT;
                animationSpeed = Mathf.Clamp(animationSpeed, .05f, 2);
             }
 
@@ -165,19 +101,19 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
       // Server will set the warp info
       if (NetworkServer.active) {
-         warp.areaTarget = areaTarget;
-         warp.spawnTarget = spawnTarget;
-         warp.newFacingDirection = newFacingDirection;
+         warp.areaTarget = secretEntranceHolder.areaTarget;
+         warp.spawnTarget = secretEntranceHolder.spawnTarget;
+         warp.newFacingDirection = secretEntranceHolder.newFacingDirection;
          warp.warpEvent.AddListener(player => {
-            userIds.Add(player.userId);
+            secretEntranceHolder.userIds.Add(player.userId);
 
             // Keep track of the user's location while in the secrets room
-            SecretsManager.self.enterUserToSecret(player.userId, areaTarget, player.instanceId, this);
+            SecretsManager.self.enterUserToSecret(player.userId, secretEntranceHolder.areaTarget, player.instanceId, this);
          });
          warp.gameObject.SetActive(false);
       }
 
-      if (isFinishedAnimating && !Util.isBatch()) {
+      if (secretEntranceHolder.isFinishedAnimating && !Util.isBatch()) {
          setSprites();
          if (subSprite.name == "none") {
             subSpriteRenderer.gameObject.SetActive(false);
@@ -189,8 +125,8 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       }
 
       SecretsManager.self.registerSecretEntrance(new SecretEntranceSpawnData {
-         instanceId = instanceId,
-         spawnId = spawnId,
+         instanceId = secretEntranceHolder.instanceId,
+         spawnId = secretEntranceHolder.spawnId,
          secretEntrance = this
       });
    }
@@ -198,9 +134,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    private void checkBlending (bool isInteractOverride = false) {
       // This feature will set the alpha of the primary sprite to zero if its true
       // The primary sprite is designed to be used as the sprite that the user interacts to reveal the second sprite that shows the actual entrance {bookcase / waterfall}
-      if (canBlend) {
+      if (secretEntranceHolder.canBlend) {
          Color tmp = spriteRenderer.color;
-         tmp.a = isInteracted ? 1 : 0;
+         tmp.a = secretEntranceHolder.isInteracted ? 1 : 0;
          if (isInteractOverride) {
             tmp.a = 1;
          }
@@ -210,9 +146,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
 
       // This feature will set the alpha of the secondary sprite to zero if its true
       // The secondary sprite is designed to be used as the sprite that animated once the path is revealed {trapdoor / boulder / tree stump}
-      if (canBlendInteract2) {
+      if (secretEntranceHolder.canBlendInteract2) {
          Color tmp = subSpriteRenderer.color;
-         tmp.a = isInteracted ? 1 : 0;
+         tmp.a = secretEntranceHolder.isInteracted ? 1 : 0;
          if (isInteractOverride) {
             tmp.a = 1;
          }
@@ -230,7 +166,7 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
    }
 
    public void handleSpriteOutline () {
-      if (_outline == null || isInteracted) {
+      if (_outline == null || secretEntranceHolder.isInteracted) {
          return;
       }
 
@@ -243,142 +179,11 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   public void receiveData (DataField[] dataFields) {
-      foreach (DataField field in dataFields) {
-         string value = field.v.Split(':')[0];
-         switch (field.k.ToLower()) {
-            case DataField.SECRETS_TYPE_ID:
-               secretsId = int.Parse(value);
-               break;
-            case DataField.SECRETS_START_SPRITE:
-               initSpritePath = value;
-               break;
-            case DataField.SECRETS_INTERACT_SPRITE:
-               interactSpritePath = value;
-               break;
-            case DataField.WARP_TARGET_MAP_KEY:
-               string areaName = AreaManager.self.getAreaName(int.Parse(value));
-               areaTarget = areaName;
-               warpAreaText.text = areaTarget;
-               break;
-            case DataField.WARP_TARGET_SPAWN_KEY:
-               spawnTarget = value;
-               break;
-            case DataField.TARGET_MAP_INFO_KEY:
-               targetInfo = field.objectValue<Map>();
-               break;
-            case DataField.WARP_ARRIVE_FACING_KEY:
-               if (field.tryGetDirectionValue(out Direction dir)) {
-                  newFacingDirection = dir;
-               }
-               break;
-            case DataField.SECRETS_COLLIDER_OFFSET_X:
-               try {
-                  float newVal = float.Parse(field.v);
-                  colliderOffset.x = newVal;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_COLLIDER_OFFSET_Y:
-               try {
-                  float newVal = float.Parse(field.v);
-                  colliderOffset.y = newVal;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_COLLIDER_SCALE_X:
-               try {
-                  float newValue = float.Parse(field.v);
-                  colliderScale.x = newValue;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_COLLIDER_SCALE_Y:
-               try {
-                  float newValue = float.Parse(field.v);
-                  colliderScale.y = newValue;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_POST_COLLIDER_OFFSET_X:
-               try {
-                  float newVal = float.Parse(field.v);
-                  postColliderOffset.x = newVal;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_POST_COLLIDER_OFFSET_Y:
-               try {
-                  float newVal = float.Parse(field.v);
-                  postColliderOffset.y = newVal;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_POST_COLLIDER_SCALE_X:
-               try {
-                  float newValue = float.Parse(field.v);
-                  postColliderScale.x = newValue;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_POST_COLLIDER_SCALE_Y:
-               try {
-                  float newValue = float.Parse(field.v);
-                  postColliderScale.y = newValue;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_CAN_BLEND:
-               canBlend = field.v.ToLower() == "true";
-               break;
-            case DataField.SECRETS_CAN_BLEND_INTERACTED:
-               canBlendInteract2 = field.v.ToLower() == "true";
-               break;
-            case DataField.SECRETS_SWITCH_OFFSET_X:
-               try {
-                  float newVal = float.Parse(field.v);
-                  switchOffset.x = newVal;
-               } catch {
-
-               }
-               break;
-            case DataField.SECRETS_SWITCH_OFFSET_Y:
-               try {
-                  float newVal = float.Parse(field.v);
-                  switchOffset.y = newVal;
-               } catch {
-
-               }
-               break; 
-         }
-      }
-   }
-
    public void tryToInteract () {
       if (isGlobalPlayerNearby()) {
-         Global.player.rpc.Cmd_InteractSecretEntrance(instanceId, spawnId);
+         Global.player.rpc.Cmd_InteractSecretEntrance(secretEntranceHolder.instanceId, secretEntranceHolder.spawnId);
       } else {
          D.editorLog("Player it Too far from the secret entrance!", Color.red);
-      }
-   }
-
-   public void completeInteraction () {
-      if (!isInteracted) {
-         isInteracted = true;
-
-         // Sends animation commands to all clients
-         Rpc_InteractAnimation();
-
-         // Let the animation play before enabling the warp object
-         StartCoroutine(CO_ProcessInteraction());
       }
    }
 
@@ -388,10 +193,6 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       }
 
       return (Vector2.Distance(Global.player.transform.position, this.transform.position) <= 1);
-   }
-
-   public void setAreaParent (Area area, bool worldPositionStays) {
-      this.transform.SetParent(area.secretsParent, worldPositionStays);
    }
 
    private void setSprites () {
@@ -409,11 +210,9 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       }
    }
 
-   [ClientRpc]
-   public void Rpc_InteractAnimation () {
+   public void interactAnimation () {
       if (!Util.isBatch()) {
          setSprites();
-
          _outline.setVisibility(false);
          _outline.enabled = false;
          _outline = null;
@@ -450,25 +249,18 @@ public class SecretEntrance : NetworkBehaviour, IMapEditorDataReceiver {
       CancelInvoke();
    }
 
+   public void processInteraction () {
+      // Let the animation play before enabling the warp object
+      StartCoroutine(CO_ProcessInteraction());
+   }
+
    private IEnumerator CO_ProcessInteraction () {
       yield return new WaitForSeconds(2);
       //spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
-      isFinishedAnimating = true;
+      secretEntranceHolder.isFinishedAnimating = true;
       blockerSprite.gameObject.SetActive(false);
       postBlockerSprite.gameObject.SetActive(true);
-   }
-
-   private IEnumerator CO_SetAreaParent () {
-      // Wait until we have finished instantiating the area
-      while (AreaManager.self.getArea(areaKey) == null) {
-         yield return 0;
-      }
-
-      // Set as a child of the area
-      Area area = AreaManager.self.getArea(this.areaKey);
-      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
-      setAreaParent(area, worldPositionStays);
    }
 
    #region Private Variables

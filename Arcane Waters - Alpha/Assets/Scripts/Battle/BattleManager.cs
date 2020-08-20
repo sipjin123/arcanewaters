@@ -204,6 +204,8 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void endBattle (Battle battle, Battle.TeamType winningTeam) {
+      BattleUIManager.self.disableBattleUI();
+
       // Remove the Battle ID for any participants
       battle.resetAllBattleIDs();
 

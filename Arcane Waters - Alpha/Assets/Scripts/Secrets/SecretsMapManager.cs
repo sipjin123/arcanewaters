@@ -43,5 +43,6 @@ public class SecretsMapManager : MonoBehaviour {
 public enum SecretType {
    None = 0,
    Bookcase = 1,
-   Stone = 2
+   Stone = 2,
+   Waterfall = 3
 }

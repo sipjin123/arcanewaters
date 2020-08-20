@@ -61,6 +61,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Determines if this npc is a shop npc
    public bool isShopNpc;
 
+   // Reference to the shadow
+   public Transform shadowTransform;
+
    #endregion
 
    protected override void Awake () {
@@ -120,6 +123,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       } else {
          setupClientSideValues();
       }
+
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
+      shadowTransform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
+      shadowTransform.localPosition = new Vector3(0, npcData.shadowOffsetY, 0);
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);

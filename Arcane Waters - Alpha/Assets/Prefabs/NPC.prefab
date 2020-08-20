@@ -454,6 +454,7 @@ MonoBehaviour:
   npcId: 0
   isDebug: 0
   isShopNpc: 0
+  shadowTransform: {fileID: 4530656524753624}
 --- !u!114 &114041420384177890
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -51,7 +51,9 @@ public class Battle : NetworkBehaviour {
       this.battleBoard = BattleManager.self.battleBoard;
 
       // Set battle end UI events
-      onBattleEnded.AddListener(BattleUIManager.self.disableBattleUI);
+      onBattleEnded.AddListener(()=> {
+         BattleUIManager.self.disableBattleUI();
+      });
 
       clientBattleReposition();
    }
@@ -182,6 +184,7 @@ public class Battle : NetworkBehaviour {
          }
 
          participant.player.battleId = 0;
+         participant.player.voyageGroupId = -1;
          participant.player.resetCombatInit();
       }
    }

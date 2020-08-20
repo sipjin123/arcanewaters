@@ -340,7 +340,7 @@ public class Instance : NetworkBehaviour
                foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
                   Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
-                  SecretEntrance secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab);
+                  SecretEntranceHolder secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab);
 
                   // Make sure obj has correct data
                   IMapEditorDataReceiver receiver = secretObjNode.GetComponent<IMapEditorDataReceiver>();

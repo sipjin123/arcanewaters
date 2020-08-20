@@ -6069,7 +6069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  message: 
+  message: Alters the shadow y axis offset
 --- !u!114 &596300264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11743,7 +11743,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  message: 
+  message: Alters the shadow size
 --- !u!114 &1505689044
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15630,10 +15630,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1733752511}
   m_HandleRect: {fileID: 2008416729}
   m_Direction: 0
-  m_MinValue: -1
-  m_MaxValue: 1
+  m_MinValue: 0.1
+  m_MaxValue: 4
   m_WholeNumbers: 0
-  m_Value: 0.07
+  m_Value: 2
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:

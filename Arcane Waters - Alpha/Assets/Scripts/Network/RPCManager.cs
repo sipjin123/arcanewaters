@@ -226,9 +226,12 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_InteractSecretEntrance (int instanceId, int spawnId) {
       SecretEntranceSpawnData secretEntranceSpawnData = SecretsManager.self.secretInstanceIdList.Find(_ => _.instanceId == instanceId && _.spawnId == spawnId);
       if (secretEntranceSpawnData != null) {
-         if (!secretEntranceSpawnData.secretEntrance.isInteracted) {
-            secretEntranceSpawnData.secretEntrance.completeInteraction();
+         if (!secretEntranceSpawnData.secretEntrance.secretEntranceHolder.isInteracted) {
+            secretEntranceSpawnData.secretEntrance.secretEntranceHolder.completeInteraction();
+            secretEntranceSpawnData.secretEntrance.secretEntranceHolder.Rpc_InteractAnimation();
          }
+      } else {
+         D.editorLog("Failed to find interactable", Color.blue);
       }
    }
 
