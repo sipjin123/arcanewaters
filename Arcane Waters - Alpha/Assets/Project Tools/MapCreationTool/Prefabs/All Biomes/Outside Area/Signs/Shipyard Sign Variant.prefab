@@ -171,10 +171,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1374696805405009525, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1820576471573080406, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa,
         type: 3}
       propertyPath: m_Name
       value: Shipyard Sign Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 6431230996645664469, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7076078705420637235, guid: 470d4ac8bbb842f4ba4ffa0b57edb3aa,
         type: 3}

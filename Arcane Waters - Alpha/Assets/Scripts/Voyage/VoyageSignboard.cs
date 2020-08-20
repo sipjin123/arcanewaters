@@ -5,12 +5,18 @@ using UnityEngine.UI;
 using Mirror;
 using TMPro;
 
-public class VoyageSignboard : ToolTipSign
+public class VoyageSignboard : ToolTipSign, IBiomable
 {
    #region Public Variables
 
    // The sort point of the sign
    public Transform sortPoint;
+
+   // Renderer for main signboard sprite
+   public SpriteRenderer signboardRen;
+
+   // Sprite for signboard in various biomes
+   public BiomableSprite signboardSprites;
 
    #endregion
 
@@ -41,6 +47,10 @@ public class VoyageSignboard : ToolTipSign
       }
 
       VoyageManager.self.showVoyagePanel(Global.player);
+   }
+
+   public void setBiome (Biome.Type biomeType) {
+      signboardRen.sprite = signboardSprites.get(biomeType);
    }
 
    #region Private Variables

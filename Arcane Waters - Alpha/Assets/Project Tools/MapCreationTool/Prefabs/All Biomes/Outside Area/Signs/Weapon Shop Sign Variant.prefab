@@ -176,6 +176,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Weapon Shop Sign Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 3064421713948666468, guid: 51487b426fdf4d549bb49c095f0fa081,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4117267559123993504, guid: 51487b426fdf4d549bb49c095f0fa081,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -240,6 +245,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6977402531524319940, guid: 51487b426fdf4d549bb49c095f0fa081,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9056272327084922341, guid: 51487b426fdf4d549bb49c095f0fa081, type: 3}

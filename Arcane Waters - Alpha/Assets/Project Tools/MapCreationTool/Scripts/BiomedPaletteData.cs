@@ -86,6 +86,14 @@ namespace MapCreationTool
             }
 
             datas.Add(biome, palette);
+
+            // Debugging:
+            // Check that all prefab configs were a assigned to a slot in palette, warn otherwise
+            int prefConfigCount = prefCons.Sum(c => c.GetComponentsInChildren<TreePrafabConfig>().Count() + c.GetComponentsInChildren<PrefabConfig>().Count());
+            int prefCount = palette.prefabGroups.Count;
+            if (prefConfigCount != prefCount) {
+               D.warning($"Potential issue in { gameObject.name } palette data: found { prefConfigCount } prefab configs, but assigned { prefCount } palette slots for them");
+            }
          }
       }
 

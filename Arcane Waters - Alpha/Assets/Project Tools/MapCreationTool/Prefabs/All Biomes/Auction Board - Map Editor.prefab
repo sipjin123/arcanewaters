@@ -202,6 +202,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4544004509230762525}
     m_Modifications:
+    - target: {fileID: 3751026149435872989, guid: 0069ba99e289b28478379b45a0c21a43,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4544004509230762525, guid: 0069ba99e289b28478379b45a0c21a43,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -276,6 +281,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: AuctionBoard
+      objectReference: {fileID: 0}
+    - target: {fileID: 8348419159839285504, guid: 0069ba99e289b28478379b45a0c21a43,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7741798316421602019, guid: 0069ba99e289b28478379b45a0c21a43, type: 3}

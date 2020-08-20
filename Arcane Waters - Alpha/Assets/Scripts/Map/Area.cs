@@ -195,6 +195,10 @@ public class Area : MonoBehaviour
    }
 
    public GridGraph getGraph () {
+      if (_graph == null) {
+         configurePathfindingGraph();
+      }
+
       return _graph;
    }
 
@@ -340,7 +344,16 @@ public class Area : MonoBehaviour
       _graph.rotation = new Vector3(-90.0f, 0.0f, 0.0f);
       _graph.collision.use2D = true;
       _graph.collision.Initialize(_graph.transform, 1.0f);
-      _graph.collision.type = ColliderType.Ray;
+
+      // For non-sea maps, use collider sphere to avoid NPCs moving through colliders
+      if (AreaManager.self.isSeaArea(areaKey)) {
+         _graph.collision.type = ColliderType.Ray;
+      } else {
+         _graph.collision.type = ColliderType.Sphere;
+
+         // 1.5 diameter (1 block of empty space + cut corners) for 0.16 grid size
+         _graph.collision.diameter = 9.375f * _firstTilemap.cellSize.x * GetComponentInChildren<Grid>().transform.localScale.x;
+      }
       _graph.collision.mask = LayerMask.GetMask("GridColliders");
       _graph.Scan();
    }

@@ -107,12 +107,13 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: d65683cda6d3fdd489367f8a9f9227a2, type: 3}
+  m_Sprite: {fileID: 3678762957476655947, guid: d65683cda6d3fdd489367f8a9f9227a2,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.32, y: 0.37}
+  m_Size: {x: 0.64, y: 0.48}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -135,8 +136,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.52, y: 0.48}
-    newSize: {x: 0.32, y: 0.37}
+    oldSize: {x: 0.64, y: 0.48}
+    newSize: {x: 0.64, y: 0.48}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -207,6 +208,16 @@ MonoBehaviour:
   toolTipPanel: {fileID: 3653827092330869024}
   toolTipText: {fileID: 4544298159129342917}
   sortPoint: {fileID: 6250538638274586701}
+  signboardRen: {fileID: 102992052273854811}
+  signboardSprites:
+    desert: {fileID: 2461931127162070260, guid: d65683cda6d3fdd489367f8a9f9227a2,
+      type: 3}
+    forest: {fileID: 3678762957476655947, guid: d65683cda6d3fdd489367f8a9f9227a2,
+      type: 3}
+    lava: {fileID: 3678762957476655947, guid: d65683cda6d3fdd489367f8a9f9227a2, type: 3}
+    pine: {fileID: 3678762957476655947, guid: d65683cda6d3fdd489367f8a9f9227a2, type: 3}
+    shroom: {fileID: 622749628821517220, guid: d65683cda6d3fdd489367f8a9f9227a2, type: 3}
+    snow: {fileID: -549071182260120418, guid: d65683cda6d3fdd489367f8a9f9227a2, type: 3}
 --- !u!1 &5571734181450444468
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +293,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.54, y: 0.5}
+  m_Size: {x: 0.66, y: 0.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0

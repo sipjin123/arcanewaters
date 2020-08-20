@@ -107,6 +107,18 @@ TextureImporter:
   - first:
       213: -7535056913267499413
     second: mushroom_outside_area_34
+  - first:
+      213: -7132216487343600640
+    second: mushroom_outside_area_35
+  - first:
+      213: 6930052017437381736
+    second: mushroom_outside_area_36
+  - first:
+      213: 3070534636749544599
+    second: mushroom_outside_area_37
+  - first:
+      213: -4765432169990169659
+    second: mushroom_outside_area_38
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -204,14 +216,14 @@ TextureImporter:
     buildTarget: Windows Store Apps
     maxTextureSize: 2048
     resizeAlgorithm: 0
-    textureFormat: -1
+    textureFormat: 4
     textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: iPhone
     maxTextureSize: 2048
@@ -1088,6 +1100,48 @@ TextureImporter:
       bones: []
       spriteID: 98b9f35a71be8444d89bff64af334139
       internalID: -7535056913267499413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_35
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 368
+        width: 32
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00c43b294e6450d90800000000000000
+      internalID: -7132216487343600640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mushroom_outside_area_36
+      rect:
+        serializedVersion: 2
+        x: 304
+        y: 368
+        width: 32
+        height: 48
+      alignment: 9
+      pivot: {x: 0.5, y: 0.4}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8649556c79d7c2060800000000000000
+      internalID: 6930052017437381736
       vertices: []
       indices: 
       edges: []

@@ -244,7 +244,7 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   shipData.Add(prefab);
                }
-            } else if (original.GetComponent<SecretEntrance>() != null) {
+            } else if (original.GetComponent<SecretEntranceHolder>() != null) {
                if (prefab.d != null) {
                   secretsData.Add(prefab);
                }

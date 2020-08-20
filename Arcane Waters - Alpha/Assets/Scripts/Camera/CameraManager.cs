@@ -170,6 +170,32 @@ public class CameraManager : ClientMonoBehaviour {
       battleCamera.getPixelFadeEffect().fadeIn();
    }
 
+   public void fadeOutDefaultCamera () {
+      StartCoroutine(CO_FadeOutPixelated());
+   }
+
+   public void fadeInDefaultCamera () {
+      StartCoroutine(CO_FadeInPixelated());
+   }
+
+   protected IEnumerator CO_FadeOutPixelated () {
+      defaultCamera.getPixelFadeEffect().fadeOut();
+
+      // Play a sound effect
+      SoundManager.play2DClip(SoundManager.Type.Haste, 0f);
+
+      // Wait for it to finish
+      yield return new WaitForSeconds(1f);
+   }
+
+   protected IEnumerator CO_FadeInPixelated () {
+      yield return new WaitForSeconds(1f);
+
+      // Play a sound effect
+      SoundManager.play2DClip(SoundManager.Type.Battle_Outro, 0f);
+      defaultCamera.getPixelFadeEffect().fadeIn();
+   }
+
    #region Private Variables
 
    // The Camera quake effect

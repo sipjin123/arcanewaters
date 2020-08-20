@@ -22,6 +22,8 @@ public class PixelFadeEffect : MonoBehaviour {
    #endregion
 
    private void Start () {
+      camFX_Pixel.initialize();
+
       if (startWithFade) {
          fadeIn();
       }
@@ -30,7 +32,7 @@ public class PixelFadeEffect : MonoBehaviour {
    void Update () {
 
       // If we do not want to fade in or fade out we do not execute the code (Optimization)
-      //if (!_willFadeIn && !_willFadeOut) { return; }
+      if (!_willFadeIn && !_willFadeOut) { return; }
 
       // How long has passed since we started fading?
       float timePassed = Time.time - _fadeStartTime;

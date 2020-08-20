@@ -570,27 +570,32 @@ public class AdminManager : NetworkBehaviour
 
    protected void requestScheduleServerRestart (string parameters) {
       string[] list = parameters.Split(' ');
-      int buildVersion = 0;
-      int delayMinutes = -1;
-      if (list.Length < 2) {
-         D.warning($"Too few parameters. Given: {list.Length} - Expected: 2");
-         ChatManager.self.addChat("Invalid parameters", ChatInfo.Type.Error);
-         return;
+      int buildVersion = 0; // 0 means 'latest'
+      int delayMinutes = 5; // Default delay 5 minutes
+
+      if (list.Length > 0) {
+         bool delayMinutesIsValid = int.TryParse(list[0], out int parsedDelayMinutes);
+         if (delayMinutesIsValid) {
+            delayMinutes = parsedDelayMinutes;
+         }
       }
 
-
-      bool delayMinutesIsValid = int.TryParse(list[0], out delayMinutes);
-      if (!delayMinutesIsValid || delayMinutes <= 0) {
-         D.warning($"The specified delay is not valid.");
+      if (delayMinutes <= 0) {
+         D.warning($"The requested delay is not valid.");
          ChatManager.self.addChat("Invalid Delay", ChatInfo.Type.Error);
          return;
       }
 
-      bool buildVersionIsValid = int.TryParse(list[1], out buildVersion);
+      if (list.Length > 1) {
+         bool buildVersionIsValid = int.TryParse(list[1], out int parsedBuildVersion);
+         if (buildVersionIsValid) {
+            buildVersion = parsedBuildVersion;
+         }
+      }
 
-      if (!buildVersionIsValid || buildVersion <= 0) {
-         D.warning($"The specified build is not valid.");
-         ChatManager.self.addChat("Invalid Build", ChatInfo.Type.Error);
+      if (buildVersion < 0) {
+         D.warning($"The requested build number is not valid.");
+         ChatManager.self.addChat("Invalid Build Number", ChatInfo.Type.Error);
          return;
       }
 

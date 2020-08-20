@@ -106,11 +106,25 @@ public class BugReportManager : MonoBehaviour {
       }
       int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
 
-      byte[] screenshotBytes = takeScreenshot().EncodeToPNG();
+      byte[] screenshotBytesPNG = takeScreenshot().EncodeToPNG();
       string screenResolution = Screen.currentResolution.ToString();
       string operatingSystem = SystemInfo.operatingSystem;
 
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+      // Find image quality of size small enough to send through Mirror Networking
+      if (screenshotBytesPNG.Length < Transport.activeTransport.GetMaxPacketSize()) {
+         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytesPNG, screenResolution, operatingSystem);
+      } else {
+         int quality = 100;
+         while (quality > 0) {
+            byte[] screenshotBytesJPG = takeScreenshot().EncodeToJPG(quality);
+            if (screenshotBytesJPG.Length < Transport.activeTransport.GetMaxPacketSize()) {
+               Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytesJPG, screenResolution, operatingSystem);
+               break;
+            }
+            quality -= 5;
+         }
+      }
+
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 

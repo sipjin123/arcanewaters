@@ -34,6 +34,9 @@ namespace MapCreationTool
       private Vector3Int? draggingFrom = null;
       private Vector3Int lastDragPos = Vector3Int.zero;
 
+      // ToolTip component for the palette
+      private PaletteToolTip _toolTip;
+
       private Vector2 paletteSize;
 
       private void Awake () {
@@ -45,6 +48,7 @@ namespace MapCreationTool
          eventCanvas = GetComponentInChildren<Canvas>().GetComponent<RectTransform>();
          paletteCamera = GetComponentInChildren<Camera>();
          selectionMarker = GetComponentInChildren<SpriteRenderer>();
+         _toolTip = GetComponent<PaletteToolTip>();
 
          Utilities.addPointerListener(eventCanvas.GetComponent<EventTrigger>(),
              EventTriggerType.PointerClick, pointerClick);
@@ -79,8 +83,38 @@ namespace MapCreationTool
       }
 
       private void Update () {
-         if (pointerHovering && Input.mouseScrollDelta.y != 0)
-            pointerScroll(Input.mouseScrollDelta.y);
+         if (pointerHovering) {
+            if (Input.mouseScrollDelta.y != 0) {
+               pointerScroll(Input.mouseScrollDelta.y);
+            }
+
+            updateToolTip(Input.mousePosition);
+         }
+      }
+
+      private void updateToolTip (Vector2 screenPos) {
+         Vector3Int cellCoors = tilemap.WorldToCell(paletteCamera.ScreenToWorldPoint(screenPos));
+         TileGroup group = paletteData.getGroup(cellCoors.x, cellCoors.y);
+
+         if (group != Tools.tileGroup) {
+            if (group is PrefabGroup) {
+               _toolTip.setToolTip("Prefab: " + (group as PrefabGroup).getPrefab().name);
+               return;
+            } else {
+               PaletteTilesData.TileData tileData = paletteData.getTile(cellCoors.x, cellCoors.y);
+               if (tileData != null) {
+                  string tileName = "_";
+                  if (tileData.tile != null) {
+                     tileName = tileData.tile.name;
+                  }
+
+                  _toolTip.setToolTip($"{ tileName }, layer: { tileData.layer }_{ tileData.subLayer }");
+                  return;
+               }
+            }
+         }
+
+         _toolTip.hideToolTip();
       }
 
       public void updatePrefabData (GameObject prefab, string key, string value) {
@@ -313,6 +347,8 @@ namespace MapCreationTool
             updateSelectionMarker();
             draggingFrom = null;
          }
+
+         _toolTip.hideToolTip();
       }
 
       private void clampCamPos () {

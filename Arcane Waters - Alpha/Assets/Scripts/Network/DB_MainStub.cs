@@ -8,7 +8,8 @@ using MapCreationTool.Serialization;
 using MapCustomization;
 using System.Threading.Tasks;
 
-public class DB_MainStub : MonoBehaviour {
+public class DB_MainStub : MonoBehaviour
+{
    #region Public Variables
 
    #endregion
@@ -22,7 +23,7 @@ public class DB_MainStub : MonoBehaviour {
    public static string fetchZipRawData (string slot) {
       return "";
    }
-   
+
    public static string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr, string inventoryCountLimit) {
       return "";
    }
@@ -120,7 +121,7 @@ public class DB_MainStub : MonoBehaviour {
       return new CloudBuildData();
    }
 
-   public static void writeZipData (byte[] bytes, int slot) { 
+   public static void writeZipData (byte[] bytes, int slot) {
    }
 
    public static string getXmlContent (string tableName, EditorSQLManager.EditorToolType toolType = EditorSQLManager.EditorToolType.None) {
@@ -695,7 +696,7 @@ public class DB_MainStub : MonoBehaviour {
 
    }
 
-   public static void setHatId (int userId, int newHatId) { 
+   public static void setHatId (int userId, int newHatId) {
 
    }
 
@@ -1170,7 +1171,7 @@ public class DB_MainStub : MonoBehaviour {
    }
 
    public static void exec (Action<object> action) {
-      
+
    }
 
    public static async Task<T> execAsync<T> (Func<object, T> action) {
@@ -1199,11 +1200,19 @@ public class DB_MainStub : MonoBehaviour {
       return false;
    }
 
-   public static bool setMetricPlayersCount (string machineId,string serverAddress, string serverPort, int playerCount) {
+   public static bool setMetricPlayersCount (string machineId, string serverAddress, string serverPort, int playerCount) {
       return false;
    }
-      
-   public static bool setMetricAreaInstancesCount (string machineId,string serverAddress, string serverPort, int areaInstancesCount) {
+
+   public static bool setMetricAreaInstancesCount (string machineId, string serverAddress, string serverPort, int areaInstancesCount) {
+      return false;
+   }
+
+   public static bool setMetricPort (string machineId, string processName, string PID, int port) {
+      return false;
+   }
+
+   public static bool setMetricIP (string machineId, string processName, string PID, string ip) {
       return false;
    }
 

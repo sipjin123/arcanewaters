@@ -1415,6 +1415,7 @@ public class Minimap : ClientMonoBehaviour {
                         texArray[0].SetPixel(x, layerSizeY - y, preset.backgroundColor);
                      }
                   }
+                  tex = TextureArrayToTexture(texArray);
 
                   if (saveMap) {
                      ExportTexture(TextureArrayToTexture(texArray), preset.imagePrefixName + area.GetComponent<Area>().areaKey + preset.imageSuffixName);

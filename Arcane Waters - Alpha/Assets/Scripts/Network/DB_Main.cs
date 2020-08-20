@@ -7523,16 +7523,17 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   protected static new bool setMetric (string machineId, string serverAddress, string serverPort, string keySuffix, string value) {
+   protected static new bool setMetric (string machineId, string processName, string PID, string keySuffix, string value) {
       try {
 
-         if (string.IsNullOrEmpty(serverAddress)) return false;
-         if (string.IsNullOrEmpty(serverPort)) return false;
+         if (string.IsNullOrEmpty(processName)) return false;
+         if (string.IsNullOrEmpty(PID)) return false;
          if (string.IsNullOrEmpty(keySuffix)) return false;
 
-         string keyPrefix = String.IsNullOrEmpty(machineId) ? string.Empty : machineId + "/";
-         string server_id = serverAddress + "/" + serverPort.ToString();
-         string key = keyPrefix + server_id + "/" + keySuffix;
+         string key = $"{processName}/{PID}/{keySuffix}";
+         if (!String.IsNullOrEmpty(machineId)) {
+            key = $"{machineId}/{key}";
+         }
          key = key.Replace(" ", "_");
          using (MySqlConnection conn = getConnection()) {
             // Open the connection.
@@ -7569,12 +7570,20 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new bool setMetricPlayersCount (string machineId, string serverAddress, string serverPort, int playerCount) {
-      return setMetric(machineId, serverAddress, serverPort, "players_count", playerCount.ToString());
+   public static new bool setMetricPlayersCount (string machineId, string processName, string PID, int playerCount) {
+      return setMetric(machineId, processName, PID, "players_count", playerCount.ToString());
    }
 
-   public static new bool setMetricAreaInstancesCount (string machineId, string serverAddress, string serverPort, int areaInstancesCount) {
-      return setMetric(machineId, serverAddress, serverPort, "area_instances_count", areaInstancesCount.ToString());
+   public static new bool setMetricAreaInstancesCount (string machineId, string processName, string PID, int areaInstancesCount) {
+      return setMetric(machineId, processName, PID, "area_instances_count", areaInstancesCount.ToString());
+   }
+
+   public static new bool setMetricPort (string machineId, string processName, string PID, int port) {
+      return setMetric(machineId, processName, PID, "port", port.ToString());
+   }
+
+   public static new bool setMetricIP (string machineId, string processName, string PID, string ip) {
+      return setMetric(machineId, processName, PID, "ip", ip);
    }
 
    #region Mail

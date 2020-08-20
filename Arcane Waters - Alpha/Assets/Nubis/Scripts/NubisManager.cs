@@ -107,18 +107,19 @@ public class NubisManager : MonoBehaviour
                   Stop();
                   break;
                case NubisEndpoints.LOG:
-                  i("Log requested.");
-                  using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-                     foreach (string line in File.ReadAllLines(NubisConfiguration.LogFilePath()))
-                        writer.WriteLine(line);
-                  }
-                  context.Response.StatusCode = 200;
-                  context.Response.Close();
+                     context.Response.StatusCode = 200;
+                     i("Log requested.");
+                     using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
+                        foreach (string line in File.ReadAllLines(NubisConfiguration.LogFilePath()))
+                           writer.WriteLine(line);
+                     }
+                     context.Response.Close();
                   break;
                case NubisEndpoints.STATUS:
                   OK(context);
                   break;
                default:
+                  i($"Request received! -from: {context.Request.RemoteEndPoint.ToString()} -url: {context.Request.Url}");
                   NotFound(context);
                   break;
             }
@@ -155,8 +156,7 @@ public class NubisManager : MonoBehaviour
       try {
          i($"{NubisStatics.AppName} waiting for requests.");
          do {
-            HttpListenerContext context = httpServer.GetContext(); // blocks until a request is received.
-            i($"Request received! -from: {context.Request.RemoteEndPoint.ToString()} -url: {context.Request.Url}");
+            HttpListenerContext context = httpServer.GetContext(); // blocks until a request is received.            
             _ = ProcessRequestAsync(context);
          }
          while (httpServer.IsListening);

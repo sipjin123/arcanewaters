@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -36,33 +37,37 @@ public class NubisRelay
 
    private static string callImpl (string function, params string[] args) {
       string argString = (args != null && args.Length > 0) ? string.Join(",", args) : string.Empty;
-      string typeName = "DB_Main";
-      NubisLogger.i($"Invoking '{typeName}.{function}({argString})' ...");
+      NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' ...");
       try {
-         System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
-         if (assembly == null) {
-            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate assembly.");
-            return string.Empty;
+         MethodInfo methodInfo;
+         if (!_methodCache.ContainsKey(function)) {
+            _assembly = _assembly ?? Assembly.GetExecutingAssembly();
+            if (_assembly == null) {
+               NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate assembly.");
+               return string.Empty;
+            }
+            _type = _type ?? _assembly.GetType(TYPE_NAME);
+            if (_type == null) {
+               NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate type.");
+               return string.Empty;
+            }
+            methodInfo = _type.GetMethod(function);
+            if (methodInfo == null) {
+               NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate method.");
+               return string.Empty;
+            }
+            _methodCache.Add(function, methodInfo);
          }
-         Type db_main_type = assembly.GetType(typeName);
-         if (db_main_type == null) {
-            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate type.");
-            return string.Empty;
-         }
-         System.Reflection.MethodInfo methodInfo = db_main_type.GetMethod(function);
-         if (methodInfo == null) {
-            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - Couldn't locate method.");
-            return string.Empty;
-         }
+         methodInfo = _methodCache[function];
          object result = methodInfo.Invoke(null, args);
          if (result == null) {
-            NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - The call to the method returned null.");
+            NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - The call to the method returned null.");
             return string.Empty;
          }
-         NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : OK");
+         NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : OK");
          return result.ToString();
       } catch (Exception ex) {
-         NubisLogger.i($"Invoking '{typeName}.{function}({argString})' : FAILED - There was an exception.");
+         NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - There was an exception.");
          NubisLogger.e(ex);
       }
       return string.Empty;
@@ -79,6 +84,22 @@ public class NubisRelay
       return result;
    }
 
+
+#region Private Variables
+
+   // The name of the type to delegate calls to.
+   private const string TYPE_NAME = "DB_Main";
+
+   // Reference to current assembly.
+   private static Assembly _assembly;
+
+   // Reference to Type
+   private static Type _type;
+
+   // Method cache
+   private static Dictionary<string, MethodInfo> _methodCache = new Dictionary<string, MethodInfo>();
+
+#endregion
 }
 #endif
 

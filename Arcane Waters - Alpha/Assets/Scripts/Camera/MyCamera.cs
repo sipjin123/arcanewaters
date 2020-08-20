@@ -41,26 +41,26 @@ public class MyCamera : BaseCamera
    private void setInternalOrthographicSize () {
       _orthographicSize = Screen.height / getPPUScale();
 
-      CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
-      if (confiner != null) {
-         if (confiner.m_BoundingShape2D != null) {
-            float confinerScale = confiner.m_BoundingShape2D.transform.localScale.x;
-            if (confinerScale != CONFINER_DEFAULT_SCALE) {
-               confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_SCALE, CONFINER_DEFAULT_SCALE, 1);
-            }
-         }
-      }
+      //CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
+      //if (confiner != null) {
+      //   if (confiner.m_BoundingShape2D != null) {
+      //      float confinerScale = confiner.m_BoundingShape2D.transform.localScale.x;
+      //      if (confinerScale != CONFINER_DEFAULT_SCALE) {
+      //         confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_SCALE, CONFINER_DEFAULT_SCALE, 1);
+      //      }
+      //   }
+      //}
 
-      foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
-         if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
-            if (confiner != null) {
-               if (confiner.m_BoundingShape2D != null) {
-                  confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_WIDESCREEN_SCALE, CONFINER_DEFAULT_SCALE, 1);
-               }
-            }
-            break;
-         }
-      }
+      //foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
+      //   if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
+      //      if (confiner != null) {
+      //         if (confiner.m_BoundingShape2D != null) {
+      //            confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_WIDESCREEN_SCALE, CONFINER_DEFAULT_SCALE, 1);
+      //         }
+      //      }
+      //      break;
+      //   }
+      //}
 
       _initialSettings = getVirtualCameraSettings();
       _initialSettings.ppuScale = getPPUScale();

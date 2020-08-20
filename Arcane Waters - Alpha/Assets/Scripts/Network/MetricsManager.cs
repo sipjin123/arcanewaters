@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Mirror;
+using System.Diagnostics;
 
 namespace Assets.Scripts.Network
 {
@@ -29,29 +30,43 @@ namespace Assets.Scripts.Network
                return;
             }
 
-            string machineIdentifier = string.Empty;
+            string machineID = string.Empty;
 
 #if UNITY_STANDALONE_WIN
-            machineIdentifier = System.Environment.MachineName + "_" + System.Environment.OSVersion;
+            machineID = System.Environment.MachineName;
 #endif
-            D.debug("The Machine Identifier is:" + machineIdentifier);
-            // Update the player count for each (server) and the area instances count.
+            //D.debug("This machine is identified as: " + machineID);
+            
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
-               var address = MyNetworkManager.self.networkAddress;
-               var port = MyNetworkManager.self.telepathy.port;
-               D.debug($"Metrics Manager: address={address} - port={port}");
-               foreach (var server in ServerNetwork.self.servers) {
-                  D.debug($"Metrics Manager: server={machineIdentifier} - users={server.connectedUserIds.Count}");
-                  DB_Main.setMetricPlayersCount(machineIdentifier, address.ToString(), port.ToString(), server.connectedUserIds.Count);
-               }
+               var proc = Process.GetCurrentProcess();
+               var procName = proc.ProcessName;
+               var procID = proc.Id.ToString();
 
+               // Server.players_count
+               var server = ServerNetwork.self.server;
+               //D.debug($"Metrics Manager: server={machineID} - users={server.connectedUserIds.Count}");
+               DB_Main.setMetricPlayersCount(machineID, procName, procID, server.connectedUserIds.Count);
+
+               // Server.area_instances
                var areaInstances = InstanceManager.self.getAreas();
-               D.debug($"Metrics Manager: server={machineIdentifier} - areaInstances={areaInstances.Length}");
-               DB_Main.setMetricAreaInstancesCount(machineIdentifier, address.ToString(), port.ToString(), areaInstances.Count());
+               //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
+               DB_Main.setMetricAreaInstancesCount(machineID, procName, procID, areaInstances.Count());
+
+               // Server.port
+               var port = MyNetworkManager.self.telepathy.port;
+               //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
+               DB_Main.setMetricPort(machineID, procName, procID, port);
+
+               // Server.ip
+               var ip = MyNetworkManager.self.networkAddress;
+               //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
+               DB_Main.setMetricIP(machineID, procName, procID, ip);
+               
+               //D.debug($"Metrics Manager: address={ip} - port={port}");
             });
          } catch (Exception ex) {
-            D.warning("MetricsManager: Couldn't update metrics. " + ex);
+            D.warning("MetricsManager: Couldn't update metrics. | " + ex.Message);
          }
       }
    }

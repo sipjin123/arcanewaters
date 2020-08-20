@@ -278,6 +278,9 @@ public class ClientMessageManager : MonoBehaviour {
 
       // Pass the info along to the Character screen
       CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.hatArray, msg.armorPalettes, msg.equipmentIds, msg.spriteIds);
+
+      // Disable pixelation effect
+      CameraManager.self.fadeInDefaultCamera();
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {
@@ -285,11 +288,6 @@ public class ClientMessageManager : MonoBehaviour {
       Global.initialFacingDirection = msg.initialFacingDirection;
       Global.lastAccountEmail = msg.accountEmail;
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
-
-      // Do a circle fader when the user first logs in
-      if (PanelManager.self.loadingScreen != null && !Util.isServerNonHost() && !TitleScreen.self.isActive()) {
-         PanelManager.self.loadingScreen.show();
-      }
 
       // Send the account name and password to the server
       /*StringMessage msg = new StringMessage(

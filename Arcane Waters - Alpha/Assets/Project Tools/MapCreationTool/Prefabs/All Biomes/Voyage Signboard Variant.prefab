@@ -17,8 +17,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.52, y: 0.48}
-    newSize: {x: 0.32, y: 0.37}
+    oldSize: {x: 0.64, y: 0.48}
+    newSize: {x: 0.64, y: 0.48}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -238,7 +238,6 @@ PrefabInstance:
       value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 5999891951874673609, guid: 92688d68e65409c479bf2b27f805f186, type: 3}
     - {fileID: 3094853600236848530, guid: 92688d68e65409c479bf2b27f805f186, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 92688d68e65409c479bf2b27f805f186, type: 3}
 --- !u!1 &6208027053805982806 stripped
