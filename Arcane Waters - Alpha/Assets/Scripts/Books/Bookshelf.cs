@@ -15,7 +15,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    #endregion
 
    private void Awake () {
-      _outline = GetComponent<SpriteOutlineHelper>();
+      _outline = GetComponent<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
    }
 
@@ -54,7 +54,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
          return;
       }
 
-      _outline.setVisibility(_isMouseOver);
+      _outline.setVisibility(_isMouseOver || _isGlobalPlayerNearby);
    }
    private void OnTriggerStay2D (Collider2D other) {
       NetEntity entity = other.GetComponent<NetEntity>();
@@ -96,7 +96,7 @@ public class Bookshelf : MonoBehaviour, IMapEditorDataReceiver {
    private BookData _book;
 
    // Our components
-   protected SpriteOutlineHelper _outline;
+   protected SpriteOutline _outline;
    protected ClickableBox _clickableBox;
 
    #endregion

@@ -19,10 +19,10 @@ public class BookReaderPanel : Panel
    public Image turnPageAnimationGameObject;
 
    // The arrow to navigate back
-   public Image leftArrow;
+   public Button leftArrow;
 
    // The arrow to navigate forward
-   public Image rightArrow;
+   public Button rightArrow;
 
    // Our components
    public Animator _animator;
@@ -100,8 +100,8 @@ public class BookReaderPanel : Panel
       yield return null;
 
       // Enable or disable navigation arrows depending on whether or not you can keep navigating
-      leftArrow.gameObject.SetActive(leftPage.contentText.firstVisibleCharacter > 0);
-      rightArrow.gameObject.SetActive(rightPage.contentText.isTextTruncated);
+      leftArrow.interactable = leftPage.contentText.firstVisibleCharacter > 0;
+      rightArrow.interactable = rightPage.contentText.isTextTruncated;
    }
 
    public void setNextPages () {
@@ -143,8 +143,8 @@ public class BookReaderPanel : Panel
       leftPage.pageNumberText.SetText("");
       rightPage.pageNumberText.SetText("");
 
-      leftArrow.gameObject.SetActive(false);
-      rightArrow.gameObject.SetActive(false);
+      leftArrow.interactable = false;
+      rightArrow.interactable = false;
    }
 
    #region Private Variables

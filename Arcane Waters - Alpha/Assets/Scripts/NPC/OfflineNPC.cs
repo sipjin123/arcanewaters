@@ -1,12 +1,11 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 using Mirror;
 using Pathfinding;
+using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Seeker))]
 public class OfflineNPC : MonoBehaviour {
    #region Public Variables
 
@@ -22,16 +21,21 @@ public class OfflineNPC : MonoBehaviour {
    // The movement speed of this NPC
    public float moveSpeed = 10;
 
+   // True if this NPC shouldn't walk around
+   public bool isStill = false;
+
    #endregion
 
    private void Awake () {
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
       _body = GetComponent<Rigidbody2D>();
-      _seeker = GetComponent<Seeker>();
 
-      if (_seeker == null) {
-         _seeker = gameObject.AddComponent<Seeker>();
+      if (!isStill) {
+         _seeker = GetComponent<Seeker>();
+         if (_seeker == null) {
+            _seeker = gameObject.AddComponent<Seeker>();
+         }
       }
    }
 
@@ -40,23 +44,59 @@ public class OfflineNPC : MonoBehaviour {
          animator.SetInteger("facing", (int) facing);
       }
 
-      // Only use the graph in this area to calculate paths
-      GridGraph graph = offlineArea.getGraph();
-      _seeker.graphMask = GraphMask.FromGraph(graph);
-      _seeker.pathCallback = setPath_Asynchronous;
-      _startPosition = transform.position;
+      if (!isStill) {
+         // Only use the graph in this area to calculate paths
+         GridGraph graph = offlineArea.getGraph();
+         _seeker.graphMask = GraphMask.FromGraph(graph);
+         _seeker.pathCallback = setPath_Asynchronous;
+         _startPosition = transform.position;
 
-      generateNewWaypoints();
+         generateNewWaypoints();
+      }
    }
 
    private void Update () {
+      if (!isStill) {
+         handlePathfindingUpdate();
+      }
+   }
+
+   private void FixedUpdate () {
+      if (!isStill) {
+         handlePathfindingFixedUpdate();
+      }
+   }
+
+   private void handlePathfindingFixedUpdate () {
+      if (_currentPathIndex < _currentPath.Count) {
+         // Move towards our current waypoint
+         // Only change our movement if enough time has passed
+         float moveTime = Time.time - _lastMoveChangeTime;
+         if (moveTime >= MOVE_CHANGE_INTERVAL) {
+            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
+            _lastMoveChangeTime = Time.time;
+         }
+
+         // Clears a node as the unit passes by
+         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
+         if (distanceToWaypoint < .1f) {
+            ++_currentPathIndex;
+         }
+      } else if (_seeker.IsDone() && _moving) {
+         _moving = false;
+         // Generate a new path
+         Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);
+      }
+   }
+
+   private void handlePathfindingUpdate () {
       Vector2 direction;
       if (_currentPathIndex < _currentPath.Count) {
          direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
       } else {
          direction = Util.getDirectionFromFacing(facing);
       }
-      
+
       // Calculate an angle for that direction
       float angle = Util.angle(direction);
 
@@ -77,28 +117,6 @@ public class OfflineNPC : MonoBehaviour {
       // Flip our sprite renderer if we're going west
       foreach (SpriteRenderer renderer in _renderers) {
          renderer.flipX = isFacingWest;
-      }
-   }
-
-   private void FixedUpdate () {
-      if (_currentPathIndex < _currentPath.Count) {
-         // Move towards our current waypoint
-         // Only change our movement if enough time has passed
-         float moveTime = Time.time - _lastMoveChangeTime;
-         if (moveTime >= MOVE_CHANGE_INTERVAL) {            
-            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
-            _lastMoveChangeTime = Time.time;
-         }
-
-         // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
-         if (distanceToWaypoint < .1f) {
-            ++_currentPathIndex;
-         }
-      } else if (_seeker.IsDone() && _moving) {
-         _moving = false;
-         // Generate a new path
-         Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);
       }
    }
 

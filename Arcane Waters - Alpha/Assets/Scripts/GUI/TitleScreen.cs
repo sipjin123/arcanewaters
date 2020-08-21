@@ -42,7 +42,7 @@ public class TitleScreen : MonoBehaviour {
    public Button setToMaxScreenWindows;
    public Button setToMaxScreenExclusive;
    public Text windowResolutionText, monitorResolutionText;
-
+      
    #endregion
 
    private void Awake () {
@@ -68,6 +68,17 @@ public class TitleScreen : MonoBehaviour {
       setToMaxScreenExclusive.onClick.AddListener(() => {
          ScreenSettingsManager.setToResolutionFullscreenExclusive();
       });
+
+      CameraManager.self.resolutionChanged += onResolutionChanged;
+   }
+
+   private void OnDestroy () {
+      CameraManager.self.resolutionChanged -= onResolutionChanged;
+   }
+
+   private void onResolutionChanged () {
+      windowResolutionText.text = "Your Window is: W: " + Screen.width + " H: " + Screen.height;
+      monitorResolutionText.text = "Your Screen is: W: " + Screen.currentResolution.width + " H: " + Screen.currentResolution.height;
    }
 
    private void Update () {
@@ -75,29 +86,40 @@ public class TitleScreen : MonoBehaviour {
          return;
       }
 
-      windowResolutionText.text = "Your Window is: W: " + Screen.width + " H: " + Screen.height;
-      monitorResolutionText.text = "Your Screen is: W: " + Screen.currentResolution.width + " H: " + Screen.currentResolution.height;
-
       // Make the canvas disabled while the client is running
-      bool disabled = !isActive();
-      _canvasGroup.interactable = !disabled;
-      _canvasGroup.blocksRaycasts = !disabled;
+      bool isActive = this.isActive();
 
-      // Slowly fade out
-      float currentAlpha = _canvasGroup.alpha;
-      _canvasGroup.alpha = disabled ? currentAlpha - Time.smoothDeltaTime : 1f;
-
-      // If they press Enter in the password field, activate the Play button
-      if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
-         Util.clickButton(loginButton);
+      if (_canvasGroup.interactable != isActive || _canvasGroup.blocksRaycasts != isActive) {
+         _canvasGroup.interactable = isActive;
+         _canvasGroup.blocksRaycasts = isActive;
       }
 
-      // Check for an assortment of keys
-      bool moveToNextField = Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.DownArrow);
+      // Save the current alpha
+      float currentAlpha = _canvasGroup.alpha;
 
-      // If we're in the account field, let us move to the password field
-      if (moveToNextField && Util.isSelected(accountInputField)) {
-         Util.select(passwordInputField);
+      if (isActive) {
+         // If they press Enter in the password field, activate the Play button
+         if (Input.GetKeyDown(KeyCode.Return) && Util.isSelected(passwordInputField) && passwordInputField.text != "" && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {
+            Util.clickButton(loginButton);
+         }
+
+         // Check for an assortment of keys
+         bool moveToNextField = Input.GetKeyDown(KeyCode.Tab) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.DownArrow);
+
+         // If we're in the account field, let us move to the password field
+         if (moveToNextField && Util.isSelected(accountInputField)) {
+            Util.select(passwordInputField);
+         }
+
+         // Make sure the canvas group is visible if the screen is active
+         if (_canvasGroup.alpha < 1) {
+            _canvasGroup.alpha = 1;
+         }
+      } else {
+         // Slowly fade out the canvas group if the screen isn't active
+         if (_canvasGroup.alpha > 0) {
+            _canvasGroup.alpha = currentAlpha - Time.smoothDeltaTime;
+         }
       }
    }
 

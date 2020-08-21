@@ -41,7 +41,7 @@ public class BooksToolImageSelector : MonoBehaviour
 
    private void insertImage (TMP_SpriteCharacter sprite) {
       int position = _lastCaretPosition > -1 ? _lastCaretPosition : bookContentInputField.text.Length - 1;
-      string text = $"<align=\"center\"><sprite={sprite.glyphIndex}></align>";
+      string text = $"<size=27><align=\"center\"><sprite={sprite.glyphIndex}>\n<sprite name=\"BorderBig\"></align></size>";
       bookContentInputField.SetTextWithoutNotify(bookContentInputField.text.Insert(position, text));
    }
 

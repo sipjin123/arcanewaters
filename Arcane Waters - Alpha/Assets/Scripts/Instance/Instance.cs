@@ -26,6 +26,9 @@ public class Instance : NetworkBehaviour
    // The list of Entities in this instance (server only)
    public List<NetworkBehaviour> entities = new List<NetworkBehaviour>();
 
+   // The list of treasure sites in this instance (server only)
+   public List<TreasureSite> treasureSites = new List<TreasureSite>();
+
    // For debugging in the Editor
    [SyncVar]
    public int entityCount;
@@ -107,7 +110,7 @@ public class Instance : NetworkBehaviour
       }
 
       // Routinely check if the instance is empty
-      InvokeRepeating("checkIfInstanceIsEmpty", 10f, 30f);
+      InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
    }
 
    public int getPlayerCount() {
@@ -185,6 +188,10 @@ public class Instance : NetworkBehaviour
       }
    }
 
+   private void generateBotShips () {
+      BotShipGenerator.generateBotShips(this);
+   }
+
    protected IEnumerator CO_SpawnInstanceSpecificPrefabs () {
       // Wait until the area has been instantiated
       while (AreaManager.self.getArea(this.areaKey) == null) {
@@ -193,212 +200,196 @@ public class Instance : NetworkBehaviour
 
       Area area = AreaManager.self.getArea(this.areaKey);
 
-      if (NetworkServer.active) {
-         if (area != null) {
-            if (area.seaMonsterDataFields.Count > 0 && seaMonsterCount < 1) {
-               foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-                  SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
+      if (!NetworkServer.active || area == null) {
+         yield break;
+      }
 
-                  SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
+      if (area.seaMonsterDataFields.Count > 0 && seaMonsterCount < 1) {
+         foreach (ExportedPrefab001 dataField in area.seaMonsterDataFields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+            SeaMonsterEntity.Type seaMonsterType = (SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d);
 
-                  // Special case of the 'horror' boss
-                  if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
-                     seaMonster.isStationary = true;
+            SeaMonsterEntity seaMonster = spawnSeaMonster((SeaMonsterEntity.Type) SeaMonsterEntity.fetchReceivedData(dataField.d), targetLocalPos, area);
 
-                     float distanceGap = .25f;
-                     float diagonalDistanceGap = .35f;
+            // Special case of the 'horror' boss
+            if (seaMonsterType == SeaMonsterEntity.Type.Horror) {
+               seaMonster.isStationary = true;
 
-                     SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
-                     SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
-                     SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
-                     SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
-                     SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
-                     SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
+               float distanceGap = .25f;
+               float diagonalDistanceGap = .35f;
 
-                     childSeaMonster1.isStationary = true;
-                     childSeaMonster2.isStationary = true;
-                     childSeaMonster3.isStationary = true;
-                     childSeaMonster4.isStationary = true;
-                     childSeaMonster5.isStationary = true;
-                     childSeaMonster6.isStationary = true;
-                  }
-               }
+               SeaMonsterEntity childSeaMonster1 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, -distanceGap, 0), area, seaMonster, 1, -1, 1);
+               SeaMonsterEntity childSeaMonster2 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, -distanceGap, 0), area, seaMonster, -1, -1, 0);
+               SeaMonsterEntity childSeaMonster3 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(distanceGap, distanceGap, 0), area, seaMonster, 1, 1, 1);
+               SeaMonsterEntity childSeaMonster4 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-distanceGap, distanceGap, 0), area, seaMonster, -1, 1, 0);
+               SeaMonsterEntity childSeaMonster5 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(-diagonalDistanceGap, 0, 0), area, seaMonster, -1, 0, 1);
+               SeaMonsterEntity childSeaMonster6 = spawnSeaMonsterChild(SeaMonsterEntity.Type.Horror_Tentacle, targetLocalPos + new Vector3(diagonalDistanceGap, 0, 0), area, seaMonster, 1, 0, 0);
+
+               childSeaMonster1.isStationary = true;
+               childSeaMonster2.isStationary = true;
+               childSeaMonster3.isStationary = true;
+               childSeaMonster4.isStationary = true;
+               childSeaMonster5.isStationary = true;
+               childSeaMonster6.isStationary = true;
             }
-
-            if (area.enemyDatafields.Count > 0 && enemyCount < 1) {
-               foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-
-                  // Add it to the Instance
-                  Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-                  enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
-                  enemy.areaKey = area.areaKey;
-                  enemy.transform.localPosition = targetLocalPos;
-                  enemy.setAreaParent(area, false);
-                  
-                  BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
-                  if (battleData != null) {
-                     enemy.isBossType = battleData.isBossType;
-                     enemy.animGroupType = battleData.animGroup;
-                     enemy.facing = Direction.South;
-                     enemy.displayNameText.text = battleData.enemyName;
-                  }
-
-                  InstanceManager.self.addEnemyToInstance(enemy, this);
-                  
-                  NetworkServer.Spawn(enemy.gameObject);
-               }
-            }
-
-            if (area.npcDatafields.Count > 0 && npcCount < 1) {
-               string disabledNpcLog = "";
-
-               foreach (ExportedPrefab001 dataField in area.npcDatafields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-                  int npcId = NPC.fetchDataFieldID(dataField.d);
-
-                  // If npc data equivalent does not exist, do not process this entity
-                  if (NPCManager.self.getNPCData(npcId) == null) {
-                     disabledNpcLog += (disabledNpcLog == "" ? "" : " : ") + npcId;
-                  } else {
-                     NPC npc = Instantiate(PrefabsManager.self.npcPrefab);
-                     npc.areaKey = area.areaKey;
-                     npc.npcId = npcId;
-                     npc.transform.localPosition = targetLocalPos;
-                     npc.setAreaParent(area, false);
-
-                     // Make sure npc has correct data
-                     IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
-                     if (receiver != null && dataField.d != null) {
-                        receiver.receiveData(dataField.d);
-                     }
-
-                     InstanceManager.self.addNPCToInstance(npc, this);
-
-                     foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
-                        snap.snapZ();
-                     }
-
-                     NetworkServer.Spawn(npc.gameObject);
-                  }
-               }
-               if (disabledNpcLog.Length > 1) {
-                  D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
-               }
-            } 
-
-            if (area.treasureSiteDataFields.Count > 0) {
-               foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
-
-                  // Instantiate the treasure site
-                  TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab);
-                  site.instanceId = this.id;
-                  site.areaKey = area.areaKey;
-                  site.setBiome(area.biome);
-                  site.difficulty = difficulty;
-                  site.transform.localPosition = targetLocalPos;
-                  site.setAreaParent(area, false);
-
-                  // Keep a track of the entity
-                  InstanceManager.self.addTreasureSiteToInstance(site, this);
-
-                  // Spawn the site on the clients
-                  NetworkServer.Spawn(site.gameObject);
-               }
-            }
-
-            if (area.oreDataFields.Count > 0) {
-               foreach (ExportedPrefab001 dataField in area.oreDataFields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
-                  int oreId = 0;
-                  OreNode.Type oreType = OreNode.Type.None;
-
-                  foreach (DataField field in dataField.d) {
-                     if (field.k.CompareTo(DataField.ORE_SPOT_DATA_KEY) == 0) {
-                        // Get ID from ore data field
-                        if (field.tryGetIntValue(out int id)) {
-                           oreId = id;
-                        }
-                     }
-                     if (field.k.CompareTo(DataField.ORE_TYPE_DATA_KEY) == 0) {
-                        // Get ore type from ore data field
-                        if (field.tryGetIntValue(out int type)) {
-                           oreType = (OreNode.Type) type;
-                        }
-                     }
-                  }
-
-                  // Create the ore node locally and through the network
-                  OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType);
-               }
-            }
-
-            if (area.secretsEntranceDataFields.Count > 0) {
-               int spawnIdCounter = 0;
-               foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
-
-                  SecretEntranceHolder secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab);
-
-                  // Make sure obj has correct data
-                  IMapEditorDataReceiver receiver = secretObjNode.GetComponent<IMapEditorDataReceiver>();
-                  if (receiver != null && dataField.d != null) {
-                     receiver.receiveData(dataField.d);
-                  }
-
-                  secretObjNode.areaKey = area.areaKey;
-
-                  // Transform Setup
-                  secretObjNode.transform.localPosition = targetLocalPos;
-                  secretObjNode.setAreaParent(area, false);
-
-                  // Id Setup
-                  secretObjNode.instanceId = id;
-                  secretObjNode.spawnId = spawnIdCounter;
-
-                  entities.Add(secretObjNode);
-
-                  NetworkServer.Spawn(secretObjNode.gameObject);
-                  spawnIdCounter++;
-               }
-            }
-
-            if (area.shipDataFields.Count > 0) {
-               foreach (ExportedPrefab001 dataField in area.shipDataFields) {
-                  Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
-
-                  int shipXmlKey = 0;
-                  int guildId = 1;
-                  foreach (DataField field in dataField.d) {
-                     if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
-                        int type = int.Parse(field.v.Split(':')[0]);
-                        shipXmlKey = type;
-                     }
-                     if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
-                        guildId = int.Parse(field.v.Split(':')[0]);
-                     }
-                  }
-
-                  BotShipEntity botShip = spawnBotShip(shipXmlKey, guildId, targetLocalPos, area);
-                  if (botShip != null) {
-                     IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
-                     if (receiver != null && dataField.d != null) {
-                        receiver.receiveData(dataField.d);
-                     }
-                  } else {
-                     D.debug("Failed to spawn bot ship: " + shipXmlKey);
-                  }
-               }
-            }
-
-            // Create the discoveries that could exist in this instance
-            DiscoveryManager.self.createDiscoveriesForInstance(this);
-
-            // Spawn potential treasure chests for this instance
-            TreasureManager.self.createTreasureForInstance(this);
          }
+      }
+
+      if (area.enemyDatafields.Count > 0 && enemyCount < 1) {
+         foreach (ExportedPrefab001 dataField in area.enemyDatafields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+
+            // Add it to the Instance
+            Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+            enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
+            enemy.areaKey = area.areaKey;
+            enemy.transform.localPosition = targetLocalPos;
+            enemy.setAreaParent(area, false);
+                  
+            BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
+            if (battleData != null) {
+               enemy.isBossType = battleData.isBossType;
+               enemy.animGroupType = battleData.animGroup;
+               enemy.facing = Direction.South;
+               enemy.displayNameText.text = battleData.enemyName;
+            }
+
+            InstanceManager.self.addEnemyToInstance(enemy, this);
+                  
+            NetworkServer.Spawn(enemy.gameObject);
+         }
+      }
+
+      if (area.npcDatafields.Count > 0 && npcCount < 1) {
+         string disabledNpcLog = "";
+
+         foreach (ExportedPrefab001 dataField in area.npcDatafields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+            int npcId = NPC.fetchDataFieldID(dataField.d);
+
+            // If npc data equivalent does not exist, do not process this entity
+            if (NPCManager.self.getNPCData(npcId) == null) {
+               disabledNpcLog += (disabledNpcLog == "" ? "" : " : ") + npcId;
+            } else {
+               NPC npc = Instantiate(PrefabsManager.self.npcPrefab);
+               npc.areaKey = area.areaKey;
+               npc.npcId = npcId;
+               npc.transform.localPosition = targetLocalPos;
+               npc.setAreaParent(area, false);
+
+               // Make sure npc has correct data
+               IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
+               if (receiver != null && dataField.d != null) {
+                  receiver.receiveData(dataField.d);
+               }
+
+               InstanceManager.self.addNPCToInstance(npc, this);
+
+               foreach (ZSnap snap in npc.GetComponentsInChildren<ZSnap>()) {
+                  snap.snapZ();
+               }
+
+               NetworkServer.Spawn(npc.gameObject);
+            }
+         }
+         if (disabledNpcLog.Length > 1) {
+            D.editorLog("Disabled Npc's for area: (" + this.areaKey + ") : " + disabledNpcLog, Color.red);
+         }
+      } 
+
+      if (area.treasureSiteDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+
+            // Instantiate the treasure site
+            TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab);
+            site.instanceId = this.id;
+            site.areaKey = area.areaKey;
+            site.setBiome(area.biome);
+            site.difficulty = difficulty;
+            site.transform.localPosition = targetLocalPos;
+            site.setAreaParent(area, false);
+
+            // Keep a track of the entity
+            InstanceManager.self.addTreasureSiteToInstance(site, this);
+
+            // Spawn the site on the clients
+            NetworkServer.Spawn(site.gameObject);
+         }
+      }
+
+      if (area.oreDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.oreDataFields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+            int oreId = 0;
+            OreNode.Type oreType = OreNode.Type.None;
+
+            foreach (DataField field in dataField.d) {
+               if (field.k.CompareTo(DataField.ORE_SPOT_DATA_KEY) == 0) {
+                  // Get ID from ore data field
+                  if (field.tryGetIntValue(out int id)) {
+                     oreId = id;
+                  }
+               }
+               if (field.k.CompareTo(DataField.ORE_TYPE_DATA_KEY) == 0) {
+                  // Get ore type from ore data field
+                  if (field.tryGetIntValue(out int type)) {
+                     oreType = (OreNode.Type) type;
+                  }
+               }
+            }
+
+            // Create the ore node locally and through the network
+            OreNode newOreNode = OreManager.self.createOreNode(this, targetLocalPos, oreType);
+         }
+      }
+
+      if (area.secretsEntranceDataFields.Count > 0) {
+         int spawnIdCounter = 0;
+         foreach (ExportedPrefab001 dataField in area.secretsEntranceDataFields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
+
+            SecretEntranceHolder secretObjNode = Instantiate(PrefabsManager.self.secretEntrancePrefab);
+
+            // Make sure obj has correct data
+            IMapEditorDataReceiver receiver = secretObjNode.GetComponent<IMapEditorDataReceiver>();
+            if (receiver != null && dataField.d != null) {
+               receiver.receiveData(dataField.d);
+            }
+
+            secretObjNode.areaKey = area.areaKey;
+
+            // Transform Setup
+            secretObjNode.transform.localPosition = targetLocalPos;
+            secretObjNode.setAreaParent(area, false);
+
+            // Id Setup
+            secretObjNode.instanceId = id;
+            secretObjNode.spawnId = spawnIdCounter;
+
+            entities.Add(secretObjNode);
+
+            NetworkServer.Spawn(secretObjNode.gameObject);
+            spawnIdCounter++;
+         }
+      }
+
+      if (area.shipDataFields.Count > 0) {
+         foreach (ExportedPrefab001 dataField in area.shipDataFields) {
+            Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.back * 10;
+            BotShipEntity botShip = spawnBotShip(dataField, targetLocalPos, area);
+         }
+      }
+
+      // Create the discoveries that could exist in this instance
+      DiscoveryManager.self.createDiscoveriesForInstance(this);
+
+      // Spawn potential treasure chests for this instance
+      TreasureManager.self.createTreasureForInstance(this);
+
+      // Regularly re-create the bot ships that are killed
+      if (BotShipGenerator.shouldGenerateBotShips(areaKey)) {
+         InvokeRepeating(nameof(generateBotShips), UnityEngine.Random.Range(10f, 14f), 30f);
       }
    }
 
@@ -424,7 +415,19 @@ public class Instance : NetworkBehaviour
       return seaMonster;
    }
 
-   private BotShipEntity spawnBotShip (int xmlId, int guildId, Vector3 localPos, Area area) {
+   public BotShipEntity spawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area) {
+      int xmlId = 0;
+      int guildId = 1;
+      foreach (DataField field in dataField.d) {
+         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
+            int type = int.Parse(field.v.Split(':')[0]);
+            xmlId = type;
+         }
+         if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
+            guildId = int.Parse(field.v.Split(':')[0]);
+         }
+      }
+
       if (SeaMonsterManager.self.getMonster(xmlId) == null) {
          D.debug("Sea monster is null! " + xmlId);
          return null;
@@ -453,6 +456,15 @@ public class Instance : NetworkBehaviour
       InstanceManager.self.addSeaMonsterToInstance(botShip, this);
 
       NetworkServer.Spawn(botShip.gameObject);
+
+      if (botShip != null) {
+         IMapEditorDataReceiver receiver = botShip.GetComponent<IMapEditorDataReceiver>();
+         if (receiver != null && dataField.d != null) {
+            receiver.receiveData(dataField.d);
+         }
+      } else {
+         D.debug("Failed to spawn bot ship: " + xmlId);
+      }
 
       return botShip;
    }

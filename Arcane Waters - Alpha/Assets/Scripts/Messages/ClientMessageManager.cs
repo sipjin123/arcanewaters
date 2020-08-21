@@ -278,9 +278,6 @@ public class ClientMessageManager : MonoBehaviour {
 
       // Pass the info along to the Character screen
       CharacterScreen.self.initializeScreen(msg.userArray, msg.armorArray, msg.weaponArray, msg.hatArray, msg.armorPalettes, msg.equipmentIds, msg.spriteIds);
-
-      // Disable pixelation effect
-      CameraManager.self.fadeInDefaultCamera();
    }
 
    public static void On_LoginIsComplete (NetworkConnection conn, LogInCompleteMessage msg) {

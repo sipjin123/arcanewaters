@@ -91,7 +91,9 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprite == null) {
-         Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         if (!Util.isBatch()) {
+            Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         }
          return self.blankSprite;
       }
       return fetchedSprite;
@@ -112,12 +114,14 @@ public class ImageManager : ClientMonoBehaviour {
       return fetchedTexture;
    }
 
-   public static Sprite[] getSprites (Texture2D texture, bool logData = false) {
-      Sprite[] fetchedSprites = self.getSpritesFromTexture(texture, logData);
+   public static Sprite[] getSprites (Texture2D texture) {
+      Sprite[] fetchedSprites = self.getSpritesFromTexture(texture);
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         D.debug("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
+         if (!Util.isBatch()) {
+            D.debug("Could not retrieve sprites from Texture(" + texture?.name + "). Returning a blank sprite array");
+         }
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
@@ -129,6 +133,22 @@ public class ImageManager : ClientMonoBehaviour {
       if (_dataByPath.ContainsKey(path)) {
          return _dataByPath[path];
       } else {
+         // Avoid storing data for batch server
+         if (Util.isBatch()) {
+            List<ImageData> batchList = new List<ImageData>();
+
+            ImageData dataForBatch = new ImageData();
+            dataForBatch.sprite = self.blankSprite;
+            dataForBatch.texture2D = self.blankTexture;
+            dataForBatch.sprites = new List<Sprite>();
+            for (int i = 0; i < 10; i++) {
+               dataForBatch.sprites.Add(self.blankSprite);
+               batchList.Add(dataForBatch);
+            }
+
+            return batchList;
+         }
+
          List<ImageData> imageData = new List<ImageData>();
          Texture2D[] textureList = Resources.LoadAll<Texture2D>(path);
          if (textureList == null) {
@@ -167,13 +187,20 @@ public class ImageManager : ClientMonoBehaviour {
 
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
-         D.warning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
+         if (!Util.isBatch()) {
+            D.warning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
+         }
          return new Sprite[] { self.blankSprite };
       }
       return fetchedSprites;
    }
 
    protected Sprite getSpriteFromPath (string path) {
+      // Avoid using Resources.Load() on batch server
+      if (Util.isBatch()) {
+         return self.blankSprite;
+      }
+
       path = getResourcePath(path);
       Sprite sprite = Resources.Load<Sprite>(path);
 
@@ -185,6 +212,11 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    protected Texture2D getTextureFromPath (string path, bool warnOnNull=true) {
+      // Avoid using Resources.Load() on batch server
+      if (Util.isBatch()) {
+         return blankTexture;
+      }
+
       path = getResourcePath(path);
       Texture2D tex = Resources.Load<Texture2D>(path);
 
@@ -197,7 +229,12 @@ public class ImageManager : ClientMonoBehaviour {
       return tex;
    }
 
-   protected Sprite[] getSpritesFromTexture (Texture2D texture, bool logData = false) {
+   protected Sprite[] getSpritesFromTexture (Texture2D texture) {
+      // Avoid storing data for batch server
+      if (Util.isBatch()) {
+         return new Sprite[10] { blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite };
+      }
+
       if (_dataByTexture.ContainsKey(texture)) {
          return _dataByTexture[texture];
       } else {
@@ -217,6 +254,11 @@ public class ImageManager : ClientMonoBehaviour {
    }
 
    protected Sprite[] getSpritesFromPath (string path) {
+      // Avoid using Resources.Load() on batch server
+      if (Util.isBatch()) {
+         return new Sprite[10] { blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite, blankSprite };
+      }
+
       path = getResourcePath(path);
       UnityEngine.Object[] data = Resources.LoadAll(path);
       List<Sprite> sprites = new List<Sprite>();

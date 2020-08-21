@@ -11,6 +11,7 @@ using MapCreationTool.Serialization;
 using BackgroundTool;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
+using System;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -45,6 +46,18 @@ public class MyNetworkManager : NetworkManager
 
    // Reference to the server communication handler
    public ServerCommunicationHandler serverCommunicationHandler;
+
+   // An event triggered when the client is about to start
+   public event Action clientStarting;
+
+   // An event triggered when the client is about to stop
+   public event Action clientStopping;
+
+   // An event triggered when the client successfully connected
+   public event Action clientConnected;
+
+   // An event triggered when the client has disconnected
+   public event Action clientDisconnected;
 
    #endregion
 
@@ -98,6 +111,8 @@ public class MyNetworkManager : NetworkManager
    public override void OnStartClient () {
       D.debug("Starting client: " + this.networkAddress + " with Cloud Build version: " + Util.getGameVersion());
 
+      clientStarting?.Invoke();
+
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerClientHandlers();
 
@@ -118,9 +133,18 @@ public class MyNetworkManager : NetworkManager
 
       // Now that we have a connection, we can send our login credentials
       ClientManager.sendAccountNameAndUserId();
+
+      clientConnected?.Invoke();
    }
 
    public override void OnClientDisconnect (NetworkConnection conn) {
+      clientDisconnected?.Invoke();
+   }
+
+   public override void OnStopClient () {
+      clientStopping?.Invoke();
+
+      base.OnStopClient();      
    }
 
    #endregion

@@ -27,6 +27,9 @@ public class CameraManager : ClientMonoBehaviour {
    // List of objects to reset
    public List<GameObject> resetObjectList;
 
+   // An event that's triggered when the resolution changes
+   public event Action resolutionChanged;
+
    #endregion
 
    protected override void Awake () {
@@ -49,6 +52,16 @@ public class CameraManager : ClientMonoBehaviour {
       _quakeEffect = GetComponent<CameraFilterPack_FX_EarthQuake>();
       _screenResolution = new Vector2(Screen.width, Screen.height);
       _isFullscreen = Screen.fullScreen;
+
+      MyNetworkManager.self.clientStarting += onClientStarting;
+   }
+
+   private void OnDestroy () {
+      MyNetworkManager.self.clientStarting -= onClientStarting;
+   }
+
+   private void onClientStarting () {
+      fadeOutDefaultCamera();
    }
 
    private void LateUpdate () {
@@ -80,6 +93,8 @@ public class CameraManager : ClientMonoBehaviour {
       foreach (BaseCamera baseCam in _baseCameras) {
          baseCam.onResolutionChanged();
       }
+
+      resolutionChanged?.Invoke();
 
       StartCoroutine(CO_ResetObjects());
    }

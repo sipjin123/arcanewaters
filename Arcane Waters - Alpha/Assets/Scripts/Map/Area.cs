@@ -65,6 +65,10 @@ public class Area : MonoBehaviour
    // Ships to be loaded by the server
    public List<ExportedPrefab001> shipDataFields = new List<ExportedPrefab001>();
 
+   // The ship data, separated by guild
+   public List<ExportedPrefab001> privateerShipDataFields = new List<ExportedPrefab001>();
+   public List<ExportedPrefab001> pirateShipDataFields = new List<ExportedPrefab001>();
+
    // Secret entrance to be loaded by the server
    public List<ExportedPrefab001> secretsEntranceDataFields = new List<ExportedPrefab001>();
 
@@ -102,6 +106,24 @@ public class Area : MonoBehaviour
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
          this.npcDatafields.Clear();
+      }
+
+      // Keep separate lists of pirate and privateer bot ships
+      foreach (ExportedPrefab001 dataField in shipDataFields) {
+         int guildId = 1;
+         foreach (DataField field in dataField.d) {
+            if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
+               guildId = int.Parse(field.v.Split(':')[0]);
+            }
+         }
+
+         if (guildId == BotShipEntity.PRIVATEERS_GUILD_ID) {
+            privateerShipDataFields.Add(dataField);
+         } else if (guildId == BotShipEntity.PIRATES_GUILD_ID) {
+            pirateShipDataFields.Add(dataField);
+         } else {
+            D.debug(string.Format($"A bot ship in area {areaKey} has an unsupported guild id: {guildId}"));
+         }
       }
    }
 
@@ -141,9 +163,12 @@ public class Area : MonoBehaviour
          }
       }
 
+      // Store a reference to all the warps in this area
+      _warps = new List<Warp>(GetComponentsInChildren<Warp>());
+
       // If the area is interior, find the town where it is located
       if (isInterior) {
-         foreach (Warp warp in GetComponentsInChildren<Warp>()) {
+         foreach (Warp warp in _warps) {
             if (!string.IsNullOrEmpty(warp.areaTarget) && !AreaManager.self.isInteriorArea(warp.areaTarget)) {
                townAreaKey = warp.areaTarget;
                break;
@@ -200,6 +225,10 @@ public class Area : MonoBehaviour
       }
 
       return _graph;
+   }
+
+   public List<Warp> getWarps () {
+      return _warps;
    }
 
    public static bool isHouse (string areaKey) {
@@ -377,6 +406,9 @@ public class Area : MonoBehaviour
 
    // Reference to first tilemap which represents base level of map
    protected Tilemap _firstTilemap = null;
+
+   // The list of warps in this area
+   protected List<Warp> _warps = new List<Warp>();
 
    #endregion
 }

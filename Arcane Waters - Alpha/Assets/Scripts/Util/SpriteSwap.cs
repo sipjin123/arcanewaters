@@ -55,7 +55,7 @@ public class SpriteSwap : ClientMonoBehaviour
 
       if (newTexture != null) {
          // Get the array of sprites associated with the new texture
-         Sprite[] newSprites = ImageManager.getSprites(newTexture, true);
+         Sprite[] newSprites = ImageManager.getSprites(newTexture);
          if (newSprites != null) {
             if (newSprites.Length > 1) { 
                // Store the sprites associated with our Texture, indexed by their frame number

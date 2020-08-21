@@ -158,6 +158,9 @@ public class CharacterScreen : MonoBehaviour
 
       // Enable character buttons
       Util.enableCanvasGroup(canvasGroup);
+
+      // Disable pixelation effect
+      CameraManager.self.fadeInDefaultCamera();
    }
 
    #region Private Variables

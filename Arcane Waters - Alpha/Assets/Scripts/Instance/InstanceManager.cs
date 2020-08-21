@@ -101,6 +101,7 @@ public class InstanceManager : MonoBehaviour {
 
    public void addTreasureSiteToInstance (TreasureSite treasureSite, Instance instance) {
       instance.entities.Add(treasureSite);
+      instance.treasureSites.Add(treasureSite);
       treasureSite.instanceId = instance.id;
       instance.treasureSiteCount++;
    }
