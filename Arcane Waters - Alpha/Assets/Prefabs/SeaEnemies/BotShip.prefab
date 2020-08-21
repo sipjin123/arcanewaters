@@ -263,9 +263,8 @@ MonoBehaviour:
   bodyType: 0
   eyesType: 0
   hairType: 0
-  eyesPalette1: 
-  hairPalette1: 
-  hairPalette2: 
+  eyesPalettes: 
+  hairPalettes: 
   entityName: 
   currentHealth: 100
   maxHealth: 100
@@ -294,6 +293,7 @@ MonoBehaviour:
   isAboutToWarpOnServer: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  _ignoredAnimators: []
   damage: 25
   reloadDelay: 1
   attackCounter: 0
@@ -316,7 +316,69 @@ MonoBehaviour:
   speed: 100
   attackRangeModifier: 100
   sailors: 10
+  primaryAbilityId: -1
   rarity: 1
+  shipSizeSpriteList:
+  - shipSize: 1
+    speedBoostSpriteFront: {fileID: 3626180043029435608, guid: 69fc79589fe0c264093acff6721e4ccc,
+      type: 3}
+    speedBoostSpriteBack: {fileID: 7894087167621734565, guid: c22aee43a1fa5ed4a9c95bed55e76d5d,
+      type: 3}
+  - shipSize: 2
+    speedBoostSpriteFront: {fileID: 7114979638880542208, guid: 37aa5480be374954f905abd54de539c6,
+      type: 3}
+    speedBoostSpriteBack: {fileID: -455514770332918826, guid: a49dc3767bffab44eacf0a26456f2250,
+      type: 3}
+  - shipSize: 3
+    speedBoostSpriteFront: {fileID: 7114979638880542208, guid: 37aa5480be374954f905abd54de539c6,
+      type: 3}
+    speedBoostSpriteBack: {fileID: -455514770332918826, guid: a49dc3767bffab44eacf0a26456f2250,
+      type: 3}
+  shipSizeSpriteCache:
+    shipSize: 0
+    speedBoostSpriteFront: {fileID: 0}
+    speedBoostSpriteBack: {fileID: 0}
+  shipSize: 0
+  seaEntityData:
+    monsterName: 
+    seaMonsterType: 0
+    attackType: 0
+    xmlId: 0
+    subVarietyTypeId: -1
+    showDebugGizmo: 0
+    isAggressive: 0
+    autoMove: 0
+    isMelee: 0
+    isRanged: 1
+    shouldDropTreasure: 1
+    isInvulnerable: 0
+    maxProjectileDistanceGap: 2
+    maxMeleeDistanceGap: 0.5
+    maxDistanceGap: 3
+    territoryRadius: 4.5
+    detectRadius: 4
+    attackFrequency: 1
+    reloadDelay: 1
+    moveFrequency: 1
+    findTargetsFrequency: 0.5
+    avatarSpritePath: 
+    defaultSpritePath: 
+    secondarySpritePath: 
+    defaultRippleTexturePath: 
+    defaultRippleSpritePath: 
+    corpseSpritePath: 
+    scaleOverride: 1
+    outlineScaleOverride: 1
+    rippleScaleOverride: 1
+    maxHealth: 25
+    animGroup: 0
+    roleType: 0
+    animationSpeedOverride: -1
+    rippleAnimationSpeedOverride: -1
+    projectileSpawnLocations: []
+    rippleLocOffset: {x: 0, y: 0, z: 0}
+    skillIdList: 
+    lootGroupId: 0
   maxForceOverride: 0
   isDebug: 0
   patrolingWaypointsRadius: 1
