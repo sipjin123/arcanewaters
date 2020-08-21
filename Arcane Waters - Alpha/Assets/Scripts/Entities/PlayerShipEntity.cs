@@ -55,9 +55,8 @@ public class PlayerShipEntity : ShipEntity
    public string guildIconSigilPalettes;
 
    // The effect that indicates this ship is speeding up
-   public GameObject speedUpEffect;
+   public GameObject speedUpEffectHolder;
    public Canvas speedupGUI;
-   public Transform speedupEffectPivot;
    public Image speedUpBar;
 
    // Color indications if the fuel is usable or not
@@ -75,7 +74,7 @@ public class PlayerShipEntity : ShipEntity
    public bool isDisabled = true;
 
    // Reference to the sprite swap
-   public SpriteSwap spriteSwap;
+   public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
 
    #endregion
 
@@ -83,8 +82,6 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void Start () {
       base.Start();
-
-      spriteSwap = spritesContainer.GetComponent<SpriteSwap>();
 
       // Player ships spawn hidden and invulnerable, until the client finishes loading the area
       if (isDisabled) {
@@ -158,7 +155,8 @@ public class PlayerShipEntity : ShipEntity
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
-            spriteSwap.newTexture = _shipBoostSprites;
+            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
+            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
@@ -180,7 +178,8 @@ public class PlayerShipEntity : ShipEntity
 
          if (speedMeter < SPEEDUP_METER_MAX) {
             speedMeter += Time.deltaTime * fuelRecoverValue;
-            spriteSwap.newTexture = _shipSprites;
+            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
+            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
          } else {
             isReadyToSpeedup = true;
          }
@@ -197,7 +196,7 @@ public class PlayerShipEntity : ShipEntity
       /*if (Input.GetKeyUp(KeyCode.Space) && !ChatManager.isTyping() && SelectionManager.self.selectedEntity != null && SeaManager.combatMode == SeaManager.CombatMode.Select) {
          Cmd_FireAtTarget(SelectionManager.self.selectedEntity.gameObject);
       }*/
-
+      
       // Right click to fire out the sides
       if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
@@ -227,10 +226,9 @@ public class PlayerShipEntity : ShipEntity
 
       // Handle sprite effects
       if (isOn) {
-         speedUpEffect.SetActive(true);
-         speedupEffectPivot.transform.localEulerAngles = new Vector3(0, 0, -Util.getAngle(facing));
+         speedUpEffectHolder.SetActive(true);
       } else {
-         speedUpEffect.SetActive(false);
+         speedUpEffectHolder.SetActive(false);
       }
    }
 

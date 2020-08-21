@@ -198,23 +198,26 @@ public class PlayerBodyEntity : BodyEntity {
          }
          jumpCollisionPivot.localEulerAngles = new Vector3(0, 0, currentAngle);
 
+         // TODO: Look for jumping over obstacle alternatives / confirm if this will be part of the target feature
+         /*
          // Gathers all the collider data
          Collider2D[] obstacleCollidedEntries = Physics2D.OverlapCircleAll(obstacleDetectionCollider.transform.position, obstacleColliderScale);
          Collider2D[] jumpEndCollidedEntries = Physics2D.OverlapCircleAll(jumpEndCollider.transform.position, jumpEndColliderScale);
+         */
 
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
              || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
             requestAnimationPlay(Anim.Type.NC_Jump_East);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_East);
-            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
+            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.North) {
             requestAnimationPlay(Anim.Type.NC_Jump_North);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_North);
-            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
+            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.South) {
             requestAnimationPlay(Anim.Type.NC_Jump_South);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
-            jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
+            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }
       }
 

@@ -124,13 +124,8 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void startUpNetworkClient (bool isSteam) {
-      if (isSteam) {
-         MyNetworkManager.self.StartClient();
-      }
-
-      if (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0) {      
+      if (isSteam || (!isSteam && passwordInputField.text.Length > 0 && accountInputField.text.Length > 0)) {      
          // Start up the Network Client, which triggers the rest of the login process
-         CameraManager.self.fadeOutDefaultCamera();
          MyNetworkManager.self.StartClient();
       } else {
          displayError(ErrorMessage.Type.FailedUserOrPass);

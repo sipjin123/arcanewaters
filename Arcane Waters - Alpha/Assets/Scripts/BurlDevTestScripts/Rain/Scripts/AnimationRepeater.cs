@@ -4,35 +4,34 @@ using UnityEngine;
 
 public class AnimationRepeater : MonoBehaviour
 {
-    Animator anim;
-    public float loopDelayMin = 1, loopDelayMax = 10;
-    public float timer;
+   // The animator component
+   public Animator animator;
 
-    void Start()
-    {
-        anim = GetComponent<Animator>();
+   // Timer variables
+   public float loopDelayMin = 4, loopDelayMax = 10;
 
-        anim.Update(Random.Range(0f, 1f));
-        timer = Random.Range(loopDelayMin, loopDelayMax);
-    }
+   // Cooldown timer
+   public float cooldownTimer;
 
-    private void Update()
-    {
-        if (anim.GetCurrentAnimatorStateInfo(0).length >= anim.GetCurrentAnimatorClipInfo(0)[0].clip.length)
-        {
-            if (timer <= 0)
-            {
-                timer = Random.Range(loopDelayMin, loopDelayMax);
-            }
-            else
-            {
-                timer -= Time.deltaTime;
+   void Start () {
+      // Animator setup
+      animator = GetComponent<Animator>();
+      animator.Update(Random.Range(0f, 1f));
 
-                if (timer <= 0)
-                {
-                    anim.Play(anim.GetCurrentAnimatorClipInfo(0)[0].clip.name, 0, 0);
-                }
-            }
-        }
-    }
+      // The interval between the lightninge effect
+      cooldownTimer = Random.Range(loopDelayMin, loopDelayMax);
+
+      StartCoroutine(playThunderAnimation());
+   }
+
+   private IEnumerator playThunderAnimation () {
+      animator.Play(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name, 0, 0);
+      yield return new WaitForSeconds(cooldownTimer);
+      initCooldown();
+   }
+
+   private void initCooldown () {
+      cooldownTimer = Random.Range(loopDelayMin, loopDelayMax);
+      StartCoroutine(playThunderAnimation());
+   }
 }

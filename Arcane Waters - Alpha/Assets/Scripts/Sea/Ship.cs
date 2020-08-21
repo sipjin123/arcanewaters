@@ -82,19 +82,12 @@ public class Ship : SeaEntity {
       return ShipDataManager.self.getShipData(shipType).basePrice;
    }
 
-   public static string getSkinPath (bool isBoosting, Ship.Type shipType, Ship.SkinType skinType = SkinType.None, bool isPirate = false) {
+   public static string getSkinPath (Ship.Type shipType, Ship.SkinType skinType = SkinType.None, bool isPirate = false) {
       string skinName;
       if (!isPirate) {
          skinName = (skinType == Ship.SkinType.None) ? shipType + "_1":  skinType + "";
       } else {
          skinName = shipType + "_pirate";
-      }
-
-      // TODO: Remove filter when all ship sprite boost is provided
-      if (shipType == Type.Type_1) {
-         if (isBoosting) {
-            skinName = shipType + "_boosting";
-         }
       }
       
       string basePath = "Ships/"; 

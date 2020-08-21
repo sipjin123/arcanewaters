@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool;
 
 public class ShipEntity : SeaEntity
 {
@@ -38,6 +39,15 @@ public class ShipEntity : SeaEntity
    // The Rarity of the ship
    public Rarity.Type rarity;
 
+   // List of ship sprites depending on size
+   public List<ShipSizeSpritePair> shipSizeSpriteList;
+
+   // Cached ship size sprite
+   public ShipSizeSpritePair shipSizeSpriteCache;
+
+   // Size of the ship
+   public ShipSize shipSize;
+
    #endregion
 
    protected override void Start () {
@@ -55,6 +65,8 @@ public class ShipEntity : SeaEntity
       sailors = data.baseSailors;
       rarity = Rarity.Type.None;
       damage = data.baseDamage;
+      shipSize = data.shipSize;
+      shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }
 
    protected virtual void initialize (ShipInfo info) {
@@ -67,6 +79,11 @@ public class ShipEntity : SeaEntity
       sailors = info.sailors;
       rarity = info.rarity;
       damage = info.damage;
+
+      ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
+      shipSize = newShipData.shipSize;
+
+      shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }
 
    private void initializePalette () {
@@ -306,11 +323,13 @@ public class ShipEntity : SeaEntity
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
 
       // Cache ship boost sprite
-      string shipBoostSpritePath = Ship.getSkinPath(true, shipType, skinType, isBotShip());
-      _shipBoostSprites = ImageManager.getSprite(shipBoostSpritePath).texture;
+      if (shipSizeSpriteCache.shipSize != ShipSize.None) {
+         _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
+         _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+      }
 
       // Set the initial idle sprites
-      string skinPath = Ship.getSkinPath(isSpeedingUp, shipType, skinType, isBotShip());
+      string skinPath = Ship.getSkinPath(shipType, skinType, isBotShip());
       _shipSprites = ImageManager.getTexture(skinPath);
       spritesContainer.GetComponent<SpriteSwap>().newTexture = _shipSprites;
    }
@@ -332,7 +351,7 @@ public class ShipEntity : SeaEntity
    // Ship Ripple SpriteSheets
    protected Texture2D _ripplesStillSprites;
    protected Texture2D _ripplesMovingSprites;
-   protected Texture2D _shipBoostSprites;
+   protected Texture2D _shipBoostSpritesFront, _shipBoostSpritesBack;
    protected Texture2D _shipSprites;
 
    #endregion

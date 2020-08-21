@@ -29,6 +29,10 @@ public class ShipDataPanel : MonoBehaviour {
    // Skill template
    public ShipSkillTemplate skillTemplate;
 
+   // Ship size UI
+   public Text shipSizeText;
+   public Slider shipSizeSlider;
+
    // Button for adding skills
    public Button addSkillButton;
 
@@ -91,6 +95,11 @@ public class ShipDataPanel : MonoBehaviour {
          }
       });
 
+      shipSizeSlider.maxValue = Enum.GetValues(typeof(ShipSize)).Length - 1;
+      shipSizeSlider.onValueChanged.AddListener(_ => {
+         shipSizeText.text = ((ShipSize) _).ToString();
+      });
+
       _shipTypeButton.onClick.AddListener(() => {
          selectionPopup.callTextSelectionPopup(GenericSelectionPopup.selectionType.ShipType, _shipTypeText);
       });
@@ -138,6 +147,7 @@ public class ShipDataPanel : MonoBehaviour {
       newShipData.baseSupplyRoom = int.Parse(_baseSupplyRoom.text);
       newShipData.basePrice = int.Parse(_basePrice.text);
       newShipData.isSkillRandom = _randomSkill.isOn;
+      newShipData.shipSize = (ShipSize) shipSizeSlider.value;
 
       try {
          newShipData.skinType = (Ship.SkinType) Enum.Parse(typeof(Ship.SkinType), _skinTypeText.text);
@@ -194,6 +204,9 @@ public class ShipDataPanel : MonoBehaviour {
       _spriteIcon.sprite = selectionPopup.emptySprite;
       _rippleSpriteIcon.sprite = selectionPopup.emptySprite;
       _randomSkill.isOn = loadedShipData.isSkillRandom;
+
+      shipSizeSlider.value = (int) loadedShipData.shipSize;
+      shipSizeText.text = loadedShipData.shipSize.ToString();
 
       if (loadedShipData.avatarIconPath != null && loadedShipData.avatarIconPath != "") {
          List<ImageManager.ImageData> imgData = ImageManager.getSpritesInDirectory(loadedShipData.avatarIconPath);

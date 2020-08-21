@@ -6,6 +6,22 @@ using Mirror;
 using System;
 using System.Xml.Serialization;
 
+public enum ShipSize {
+   None = 0,
+   Small = 1,
+   Medium = 2,
+   Large = 3
+}
+
+[Serializable]
+public class ShipSizeSpritePair {
+   // The ship size
+   public ShipSize shipSize;
+
+   // The speed boost sprites
+   public Sprite speedBoostSpriteFront, speedBoostSpriteBack;
+}
+
 [Serializable]
 public class ShipData
 {
@@ -26,7 +42,10 @@ public class ShipData
    
    // Attack range of the ship
    public int baseRange = 100;
-   
+
+   // Ship Size, the wakes will depend on this variable
+   public ShipSize shipSize = ShipSize.None;
+
    // Damage of the ship
    public int baseDamage = 10;
    
