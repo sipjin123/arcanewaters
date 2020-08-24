@@ -128,6 +128,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       shadowTransform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
       shadowTransform.localPosition = new Vector3(0, npcData.shadowOffsetY, 0);
 
+      // Use shadow as our sort point
+      sortPoint.transform.localPosition = shadowTransform.localPosition;
+
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
    }

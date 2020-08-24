@@ -30,7 +30,12 @@ public class InstanceManager : MonoBehaviour {
             D.error("Could not find the voyage instance for voyage id " + voyageId);
          }
       }
-      
+
+      // For private areas, we always create a new instance, to ensure that players don't join instances of other players
+      if (AreaManager.self.isPrivateArea(areaKey)) {
+         instance = createNewInstance(areaKey, player.isSinglePlayer);
+      }
+
       if (instance == null) {
          // Look for an open instance
          instance = getOpenInstance(areaKey, player.isSinglePlayer);

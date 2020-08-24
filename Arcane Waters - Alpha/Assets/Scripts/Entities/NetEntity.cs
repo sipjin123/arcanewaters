@@ -1294,6 +1294,10 @@ public class NetEntity : NetworkBehaviour
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInFarm);
          }
 
+         if (string.Equals(areaKey, TutorialData3.tutorialCemeteryAreaKey)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInTutorialTownCemetery);
+         }
+
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }

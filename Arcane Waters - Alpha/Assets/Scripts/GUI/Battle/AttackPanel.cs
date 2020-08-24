@@ -70,6 +70,9 @@ public class AttackPanel : MonoBehaviour {
       recentAbilityRequest.targetNetId = target.netId;
       recentAbilityRequest.abilityIndex = abilityIndex;
       Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);
    }
 
    private bool isValidRecentAbility () {

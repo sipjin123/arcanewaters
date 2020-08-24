@@ -641,6 +641,9 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveEndBattle (NetworkConnection connection) {
       BattleUIManager.self.abilitiesCG.Hide();
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.EndBattle);
    }
 
    [TargetRpc]

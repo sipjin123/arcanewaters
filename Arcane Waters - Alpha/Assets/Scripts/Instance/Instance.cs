@@ -144,6 +144,8 @@ public class Instance : NetworkBehaviour
          _maxPlayerCount = 1;
       } else if (isVoyage) {
          _maxPlayerCount = Voyage.MAX_PLAYERS_PER_INSTANCE;
+      } else if (AreaManager.self.isPrivateArea(areaKey)) {
+         _maxPlayerCount = 1;
       } else {
          // Check if we've specified a max player count on the command line
          if (CommandCodes.get(CommandCodes.Type.MAX_INSTANCE_PLAYERS)) {
@@ -178,7 +180,7 @@ public class Instance : NetworkBehaviour
          _consecutiveEmptyChecks++;
 
          // If the Instance has been empty for long enough, just remove it
-         if (_consecutiveEmptyChecks > 10) {
+         if (_consecutiveEmptyChecks > 10 || AreaManager.self.isPrivateArea(areaKey)) {
             InstanceManager.self.removeEmptyInstance(this);
          }
 

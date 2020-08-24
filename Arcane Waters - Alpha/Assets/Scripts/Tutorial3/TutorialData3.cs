@@ -8,6 +8,8 @@ public class TutorialData3 : MonoBehaviour
 {
    #region Public Variables
 
+   public static string tutorialCemeteryAreaKey = "Tutorial Town Cemetery";
+
    // The tutorials and, for each step, the npc speech and completion triggers
    public static List<Tutorial3> tutorials = new List<Tutorial3>() {
       new Tutorial3("Introduction", "Introduction",
@@ -26,10 +28,16 @@ public class TutorialData3 : MonoBehaviour
       //   new TutorialStep3(TutorialTrigger.Manual, "Well done! You can now try your weapon in a test battle! Click on the right arrow to start the next tutorial."),
       //}),
 
-      //new Tutorial3("TestMeleeBattle", "Do a test melee battle against an NPC in town",
-      //new List<TutorialStep3>() {
-      //   new TutorialStep3(TutorialTrigger.Manual, "This tutorial will be available soon!"),
-      //}),
+      new Tutorial3("TestMeleeBattle", "Do a test melee battle",
+      new List<TutorialStep3>() {
+         new TutorialStep3(TutorialTrigger.EquipWeapon, "You should have a sword in your fourth shortcut. Press 4 to equip it. You can also search for one in your inventory by pressing I"),
+         new TutorialStep3(TutorialTrigger.SpawnInTutorialTownCemetery, "You will find a cemetery by exiting the starting town from the east. Go there now!"),
+         new TutorialStep3(TutorialTrigger.EnterBattle, "A stubborn skeleton often comes back to life in this place. Do a favor to the villagers and send him back to sleep. Move close to him to enter battle!"),
+         new TutorialStep3(TutorialTrigger.SelectBattleEnemy, "Do not worry, the skeleton is too weak to hurt you. Select it by clicking on it."),
+         new TutorialStep3(TutorialTrigger.AttackBattleTarget, "At the top of the screen are your skills. Pick an attack skill and cast it!"),
+         new TutorialStep3(TutorialTrigger.EndBattle, "Well done! Keep attacking until the skeleton is defeated!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Congratulations on your battle victory! The first of many. To start the next tutorial, click on the right arrow."),
+      }),
 
       new Tutorial3("PickFarmLayout", "Pick your farm layout",
       new List<TutorialStep3>() {
@@ -61,7 +69,7 @@ public class TutorialData3 : MonoBehaviour
          new TutorialStep3(TutorialTrigger.SpawnInSeaArea, "To sail your ship, go to the docks. In the starting town, they are located south."),
          new TutorialStep3(TutorialTrigger.Manual, "Use W to move forward and A or D to turn. Beware the pirates!"),
          new TutorialStep3(TutorialTrigger.ShipSpeedUp, "You can boost your movement by holding the SHIFT key. Try it now!"),
-         new TutorialStep3(TutorialTrigger.Manual, "The speed-up only last a few seconds before needing to recharge."),
+         new TutorialStep3(TutorialTrigger.Manual, "The speed-up only lasts a few seconds before needing to recharge."),
          new TutorialStep3(TutorialTrigger.Manual, "Well done! You are ready to fight some pirates! Click on the right arrow to start the next tutorial."),
       }),
 
@@ -85,9 +93,10 @@ public class TutorialData3 : MonoBehaviour
          new TutorialStep3(TutorialTrigger.Manual, "Voyages are set in distant, unexplored seas. The destinations regularly change."),
          new TutorialStep3(TutorialTrigger.SpawnInVoyage, "By selecting a map, you will be automatically matched with other players. Choose a PvE map and join the expedition!"),
          new TutorialStep3(TutorialTrigger.Manual, "The group composition is displayed on the left of your screen. You can interact with the members through the chat."),
-         new TutorialStep3(TutorialTrigger.Manual, "Your goal is to find and capture treasure sites before rival groups do. Once captured, a treasure site can be explored in search of riches!"),
-         new TutorialStep3(TutorialTrigger.Manual, "Be careful, though! These seas are full of monsters and pirates!"),
-         new TutorialStep3(TutorialTrigger.Manual, "You can leave your group at any time by pressing the X button above the group members."),
+         new TutorialStep3(TutorialTrigger.Manual, "You can leave your group and the map at any time by pressing the X button above the group members. But don't do it yet!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Your goal is to find and capture treasure sites before rival groups do."),
+         new TutorialStep3(TutorialTrigger.EnterTreasureSiteRange, "Treasure sites show up as chests in the minimap. Search for one now! Beware the sea monsters and pirates, though."),
+         new TutorialStep3(TutorialTrigger.Manual, "There, you found one! We won't go further in this tutorial, but I can tell you that once captured, a treasure site can be explored in search of riches!"),
          new TutorialStep3(TutorialTrigger.Manual, "This is all for voyages. To continue with other tutorials, click on the right arrow."),
       }),
 
@@ -133,4 +142,10 @@ public enum TutorialTrigger
    SpawnInHouse = 18,
    OpenVoyagePanel = 19,
    SpawnInVoyage = 20,
+   SpawnInTutorialTownCemetery = 21,
+   EnterBattle = 22,
+   SelectBattleEnemy = 23,
+   AttackBattleTarget = 24,
+   EndBattle = 25,
+   EnterTreasureSiteRange = 26,
 };

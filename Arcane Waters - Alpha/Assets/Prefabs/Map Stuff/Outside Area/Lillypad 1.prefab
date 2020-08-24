@@ -108,6 +108,8 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!114 &6672099721373389714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: -0.15
+  offsetZ: -0.12
   inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}

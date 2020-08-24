@@ -1,6 +1,7 @@
 ﻿#if NUBIS
 using UnityEngine;
 using System;
+using System.IO;
 
 public class NubisConfiguration
 {
@@ -21,6 +22,16 @@ public class NubisConfiguration
    /// </summary>
    public int WebServerPort;
 
+   /// <summary>
+   /// The prefix added to log files in the Nubis Log folder.
+   /// </summary>
+   public const string LogFilePrefix = "nubis";
+
+   /// <summary>
+   /// The extension given to log files.
+   /// </summary>
+   public const string LogFileExtension = ".log";
+
    #endregion
 
    /// <summary>
@@ -38,7 +49,21 @@ public class NubisConfiguration
    /// <summary>
    /// Returns the path to the Log file.
    /// </summary>
-   public static string LogFilePath () => System.IO.Path.Combine(LogFolderPath(), LogFileName);
+   public static string LogFilePath ()
+   {
+      try {
+         if (!Directory.Exists(LogFolderPath())) return string.Empty;
+         string date = DateTime.Now.ToString("yyyy-MM-dd");
+         string fileName = $"{LogFilePrefix}-{date}{LogFileExtension}";
+         string logFilePath = Path.GetFullPath(Path.Combine(LogFolderPath(), fileName));
+         if (!File.Exists(logFilePath)) {
+            File.WriteAllText(logFilePath, "");
+         }
+         return logFilePath;
+      } catch {
+         return string.Empty;
+      }
+   }
    /// <summary>
    /// Save a ButlerConfiguration to a string.
    /// </summary>

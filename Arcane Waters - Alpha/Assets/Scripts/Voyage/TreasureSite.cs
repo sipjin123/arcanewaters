@@ -173,6 +173,15 @@ public class TreasureSite : NetworkBehaviour
             _capturingShips.Add(ship);
          }
       }
+
+      if (isClient) {
+         // Determine if the colliding object is a ship
+         ShipEntity ship = other.transform.GetComponent<ShipEntity>();
+         if (ship != null && ship.instanceId == instanceId) {
+            // Trigger the tutorial
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterTreasureSiteRange);
+         }
+      }
    }
 
    public void OnTriggerExit2D (Collider2D other) {
