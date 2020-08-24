@@ -79,6 +79,9 @@ public class WeatherManager : MonoBehaviour {
       for (int i = 0; i < snowRandomSpeed.Length; i++) {
          snowRandomSpeed[i] = Random.Range(.2f, .6f);
       }
+
+      snowEffectObj.transform.SetParent(mainCam.transform, false);
+      rainEffectObj.transform.SetParent(mainCam.transform, false);
    }
 
    public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {
@@ -107,11 +110,9 @@ public class WeatherManager : MonoBehaviour {
                resetWeatherSimulation();
                break;
             case WeatherEffectType.Snow:
-               snowEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);//rootObj.position;//
                snowEffectObj.gameObject.SetActive(true);
                break;
             case WeatherEffectType.Rain:
-               rainEffectObj.transform.position = new Vector3(mainCam.transform.position.x, mainCam.transform.position.y, 0);
                rainEffectObj.SetActive(true);
                break;
             case WeatherEffectType.Sunny:

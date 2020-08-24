@@ -23,6 +23,9 @@ public class ShipAbilityToolManager : XmlDataToolManager {
 
       // The owner of the content
       public int ownerId;
+
+      // If the ability is active in the database
+      public bool isActive;
    }
 
    #endregion
@@ -100,7 +103,8 @@ public class ShipAbilityToolManager : XmlDataToolManager {
                   ShipAbilityGroup newGroup = new ShipAbilityGroup {
                      xmlId = xmlPair.xmlId,
                      ownerId = xmlPair.xmlOwnerId,
-                     shipAbility = shipAbilityData
+                     shipAbility = shipAbilityData,
+                     isActive = xmlPair.isEnabled
                   };
 
                   _shipAbilityData.Add(xmlPair.xmlId, newGroup);

@@ -1522,7 +1522,7 @@ public class DB_Main : DB_MainStub
                   XMLPair xmlPair = new XMLPair {
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("xml_id"),
-                     isEnabled = true,
+                     isEnabled = dataReader.GetInt32("isActive") == 0 ? false : true,
                      xmlOwnerId = dataReader.GetInt32("creator_userID"),
                   };
                   rawDataList.Add(xmlPair);

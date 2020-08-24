@@ -38,7 +38,7 @@ public class ShipAbilityManager : MonoBehaviour {
                   TextAsset newTextAsset = new TextAsset(rawData.rawXmlData);
                   ShipAbilityData shipAbilityData = Util.xmlLoad<ShipAbilityData>(newTextAsset);
 
-                  if (!shipAbilityDataList.Exists(_=>_.abilityId == rawData.xmlId)) {
+                  if (!shipAbilityDataList.Exists(_=>_.abilityId == rawData.xmlId) && rawData.isEnabled) {
                      shipAbilityData.abilityId = rawData.xmlId;
 
                      shipAbilityDataList.Add(new ShipAbilityPair { 

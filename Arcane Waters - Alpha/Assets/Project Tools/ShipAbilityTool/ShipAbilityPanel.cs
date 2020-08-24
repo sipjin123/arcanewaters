@@ -86,15 +86,19 @@ public class ShipAbilityPanel : MonoBehaviour {
       });
 
       _abilityPathButton.onClick.AddListener(() => {
+         selectionPopup.previewSelectionIcon.GetComponent<SimpleAnimation>().enabled = false;
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityIcon, _abilityPathIcon, _abilityPath);
       });
       _projectilePathButton.onClick.AddListener(() => {
+         selectionPopup.previewSelectionIcon.GetComponent<SimpleAnimation>().enabled = false;
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.CannonSprites, _projectilePathIcon, _projectilePath);
       });
       _skillHitButton.onClick.AddListener(() => {
+         selectionPopup.previewSelectionIcon.GetComponent<SimpleAnimation>().enabled = true;
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityEffect, _skillHitIcon, _skillHitText);
       });
       _skillCastButton.onClick.AddListener(() => {
+         selectionPopup.previewSelectionIcon.GetComponent<SimpleAnimation>().enabled = true;
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.ShipAbilityEffect, _skillCastIcon, _skillCastText);
       });
 

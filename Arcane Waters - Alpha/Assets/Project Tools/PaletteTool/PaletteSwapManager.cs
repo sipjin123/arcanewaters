@@ -91,7 +91,7 @@ public class PaletteSwapManager : MonoBehaviour {
       List<Color> srcColors = new List<Color>();
       List<Color> dstColors = new List<Color>();
       Texture2D tex = null;
-
+      
       foreach (string name in names) {
          if (name == null || name.Trim() == "") {
             continue;
@@ -109,11 +109,15 @@ public class PaletteSwapManager : MonoBehaviour {
 
          for (int i = 0; i < data.srcColor.Length; i++) {
             if (data.srcColor[i] != data.dstColor[i]) {
-               Color s = PaletteToolManager.convertHexToRGB(data.srcColor[i]);
-               Color d = PaletteToolManager.convertHexToRGB(data.dstColor[i]);
+               try {
+                  Color s = PaletteToolManager.convertHexToRGB(data.srcColor[i]);
+                  Color d = PaletteToolManager.convertHexToRGB(data.dstColor[i]);
 
-               srcColors.Add(s);
-               dstColors.Add(d);
+                  srcColors.Add(s);
+                  dstColors.Add(d);
+               } catch {
+                  D.debug("Failed to convert Hex to RGB");
+               }
             }
          }
       }

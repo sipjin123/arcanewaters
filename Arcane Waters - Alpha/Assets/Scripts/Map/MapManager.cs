@@ -232,8 +232,12 @@ public class MapManager : MonoBehaviour
          } else if (exportedProject.editorType == EditorType.Area) {
             Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
             if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
-               area.cloudShadowManager.enabled = true;
-               WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
+               if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+                  WeatherManager.self.setWeatherSimulation(weatherType, null);
+               } else {
+                  area.cloudShadowManager.enabled = true;
+                  WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
+               }
             } else {
                WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
             }

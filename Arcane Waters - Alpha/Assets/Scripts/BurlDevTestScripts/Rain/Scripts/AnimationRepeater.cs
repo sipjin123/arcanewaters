@@ -21,10 +21,10 @@ public class AnimationRepeater : MonoBehaviour
       // The interval between the lightninge effect
       cooldownTimer = Random.Range(loopDelayMin, loopDelayMax);
 
-      StartCoroutine(playThunderAnimation());
+      StartCoroutine(CO_PlayThunderAnimation());
    }
 
-   private IEnumerator playThunderAnimation () {
+   private IEnumerator CO_PlayThunderAnimation () {
       animator.Play(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name, 0, 0);
       yield return new WaitForSeconds(cooldownTimer);
       initCooldown();
@@ -32,6 +32,6 @@ public class AnimationRepeater : MonoBehaviour
 
    private void initCooldown () {
       cooldownTimer = Random.Range(loopDelayMin, loopDelayMax);
-      StartCoroutine(playThunderAnimation());
+      StartCoroutine(CO_PlayThunderAnimation());
    }
 }

@@ -11,6 +11,9 @@ public class ShipAbilityTemplate : GenericEntryTemplate
    // The database id
    public int xmlId;
 
+   // Determines if this template is active in the database
+   public GameObject isActiveIndicator;
+
    #endregion
 
    private void OnEnable () {

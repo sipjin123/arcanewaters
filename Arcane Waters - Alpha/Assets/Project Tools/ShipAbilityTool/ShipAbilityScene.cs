@@ -84,6 +84,7 @@ public class ShipAbilityScene : MonoBehaviour {
          ShipAbilityTemplate template = GenericEntryTemplate.createGenericTemplate(itemTemplatePrefab.gameObject, toolManager, itemTemplateParent.transform).GetComponent<ShipAbilityTemplate>();
          template.xmlId = shipAbilityGroup.xmlId;
          template.nameText.text = shipAbilityGroup.shipAbility.abilityName;
+         template.isActiveIndicator.SetActive(shipAbilityGroup.isActive);
          template.editButton.onClick.AddListener(() => {
             shipAbilityPanel.loadData(shipAbilityGroup.shipAbility, template.xmlId);
             shipAbilityPanel.gameObject.SetActive(true);
