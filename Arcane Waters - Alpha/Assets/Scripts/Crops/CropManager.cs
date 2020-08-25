@@ -91,8 +91,7 @@ public class CropManager : NetworkBehaviour {
    [Server]
    public void plantCrop (Crop.Type cropType, int cropNumber, string areaKey) {
       int userId = _player.userId;
-      int tutorialStep = TutorialManager.getHighestCompletedStep(userId);
-      int waterInterval = getWaterIntervalSeconds(cropType, tutorialStep);
+      int waterInterval = getWaterIntervalSeconds(cropType);
 
       // Make sure there's not already a Crop in that spot
       foreach (CropInfo crop in _crops) {
@@ -456,26 +455,11 @@ public class CropManager : NetworkBehaviour {
       // Play a sound
       SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
 
-      // If the player was on the sell step, they just completed it
-      if (TutorialManager.self.currentTutorialData().actionType == ActionType.SellCrop) {
-         Global.player.Cmd_CompletedTutorialStep(TutorialManager.currentStep);
-      }
-
       // Updates the offers in the merchant panel
       Global.player.rpc.Cmd_GetOffersForArea(ShopManager.DEFAULT_SHOP_NAME);
    }
 
-   protected static int getWaterIntervalSeconds (Crop.Type cropType, int highestCompletedTutorialStep) {
-      // When they're just getting started, make the crops grow fast
-      try {
-         TutorialData tutorialData = TutorialManager.self.fetchTutorialData(highestCompletedTutorialStep);
-         if (tutorialData.actionType == ActionType.WaterCrop && tutorialData.countRequirement == 1) {
-            return 6;
-         }
-      } catch {
-         D.debug("Tutorial Manager failed to process");
-      }
-
+   protected static int getWaterIntervalSeconds (Crop.Type cropType) {
       CropsData cropData = CropsDataManager.self.getCropData(cropType);
       return (int)cropData.growthRate;
    }

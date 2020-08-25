@@ -30,6 +30,11 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       public void initializeHandler () {
+         if (CommandCodes.get(CommandCodes.Type.SERVER_DISABLE_DATA_HANDLER)) {
+            enabled = false;
+            return;
+         }
+         
          // Continously handle shared server data
          InvokeRepeating("handleSharedServerData", 10, 1);
       }

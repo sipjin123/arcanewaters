@@ -16,7 +16,7 @@ public class Panel : MonoBehaviour {
       Adventure = 16, CharacterInfo = 17, Guild = 18, GuildCreate = 19, Flagship = 20,
       NPC_Panel = 21, Overworld = 22, Craft = 23, Reward = 24, TradeHistory = 25, RandomMaps = 26,
       LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31,
-      Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35, NewTutorial = 36, NewTutorialDetails = 37,
+      Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35,
       CustomMaps = 38, StepCompletedNotification = 39, MapCustomization = 40, Auction = 41
    }
 

@@ -23,7 +23,6 @@ public class EditorSQLManager {
       Ship = 12,
       ShipAbility = 13,
       Shop = 14,
-      Tutorial = 15,
       SoundEffects = 16,
       Crops = 17,
       Books = 18,
@@ -32,7 +31,6 @@ public class EditorSQLManager {
       Equipment_Weapon = 21,
       Equipment_Armor = 22,
       Equipment_Hat = 23,
-      NewTutorial = 24,
       Perks = 25,
       Palette = 26,
       Treasure_Drops = 27,
@@ -72,12 +70,8 @@ public class EditorSQLManager {
             return "ship_ability_xml_v2";
          case EditorToolType.Shop:
             return "shop_xml_v2";
-         case EditorToolType.Tutorial:
-            return "tutorial_xml";
          case EditorToolType.Books:
             return "books_xml";
-         case EditorToolType.NewTutorial:
-            return "tutorial_v2";
          case EditorToolType.Crops:
             return "crops_xml_v1";
          case EditorToolType.Background:

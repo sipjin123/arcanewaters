@@ -25,12 +25,6 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for creating Building icons
    public MM_Icon buildingIconPrefab;
 
-   // The prefab we use for showing Tutorial objectives
-   public MM_TutorialIcon tutorialIconPrefab;
-
-   // Generic Tutorial arrow indicator
-   public TutorialItem tutorialArrowPrefab;
-
    // The prefab we use for showing impassable areas
    public MM_Icon impassableIconPrefab;
 
@@ -219,13 +213,6 @@ public class Minimap : ClientMonoBehaviour {
                icon.tooltip.text = building;
             }
          }
-      }
-
-      // Create icons for all tutorial objectives
-      foreach (TutorialLocation loc in area.GetComponentsInChildren<TutorialLocation>()) {
-         MM_TutorialIcon icon = Instantiate(tutorialIconPrefab, this.iconContainer.transform);
-         icon.tutorialStepCount = loc.tutorialStepType;
-         icon.target = loc.gameObject;
       }
 
       // Create icons for all treasure chests

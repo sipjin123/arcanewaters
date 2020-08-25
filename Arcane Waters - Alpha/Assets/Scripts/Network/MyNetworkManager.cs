@@ -179,9 +179,6 @@ public class MyNetworkManager : NetworkManager
       // Create the initial map that everyone starts in
       MapManager.self.createLiveMap(Area.STARTING_TOWN);
 
-      // Set up tutorial data
-      NewTutorialManager.self.storeInfoFromDatabase();
-
       // Start the voyage maps and voyage groups management
       VoyageManager.self.startVoyageManagement();
 
@@ -199,7 +196,6 @@ public class MyNetworkManager : NetworkManager
       // Loads all SQL Data from server
       NPCManager.self.initializeQuestCache();
       ShipDataManager.self.initializeDataCache();
-      // TutorialManager.self.initializeDataCache();
       CraftingManager.self.initializeDataCache();
       CropsDataManager.self.initializeDataCache();
       AchievementManager.self.initializeDataCache();

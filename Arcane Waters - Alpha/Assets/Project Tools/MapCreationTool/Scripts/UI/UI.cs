@@ -150,7 +150,7 @@ namespace MapCreationTool
       }
 
       private void Update () {
-         toolTipText.text = string.IsNullOrEmpty(ToolTipManager.currentMessage) ? "MAP TOOL" : ToolTipManager.currentMessage;
+         toolTipText.text = ToolTipManager.currentMessage;
       }
 
       private void changeLoadedMapUI (MapVersion mapVersion) {

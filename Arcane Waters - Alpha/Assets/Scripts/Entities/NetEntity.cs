@@ -852,12 +852,6 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveTutorialInfo (NetworkConnection connection, TutorialInfo[] infoArray, bool justCompletedStep) {
-      // Pass along the info to the Tutorial Manager
-      TutorialManager.self.receivedTutorialInfo(new List<TutorialInfo>(infoArray), justCompletedStep);
-   }
-
-   [TargetRpc]
    protected void Target_ReceiveServerDateTime (NetworkConnection conn, float serverUnityTime, long serverDateTime) {
       TimeManager.self.setLastServerDateTime(serverDateTime);
 
@@ -1015,13 +1009,7 @@ public class NetEntity : NetworkBehaviour
          Target_ReceiveServerDateTime(this.connectionToClient, Time.time, System.DateTime.UtcNow.ToBinary());
       }
    }
-
-   [Command]
-   public void Cmd_CompletedTutorialStep (int stepIndex) {
-      // We handle the logic in a non-Cmd function, so that the code can be called from other places
-      completedTutorialStep(stepIndex);
-   }
-
+   
    [Command]
    public void Cmd_UpdateFacing (Direction newFacing) {
       this.facing = newFacing;
@@ -1065,11 +1053,9 @@ public class NetEntity : NetworkBehaviour
          PlayerShipEntity ship = (PlayerShipEntity) this;
          ship.desiredAngle = DirectionUtil.getAngle(this.facing);
 
-         _body.mass = 1f;
+         _body.mass = 6f;
          _body.drag = 2.5f;
          _body.angularDrag = 10f;
-
-         ((PlayerShipEntity) this).speed = 15;
 
          // The server controls the final position of the object instead of the owner
          _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
@@ -1088,11 +1074,9 @@ public class NetEntity : NetworkBehaviour
 
    [ClientRpc]
    private void Rpc_SetServerAuthoritativeMode () {
-      _body.mass = 1f;
+      _body.mass = 6f;
       _body.drag = 2.5f;
       _body.angularDrag = 10f;
-
-      ((PlayerShipEntity)this).speed = 15;
 
       // The server controls the final position of the object instead of the owner
       _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
@@ -1220,41 +1204,6 @@ public class NetEntity : NetworkBehaviour
       });
    }
 
-   [Server]
-   public void completedTutorialStep (int stepIndex) {
-      // Make sure we don't process the same tutorial step multiple times
-      if (_processedTutorialSteps.ContainsKey(stepIndex)) {
-         return;
-      }
-      _processedTutorialSteps[stepIndex] = true;
-
-      // Database thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         TutorialData completedStep = DB_Main.completeTutorialStep(this.userId, stepIndex);
-
-         // If they completed certain steps, they get items
-         if (completedStep.requirementType == RequirementType.Item) {
-            Item item = JsonUtility.FromJson<Item>(completedStep.rawDataJson);
-
-            if (item.category == Item.Category.Weapon) {
-               DB_Main.insertNewWeapon(this.userId, item.itemTypeId, Item.parseItmPalette(new string[2]{ PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP, PaletteDef.WHITE_WEAPON_COMPLETED_TUTORIAL_STEP }));
-            }
-         }
-         if (completedStep.actionType == ActionType.HarvestCrop) {
-            ShipInfo shipInfo = DB_Main.createStartingShip(userId);
-            DB_Main.setCurrentShip(userId, shipInfo.shipId);
-         }
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Send the info to the player
-            if (completedStep.stepOrder > 0) {
-               TutorialManager.self.sendTutorialInfo(this, true);
-            }
-         });
-      });
-   }
-
    protected IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(this.areaKey) == null) {
@@ -1353,9 +1302,6 @@ public class NetEntity : NetworkBehaviour
 
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, float> _attackers = new Dictionary<uint, float>();
-
-   // Used by the server to keep track of which tutorial steps have already been processed
-   protected Dictionary<int, bool> _processedTutorialSteps = new Dictionary<int, bool>();
 
    // Did the Entity move last frame?
    private bool _movedLastFrame;

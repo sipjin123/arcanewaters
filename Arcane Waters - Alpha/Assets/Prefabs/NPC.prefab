@@ -429,7 +429,7 @@ MonoBehaviour:
   groundChecker: {fileID: 0}
   waterChecker: {fileID: 0}
   nameText: {fileID: 114686738398175836}
-  sortPoint: {fileID: 0}
+  sortPoint: {fileID: 1500841596590262}
   facing: 5
   isSinglePlayer: 0
   hasDiagonals: 0

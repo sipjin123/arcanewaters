@@ -107,8 +107,6 @@ public class PaletteDef : MonoBehaviour {
       {"guild_icon_two_white", PaletteSwapManager.intToColor (255, 255, 255) },
    };
 
-   public static string WHITE_WEAPON_COMPLETED_TUTORIAL_STEP = "";
-
    #endregion
 
    #region Private Variables

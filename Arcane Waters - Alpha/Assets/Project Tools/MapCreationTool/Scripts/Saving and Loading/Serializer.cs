@@ -306,8 +306,6 @@ namespace MapCreationTool.Serialization
       public const string HOUSE_TARGET_MAP_KEY = "target map";
       public const string HOUSE_TARGET_SPAWN_KEY = "target spawn";
 
-      public const string TUTORIAL_ITEM_STEP_ID_KEY = "step id";
-
       public const string MAP_SIGN_TYPE_KEY = "map sign type";
       public const string MAP_ICON_KEY = "map sign icon";
       public const string MAP_SIGN_LABEL = "map sign label";

@@ -16,7 +16,9 @@ public class CommandCodes : MonoBehaviour {
       PHOTON_CLOUD = 6,          // Force connection to Photon cloud (rather than self-hosted)
       AUTO_DBCONFIG = 7,         // Automatically start up a server and read DB server configuration from json config file
       MAX_INSTANCE_PLAYERS = 8,  // Sets the maximum number of players allowed in an instance
-      NPC_DISABLE = 9            // Disables NPCs for area (Area.npcDatafields)
+      NPC_DISABLE = 9,           // Disables NPCs for area (Area.npcDatafields)
+      SERVER_DISABLE_COMMUNICATION = 10, // Disables ServerCommunicationHandler
+      SERVER_DISABLE_DATA_HANDLER = 11 // Disables SharedServerDataHandler
    }
 
    #endregion

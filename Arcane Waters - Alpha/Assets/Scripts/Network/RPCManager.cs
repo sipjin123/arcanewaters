@@ -182,15 +182,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveTutorialData (NetworkConnection connection, string[] rawInfo) {
-      // Deserialize data
-      TutorialData[] tutorialDataList = Util.unserialize<TutorialData>(rawInfo).ToArray();
-
-      // Cache to tutorial manager 
-      TutorialManager.self.receiveListFromServer(tutorialDataList);
-   }
-
-   [TargetRpc]
    public void Target_ReceiveSoundEffects (NetworkConnection connection, string[] rawInfo) {
       // Deserialize data
       SoundEffect[] soundEffectsList = Util.unserialize<SoundEffect>(rawInfo).ToArray();
@@ -4338,30 +4329,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CompletedAction (string actionCode) {
-      if (NewTutorialManager.self.isValidAction(actionCode)) {
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            bool userCompletedAction = DB_Main.userHasCompletedAction(_player.userId, actionCode);
-
-            if (!userCompletedAction) {
-               DB_Main.completeStepForUser(_player.userId, actionCode);
-               TutorialStepData stepData = DB_Main.getTutorialStepDataByAction(actionCode);
-
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  Target_ShowTutorialStepCompletedNotification(netIdentity.connectionToClient, stepData.stepName);
-               });
-            }
-         });
-      }
-   }
-
-   [TargetRpc]
-   private void Target_ShowTutorialStepCompletedNotification (NetworkConnection conn, string title) {
-      StepCompletedNotificationPanel notificationPanel = (StepCompletedNotificationPanel) PanelManager.self.get(Panel.Type.StepCompletedNotification);
-      notificationPanel.showStepCompletedNotification(title);
-   }
-
-   [Command]
    public void Cmd_FoundDiscovery (int discoveryId) {
       Discovery discovery = DiscoveryManager.self.getSpawnedDiscoveryById(discoveryId);
 
@@ -4377,11 +4344,6 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                _player.Target_GainedXP(netIdentity.connectionToClient, gainedXP, newJobXP, Jobs.Type.Explorer, 0, true);
                discovery.Target_RevealDiscovery(netIdentity.connectionToClient);
-
-               // Tutorial logic
-               if (NewTutorialManager.self.isTutorialAreaKey(_player.areaKey)) {
-                  Cmd_CompletedAction(NewTutorialConstants.Actions.DISCOVERY_FOUND);
-               }
             });
          });
       } else {

@@ -324,7 +324,6 @@ public class ServerMessageManager : MonoBehaviour {
          DB_Main.deleteAllFromTable(accountId, msg.userId, "items");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "crops");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "silo");
-         DB_Main.deleteAllFromTable(accountId, msg.userId, "tutorial");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "perks");
 
          DB_Main.deleteUser(accountId, msg.userId);

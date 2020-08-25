@@ -202,17 +202,6 @@ public class DB_MainStub : MonoBehaviour
    public static void deleteShipAbilityXML (int xmlId) {
    }
 
-   public static void updateTutorialXML (string rawData, string name, int order) {
-
-   }
-
-   public static void deleteTutorialXML (string name) {
-   }
-
-   public static List<string> getTutorialXML () {
-      return new List<string>();
-   }
-
    public static void updateEquipmentXML (string rawData, int typeID, EquipmentType equipType, string equipmentName, bool isEnabled) {
 
    }
@@ -352,38 +341,6 @@ public class DB_MainStub : MonoBehaviour
       return new List<DiscoveryData>();
    }
 
-   public static List<NewTutorialData> getNewTutorialList () {
-      return new List<NewTutorialData>();
-   }
-
-   public static void upsertNewTutorial (NewTutorialData data) {
-   }
-
-   public static void deleteNewTutorialById (int tutorialId) {
-   }
-
-   public static void deleteTutorialStepById (int stepId) {
-   }
-
-   public static void upsertTutorialStep (TutorialStepData data) {
-   }
-
-   public static List<string> getAvailableAreaKeysForTutorial () {
-      return new List<string>();
-   }
-
-   public static List<string> getTutorialAreaKeys () {
-      return new List<string>();
-   }
-
-   public static List<TutorialStepAction> getTutorialStepActions () {
-      return new List<TutorialStepAction>();
-   }
-
-   public static List<UserTutorialStep> getUserCompletedSteps (int userId, int tutorialId) {
-      return new List<UserTutorialStep>();
-   }
-
    public static void completeStepForUser (int userId, int stepId) {
    }
 
@@ -392,10 +349,6 @@ public class DB_MainStub : MonoBehaviour
 
    public static bool userHasCompletedAction (int userId, string actionCode) {
       return false;
-   }
-
-   public static TutorialStepData getTutorialStepDataByAction (string actionCode) {
-      return null;
    }
 
    public static void updateNPCXML (string rawData, int typeIndex) {
@@ -727,14 +680,6 @@ public class DB_MainStub : MonoBehaviour
 
    public static void addToSilo (int userId, Crop.Type cropType, int amount = 1) {
 
-   }
-
-   public static List<TutorialInfo> getTutorialInfo (int userId) {
-      return null;
-   }
-
-   public static TutorialData completeTutorialStep (int userId, int stepIndex) {
-      return new TutorialData();
    }
 
    public static int getUserId (string username) {
@@ -1230,6 +1175,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
+      return new List<XMLPair>();
+   }
+
+   public static List<XMLPair> getPaletteXML (string tag) {
       return new List<XMLPair>();
    }
 

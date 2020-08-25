@@ -12,7 +12,7 @@ public class SeaManager : MonoBehaviour {
    public enum MoveMode { Instant = 1, Delay = 2, Arrows = 4, ServerAuthoritative = 5 }
 
    // The current movement mode
-   public static MoveMode moveMode = MoveMode.Delay;
+   public static MoveMode moveMode = MoveMode.ServerAuthoritative;
 
    // The combat modes
    public enum CombatMode { Circle = 1, Straight = 2, Select = 3 }

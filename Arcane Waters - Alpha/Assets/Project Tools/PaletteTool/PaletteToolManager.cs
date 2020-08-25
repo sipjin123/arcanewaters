@@ -623,6 +623,73 @@ public class PaletteToolManager : XmlDataToolManager {
       prepareSubcategoryDropdown(_currentRow);
    }
 
+   public static List<PaletteDataPair> getColors (PaletteImageType type, string tag) {
+      if ((int)type >= (int)PaletteImageType.MAX || (int)type <= (int) PaletteImageType.None) {
+         D.error("Incorrect palette type specified");
+         return new List<PaletteDataPair>();
+      }
+      List<PaletteDataPair> pairs = new List<PaletteDataPair>();
+
+      if (XmlLoadingPanel.self) {
+         XmlLoadingPanel.self.startLoading();
+      }
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(tag);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (XMLPair xmlPair in rawXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               PaletteToolData paletteData = Util.xmlLoad<PaletteToolData>(newTextAsset);
+
+               // Save the palette data in the memory cache
+               PaletteDataPair newDataPair = new PaletteDataPair {
+                  paletteData = paletteData,
+                  creatorID = xmlPair.xmlOwnerId,
+                  paletteId = xmlPair.xmlId,
+                  isEnabled = xmlPair.isEnabled
+               };
+               if (paletteData.paletteType == (int)type) {
+                  pairs.Add(newDataPair);
+               }
+            }
+            if (XmlLoadingPanel.self) {
+               XmlLoadingPanel.self.finishLoading();
+            }
+         });
+      });
+
+      return pairs;
+   }
+
+   public void updatePickingColorFromSprite (Color color) {
+      colorPicker.GetComponent<ColorPicker>().CurrentColor = color;
+   }
+
+   public void finalizePickingColorFromSprite (bool ignoreColorChange = false) {
+      paletteDataScene.SetActive(true);
+      spritePreviewForColorPicker.gameObject.SetActive(false);
+      changePaletteScene.gameObject.SetActive(true);
+      colorPickerHideButton.gameObject.SetActive(true);
+      colorPickerHideButton.gameObject.SetActive(false);
+      colorPicker.SetActive(false);
+   }
+
+   public void finalizePickingColorFromSprite (bool ignoreColorChange, Color revertColor) {
+      if (ignoreColorChange) {
+         changeColorInPalette(revertColor);
+      }
+      finalizePickingColorFromSprite(ignoreColorChange);
+   }
+
+   public static Color convertHexToRGB (string hex) {
+      int red = translateHexLetterToInt(hex[0]) * 16 + translateHexLetterToInt(hex[1]);
+      int green = translateHexLetterToInt(hex[2]) * 16 + translateHexLetterToInt(hex[3]);
+      int blue = translateHexLetterToInt(hex[4]) * 16 + translateHexLetterToInt(hex[5]);
+      return new Color(red / 255.0f, green / 255.0f, blue / 255.0f);
+   }
+
+   #region Private methods
+
    private void hideShowOptionButtons () {
       showHairOptions.gameObject.SetActive(false);
       showEyesOptions.gameObject.SetActive(false);
@@ -822,7 +889,7 @@ public class PaletteToolManager : XmlDataToolManager {
       }
    }
 
-   public void deleteXMLData (int xmlID) {
+   private void deleteXMLData (int xmlID) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.deletePaletteXML(xmlID);
 
@@ -832,7 +899,7 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   public void saveXMLData (PaletteToolData data, int xmlID, int isEnabled) {
+   private void saveXMLData (PaletteToolData data, int xmlID, int isEnabled) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -851,7 +918,7 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   public void loadXMLData () {
+   private void loadXMLData () {
       _paletteDataList = new List<PaletteDataPair>();
 
       if (XmlLoadingPanel.self == null) {
@@ -888,13 +955,6 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   public static Color convertHexToRGB(string hex) {
-      int red = translateHexLetterToInt(hex[0]) * 16 + translateHexLetterToInt(hex[1]);
-      int green = translateHexLetterToInt(hex[2]) * 16 + translateHexLetterToInt(hex[3]);
-      int blue = translateHexLetterToInt(hex[4]) * 16 + translateHexLetterToInt(hex[5]);
-      return new Color(red / 255.0f, green / 255.0f, blue / 255.0f);
-   }
-
    private static int translateHexLetterToInt (char letter) {
       switch (letter) {
          case 'A': return 10;
@@ -908,7 +968,7 @@ public class PaletteToolManager : XmlDataToolManager {
       return int.Parse(s);
    }
 
-   public static string convertRGBToHex(Color color) {
+   private static string convertRGBToHex (Color color) {
       return convertIntToHex(color.r) + convertIntToHex(color.g) + convertIntToHex(color.b);
    }
 
@@ -1178,26 +1238,6 @@ public class PaletteToolManager : XmlDataToolManager {
       spritePreviewForColorPicker.transform.localScale = new Vector3(scale, scale, 1.0f);
 
       PaletteToolColorUnderCursor.self.activate(_currentlyEditedElementInPalette.GetComponent<Image>().color);
-   }
-
-   public void updatePickingColorFromSprite(Color color) {
-      colorPicker.GetComponent<ColorPicker>().CurrentColor = color;
-   }
-
-   public void finalizePickingColorFromSprite (bool ignoreColorChange = false) {
-      paletteDataScene.SetActive(true);
-      spritePreviewForColorPicker.gameObject.SetActive(false);
-      changePaletteScene.gameObject.SetActive(true);
-      colorPickerHideButton.gameObject.SetActive(true);
-      colorPickerHideButton.gameObject.SetActive(false);
-      colorPicker.SetActive(false);
-   }
-
-   public void finalizePickingColorFromSprite (bool ignoreColorChange, Color revertColor) {
-      if (ignoreColorChange) {
-         changeColorInPalette(revertColor);
-      }
-      finalizePickingColorFromSprite(ignoreColorChange);      
    }
 
    private void updatePlayerCharacterSprite () {
@@ -1946,6 +1986,8 @@ public class PaletteToolManager : XmlDataToolManager {
       }
       return 0;
    }
+
+   #endregion
 
    #region Private Variables
 

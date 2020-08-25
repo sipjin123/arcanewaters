@@ -221,6 +221,7 @@ public class MapManager : MonoBehaviour
          }
 
          WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
+         D.editorLog("The weather here is : " + weatherType, Color.green);
          if (exportedProject.editorType == EditorType.Sea) {
             if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
                WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);

@@ -64,6 +64,11 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       public void initializeServers () {
+         if (CommandCodes.get(CommandCodes.Type.SERVER_DISABLE_COMMUNICATION)) {
+            enabled = false;
+            return;
+         }
+         
          initializeLocalServer();
       }
 

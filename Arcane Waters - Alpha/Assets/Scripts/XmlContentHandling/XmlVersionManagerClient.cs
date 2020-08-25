@@ -132,7 +132,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SHOP_FILE);
-      checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.SHIP_ABILITY_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.BACKGROUND_DATA_FILE);
 
@@ -479,7 +478,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
             #endregion
 
-         #region Group 4 (Ships/ShipAbility/Shop/Tutorial)
+         #region Group 4 (Ships/ShipAbility/Shop)
          case EditorToolType.Ship:
             List<ShipData> shipDataList = new List<ShipData>();
             foreach (string subGroup in xmlGroup) {

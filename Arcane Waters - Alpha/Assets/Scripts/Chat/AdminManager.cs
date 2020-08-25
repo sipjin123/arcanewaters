@@ -38,7 +38,6 @@ public class AdminManager : NetworkBehaviour
    protected static string SITE_GO = "sitego";
    protected static string PLAYER_GO = "pgo";
    protected static string BOT_WAYPOINT = "bot_waypoint";
-   protected static string SKIP_TUTORIAL = "skip_tutorial";
    protected static string WARP = "warp";
    protected static string ENEMY = "enemy";
    protected static string ABILITY = "all_abilities";
@@ -133,8 +132,6 @@ public class AdminManager : NetworkBehaviour
          requestPlayerGo(parameters);
       } else if (BOT_WAYPOINT.Equals(adminCommand)) {
          Cmd_BotWaypoint();
-      } else if (SKIP_TUTORIAL.StartsWith(adminCommand)) {
-         requestSkipTutorial(parameters);
       } else if (WARP.Equals(adminCommand)) {
          requestWarp(parameters);
       } else if (ABILITY.Equals(adminCommand)) {
@@ -286,24 +283,6 @@ public class AdminManager : NetworkBehaviour
 
       // Send the request to the server
       Cmd_AddGold(gold, username);
-   }
-
-   protected void requestSkipTutorial (string parameters) {
-      int stepNumber = 0;
-
-      if (!Util.isEmpty(parameters)) {
-         string[] list = parameters.Split(' ');
-
-         try {
-            stepNumber = System.Convert.ToInt32(list[0]);
-         } catch (System.Exception e) {
-            D.warning("Unable to parse step number int from: " + parameters + ", exception: " + e);
-            return;
-         }
-      }
-
-      // Send the request to the server
-      Cmd_SkipTutorial(stepNumber);
    }
 
    protected void requestAllAbilities (string parameters) {
@@ -816,15 +795,6 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
-   protected void Cmd_SkipTutorial (int stepNumber) {
-      // Stop it if it's already running
-      StopCoroutine("CO_SkipTutorial");
-
-      // Start skipping steps
-      StartCoroutine(CO_SkipTutorial(stepNumber));
-   }
-
-   [Command]
    public void Cmd_SpawnEnemy () {
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin.");
@@ -841,32 +811,6 @@ public class AdminManager : NetworkBehaviour
 
       enemy.transform.position = _player.transform.position;
       NetworkServer.Spawn(enemy.gameObject);
-   }
-
-   protected IEnumerator CO_SkipTutorial (int stepNumber) {
-      // Make sure this is an admin
-      if (!_player.isAdmin()) {
-         D.warning("Received admin command from non-admin!");
-         yield break;
-      }
-
-      // Make sure they aren't already done with the tutorial
-      int maxStep = TutorialManager.self.fetchMaxTutorialCount();
-      int highestCompletedStep = TutorialManager.getHighestCompletedStep(_player.userId);
-
-      if (highestCompletedStep >= maxStep) {
-         D.warning("This player has already completed the tutorial!");
-         yield break;
-      }
-
-      foreach (TutorialData tutData in TutorialManager.self.tutorialDataList()) {
-         if (tutData.stepOrder == 0) {
-            continue;
-         }
-
-         _player.completedTutorialStep(tutData.stepOrder);
-         yield return new WaitForSeconds(.5f);
-      }
    }
 
    protected void warpRandomly () {

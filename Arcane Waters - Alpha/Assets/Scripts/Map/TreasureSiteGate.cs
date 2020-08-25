@@ -28,10 +28,6 @@ public class TreasureSiteGate : ClientMonoBehaviour {
    #endregion
 
    public void Start () {
-      TutorialManager.self.finishSetupEvent.AddListener(() => {
-         destroyGateQuestIndex = TutorialManager.self.fetchTutorialData(DESTROY_GATE_QUEST_TITLE).stepOrder;
-         isXmlSetupFinished = true;
-      });
       
       _collider = GetComponent<PolygonCollider2D>();
 
@@ -44,18 +40,7 @@ public class TreasureSiteGate : ClientMonoBehaviour {
 
    private void Update () {
       // Stay hidden until we have the info we need
-      statusesContainer.SetActive(Global.player != null && TutorialManager.currentStep > 0);
-
-      // We only mess with the warp if we have a player object
-      if (Global.player != null && isXmlSetupFinished) {
-         // If we're past the tutorial step, we can clear the gate
-         if (TutorialManager.currentStep > destroyGateQuestIndex) {
-            foreach (SpriteRenderer gate in _gates) {
-               gate.enabled = false;
-            }
-            this.gameObject.SetActive(false);
-         }
-      }
+      statusesContainer.SetActive(Global.player != null);
    }
 
    public bool colliderContainsPoint (Vector2 point) {
@@ -78,11 +63,6 @@ public class TreasureSiteGate : ClientMonoBehaviour {
             gateStatus.enabled = false;
             break;
          }
-      }
-
-      if (!isEntranceStillBlocked()) {
-         int stepIndex = TutorialManager.self.tutorialDataList().Find(_ => _.actionType == ActionType.DestroyGate).stepOrder;
-         Global.player.Cmd_CompletedTutorialStep(stepIndex);
       }
    }
 

@@ -24,14 +24,12 @@ public class MasterToolScene : MonoBehaviour {
    public const string achievementScene = "Achievement Tool";
    public const string shipAbilityScene = "ShipAbility Tool";
    public const string shopScene = "ShopTool";
-   public const string tutorialScene = "Tutorial Tool";
    public const string backgroundScene = "BackgroundTool";
    public const string soundEffectScene = "Sound Effects Tool";
    public const string booksToolScene = "Books Tool";
    public const string cropsDataScene = "CropsDataTool";
    public const string discoveriesToolScene = "Discoveries Tool";
    public const string paletteToolScene = "Palette Tool";
-   public const string newTutorialToolScene = "New Tutorial Tool";
    public const string perksToolScene = "Perk Tool";
    public const string treasureDropToolScene = "Treasure Drops Tool";
    public const string questDataToolScene = "QuestData Tool";
@@ -68,14 +66,12 @@ public class MasterToolScene : MonoBehaviour {
       clickAchievementScene,
       clickShipAbilityScene,
       clickShopScene,
-      clickTutorialScene,
       clickBackgroundScene,
       clickSoundEffectScene,
       clickBooksToolScene,
       clickCropsDataScene,
       clickDiscoveriesToolScene,
       clickPaletteToolScene,
-      clickNewTutorialToolScene,
       clickPerkToolScene,
       clickTreasureDropToolScene,
       clickQuestDataToolScene,
@@ -137,9 +133,6 @@ public class MasterToolScene : MonoBehaviour {
       clickShopScene.onClick.AddListener(() => {
          SceneManager.LoadScene(shopScene);
       });
-      clickTutorialScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(tutorialScene);
-      });
       clickBackgroundScene.onClick.AddListener(() => {
          SceneManager.LoadScene(backgroundScene);
       });
@@ -157,9 +150,6 @@ public class MasterToolScene : MonoBehaviour {
       });
       clickPaletteToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(paletteToolScene);
-      });
-      clickNewTutorialToolScene.onClick.AddListener(() => {
-         SceneManager.LoadScene(newTutorialToolScene);
       });
       clickPerkToolScene.onClick.AddListener(() => {
          SceneManager.LoadScene(perksToolScene);

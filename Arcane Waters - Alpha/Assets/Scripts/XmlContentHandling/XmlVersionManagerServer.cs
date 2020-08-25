@@ -38,7 +38,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string SHIP_TABLE = "ship_xml_v2";
    public static string SHOP_TABLE = "shop_xml_v2";
-   public static string TUTORIAL_TABLE = "tutorial_xml";
    public static string SHIP_ABILITY_TABLE = "ship_ability_xml_v2";
    public static string BACKGROUND_DATA_TABLE = "background_xml_v2";
    public static string TREASURE_DROPS_TABLE = "treasure_drops_xml_v2";
@@ -62,7 +61,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string SHIP_FILE = "ships";
    public static string SHOP_FILE = "shops";
-   public static string TUTORIAL_FILE = "tutorials";
    public static string SHIP_ABILITY_FILE = "ships_abilities";
    public static string BACKGROUND_DATA_FILE = "battle_bg_data";
 
@@ -117,7 +115,6 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
       confirmTextFile(SHIP_FILE);
       confirmTextFile(SHOP_FILE);
-      confirmTextFile(TUTORIAL_FILE);
       confirmTextFile(SHIP_ABILITY_FILE);
       confirmTextFile(BACKGROUND_DATA_FILE);
 

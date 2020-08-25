@@ -8,6 +8,7 @@ public class TutorialData3 : MonoBehaviour
 {
    #region Public Variables
 
+   // The area key of the tutorial cemetery
    public static string tutorialCemeteryAreaKey = "Tutorial Town Cemetery";
 
    // The tutorials and, for each step, the npc speech and completion triggers

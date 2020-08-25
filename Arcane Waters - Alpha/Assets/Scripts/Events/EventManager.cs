@@ -6,9 +6,6 @@ using System.Collections.Generic;
 public class EventManager : MonoBehaviour {
    #region Public Variables
 
-   // Types of events
-   public static string COMPLETED_TUTORIAL_STEP = "completed_tutorial_step";
-
    // Self
    public static EventManager self;
 
