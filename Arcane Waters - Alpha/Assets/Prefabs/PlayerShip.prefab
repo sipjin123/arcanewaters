@@ -1085,7 +1085,7 @@ MonoBehaviour:
   interactingAnimation: 0
   isSpeedingUp: 0
   _ignoredAnimators: []
-  damage: 25
+  damage: 90
   reloadDelay: 1
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
@@ -1103,7 +1103,7 @@ MonoBehaviour:
   currentImpactMagnitude: 0
   shipType: 100
   skinType: 0
-  speed: 100
+  speed: 15
   attackRangeModifier: 100
   sailors: 0
   primaryAbilityId: -1
@@ -1169,9 +1169,9 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 50
-  m_AngularDrag: 0.05
+  m_Mass: 6
+  m_LinearDrag: 2.5
+  m_AngularDrag: 10
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 85d5d0a47c772d24ca0b79efe93fa021, type: 2}
   m_Interpolate: 1
@@ -1369,12 +1369,12 @@ MonoBehaviour:
   isVelocityCompressed: 0
   isAngularVelocityCompressed: 0
   isSmoothingAuthorityChanges: 0
-  transformSource: 0
+  transformSource: 1
   whenToUpdateTransform: 1
   sendRate: 4
   networkChannel: 1
   childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 0
+  setVelocityInsteadOfPositionOnNonOwners: 1
   maxPositionDifferenceForVelocitySyncing: 1
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1

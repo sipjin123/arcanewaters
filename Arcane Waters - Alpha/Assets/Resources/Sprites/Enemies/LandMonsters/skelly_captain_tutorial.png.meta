@@ -1,0 +1,1112 @@
+fileFormatVersion: 2
+guid: 9b5a3a6a6f482f24c811d84308f8e59e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5457328560506547465
+    second: skelly_captain_0
+  - first:
+      213: -1057701546487860089
+    second: skelly_captain_1
+  - first:
+      213: -6813039690667730124
+    second: skelly_captain_2
+  - first:
+      213: 8266639043642754216
+    second: skelly_captain_3
+  - first:
+      213: -4724764742179579864
+    second: skelly_captain_4
+  - first:
+      213: 967094883574344485
+    second: skelly_captain_5
+  - first:
+      213: 8275021402501587204
+    second: skelly_captain_6
+  - first:
+      213: 6658949482737654247
+    second: skelly_captain_7
+  - first:
+      213: 6958302529636478414
+    second: skelly_captain_8
+  - first:
+      213: 1117755073988951746
+    second: skelly_captain_9
+  - first:
+      213: -4721778988936448857
+    second: skelly_captain_10
+  - first:
+      213: 670937486062394919
+    second: skelly_captain_11
+  - first:
+      213: 5042229512130711801
+    second: skelly_captain_12
+  - first:
+      213: 1167448456776584653
+    second: skelly_captain_13
+  - first:
+      213: 8335786954320883408
+    second: skelly_captain_14
+  - first:
+      213: 2121233741544718516
+    second: skelly_captain_15
+  - first:
+      213: -4122231596707419701
+    second: skelly_captain_16
+  - first:
+      213: 6548655644921026831
+    second: skelly_captain_17
+  - first:
+      213: 1698101650294698422
+    second: skelly_captain_18
+  - first:
+      213: -2767813692821208734
+    second: skelly_captain_19
+  - first:
+      213: -935302767288747146
+    second: skelly_captain_20
+  - first:
+      213: -2146434049967179360
+    second: skelly_captain_21
+  - first:
+      213: 2613260070109766278
+    second: skelly_captain_22
+  - first:
+      213: 8062997599727335726
+    second: skelly_captain_23
+  - first:
+      213: 2248615227410159462
+    second: skelly_captain_24
+  - first:
+      213: -2233024413299313532
+    second: skelly_captain_25
+  - first:
+      213: 6537861596832644909
+    second: skelly_captain_26
+  - first:
+      213: 200601072038130837
+    second: skelly_captain_27
+  - first:
+      213: 943593697785817094
+    second: skelly_captain_28
+  - first:
+      213: 4332982730984893808
+    second: skelly_captain_29
+  - first:
+      213: 5252122972859984989
+    second: skelly_captain_30
+  - first:
+      213: -5245238086833474550
+    second: skelly_captain_31
+  - first:
+      213: -3013528563616040550
+    second: skelly_captain_32
+  - first:
+      213: -1264508354565433853
+    second: skelly_captain_33
+  - first:
+      213: -6433230338888392386
+    second: skelly_captain_34
+  - first:
+      213: 4684017205445289650
+    second: skelly_captain_35
+  - first:
+      213: -6139448367130182376
+    second: skelly_captain_36
+  - first:
+      213: 3638360975027348361
+    second: skelly_captain_37
+  - first:
+      213: -7974252298862989035
+    second: skelly_captain_38
+  - first:
+      213: -232577065036338400
+    second: skelly_captain_39
+  - first:
+      213: -7260700506039000076
+    second: skelly_captain_40
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: skelly_captain_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90d269f59635cbb40800000000000000
+      internalID: 5457328560506547465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_1
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 784b5332c0a4251f0800000000000000
+      internalID: -1057701546487860089
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_2
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43bdc159f783371a0800000000000000
+      internalID: -6813039690667730124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_3
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a483b2696009b270800000000000000
+      internalID: 8266639043642754216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_4
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8289817ff734e6eb0800000000000000
+      internalID: -4724764742179579864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_5
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52beb873cafcb6d00800000000000000
+      internalID: 967094883574344485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_6
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 401acd46f18c6d270800000000000000
+      internalID: 8275021402501587204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_7
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e959df1647596c50800000000000000
+      internalID: 6658949482737654247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_8
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ecd2fa6b84bd09060800000000000000
+      internalID: 6958302529636478414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_9
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2ce70035150138f00800000000000000
+      internalID: 1117755073988951746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_10
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a43a80d60fd87eb0800000000000000
+      internalID: -4721778988936448857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_11
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 427
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72e1e3bb616af4900800000000000000
+      internalID: 670937486062394919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_12
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f0da82c60999f540800000000000000
+      internalID: 5042229512130711801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_13
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcd0fbf9f2c933010800000000000000
+      internalID: 1167448456776584653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_14
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0dea1afe11aaea370800000000000000
+      internalID: 8335786954320883408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_15
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b0885269d2207d10800000000000000
+      internalID: 2121233741544718516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_16
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc9ec5c0434eac6c0800000000000000
+      internalID: -4122231596707419701
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_17
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f09dfdfdc9f71ea50800000000000000
+      internalID: 6548655644921026831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_18
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b1f15a347ed09710800000000000000
+      internalID: 1698101650294698422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_19
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2610ee26c10c699d0800000000000000
+      internalID: -2767813692821208734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_20
+      rect:
+        serializedVersion: 2
+        x: 680
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67b705ea6132503f0800000000000000
+      internalID: -935302767288747146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_21
+      rect:
+        serializedVersion: 2
+        x: 765
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a937e59a955632e0800000000000000
+      internalID: -2146434049967179360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_22
+      rect:
+        serializedVersion: 2
+        x: 850
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 682ea98203a244420800000000000000
+      internalID: 2613260070109766278
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_23
+      rect:
+        serializedVersion: 2
+        x: 935
+        y: 342
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e29339ce89585ef60800000000000000
+      internalID: 8062997599727335726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_24
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 667115ab2afa43f10800000000000000
+      internalID: 2248615227410159462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_25
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 484f48e8024b201e0800000000000000
+      internalID: -2233024413299313532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_26
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2fb0e5bb762bba50800000000000000
+      internalID: 6537861596832644909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_27
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5943568bc9da8c200800000000000000
+      internalID: 200601072038130837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_28
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60822d00871581d00800000000000000
+      internalID: 943593697785817094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_29
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07da14236d8d12c30800000000000000
+      internalID: 4332982730984893808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_30
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5cecf1540a43e840800000000000000
+      internalID: 5252122972859984989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_31
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 257
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a04f0ff10cb2537b0800000000000000
+      internalID: -5245238086833474550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_32
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 172
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a993c2ddcbbcd26d0800000000000000
+      internalID: -3013528563616040550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_33
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3061d96e950937ee0800000000000000
+      internalID: -1264508354565433853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_34
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e31aa4c671398b6a0800000000000000
+      internalID: -6433230338888392386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_35
+      rect:
+        serializedVersion: 2
+        x: 170
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b66264d4d8f00140800000000000000
+      internalID: 4684017205445289650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_36
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81d7a500d3c4ccaa0800000000000000
+      internalID: -6139448367130182376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_37
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9832629a70e0e7230800000000000000
+      internalID: 3638360975027348361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_38
+      rect:
+        serializedVersion: 2
+        x: 425
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 511fde898c3c55190800000000000000
+      internalID: -7974252298862989035
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_39
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02b2b9f3468b5ccf0800000000000000
+      internalID: -232577065036338400
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: skelly_captain_40
+      rect:
+        serializedVersion: 2
+        x: 595
+        y: 87
+        width: 85
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f3eb0dcb5fcc3b90800000000000000
+      internalID: -7260700506039000076
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -60,6 +60,11 @@ public class ShipAbilityPanel : MonoBehaviour {
       _shipAbilityAttackType.maxValue = Enum.GetValues(typeof(Attack.Type)).Length - 1;
       _impactMagnitude.maxValue = Enum.GetValues(typeof(Attack.ImpactMagnitude)).Length - 1;
       _statusSlider.maxValue = Enum.GetValues(typeof(Status.Type)).Length - 1;
+      _abilityTypeSlider.maxValue = Enum.GetValues(typeof(SeaEntityAbilityType)).Length - 1;
+
+      _abilityTypeSlider.onValueChanged.AddListener(_ => {
+         _abilityTypeText.text = ((SeaEntityAbilityType) _).ToString();
+      });
 
       _statusSlider.onValueChanged.AddListener(_ => {
          _statusText.text = ((Status.Type) _).ToString();
@@ -180,6 +185,9 @@ public class ShipAbilityPanel : MonoBehaviour {
       _statusSlider.value = shipAbilityData.statusType;
       _statusText.text = ((Status.Type) shipAbilityData.statusType).ToString();
 
+      _abilityTypeSlider.value = (int)shipAbilityData.seaEntityAbilityType;
+      _abilityTypeText.text = shipAbilityData.seaEntityAbilityType.ToString();
+
       _hitAudioText.text = shipAbilityData.collisionSFXPath;
       _castAudioText.text = shipAbilityData.castSFXPath;
       if (shipAbilityData.collisionSFXPath != "") {
@@ -228,6 +236,7 @@ public class ShipAbilityPanel : MonoBehaviour {
       abilityData.splitAttackCap = int.Parse(_splitAttackCap.text);
 
       abilityData.statusType = (int)_statusSlider.value;
+      abilityData.seaEntityAbilityType = (SeaEntityAbilityType) _abilityTypeSlider.value;
 
       return abilityData;
    }
@@ -254,6 +263,11 @@ public class ShipAbilityPanel : MonoBehaviour {
    private Slider _shipCastType;
    [SerializeField]
    private Text _shipCastText;
+
+   [SerializeField]
+   private Slider _abilityTypeSlider;
+   [SerializeField]
+   private Text _abilityTypeText;
 
    [SerializeField]
    private Slider _shipAbilityEffect;

@@ -4,7 +4,13 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
-using System.Xml.Serialization;
+
+public enum SeaEntityAbilityType {
+   None = 0,
+   Neutral = 1,
+   Ships = 2,
+   SeaMonsters = 3,
+}
 
 [Serializable]
 public class ShipAbilityData
@@ -14,6 +20,9 @@ public class ShipAbilityData
 
    // The name of the ability
    public string abilityName;
+
+   // Determines the type of ability for filtering
+   public SeaEntityAbilityType seaEntityAbilityType;
 
    // Sea Entity Attack Type
    public Attack.Type selectedAttackType;

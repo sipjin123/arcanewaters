@@ -23,6 +23,9 @@ public class TreasureDropsTemplate : MonoBehaviour {
    public Sprite monsterDrop;
    public Sprite biomeDrop;
 
+   // Duplicates the template
+   public Button duplicateButton;
+
    #endregion
 
    public void setImage (bool isBiomeLoot) {

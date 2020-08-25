@@ -1370,7 +1370,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  if (editorType == EditorSQLManager.EditorToolType.Quest) {
+                  if (editorType == EditorSQLManager.EditorToolType.Quest || editorType == EditorSQLManager.EditorToolType.Treasure_Drops) {
                      SQLEntryIDClass newEntry = new SQLEntryIDClass(dataReader, true);
                      rawDataList.Add(newEntry);
                   } else {

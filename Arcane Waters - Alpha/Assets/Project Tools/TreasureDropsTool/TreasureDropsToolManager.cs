@@ -10,7 +10,7 @@ using System.Xml;
 using System.Linq;
 using System;
 
-public class TreasureDropsToolManager : MonoBehaviour {
+public class TreasureDropsToolManager : XmlDataToolManager {
    #region Public Variables
 
    // Cached drops list
@@ -24,8 +24,10 @@ public class TreasureDropsToolManager : MonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
       instance = this;
+      self = this;
    }
 
    private void Start () {
@@ -39,6 +41,7 @@ public class TreasureDropsToolManager : MonoBehaviour {
          loadAllDataFiles();
       });
 
+      fetchRecipe();
       EquipmentXMLManager.self.initializeDataCache();
    }
 
@@ -55,6 +58,24 @@ public class TreasureDropsToolManager : MonoBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.updateBiomeTreasureDrops(xmlId, longString, biomeType);
 
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            loadAllDataFiles();
+         });
+      });
+   }
+
+   public void duplicateData (LootGroupData lootData) {
+      lootData.lootGroupName = "(Undefined)";
+
+      XmlLoadingPanel.self.startLoading();
+      XmlSerializer ser = new XmlSerializer(lootData.GetType());
+      var sb = new StringBuilder();
+      using (var writer = XmlWriter.Create(sb)) {
+         ser.Serialize(writer, lootData);
+      }
+      string longString = sb.ToString();
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.updateBiomeTreasureDrops(-1, longString, Biome.Type.None);
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadAllDataFiles();
          });

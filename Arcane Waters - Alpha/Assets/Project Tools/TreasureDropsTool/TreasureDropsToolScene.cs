@@ -27,7 +27,7 @@ public class TreasureDropsToolScene : MonoBehaviour {
    public GenericSelectionPopup genericSelectionPopup;
 
    // Add items
-   public Button addWeapon, addArmor, addHat, addCraftingIngredient;
+   public Button addWeapon, addArmor, addHat, addCraftingIngredient, addBlueprint;
 
    // Event that notifies the script that an item is selected
    public UnityEvent changeItemTypeEvent = new UnityEvent();
@@ -138,6 +138,18 @@ public class TreasureDropsToolScene : MonoBehaviour {
          genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
       });
 
+      addBlueprint.onClick.AddListener(() => {
+         Item.Category category = Item.Category.Blueprint;
+
+         changeItemTypeEvent.RemoveAllListeners();
+         changeItemTypeEvent.AddListener(() => {
+            TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
+            int ingredientType = int.Parse(cachedItemIndex.text);
+            processItemTemplate(template, category, ingredientType, "");
+         });
+         genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);
+      });
+
       createGroupButton.onClick.AddListener(() => {
          selectedBiome = Biome.Type.None;
          lootGroupName.text = "";
@@ -213,6 +225,9 @@ public class TreasureDropsToolScene : MonoBehaviour {
             lootGroupName.text = lootGrpData.Value.lootGroupName;
             loadItemsFromGroup(lootGrpData.Key);
          });
+         template.duplicateButton.onClick.AddListener(() => {
+            TreasureDropsToolManager.instance.duplicateData(lootGrpData.Value);
+         });
          template.gameObject.SetActive(true);
       }
    }
@@ -234,7 +249,7 @@ public class TreasureDropsToolScene : MonoBehaviour {
 
             // Item info
             template.item = treasureData.item;
-            template.itemName.text = treasureData.item.itemName;
+            template.itemName.text = template.item.category == Item.Category.Blueprint ? treasureData.item.itemName + " Blueprint" : treasureData.item.itemName;
             template.itemIcon.sprite = ImageManager.getSprite(treasureData.item.iconPath);
             template.itemType.text = template.item.category == Item.Category.CraftingIngredients ? "Material" : template.item.category.ToString();
 

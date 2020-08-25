@@ -79,6 +79,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int health = 1;
 
+   [Header("Attack Attributes")]
    // The bonus attack stats provided by buffs
    [SyncVar]
    public int bonusFireAttack = 0,
@@ -87,6 +88,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       bonusEarthAttack = 0,
       bonusPhysicalAttack = 0;
 
+   [Header("Defense Attributes")]
    // The bonus defense stats provided by buffs
    [SyncVar]
    public int bonusFireDefense = 0,

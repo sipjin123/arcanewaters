@@ -93,20 +93,37 @@ public class ShipAbilityManager : MonoBehaviour {
    }
 
    public static List<int> getRandomAbilities (int abilityCount) {
-      List<int> totalAbilityList = new List<int>();
-      foreach (ShipAbilityPair ability in self.shipAbilityDataList) {
-         totalAbilityList.Add(ability.abilityId);
+      List<ShipAbilityPair> totalAbilityList = new List<ShipAbilityPair>();
+      
+      // Select only the ship type abilities to be randomized by the ship entries in the shop
+      foreach (ShipAbilityPair ability in self.shipAbilityDataList.FindAll(_ => _.shipAbilityData.seaEntityAbilityType == SeaEntityAbilityType.Ships)) {
+         totalAbilityList.Add(ability);
       }
 
+      int offensiveAbilityCount = 0;
       List<int> randomAbilityList = new List<int>();
       if (totalAbilityList.Count > 0) {
          while (randomAbilityList.Count < abilityCount) {
-            int newAbility = totalAbilityList.ChooseRandom();
-            randomAbilityList.Add(newAbility);
+            // Picks a random ability from the list 
+            ShipAbilityPair newAbility = totalAbilityList.ChooseRandom();
+
+            // Keeps track of the offensive ability count, each ship should have atleast one attack ability
+            if (newAbility.shipAbilityData.shipCastType == ShipAbilityData.ShipCastType.Target) {
+               offensiveAbilityCount++;
+            }
+            randomAbilityList.Add(newAbility.abilityId);
+
+            // Removes the selected ability from the list to prevent duplication
             totalAbilityList.Remove(totalAbilityList.Find(_=>_ == newAbility));
          }
       } else {
          D.debug("No abilities available");
+      }
+
+      // Check if the offensive abilities are set to 0
+      if (offensiveAbilityCount == 0) {
+         // Enforce the first ability to be an offensive skill to prevent all abilities from randomizing into all buffs
+         randomAbilityList[0] = totalAbilityList.FindAll(_ => _.shipAbilityData.shipCastType == ShipAbilityData.ShipCastType.Target).ChooseRandom().abilityId;
       }
 
       return randomAbilityList;

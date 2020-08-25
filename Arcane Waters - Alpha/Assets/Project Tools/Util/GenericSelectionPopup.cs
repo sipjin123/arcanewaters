@@ -49,7 +49,6 @@ public class GenericSelectionPopup : MonoBehaviour
    public Dictionary<string, Sprite> playerFactionSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerSpecialtySpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> playerJobSpriteList = new Dictionary<string, Sprite>();
-   public Dictionary<string, Sprite> tutorialSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipAbilitySpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> shipAbilityEffectSpriteList = new Dictionary<string, Sprite>();
    public Dictionary<string, Sprite> cannonSpriteList = new Dictionary<string, Sprite>();
@@ -86,7 +85,6 @@ public class GenericSelectionPopup : MonoBehaviour
       PlayerJobIcons = 28,
       MonsterType = 29,
       AbilityType = 30,
-      TutorialIcon = 31,
       RequirementType = 32,
       ShipAbilityIcon = 33,
       ShipAbilityEffect = 34,
@@ -156,9 +154,6 @@ public class GenericSelectionPopup : MonoBehaviour
 
       string jobPath = "Sprites/Icons/Jobs/";
       setupSpriteContent(playerJobSpriteList, jobPath);
-
-      string tutorialPath = "Sprites/Icons/Undefined/";
-      setupSpriteContent(tutorialSpriteList, tutorialPath);
 
       string shipAbilityPath = "Sprites/Icons/ShipAbilities/";
       setupSpriteContent(shipAbilitySpriteList, shipAbilityPath);
@@ -254,12 +249,6 @@ public class GenericSelectionPopup : MonoBehaviour
             Sprite icon = ImageManager.getSprite(sourceSprite.Key);
             createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
          }
-      } else if (popupType == selectionType.TutorialIcon) {
-         foreach (KeyValuePair<string, Sprite> sourceSprite in tutorialSpriteList) {
-            string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
-            Sprite icon = ImageManager.getSprite(sourceSprite.Key);
-            createImageTemplate(sourceSprite.Key, shortName, icon, imageIcon, textUI);
-         }
       } else if (popupType == selectionType.ShipAbilityIcon) {
          foreach (KeyValuePair<string, Sprite> sourceSprite in shipAbilitySpriteList) {
             string shortName = ImageManager.getSpritesInDirectory(sourceSprite.Key)[0].imageName;
@@ -349,11 +338,6 @@ public class GenericSelectionPopup : MonoBehaviour
          case selectionType.ShipType:
             foreach (Ship.Type shipType in Enum.GetValues(typeof(Ship.Type))) {
                createTextTemplate(shipType.ToString(), textUI, changeEvent);
-            }
-            break;
-         case selectionType.RequirementType:
-            foreach (RequirementType requirementType in Enum.GetValues(typeof(RequirementType))) {
-               createTextTemplate(requirementType.ToString(), textUI, changeEvent);
             }
             break;
          case selectionType.BiomeType:
@@ -519,7 +503,17 @@ public class GenericSelectionPopup : MonoBehaviour
             }
             break;
          case Item.Category.Blueprint: {
-               foreach (CraftableItemRequirements craftingItem in QuestDataToolManager.instance.craftingDataList) {
+               List<CraftableItemRequirements> craftingList = new List<CraftableItemRequirements>();
+               switch (XmlDataToolManager.self.editorToolType) {
+                  case EditorSQLManager.EditorToolType.Quest:
+                     craftingList = QuestDataToolManager.instance.craftingDataList;
+                     break;
+                  case EditorSQLManager.EditorToolType.Treasure_Drops:
+                     craftingList = TreasureDropsToolManager.instance.craftingDataList;
+                     break;
+               }
+
+               foreach (CraftableItemRequirements craftingItem in craftingList) {
                   string iconPath = "";
                   string itemName = "";
                   if (craftingItem.resultItem.category == Item.Category.Weapon) {

@@ -21,7 +21,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       Shroom_Luminous = 224, Shroom_Old = 225, Shroom_Toxic = 226, Shroom_Warrior = 227,
       Pirate_Base = 228, Pirate_Healer = 229, Pirate_Shooter = 230, Pirate_Tank = 231, Pirate_Wisp = 232, 
       Elemental_Base = 233, Elemental_Assassin = 234, Elemental_Healer = 235, Elemental_Ranged = 236, Elemental_Tank = 237, Pirate_Berzerker = 238,
-      Skelly_Captain = 239,
+      Skelly_Captain = 239, Skelly_Captain_Tutorial = 240,
       PlayerBattler = 305, 
    }
 
