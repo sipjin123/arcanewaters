@@ -34,6 +34,7 @@ public class TreasureDropsToolManager : XmlDataToolManager {
       // Initialize equipment data first
       Invoke("initializeData", MasterToolScene.loadDelay);
       XmlLoadingPanel.self.startLoading();
+      CraftingManager.self.initializeDataCache();
    }
 
    private void initializeData () {

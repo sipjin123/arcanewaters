@@ -31,6 +31,9 @@ public class FlagshipRow : MonoBehaviour {
    public Text attackRangeText;
    public Text sailorsText;
 
+   // The ability row references
+   public FlagShipAbilityRow[] abilityTemplates;
+
    #endregion
 
    public void setRowForItem (ShipInfo shipInfo) {
@@ -60,6 +63,24 @@ public class FlagshipRow : MonoBehaviour {
 
       // Toggle the flagship icon appropriately
       flagshipIcon.enabled = shipInfo.shipId == FlagshipPanel.playerFlagshipId;
+      setAbilities(shipInfo.shipAbilities);
+   }
+
+   private void setAbilities (ShipAbilityInfo info) {
+      int counter = 0;
+      for (int i = 0; i < abilityTemplates.Length; i++) {
+         abilityTemplates[i].gameObject.SetActive(false);
+      }
+
+      foreach (int abilityId in info.ShipAbilities) {
+         ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+         abilityTemplates[counter].gameObject.SetActive(true);
+         abilityTemplates[counter].iconImage.sprite = ImageManager.getSprite(abilityData.skillIconPath);
+         abilityTemplates[counter].abilityName = abilityData.abilityName;
+         abilityTemplates[counter].abilityInfo = abilityData.abilityDescription;
+         abilityTemplates[counter].GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
+         counter++;
+      }
    }
 
    public void chooseThisAsFlagship () {

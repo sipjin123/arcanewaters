@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.SceneManagement;
 using static CraftingToolManager;
+using System.Linq;
 
 public class CraftingToolScene : MonoBehaviour {
    #region Public Variables
@@ -80,13 +81,20 @@ public class CraftingToolScene : MonoBehaviour {
       // Clear all the rows
       craftableItemParent.gameObject.DestroyChildren();
 
+      createTemplates(craftableList.FindAll(_ => _.requirements.resultItem.category == Item.Category.Weapon).OrderBy(_=>_.requirements.resultItem.itemName).ToList());
+      createTemplates(craftableList.FindAll(_ => _.requirements.resultItem.category == Item.Category.Armor).OrderBy(_ => _.requirements.resultItem.itemName).ToList());
+      createTemplates(craftableList.FindAll(_ => _.requirements.resultItem.category == Item.Category.Hats).OrderBy(_ => _.requirements.resultItem.itemName).ToList());
+      createTemplates(craftableList.FindAll(_ => _.requirements.resultItem.category == Item.Category.CraftingIngredients).OrderBy(_ => _.requirements.resultItem.itemName).ToList());
+      createTemplates(craftableList.FindAll(_ => _.requirements.resultItem.category == Item.Category.None));
+   }
+
+   private void createTemplates (List<CraftableRequirementXML> craftableList) {
       // Create a row for each crafting ingredient
       foreach (CraftableRequirementXML xmlContent in craftableList) {
          CraftableItemTemplate template = GenericEntryTemplate.createGenericTemplate(craftableItemTemplate.gameObject, toolManager, craftableItemParent).GetComponent<CraftableItemTemplate>();
          template.updateItemDisplay(xmlContent.requirements.resultItem);
          template.xmlID = xmlContent.xmlID;
-         template.editButton.onClick.AddListener(() =>
-         {
+         template.editButton.onClick.AddListener(() => {
             craftingPanel.currentXMLTemplate = template;
             craftingPanel.gameObject.SetActive(true);
             craftingPanel.setData(xmlContent.requirements, xmlContent.xmlID);

@@ -68,6 +68,10 @@ public class WeatherManager : MonoBehaviour {
    public GameObject snowCellPrefab;
    public float[] snowRandomSpeed = new float[72];
 
+   // The layer mask cache that will be switched depending if the area is an interior
+   public LayerMask normalMask;
+   public LayerMask mutedWeatherMask;
+
    #endregion
 
    private void Awake () {
@@ -82,6 +86,14 @@ public class WeatherManager : MonoBehaviour {
 
       snowEffectObj.transform.SetParent(mainCam.transform, false);
       rainEffectObj.transform.SetParent(mainCam.transform, false);
+   }
+
+   public void muteWeather () {
+      mainCam.cullingMask = mutedWeatherMask;
+   }
+
+   public void activateWeather () {
+      mainCam.cullingMask = normalMask;
    }
 
    public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {

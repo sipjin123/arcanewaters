@@ -14,10 +14,14 @@ public class DebugButtons : NetworkBehaviour
    public Item.Category categoryType = Item.Category.CraftingIngredients;
    public string itemType;
    public string outputItem;
-   public string itemData;
+   public string itemData = "";
    public string abilityIDData;
 
    #endregion
+
+   private void Awake () {
+      itemData = "";
+   }
 
    private void OnGUI () {
       if (!enableDebug) {

@@ -3179,7 +3179,7 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveAbilityRewards (NetworkConnection connection, int[] abilityIds) {
       if (abilityIds.Length == 1) {
          BasicAbilityData abilityInfo = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilityIds[0]);
-         RewardManager.self.showRecruitmentNotice(abilityInfo.itemName, abilityInfo.itemIconPath);
+         RewardManager.self.showAbilityRewardNotice(abilityInfo.itemName, abilityInfo.itemIconPath);
       }
    }
 

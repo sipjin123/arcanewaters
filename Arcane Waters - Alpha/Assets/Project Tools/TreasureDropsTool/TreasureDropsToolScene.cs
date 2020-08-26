@@ -196,15 +196,21 @@ public class TreasureDropsToolScene : MonoBehaviour {
          data = rawData,
          iconPath = iconPath
       };
-      
+
       if (iconPath == "") {
          template.item.iconPath = template.item.getCastItem().getIconPath();
       }
 
       // Item Info
-      template.itemName.text = cachedItemName.text;
+      template.itemName.text = template.item.category == Item.Category.Blueprint ? cachedItemName.text + " BP" : cachedItemName.text;
       template.itemIndex.text = itemTemplateHolder.childCount.ToString();
-      template.itemIcon.sprite = cachedItemIcon.sprite;
+      if (template.item.category != Item.Category.Blueprint) {
+         template.itemIcon.sprite = cachedItemIcon.sprite;
+      } else {
+         string iconPathNew = EquipmentXMLManager.self.getItemIconPath(template.item);
+         template.itemIcon.sprite = ImageManager.getSprite(iconPathNew);
+      }
+
       template.itemType.text = category == Item.Category.CraftingIngredients ? "Material" : template.item.category.ToString();
 
       template.gameObject.SetActive(true);
@@ -249,8 +255,13 @@ public class TreasureDropsToolScene : MonoBehaviour {
 
             // Item info
             template.item = treasureData.item;
-            template.itemName.text = template.item.category == Item.Category.Blueprint ? treasureData.item.itemName + " Blueprint" : treasureData.item.itemName;
-            template.itemIcon.sprite = ImageManager.getSprite(treasureData.item.iconPath);
+            template.itemName.text = template.item.category == Item.Category.Blueprint ? treasureData.item.itemName + " BP" : treasureData.item.itemName;
+            if (template.item.category != Item.Category.Blueprint) {
+               template.itemIcon.sprite = ImageManager.getSprite(treasureData.item.iconPath);
+            } else {
+               string iconPath = EquipmentXMLManager.self.getItemIconPath(treasureData.item);
+               template.itemIcon.sprite = ImageManager.getSprite(iconPath);
+            }
             template.itemType.text = template.item.category == Item.Category.CraftingIngredients ? "Material" : template.item.category.ToString();
 
             // Spawning parameters

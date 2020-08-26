@@ -70,6 +70,7 @@ public class CraftingToolManager : XmlDataToolManager {
                   xmlID = xmlData.xmlId,
                   requirements = craftingData
                };
+               newRequirementXML.requirements.resultItem.itemName = EquipmentXMLManager.self.getItemName(newRequirementXML.requirements.resultItem);
 
                // Save the Crafting data in the memory cache
                if (!_craftingDataList.ContainsKey(xmlData.xmlId)) {

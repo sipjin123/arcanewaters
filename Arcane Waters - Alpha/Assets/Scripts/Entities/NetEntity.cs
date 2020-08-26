@@ -1215,6 +1215,14 @@ public class NetEntity : NetworkBehaviour
       setAreaParent(area, worldPositionStays);
 
       if (isLocalPlayer) {
+         // Toggles the weather layer in the camera render if the player is inside buildings
+         if (AreaManager.self.getArea(areaKey).isInterior) {
+            WeatherManager.self.muteWeather();
+         }
+         else {
+            WeatherManager.self.activateWeather();
+         }
+
          // Wait until the loading screen is hidden
          while (PanelManager.self.loadingScreen.isShowing()) {
             yield return null;
