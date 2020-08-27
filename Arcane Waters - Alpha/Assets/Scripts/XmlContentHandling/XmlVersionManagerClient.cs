@@ -73,6 +73,16 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
       loadBlocker.SetActive(true);
 
+      // Set initialization progress to 0
+      _downloadProgress = 0;
+      _extractProgress = 0;
+      _writeProgress = 0;
+
+      // Add progress to loading screen if it is showing already
+      if (PanelManager.self.loadingScreen.isShowing()) {
+         PanelManager.self.loadingScreen.show(getExtractionProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
+      }
+
       initializeLoadingXmlData.RemoveAllListeners();
       finishedCheckingStreamingAsset.RemoveAllListeners();
       finishedLoadingXmlData.RemoveAllListeners();
@@ -92,6 +102,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       finishedCheckingStreamingAsset.AddListener(isCompleteData => {
          if (!isCompleteData) {
             clientMessage = "Missing Files! Initialize Redownload";
+            _downloadProgress = 0f;
             D.debug(clientMessage);
 
             // Reset version cache since file integrity might be compromised
@@ -109,6 +120,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
                downloadClientData(serverVersion);
             } else {
                clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
+               _downloadProgress = 1f;
+               _writeProgress = 1f;
                D.debug(clientMessage);
                processClientXml();
             }
@@ -157,6 +170,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    
    private async void downloadClientData (int targetVersion) {
       string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex());
+      _downloadProgress = 1f;
       writeData(zipDataRequest, targetVersion);
    }
    
@@ -189,6 +203,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          D.editorLog("Finished Extracting Zip", Color.green);
          PlayerPrefs.SetInt(XML_VERSION, targetVersion);
+         _writeProgress = 1f;
          processClientXml();
       }
    }
@@ -630,6 +645,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
    private void checkTextExtractionProgress () {
       debugLog("Progress is: " + currentProgress + " / " + targetProgress);
+      _extractProgress = (float) currentProgress / targetProgress;
 
       if (currentProgress >= targetProgress) {
          isInitialized = true;
@@ -639,6 +655,18 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
    }
 
+   private Func<float> getExtractionProgressObserver () {
+      return () => {
+         // If we are initialized, that means the process is done
+         if (isInitialized) {
+            return 1f;
+         } else {
+            // Otherwise, show progress
+            return Mathf.Clamp(_writeProgress + _extractProgress + _downloadProgress, 0, 0.95f);
+         }
+      };
+   }
+
    private void debugLog (string message) {
       if (includeProgressInEditorLog) {
          D.debug(message);
@@ -646,6 +674,15 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // Progress of downloading serialized files
+   private float _downloadProgress = 0;
+
+   // Progress of writing and unzipping serialized files to disk
+   private float _writeProgress = 0;
+
+   // Progress of extracting data from serialized files
+   private float _extractProgress = 0;
 
    #endregion
 }

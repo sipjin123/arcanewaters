@@ -27,6 +27,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    // The transform values for the camera when creating a character for this spot
    public Transform spotCamera;
 
+   // Last CharacterSpot that the user interacted with
+   public static CharacterSpot lastInteractedSpot;
+
    #endregion
 
    protected override void Awake () {
@@ -57,6 +60,8 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    public void selectButtonWasPressed () {
+      lastInteractedSpot = this;
+
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
 
@@ -73,9 +78,14 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       // Now go ahead and call ClientScene.AddPlayer() along with our currently selected user ID
       ClientManager.sendAccountNameAndUserId();
+
+      // Show loading screen until player warps to map
+      PanelManager.self.loadingScreen.show(MapManager.getPlayerActiveInMapProgressObserver(), SpotFader.self, SpotFader.self);
    }
 
    public void deleteButtonWasPressed () {
+      lastInteractedSpot = this;
+
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
 
@@ -84,6 +94,8 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    public void startNewCharacterButtonWasPressed () {
+      lastInteractedSpot = this;
+
       // Remove any existing character creation stuff
       if (character != null && character.creationMode) {
          Destroy(character.gameObject);

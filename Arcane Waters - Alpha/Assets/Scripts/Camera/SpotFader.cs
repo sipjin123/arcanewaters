@@ -6,7 +6,7 @@ using Mirror;
 using Cinemachine;
 using DG.Tweening;
 
-public class SpotFader : ClientMonoBehaviour {
+public class SpotFader : ClientMonoBehaviour, IScreenFader {
    #region Public Variables
 
    // The background image
@@ -148,6 +148,32 @@ public class SpotFader : ClientMonoBehaviour {
          _currentColorTween?.Kill();
          _currentSizeTween?.Kill();
       }
+   }
+
+   public float fadeIn () {
+      // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
+      if (Global.player != null) {
+         openSpotToMaxSize(Global.player.transform.position);
+      } else if (CharacterScreen.self.isShowing() && CharacterSpot.lastInteractedSpot != null && CharacterSpot.lastInteractedSpot.character != null) {
+         openSpotToMaxSize(CharacterSpot.lastInteractedSpot.character.transform.position);
+      } else {
+         openSpotToMaxSize(Camera.main.ViewportToWorldPoint(new Vector3(0.5f, 0.5f)));
+      }
+
+      return _totalEffectTime;
+   }
+
+   public float fadeOut () {
+      // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
+      if (Global.player != null) {
+         closeSpot(Global.player.transform.position);
+      } else if (CharacterScreen.self.isShowing() && CharacterSpot.lastInteractedSpot != null && CharacterSpot.lastInteractedSpot.character != null) {
+         closeSpot(CharacterSpot.lastInteractedSpot.character.transform.position);
+      } else {
+         closeSpotTowardsCenter();
+      }
+
+      return _totalEffectTime;
    }
 
    #region Private Variables

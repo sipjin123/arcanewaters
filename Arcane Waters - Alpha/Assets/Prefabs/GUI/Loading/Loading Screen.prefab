@@ -417,7 +417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a8aea04f4d011d4793917b075628323, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvasGroup: {fileID: 5142194124921524775}
+  mainCanvasGroup: {fileID: 5142194124921524775}
+  elementsCanvasGroup: {fileID: 8101595407296146199}
   loadingFinishedMessage: {fileID: 7547536115572167843}
   barImage: {fileID: 5142194124433669818}
 --- !u!114 &5142194124921524772
@@ -427,7 +428,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5142194124921524761}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -593,6 +594,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5142194125321988028}
   - component: {fileID: 5142194125321988029}
+  - component: {fileID: 8101595407296146199}
   m_Layer: 5
   m_Name: Box
   m_TagString: Untagged
@@ -648,6 +650,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!225 &8101595407296146199
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5142194125321988031}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
 --- !u!1 &8917252804461925792
 GameObject:
   m_ObjectHideFlags: 0

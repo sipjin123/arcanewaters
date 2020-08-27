@@ -956,15 +956,16 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    private static int translateHexLetterToInt (char letter) {
-      switch (letter) {
-         case 'A': return 10;
-         case 'B': return 11;
-         case 'C': return 12;
-         case 'D': return 13;
-         case 'E': return 14;
-         case 'F': return 15;
-      }
       string s = new string(letter, 1);
+      s = s.ToLower();
+      switch (s) {
+         case "a": return 10;
+         case "b": return 11;
+         case "c": return 12;
+         case "d": return 13;
+         case "e": return 14;
+         case "f": return 15;
+      }
       return int.Parse(s);
    }
 
@@ -1062,6 +1063,10 @@ public class PaletteToolManager : XmlDataToolManager {
       if (srcColors.Count != dstColors.Count) {
          D.warning("Source and destination color arrays are of different size!");
          return;
+      }
+
+      if (size == 0) {
+         size = Mathf.Max(srcColors.Count, dstColors.Count);
       }
 
       currentSizeText.text = "Current size: " + size.ToString();

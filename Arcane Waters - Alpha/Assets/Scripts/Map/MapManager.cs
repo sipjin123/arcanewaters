@@ -58,6 +58,7 @@ public class MapManager : MonoBehaviour
 
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
+      _creationProgress = 0f;
 
       // Find out if we are creating an owned map, if so, get owner id
       int ownerId = -1;
@@ -162,7 +163,7 @@ public class MapManager : MonoBehaviour
          foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
             MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
                result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
-            PanelManager.self.loadingScreen.setPercentage((0.1f / exportedProject.layers.Length) * tilemaps.Count);
+            _creationProgress = (0.1f / exportedProject.layers.Length) * tilemaps.Count;
             yield return null;
          }
 
@@ -188,7 +189,7 @@ public class MapManager : MonoBehaviour
                mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
                   exportedProject.biome, rect));
 
-               PanelManager.self.loadingScreen.setPercentage(0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
+               _creationProgress = 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count;
                yield return null;
             }
          }
@@ -221,28 +222,29 @@ public class MapManager : MonoBehaviour
          }
 
          WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
-         D.editorLog("The weather here is : " + weatherType, Color.green);
-         if (exportedProject.editorType == EditorType.Sea) {
-            if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
-               WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
-               area.cloudManager.weatherEffectType = weatherType;
-               area.cloudManager.enabled = true;
-            } else if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
-               WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
-            }
-         } else if (exportedProject.editorType == EditorType.Area) {
-            Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
-            if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
-               if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
-                  WeatherManager.self.setWeatherSimulation(weatherType, null);
-               } else {
-                  area.cloudShadowManager.enabled = true;
+         if (!area.isInterior) {
+            if (exportedProject.editorType == EditorType.Sea) {
+               if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
                   WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
+                  area.cloudManager.weatherEffectType = weatherType;
+                  area.cloudManager.enabled = true;
+               } else if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+                  WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
                }
-            } else {
-               WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
+            } else if (exportedProject.editorType == EditorType.Area) {
+               Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
+               if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
+                  if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+                     WeatherManager.self.setWeatherSimulation(weatherType, null);
+                  } else {
+                     area.cloudShadowManager.enabled = true;
+                     WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
+                  }
+               } else {
+                  WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
+               }
             }
-         }
+         } 
 
          // Destroy the template component
          Destroy(result);
@@ -261,7 +263,7 @@ public class MapManager : MonoBehaviour
       // Set the area as available
       AreaManager.self.storeArea(area);
 
-      PanelManager.self.loadingScreen.setPercentage(1f);
+      _creationProgress = 1f;
 
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
@@ -281,6 +283,42 @@ public class MapManager : MonoBehaviour
          createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData);
          _nextAreaKey = null;
       }
+   }
+
+   public static Func<float> getPlayerActiveInMapProgressObserver () {
+      return () => {
+         return getPlayerActiveInMapProgress();
+      };
+   }
+
+   public static float getPlayerActiveInMapProgress () {
+      // Check that player exists
+      if (Global.player == null || Global.player.areaKey == null) {
+         return 0f;
+      }
+
+      // Check that player is registered in entity manager
+      if (EntityManager.self.getEntity(Global.player.userId) == null) {
+         return 0f;
+      }
+
+      // Check if area is already created
+      Area area = AreaManager.self.getArea(Global.player.areaKey);
+      if (area != null) {
+         // Check that player is added to that area
+         if (area.userParent == Global.player.transform.parent) {
+            return 1f;
+         } else {
+            return 0.9f;
+         }
+      }
+
+      // Otherwise, check for the creation progress
+      if (self.isAreaUnderCreation(Global.player.areaKey)) {
+         return Mathf.Clamp(self._creationProgress, 0, 0.9f);
+      }
+
+      return 0f;
    }
 
    public void setCustomizations (Area area, MapCustomizationData customizationData) {
@@ -406,6 +444,9 @@ public class MapManager : MonoBehaviour
    private MapInfo _nextMapInfo;
    private Vector3 _nextMapPosition;
    private MapCustomizationData _nextMapCustomizationData;
+
+   // Current progress of area creation
+   private float _creationProgress = 0f;
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();

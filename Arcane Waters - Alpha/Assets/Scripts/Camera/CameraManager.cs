@@ -61,7 +61,12 @@ public class CameraManager : ClientMonoBehaviour {
    }
 
    private void onClientStarting () {
-      fadeOutDefaultCamera();
+      // Fade out screen and show loading progress
+      // Get fade effect
+      IScreenFader fader = defaultCamera.getPixelFadeEffect();
+
+      // Lets track loading by checking if CharacterScreen was populated with data
+      PanelManager.self.loadingScreen.show(() => CharacterScreen.self.startingArmorData == null ? 0 : 1, fader, fader);
    }
 
    private void LateUpdate () {

@@ -152,6 +152,17 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks));
+
+         // Show loading screen until player warps to map
+         System.Func<float> loadingObserver = () => {
+            if (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
+               return 0;
+            }
+
+            return 1f;
+         };
+         
+         PanelManager.self.loadingScreen.show(loadingObserver, SpotFader.self, SpotFader.self);
       });
    }
 
@@ -160,7 +171,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       SpotFader.self.fadeBackgroundColor(Color.black, 0.25f);
       SpotFader.self.closeSpot();
-      PanelManager.self.loadingScreen.show();
+
+      // Show loading screen while starting map is being created
+      PanelManager.self.loadingScreen.show(MapManager.getPlayerActiveInMapProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), SpotFader.self);
 
       // Return camera to its original position
       CharacterScreen.self.myCamera.setDefaultSettings();

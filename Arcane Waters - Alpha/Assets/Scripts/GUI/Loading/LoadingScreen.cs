@@ -6,13 +6,19 @@ using Mirror;
 using System.Text;
 using Cinemachine;
 using DG.Tweening;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 public class LoadingScreen : MonoBehaviour
 {
    #region Public Variables
 
-   // Our associated Canvas Group
-   public CanvasGroup canvasGroup;
+   // Canvas group of the entire loading screen
+   public CanvasGroup mainCanvasGroup;
+
+   // Canvas group of loading screen elements - progress bar, etc.
+   public CanvasGroup elementsCanvasGroup;
 
    // The message that appears when the loading bar reaches 100%
    public Text loadingFinishedMessage;
@@ -22,153 +28,128 @@ public class LoadingScreen : MonoBehaviour
 
    #endregion
 
-   public void show () {
-      // Don't show again if the process already started
-      if (_isPreparingToShow || isShowing()) {
-         return;
-      }
+   // progressHandler should return the loading progress from 0 to 1, where 1 will indicate that the loading is complete
+   public void show (Func<float> progressHandler, IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
+      _loadingObservers.Add(progressHandler);
+      if (!_isShowing) {
+         _isShowing = true;
 
-      _startingCamera = getActiveCamera();
-      _isPreparingToShow = true;
+         // It is possible that existing loading routines are finishing up, cancel them
+         StopAllCoroutines();
 
-      this.gameObject.SetActive(true);
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
-      loadingFinishedMessage.enabled = false;
+         mainCanvasGroup.alpha = 0f;
+         mainCanvasGroup.blocksRaycasts = true;
+         mainCanvasGroup.interactable = true;
+         elementsCanvasGroup.alpha = 0f;
+         loadingFinishedMessage.enabled = false;
 
-      setPercentage(0f);
-
-      StopAllCoroutines();
-      StartCoroutine(CO_Show());
-   }
-
-   public void hide () {
-      StopAllCoroutines();
-      this.canvasGroup.alpha = 0;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
-      loadingFinishedMessage.enabled = false;
-      _isPreparingToShow = false;
-      try {
-         SpotFader.self.openSpotToMaxSize(Global.player.transform);
-      } catch {
-         D.debug("Issue with Spot Fader");
+         StartCoroutine(CO_Show(fadeOutEffect, fadeInEffect));
       }
    }
 
-   public bool isShowing () {
-      return this.gameObject.activeSelf && this.canvasGroup.alpha >= 1f;
-   }
+   private IEnumerator CO_Show (IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
+      // Remember start time of the loading screen
+      float startTime = Time.time;
 
-   public void setPercentage (float percentage) {
-      _percentage = Mathf.Clamp(percentage, 0, 1f);
-   }
-
-   private IEnumerator CO_Show () {
-      // If the circle fader is running, wait until its animation ends
-      if (SpotFader.self != null) {
-         // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
-         if (Global.player != null) {
-            SpotFader.self.closeSpot(Global.player.transform.position);
-         } else {
-            SpotFader.self.closeSpotTowardsCenter();
-         }
-
-         // Wait a frame so the tween starts
-         yield return null;
-
-         while (SpotFader.self.isAnimatingSize()) {
-            yield return null;
-         }
+      // If we have a fade out effect, display it
+      if (fadeOutEffect != null) {
+         yield return new WaitForSeconds(fadeOutEffect.fadeOut());
       }
 
-      float waitTime = 0.0f;
+      // Blacken the screen
+      mainCanvasGroup.alpha = 1f;
 
-      // Show a empty (black) screen for a short time
-      while (waitTime < MIN_TIME_BEFORE_SHOWING_BAR) {
+      // Show a black screen for a short time
+      for (float time = 0; time < MIN_TIME_BEFORE_SHOWING_BAR; time += Time.deltaTime) {
          // If at this point the loading is finished, don't show the progress bar at all
-         if (_percentage >= 1f || hasCameraChanged()) {
-            hide();
+         if (getCurrentProgress() >= 1f) {
+            hide(fadeInEffect);
             yield break;
          }
 
-         waitTime += Time.deltaTime;
-         yield return null;
+         yield return new WaitForEndOfFrame();
       }
 
-      this.canvasGroup.DOFade(1, 0.25f);
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
+      // Reveal loading screen elements - progress bar, etc.
+      elementsCanvasGroup.DOFade(1, 0.25f);
 
       // Show the loading bar at 0 percent for a short time
       barImage.fillAmount = 0;
       yield return new WaitForSeconds(0.25f);
 
-      waitTime = 0.0f;
+      // For our current loading percentage, lets take the slowest of all current loading processes
+      float progress;
+      while ((progress = getCurrentProgress()) < 1f) {
+         barImage.fillAmount = progress;
 
-      // Show the correct percentage
-      while (_percentage < 1f) {
-         if (hasCameraChanged() && Global.player != null) {
-            _percentage = 1f;
-            break;
-         }
-
-         barImage.fillAmount = _percentage;
-         waitTime += Time.deltaTime;
-
-         if (waitTime > LOADING_TIMEOUT) {
+         // Check if we exceeded maximum wait time
+         if (Time.time - startTime > LOADING_TIMEOUT) {
             D.editorLog("The maximum loading time was exceeded.");
             break;
          }
 
-         yield return null;
+         yield return new WaitForEndOfFrame();
       }
 
-      while (!hasCameraChanged()) {
-         if (_startingCamera == getActiveCamera() && waitTime > LOADING_TIMEOUT) {
-            D.editorLog("Camera is not changing, player spawned in the same map");
-            break;
-         }
-         yield return null;
-      }
+      // Mark loading process as finished, in case a new loading process wants to be initialized exactly at this time
+      _isShowing = false;
 
       // Show the loading bar at 100 percent for a short time
       barImage.fillAmount = 1f;
       loadingFinishedMessage.enabled = true;
-      this.canvasGroup.DOFade(0, 0.2f);
 
+      // Fade out loading screen elements - progress bar, etc.
+      elementsCanvasGroup.DOFade(0, 0.2f);
       yield return new WaitForSeconds(0.25f);
 
-      hide();
+      hide(fadeOutEffect);
    }
 
-   protected bool hasCameraChanged () {
-      if (Global.player == null || !AreaManager.self.hasArea(Global.player.areaKey)) {
-         return false;
-      }
+   public void hide (IScreenFader fadeInEffect) {
+      mainCanvasGroup.alpha = 0;
+      mainCanvasGroup.blocksRaycasts = false;
+      mainCanvasGroup.interactable = false;
+      _isShowing = false;
 
-      return _startingCamera != getActiveCamera();
+      // If we have a fade in effect, show it
+      if (fadeInEffect != null) {
+         fadeInEffect.fadeIn();
+      }
    }
 
-   protected ICinemachineCamera getActiveCamera () {
-      if (Camera.main == null) {
-         return null;
+   public bool isShowing () {
+      return _isShowing;
+   }
+
+   public float getCurrentProgress () {
+      // Use slowest observer for current value
+      float min = 1f;
+
+      for (int i = 0; i < _loadingObservers.Count; i++) {
+         float progress = _loadingObservers[i].Invoke();
+
+         // Remove completed progresses
+         if (progress >= 1f) {
+            _loadingObservers.RemoveAt(i);
+            i--;
+            continue;
+         }
+
+         if (progress < min) {
+            min = progress;
+         }
       }
 
-      return Camera.main.GetComponent<CinemachineBrain>().ActiveVirtualCamera;
+      return min;
    }
 
    #region Private Variables
 
-   // The percentage of loading
-   private float _percentage;
+   // List of functions, created by systems that are currently loading. Functions return their loading progress from 0 to 1
+   private List<Func<float>> _loadingObservers = new List<Func<float>>();
 
-   // The active camera when started showing the loading screen
-   private ICinemachineCamera _startingCamera;
-
-   // True while the screen is being or about to be shown
-   private bool _isPreparingToShow = false;
+   // Whether the loading screen is currently showing
+   private bool _isShowing = false;
 
    // How much time should pass before showing the progress bar
    private const float MIN_TIME_BEFORE_SHOWING_BAR = 1f;

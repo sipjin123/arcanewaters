@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 
-public class PixelFadeEffect : MonoBehaviour {
+public class PixelFadeEffect : MonoBehaviour, IScreenFader {
    #region Public Variables
 
    // If this is set to true, at the start it will perform a fade in effect
@@ -67,7 +67,7 @@ public class PixelFadeEffect : MonoBehaviour {
       return camFX_Pixel.enabled && (_targetPixelAmount > MIN_PIXEL_AMOUNT || getPixelAmount() > MIN_PIXEL_AMOUNT);
    }
 
-   public void fadeOut () {
+   public float fadeOut () {
       _willFadeOut = true;
 
       // Note that we're about to start the fade
@@ -84,9 +84,12 @@ public class PixelFadeEffect : MonoBehaviour {
 
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(0f, 1f);
+
+      // FADE_OUT_DURATION seems to not represent the actual time duration correctly, return an approximation of the effect duration
+      return 1f;
    }
 
-   public void fadeIn () {
+   public float fadeIn () {
       _willFadeIn = true;
 
       // Note that we're about to start the fade
@@ -103,6 +106,9 @@ public class PixelFadeEffect : MonoBehaviour {
 
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(1f, 1f);
+
+      // FADE_OUT_DURATION seems to not represent the actual time duration correctly, return an approximation of the effect duration
+      return 1f;
    }
 
    protected void setNewPixelAmount (float newPixelAmount) {

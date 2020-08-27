@@ -36,77 +36,8 @@ public class CircleFader : ClientMonoBehaviour {
       }
    }
 
-   public void doCircleFade () {
-      doCircleFade(Global.player.transform.position);
-   }
-
-   public void doCircleFade (Vector2 startLocation) {
-      if (CameraManager.self != null) {
-         _startTime = Time.time;
-
-         // Initialize the starting camera and location only if the spot effect was not already running
-         if (!spotEffect.enabled) {
-            _startLocation = startLocation;
-            _startingCamera = getActiveCamera();
-         }
-
-         StopAllCoroutines();
-         StartCoroutine(CO_doCircleFade());
-      }
-   }
-
    public bool isAnimating () {
       return spotEffect.Radius > -.1f && spotEffect.Radius < 1f;
-   }
-
-   protected IEnumerator CO_doCircleFade () {
-      CameraFilterPack_FX_Spot spotEffect = Camera.main.GetComponent<CameraFilterPack_FX_Spot>();
-
-      // Freeze the camera
-      Camera.main.clearFlags = CameraClearFlags.Nothing;
-      yield return null;
-      Camera.main.cullingMask = 0;
-
-      // Start without any effect showing at all
-      spotEffect.Radius = 1f;
-      spotEffect.center = getEffectCenter(_startLocation);
-      spotEffect.enabled = true;
-      while (spotEffect.Radius > -.1f) {
-         spotEffect.Radius -= EFFECT_SPEED;
-         yield return new WaitForSeconds(FRAME_LENGTH);
-      }
-      spotEffect.Radius = -.1f;
-
-      // Wait until we're in the new area (or enough time passes)
-      while (!hasCameraChanged() && Time.time - _startTime < TIMEOUT_DURATION) {
-         yield return null;
-      }
-
-      if (PanelManager.self.loadingScreen.isShowing()) {
-         // Wait until the loading screen is hidden
-         while (PanelManager.self.loadingScreen.isShowing()) {
-            yield return null;
-         }
-
-         // Show a black screen for a short duration after the loading screen disappears
-         yield return new WaitForSeconds(0.2f);
-      }
-
-      // Turn the camera back on
-      Camera.main.clearFlags = CameraClearFlags.SolidColor;
-      yield return null;
-      Camera.main.cullingMask = -1;
-      yield return null;
-
-      // Now work our way back to no effect showing
-      Vector3 spotCenter = Global.player != null ? Global.player.transform.position : (Vector3) _startLocation;
-      spotEffect.center = getEffectCenter(spotCenter);
-      while (spotEffect.Radius < 1f) {
-         spotEffect.Radius += EFFECT_SPEED;
-         yield return new WaitForSeconds(FRAME_LENGTH);
-      }
-      spotEffect.Radius = 1f;
-      spotEffect.enabled = false;
    }
 
    protected Vector2 getEffectCenter (Vector3 position) {
