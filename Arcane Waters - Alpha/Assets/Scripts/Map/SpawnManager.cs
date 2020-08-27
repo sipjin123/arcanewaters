@@ -53,9 +53,8 @@ public partial class SpawnManager : MonoBehaviour
             mapSpawnData.defaultSpawn = mapSpawnData.spawns.First().Value;
          }
 
-         _mapSpawns.Add(mapSpawnGroup.Key, mapSpawnData);
-         if (mapSpawnGroup.Key.ToLower().Contains("pineward")) {
-            D.editorLog("Info is: " + mapSpawnData.mapName + " : " + mapSpawnData.defaultSpawn.name + " : " + mapSpawnData.defaultSpawn.localPosition, Color.magenta);
+         if (!_mapSpawns.ContainsKey(mapSpawnGroup.Key)) {
+            _mapSpawns.Add(mapSpawnGroup.Key, mapSpawnData);
          }
 #if UNITY_EDITOR
          _mapSpawnPreviewList.Add(mapSpawnData);

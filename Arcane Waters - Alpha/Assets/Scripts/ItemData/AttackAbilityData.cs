@@ -168,7 +168,7 @@ public class AttackAbilityData : BasicAbilityData
    }
 
    public bool isMelee () {
-      return abilityType.Equals(AbilityActionType.Melee);
+      return classRequirement == Weapon.Class.Melee;
    }
 
    public bool isHeal () {

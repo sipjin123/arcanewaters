@@ -16,8 +16,18 @@ public class DB_MainTester : MonoBehaviour {
          giveProjectileAbilities();
       }
 
-      if (GUILayout.Button("Create Account")) {
+      if (GUILayout.Button("Create Account1")) {
          DB_Main.createAccount("burlin1", "test", "burlin1@codecommode.com", 1);
+      }
+
+      if (GUILayout.Button("Create Account 2 & 3")) {
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.createAccount("burlin2", "test", "burlin2@codecommode.com", 1);
+            DB_Main.createAccount("burlin3", "test", "burlin3@codecommode.com", 1);
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               D.editorLog("Done creating");
+            });
+         });
       }
 
       if (GUILayout.Button("Fetch armor")) {

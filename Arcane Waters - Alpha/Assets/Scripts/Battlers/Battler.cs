@@ -241,6 +241,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If cancel state was received
    public bool receivedCancelState;
 
+   // Reference to the shadow
+   public Transform shadowTransform;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -424,6 +427,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   // Enlarge the click box of a boss type enemy
                   _clickableBox.GetComponent<BoxCollider2D>().size = new Vector2(1, 1);
                }
+
+               shadowTransform.localScale = new Vector2(_alteredBattlerData.shadowScale, _alteredBattlerData.shadowScale);
+               shadowTransform.localPosition = new Vector3(_alteredBattlerData.shadowOffset.x, _alteredBattlerData.shadowOffset.y, shadowTransform.localPosition.z);
             }
             selectedBattleBar.gameObject.SetActive(true);
 
@@ -1049,7 +1055,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
-               sourceBattler.playAnim(attackerAbility.getAnimation());
+               if (enemyType == Enemy.Type.PlayerBattler) {
+                  sourceBattler.playAnim(attackerAbility.getAnimation());
+               } else {
+                  sourceBattler.playAnim(Anim.Type.Ready_Attack);
+               }
             }
 
             // Play any sounds that go along with the ability being cast
@@ -1058,8 +1068,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
 
-            if (sourceBattler.isUnarmed()) {
+            if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Battle_East);
+            } else {
+               sourceBattler.playAnim(Anim.Type.Finish_Attack);
             }
 
             #region Display Block

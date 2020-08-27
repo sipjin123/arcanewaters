@@ -93,6 +93,11 @@ public class PlayerBodyEntity : BodyEntity {
    // The dust particle when sprinting
    public ParticleSystem dustTrailParticleObj;
 
+   // Cooldown variables
+   public const float jumpCooldownMax = 1.5f;
+   public float jumpCooldownTimer;
+   public bool isJumpCoolingDown = false;
+
    #endregion
 
    protected override void Awake () {
@@ -186,7 +191,14 @@ public class PlayerBodyEntity : BodyEntity {
          }
       }
 
-      if (InputManager.isActionKeyPressed()) {
+      if (isJumpCoolingDown) {
+         jumpCooldownTimer += Time.deltaTime;
+         if (jumpCooldownTimer >= jumpCooldownMax) {
+            isJumpCoolingDown = false;
+         }
+      }
+
+      if (InputManager.isActionKeyPressed() && !isJumpCoolingDown) {
          // Adjust the colider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
@@ -219,6 +231,8 @@ public class PlayerBodyEntity : BodyEntity {
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }
+         isJumpCoolingDown = true;
+         jumpCooldownTimer = 0;
       }
 
       if (Input.GetKeyDown(KeyCode.Mouse1)) {

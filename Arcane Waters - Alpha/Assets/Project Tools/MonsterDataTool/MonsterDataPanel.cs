@@ -136,6 +136,15 @@ public class MonsterDataPanel : MonoBehaviour
    // Variables that will be hidden if the enemy is a boss type
    public GameObject[] nonBossTypeVariables;
 
+   // The in game texture
+   public SpriteRenderer inGameSprite;
+
+   // Reference to the shadow
+   public Transform shadowTransform;
+
+   // The offset and scale inputfield of the shadow transform
+   public InputField shadowXOffset, shadowYOffset, shadowScale;
+
    // Loot group UI requirements
    public Button lootGroupButton;
    public Text lootGroupText, lootGroupIndexText;
@@ -177,6 +186,33 @@ public class MonsterDataPanel : MonoBehaviour
       toggleAttackButton.onClick.AddListener(() => toggleAttackStats());
       toggleDefenseButton.onClick.AddListener(() => toggleDefenseStats());
       toggleSkillsButton.onClick.AddListener(() => toggleSkills());
+
+      shadowScale.onValueChanged.AddListener(_ => {
+         try {
+            float floatVal = float.Parse(_);
+            shadowTransform.localScale = new Vector2(floatVal, floatVal);
+         } catch {
+
+         }
+      });
+
+      shadowXOffset.onValueChanged.AddListener(_ => {
+         try {
+            float floatVal = float.Parse(_);
+            shadowTransform.localPosition = new Vector3(floatVal, shadowTransform.localPosition.y, 0.1f);
+         } catch {
+
+         }
+      });
+
+      shadowYOffset.onValueChanged.AddListener(_ => {
+         try {
+            float floatVal = float.Parse(_);
+            shadowTransform.localPosition = new Vector3(shadowTransform.localPosition.x, floatVal, 0.1f);
+         } catch {
+
+         }
+      });
 
       animGroupSlider.maxValue = Enum.GetValues(typeof(Anim.Group)).Length;
       animGroupSlider.onValueChanged.AddListener(_ => {
@@ -290,8 +326,10 @@ public class MonsterDataPanel : MonoBehaviour
 
       try {
          avatarIcon.sprite = ImageManager.getSprite(newBattleData.imagePath);
+         inGameSprite.sprite = avatarIcon.sprite;
       } catch {
          avatarIcon.sprite = emptySprite;
+         inGameSprite.sprite = avatarIcon.sprite;
       }
       avatarIconPath = newBattleData.imagePath;
 
@@ -332,6 +370,9 @@ public class MonsterDataPanel : MonoBehaviour
       _airAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.airAttackMultiplierPerLevel.ToString();
       _waterAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.waterAttackMultiplierPerLevel.ToString();
       _allAttackMultiplierPerLevel.text = newBattleData.perLevelDamageMultiplierSet.allAttackMultiplierPerLevel.ToString();
+      shadowScale.text = newBattleData.shadowScale.ToString("f2");
+      shadowXOffset.text = newBattleData.shadowOffset.x.ToString("f2");
+      shadowYOffset.text = newBattleData.shadowOffset.y.ToString("f2");
 
       _preContactLength.text = newBattleData.preContactLength.ToString();
       _preMagicLength.text = newBattleData.preMagicLength.ToString();
@@ -411,6 +452,8 @@ public class MonsterDataPanel : MonoBehaviour
 
       newBattData.preContactLength = int.Parse(_preContactLength.text);
       newBattData.preMagicLength = int.Parse(_preMagicLength.text);
+      newBattData.shadowOffset = new Vector3 (float.Parse(shadowXOffset.text), float.Parse(shadowYOffset.text), 0.1f);
+      newBattData.shadowScale = float.Parse(shadowScale.text);
 
       newBattData.deathSoundEffectId = deathSoundEffect.id;
       newBattData.jumpSoundEffectId = jumpSoundEffect.id;
@@ -482,6 +525,7 @@ public class MonsterDataPanel : MonoBehaviour
          iconTemp.selectButton.onClick.AddListener(() => {
             avatarIconPath = sourceSprite.Key;
             avatarIcon.sprite = sourceSprite.Value;
+            inGameSprite.sprite = avatarIcon.sprite;
             closeAvatarSelectionButton.onClick.Invoke();
          });
       }

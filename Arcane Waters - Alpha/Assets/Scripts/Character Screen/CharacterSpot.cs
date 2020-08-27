@@ -30,6 +30,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    // Last CharacterSpot that the user interacted with
    public static CharacterSpot lastInteractedSpot;
 
+   // Shows a UI that notifies the user their character is being deleted
+   public GameObject deleteIndicator;
+
    #endregion
 
    protected override void Awake () {
@@ -131,6 +134,9 @@ public class CharacterSpot : ClientMonoBehaviour {
    }
 
    protected void sendDeleteUserRequest (int userId) {
+      deleteIndicator.SetActive(true);
+      character.gameObject.SetActive(false);
+
       // Disable the canvas group
       Util.disableCanvasGroup(CharacterScreen.self.canvasGroup);
 

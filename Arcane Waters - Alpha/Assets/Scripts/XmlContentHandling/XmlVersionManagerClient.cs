@@ -68,31 +68,33 @@ public class XmlVersionManagerClient : MonoBehaviour {
    }
 
    public void initializeClient () {
-      if (resetXmlPrefs) {
-         PlayerPrefs.SetInt(XML_VERSION, 0);
+      if (!isInitialized) {
+         if (resetXmlPrefs) {
+            PlayerPrefs.SetInt(XML_VERSION, 0);
+         }
+         loadBlocker.SetActive(true);
+
+         // Set initialization progress to 0
+         _downloadProgress = 0;
+         _extractProgress = 0;
+         _writeProgress = 0;
+
+         // Add progress to loading screen if it is showing already
+         if (PanelManager.self.loadingScreen.isShowing()) {
+            PanelManager.self.loadingScreen.show(getExtractionProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
+         }
+
+         initializeLoadingXmlData.RemoveAllListeners();
+         finishedCheckingStreamingAsset.RemoveAllListeners();
+         finishedLoadingXmlData.RemoveAllListeners();
+
+         NubisDataFetcher.self.xmlVersionEvent.AddListener(_ => {
+            processClientData(_);
+            NubisDataFetcher.self.xmlVersionEvent.RemoveAllListeners();
+         });
+
+         NubisDataFetcher.self.fetchXmlVersion();
       }
-      loadBlocker.SetActive(true);
-
-      // Set initialization progress to 0
-      _downloadProgress = 0;
-      _extractProgress = 0;
-      _writeProgress = 0;
-
-      // Add progress to loading screen if it is showing already
-      if (PanelManager.self.loadingScreen.isShowing()) {
-         PanelManager.self.loadingScreen.show(getExtractionProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
-      }
-
-      initializeLoadingXmlData.RemoveAllListeners();
-      finishedCheckingStreamingAsset.RemoveAllListeners();
-      finishedLoadingXmlData.RemoveAllListeners();
-
-      NubisDataFetcher.self.xmlVersionEvent.AddListener(_ => {
-         processClientData(_);
-         NubisDataFetcher.self.xmlVersionEvent.RemoveAllListeners();
-      });
-
-      NubisDataFetcher.self.fetchXmlVersion();
    }
 
    private void processClientData (int serverVersion) {

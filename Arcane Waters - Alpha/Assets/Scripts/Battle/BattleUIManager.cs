@@ -216,7 +216,11 @@ public class BattleUIManager : MonoBehaviour {
                   }); 
                   
                   if (indexCounter > 0 && !hasValidAbilities) {
-                     D.editorLog("Not valid ability!", Color.red);
+                     abilityButton.disableButton();
+                     abilityButton.isInvalidAbility = true;
+                  }
+
+                  if (weaponClass != currentAbility.classRequirement) {
                      abilityButton.disableButton();
                      abilityButton.isInvalidAbility = true;
                   }

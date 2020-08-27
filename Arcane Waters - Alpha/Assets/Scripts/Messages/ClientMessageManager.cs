@@ -111,6 +111,11 @@ public class ClientMessageManager : MonoBehaviour {
             // Hide the confirm panel
             PanelManager.self.confirmScreen.hide();
 
+            // Disabled the silhouettes
+            foreach (CharacterSpot spot in CharacterScreen.self.GetComponentsInChildren<CharacterSpot>()) {
+               spot.deleteIndicator.SetActive(false);
+            }
+
             // Request a new character list
             ClientManager.sendAccountNameAndUserId();
 
