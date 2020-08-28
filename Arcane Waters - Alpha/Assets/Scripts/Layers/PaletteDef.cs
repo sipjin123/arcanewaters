@@ -6,7 +6,26 @@ using Mirror;
 
 public class PaletteDef : MonoBehaviour {
    #region Public Variables
-      
+
+   public struct Subcategory
+   {
+      // Name of recolor
+      public string name;
+
+      // Type assosiated with this recolor
+      public PaletteToolManager.PaletteImageType type;
+
+      // Source colors stored in hex format
+      public string[] colorsHex;
+
+      // Constructor requiring all of above variables
+      public Subcategory(string name_, PaletteToolManager.PaletteImageType type_, string[] colorsHex_) {
+         name = name_;
+         type = type_;
+         colorsHex = colorsHex_;
+      }
+   }
+
    public class Eyes
    {
       public static string Blue = "eyes_blue";
@@ -14,6 +33,8 @@ public class PaletteDef : MonoBehaviour {
       public static string Green = "eyes_green";
       public static string Purple = "eyes_purple";
       public static string Black = "eyes_black";
+
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Eyes, new string[1] { "#00FF00" });
    }
 
    public class Hair
@@ -24,6 +45,9 @@ public class PaletteDef : MonoBehaviour {
       public static string Yellow = "hair_yellow";
       public static string White = "hair_white";
       public static string Blue = "hair_blue";
+
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Hair, new string[4] { "#B15D23", "#85461A", "#673412", "#50280A" });
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.Hair, new string[4] { "#F82727", "#E21414", "#B71212", "#900202" });
    }
 
    public class Armor1
@@ -53,11 +77,29 @@ public class PaletteDef : MonoBehaviour {
    {
       public static string Black = "";
       public static string White = "";
+
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#D9E9FB", "#A1B7CC", "#748EA7", "#4F6276" } );
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#70B9FF", "#3284D2", "#075CA7", "#083B6B" } );
+      public static Subcategory accent = new Subcategory("accent", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#F82727", "#E21414", "#B71212", "#900202" } );
+   }
+
+   public class Weapon
+   {
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Weapon, new string[4] { "#E9EEF2", "#91A7B6", "#687E8D", "#465B69" });
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.Weapon, new string[4] { "#E7A38C", "#B5654B", "#7B3C27", "#442116" });
+      public static Subcategory power = new Subcategory("power", PaletteToolManager.PaletteImageType.Weapon, new string[4] { "#A8FCFF", "#68FEFF", "#00FEFF", "#00CFD0" });
    }
 
    public class Flag
    {
       public static string OnlyPalette = "ship_flag_nation";
+   }
+
+   public class Ship
+   {
+      public static Subcategory hull = new Subcategory("hull", PaletteToolManager.PaletteImageType.Ship, new string[4] { "#CC4435", "#A7322E", "#822028", "#5B111C" });
+      public static Subcategory sail = new Subcategory("sail", PaletteToolManager.PaletteImageType.Armor, new string[3] { "#E1DCFF", "#B6ABED", "#6B60A2" });
+      public static Subcategory flag = new Subcategory("flag", PaletteToolManager.PaletteImageType.Armor, new string[2] { "#91BDFF", "#3888FF" });
    }
 
    public class ShipHull

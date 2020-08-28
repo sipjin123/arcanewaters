@@ -3262,7 +3262,7 @@ public class DB_Main : DB_MainStub
 
    #region Palette XML Data
 
-   public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, int subcategory) {
+   public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
       string xml_id_key = "paletteId, ";
       string xml_id_value = "@paletteId, ";
 
@@ -3276,9 +3276,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate, isEnabled, subcategory) " +
-            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW(), @isEnabled, @subcategory) " +
-            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW(), isEnabled = @isEnabled, subcategory = @subcategory", conn)) {
+            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate, isEnabled) " +
+            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW(), @isEnabled) " +
+            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW(), isEnabled = @isEnabled", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3288,7 +3288,6 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_content", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self ? MasterToolAccountManager.self.currentAccountID : 0);
             cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
-            cmd.Parameters.AddWithValue("@subcategory", subcategory);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3388,173 +3387,6 @@ public class DB_Main : DB_MainStub
       }
       return rawDataList;
    }
-
-   #endregion
-
-   #region Palette Categories Data
-
-   public static new void updatePaletteCategory (int type, string subcategory, int id, string srcColors) {
-      string id_key = "id, ";
-      string id_value = "@id, ";
-
-      // If this is a newly created data, let sql table auto generate id
-      if (id < 0) {
-         id_key = "";
-         id_value = "";
-      }
-
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            // Declaration of table elements
-            "INSERT INTO palette_categories (" + id_key + "type, subcategory" + (srcColors != "" ? ", srcColors) " : ") ") +
-            "VALUES(" + id_value + "@type, @subcategory" + (srcColors != "" ? ", @srcColors) " : ") ") +
-            "ON DUPLICATE KEY UPDATE type = @type, subcategory = @subcategory" + (srcColors != "" ? ", srcColors = @srcColors" : ""), conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@id", id);
-            cmd.Parameters.AddWithValue("@type", type);
-            cmd.Parameters.AddWithValue("@subcategory", subcategory);
-            cmd.Parameters.AddWithValue("@srcColors", srcColors);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new int getPaletteCategoryIndex (int type, string subcategory) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_categories WHERE type = @type AND subcategory = @subcategory", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@type", type);
-            cmd.Parameters.AddWithValue("@subcategory", subcategory);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  return dataReader.GetInt32("id");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return -1;
-   }
-
-   public static new List<string> getPaletteSubcategoryNames (int type) {
-      List<string> toReturn = new List<string>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_categories WHERE type = @type", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@type", type);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  toReturn.Add(dataReader.GetString("subcategory"));
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return toReturn;
-   }
-
-   public static new List<string> getPaletteSubcategorySrcColors (int id) {
-      List<string> toReturn = new List<string>();
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_categories WHERE id = @id", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@id", id);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  string xmlData = dataReader.GetString("srcColors");
-
-                  TextAsset newTextAsset = new TextAsset(xmlData);
-                  toReturn = Util.xmlLoad<List<string>>(newTextAsset);
-
-                  return toReturn;
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return toReturn;
-   }
-
-   public static new int getPaletteSubcategoryIndexFromPaletteTable (int paletteId) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette WHERE paletteId = @paletteId", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@paletteId", paletteId);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  return dataReader.GetInt32("subcategory");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return -1;
-   }
-
-   public static new string getPaletteSubcategoryName (int id) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_categories WHERE id = @id", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-
-            cmd.Parameters.AddWithValue("@id", id);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  return dataReader.GetString("subcategory");
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-      return "";
-   }
-
 
    #endregion
 

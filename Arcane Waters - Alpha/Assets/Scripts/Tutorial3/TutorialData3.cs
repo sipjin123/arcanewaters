@@ -9,7 +9,7 @@ public class TutorialData3 : MonoBehaviour
    #region Public Variables
 
    // The area key of the tutorial cemetery
-   public static string tutorialCemeteryAreaKey = "Tutorial Town Cemetery";
+   public static string tutorialCemeteryAreaKey = "Tutorial Town Cemetery v2";
 
    // The tutorials and, for each step, the npc speech and completion triggers
    public static List<Tutorial3> tutorials = new List<Tutorial3>() {
@@ -33,8 +33,8 @@ public class TutorialData3 : MonoBehaviour
       new List<TutorialStep3>() {
          new TutorialStep3(TutorialTrigger.EquipWeapon, "You should have a sword in your fourth shortcut. Press 4 to equip it. You can also search for one in your inventory by pressing I."),
          new TutorialStep3(TutorialTrigger.SpawnInTutorialTownCemetery, "There is an old cemetery to the east of the starting town. Head there now!"),
-         new TutorialStep3(TutorialTrigger.EnterBattle, "A stubborn skeleton keeps coming back to life in this place. Help the villagers out by reminding him he should be dead. Move close to him to enter battle!"),
-         new TutorialStep3(TutorialTrigger.SelectBattleEnemy, "He may look scary, but the skeleton is too weak to hurt you. Select it by clicking on it."),
+         new TutorialStep3(TutorialTrigger.EnterBattle, "Many skeletons keep coming back to life in this place. Help the villagers out by reminding them they should be dead. Move close to one to enter battle!"),
+         new TutorialStep3(TutorialTrigger.SelectBattleEnemy, "He may look scary, but the skeleton is old and weak. Select it by clicking on it."),
          new TutorialStep3(TutorialTrigger.AttackBattleTarget, "At the top of the screen are your skills. Pick an attack skill and cast it!"),
          new TutorialStep3(TutorialTrigger.EndBattle, "Well done! Now give the skeleton no quarter until it is defeated!"),
          new TutorialStep3(TutorialTrigger.Manual, "Congratulations on your battle victory! The first of many I'm sure. To start the next tutorial, click on the right arrow."),

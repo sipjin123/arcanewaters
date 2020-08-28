@@ -46,8 +46,11 @@ public class PaletteToolManager : XmlDataToolManager {
    // Contains pair of source and destination square to allow grouping in UI
    public GameObject horizontalColorHolderPrefab;
 
-   // Button which indicates whether box color is static in regard to hue shift
-   public GameObject staticColorButtonPrefab;
+   // Header separating recolors
+   public GameObject recolorHeaderPrefab;
+
+   // Slider which allows to do hue shift on all colors
+   public GameObject hueSliderPrefab;
 
    [Header("Containers")]
    // Container for single pixel in palette (source - destination)
@@ -62,7 +65,6 @@ public class PaletteToolManager : XmlDataToolManager {
    [Header("Edit palette menu")]
    public Image previewSprite;
    public Text choosePaletteNameText;
-   public Text currentSizeText;
    public GameObject changePaletteScene;
 
    [Header("Color picker")]
@@ -80,9 +82,6 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Sprite preview using SpriteRender to allow using color picking
    public SpriteRenderer spritePreviewForColorPicker;
-
-   // Slider which allows to do hue shift on all colors
-   public Slider hueSlider;
 
    // Text presenting current hue shift
    public Text hueValueText;
@@ -136,30 +135,6 @@ public class PaletteToolManager : XmlDataToolManager {
    [Header("Palette category")]
    // Dropdown element to populate with palette categories to choose from
    public TMPro.TMP_Dropdown dropdownPaletteCategory;
-
-   // Dropdown element to populate with palette subcategories to choose from
-   public TMPro.TMP_Dropdown dropdownPaletteSubcategory;
-
-   // Adding new palette subcategory coupled to currently chosen category
-   public Button addPaletteSubcategory;
-
-   // Modify currently chosen subcategory
-   public Button modifyPaletteSubcategory;
-
-   // Add/modify category scene
-   public GameObject addSubcategoryScene;
-
-   // Field to enter or modify subcategory name
-   public InputField newSubcategoryName;
-
-   // Accept changes in name of subcategory
-   public Button confirmSubcategory;
-
-   // Reject changes in name of subcategory
-   public Button cancelSubcategory;
-
-   // Update changes in source colors of subcategory and store it in database
-   public Button updateSubcategoryColors;
 
    [Header("Sprite references")]
    // Checkbox checked sprite for enabled palette
@@ -313,11 +288,6 @@ public class PaletteToolManager : XmlDataToolManager {
          changeArraySize(_srcColors.Count / 2, false);
       });
 
-      // Call function when changing hue slider value
-      hueSlider.onValueChanged.AddListener((float val) => {
-         changeColorsWithHueShift((int) val);
-      });
-
       // Confirm or cancel deleting palette (available in cofirm delete scene)
       confirmDeletingButton.onClick.AddListener(() => {
          deleteXMLData(_paletteDataList[_currentRow.dataIndex].paletteId);
@@ -332,7 +302,7 @@ public class PaletteToolManager : XmlDataToolManager {
          confirmResettingPaletteScene.gameObject.SetActive(true);
       });
       confirmResettingButton.onClick.AddListener(() => {
-         fillColorBoxesWithSpriteColors();
+         generatePaletteColorImages(null, null);
          confirmResettingPaletteScene.gameObject.SetActive(false);
       });
       cancelResettingButton.onClick.AddListener(() => {
@@ -349,60 +319,6 @@ public class PaletteToolManager : XmlDataToolManager {
       // Start picking color from current sprite preview
       pickColorButton.onClick.AddListener(() => {
          startPickingColorFromSprite();
-      });
-
-      // Add/modify subcategory to currently chosen palette category
-      addPaletteSubcategory.onClick.AddListener(() => {
-         addSubcategoryScene.gameObject.SetActive(true);
-         _currentSubcategoryIndex = -1;
-         newSubcategoryName.text = "";
-      });
-      modifyPaletteSubcategory.onClick.AddListener(() => {
-         addSubcategoryScene.gameObject.SetActive(true);
-         updateSubcategoryName();
-      });
-      dropdownPaletteSubcategory.onValueChanged.AddListener((int index) => {
-         newSubcategoryName.text = dropdownPaletteSubcategory.options[dropdownPaletteSubcategory.value].text;
-         fillColorsBasedOnSubcategory();
-      });
-      
-      confirmSubcategory.onClick.AddListener(() => {
-         // Empty subcategory name is not allowed - reserved for first element
-         if (newSubcategoryName.text == "") {
-            return;
-         }
-
-         XmlLoadingPanel.self.startLoading();
-
-         string[] colors = new string[MINIMUM_ALLOWED_SIZE];
-         for (int i = 0; i < colors.Length; i++) {
-            colors[i] = "000000";
-         }
-         
-         XmlSerializer ser = new XmlSerializer(colors.GetType());
-         var sb = new StringBuilder();
-         using (var writer = XmlWriter.Create(sb)) {
-            ser.Serialize(writer, colors);
-         }
-         string longString = sb.ToString();
-
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               // If new (index == -1) - pass XML with black srcColors; otherwise - do not update srcColors
-               DB_Main.updatePaletteCategory(dropdownPaletteCategory.value, newSubcategoryName.text, _currentSubcategoryIndex, _currentSubcategoryIndex == -1 ? longString : "");
-               prepareSubcategoryDropdown(_currentRow);
-               XmlLoadingPanel.self.finishLoading();
-            });
-         });
-         addSubcategoryScene.gameObject.SetActive(false);
-      });
-      cancelSubcategory.onClick.AddListener(() => {
-         addSubcategoryScene.gameObject.SetActive(false);
-      });
-
-      updateSubcategoryColors.onClick.AddListener(() => {
-         updateSubcategoryName();
-         updateSubcategoryColorsInDatabase();
       });
 
       // Preview character with multiple layers
@@ -618,9 +534,6 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Fill dropdown, used for choosing palette types, with values based on palette type enum
       preparePaletteTypeDropdown();
-
-      // Fill dropdown based on currently chosen category
-      prepareSubcategoryDropdown(_currentRow);
    }
 
    public static List<PaletteDataPair> getColors (PaletteImageType type, string tag) {
@@ -682,6 +595,7 @@ public class PaletteToolManager : XmlDataToolManager {
    }
 
    public static Color convertHexToRGB (string hex) {
+      hex = hex.Replace("#", "");
       int red = translateHexLetterToInt(hex[0]) * 16 + translateHexLetterToInt(hex[1]);
       int green = translateHexLetterToInt(hex[2]) * 16 + translateHexLetterToInt(hex[3]);
       int blue = translateHexLetterToInt(hex[4]) * 16 + translateHexLetterToInt(hex[5]);
@@ -718,7 +632,6 @@ public class PaletteToolManager : XmlDataToolManager {
 
       row.paletteName.text = data.paletteData.paletteName;
       row.dataIndex = index;
-      row.size.text = data.paletteData.size.ToString();
       row.editButton.onClick.AddListener(() => {
          showSingleRowEditor(row);
       });
@@ -766,7 +679,6 @@ public class PaletteToolManager : XmlDataToolManager {
       _isEditingRow = false;
       mainMenuCategoryDropdown.value = 0;
 
-      hueSlider.value = hueSlider.minValue;
       changePaletteScene.gameObject.SetActive(true);
       mainMenuCategoryDropdown.transform.parent.gameObject.SetActive(false);
 
@@ -789,77 +701,22 @@ public class PaletteToolManager : XmlDataToolManager {
          dropdownPaletteCategory.value = 0;
       }
 
-      prepareSubcategoryDropdown(row);
       prepareCharacterPreviewPaletteChoose();
 
       // Present edit scene with downloaded data
       _currentRow = row;
-      generatePaletteColorImages(src, dst, data.size, data.staticColor);
+      generatePaletteColorImages(src, dst);
       showPalettePreview();
       choosePaletteNameText.GetComponent<InputField>().text = data.paletteName;
 
       _isEditingRow = true;
    }
 
-   private void fillColorsBasedOnSubcategory () {
-      int id = DB_Main.getPaletteCategoryIndex(dropdownPaletteCategory.value, newSubcategoryName.text);
-      List<string> colors = DB_Main.getPaletteSubcategorySrcColors(id);
-
-      List<Color> src = new List<Color>();
-      List<Color> dst = new List<Color>();
-
-      if (colors != null) {
-         for (int i = 0; i < colors.Count; i++) {
-            src.Add(convertHexToRGB(colors[i]));
-            dst.Add(convertHexToRGB(colors[i]));
-         }
-      }
-
-      while (src.Count < MINIMUM_ALLOWED_SIZE) {
-         src.Add(convertHexToRGB("000000"));
-         dst.Add(convertHexToRGB("000000"));
-      }
-
-      bool[] isStatic = new bool[Mathf.Min(_staticColors.Count, src.Count)];
-      for (int i = 0; i < isStatic.Length; i++) {
-         isStatic[i] = _staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? true : false;
-      }
-
-      int newSize = !Mathf.IsPowerOfTwo(src.Count) ? Mathf.NextPowerOfTwo(src.Count) : src.Count;
-      hueSlider.value = hueSlider.minValue;
-      generatePaletteColorImages(src, dst, newSize, isStatic);
-      showPalettePreview();
-   }
-
-   private void updateSubcategoryColorsInDatabase () {
-      if (newSubcategoryName.text == "") {
+   private void changeArraySize (int size, bool clearColors) {
+      if (getSourceColorSplitIndices(_paletteImageType).Count > 0) {
          return;
       }
 
-      XmlLoadingPanel.self.startLoading();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            List<string> colorsList = new List<string>();
-            for (int i = 0; i < _srcColors.Count; i++) {
-               colorsList.Add(convertRGBToHex(_srcColors[i].color));
-            }
-            string[] colors = colorsList.ToArray();
-
-            XmlSerializer ser = new XmlSerializer(colors.GetType());
-            var sb = new StringBuilder();
-            using (var writer = XmlWriter.Create(sb)) {
-               ser.Serialize(writer, colors);
-            }
-            string longString = sb.ToString();
-
-            DB_Main.updatePaletteCategory(dropdownPaletteCategory.value, newSubcategoryName.text, _currentSubcategoryIndex, longString);
-            prepareSubcategoryDropdown(newSubcategoryName.text);
-            XmlLoadingPanel.self.finishLoading();
-         });
-      });
-   }
-
-   private void changeArraySize (int size, bool clearColors) {
       // Get current colors and pass to function generating new scene
       if (!clearColors) {
          if (size > MAXIMUM_ALLOWED_SIZE) {
@@ -873,19 +730,15 @@ public class PaletteToolManager : XmlDataToolManager {
 
          List<Color> src = new List<Color>();
          List<Color> dst = new List<Color>();
-         bool[] isStatic = new bool[_staticColors.Count];
          for (int i = 0; i < _srcColors.Count; i++) {
             src.Add(_srcColors[i].color);
          }
          for (int i = 0; i < _dstColors.Count; i++) {
             dst.Add(_dstColors[i].color);
          }
-         for (int i = 0; i < _staticColors.Count; i++) {
-            isStatic[i] = _staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? true : false;
-         }
-         generatePaletteColorImages(src, dst, size, isStatic);
+         generatePaletteColorImages(src, dst);
       } else {
-         generatePaletteColorImages(null, null, size, null);
+         generatePaletteColorImages(null, null);
       }
    }
 
@@ -908,9 +761,8 @@ public class PaletteToolManager : XmlDataToolManager {
 
       string longString = sb.ToString();
 
-      updateSubcategoryName();
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => { 
-         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled, _currentSubcategoryIndex);
+         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -1001,12 +853,8 @@ public class PaletteToolManager : XmlDataToolManager {
          D.error("Source and destination color palette sizes are different. Cannot save palette in database!");
          return;
       }
-      bool[] isStatic = new bool[_srcColors.Count];
-      for (int i = 0; i < _srcColors.Count; i++) {
-         isStatic[i] = (_staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite) ? true : false;
-      }
 
-      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src.Length, src, dst, (int) _paletteImageType, isStatic);
+      PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src, dst, (int) _paletteImageType);
       saveXMLData(data, findPaletteId(data), isPaletteEnabled(data));
    }
 
@@ -1033,13 +881,12 @@ public class PaletteToolManager : XmlDataToolManager {
    private void createNewPalette (int size) {
       _isEditingRow = true;
       _currentRow = null;
-      hueSlider.value = hueSlider.minValue;
-      generatePaletteColorImages(null, null, size, null);
+      generatePaletteColorImages(null, null);
       showPalettePreview();
       choosePaletteNameText.GetComponent<InputField>().text = _initialPaletteName;
    }
 
-   private void generatePaletteColorImages (List<Color> srcColors, List<Color> dstColors, int size, bool[] isStatic) {
+   private void generatePaletteColorImages (List<Color> srcColors, List<Color> dstColors) {
       // Genereate most often occurring colors and present as presets in Color Picker
       colorPicker.GetComponent<ColorPicker>().Setup.DefaultPresetColors = generateMostCommonPixelsInSprite(previewSprite.sprite).ToArray();
 
@@ -1048,52 +895,95 @@ public class PaletteToolManager : XmlDataToolManager {
          Destroy(colorsContainer.GetChild(i).gameObject);
       }
       
+      // Get data
+      List<Color> oldSrc = getSrcColors();
+      srcColors = generateSourceColorsForType(_paletteImageType);
+
       // Clear cached colors
       _srcColors.Clear();
       _dstColors.Clear();
-      _staticColors.Clear();
 
+      // Check lists to avoid any nulls
       if (srcColors == null) {
-         srcColors = new List<Color>();
+         D.error("Source colors cannot be empty");
+         return;
       }
       if (dstColors == null) {
          dstColors = new List<Color>();
       }
 
+      // Use same number as src and dst colors
+      for (int i = 0; i < srcColors.Count; i++) {
+         if (dstColors.Count <= i) {
+            dstColors.Add(srcColors[i]);
+         }
+      }
+      if (dstColors.Count > srcColors.Count) {
+         dstColors.RemoveRange(srcColors.Count, dstColors.Count - srcColors.Count);
+      }
+
+      // If color box was never changed - treat it as such and download new source color
+      for (int i = 0; i < Mathf.Min(dstColors.Count, oldSrc.Count); i++) {
+         if (dstColors[i] == oldSrc[i]) {
+            dstColors[i] = srcColors[i];
+         }
+      }
+
+      // Shouldn't ever fail but check for safety
       if (srcColors.Count != dstColors.Count) {
          D.warning("Source and destination color arrays are of different size!");
          return;
       }
 
-      if (size == 0) {
-         size = Mathf.Max(srcColors.Count, dstColors.Count);
-      }
-
-      currentSizeText.text = "Current size: " + size.ToString();
-
-      // Fill source colors (with black) to desired size
-      if (srcColors.Count < size) {
-         int count = size - srcColors.Count;
-         for (int i = 0; i < count; i++) {
-            srcColors.Add(Color.black);
-         }
-      }
-
-      // Fill destination colors (with black) to desired size
-      if (dstColors.Count < size) {
-         int count = size - dstColors.Count;
-         for (int i = 0; i < count; i++) {
-            dstColors.Add(Color.black);
-         }
-      }
+      List<string> recolorNames = getNamesOfRecolors(_paletteImageType);
+      List<int> splitIndices = getSourceColorSplitIndices(_paletteImageType);
+      int splitIndex = -1;
+      RectTransform parent = null;
 
       singleColorPrefab.gameObject.SetActive(true);
-      staticColorButtonPrefab.gameObject.SetActive(true);
-      for (int i = 0; i < size; i++) {
+      for (int i = 0; i < srcColors.Count; i++) {
          // Create horizontal prefab which is holding source and destination pixels
-         RectTransform parent = GameObject.Instantiate(horizontalColorHolderPrefab).GetComponent<RectTransform>();
-         parent.GetComponent<RectTransform>().SetParent(colorsContainer);
-         parent.gameObject.SetActive(true);
+         if (i == 0 || (splitIndices.Count > splitIndex && splitIndices[splitIndex] == i)) {
+            if (splitIndices.Count > 0) {
+               RectTransform headerParent = GameObject.Instantiate(horizontalColorHolderPrefab).GetComponent<RectTransform>();
+               headerParent.GetComponent<RectTransform>().SetParent(colorsContainer);
+               headerParent.gameObject.SetActive(true);
+
+               recolorHeaderPrefab.SetActive(true);
+               GameObject headerPrefab = GameObject.Instantiate(recolorHeaderPrefab);
+               headerPrefab.GetComponentInChildren<Text>().text = recolorNames[splitIndex + 1];
+               headerPrefab.GetComponent<RectTransform>().SetParent(headerParent);
+               recolorHeaderPrefab.SetActive(false);
+            }
+
+            parent = GameObject.Instantiate(horizontalColorHolderPrefab).GetComponent<RectTransform>();
+            parent.GetComponent<RectTransform>().SetParent(colorsContainer);
+            parent.gameObject.SetActive(true);
+
+            if (splitIndices.Count > 0) {
+               RectTransform sliderParent = GameObject.Instantiate(horizontalColorHolderPrefab).GetComponent<RectTransform>();
+               sliderParent.GetComponent<RectTransform>().SetParent(colorsContainer);
+               sliderParent.gameObject.SetActive(true);
+
+               hueSliderPrefab.gameObject.SetActive(true);
+               GameObject sliderPrefab = GameObject.Instantiate(hueSliderPrefab).gameObject;
+               Slider slider = sliderPrefab.GetComponentInChildren<Slider>();
+               slider.name = splitIndex.ToString();
+               slider.transform.parent.GetChild(2).GetComponent<Text>().text = "0";
+               sliderPrefab.GetComponent<RectTransform>().SetParent(sliderParent);
+               hueSliderPrefab.gameObject.SetActive(false);
+
+               // Call function when changing hue slider value
+               slider.onValueChanged.AddListener((float val) => {
+                  changeColorsWithHueShift((int) val, int.Parse(slider.name));
+                  slider.transform.parent.GetChild(2).GetComponent<Text>().text = ((int) val).ToString();
+               });
+
+               _hueShiftValues.Add(0);
+            }
+
+            splitIndex++;
+         }
 
          // Source colors
          GameObject srcPrefab = GameObject.Instantiate(singleColorPrefab);
@@ -1102,6 +992,7 @@ public class PaletteToolManager : XmlDataToolManager {
             activeColorPicker(srcPrefab.GetComponent<Button>());
          });
          srcPrefab.GetComponent<RectTransform>().SetParent(parent);
+         srcPrefab.gameObject.SetActive(false);
          _srcColors.Add(srcPrefab.GetComponent<Image>());
 
          // Destination colors
@@ -1112,18 +1003,138 @@ public class PaletteToolManager : XmlDataToolManager {
          });
          dstPrefab.GetComponent<RectTransform>().SetParent(parent);
          _dstColors.Add(dstPrefab.GetComponent<Image>());
-
-         // Static colors
-         GameObject staticPrefab = GameObject.Instantiate(staticColorButtonPrefab);
-         staticPrefab.GetComponent<Image>().sprite = (isStatic != null && isStatic.Length > i && isStatic[i] == true ? checkboxCheckedBoxSprite : checkboxUncheckedBoxSprite);
-         staticPrefab.GetComponent<Button>().onClick.AddListener(() => {
-            staticPrefab.GetComponent<Image>().sprite = (staticPrefab.GetComponent<Image>().sprite == checkboxCheckedBoxSprite ? checkboxUncheckedBoxSprite : checkboxCheckedBoxSprite);
-         });
-         staticPrefab.GetComponent<RectTransform>().SetParent(parent);
-         _staticColors.Add(staticPrefab);
       }
       singleColorPrefab.gameObject.SetActive(false);
-      staticColorButtonPrefab.gameObject.SetActive(false);
+   }
+
+   private List<string> getNamesOfRecolors (PaletteImageType type) {
+      List<string> names = new List<string>();
+
+      switch (type) {
+         case PaletteImageType.Armor:
+            names.Add(PaletteDef.Armor.primary.name);
+            names.Add(PaletteDef.Armor.secondary.name);
+            names.Add(PaletteDef.Armor.accent.name);
+            break;
+         case PaletteImageType.Weapon:
+            names.Add(PaletteDef.Weapon.primary.name);
+            names.Add(PaletteDef.Weapon.secondary.name);
+            names.Add(PaletteDef.Weapon.power.name);
+            break;
+         case PaletteImageType.Hair:
+            names.Add(PaletteDef.Hair.primary.name);
+            names.Add(PaletteDef.Hair.secondary.name);
+            break;
+         case PaletteImageType.Eyes:
+            names.Add(PaletteDef.Eyes.primary.name);
+            break;
+         case PaletteImageType.Body:
+            break;
+         case PaletteImageType.NPC:
+            break;
+         case PaletteImageType.Ship:
+            names.Add(PaletteDef.Ship.hull.name);
+            names.Add(PaletteDef.Ship.sail.name);
+            names.Add(PaletteDef.Ship.flag.name);
+            break;
+         case PaletteImageType.GuildIconBackground:
+            break;
+         case PaletteImageType.GuildIconSigil:
+            break;
+      }
+
+      return names;
+   }
+
+   private List<Color> generateSourceColorsForType(PaletteImageType type) {
+      List<string> hexColors = new List<string>();
+
+      switch (type) {
+         case PaletteImageType.Armor:
+            hexColors.AddRange(PaletteDef.Armor.primary.colorsHex);
+            hexColors.AddRange(PaletteDef.Armor.secondary.colorsHex);
+            hexColors.AddRange(PaletteDef.Armor.accent.colorsHex);
+            break;
+         case PaletteImageType.Weapon:
+            hexColors.AddRange(PaletteDef.Weapon.primary.colorsHex);
+            hexColors.AddRange(PaletteDef.Weapon.secondary.colorsHex);
+            hexColors.AddRange(PaletteDef.Weapon.power.colorsHex);
+            break;
+         case PaletteImageType.Hair:
+            hexColors.AddRange(PaletteDef.Hair.primary.colorsHex);
+            hexColors.AddRange(PaletteDef.Hair.secondary.colorsHex);
+            break;
+         case PaletteImageType.Eyes:
+            hexColors.AddRange(PaletteDef.Eyes.primary.colorsHex);
+            break;
+         case PaletteImageType.Body:
+            break;
+         case PaletteImageType.NPC:
+            break;
+         case PaletteImageType.Ship:
+            hexColors.AddRange(PaletteDef.Ship.hull.colorsHex);
+            hexColors.AddRange(PaletteDef.Ship.sail.colorsHex);
+            hexColors.AddRange(PaletteDef.Ship.flag.colorsHex);
+            break;
+         case PaletteImageType.GuildIconBackground:
+            break;
+         case PaletteImageType.GuildIconSigil:
+            break;
+      }
+
+      List<Color> colors = new List<Color>();
+      foreach (string hex in hexColors) {
+         colors.Add(convertHexToRGB(hex));
+      }
+
+      return colors;
+   }
+
+   private List<int> getSourceColorSplitIndices (PaletteImageType type) {
+      List<int> indices = new List<int>();
+
+      switch (type) {
+         case PaletteImageType.Armor:
+            indices.Add(PaletteDef.Armor.primary.colorsHex.Length);
+            indices.Add(PaletteDef.Armor.secondary.colorsHex.Length);
+            indices.Add(PaletteDef.Armor.accent.colorsHex.Length);
+            break;
+         case PaletteImageType.Weapon:
+            indices.Add(PaletteDef.Weapon.primary.colorsHex.Length);
+            indices.Add(PaletteDef.Weapon.secondary.colorsHex.Length);
+            indices.Add(PaletteDef.Weapon.power.colorsHex.Length);
+            break;
+         case PaletteImageType.Hair:
+            indices.Add(PaletteDef.Hair.primary.colorsHex.Length);
+            indices.Add(PaletteDef.Hair.secondary.colorsHex.Length);
+            break;
+         case PaletteImageType.Eyes:
+            indices.Add(PaletteDef.Eyes.primary.colorsHex.Length);
+            break;
+         case PaletteImageType.Body:
+            break;
+         case PaletteImageType.NPC:
+            break;
+         case PaletteImageType.Ship:
+            indices.Add(PaletteDef.Ship.hull.colorsHex.Length);
+            indices.Add(PaletteDef.Ship.sail.colorsHex.Length);
+            indices.Add(PaletteDef.Ship.flag.colorsHex.Length);
+            break;
+         case PaletteImageType.GuildIconBackground:
+            break;
+         case PaletteImageType.GuildIconSigil:
+            break;
+      }
+
+      for (int i = 1; i < indices.Count; i++) {
+         indices[i] += indices[i - 1];
+      }
+
+      return indices;
+   }
+
+   private void createRecolor () {
+
    }
 
    private void activeColorPicker (Button button) {
@@ -1144,15 +1155,16 @@ public class PaletteToolManager : XmlDataToolManager {
       }
    }
 
-   private void changeColorsWithHueShift (int newHueShift) {
+   private void changeColorsWithHueShift (int newHueShift, int index) {
+      List<int> splitIndices = getSourceColorSplitIndices(_paletteImageType);
+      int startIndex = index == -1 ? 0 : splitIndices[index];
+      int endIndex = splitIndices.Count > index + 1 ? splitIndices[index + 1] : getSrcColors().Count;
+
       hueValueText.text = newHueShift.ToString();
-      float diff = (newHueShift - _hueShiftValue) / 255.0f;
+      float diff = (newHueShift - _hueShiftValues[index + 1]) / 255.0f;
+      _hueShiftValues[index + 1] = newHueShift;
 
-      for (int i = 0; i < _dstColors.Count; i++) {
-         if (_staticColors[i].GetComponent<Image>().sprite == checkboxCheckedBoxSprite) {
-            continue;
-         }
-
+      for (int i = startIndex; i < endIndex; i++) {
          Image image = _dstColors[i];
          Color.RGBToHSV(image.color, out float H, out float S, out float V);
          H += diff;
@@ -1162,7 +1174,6 @@ public class PaletteToolManager : XmlDataToolManager {
          }
          image.color = Color.HSVToRGB(H, S, V, false);
       }
-      _hueShiftValue = newHueShift;
       showPalettePreview();
 
       // Modify elements for character preview, if they're using currently edited palette
@@ -1340,20 +1351,42 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       dropdownPaletteCategory.onValueChanged.AddListener((int index) => {
-         prepareSubcategoryDropdown(_currentRow);
-      });
-
-      dropdownPaletteCategory.onValueChanged.AddListener((int index) => {
          _paletteImageType = (PaletteImageType) (index + 1);
          prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
+         generatePaletteColorImages(null, getDstColors());
       });
       _paletteImageType = (PaletteImageType)1;
       prepareSpriteChooseDropdown(paletteImageTypePaths[(int) _paletteImageType]);
+      generatePaletteColorImages(null, getDstColors());
 
       // Available dropdown values should be the same in row view as well as, when editing single row
       mainMenuCategoryDropdown.options.Clear();
       mainMenuCategoryDropdown.options.Add(new TMPro.TMP_Dropdown.OptionData("All"));
       mainMenuCategoryDropdown.options.AddRange(dropdownPaletteCategory.options);
+   }
+
+   private List<Color> getSrcColors () {
+      if (_srcColors == null) {
+         return new List<Color>();
+      }
+
+      List<Color> colors = new List<Color>();
+      foreach (Image image in _srcColors) {
+         colors.Add(image.color);
+      }
+      return colors;
+   }
+
+   private List<Color> getDstColors () {
+      if (_dstColors == null) {
+         return new List<Color>();
+      }
+
+      List<Color> colors = new List<Color>();
+      foreach(Image image in _dstColors) {
+         colors.Add(image.color);
+      }
+      return colors;
    }
 
    private void prepareCharacterPreviewPaletteChoose () {
@@ -1549,44 +1582,6 @@ public class PaletteToolManager : XmlDataToolManager {
       }
    }
 
-   private void updateSubcategoryName () {
-      if (dropdownPaletteSubcategory.options.Count > 0) {
-         newSubcategoryName.text = dropdownPaletteSubcategory.options[dropdownPaletteSubcategory.value].text;
-         _currentSubcategoryIndex = DB_Main.getPaletteCategoryIndex(dropdownPaletteCategory.value, newSubcategoryName.text);
-      } else {
-         newSubcategoryName.text = "";
-         _currentSubcategoryIndex = -1;
-      }
-   }
-
-   private void prepareSubcategoryDropdown (PaletteButtonRow row) {
-      int subcategoryId = row == null ? -1 : DB_Main.getPaletteSubcategoryIndexFromPaletteTable(_paletteDataList[row.dataIndex].paletteId);
-      string subcategoryName = DB_Main.getPaletteSubcategoryName(subcategoryId);
-      prepareSubcategoryDropdown(subcategoryName);
-   }
-
-   private void prepareSubcategoryDropdown (string subcategoryName) {
-      dropdownPaletteSubcategory.options.Clear();
-
-      // First element is empty to ensure that we can reset field to nothing
-      dropdownPaletteSubcategory.options.Add(new TMPro.TMP_Dropdown.OptionData(""));
-      dropdownPaletteSubcategory.value = 0;
-
-      int newValue = 0;
-
-      foreach (string name in DB_Main.getPaletteSubcategoryNames(dropdownPaletteCategory.value)) {
-         TMPro.TMP_Dropdown.OptionData optionData = new TMPro.TMP_Dropdown.OptionData(name);
-         dropdownPaletteSubcategory.options.Add(optionData);
-
-         if (name == subcategoryName) {
-            newValue = dropdownPaletteSubcategory.options.Count - 1;
-         }
-      }
-
-      dropdownPaletteSubcategory.value = newValue;
-      dropdownPaletteSubcategory.RefreshShownValue();
-   }
-
    private void choosePreviewSprite (int dropdownIndex) {
       bool isPaletteEmpty = true;
       foreach (Image image in _srcColors) {
@@ -1611,64 +1606,8 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // If preview changed for empty palette - fill with sprite colors
       if (isPaletteEmpty) {
-         fillColorBoxesWithSpriteColors();
+         generatePaletteColorImages(null, null);
       }
-   }
-
-   private void fillColorBoxesWithSpriteColors () {
-      if (!_isEditingRow) {
-         return;
-      }
-      _staticColors.Clear();
-      
-      HashSet<Color> allColors = new HashSet<Color>();
-      string path = paletteImageTypePaths[(int) _paletteImageType];
-      string spritePath = (path != "") ? path : "Assets/Sprites";
-      List<ImageManager.ImageData> allImages = ImageManager.getSpritesInDirectory(spritePath);
-
-      for (int i = 0; i < allImages.Count; i++) {
-         List<Color> colors = generateMostCommonPixelsInSprite(allImages[i].sprite, 0);
-         foreach (Color color in colors) {
-            allColors.Add(color);
-         }
-      }
-      if (allColors.Count <= 8) {
-         changeArraySize(8, true);
-      } else if (allColors.Count <= 16) {
-         changeArraySize(16, true);
-      } else if (allColors.Count <= 32) {
-         changeArraySize(32, true);
-      } else if (allColors.Count <= 64) {
-         changeArraySize(64, true);
-      } else {
-         changeArraySize(128, true);
-      }
-
-      int count = _srcColors.Count;
-      if (allColors.Count < _srcColors.Count) {
-         count = allColors.Count;
-      }
-
-      int colorIndex = 0;
-      foreach (Color color in allColors) {
-         Color colorA = new Color(color.r, color.g, color.b, 1.0f);
-         _srcColors[colorIndex].color = colorA;
-         _dstColors[colorIndex].color = colorA;
-         colorIndex++;
-         if (colorIndex >= _srcColors.Count) {
-            if (allColors.Count > MAXIMUM_ALLOWED_SIZE) {
-               D.warning("User is trying to generate palette of size " + allColors.Count + ". Maximum palette size allowed is 128");
-            }
-            break;
-         }
-      }
-
-      _hueShiftValue = 0;
-      hueSlider.value = Random.Range((int) hueSlider.minValue, (int) hueSlider.maxValue);
-      if (choosePaletteNameText.GetComponent<InputField>().text == _initialPaletteName) {
-         choosePaletteNameText.GetComponent<InputField>().text = "Palette #" + (_paletteDataList[_paletteDataList.Count - 1].paletteId + 1);
-      }
-      savePalette();
    }
 
    private IEnumerator updateColorsPresets () {
@@ -2008,9 +1947,6 @@ public class PaletteToolManager : XmlDataToolManager {
    // Cached destination colors which are currently edited
    private List<Image> _dstColors = new List<Image>();
 
-   // Cached buttons checking if color is static
-   private List<GameObject> _staticColors = new List<GameObject>();
-
    // Currently edited row of data
    private PaletteButtonRow _currentRow;
 
@@ -2021,7 +1957,7 @@ public class PaletteToolManager : XmlDataToolManager {
    private PaletteImageType _paletteImageType = PaletteImageType.None;
 
    // Value of hue shift in current palette;
-   private int _hueShiftValue;
+   private List<int> _hueShiftValues = new List<int>();
 
    // Checking if user is browsing list or editing single row
    private bool _isEditingRow = false;
@@ -2034,9 +1970,6 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Minimum allowed size of palette
    private const int MINIMUM_ALLOWED_SIZE = 4;
-
-   // Index of subcategory dropdown
-   private int _currentSubcategoryIndex;
 
    // Index in spritesheet which indicate frontfacing element
    private int INDEX_OF_FRONT_PREVIEW = 8;

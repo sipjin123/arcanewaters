@@ -372,8 +372,8 @@ public class MailPanel : Panel
          cell.leftClickEvent.RemoveAllListeners();
          cell.rightClickEvent.RemoveAllListeners();
          cell.doubleClickEvent.RemoveAllListeners();
-         cell.leftClickEvent.AddListener(() => removeAttachedItem(cell.getItem()));
-         cell.rightClickEvent.AddListener(() => removeAttachedItem(cell.getItem()));
+         cell.leftClickEvent.AddListener(() => removeAttachedItem(item));
+         cell.rightClickEvent.AddListener(() => removeAttachedItem(item));
       }
 
       // Disable the add button if the maximum number of attached items is reached

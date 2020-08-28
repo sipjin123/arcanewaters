@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 using UnityEngine.Events;
+using DG.Tweening;
 
 public class PixelFadeEffect : MonoBehaviour, IScreenFader {
    #region Public Variables
@@ -29,86 +30,47 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       }
    }
 
-   void Update () {
-
-      // If we do not want to fade in or fade out we do not execute the code (Optimization)
-      if (!_willFadeIn && !_willFadeOut) { return; }
-
-      // How long has passed since we started fading?
-      float timePassed = Time.time - _fadeStartTime;
-
-      // Lerp towards the target pixel amount
-      float newPixelAmount = Mathf.Lerp(camFX_Pixel._Pixelisation, _targetPixelAmount, (timePassed / _fadeDuration));
-      setNewPixelAmount(newPixelAmount);
-
-      // If our target is the minimum and we've reached that, we can disable the cam FX
-      if (_targetPixelAmount <= MIN_PIXEL_AMOUNT && getPixelAmount() == MIN_PIXEL_AMOUNT) {
-         camFX_Pixel.enabled = false;
-      }
-
-      // When fading back in, we want to hurry up and get it over with if we're close
-      if (Mathf.Abs(_targetPixelAmount - getPixelAmount()) < .5f && _targetPixelAmount == MIN_PIXEL_AMOUNT) {
-         setNewPixelAmount(MIN_PIXEL_AMOUNT);
-         camFX_Pixel.enabled = false;
-
-         if (_willFadeIn) {
-            //onFadeInEnd.Invoke();
-            _willFadeIn = false;
-         }
-
-         if (_willFadeOut) {
-            //onFadeOutEnd.Invoke();
-            _willFadeOut = false;
-         }
-      }
-   }
-
-   public bool isPixelated () {
-      return camFX_Pixel.enabled && (_targetPixelAmount > MIN_PIXEL_AMOUNT || getPixelAmount() > MIN_PIXEL_AMOUNT);
-   }
-
    public float fadeOut () {
-      _willFadeOut = true;
-
-      // Note that we're about to start the fade
-      _fadeStartTime = Time.time;
-
-      // Set an appropriate fade duration
-      _fadeDuration = FADE_OUT_DURATION;
-
       // Make sure the effect is enabled
       camFX_Pixel.enabled = true;
 
-      // Set the new target pixelation
-      _targetPixelAmount = MAX_PIXEL_AMOUNT;
+      // If we're currently fading in or out, stop
+      _fadeTween?.Kill();
+
+      // Get the current pixel amount
+      float pixelAmount = getPixelAmount();
+
+      // Tween the pixel amount towards MAX_PIXEL_AMOUNT
+      _fadeTween = DOTween.To(() => pixelAmount, x => pixelAmount = x, MAX_PIXEL_AMOUNT, FADE_OUT_DURATION);
+
+      // Make it increase linearly instead of smoothly
+      _fadeTween.SetEase(Ease.Linear);
+
+      // Update the value of pixel amount on each step
+      _fadeTween.OnUpdate(() => setNewPixelAmount(pixelAmount));
 
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(0f, 1f);
-
-      // FADE_OUT_DURATION seems to not represent the actual time duration correctly, return an approximation of the effect duration
-      return 1f;
+            
+      return FADE_OUT_DURATION;
    }
 
-   public float fadeIn () {
-      _willFadeIn = true;
-
-      // Note that we're about to start the fade
-      _fadeStartTime = Time.time;
-
-      // Set an appropriate fade duration
-      _fadeDuration = FADE_IN_DURATION;
-
+   public float fadeIn () {      
       // Make sure the effect is enabled
       camFX_Pixel.enabled = true;
 
-      // Set the new target pixelation
-      _targetPixelAmount = MIN_PIXEL_AMOUNT;
+      _fadeTween?.Kill();
+      float pixelAmount = getPixelAmount();
+
+      _fadeTween = DOTween.To(() => pixelAmount, x => pixelAmount = x, MIN_PIXEL_AMOUNT, FADE_IN_DURATION);
+      _fadeTween.OnUpdate(() => setNewPixelAmount(pixelAmount));
+      _fadeTween.SetEase(Ease.Linear);
+      _fadeTween.OnComplete(() => camFX_Pixel.enabled = false);
 
       // Start a darkness color fade as well
       BrightnessManager.self.setNewTargetIntensity(1f, 1f);
 
-      // FADE_OUT_DURATION seems to not represent the actual time duration correctly, return an approximation of the effect duration
-      return 1f;
+      return FADE_IN_DURATION;
    }
 
    protected void setNewPixelAmount (float newPixelAmount) {
@@ -128,23 +90,13 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
    protected static float MAX_PIXEL_AMOUNT = 24f;
 
    // How long a fade in should take
-   protected static float FADE_IN_DURATION = 16f;
+   protected static float FADE_IN_DURATION = 1f;
 
    // How long a fade out should take
-   protected static float FADE_OUT_DURATION = 12f;
+   protected static float FADE_OUT_DURATION = 1f;
 
-   // The time at which the fade started
-   protected float _fadeStartTime;
-
-   // The duration of this fade
-   protected float _fadeDuration = FADE_IN_DURATION;
-
-   // Our desired pixel amount
-   protected float _targetPixelAmount = MIN_PIXEL_AMOUNT;
-
-   // Flags for checking if we are fading in or fading out.
-   private bool _willFadeOut;
-   private bool _willFadeIn;
+   // The sequence handling the fade in/out
+   private Tween _fadeTween;
 
    #endregion
 }
