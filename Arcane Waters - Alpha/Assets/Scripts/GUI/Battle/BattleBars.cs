@@ -40,6 +40,7 @@ public class BattleBars : MonoBehaviour {
          if (stanceImage != null) {
             stanceImage.gameObject.SetActive(false);
          }
+         nameText.enabled = false;
       }
       isInitialized = true;
    }

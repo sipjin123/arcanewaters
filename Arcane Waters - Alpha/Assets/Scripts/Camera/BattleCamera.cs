@@ -31,6 +31,8 @@ public class BattleCamera : BaseCamera {
    }
 
    public void focusOnPosition (Vector3 targetPos, float time) {
+      // TODO: Confirm if this function will now be deleted, only used on melee pre attack
+      /*
       _focusSequence?.Kill();
       _focusSequence = DOTween.Sequence();
 
@@ -57,10 +59,12 @@ public class BattleCamera : BaseCamera {
          BattleUIManager.self.updatePlayerUIPositions();
       });
 
-      _focusSequence.Play();
+      _focusSequence.Play();*/
    }
 
    public void returnToOriginalSettings (float time) {
+      // TODO: Confirm if this function will now be deleted,  only used on melee after attack
+      /*
       _focusSequence?.Kill();
       _focusSequence = DOTween.Sequence();
 
@@ -80,7 +84,7 @@ public class BattleCamera : BaseCamera {
          BattleUIManager.self.updatePlayerUIPositions();
       });
 
-      _focusSequence.Play();
+      _focusSequence.Play();*/
    }
 
    #region Private Variables

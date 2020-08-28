@@ -345,7 +345,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, " +
+               "SELECT itmId, itmCategory, itmType, itmPalettes, " +
                "CASE " +
                "WHEN itmCategory = 1 THEN arcane.equipment_weapon_xml_v3.xmlContent " +
                "WHEN itmCategory = 2 THEN arcane.equipment_armor_xml_v3.xmlContent " +
@@ -367,7 +367,8 @@ public class DB_Main : DB_MainStub
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
                      string equipmentXML = reader.GetString("equipmentXML");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{equipmentXML}[space]";
+                     string itemPalette = reader.GetString("itmPalettes"); 
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{equipmentXML}[space]{itemPalette}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }

@@ -194,11 +194,11 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
    }
 
-   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems) {
+   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems, bool overrideEquipmentCache) {
       loadBlocker.SetActive(false);
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
-
+ 
       // Update the current page number
       _currentPage = pageIndex;
 
@@ -221,7 +221,9 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       characterStack.updateLayers(userObjects);
 
       // Update cached user object equipment
-      Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat);
+      if (overrideEquipmentCache) {
+         Global.setUserEquipment(userObjects.weapon, userObjects.armor, userObjects.hat);
+      }
 
       // Insert the player's name
       if (Global.player != null) {
@@ -256,12 +258,15 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
                if (InventoryManager.isEquipped(item.id)) {
                   if (item.category == Item.Category.Weapon) {
+                     equippedWeaponCellContainer.DestroyChildren();
                      cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
                      refreshStats(Weapon.castItemToWeapon(item));
                   } else if (item.category == Item.Category.Armor) {
+                     equippedArmorCellContainer.DestroyChildren();
                      cell.transform.SetParent(equippedArmorCellContainer.transform, false);
                      refreshStats(Armor.castItemToArmor(item));
                   } else if (item.category == Item.Category.Hats) {
+                     equippedHatCellContainer.DestroyChildren();
                      cell.transform.SetParent(equippedHatCellContainer.transform, false);
                      refreshStats(Hat.castItemToHat(item));
                   }

@@ -305,33 +305,18 @@ namespace NubisDataHandling {
          inventoryPanel.clearPanel();
 
          int userId = Global.player == null ? 0 : Global.player.userId;
-         UserInfo newUserInfo = new UserInfo();
          List<Item> userInventory = new List<Item>();
 
          this.categoryFilter = categoryFilter == null ? Item.Category.None : categoryFilter[0];
          this.pageIndex = pageIndex;
          this.itemsPerPage = itemsPerPage;
 
-         // Process user info
-         newUserInfo = await NubisClient.callJSONClass<UserInfo>(nameof(DB_Main.getUserInfoJSON), userId);
-         if (newUserInfo == null) {
-            D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
-         }
-
-         // Process user equipped items
-         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
-         Item equippedWeapon = new Item();
-         Item equippedArmor = new Item();
-         Item equippedHat = new Item(); 
-
-         EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
-         equippedWeapon = equippedItemData.weaponItem;
-         equippedArmor = equippedItemData.armorItem;
-         equippedHat = equippedItemData.hatItem;
-
-         userInventory.Add(equippedWeapon);
-         userInventory.Add(equippedArmor);
-         userInventory.Add(equippedHat);
+         // Fetch the cached user info which was provided by the server upon login
+         UserInfo newUserInfo = Global.getUserObjects().userInfo;
+         EquippedItemData equippedItemData = new EquippedItemData();
+         equippedItemData.weaponItem = Global.getUserObjects().weapon;
+         equippedItemData.armorItem = Global.getUserObjects().armor;
+         equippedItemData.hatItem = Global.getUserObjects().hat;
 
          List<Item.Category> newcategoryList = new List<Item.Category>();
          newcategoryList.Add(Item.Category.Weapon);
@@ -343,16 +328,18 @@ namespace NubisDataHandling {
          string categoryJson = JsonConvert.SerializeObject(categoryInt);
 
          List<int> itemIdFilter = new List<int>();
-         if (equippedWeapon.itemTypeId > 0) {
-            itemIdFilter.Add(equippedWeapon.id);
-         }
-         if (equippedArmor.itemTypeId > 0) {
-            itemIdFilter.Add(equippedArmor.id);
-         }
-         if (equippedHat.itemTypeId > 0) {
-            itemIdFilter.Add(equippedHat.id);
-         }
 
+         // Filter equipped item id so it will not be part of the inventory fetch
+         UserObjects cachedUserObj = Global.getUserObjects();
+         itemIdFilter.Add(cachedUserObj.weapon.id);
+         itemIdFilter.Add(cachedUserObj.armor.id);
+         itemIdFilter.Add(cachedUserObj.hat.id);
+
+         userInventory.Add(cachedUserObj.weapon);
+         userInventory.Add(cachedUserObj.armor);
+         userInventory.Add(cachedUserObj.hat);
+
+         // Fetch the total item count for pagination
          string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
          string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId.ToString(), categoryJson, itemIdJson, "0");
          int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
@@ -385,8 +372,34 @@ namespace NubisDataHandling {
             }
          }
 
-         UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedWeapon, armor = equippedArmor, hat = equippedHat };
-         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount);
+         // Provide the user with the Nubis fetched items and the cached version of the user info
+         UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
+         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, false);
+
+         // Refresh user info after the inventory has been loaded in the inventory panel, to make sure that user data is accurate and to improve the speed of the inventory loading reaction
+         newUserInfo = await NubisClient.callJSONClass<UserInfo>(nameof(DB_Main.getUserInfoJSON), userId);
+         if (newUserInfo == null) {
+            D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
+         }
+
+         // Process user equipped items
+         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
+         Item equippedWeapon = new Item();
+         Item equippedArmor = new Item();
+         Item equippedHat = new Item();
+
+         equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
+         equippedWeapon = equippedItemData.weaponItem;
+         equippedArmor = equippedItemData.armorItem;
+         equippedHat = equippedItemData.hatItem;
+
+         userInventory.Add(equippedWeapon);
+         userInventory.Add(equippedArmor);
+         userInventory.Add(equippedHat);
+
+         // Provide the inventory panel with the updated equipped items and user info
+         userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
+         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, true);
       }
 
       #endregion

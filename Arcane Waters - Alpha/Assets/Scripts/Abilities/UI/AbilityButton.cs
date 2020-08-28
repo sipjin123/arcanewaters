@@ -90,15 +90,21 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    }
 
    public void invalidButtonClick () {
-      buttonAnimator.Play(INVALID_ANIM);
+      if (buttonAnimator.isActiveAndEnabled) {
+         buttonAnimator.Play(INVALID_ANIM);
+      }
    }
 
    public void playSelectAnim () {
-      buttonAnimator.Play(SELECT_ANIM);
+      if (buttonAnimator.isActiveAndEnabled) {
+         buttonAnimator.Play(SELECT_ANIM);
+      }
    }
 
    public void playIdleAnim () {
-      buttonAnimator.Play(IDLE_ANIM);
+      if (buttonAnimator.isActiveAndEnabled) {
+         buttonAnimator.Play(IDLE_ANIM);
+      }
    }
 
    public void OnPointerEnter (PointerEventData eventData) {

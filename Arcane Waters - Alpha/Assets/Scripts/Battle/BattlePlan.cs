@@ -16,6 +16,9 @@ public class BattlePlan {
    // The battlers we're going to target
    public List<Battler> targets;
 
+   // The battlers we can potentially give buff to
+   public List<Battler> targetAllies;
+
    #endregion
 
    public BattlePlan () { }

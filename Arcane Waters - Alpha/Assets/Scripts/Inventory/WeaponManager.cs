@@ -109,6 +109,7 @@ public class WeaponManager : EquipmentManager {
          // No weapon to equip
          equippedWeaponId = 0;
          weaponType = 0;
+         equipmentDataId = 0;
          updateSprites(0, "");
          return;
       }

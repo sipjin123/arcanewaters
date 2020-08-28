@@ -471,6 +471,8 @@ public class BattleManager : MonoBehaviour {
          } else if (abilityType == AbilityType.BuffDebuff) {
             abilityData = source.getBuffAbilities()[abilityInventoryIndex];
          }
+      } else if (source.getBuffAbilities().Count > 0) {
+         abilityData = source.getBuffAbilities()[abilityInventoryIndex];
       } else {
          D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
          abilityData = AbilityManager.self.punchAbility();
@@ -633,7 +635,6 @@ public class BattleManager : MonoBehaviour {
 
             // Create the Action object
             BuffAction action = new BuffAction(battle.battleId, 0, source.userId, target.userId, timeBuffEnds, timeBuffEnds + 10, cooldownDuration, timeBuffEnds, sourceApChange, targetApChange, abilityData.itemID, buffAbility.value, buffAbility.elementType, buffAbility.bonusStatType, buffAbility.buffActionType);
-            
             actions.Add(action);
 
             // Make note how long the two Battler objects need in order to execute the cast effect animations
@@ -706,19 +707,21 @@ public class BattleManager : MonoBehaviour {
          BattleAction action = (BattleAction) actionToApply;
          Battler target = battle.getBattler(action.targetId);
 
-         // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
-         // So we will grab the source battler
-         AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
-
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
             // Don't create Cancel Actions for multi-target abilities
             if (hasMultipleTargets) {
                yield break;
             }
-
-            // Remove the action cooldown and animation duration from the source's timestamps
-            float animLength = abilityData.getTotalAnimLength(source, target);
+            float animLength = .6f;
+            if (actionToApply is AttackAction) {
+               // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
+               // So we will grab the source battler
+               AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
+               // Remove the action cooldown and animation duration from the source's timestamps
+               animLength = abilityData.getTotalAnimLength(source, target);
+            }
+            
             float timeToSubtract = action.cooldownDuration + animLength;
 
             // Update the battler's action timestamps here on the server

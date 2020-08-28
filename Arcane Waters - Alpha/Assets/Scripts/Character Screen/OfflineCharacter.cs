@@ -111,11 +111,14 @@ public class OfflineCharacter : ClientMonoBehaviour {
       setHat(hatData.hatType, hatData.palettes, HatStatData.serializeHatStatData(hatData));
       setWeapon(userInfo, weapon);
 
+      Item newWeapon = new Weapon { itemTypeId = weapon.itemTypeId, id = weapon.id, paletteNames = weapon.paletteNames };
+      Item newArmor = new Armor { itemTypeId = armor.itemTypeId, id = armor.id, paletteNames = armor.paletteNames };
+      Item newHat = new Hat { itemTypeId = hat.itemTypeId, id = hat.id, paletteNames = hat.paletteNames };
       Global.setUserObject(new UserObjects {
          userInfo = userInfo,
-         weapon = new Weapon { itemTypeId = weapon.itemTypeId },
-         armor = new Armor { itemTypeId = armor.itemTypeId },
-         hat = new Hat { itemTypeId = hat.itemTypeId },
+         weapon = newWeapon,
+         armor = newArmor,
+         hat = newHat,
       });
    }
 

@@ -105,6 +105,9 @@ public class Battle : NetworkBehaviour {
          // If any of our monsters are ready to attack, then do so
          if (battler.isMonster() && Util.netTime() > battler.animatingUntil && Util.netTime() > bufferedCooldown) {
             BattlePlan battlePlan = battler.getBattlePlan(this);
+            BattlerData battlerData = MonsterManager.self.getBattler(battler.enemyType);
+            List<Battler> battlerAllies = new List<Battler>();
+            battlerAllies.Add(battlePlan.targetAllies.ChooseRandom());
 
             // If we couldn't find a valid target, then move on
             if (battlePlan == null || battlePlan.targets == null || battlePlan.targets.Count == 0) {
@@ -112,7 +115,12 @@ public class Battle : NetworkBehaviour {
             }
 
             // Handles the current and only attack a monster can do
-            BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+            // TODO: After setting up xml data remove the hardcoded enemy type
+            if (battlerData.isSupportType || battlerData.enemyType == Enemy.Type.Pirate_Healer) {
+               BattleManager.self.executeBattleAction(this, battler, battlerAllies, 0, AbilityType.BuffDebuff);
+            } else {
+               BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+            }
          }
       }
 

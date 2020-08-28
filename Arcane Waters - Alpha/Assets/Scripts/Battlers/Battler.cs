@@ -450,7 +450,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
-               selectedBattleBar.nameText.enabled = true;
                selectedBattleBar.gameObject.SetActive(false);
             } else {
                BattleUIManager.self.abilitiesCG.Show();
@@ -1034,7 +1033,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
 
                BattleCamera.self.focusOnPosition(targetPosition, jumpDuration * 1.5f);
-
+               
                float startTime = Time.time;
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;
@@ -1129,6 +1128,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Switch back to our battle stance
             sourceBattler.playAnim(Anim.Type.Battle_East);
+            sourceBattler.pauseAnim(false);
 
             // Mark the source sprite as no longer jumping
             sourceBattler.isJumping = false;
@@ -1386,6 +1386,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          targetBattler.playAnim(Anim.Type.Battle_East);
       } else if (abilityDataReference.hasKnockBack) {
          // Move the sprite back and forward to simulate knockback
+         targetBattler.playAnim(Anim.Type.Hurt_East);
          targetBattler.StartCoroutine(targetBattler.animateKnockback());
          yield return new WaitForSeconds(KNOCKBACK_LENGTH);
       }
@@ -1903,6 +1904,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public BattlePlan getBattlePlan (Battle battle) {
       if (battlerType == BattlerType.AIEnemyControlled) {
          Battler target = getRandomTargetFor(getBasicAttack(), battle);
+         List<Battler> allies = getBattlerAllies(battle);
 
          // Set up a list of targets
          List<Battler> targets = new List<Battler>();
@@ -1911,11 +1913,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
 
          // By default, AI battlers will use the Monster attack ability
-         return new BattlePlan(getBasicAttack(), targets);
+         BattlePlan newBattlePlan = new BattlePlan(getBasicAttack(), targets);
+         newBattlePlan.targetAllies = allies;
+         return newBattlePlan;
       } else {
          Debug.LogError("Error in battle logic, a non AI controlled battler cannot have a Battle Plan");
          return null;
       }
+   }
+   protected List<Battler> getBattlerAllies (Battle battle) {
+      List<Battler> allies = new List<Battler>();
+
+      // Cycle over all of the participants in the battle
+      foreach (Battler targetBattler in battle.getParticipants()) {
+         // Check if the battler is on the same team and not dead
+         if (targetBattler.teamType == this.teamType && !targetBattler.isDead()) {
+            allies.Add(targetBattler);
+         }
+      }
+      return allies;
    }
 
    protected Battler getRandomTargetFor (AttackAbilityData abilityData, Battle battle) {

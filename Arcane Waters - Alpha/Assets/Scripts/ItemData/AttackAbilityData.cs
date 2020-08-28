@@ -176,7 +176,7 @@ public class AttackAbilityData : BasicAbilityData
    }
 
    public bool isProjectile () {
-      return abilityType.Equals(AbilityActionType.Projectile);
+      return classRequirement == Weapon.Class.Ranged;
    }
 
    public bool isCancel () {

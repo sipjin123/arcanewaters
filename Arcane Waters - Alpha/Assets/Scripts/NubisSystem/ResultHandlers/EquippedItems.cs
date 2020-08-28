@@ -40,10 +40,16 @@ namespace NubisDataHandling {
 
             if (dataGroup.Length > 0) {
                // Crafting ingredients have no crafting data
-               if (dataGroup.Length == 5) {
+               if (dataGroup.Length >= 5) {
                   int itemID = int.Parse(dataGroup[0]);
                   Item.Category itemCategory = (Item.Category) int.Parse(dataGroup[1]);
                   int itemTypeID = int.Parse(dataGroup[2]);
+                  string paletteNames = "";
+                  try {
+                     paletteNames = dataGroup[4];
+                  } catch {
+                     paletteNames = "armor_one_white, armor_two_white, , ";
+                  }
 
                   switch (itemCategory) {
                      case Item.Category.Weapon:
@@ -51,7 +57,8 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Weapon,
                            itemTypeId = itemTypeID,
-                           data = dataGroup[3]
+                           data = dataGroup[3],
+                           paletteNames = paletteNames
                         };
                         break;
                      case Item.Category.Armor:
@@ -59,7 +66,8 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Armor,
                            itemTypeId = itemTypeID,
-                           data = dataGroup[3]
+                           data = dataGroup[3],
+                           paletteNames = paletteNames
                         };
                         break;
                      case Item.Category.Hats:
@@ -67,7 +75,8 @@ namespace NubisDataHandling {
                            id = itemID,
                            category = Item.Category.Hats,
                            itemTypeId = itemTypeID,
-                           data = dataGroup[3]
+                           data = dataGroup[3],
+                           paletteNames = paletteNames
                         };
                         break;
                   }

@@ -125,6 +125,9 @@ public class MonsterDataPanel : MonoBehaviour
    // Toggler to determine if this enemy is a boss
    public Toggle isBossToggler;
 
+   // Toggler to determine if this enemy is a support
+   public Toggle isSupportType;
+
    // Error Panel
    public GameObject errorPanel;
    public Button closeErrorPanel;
@@ -318,6 +321,7 @@ public class MonsterDataPanel : MonoBehaviour
    public void loadData (BattlerData newBattleData, int xml_id, bool isActive) {
       xml_toggler.isOn = isActive;
       isBossToggler.isOn = newBattleData.isBossType;
+      isSupportType.isOn = newBattleData.isSupportType;
       currentXmlId = xml_id;
       startingName = newBattleData.enemyName;
       monsterTypeText.text = ((Enemy.Type) newBattleData.enemyType).ToString();
@@ -412,6 +416,7 @@ public class MonsterDataPanel : MonoBehaviour
       newBattData.animGroup = (Anim.Group) Enum.Parse(typeof(Anim.Group), animGroupText.text);
       newBattData.imagePath = avatarIconPath;
       newBattData.isBossType = isBossToggler.isOn;
+      newBattData.isSupportType = isSupportType.isOn;
 
       newBattData.baseHealth = int.Parse(_baseHealth.text);
       newBattData.baseDefense = int.Parse(_baseDefense.text);

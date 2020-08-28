@@ -163,8 +163,8 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public void SetupAbilityUI (AbilitySQLData[] abilitydata, int weaponClassInt, bool hasValidAbilities) {
-      Weapon.Class weaponClass = (Weapon.Class) weaponClassInt;
+   public void SetupAbilityUI (AbilitySQLData[] abilitydata, int weaponCategoryInt, bool hasValidAbilities) {
+      Weapon.Class weaponClass = (Weapon.Class) weaponCategoryInt;
       int indexCounter = 0;
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
@@ -174,7 +174,6 @@ public class BattleUIManager : MonoBehaviour {
             AbilityType abilityType = abilitydata[indexCounter].abilityType;
             if (abilityType == AbilityType.Standard || abilityType == AbilityType.BuffDebuff) {
                BasicAbilityData currentAbility = AbilityManager.getAbility(abilitydata[indexCounter].abilityID, abilityType);
-    
                if (currentAbility != null) {
                   // Setup Button Display
                   string iconPath = currentAbility.itemIconPath;
@@ -213,16 +212,18 @@ public class BattleUIManager : MonoBehaviour {
                            attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
                         }
                      }
-                  }); 
-                  
+                  });
+
+                  abilityButton.enableButton();
+                  abilityButton.isInvalidAbility = false;
                   if (indexCounter > 0 && !hasValidAbilities) {
                      abilityButton.disableButton();
                      abilityButton.isInvalidAbility = true;
                   }
 
-                  if (weaponClass != currentAbility.classRequirement) {
+                  if (weaponClass != currentAbility.classRequirement && currentAbility.itemID != AbilityManager.PUNCH_ID) {
                      abilityButton.disableButton();
-                     abilityButton.isInvalidAbility = true;
+                     abilityButton.isInvalidAbility = true; 
                   }
 
                   abilityButton.cancelButton.onClick.AddListener(() => {

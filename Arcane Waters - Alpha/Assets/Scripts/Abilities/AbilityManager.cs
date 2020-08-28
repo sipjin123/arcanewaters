@@ -153,19 +153,18 @@ public class AbilityManager : MonoBehaviour
          }
 
          float animationLength = .6f;
-
-         // Get the ability object for this action
-         AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
-         if (abilityData != null) {
-            if (targetBattler != null) {
-               animationLength = abilityData.getTotalAnimLength(sourceBattler, targetBattler);
-            }
-         } else {
-            D.editorLog("Issue getting ability data: " + action.abilityInventoryIndex + " - " + action.abilityGlobalID);
-         }
-
          switch (action.battleActionType) {
-            case BattleActionType.Attack: 
+            case BattleActionType.Attack:
+               // Get the ability object for this action
+               AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
+               if (abilityData != null) {
+                  if (targetBattler != null) {
+                     animationLength = abilityData.getTotalAnimLength(sourceBattler, targetBattler);
+                  }
+               } else {
+                  D.editorLog("Issue getting ability data: " + action.abilityInventoryIndex + " - " + action.abilityGlobalID);
+               }
+
                AttackAction attackAction = action as AttackAction;
                actionToExecute = attackAction;
 

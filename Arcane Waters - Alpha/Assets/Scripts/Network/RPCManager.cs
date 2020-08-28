@@ -3697,7 +3697,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             int maximumEnemyCount = (attackerCount * 2) - 1;
-            if (!enemy.isBossType) {
+            if (!enemy.isBossType && enemy.enemyType != Enemy.Type.Skelly_Captain_Tutorial) {
                for (int i = 0; i < maximumEnemyCount; i++) {
                   float randomizedSpawnChance = 0;
 
@@ -3731,7 +3731,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Set user to only use skill if no weapon is equipped
-            if (localBattler.weaponManager.weaponType == 0) {
+            if (localBattler.weaponManager.equipmentDataId == 0) {
                abilityDataList = modifiedUnarmedAbilityList();
             }
 
@@ -3757,7 +3757,7 @@ public class RPCManager : NetworkBehaviour {
             BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
 
             // Provides the client with the info of the Equipped Abilities
-            int weaponId = localBattler.weaponManager.getWeapon().itemTypeId;
+            int weaponId = localBattler.weaponManager.equipmentDataId;
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
             Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
             WeaponCategory weaponCategory = WeaponCategory.None;
@@ -4282,6 +4282,8 @@ public class RPCManager : NetworkBehaviour {
 
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
+            } else {
+               D.editorLog("Failed to cast!", Color.magenta);
             }
 
             Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
