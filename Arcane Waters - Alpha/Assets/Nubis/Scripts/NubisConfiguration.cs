@@ -20,7 +20,7 @@ public class NubisConfiguration
    /// <summary>
    /// The port Nubis is listening on
    /// </summary>
-   public int WebServerPort;
+   public int WebServerPort = 7900;
 
    /// <summary>
    /// The prefix added to log files in the Nubis Log folder.
@@ -37,7 +37,7 @@ public class NubisConfiguration
    /// <summary>
    /// The path to the folder that will contain the configuration file.
    /// </summary>
-   public static string ConfigFolderPath () => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), NubisStatics.AppName, "Config");
+   public static string ConfigFolderPath () => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), NubisStatics.APP_NAME, "Config");
    /// <summary>
    /// Returns the filepath to the configuration file.
    /// </summary>
@@ -45,7 +45,7 @@ public class NubisConfiguration
    /// <summary>
    /// Returns the path to the folder containing the log.
    /// </summary>
-   public static string LogFolderPath () => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), NubisStatics.AppName, "Log");
+   public static string LogFolderPath () => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments), NubisStatics.APP_NAME, "Log");
    /// <summary>
    /// Returns the path to the Log file.
    /// </summary>

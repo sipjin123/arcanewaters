@@ -31,6 +31,7 @@ MonoBehaviour:
   title: Lillypad
   canInheritPosition: 0
   canControlPosition: 0
+  positionStep: {x: 0, y: 0}
   dataFields: []
   selectDataFields: []
   customDataFields: []
@@ -72,6 +73,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -3043820012857982230, guid: 772654512ce84834b8cb3312e10a3b93,
+        type: 3}
+      propertyPath: offsetZ
+      value: -0.08
+      objectReference: {fileID: 0}
     - target: {fileID: 3549297326683795498, guid: 772654512ce84834b8cb3312e10a3b93,
         type: 3}
       propertyPath: m_Enabled

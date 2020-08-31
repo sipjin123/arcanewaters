@@ -1031,9 +1031,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Smoothly jump into position
                sourceBattler.playAnim(Anim.Type.Jump_East);
                Vector2 targetPosition = targetBattler.getMeleeStandPosition(sourceBattler.weaponManager.weaponType != 0);
-
-               BattleCamera.self.focusOnPosition(targetPosition, jumpDuration * 1.5f);
-               
                float startTime = Time.time;
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;
@@ -1109,8 +1106,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Now jump back to where we started from
                sourceBattler.playAnim(Anim.Type.Jump_East);
                float startTime = Time.time;
-
-               BattleCamera.self.returnToOriginalSettings(jumpDuration);
 
                while (Time.time - startTime < jumpDuration) {
                   float timePassed = Time.time - startTime;

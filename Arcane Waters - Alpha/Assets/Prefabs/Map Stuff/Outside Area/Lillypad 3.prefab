@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: -0.12
+  offsetZ: -0.08
   inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}

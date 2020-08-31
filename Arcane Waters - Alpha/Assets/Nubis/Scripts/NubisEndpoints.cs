@@ -14,6 +14,9 @@
    // STATUS - Nubis Endpoint. Used to check Nubis' status.
    public const string STATUS = "status";
 
+   // VERSION - Nubis Endpoint. Used to retrieve Nubis' version.
+   public const string VERSION = "version";
+
    #endregion
 
 }

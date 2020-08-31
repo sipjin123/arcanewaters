@@ -15,6 +15,30 @@ public enum XmlSlotIndex
 
 namespace NubisDataHandling {
 
+   public class InventoryBundle
+   {
+      #region Public Variables
+      // Reference to the user info.
+      public UserInfo user;
+
+      // The equipped weapon.
+      public Item equippedWeapon;
+
+      // The equipped armor.
+      public Item equippedArmor;
+
+      // The equipped hat.
+      public Item equippedHat;
+
+      // The item count.
+      public int totalItemCount;
+
+      // String containing the encoded inventory data.
+      public string inventoryData;
+
+      #endregion
+   }
+
    public class XmlVersionEvent : UnityEvent<int> { 
    }
 
@@ -295,6 +319,53 @@ namespace NubisDataHandling {
       }
 
       private async void processUserInventory (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
+         // Get the inventory panel
+         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+         // Make sure the inventory panel is showing
+         if (!inventoryPanel.isShowing()) {
+            PanelManager.self.pushPanel(Panel.Type.Inventory);
+         }
+         inventoryPanel.clearPanel();
+
+         int userId = Global.player == null ? 0 : Global.player.userId;
+
+         this.categoryFilter = categoryFilter == null ? Item.Category.None : categoryFilter[0];
+         this.pageIndex = pageIndex;
+         this.itemsPerPage = itemsPerPage;
+
+         string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage", userId, Enum.GetName(typeof(Item.Category), this.categoryFilter).ToString(), pageIndex, InventoryPanel.ITEMS_PER_PAGE);
+         var inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
+
+         List<Item> userInventory = new List<Item>();
+         userInventory.Add(inventoryBundle.equippedWeapon);
+         userInventory.Add(inventoryBundle.equippedArmor);
+         userInventory.Add(inventoryBundle.equippedHat);
+
+         List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
+         foreach (Item item in itemList) {
+            if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               item.paletteNames = weaponData.palettes;
+            }
+            if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               item.paletteNames = armorData.palettes;
+            }
+            if (item.category == Item.Category.Hats) {
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               item.paletteNames = hatData.palettes;
+            }
+            if (item.id != inventoryBundle.user.weaponId && item.id != inventoryBundle.user.armorId && item.id != inventoryBundle.user.hatId) {
+               userInventory.Add(item);
+            }
+         }
+
+         UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
+         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, inventoryBundle.totalItemCount,true);
+      }
+
+      private async void processUserInventoryOld (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
          // Get the inventory panel
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 

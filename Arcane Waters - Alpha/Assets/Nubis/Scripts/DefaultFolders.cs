@@ -10,7 +10,7 @@ public class DefaultFolders
    /// <param name="filepath">Path to the new file.</param>
    /// <returns>TRUE if the file was created successflly (or was already available), FALSE otherwise.</returns>
    private static bool CreateFileSafe (string filepath) {
-      // check if folder already exists. if yes, do nothing.
+      // check if file already exists. if yes, do nothing.
       if (File.Exists(filepath)) {
          return true;
       }

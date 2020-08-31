@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using static NubisLogger;
 
 public class NubisRelay
 {
@@ -37,10 +38,15 @@ public class NubisRelay
    }
 
    private static string callImpl (string function, params string[] args) {
-      var start = DateTime.Now;
+
+      if (string.Equals(function, "NubisDirect-getUserInventoryPage", StringComparison.OrdinalIgnoreCase)) {
+         return NubisDirect.getUserInventoryPage(args[0], args[1], args[2], args[3]);
+      }
+      // TODO: Ken: Any function that needs to be called directly should be added here.
+
       string result = string.Empty;
       string argString = (args != null && args.Length > 0) ? string.Join(",", args) : string.Empty;
-      NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' ...");
+      i($"Invoking '{TYPE_NAME}.{function}({argString})' ...");
       try {
          if (!_methodCache.ContainsKey(function)) {
             _assembly = _assembly ?? Assembly.GetExecutingAssembly();
@@ -51,13 +57,13 @@ public class NubisRelay
                   if (_methodInfo != null) {
                      _methodCache.Add(function, _methodInfo);
                   } else {
-                     NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate method.");
+                     i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate method.");
                   }
                } else {
-                  NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate type.");
+                  i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate type.");
                }
             } else {
-               NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate assembly.");
+               i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - Couldn't locate assembly.");
             }
          }
 
@@ -66,22 +72,22 @@ public class NubisRelay
             if (methodInfo != null) {
                result = methodInfo.Invoke(null, args) as string;
                if (result != null) {
-                  NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : OK");
+                  i($"Invoking '{TYPE_NAME}.{function}({argString})' : OK");
                } else {
-                  NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - The call to the method returned null.");
+                  i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - The call to the method returned null.");
                }
             }
          }
       } catch (Exception ex) {
-         NubisLogger.i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - There was an exception.");
-         NubisLogger.e(ex);
+         i($"Invoking '{TYPE_NAME}.{function}({argString})' : FAILED - There was an exception.");
+         e(ex);
       }
       return result;
    }
 
    public static string call (string url) {
       var start = DateTime.Now;
-      NubisLogger.i($"New url received. url: '{url}");
+      i($"New url received. url: '{url}");
       Uri uri = new Uri(url);
       string function = getFunctionNameFromUri(uri);
       Dictionary<string, string> arguments = getArgumentsFromUri(uri);

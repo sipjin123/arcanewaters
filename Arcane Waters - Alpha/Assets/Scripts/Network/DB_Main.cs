@@ -2145,7 +2145,8 @@ public class DB_Main : DB_MainStub
       List<MapSpawn> result = new List<MapSpawn>();
 
       string cmdText = "SELECT mapid, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
-         "FROM map_spawns_v2 JOIN maps_v2 ON maps_v2.id = map_spawns_v2.mapid;";
+         "FROM map_spawns_v2 JOIN maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
+         "WHERE mapVersion = publishedVersion;";
       using (MySqlConnection conn = getConnection())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();

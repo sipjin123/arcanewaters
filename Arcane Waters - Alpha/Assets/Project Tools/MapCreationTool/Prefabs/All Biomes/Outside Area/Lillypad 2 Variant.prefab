@@ -62,6 +62,7 @@ MonoBehaviour:
   title: Lillypad
   canInheritPosition: 0
   canControlPosition: 0
+  positionStep: {x: 0, y: 0}
   dataFields: []
   selectDataFields: []
   customDataFields: []

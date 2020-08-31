@@ -32,6 +32,10 @@ public class WaterChecker : ClientMonoBehaviour {
    // The shadow obj
    public GameObject shadowObj;
 
+   // Heights used for the water cover shader
+   public float fullWaterHeight = 0.48f;
+   public float waterHeight = 0.42f;
+
    #endregion
 
    void Start () {
@@ -72,10 +76,10 @@ public class WaterChecker : ClientMonoBehaviour {
          renderer.material.SetFloat("_WaterAlpha", 1f);
 
          if (isInFullWater) {
-            renderer.material.SetFloat("_WaterHeight", .48f);
+            renderer.material.SetFloat("_WaterHeight", fullWaterHeight);
             renderer.material.SetFloat("_WaterAlpha", 0f);
          } else if (isInPartialWater) {
-            renderer.material.SetFloat("_WaterHeight", .42f);
+            renderer.material.SetFloat("_WaterHeight", waterHeight);
          } else {
             renderer.material.SetFloat("_WaterHeight", 0f);
          }         

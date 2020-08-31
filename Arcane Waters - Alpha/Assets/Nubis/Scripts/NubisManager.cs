@@ -22,197 +22,80 @@ public class NubisManager : MonoBehaviour
    public void Start () {
       Application.targetFrameRate = 1;
       i("NubisManager starting");
-      _ = StartNubis();
+      startNubis();
    }
 
    public void OnDestroy () {
-      Stop();
+      stopNubis();
    }
 
-   public bool Initialize () {
-      bool IsSupported = CheckSystemRequirements();
-      if (!IsSupported) return false;
-      return true;
-   }
-
-   private static void Content (HttpListenerContext context, string message = "") {
-      try {
-
-         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-            context.Response.StatusCode = 200;
-            writer.WriteLine(message);
-            writer.Flush();
-         }
-         context.Response.Close();
-      } catch {
-         i("Replying to client: FAILED");
-      }
-   }
-
-   private static void OK (HttpListenerContext context, string message = "OK") {
-      try {
-         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-            context.Response.StatusCode = 200;
-            writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
-            writer.Flush();
-         }
-         context.Response.Close();
-      } catch {
-         i("Replying to client: FAILED");
-      }
-   }
-
-   private static void NotFound (HttpListenerContext context, string message = "Not Found") {
-      try {
-         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-            context.Response.StatusCode = 404;
-            writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
-            writer.Flush();
-         }
-         context.Response.Close();
-      } catch {
-         i("Replying to client: FAILED");
-      }
-   }
-
-   private static void InternalServerError (HttpListenerContext context, string message = "Internal Server Error") {
-      try {
-         using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-            context.Response.StatusCode = 500;
-            writer.WriteLine($"<html><p style=\"color:green;\">{message}</p></html>");
-            writer.Flush();
-         }
-         context.Response.Close();
-      } catch {
-         i("Replying to client: FAILED");
-      }
-   }
-   private async Task ProcessRequestAsync (HttpListenerContext context) {
+   internal async Task ProcessRequestAsync (HttpListenerContext context) {
       await Task.Run(() => {
          try {
             if (context.Request.Url.Segments == null || context.Request.Url.Segments.Length < 1) {
-               OK(context, "");
+               NubisResponse.OK(context, "");
                return;
             }
             string endpoint = context.Request.Url.Segments[1].Replace("/", "");
             switch (endpoint) {
                case NubisEndpoints.RPC:
                   var result = NubisRelay.call(context.Request.Url.AbsoluteUri);
-                  Content(context, result);
+                  NubisResponse.Content(context, result);
                   break;
                case NubisEndpoints.TERMINATE:
-                  string msg = "Stop request received.";
-                  i(msg);
-                  OK(context, msg);
-                  Stop();
+                  NubisResponse.OK(context, "Stop request received.");
+                  stopNubis();
                   break;
                case NubisEndpoints.LOG:
-                     context.Response.StatusCode = 200;
-                     i("Log requested.");
-                     using (StreamWriter writer = new StreamWriter(context.Response.OutputStream)) {
-                        foreach (string line in File.ReadAllLines(NubisConfiguration.LogFilePath()))
-                           writer.WriteLine(line);
-                     }
-                     context.Response.Close();
+                  NubisResponse.LOG(context);
                   break;
                case NubisEndpoints.STATUS:
-                  OK(context);
+                  NubisResponse.OK(context);
+                  break;
+               case NubisEndpoints.VERSION:
+                  NubisResponse.Content(context,NubisStatics.VERSION);
                   break;
                default:
-                  i($"Request received! -from: {context.Request.RemoteEndPoint.ToString()} -url: {context.Request.Url}");
-                  NotFound(context);
+                  i($"New Request | Sender: {context.Request.RemoteEndPoint.ToString()} | URL: {context.Request.Url}");
+                  NubisResponse.NotFound(context);
                   break;
             }
          } catch (Exception ex) {
+            NubisResponse.InternalServerError(context);
             e(ex);
-            InternalServerError(context);
          }
 
       });
    }
 
-   public async Task StartNubis () {
+   private bool isNubisSupported () {
+      i($"is {NubisStatics.APP_NAME} Supported?...");
+      bool httpListenerSupported = HttpListener.IsSupported;
+      if (httpListenerSupported) {
+         i($"{NubisStatics.APP_NAME} can run on this platform!");
+      } else {
+         i($"{NubisStatics.APP_NAME} is not supported on this platform...");
+      }
+      return httpListenerSupported;
+   }
+   
+   private void startNubis () {
+      if (!isNubisSupported()) return;
       if (Status == NubisStatus.Starting || Status == NubisStatus.Running) return;
       Status = NubisStatus.Starting;
       DefaultFolders.Initialize();
-      i($"{NubisStatics.AppName} starting...");
+      i($"{NubisStatics.APP_NAME} starting...");
       configuration = NubisConfiguration.LoadSafe();
-      await CreateWebServerAsync(configuration.WebServerPort);
+      webServer = new NubisWebServer(this, configuration.WebServerPort);
+      webServer.init();
    }
 
-   private bool CheckSystemRequirements () {
-      i("Checking System Requirements...");
-      bool httpListenerSupported = HttpListener.IsSupported;
-      if (!httpListenerSupported) {
-         i($"{NubisStatics.AppName} is not supported on this platform...");
-         return false;
-      }
-      i($"{NubisStatics.AppName} can run on this platform!");
-      i("Checking System Requirements: DONE.");
-      return true;
-   }
-
-   private void WebServerLoop () {
-      try {
-         i($"{NubisStatics.AppName} waiting for requests.");
-         do {
-            HttpListenerContext context = httpServer.GetContext(); // blocks until a request is received.            
-            _ = ProcessRequestAsync(context);
-         }
-         while (httpServer.IsListening);
-      } catch (InvalidOperationException ex) {
-         // httpServer not started or Stopped or closed. or no URI to respond to. thus remember to add prefixes.
-         e(ex);
-      } catch (HttpListenerException ex) {
-         // native call failed.
-         i(ex.Message + " | errorCode: " + ex.ErrorCode + " | nativeErrorCode: " + ex.NativeErrorCode);
-         if (ex.NativeErrorCode == 995) {
-            i($"The error {ex.NativeErrorCode} can be safely ignored in most cases.");
-         };
-      }
-      i($"{NubisStatics.AppName} web server stopped.");
-   }
-
-   private bool StartWebServer (HttpListener httpServer, int port) {
-      // try to start web server.
-      try {
-         httpServer.Prefixes.Add($"http://*:{port.ToString()}/");
-         i($"Trying to start {NubisStatics.AppName}...");
-         httpServer.Start();
-      } catch (InvalidOperationException ex) {
-         // httpServer not started or Stopped or closed. or no URI to respond to. so remember to add prefixes.
-         e(ex);
-         i($"{NubisStatics.AppName} failed to start.");
-         return false;
-      } catch (HttpListenerException ex) {
-         // native call failed.
-         i(ex.Message + " | errorCode: " + ex.ErrorCode + " | nativeErrorCode: " + ex.NativeErrorCode);
-         if (ex.ErrorCode == 5) {
-            i($"Please, Run {NubisStatics.AppName} as an Administrator.");
-         }
-         i($"{NubisStatics.AppName} failed to start.");
-         return false;
-      }
-      return true;
-   }
-
-   private async Task CreateWebServerAsync (int port) {
-      try {
-         // create web server.
-         httpServer = new HttpListener();
-         bool success = StartWebServer(httpServer, port);
-         if (!success) return;
-         await Task.Run(WebServerLoop);
-      } catch (Exception ex) {
-         e(ex);
-      }
-   }
-
-   public void Stop () {
+   public void stopNubis () {
       if (Status == NubisStatus.Stopping || Status == NubisStatus.Idle) return;
+
       Status = NubisStatus.Stopping;
-      i($"{NubisStatics.AppName} stopping...");
-      httpServer?.Abort();
+      i($"{NubisStatics.APP_NAME} stopping...");
+      webServer?.stop();
    }
 
 
@@ -221,10 +104,11 @@ public class NubisManager : MonoBehaviour
    // Reference to the current instance of the configuration.
    private NubisConfiguration configuration;
 
-   // Reference to the webServer the butler is listening with.
-   private HttpListener httpServer;
-   // Reference to the current status of the Butler.
+   // Reference to the current status of Nubis.
    public NubisStatus Status { get; private set; } = NubisStatus.Idle;
+
+   // Reference to the WebServer.
+   private NubisWebServer webServer = null;
 
    #endregion
 

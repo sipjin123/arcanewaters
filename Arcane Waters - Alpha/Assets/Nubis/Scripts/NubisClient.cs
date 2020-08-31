@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System;
 using UnityEngine;
 
+
 /// <summary>
 /// Allows to communicate with Nubis through reflection calls.
 /// </summary>
@@ -31,7 +32,8 @@ internal class NubisClient
       foreach (string arg in args) {
          if (string.IsNullOrEmpty(arg)) continue;
          sbuilder.Append((argIdx == 0) ? "?" : "&");
-         string name = arg.GetType().Name + argIdx.ToString();
+         //string name = arg.GetType().Name + argIdx.ToString();
+         string name = "A" + argIdx.ToString();
          string value = arg;
          name = System.Net.WebUtility.UrlEncode(name);
          value = System.Net.WebUtility.UrlEncode(value);
@@ -98,6 +100,9 @@ internal class NubisClient
       } catch {
          return string.Empty;
       }
+   }
+   public static async Task<string> callDirect (string function, params object[] rawArgs) {
+      return await call("NubisDirect-" + function, rawArgs);
    }
 }
 
