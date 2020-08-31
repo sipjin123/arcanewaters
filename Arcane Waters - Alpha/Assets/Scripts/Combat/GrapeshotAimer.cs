@@ -15,7 +15,7 @@ public class GrapeshotAimer : ClientMonoBehaviour {
    private void Update () {
       // Check if the right mouse is being held down for the grapeshot attack
       bool rightMouseDown = Input.GetMouseButton(1);
-      _renderer.enabled = (rightMouseDown && SeaManager.selectedAttackType == Attack.Type.Air);
+      _renderer.enabled = (rightMouseDown && SeaManager.getAttackType() == Attack.Type.Air);
 
       // Can't do anything until we have a player
       if (Global.player == null || !(Global.player is SeaEntity)) {
@@ -23,7 +23,7 @@ public class GrapeshotAimer : ClientMonoBehaviour {
       }
 
       // Only show when we've selected grapeshot
-      if (SeaManager.selectedAttackType != Attack.Type.Air) {
+      if (SeaManager.getAttackType() != Attack.Type.Air) {
          return;
       }
 

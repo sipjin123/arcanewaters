@@ -181,7 +181,18 @@ public class ShipAbilityInfo
    public ShipAbilityInfo () { }
    public ShipAbilityInfo (bool autoGenerate) {
       if (autoGenerate) {
-         ShipAbilities = ShipAbilityManager.getRandomAbilities(3).ToArray();
+         List<int> newAbilities = new List<int>();
+         int[] randomizedAbilities = ShipAbilityManager.getRandomAbilities(2).ToArray();
+
+         // Make sure that the default ability is part of the skill list
+         newAbilities.Add(DEFAULT_ABILITY);
+
+         // Assign the randomized abilities
+         foreach (int abilityId in randomizedAbilities) {
+            newAbilities.Add(abilityId);
+         }
+
+         ShipAbilities = newAbilities.ToArray();
       }
    }
 }

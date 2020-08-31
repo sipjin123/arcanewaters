@@ -98,7 +98,7 @@ public class EffectManager : MonoBehaviour {
 
       // Swap in the desired Effect texture
       SimpleAnimation anim = genericEffect.GetComponent<SimpleAnimation>();
-      anim.setNewTexture(ImageManager.getTexture("Effects/" + effectType));
+      anim.setNewTexture(ImageManager.getSprite("Effects/" + effectType).texture);
 
       // Check if we need to set a custom speed
       float frameLength = getFrameLength(effectType);
@@ -247,6 +247,9 @@ public class EffectManager : MonoBehaviour {
       BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
       battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
       battlerProjectile.projectileRenderer.sprite = ImageManager.getSprite(projectileSpritePath);
+      if (projectileSpritePath.Contains("empty")) {
+         battlerProjectile.shadowObj.SetActive(false);
+      }
       genericEffect.transform.localScale = new Vector3(scale, scale, scale);
 
       // It target is at the left side of the map, flip the sprite

@@ -328,7 +328,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2168605178682876885}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.017, y: -0.142, z: 0.1}
+  m_LocalPosition: {x: -0.017, y: -0.115, z: 0.1}
   m_LocalScale: {x: 1.3650565, y: 1.3650565, z: 1.3650565}
   m_Children: []
   m_Father: {fileID: 6527673179465098367}
@@ -2096,7 +2096,9 @@ MonoBehaviour:
     elementalWeakness: 
     elementalResistance: 
     lootGroupId: 0
-    shadowScale: {x: 1, y: 1}
+    shadowScale: 1
+    shadowOffset: {x: 0, y: -0.2, z: 0.1}
+    isSupportType: 0
 --- !u!114 &6527673179465098354
 MonoBehaviour:
   m_ObjectHideFlags: 0

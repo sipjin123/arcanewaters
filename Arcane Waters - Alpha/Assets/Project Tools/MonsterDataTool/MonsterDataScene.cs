@@ -76,7 +76,11 @@ public class MonsterDataScene : MonoBehaviour {
 
          foreach (ImageManager.ImageData imgData in hitSpriteIconFiles) {
             Sprite sourceSprite = imgData.sprite;
-            monsterPanel.hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
+            if (!monsterPanel.hitIconSpriteList.ContainsKey(imgData.imagePath)) {
+               monsterPanel.hitIconSpriteList.Add(imgData.imagePath, sourceSprite);
+            } else {
+               D.editorLog("Duplicated key: " + imgData.imagePath, Color.red);
+            }
          }
 
          string castSpritePath = "Sprites/Effects/";
@@ -84,8 +88,12 @@ public class MonsterDataScene : MonoBehaviour {
 
          foreach (ImageManager.ImageData imgData in castSpriteIconFiles) {
             Sprite sourceSprite = imgData.sprite;
-            monsterPanel.castIconSpriteList.Add(imgData.imagePath, sourceSprite);
-         }
+            if (!monsterPanel.castIconSpriteList.ContainsKey(imgData.imagePath)) {
+               monsterPanel.castIconSpriteList.Add(imgData.imagePath, sourceSprite);
+            } else {
+               D.editorLog("Duplicated key: " + imgData.imagePath, Color.red);
+            }
+            }
 
          string skillIconSpritePath = "Sprites/Icons/Abilities/";
          List<ImageManager.ImageData> skillIconSpriteFiles = ImageManager.getSpritesInDirectory(skillIconSpritePath);

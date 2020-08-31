@@ -33,11 +33,18 @@ public class CannonPanel : ClientMonoBehaviour {
       _boxes = GetComponentsInChildren<CannonBox>();
    }
 
+   public void resetAllHighlights () {
+      foreach (CannonBox cannonBox in cannonBoxList) {
+         cannonBox.highlightSkill.SetActive(false);
+      }
+   }
+
    public void setAbilityTab (int[] abilities) {
       cannonBoxParent.gameObject.DestroyChildren();
       cannonBoxList = new List<CannonBox>();
 
       Attack.Type initialAbility = Attack.Type.None;
+      int index = 0;
       foreach (int abilityId in abilities) {
          CannonBox abilityTab = Instantiate(cannonBoxPrefab.gameObject, cannonBoxParent).GetComponent<CannonBox>();
          ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
@@ -47,17 +54,26 @@ public class CannonPanel : ClientMonoBehaviour {
          }
 
          abilityTab.attackType = shipAbility.selectedAttackType;
+         abilityTab.abilityId = shipAbility.abilityId;
          abilityTab.skillIcon.sprite = ImageManager.getSprite(shipAbility.skillIconPath);
 
+         // Selects the default ability
+         if (index == 0) {
+            SeaManager.selectedAbilityId = shipAbility.abilityId;
+         }
+
          cannonBoxList.Add(abilityTab);
+         index++;
       }
+      resetAllHighlights();
+      cannonBoxList[0].setCannons();
    }
 
-   public Attack.Type getAttackType (int index) {
+   public int getAbilityId (int index) {
       if (index < cannonBoxList.Count) {
-         return cannonBoxList[index].attackType;
+         return cannonBoxList[index].abilityId;
       }
-      return Attack.Type.Cannon;
+      return ShipAbilityInfo.DEFAULT_ABILITY;
    }
 
    private void Update () {

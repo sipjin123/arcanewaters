@@ -20,8 +20,8 @@ public class SeaManager : MonoBehaviour {
    // The current combat mode
    public static CombatMode combatMode = CombatMode.Circle;
 
-   // The currently selected attack type
-   public static Attack.Type selectedAttackType = Attack.Type.Cannon;
+   // The currently selected ability id
+   public static int selectedAbilityId = 1;
 
    // Self
    public static SeaManager self;
@@ -33,11 +33,19 @@ public class SeaManager : MonoBehaviour {
    }
 
    public bool isOffensiveAbility () {
-      if (selectedAttackType == Attack.Type.Heal || selectedAttackType == Attack.Type.SpeedBoost) {
+      if (getAttackType(selectedAbilityId) == Attack.Type.Heal || getAttackType(selectedAbilityId) == Attack.Type.SpeedBoost) {
          return false;
       }
 
       return true;
+   }
+
+   public static Attack.Type getAttackType (int ablityId) {
+      return ShipAbilityManager.self.getAbility(ablityId).selectedAttackType;
+   }
+
+   public static Attack.Type getAttackType () {
+      return ShipAbilityManager.self.getAbility(selectedAbilityId).selectedAttackType;
    }
 
    private void Update () {
@@ -48,15 +56,15 @@ public class SeaManager : MonoBehaviour {
 
       // Allow pressing F1 through F3 to change the combat mode
       if (Input.GetKeyUp(KeyCode.Alpha1)) {
-         selectedAttackType = CannonPanel.self.getAttackType(0);
+         selectedAbilityId = CannonPanel.self.getAbilityId(0);
       }
 
       if (Input.GetKeyUp(KeyCode.Alpha2)) {
-         selectedAttackType = CannonPanel.self.getAttackType(1);
+         selectedAbilityId = CannonPanel.self.getAbilityId(1);
       }
 
       if (Input.GetKeyUp(KeyCode.Alpha3)) {
-         selectedAttackType = CannonPanel.self.getAttackType(2);
+         selectedAbilityId = CannonPanel.self.getAbilityId(2);
       }
 
       // Allow pressing F1 through F2 to change the move mode

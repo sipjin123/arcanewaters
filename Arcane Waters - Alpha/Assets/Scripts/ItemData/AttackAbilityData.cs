@@ -117,6 +117,11 @@ public class AttackAbilityData : BasicAbilityData
    public float getTotalAnimLength (Battler attacker, Battler target) {
       float shakeLength = 0;
       float knockupLength = 0;
+      float knockBackLength = 0;
+
+      shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
+      knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
+      knockBackLength = hasKnockBack ? Battler.KNOCKBACK_LENGTH : 0f;
 
       switch (abilityActionType) {
          case AbilityActionType.Melee:
@@ -125,28 +130,18 @@ public class AttackAbilityData : BasicAbilityData
 
             // Add up the amount of time it takes to animate an entire melee action
             return jumpDuration + Battler.PAUSE_LENGTH + attacker.getPreContactLength() +
-                Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH;
-
+                Battler.POST_CONTACT_LENGTH + jumpDuration + Battler.PAUSE_LENGTH + shakeLength + knockupLength + knockBackLength;
          case AbilityActionType.Ranged:
-            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
-
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
 
          case AbilityActionType.Projectile:
-            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
-
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.AIM_DURATION + Battler.PRE_AIM_DELAY + Battler.POST_SHOOT_DELAY + Battler.PRE_SHOOT_DELAY;
 
          case AbilityActionType.CastToTarget:
-            shakeLength = hasShake ? Battler.SHAKE_LENGTH : 0f;
-            knockupLength = hasKnockup ? Battler.KNOCKUP_LENGTH : 0f;
-
             // Add up the amount of time it takes to animate an entire action
-            return attacker.getPreMagicLength() + shakeLength + knockupLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
 
          default:
             Debug.LogWarning("Ability type is not defined for getting anim length");

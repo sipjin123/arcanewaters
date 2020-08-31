@@ -140,7 +140,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId, bool isSupportType) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId, bool isSupportType, float shadowScale, Vector2 shadowOffset) {
 
       BattlerData data = new BattlerData();
 
@@ -148,7 +148,7 @@ public class BattlerData {
        defPerLevel, healthPerLevel, battlerAbilities, physicalDefMultiplier, fireDefMultiplier,
        earthDefMultiplier, airDefMultiplier, waterDefMultiplier, allDefMultiplier, physicalAtkMultiplier,
        fireAtkMultiplier, earthAtkMultiplier, airAtkMultiplier, waterAtkMultiplier, allAtkMultiplier,
-       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, enemyType, battlerObject, imagePath, animGroup, disableOnDeath, lootGroupId, isSupportType);
+       deathSoundEffectId, jumpSoundEffectId, preContactLength, preMagicLength, baseXPReward, enemyType, battlerObject, imagePath, animGroup, disableOnDeath, lootGroupId, isSupportType, shadowScale, shadowOffset);
 
       return data;
    }
@@ -213,6 +213,9 @@ public class BattlerData {
       imagePath = datacopy.imagePath;
       disableOnDeath = datacopy.disableOnDeath;
       lootGroupId = datacopy.lootGroupId;
+
+      shadowOffset = datacopy.shadowOffset;
+      shadowScale = datacopy.shadowScale;
    }
 
    protected void setAllBattlerData (int xp, int apWhenDamaged, int baseHealth, int baseDef, int baseDmg, int baseGold, int dmgPerLevel,
@@ -220,7 +223,7 @@ public class BattlerData {
       float earthDefMultiplier, float airDefMultiplier, float waterDefMultiplier, float allDefMultiplier, float physicalAtkMultiplier,
       float fireAtkMultiplier, float earthAtkMultiplier, float airAtkMultiplier, float waterAtkMultiplier, float allAtkMultiplier,
       int deathSoundEffectId, int jumpSoundEffectId, float preContactLength, float preMagicLength, int baseXPReward,
-      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId, bool isSupportType) {
+      Enemy.Type enemyType, Battler battlerObject, string imagePath, Anim.Group animGroup, bool disableOnDeath, int lootGroupId, bool isSupportType, float shadowScale, Vector2 shadowOffset) {
 
       this.currentXP = xp;
       this.enemyType = enemyType;
@@ -265,6 +268,9 @@ public class BattlerData {
       this.lootGroupId = lootGroupId;
 
       this.isSupportType = isSupportType;
+
+      this.shadowOffset = shadowOffset;
+      this.shadowScale = shadowScale;
    }
 
    #region Helper Class

@@ -39,7 +39,7 @@ public class AttackManager : ClientMonoBehaviour {
    void Update () {
       // Disable the sea combat UI when not relevant
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
-         SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.selectedAttackType == Attack.Type.Air ||
+         SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.getAttackType() == Attack.Type.Air ||
          PanelManager.self.hasPanelInStack()) {
          freeCursor.enabled = false;
          maxRangeCircle.hide();
@@ -118,12 +118,12 @@ public class AttackManager : ClientMonoBehaviour {
    }
 
    public int getPredictedDamage (SeaEntity enemy) {
-      if (Global.player == null || !(Global.player is SeaEntity) || SeaManager.selectedAttackType == Attack.Type.Air 
+      if (Global.player == null || !(Global.player is SeaEntity) || SeaManager.getAttackType() == Attack.Type.Air 
          || Global.player == enemy || !enemy.isAttackCursorOver() || Global.player.isAllyOf(enemy)
          || Global.player.isAdversaryInPveInstance(enemy)) {
          return 0;
       } else {
-         return ((SeaEntity) Global.player).getDamageForShot(SeaManager.selectedAttackType, 
+         return ((SeaEntity) Global.player).getDamageForShot(SeaManager.getAttackType(), 
             ShipEntity.getDamageModifierForDistance(_normalizedDistanceToCursor));
       }
    }

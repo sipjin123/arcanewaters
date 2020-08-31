@@ -13,6 +13,9 @@ public class CannonBox : ClientMonoBehaviour {
    // Skill Icon
    public Image skillIcon;
 
+   // The ability id
+   public int abilityId;
+
    // Skill highlight
    public GameObject highlightSkill;
 
@@ -24,19 +27,10 @@ public class CannonBox : ClientMonoBehaviour {
       _containerImage = GetComponent<Image>();
    }
 
-   private void Update () {
-      // Make the box highlighted if we've equipped the associated attack type
-      /*_containerImage.color = Color.white;
-      if (this.attackType == SeaManager.selectedAttackType) {
-         _containerImage.color = Util.getColor(255, 160, 160);
-      }*/
-
-      // Maybe swap out the image
-      highlightSkill.SetActive(this.attackType == SeaManager.selectedAttackType);
-   }
-
    public void setCannons () {
-      SeaManager.selectedAttackType = this.attackType;
+      CannonPanel.self.resetAllHighlights();
+      SeaManager.selectedAbilityId = abilityId;
+      highlightSkill.SetActive(true);
    }
 
    #region Private Variables

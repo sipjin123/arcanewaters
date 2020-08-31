@@ -107,7 +107,26 @@ public class Battle : NetworkBehaviour {
             BattlePlan battlePlan = battler.getBattlePlan(this);
             BattlerData battlerData = MonsterManager.self.getBattler(battler.enemyType);
             List<Battler> battlerAllies = new List<Battler>();
-            battlerAllies.Add(battlePlan.targetAllies.ChooseRandom());
+            int lowHpAllies = battlePlan.targetAllies.FindAll(_ => _.displayedHealth < _.getStartingHealth(_.enemyType)).Count;
+
+            if (lowHpAllies > 0 && battlePlan.targetAllies.Count > 0) {
+               Battler lowestHpBattler = battlePlan.targetAllies[0];
+               float lowestHealth = -1;
+               foreach (Battler allyBattler in battlePlan.targetAllies) {
+                  if (lowestHealth < 0) {
+                     // Assigns the default battler to heal
+                     lowestHpBattler = allyBattler;
+                     lowestHealth = allyBattler.displayedHealth;
+                  } else {
+                     // Assigns the battler with the lower hp in percentage as the default battler to heal
+                     if ((allyBattler.displayedHealth / allyBattler.getStartingHealth(allyBattler.enemyType)) < (lowestHpBattler.displayedHealth / lowestHpBattler.getStartingHealth(lowestHpBattler.enemyType))) {
+                        lowestHpBattler = allyBattler;
+                        lowestHealth = allyBattler.displayedHealth;
+                     }
+                  }
+               }
+               battlerAllies.Add(lowestHpBattler);
+            }
 
             // If we couldn't find a valid target, then move on
             if (battlePlan == null || battlePlan.targets == null || battlePlan.targets.Count == 0) {
@@ -115,8 +134,7 @@ public class Battle : NetworkBehaviour {
             }
 
             // Handles the current and only attack a monster can do
-            // TODO: After setting up xml data remove the hardcoded enemy type
-            if (battlerData.isSupportType || battlerData.enemyType == Enemy.Type.Pirate_Healer) {
+            if (battlerData.isSupportType && lowHpAllies > 0) {
                BattleManager.self.executeBattleAction(this, battler, battlerAllies, 0, AbilityType.BuffDebuff);
             } else {
                BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);

@@ -3619,6 +3619,7 @@ public class RPCManager : NetworkBehaviour {
       PlayerBodyEntity localBattler = (PlayerBodyEntity) _player;
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[netId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
+      BattlerData enemyData = MonsterManager.self.getBattler(enemy.enemyType);
       Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
       List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
@@ -3697,17 +3698,25 @@ public class RPCManager : NetworkBehaviour {
             }
 
             int maximumEnemyCount = (attackerCount * 2) - 1;
+            int combatantCount = 0;
+            bool forceCombatantEntry = false;
             if (!enemy.isBossType && enemy.enemyType != Enemy.Type.Skelly_Captain_Tutorial) {
                for (int i = 0; i < maximumEnemyCount; i++) {
                   float randomizedSpawnChance = 0;
 
                   // Chance to spawn additional enemies more than the attackers
                   if (modifiedDefenderList.Count >= attackerCount) {
-                     randomizedSpawnChance = Random.Range(0.0f, 10.0f);
+                     // Make sure that if the encountered enemy is a support type, there is atleast 1 combatant ally
+                     if (enemyData.isSupportType && i == maximumEnemyCount - 1 && combatantCount < 1) {
+                        randomizedSpawnChance = 0;
+                        forceCombatantEntry = true;
+                     } else {
+                        randomizedSpawnChance = Random.Range(0.0f, 10.0f);
+                     }
                   }
 
                   if (randomizedSpawnChance < 5) {
-                     Enemy backupEnemy = enemyRoster[Random.Range(0, enemyRoster.Count)];
+                     Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
                      BattlerData battlerData = MonsterManager.self.getBattler(backupEnemy.enemyType);
                      modifiedDefenderList.Add(new BattlerInfo {
                         battlerName = battlerData.enemyName,
@@ -3716,6 +3725,10 @@ public class RPCManager : NetworkBehaviour {
                         battlerXp = backupEnemy.XP,
                         companionId = 0
                      });
+
+                     if (!battlerData.isSupportType) {
+                        combatantCount++;
+                     }
                   }
                }
             }

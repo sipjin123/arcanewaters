@@ -25,6 +25,9 @@ public class BattlerProjectile : MonoBehaviour {
    // Reference to the sprite
    public SpriteRenderer projectileRenderer;
 
+   // The shadow object
+   public GameObject shadowObj;
+
    #endregion
 
    public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float projectileSpeed) {

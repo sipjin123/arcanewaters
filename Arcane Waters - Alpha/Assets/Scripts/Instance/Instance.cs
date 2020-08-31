@@ -251,6 +251,7 @@ public class Instance : NetworkBehaviour
             BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
             if (battleData != null) {
                enemy.isBossType = battleData.isBossType;
+               enemy.isSupportType = battleData.isSupportType;
                enemy.animGroupType = battleData.animGroup;
                enemy.facing = Direction.South;
                enemy.displayNameText.text = battleData.enemyName;

@@ -120,9 +120,9 @@ public class PlayerShipEntity : ShipEntity
       if (isNextShotDefined && hasReloaded()) {
          // Fire the scheduled shot
          if (!SeaManager.self.isOffensiveAbility()) {
-            Cmd_CastAbility(SeaManager.selectedAttackType);
+            Cmd_CastAbility(SeaManager.getAttackType());
          } else {
-            Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.selectedAttackType, transform.position);
+            Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.getAttackType(), transform.position);
          }
          isNextShotDefined = false;
       }
@@ -133,16 +133,16 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // Right-click to attack in a circle
-      if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.selectedAttackType != Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
+      if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.getAttackType() != Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          // If the ship is reloading, set the next shot
          if (!hasReloaded()) {
             nextShotTarget = clampToRange(Util.getMousePos());
             isNextShotDefined = true;
          } else {
             if (!SeaManager.self.isOffensiveAbility()) {
-               Cmd_CastAbility(SeaManager.selectedAttackType);
+               Cmd_CastAbility(SeaManager.getAttackType());
             } else {
-               Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.selectedAttackType, transform.position);
+               Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.getAttackType(), transform.position);
 
                // Trigger the tutorial
                TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
@@ -198,7 +198,7 @@ public class PlayerShipEntity : ShipEntity
       }*/
       
       // Right click to fire out the sides
-      if (Input.GetMouseButtonUp(1) && SeaManager.selectedAttackType == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
+      if (Input.GetMouseButtonUp(1) && SeaManager.getAttackType() == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
       }
    }

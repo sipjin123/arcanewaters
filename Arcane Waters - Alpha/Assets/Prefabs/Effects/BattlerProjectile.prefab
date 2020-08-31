@@ -50,6 +50,7 @@ MonoBehaviour:
   targetPosition: {x: 0, y: 0}
   projectileSpeed: 0
   projectileRenderer: {fileID: 6741503060635277830}
+  shadowObj: {fileID: 7766926891890308027}
 --- !u!1 &1308094845865132502
 GameObject:
   m_ObjectHideFlags: 0

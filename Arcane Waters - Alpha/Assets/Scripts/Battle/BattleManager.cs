@@ -489,7 +489,7 @@ public class BattleManager : MonoBehaviour {
 
       // String action list that will be sent to clients
       List<string> stringList = new List<string>();
-
+      
       if (abilityData == null) {
          D.error("The Ability Data is NULL!! : "+ source.enemyType);
          return;
@@ -718,6 +718,7 @@ public class BattleManager : MonoBehaviour {
                // ZERONEV-COMMENT: It is supossed we are still grabbing the ability from the source battler to apply it
                // So we will grab the source battler
                AttackAbilityData abilityData = source.getAttackAbilities()[action.abilityInventoryIndex];
+
                // Remove the action cooldown and animation duration from the source's timestamps
                animLength = abilityData.getTotalAnimLength(source, target);
             }

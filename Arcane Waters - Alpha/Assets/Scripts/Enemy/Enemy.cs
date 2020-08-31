@@ -41,6 +41,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    [SyncVar]
    public bool isBossType;
 
+   // Determines if this battler is a support
+   [SyncVar]
+   public bool isSupportType;
+
    // Our body animator
    public SimpleAnimation bodyAnim;
 
