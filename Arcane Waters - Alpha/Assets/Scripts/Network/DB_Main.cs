@@ -2029,6 +2029,7 @@ public class DB_Main : DB_MainStub
             }
          }
       } catch (Exception e) {
+         D.debug("Failed to get Map info for: " + areaKey);
          D.error("MySQL Error: " + e.ToString());
       }
 

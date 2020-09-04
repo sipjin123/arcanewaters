@@ -88,6 +88,7 @@ public class BaseCamera : MonoBehaviour {
    protected Camera _cam;
 
    // The associated virtual camera
+   [SerializeField]
    protected CinemachineVirtualCamera _vcam;
 
    // Our Pixel Fade effect

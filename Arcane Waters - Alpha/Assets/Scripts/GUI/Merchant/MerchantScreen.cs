@@ -149,7 +149,7 @@ public class MerchantScreen : Panel {
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell);
+      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell, shopName);
    }
 
    public void updatePanelWithOffers (int gold, List<CropOffer> offers, long lastCropRegenTime, string greetingText) {

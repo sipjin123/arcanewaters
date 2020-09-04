@@ -43,19 +43,28 @@ public class CharacterStack : MonoBehaviour {
       updateHair(info.hairType, info.hairPalettes);
 
       ArmorStatData armorData = ArmorStatData.getDefaultData();
-      if (userObjects.armor.data != "") {
-         armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
-         if (updatePalettes) {
-            if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().armorManager) {
-               ArmorManager armorManager = Global.player.GetComponent<BodyEntity>().armorManager;
-               armorData.palettes = armorManager.palettes;
+      if (userObjects.armor.data != "" && userObjects.armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+         try {
+            armorData = Util.xmlLoad<ArmorStatData>(userObjects.armor.data);
+            if (updatePalettes) {
+               if (Global.player && Global.player.GetComponent<BodyEntity>() && Global.player.GetComponent<BodyEntity>().armorManager) {
+                  ArmorManager armorManager = Global.player.GetComponent<BodyEntity>().armorManager;
+                  armorData.palettes = armorManager.palettes;
+               }
             }
+         } catch {
+            D.editorLog("Failed to translate xml data!", Color.red);
+            D.editorLog(userObjects.armor.data, Color.red);
+         }
+      } else {
+         if (userObjects.armor.itemTypeId > 0) {
+            armorData = EquipmentXMLManager.self.getArmorData(userObjects.armor.itemTypeId);
          }
       }
       updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
 
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
-      if (userObjects.weapon.data != "") {
+      if (userObjects.weapon.data != "" && userObjects.weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
          try {
             weaponData = Util.xmlLoad<WeaponStatData>(userObjects.weapon.data);
             if (updatePalettes) {
@@ -68,11 +77,15 @@ public class CharacterStack : MonoBehaviour {
             D.editorLog("Failed to translate xml data!", Color.red);
             D.editorLog(userObjects.weapon.data, Color.red);
          }
+      } else {
+         if (userObjects.weapon.itemTypeId > 0) {
+            weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
+         }
       }
       updateWeapon(info.gender, weaponData.weaponType, weaponData.palettes, updatePalettes);
 
       HatStatData hatData = HatStatData.getDefaultData();
-      if (userObjects.hat.data != "") {
+      if (userObjects.hat.data != "" && userObjects.hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
          try {
             hatData = Util.xmlLoad<HatStatData>(userObjects.hat.data);
             if (updatePalettes) {
@@ -84,6 +97,10 @@ public class CharacterStack : MonoBehaviour {
          } catch {
             D.editorLog("Failed to translate xml data!", Color.red);
             D.editorLog(userObjects.hat.data, Color.red);
+         }
+      } else {
+         if (userObjects.hat.itemTypeId > 0) {
+            hatData = EquipmentXMLManager.self.getHatData(userObjects.hat.itemTypeId);
          }
       }
       updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);

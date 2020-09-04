@@ -107,7 +107,7 @@ public class Battle : NetworkBehaviour {
             BattlePlan battlePlan = battler.getBattlePlan(this);
             BattlerData battlerData = MonsterManager.self.getBattler(battler.enemyType);
             List<Battler> battlerAllies = new List<Battler>();
-            int lowHpAllies = battlePlan.targetAllies.FindAll(_ => _.displayedHealth < _.getStartingHealth(_.enemyType)).Count;
+            int lowHpAllies = battlePlan.targetAllies.FindAll(_ => _.health < _.getStartingHealth(_.enemyType)).Count;
 
             if (lowHpAllies > 0 && battlePlan.targetAllies.Count > 0) {
                Battler lowestHpBattler = battlePlan.targetAllies[0];
@@ -116,12 +116,14 @@ public class Battle : NetworkBehaviour {
                   if (lowestHealth < 0) {
                      // Assigns the default battler to heal
                      lowestHpBattler = allyBattler;
-                     lowestHealth = allyBattler.displayedHealth;
+                     lowestHealth = allyBattler.health;
                   } else {
                      // Assigns the battler with the lower hp in percentage as the default battler to heal
-                     if ((allyBattler.displayedHealth / allyBattler.getStartingHealth(allyBattler.enemyType)) < (lowestHpBattler.displayedHealth / lowestHpBattler.getStartingHealth(lowestHpBattler.enemyType))) {
+                     float selectedAllyHealthRatio = allyBattler.health / allyBattler.getStartingHealth(allyBattler.enemyType);
+                     float newAllyHealthRatio = lowestHpBattler.health / lowestHpBattler.getStartingHealth(lowestHpBattler.enemyType);
+                     if (selectedAllyHealthRatio < newAllyHealthRatio) {
                         lowestHpBattler = allyBattler;
-                        lowestHealth = allyBattler.displayedHealth;
+                        lowestHealth = allyBattler.health;
                      }
                   }
                }

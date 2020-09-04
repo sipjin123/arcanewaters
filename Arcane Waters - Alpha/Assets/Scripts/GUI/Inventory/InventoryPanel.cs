@@ -167,23 +167,46 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       try {
          // If the item is equipped, place the item cell in the equipped slots
          if (item.category == Item.Category.Weapon) {
-            WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(item.data);
-            Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
-            newWeapon.itemTypeId = weaponData.sqlId;
+            Weapon newWeapon = new Weapon { category = Item.Category.Weapon, itemTypeId = item.itemTypeId };
+            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(item.data);
+               newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+               newWeapon.itemTypeId = weaponData.sqlId;
+            } else {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               newWeapon.itemTypeId = weaponData.sqlId;
+               newWeapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+            }
 
             cell.setCellForItem(newWeapon);
             cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
             refreshStats(newWeapon);
          } else if (item.category == Item.Category.Armor) {
-            ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(item.data);
-            Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
+            Armor newArmor = new Armor { category = Item.Category.Armor, itemTypeId = item.itemTypeId };
+            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(item.data);
+               newArmor = ArmorStatData.translateDataToArmor(armorData);
+               newArmor.itemTypeId = armorData.sqlId;
+            } else {
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               newArmor.itemTypeId = armorData.sqlId;
+               newArmor.data = ArmorStatData.serializeArmorStatData(armorData);
+            }
 
             cell.setCellForItem(newArmor);
             cell.transform.SetParent(equippedArmorCellContainer.transform, false);
             refreshStats(Armor.castItemToArmor(newArmor));
          } else if (item.category == Item.Category.Hats) {
-            HatStatData hatData = Util.xmlLoad<HatStatData>(item.data);
-            Hat newHat = HatStatData.translateDataToHat(hatData);
+            Hat newHat = new Hat { category = Item.Category.Hats, itemTypeId = item.itemTypeId };
+            if (item.itemTypeId > 0 && item.data.Length > 0 && item.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               HatStatData hatData = Util.xmlLoad<HatStatData>(item.data);
+               newHat = HatStatData.translateDataToHat(hatData);
+               newHat.itemTypeId = hatData.sqlId;
+            } else {
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               newHat.itemTypeId = hatData.sqlId;
+               newHat.data = HatStatData.serializeHatStatData(hatData);
+            }
 
             cell.setCellForItem(newHat);
             cell.transform.SetParent(equippedHatCellContainer.transform, false);

@@ -94,7 +94,7 @@ public class PlayerBodyEntity : BodyEntity {
    public ParticleSystem dustTrailParticleObj;
 
    // Cooldown variables
-   public const float jumpCooldownMax = 1.5f;
+   public const float jumpCooldownMax = .4f;
    public float jumpCooldownTimer;
    public bool isJumpCoolingDown = false;
 
@@ -219,15 +219,12 @@ public class PlayerBodyEntity : BodyEntity {
 
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
              || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
-            requestAnimationPlay(Anim.Type.NC_Jump_East);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_East);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.North) {
-            requestAnimationPlay(Anim.Type.NC_Jump_North);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_North);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.South) {
-            requestAnimationPlay(Anim.Type.NC_Jump_South);
             rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }

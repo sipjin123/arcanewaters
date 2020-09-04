@@ -248,7 +248,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void sellCrops (int offerId, int amountToSell) {
+   public void sellCrops (int offerId, int amountToSell, string shopName) {
       // Make sure they aren't spamming requests
       if (recentlySoldCrops(_player.userId)) {
          D.log("Ignoring spam sell request from player: " + _player);
@@ -258,9 +258,17 @@ public class CropManager : NetworkBehaviour {
       // Make sure the offer exists at the current area
       CropOffer offer = new CropOffer();
 
-      foreach (CropOffer availableOffer in ShopManager.self.getOffers(_player.areaKey)) {
-         if (availableOffer.id == offerId) {
-            offer = availableOffer;
+      if (Util.isEmpty(shopName)) {
+         foreach (CropOffer availableOffer in ShopManager.self.getOffers(_player.areaKey)) {
+            if (availableOffer.id == offerId) {
+               offer = availableOffer;
+            }
+         }
+      } else {
+         foreach (CropOffer availableOffer in ShopManager.self.getOffersByShopName(shopName)) {
+            if (availableOffer.id == offerId) {
+               offer = availableOffer;
+            }
          }
       }
 
@@ -456,7 +464,7 @@ public class CropManager : NetworkBehaviour {
       SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
 
       // Updates the offers in the merchant panel
-      Global.player.rpc.Cmd_GetOffersForArea(ShopManager.DEFAULT_SHOP_NAME);
+      Global.player.rpc.Cmd_GetOffersForArea(MerchantScreen.self.shopName);
    }
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType) {

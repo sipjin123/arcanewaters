@@ -1316,8 +1316,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SellCrops (int offerId, int amountToSell) {
-      _player.cropManager.sellCrops(offerId, amountToSell);
+   public void Cmd_SellCrops (int offerId, int amountToSell, string shopName) {
+      _player.cropManager.sellCrops(offerId, amountToSell, shopName);
    }
 
    [Command]
@@ -1618,7 +1618,7 @@ public class RPCManager : NetworkBehaviour {
 
          if (itemRequirementList.Count > 0) {
             List<Item> currentItems = DB_Main.getRequiredItems(itemRequirementList, _player.userId);
-            itemStock = getItemStock(itemRequirementList, currentItems);
+            itemStock = getItemStock(itemRequirementList, currentItems); 
          }
 
          // Back to the Unity thread
@@ -1732,7 +1732,7 @@ public class RPCManager : NetworkBehaviour {
    private List<int> getItemStock (List<Item> itemRequirements, List<Item> currentItems) {
       List<int> newItemStockList = new List<int>();
       foreach (Item item in itemRequirements) {
-         Item currentItem = currentItems.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId && _.count >= item.count);
+         Item currentItem = currentItems.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId);
          if (currentItem == null) {
             newItemStockList.Add(0);
          } else {
@@ -4246,7 +4246,10 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
-
+            if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               armor.data = ArmorStatData.serializeArmorStatData( EquipmentXMLManager.self.getArmorData(armor.itemTypeId));
+               userObjects.armor.data = armor.data;
+            }
             if (body != null) {
                body.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
             }
@@ -4269,6 +4272,10 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Hat hat = Hat.castItemToHat(userObjects.hat);
+            if (hat.data.Length < 1 && hat.itemTypeId > 0 && hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               hat.data = HatStatData.serializeHatStatData(EquipmentXMLManager.self.getHatData(hat.itemTypeId));
+               userObjects.hat.data = hat.data;
+            }
             if (body != null) {
                body.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
             }
@@ -4292,7 +4299,10 @@ public class RPCManager : NetworkBehaviour {
          // Back to Unity Thread to call RPC functions
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Weapon weapon = Weapon.castItemToWeapon(userObjects.weapon);
-
+            if (weapon.data.Length < 1 && weapon.itemTypeId > 0 && weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
+               weapon.data = WeaponStatData.serializeWeaponStatData(EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId));
+               userObjects.weapon.data = weapon.data;
+            }
             if (body != null) {
                body.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
             } else {

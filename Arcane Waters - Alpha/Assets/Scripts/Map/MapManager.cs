@@ -111,10 +111,11 @@ public class MapManager : MonoBehaviour
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call(nameof(DB_Main.getMapInfo), areaKey);
       D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
-      MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
-      if (string.IsNullOrWhiteSpace(mapData)) {
-         D.debug("Error in retrieving map data from NUBIS");
+      if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
+         D.debug("Error in retrieving map data from NUBIS: (" + mapData + ")");
       } else {
+         MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
+
          // Deserialize the map
          ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 

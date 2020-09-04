@@ -70,24 +70,24 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             itemTypeId = item.itemTypeId;
             break;
          case Item.Category.Armor:
-            item = Armor.castItemToArmor(item);
-            if (item.data.Length < 1) {
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
-            } else {
-               ArmorStatData armorData = ArmorStatData.getStatData(item.data, item.itemTypeId);
-               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
-            }
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
+            newArmor.id = item.id;
+            item = newArmor;
+
+            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+            itemSpriteId = armorData.armorType;
+            itemTypeId = item.itemTypeId;
             break;
          case Item.Category.Hats:
-            item = Hat.castItemToHat(item);
-            if (item.data.Length < 1) {
-               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
-            } else {
-               HatStatData hatData = HatStatData.getStatData(item.data, item.itemTypeId);
-               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
-            }
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+            Hat newHat = HatStatData.translateDataToHat(hatData);
+            newHat.id = item.id;
+            item = newHat;
+
+            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+            itemSpriteId = hatData.hatType;
+            itemTypeId = item.itemTypeId;
             break;
          case Item.Category.Potion:
             item = item.getCastItem();

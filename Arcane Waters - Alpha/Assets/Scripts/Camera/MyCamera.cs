@@ -64,11 +64,14 @@ public class MyCamera : BaseCamera
 
       _initialSettings = getVirtualCameraSettings();
       _initialSettings.ppuScale = getPPUScale();
-   }
-
-   void Update () {
       _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
    }
+
+   // TODO: Confirm if this line is intended to be in update, this causes the inappropriate scaling of the character when changing resolution
+   /*
+   void Update () {
+      _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
+   }*/
 
    public Tween setOrthographicSize (float size) {
       _orthoSizeTween?.Kill();

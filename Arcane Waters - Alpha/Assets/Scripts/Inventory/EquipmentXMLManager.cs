@@ -34,6 +34,9 @@ public class EquipmentXMLManager : MonoBehaviour {
    // Determines if all equipment is loaded
    public bool loadedAllEquipment;
 
+   // The valid starting format of an xml data
+   public const string VALID_XML_FORMAT = "<?xml version=";
+
    // Determines if data setup is done
    public UnityEvent finishedDataSetup = new UnityEvent();
 
