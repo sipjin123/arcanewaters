@@ -7,6 +7,15 @@ namespace MinimapGeneration
    [CreateAssetMenu(fileName = "newMinimapGeneratorPreset", menuName = "Minimap Generator Preset")]
    public class MinimapGeneratorPreset : ScriptableObject
    {
+      // Determine if preset is dedicated to special usage (single map - based on area key) and which type of map should be used
+      public enum SpecialType
+      {
+         NotSpecial = 0,
+         Land = 1,
+         Sea = 2,
+         Interior = 3
+      }
+
       [Header("Images settings")]
       public string _minimapsPath = "/Sprites/Minimaps/";
       public string imagePrefixName = "";
@@ -23,12 +32,9 @@ namespace MinimapGeneration
       public bool useOutline;
       public Color outlineColor;
 
-      [Header("Map Types")]
-      public string[] mapTypeNames;
-      public string[] mapKeys;
-
-      [Tooltip("it is just checked if have something written")]
-      public string biome = "";
+      [Header("Special Type")]
+      public SpecialType specialType = SpecialType.NotSpecial;
+      public string specialTypeAreaKey = "";
 
       [Reorderable]
       [Header("Layers")]

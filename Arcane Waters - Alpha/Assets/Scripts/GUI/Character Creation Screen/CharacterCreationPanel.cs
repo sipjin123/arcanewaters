@@ -112,7 +112,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       this.genderSelected(Random.Range(1, 3));
 
-      SpotFader.self.setColor(circleFaderBackgroundColor);
+      CharacterCreationSpotFader.self.setColor(circleFaderBackgroundColor);
 
       show();
    }
@@ -169,7 +169,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public void onCharacterCreationValid () {      
       hide();
 
-      SpotFader.self.fadeBackgroundColor(Color.black, 0.25f);
+      CharacterCreationSpotFader.self.closeAndHide();
+      
+      SpotFader.self.fadeBackgroundColor(Color.black, 0.1f);
       SpotFader.self.closeSpot();
 
       // Show loading screen while starting map is being created
@@ -195,7 +197,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public void cancelCreating () {
       CharacterScreen.self.myCamera.setDefaultSettings();
       Destroy(_char.gameObject);
-      SpotFader.self.openSpotToMaxSize();
+      CharacterCreationSpotFader.self.openSpotToMaxSize();
       hide();
    }
 

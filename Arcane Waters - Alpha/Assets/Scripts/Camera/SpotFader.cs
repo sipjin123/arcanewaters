@@ -15,6 +15,9 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
    // The spot mask image
    public Image spotMask;
 
+   // Whether the color of the mask sprite should match the background color
+   public bool matchMaskWithBackgroundColor;
+
    // Self
    public static SpotFader self;
 
@@ -39,8 +42,13 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
          return;
       }
 
-      _currentColorTween?.Kill();
-      _currentColorTween = backgroundImage.DOColor(color, time >= 0 ? time : _totalEffectTime * 0.5f);
+      _currentBackgroundColorTween?.Kill();
+      _currentBackgroundColorTween = backgroundImage.DOColor(color, time >= 0 ? time : _totalEffectTime * 0.5f);
+
+      if (matchMaskWithBackgroundColor) {
+         _currentSpotColorTween?.Kill();
+         _currentSpotColorTween = spotMask.DOColor(color, time >= 0 ? time : _totalEffectTime * 0.5f);
+      }
    }
 
    public void openSpotToMaxSize () {
@@ -62,19 +70,6 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
 
    public void openSpotToMaxSize (Transform transform) {
       StartCoroutine(CO_OpenSpotWhenPositionIsValid(transform));
-   }
-
-
-   public void closeTowardsOfflineChar (Vector3 worldPosition) {
-      if (self == null) {
-         return;
-      }
-
-      _currentSizeTween?.Kill();
-      spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
-      spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition) + _highlightPlayerOffset;
-      setFadeInitialValues();
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(_highlightPlayerSpotSize, _totalEffectTime * 0.5f);
    }
 
    public void closeSpot () {
@@ -107,8 +102,13 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
          return;
       }
 
-      _currentColorTween?.Kill();
+      _currentBackgroundColorTween?.Kill();
       backgroundImage.color = color;
+
+      if (matchMaskWithBackgroundColor) {
+         _currentSpotColorTween?.Kill();
+         spotMask.color = color;
+      }
    }
 
    private void setFadeInitialValues () {
@@ -126,7 +126,7 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
    }
 
    public bool isAnimatingColor () {
-      return _currentColorTween != null && _currentColorTween.active && _currentColorTween.IsPlaying();
+      return _currentBackgroundColorTween != null && _currentBackgroundColorTween.active && _currentBackgroundColorTween.IsPlaying();
    }
 
    private IEnumerator CO_OpenSpotWhenPositionIsValid (Transform transform) {
@@ -145,7 +145,7 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
       StopAllCoroutines();
 
       if (isAnimatingAny()) {
-         _currentColorTween?.Kill();
+         _currentBackgroundColorTween?.Kill();
          _currentSizeTween?.Kill();
       }
    }
@@ -164,6 +164,8 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
    }
 
    public float fadeOut () {
+      fadeBackgroundColor(_defaultColor);
+
       // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
       if (Global.player != null) {
          closeSpot(Global.player.transform.position);
@@ -178,14 +180,6 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
 
    #region Private Variables
 
-   // The default spot size, enough to highlight a player
-   [SerializeField]
-   private Vector2 _highlightPlayerSpotSize = new Vector2(500, 500);
-
-   // The world position offset of the mask relative to the player
-   [SerializeField]
-   private Vector3 _highlightPlayerOffset = new Vector2(6, 100);
-
    // The default color of the background image
    [SerializeField]
    private Color _defaultColor = Color.black;
@@ -197,12 +191,15 @@ public class SpotFader : ClientMonoBehaviour, IScreenFader {
    // The tween that's changing the spot size
    private Tween _currentSizeTween;
 
-   // The tween that's changing the color
-   private Tween _currentColorTween;
+   // The tween that's changing the color of the background
+   private Tween _currentBackgroundColorTween;
+
+   // The tween that's changing the color of the spot
+   private Tween _currentSpotColorTween;
 
    // The canvas group
    private CanvasGroup _canvasGroup;
-
+      
    // The max spot size, enough to go become invisible 
    private static Vector2 MAX_SPOT_SIZE;
 

@@ -3263,7 +3263,7 @@ public class DB_Main : DB_MainStub
 
    #region Palette XML Data
 
-   public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
+   public static new void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, string tag) {
       string xml_id_key = "paletteId, ";
       string xml_id_value = "@paletteId, ";
 
@@ -3277,9 +3277,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate, isEnabled) " +
-            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW(), @isEnabled) " +
-            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW(), isEnabled = @isEnabled", conn)) {
+            "INSERT INTO palette (" + xml_id_key + "palette_name, xml_content, creator_userID, lastUserUpdate, isEnabled, tag) " +
+            "VALUES(" + xml_id_value + "@palette_name, @xml_content, @creator_userID, NOW(), @isEnabled, @tag) " +
+            "ON DUPLICATE KEY UPDATE palette_name = @palette_name, xml_content = @xml_content, lastUserUpdate = NOW(), isEnabled = @isEnabled, tag = @tag", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3289,6 +3289,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_content", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self ? MasterToolAccountManager.self.currentAccountID : 0);
             cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
+            cmd.Parameters.AddWithValue("@tag", tag);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3348,6 +3349,7 @@ public class DB_Main : DB_MainStub
                      rawXmlData = dataReader.GetString("xml_content"),
                      xmlId = dataReader.GetInt32("paletteId"),
                      xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                     tag = dataReader.GetString("tag"),
                   };
                   rawDataList.Add(newXML);
                }

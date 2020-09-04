@@ -182,6 +182,9 @@ public class XMLPair {
    // The xml content 
    public string rawXmlData;
 
+   // Tag classifying palette
+   public string tag;
+
    // Determines if this data is enabled
    public bool isEnabled;
 }

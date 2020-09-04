@@ -201,7 +201,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public UserInfo getUserInfo () {
-      CharacterSpot spot = GetComponentInParent<CharacterSpot>();
+      CharacterSpot spot = this.spot != null ? this.spot : GetComponentInParent<CharacterSpot>();
 
       UserInfo info = new UserInfo();
       info.gender = this.genderType;

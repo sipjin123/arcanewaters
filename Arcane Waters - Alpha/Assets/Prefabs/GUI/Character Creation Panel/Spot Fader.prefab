@@ -139,8 +139,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImage: {fileID: 802755960962764614}
   spotMask: {fileID: 802755961768482728}
-  _highlightPlayerSpotSize: {x: 500, y: 500}
-  _highlightPlayerOffset: {x: 6, y: 30, z: 0}
+  matchMaskWithBackgroundColor: 1
   _defaultColor: {r: 0, g: 0, b: 0, a: 1}
   _totalEffectTime: 1
 --- !u!1 &802755961768482710
@@ -177,8 +176,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2136, y: 1424}
+  m_AnchoredPosition: {x: -502.5, y: -489.5}
+  m_SizeDelta: {x: 1066.9744, y: 1066.9744}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &802755961768482729
 CanvasRenderer:
@@ -201,13 +200,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: e1c29008afee7067f93b1870d07c04a3, type: 2}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d465205d48d0e4045accf427f9be051a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e68ecbc6d47d72642bbdd7fe74ff7c09, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

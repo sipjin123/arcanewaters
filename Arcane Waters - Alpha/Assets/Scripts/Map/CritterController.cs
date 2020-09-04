@@ -33,7 +33,9 @@ public class CritterController : MonoBehaviour, IMapEditorDataReceiver
 
    private void appear () {
       // Handle it in a coroutine so that we can wait
-      StartCoroutine(CO_Appear());
+      if (gameObject.activeInHierarchy) {
+         StartCoroutine(CO_Appear());
+      }
    }
 
    private IEnumerator CO_Appear () {

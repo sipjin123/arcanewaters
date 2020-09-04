@@ -127,7 +127,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteNames);
 
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
-         SpotFader.self.closeTowardsOfflineChar(offlineChar.transform.position);
+         CharacterCreationSpotFader.self.closeTowardsOfflineChar(offlineChar.transform.position);
       });
 
       this.assignCharacter(offlineChar);

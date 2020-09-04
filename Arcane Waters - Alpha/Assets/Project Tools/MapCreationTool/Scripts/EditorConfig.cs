@@ -20,6 +20,7 @@ namespace MapCreationTool
 
       public MinimapGeneration.MinimapGeneratorPreset[] areaPresets;
       public MinimapGeneration.MinimapGeneratorPreset[] seaPresets;
+      public MinimapGeneration.MinimapGeneratorPreset[] specialPresets;
       public MinimapGeneration.MinimapGeneratorPreset interiorPreset;
 
       public Color[] rugLookupForest;
@@ -113,6 +114,9 @@ namespace MapCreationTool
          for (int i = 0; i < seaPresets.Length; i++) {
             Assert.IsTrue(seaPresets[i], "Sea preset #" + i.ToString() + " is empty. Please provide correct preset");
          }
+         for (int i = 0; i < specialPresets.Length; i++) {
+            Assert.IsTrue(specialPresets[i], "Special preset #" + i.ToString() + " is empty. Please provide correct preset");
+         }
          Assert.IsNotNull(interiorPreset, "Interior preset is empty. Please provide correct preset");
       }
 
@@ -128,12 +132,34 @@ namespace MapCreationTool
                Assert.IsFalse(seaPresets[i] == seaPresets[j], "Sea preset #" + i.ToString() + " is same as sea preset #" + j.ToString() + ". Please provide unique presets");
             }
          }
+         for (int i = 0; i < specialPresets.Length; i++) {
+            for (int j = i + 1; j < specialPresets.Length; j++) {
+               Assert.IsFalse(specialPresets[i] == specialPresets[j], "Special preset #" + i.ToString() + " is same as special preset #" + j.ToString() + ". Please provide unique presets");
+            }
+         }
       }
 
       private void testMissingLayersInPresets () {
          testMissingLayersInPresets(areaPresets, areaLayerIndexes);
          testMissingLayersInPresets(seaPresets, seaLayerIndexes);
          testMissingLayersInPresets(interiorPreset, interiorLayerIndexes);
+
+         foreach (var preset in specialPresets) {
+            switch (preset.specialType) {
+               case MinimapGeneration.MinimapGeneratorPreset.SpecialType.NotSpecial:
+                  Assert.IsTrue(false, "Preset: " + preset.name + " is present in special category array, but is not marked as one");
+                  break;
+               case MinimapGeneration.MinimapGeneratorPreset.SpecialType.Land:
+                  testMissingLayersInPresets(specialPresets, areaLayerIndexes);
+                  break;
+               case MinimapGeneration.MinimapGeneratorPreset.SpecialType.Sea:
+                  testMissingLayersInPresets(specialPresets, seaLayerIndexes);
+                  break;
+               case MinimapGeneration.MinimapGeneratorPreset.SpecialType.Interior:
+                  testMissingLayersInPresets(specialPresets, interiorLayerIndexes);
+                  break;
+            }
+         }
       }
 
       private void testMissingLayersInPresets (MinimapGeneration.MinimapGeneratorPreset preset, LayerConfig[] layerIndexes) {

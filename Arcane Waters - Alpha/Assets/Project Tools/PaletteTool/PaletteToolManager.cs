@@ -65,6 +65,7 @@ public class PaletteToolManager : XmlDataToolManager {
    [Header("Edit palette menu")]
    public Image previewSprite;
    public Text choosePaletteNameText;
+   public Text choosePaletteTagText;
    public GameObject changePaletteScene;
 
    [Header("Color picker")]
@@ -127,6 +128,9 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Determines if palette is enabled
       public bool isEnabled;
+
+      // Tag classifying palette
+      public string tag;
 
       // Data of the palette
       public PaletteToolData paletteData;
@@ -536,7 +540,7 @@ public class PaletteToolManager : XmlDataToolManager {
       preparePaletteTypeDropdown();
    }
 
-   public static List<PaletteDataPair> getColors (PaletteImageType type, string tag) {
+   public static List<PaletteDataPair> getColors (PaletteImageType type, string tagToFind) {
       if ((int)type >= (int)PaletteImageType.MAX || (int)type <= (int) PaletteImageType.None) {
          D.error("Incorrect palette type specified");
          return new List<PaletteDataPair>();
@@ -547,7 +551,7 @@ public class PaletteToolManager : XmlDataToolManager {
          XmlLoadingPanel.self.startLoading();
       }
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(tag);
+         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(tagToFind);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
@@ -559,7 +563,8 @@ public class PaletteToolManager : XmlDataToolManager {
                   paletteData = paletteData,
                   creatorID = xmlPair.xmlOwnerId,
                   paletteId = xmlPair.xmlId,
-                  isEnabled = xmlPair.isEnabled
+                  isEnabled = xmlPair.isEnabled,
+                  tag = xmlPair.tag
                };
                if (paletteData.paletteType == (int)type) {
                   pairs.Add(newDataPair);
@@ -662,12 +667,13 @@ public class PaletteToolManager : XmlDataToolManager {
       showSingleRowEditor(row);
       _currentRow = null;
       choosePaletteNameText.GetComponent<InputField>().text = _initialPaletteName;
+      choosePaletteTagText.GetComponent<InputField>().text = "";
       _isEditingRow = true;
    }
 
    private void enableSingleRow (PaletteButtonRow row) {
       PaletteToolData data = _paletteDataList[row.dataIndex].paletteData;
-      saveXMLData(data, findPaletteId(data), (isPaletteEnabled(data) + 1) % 2);
+      saveXMLData(data, findPaletteId(data), (isPaletteEnabled(data) + 1) % 2, choosePaletteTagText.text);
    }
 
    private void showDeleteConfirmation (PaletteButtonRow row) {
@@ -684,6 +690,7 @@ public class PaletteToolManager : XmlDataToolManager {
 
       // Convert data from string (hex format RRGGBB) to Unity.Color
       PaletteToolData data = _paletteDataList[row.dataIndex].paletteData;
+      PaletteDataPair dataPair = _paletteDataList[row.dataIndex];
       List<Color> src = new List<Color>();
       List<Color> dst = new List<Color>();
       for (int i = 0; i < data.srcColor.Length; i++) {
@@ -708,6 +715,7 @@ public class PaletteToolManager : XmlDataToolManager {
       generatePaletteColorImages(src, dst);
       showPalettePreview();
       choosePaletteNameText.GetComponent<InputField>().text = data.paletteName;
+      choosePaletteTagText.GetComponent<InputField>().text = dataPair.tag;
 
       _isEditingRow = true;
    }
@@ -752,7 +760,7 @@ public class PaletteToolManager : XmlDataToolManager {
       });
    }
 
-   private void saveXMLData (PaletteToolData data, int xmlID, int isEnabled) {
+   private void saveXMLData (PaletteToolData data, int xmlID, int isEnabled, string tag) {
       XmlSerializer ser = new XmlSerializer(data.GetType());
       var sb = new StringBuilder();
       using (var writer = XmlWriter.Create(sb)) {
@@ -762,7 +770,7 @@ public class PaletteToolManager : XmlDataToolManager {
       string longString = sb.ToString();
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => { 
-         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled);
+         DB_Main.updatePaletteXML(longString, data.paletteName, xmlID, isEnabled, tag);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             loadXMLData();
@@ -792,7 +800,8 @@ public class PaletteToolManager : XmlDataToolManager {
                   paletteData = paletteData,
                   creatorID = xmlPair.xmlOwnerId,
                   paletteId = xmlPair.xmlId,
-                  isEnabled = xmlPair.isEnabled
+                  isEnabled = xmlPair.isEnabled,
+                  tag = xmlPair.tag
                };
                _paletteDataList.Add(newDataPair);
             }
@@ -855,7 +864,7 @@ public class PaletteToolManager : XmlDataToolManager {
       }
 
       PaletteToolData data = new PaletteToolData(choosePaletteNameText.text, src, dst, (int) _paletteImageType);
-      saveXMLData(data, findPaletteId(data), isPaletteEnabled(data));
+      saveXMLData(data, findPaletteId(data), isPaletteEnabled(data), choosePaletteTagText.text);
    }
 
    private int findPaletteId (PaletteToolData data) {
@@ -884,6 +893,7 @@ public class PaletteToolManager : XmlDataToolManager {
       generatePaletteColorImages(null, null);
       showPalettePreview();
       choosePaletteNameText.GetComponent<InputField>().text = _initialPaletteName;
+      choosePaletteTagText.GetComponent<InputField>().text = "";
    }
 
    private void generatePaletteColorImages (List<Color> srcColors, List<Color> dstColors) {

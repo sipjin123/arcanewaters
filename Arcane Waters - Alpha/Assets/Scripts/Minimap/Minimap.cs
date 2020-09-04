@@ -105,6 +105,10 @@ public class Minimap : ClientMonoBehaviour {
    [Header("Interior map prefabs")]
    public MinimapGeneratorPreset interiorPreset;
 
+   // Minimap generator presets (scriptable objects) for special maps
+   [Header("Special map prefabs")]
+   public List<MinimapGeneratorPreset> specialPresets = new List<MinimapGeneratorPreset>();
+
    // Self
    public static Minimap self;
 
@@ -476,6 +480,11 @@ public class Minimap : ClientMonoBehaviour {
       if (!area) {
          D.debug("Couldn't get map instance!");
          return baseForestPreset;
+      }
+
+      int specialPresetIndex = specialPresets.FindIndex((MinimapGeneratorPreset preset) => preset.specialTypeAreaKey == area.areaKey);
+      if (specialPresetIndex != -1) {
+         return specialPresets[specialPresetIndex];
       }
 
       Biome.Type biomeType = area.biome;

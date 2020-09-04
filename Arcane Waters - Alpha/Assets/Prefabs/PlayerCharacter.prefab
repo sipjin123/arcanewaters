@@ -412,7 +412,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1301615659563050}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000008}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000009}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7280967387605188078}
@@ -1107,7 +1107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513150390263812}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000009}
+  m_LocalPosition: {x: 0, y: 0, z: 0.00001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7280967387605188078}
@@ -1849,6 +1849,8 @@ MonoBehaviour:
   jumpOverWorldLocation: {x: 0, y: 0}
   jumpOverSourceLocation: {x: 0, y: 0}
   dustTrailParticleObj: {fileID: 881166268088869365}
+  jumpCooldownTimer: 0
+  isJumpCoolingDown: 0
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1996,6 +1998,8 @@ MonoBehaviour:
   lastWaterTime: -3.4028235e+38
   waterWadingSound: {fileID: 82102829024873760}
   shadowObj: {fileID: 3722542199485167435}
+  fullWaterHeight: 0.48
+  waterHeight: 0.42
 --- !u!114 &114840136468941616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2453,7 +2457,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1972619128998838}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000007}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000008}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7280967387605188078}

@@ -1162,7 +1162,7 @@ public class DB_MainStub : MonoBehaviour
    }
 
 
-   public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled) {
+   public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, string tag) {
 
    }
 
