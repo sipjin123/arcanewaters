@@ -35,6 +35,9 @@ public class PlayerBodyEntity : BodyEntity {
    // Script handling the battle initializer
    public PlayerBattleCollider playerBattleCollider;
 
+   // The animator handling the dash vfx
+   public Animator dashAnimator;
+
    // If the player is near an enemy
    public bool isWithinEnemyRadius;
 
@@ -53,9 +56,6 @@ public class PlayerBodyEntity : BodyEntity {
 
    // Reference to the transform of the sprite holder
    public Transform spritesTransform;
-
-   // The animator handling the dash vfx
-   public Animator dashAnimator;
 
    // Reference to the wind vfx during dash
    public Transform windDashSprite;
@@ -198,7 +198,7 @@ public class PlayerBodyEntity : BodyEntity {
          }
       }
 
-      if (InputManager.isActionKeyPressed() && !isJumpCoolingDown) {
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown) {
          // Adjust the colider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
@@ -219,13 +219,16 @@ public class PlayerBodyEntity : BodyEntity {
 
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
              || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
-            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_East);
+            requestAnimationPlay(Anim.Type.NC_Jump_East);
+            Cmd_JumpAnimation(Anim.Type.NC_Jump_East);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.North) {
-            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_North);
+            requestAnimationPlay(Anim.Type.NC_Jump_North);
+            Cmd_JumpAnimation(Anim.Type.NC_Jump_North);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          } else if (facing == Direction.South) {
-            rpc.Cmd_InteractAnimation(Anim.Type.NC_Jump_South);
+            requestAnimationPlay(Anim.Type.NC_Jump_South);
+            Cmd_JumpAnimation(Anim.Type.NC_Jump_South);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }
          isJumpCoolingDown = true;
@@ -294,9 +297,10 @@ public class PlayerBodyEntity : BodyEntity {
          if (speedMeter > 0 && !waterChecker.inWater()) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
-            Cmd_UpdateSpeedupDisplay(true);
-            Direction overrideDirection = getOverrideDirection();
+            Direction overrideDirection = facing;
             dashAnimator.SetInteger("direction", (int) overrideDirection);
+            Cmd_UpdateSpeedupDisplay(true);
+            dashAnimator.gameObject.SetActive(true);
             setDustParticles(true);
          } else {
             isReadyToSpeedup = false;
@@ -315,7 +319,7 @@ public class PlayerBodyEntity : BodyEntity {
          } else {
             isReadyToSpeedup = true;
          }
-         dashAnimator.SetInteger("direction", -1);
+         dashAnimator.gameObject.SetActive(false);
          setDustParticles(false);
       }
 
@@ -333,13 +337,14 @@ public class PlayerBodyEntity : BodyEntity {
    }
 
    private void updateSprintEffects (bool isOn) {
+      dashAnimator.gameObject.SetActive(isOn);
+
       // Handle sprite effects
       if (isOn) {
-         Direction overrideDirection = getOverrideDirection();
-
+         Direction overrideDirection = facing;
+         dashAnimator.SetInteger("direction", (int) overrideDirection);
          windDashSprite.localPosition = new Vector3(0, 0, overrideDirection == Direction.South ? windDashZOffset : -windDashZOffset);
 
-         dashAnimator.SetInteger("direction", (int) overrideDirection);
          setDustParticles(true);
 
          dashAnimator.speed = ANIM_SPEEDUP_VALUE;
@@ -347,7 +352,6 @@ public class PlayerBodyEntity : BodyEntity {
             animator.speed = ANIM_SPEEDUP_VALUE;
          }
       } else {
-         dashAnimator.SetInteger("direction", -1);
          setDustParticles(false);
       }
 
@@ -355,21 +359,6 @@ public class PlayerBodyEntity : BodyEntity {
          animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
       dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
-   }
-
-   private Direction getOverrideDirection () {
-      Direction overrideDirection = facing;
-      switch (overrideDirection) {
-         case Direction.NorthWest:
-         case Direction.SouthWest:
-            overrideDirection = Direction.West;
-            break;
-         case Direction.NorthEast:
-         case Direction.SouthEast:
-            overrideDirection = Direction.East;
-            break;
-      }
-      return overrideDirection;
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
@@ -411,12 +400,27 @@ public class PlayerBodyEntity : BodyEntity {
 
    [Command]
    void Cmd_UpdateSpeedupDisplay (bool isOn) {
-      Rpc_UpdateSpeedupDisplay(isOn);
+      updateSprintEffects(isOn);
+      Rpc_UpdateSpeedupDisplay(isOn, userId);
    }
 
    [ClientRpc]
-   public void Rpc_UpdateSpeedupDisplay (bool isOn) {
-      updateSprintEffects(isOn);
+   public void Rpc_UpdateSpeedupDisplay (bool isOn, int userId) {
+      if (!isLocalPlayer) {
+         updateSprintEffects(isOn);
+      }
+   }
+
+   [Command]
+   public void Cmd_JumpAnimation (Anim.Type animType) {
+      Rpc_JumpAnimation(animType);
+   }
+
+   [ClientRpc]
+   public void Rpc_JumpAnimation (Anim.Type animType) {
+      if (!isJumpCoolingDown) {
+         requestAnimationPlay(animType);
+      }
    }
 
    private void interactNearestLoot (List<TreasureChest> chestList) {

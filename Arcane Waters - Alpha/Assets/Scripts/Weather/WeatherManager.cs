@@ -36,10 +36,10 @@ public class WeatherManager : MonoBehaviour {
    public bool startWeatherSimulation;
 
    // The max horizontal position
-   public static float maxRightPos = 5f, maxLeftPos = -5f;
+   public const float maxRightPos = 7f, maxLeftPos = -7f;
 
    // The max vetical position
-   public static float maxUpPos = 5f, maxDownPos = -5f;
+   public const float maxUpPos = 7f, maxDownPos = -7f;
 
    // List of cloud sprite combinations
    public List<CloudSpritePair> cloudSpriteList;
@@ -97,6 +97,10 @@ public class WeatherManager : MonoBehaviour {
    }
 
    public void setWeatherSimulation (WeatherEffectType weatherEffect, Transform rootObj = null) {
+      if (Util.isBatch()) {
+         return;
+      }
+
       this.weatherEffectType = weatherEffect;
       sunRayHolder.gameObject.DestroyChildren();
       spawnRoot = rootObj;
@@ -190,6 +194,9 @@ public class WeatherManager : MonoBehaviour {
    }
 
    private void resetWeatherSimulation () {
+      if (Util.isBatch()) {
+         return;
+      }
       direction = weatherDirections[Random.Range(0, weatherDirections.Length)];
 
       if (weatherEffectType == WeatherEffectType.Mist) {
@@ -231,6 +238,23 @@ public class WeatherManager : MonoBehaviour {
    }
 
    private void Update () {
+      if (startWeatherSimulation) {
+         switch (weatherEffectType) {
+            case WeatherEffectType.DarkCloud:
+            case WeatherEffectType.Mist:
+            case WeatherEffectType.Cloud:
+               foreach (CloudObject cloudObj in cloudObjects) {
+                  cloudObj.move();
+               }
+               break;
+         }
+      }
+
+      // TODO: Remove this after weather feature has been approved and simulation is now longer necessary
+      debugFunctionality();
+   }
+
+   private void debugFunctionality () {
       if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1 || SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME2) {
          if (Input.GetKey(KeyCode.F11)) {
             if (Input.GetKeyDown(KeyCode.Alpha1)) {
@@ -257,18 +281,6 @@ public class WeatherManager : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Alpha6)) {
                D.editorLog("Setting weather: " + WeatherEffectType.Sunny, Color.green);
                setWeatherSimulation(WeatherEffectType.Sunny, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
-         }
-
-         if (startWeatherSimulation) {
-            switch (weatherEffectType) {
-               case WeatherEffectType.DarkCloud:
-               case WeatherEffectType.Mist:
-               case WeatherEffectType.Cloud:
-                  foreach (CloudObject cloudObj in cloudObjects) {
-                     cloudObj.move();
-                  }
-                  break;
             }
          }
       }

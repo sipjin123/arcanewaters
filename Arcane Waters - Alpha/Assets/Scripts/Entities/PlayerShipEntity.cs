@@ -87,7 +87,7 @@ public class PlayerShipEntity : ShipEntity
       if (isDisabled) {
          StartCoroutine(CO_TemporarilyDisableShip());
       }
-
+      
       if (isLocalPlayer) {
          // Create a ship movement sound for our own ship
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
@@ -97,6 +97,8 @@ public class PlayerShipEntity : ShipEntity
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
+
+         speedUpEffectHolder.SetActive(false);
       }
    }
 
@@ -155,8 +157,6 @@ public class PlayerShipEntity : ShipEntity
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
-            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
-            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
@@ -184,8 +184,6 @@ public class PlayerShipEntity : ShipEntity
             isReadyToSpeedup = true;
          }
       }
-
-      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
 
       // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
       if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
@@ -268,6 +266,9 @@ public class PlayerShipEntity : ShipEntity
       // Ship stuff
       initialize(shipInfo);
       shipId = shipInfo.shipId;
+
+      ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipType);
+      shipSize = shipData.shipSize;
 
       foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
          shipAbilities.Add(newShipAbility);

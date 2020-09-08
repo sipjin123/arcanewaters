@@ -3016,6 +3016,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RainHolder
       objectReference: {fileID: 0}
+    - target: {fileID: 3401758641216376879, guid: d4fcb7e31fbef0c4e8a2ff1fa8c8adc1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4fcb7e31fbef0c4e8a2ff1fa8c8adc1, type: 3}
 --- !u!1 &7920947441252158505 stripped
@@ -3491,6 +3496,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SnowHolder
+      objectReference: {fileID: 0}
+    - target: {fileID: 2664268287811865152, guid: de0638988c9fe024b9294ccd6c5e4d85,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2664268287811865153, guid: de0638988c9fe024b9294ccd6c5e4d85,
         type: 3}

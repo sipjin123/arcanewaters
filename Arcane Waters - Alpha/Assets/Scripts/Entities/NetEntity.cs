@@ -475,7 +475,7 @@ public class NetEntity : NetworkBehaviour
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
       float baseSpeed = (this is SeaEntity) ? 70f : 135f;
-
+  
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
       if (StatusManager.self.hasStatus(this.netId, Status.Type.Freeze)) {
@@ -1290,6 +1290,7 @@ public class NetEntity : NetworkBehaviour
 
    [SerializeField]
    protected List<Animator> _ignoredAnimators = new List<Animator>();
+   [SerializeField]
    protected List<Animator> _animators = new List<Animator>();
    protected List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
 

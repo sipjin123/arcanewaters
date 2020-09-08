@@ -46,6 +46,7 @@ public class ShipEntity : SeaEntity
    public ShipSizeSpritePair shipSizeSpriteCache;
 
    // Size of the ship
+   [SyncVar]
    public ShipSize shipSize;
 
    #endregion
@@ -82,7 +83,6 @@ public class ShipEntity : SeaEntity
 
       ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
       shipSize = newShipData.shipSize;
-
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }
 
@@ -321,9 +321,13 @@ public class ShipEntity : SeaEntity
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
       _ripplesMovingSprites = ImageManager.getTexture(Ship.getRipplesMovingPath(shipType));
       ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
-
+      
       // Cache ship boost sprite
       if (shipSizeSpriteCache.shipSize != ShipSize.None) {
+         _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
+         _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
+      } else {
+         shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
          _shipBoostSpritesFront = shipSizeSpriteCache.speedBoostSpriteFront.texture;
          _shipBoostSpritesBack = shipSizeSpriteCache.speedBoostSpriteBack.texture;
       }

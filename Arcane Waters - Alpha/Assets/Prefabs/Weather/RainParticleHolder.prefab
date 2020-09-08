@@ -48,7 +48,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
-  prewarm: 0
+  prewarm: 1
   playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
@@ -117,7 +117,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 3
       scalar: 0.75
-      minScalar: 0.35
+      minScalar: 0.25
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -866,7 +866,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 60
+      scalar: 80
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1481,11 +1481,11 @@ ParticleSystem:
     uvChannelMask: -1
     rowMode: 1
     sprites:
+    - sprite: {fileID: 8371938986527376862, guid: 1d73f17c0bb76144fb4edd014f875d53,
+        type: 3}
     - sprite: {fileID: -172499247755040552, guid: 1d73f17c0bb76144fb4edd014f875d53,
         type: 3}
     - sprite: {fileID: -8140093697600284203, guid: 1d73f17c0bb76144fb4edd014f875d53,
-        type: 3}
-    - sprite: {fileID: 8371938986527376862, guid: 1d73f17c0bb76144fb4edd014f875d53,
         type: 3}
     flipU: 0
     flipV: 0
@@ -3765,7 +3765,7 @@ ParticleSystem:
     - serializedVersion: 3
       emitter: {fileID: 3401758640871125540}
       type: 2
-      properties: 0
+      properties: 1
       emitProbability: 0.7
   LightsModule:
     enabled: 0
@@ -4711,7 +4711,6 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -5653,7 +5652,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
   EmissionModule:
-    enabled: 1
+    enabled: 0
     serializedVersion: 4
     rateOverTime:
       serializedVersion: 2
@@ -6335,7 +6334,7 @@ ParticleSystem:
         type: 3}
     - sprite: {fileID: 6199326700038869260, guid: 1d73f17c0bb76144fb4edd014f875d53,
         type: 3}
-    - sprite: {fileID: 3633252413776573961, guid: 1d73f17c0bb76144fb4edd014f875d53,
+    - sprite: {fileID: -6680489296809234488, guid: 1d73f17c0bb76144fb4edd014f875d53,
         type: 3}
     flipU: 0
     flipV: 0
@@ -9561,7 +9560,6 @@ ParticleSystemRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
-  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -9620,12 +9618,12 @@ GameObject:
   m_Component:
   - component: {fileID: 3401758641216376876}
   m_Layer: 0
-  m_Name: RainHolder
+  m_Name: RainParticleHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3401758641216376876
 Transform:
   m_ObjectHideFlags: 0
@@ -9648,6 +9646,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3401758639845526319}
     m_Modifications:
+    - target: {fileID: 4864526039049802158, guid: f45251d85420e404cbeee345ff102d22,
+        type: 3}
+      propertyPath: m_Name
+      value: BlackCamOverlay
+      objectReference: {fileID: 0}
+    - target: {fileID: 4864526039049802158, guid: f45251d85420e404cbeee345ff102d22,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 4864526039049802144, guid: f45251d85420e404cbeee345ff102d22,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -9702,16 +9710,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4864526039049802158, guid: f45251d85420e404cbeee345ff102d22,
-        type: 3}
-      propertyPath: m_Name
-      value: BlackCamOverlay
-      objectReference: {fileID: 0}
-    - target: {fileID: 4864526039049802158, guid: f45251d85420e404cbeee345ff102d22,
-        type: 3}
-      propertyPath: m_Layer
-      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f45251d85420e404cbeee345ff102d22, type: 3}
@@ -9795,14 +9793,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1255520897783427508, guid: a73fbda2058d2774e941dbfc9be17650,
         type: 3}
-      propertyPath: loopDelayMin
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1255520897783427508, guid: a73fbda2058d2774e941dbfc9be17650,
-        type: 3}
       propertyPath: animator
       value: 
       objectReference: {fileID: 4492895809670268368}
+    - target: {fileID: 1255520897783427508, guid: a73fbda2058d2774e941dbfc9be17650,
+        type: 3}
+      propertyPath: loopDelayMin
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a73fbda2058d2774e941dbfc9be17650, type: 3}
 --- !u!4 &4492895809670268374 stripped
