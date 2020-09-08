@@ -74,8 +74,10 @@ public class MyCamera : BaseCamera
    }*/
 
    public Tween setOrthographicSize (float size) {
+      Debug.Log("Setting size " + size);
       _orthoSizeTween?.Kill();
-      _orthoSizeTween = DOTween.To(() => _orthographicSize, (x) => _orthographicSize = x, size, ANIMATION_TIME);
+      _orthoSizeTween = DOTween.To(() => _orthographicSize, (x) => _orthographicSize = x, size, ANIMATION_TIME)
+         .OnUpdate(() => _vcam.m_Lens.OrthographicSize = _orthographicSize);
 
       return _orthoSizeTween;
    }

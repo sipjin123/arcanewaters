@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Tilemaps;
+using MapCreationTool.Serialization;
 
-public class WaterChecker : ClientMonoBehaviour {
+public class WaterChecker : ClientMonoBehaviour
+{
    #region Public Variables
 
    // Whether we're currently in full water or not
@@ -13,9 +15,6 @@ public class WaterChecker : ClientMonoBehaviour {
 
    // Whether we're currently in partial water or not
    public bool isInPartialWater = false;
-
-   // The name of the tile we're in
-   public string currentTile = "";
 
    // The back water ripple
    public GameObject waterRippleBack;
@@ -60,9 +59,9 @@ public class WaterChecker : ClientMonoBehaviour {
 
    public static HashSet<string> getAllWaterTiles () {
       HashSet<string> allWaterTiles = new HashSet<string>();
-      allWaterTiles.UnionWith(_fullWaterTiles);
-      allWaterTiles.UnionWith(_partialWaterTiles);
-      allWaterTiles.UnionWith(_waterFallTiles);
+      allWaterTiles.UnionWith(Exporter.fullWaterTiles);
+      allWaterTiles.UnionWith(Exporter.partialWaterTiles);
+      allWaterTiles.UnionWith(Exporter.waterFallTiles);
 
       return allWaterTiles;
    }
@@ -82,7 +81,7 @@ public class WaterChecker : ClientMonoBehaviour {
             renderer.material.SetFloat("_WaterHeight", waterHeight);
          } else {
             renderer.material.SetFloat("_WaterHeight", 0f);
-         }         
+         }
       }
 
       // Show or hide the water ripples
@@ -114,59 +113,45 @@ public class WaterChecker : ClientMonoBehaviour {
       // Look up the Area and Grid that we're currently in
       Area area = AreaManager.self.getArea(_player.areaKey);
       if (area != null) {
-         Vector3Int cellPos = area.worldToCell(_player.sortPoint.transform.position);
-
-         // Locate the Water tilemap within the area
-         List<TilemapLayer> layers = area.getTilemapLayers();
-         for (int i = layers.Count - 1; i >= 0; i--) {
-            TileBase tile = layers[i].tilemap.GetTile(cellPos);
-            if (tile != null && !_nonBlockingTiles.Contains(tile.name)) {
-               if (layers[i].name.ToLower().EndsWith("water")) {
-                  this.currentTile = tile.name;
-                  isInFullWater = _fullWaterTiles.Contains(currentTile) || _waterFallTiles.Contains(currentTile);
-                  isInPartialWater = _partialWaterTiles.Contains(currentTile);
-               }
-               break;
-            }
+         // Check if we have a precalculated cell types container, do dynamic check otherwise
+         // TODO: just use cached check for everything in the future
+         if (area.cellTypes.isInitialized) {
+            cachedCheck(area.cellTypes);
+         } else {
+            dynamicCheck(area);
          }
       }
+   }
+
+   private void dynamicCheck (Area area) {
+      Vector3Int cellPos = area.worldToCell(_player.sortPoint.transform.position);
+
+      // Locate the Water tilemap within the area
+      List<TilemapLayer> layers = area.getTilemapLayers();
+      for (int i = layers.Count - 1; i >= 0; i--) {
+         TileBase tile = layers[i].tilemap.GetTile(cellPos);
+         if (tile != null && !Exporter.nonWaterBlockingTiles.Contains(tile.name)) {
+            if (layers[i].name.ToLower().EndsWith("water")) {
+               string currentTile = tile.name;
+               isInFullWater = Exporter.fullWaterTiles.Contains(currentTile) || Exporter.waterFallTiles.Contains(currentTile);
+               isInPartialWater = Exporter.partialWaterTiles.Contains(currentTile);
+            }
+            break;
+         }
+      }
+   }
+
+   private void cachedCheck (CellTypesContainer cellTypes) {
+      CellTypesContainer.MapCellType cellType = cellTypes.getCellType(_player.sortPoint.transform.position);
+
+      isInFullWater = cellType == CellTypesContainer.MapCellType.FullWater;
+      isInPartialWater = cellType == CellTypesContainer.MapCellType.PartialWater;
    }
 
    #region Private Variables
 
    // Our associated player
    protected NetEntity _player;
-
-   // Tiles that should not block player from being considered 'in water'
-   protected static HashSet<string> _nonBlockingTiles = new HashSet<string> {
-      "desert_tiles_161", "desert_tiles_258", "desert_tiles_261",
-      "forest_tiles_155", "forest_tiles_252", "forest_tiles_255",
-      "lava_tiles_151", "lava_tiles_248", "lava_tiles_251",
-      "pine_tiles_153", "pine_tiles_250", "pine_tiles_253",
-      "mushroom_tiles_151", "mushroom_tiles_252", "mushroom_tiles_255",
-      "snow_tiles_153", "snow_tiles_250", "snow_tiles_253"
-   };
-
-   // The names of the full water tiles
-   protected static HashSet<string> _fullWaterTiles = new HashSet<string>() {
-      "water_15", "water_16", "water_17",
-      "water_129", "water_132", "water_133", "water_134", "water_135", "water_136",
-      "water_144", "water_146", "water_147", "water_148", "water_149",
-      "water_156", "water_157", "water_158", "water_159", "water_160", "water_161",
-      "water_168", "water_171", "water_174", "water_180", "water_186", "water_192",
-      "water_195", "water_198",
-   };
-
-   // The names of the waterfall tiles
-   protected static HashSet<string> _waterFallTiles = new HashSet<string>() {
-      "water_60", "water_61", "water_62", "water_72", "water_73", "water_74",
-      "water_84", "water_85", "water_86", "water_96", "water_108", "water_120"
-   };
-
-   // The names of the partial water tiles
-   protected static HashSet<string> _partialWaterTiles = new HashSet<string>() {
-      "water_3","water_12", "water_18", "water_27", "water_0", "water_6", "water_24", "water_30", "water_36", "water_48"
-   };
 
    #endregion;
 }

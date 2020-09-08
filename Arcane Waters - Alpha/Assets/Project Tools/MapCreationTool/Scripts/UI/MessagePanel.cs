@@ -23,7 +23,7 @@ namespace MapCreationTool
          titleText.color = infoColor;
          contentText.color = infoColor;
 
-         titleText.text = title;
+         titleText.text = title.ToUpper();
          contentText.text = content;
 
          show();
@@ -33,7 +33,7 @@ namespace MapCreationTool
          titleText.color = warningColor;
          contentText.color = warningColor;
 
-         titleText.text = title;
+         titleText.text = title.ToUpper();
          contentText.text = content;
 
          show();
@@ -45,7 +45,7 @@ namespace MapCreationTool
          titleText.color = errorColor;
          contentText.color = errorColor;
 
-         titleText.text = title;
+         titleText.text = title.ToUpper();
          contentText.text = content.Length > maxErrorCharacters ? content.Substring(0, maxErrorCharacters) : content;
 
          show();

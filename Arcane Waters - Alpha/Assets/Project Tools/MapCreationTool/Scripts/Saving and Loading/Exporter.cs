@@ -8,6 +8,57 @@ namespace MapCreationTool.Serialization
 {
    public class Exporter
    {
+      // Tiles that should not block a cell from being considered being a 'water' cell
+      public static HashSet<string> nonWaterBlockingTiles = new HashSet<string> {
+         "desert_tiles_161", "desert_tiles_258", "desert_tiles_261",
+         "forest_tiles_155", "forest_tiles_252", "forest_tiles_255",
+         "lava_tiles_151", "lava_tiles_248", "lava_tiles_251",
+         "pine_tiles_153", "pine_tiles_250", "pine_tiles_253",
+         "mushroom_tiles_151", "mushroom_tiles_252", "mushroom_tiles_255",
+         "snow_tiles_153", "snow_tiles_250", "snow_tiles_253"
+      };
+
+      // The names of the full water tiles
+      public static HashSet<string> fullWaterTiles = new HashSet<string>() {
+         "water_15", "water_16", "water_17",
+         "water_129", "water_132", "water_133", "water_134", "water_135", "water_136",
+         "water_144", "water_146", "water_147", "water_148", "water_149",
+         "water_156", "water_157", "water_158", "water_159", "water_160", "water_161",
+         "water_168", "water_171", "water_174", "water_180", "water_186", "water_192",
+         "water_195", "water_198",
+      };
+
+      // The names of the waterfall tiles
+      public static HashSet<string> waterFallTiles = new HashSet<string>() {
+         "water_60", "water_61", "water_62", "water_72", "water_73", "water_74",
+         "water_84", "water_85", "water_86", "water_96", "water_108", "water_120"
+      };
+
+      // The names of the partial water tiles
+      public static HashSet<string> partialWaterTiles = new HashSet<string>() {
+         "water_3","water_12", "water_18", "water_27", "water_0", "water_6", "water_24", "water_30", "water_36", "water_48"
+      };
+
+      // The names of wall tiles that should be forces to be rendered on top of player
+      public static HashSet<string> wallForceTopTiles = new HashSet<string>() {
+         "desert_tiles_51", "desert_tiles_55", "desert_tiles_68", "desert_tiles_72", "desert_tiles_85", "desert_tiles_89",
+         "forest_tiles_51", "forest_tiles_55", "forest_tiles_68", "forest_tiles_72", "forest_tiles_85", "forest_tiles_89",
+         "lava_tiles_51"," lava_tiles_55", "lava_tiles_68", "lava_tiles_72", "lava_tiles_85", "lava_tiles_89",
+         "mushroom_tiles_51", "mushroom_tiles_55", "mushroom_tiles_68", "mushroom_tiles_72", "mushroom_tiles_85", "mushroom_tiles_89",
+         "pine_tiles_51", "pine_tiles_55", "pine_tiles_68", "pine_tiles_72", "pine_tiles_85", "pine_tiles_89",
+         "snow_tiles_51", "snow_tiles_55", "snow_tiles_68", "snow_tiles_72", "snow_tiles_85", "snow_tiles_89"
+      };
+
+      // The tile numbers for grass
+      public static HashSet<int> grassTiles = new HashSet<int>() { 0, 1 };
+
+      // The tile numbers for stone
+      public static HashSet<int> stoneTiles = new HashSet<int>() { 11, 12, 13, 28, 29, 30, 45, 46, 47, 69, 143, 144, 145, 211, 212, 228, 229 };
+
+      // The tile numbers for wood
+      public static HashSet<int> woodTiles = new HashSet<int>() { 62, 63, 64, 79, 80, 81, 96, 97, 98, 113, 114, 115, 160, 161, 162, 177, 178, 179, 194, 195, 196,
+      183, 184, 185, 200, 201, 202 };
+
       public Dictionary<string, Layer> layerDictionary { get; private set; }
       public List<PlacedPrefab> placedPrefabs { get; private set; }
       public Biome.Type biome { get; private set; }
@@ -88,14 +139,19 @@ namespace MapCreationTool.Serialization
                .ToArray()
          };
 
+         // Map cell types
+         List<CellTypesContainer.MapCellType> mapCellTypes = formMapCellTypes();
+
          return new ExportedProject001 {
             version = "0.0.1",
             biome = biome,
             layers = exportedLayers,
             specialTileChunks = formSpecialTileChunks().Union(vineChunks).ToArray(),
             editorType = editorType,
+            size = editorSize,
             prefabs = prefabsSerialized,
-            additionalTileColliders = exportedAddtionalColliders
+            additionalTileColliders = exportedAddtionalColliders,
+            mapCellTypes = mapCellTypes.ToArray()
          };
       }
 
@@ -111,6 +167,18 @@ namespace MapCreationTool.Serialization
 
          // Handle vines differently
          vineChunks = handleVines().ToList();
+
+         // Force some wall tiles to be rendered on top of player
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               for (int k = 0; k < cellMatrix[i, j].tiles.Length; k++) {
+                  if (Layer.isWall(cellMatrix[i, j].tiles[k].layer) && wallForceTopTiles.Contains(cellMatrix[i, j].tiles[k].tileBase.name)) {
+                     cellMatrix[i, j].tiles[k].forceAbsoluteTop = true;
+                     break;
+                  }
+               }
+            }
+         }
       }
 
       private void setCollisions (BoardCell[,] cellMatrix) {
@@ -442,6 +510,19 @@ namespace MapCreationTool.Serialization
          }
       }
 
+      private List<CellTypesContainer.MapCellType> formMapCellTypes () {
+         List<CellTypesContainer.MapCellType> result = new List<CellTypesContainer.MapCellType>();
+
+         // Iterate over all the cells
+         for (int i = 0; i < editorSize.x; i++) {
+            for (int j = 0; j < editorSize.y; j++) {
+               result.Add(cellMatrix[i, j].getCellType());
+            }
+         }
+
+         return result;
+      }
+
       private SpecialTileChunk[] formSpecialTileChunks () {
          IEnumerable<SpecialTileChunk> stairs = formSquareChunks(SpecialTileChunk.Type.Stair, (c) => c.hasStair);
          IEnumerable<SpecialTileChunk> waterfalls = formSquareChunks(SpecialTileChunk.Type.Waterfall, (c) => c.hasWater4 && editorType == EditorType.Area);
@@ -718,6 +799,50 @@ namespace MapCreationTool.Serialization
                tiles[i].shouldHaveCollider = false;
             }
          }
+
+         public CellTypesContainer.MapCellType getCellType () {
+            // Iterate over all the tiles
+            for (int k = tiles.Length - 1; k >= 0; k--) {
+               string tileName = tiles[k].tileBase.name.ToLower();
+
+               // If we're in an interior, the floor is always wood
+               if (tileName.StartsWith("interior")) {
+                  return CellTypesContainer.MapCellType.Wood;
+               }
+
+               // Check if this is a water tile
+               if (fullWaterTiles.Contains(tileName) || waterFallTiles.Contains(tileName)) {
+                  return CellTypesContainer.MapCellType.FullWater;
+               }
+
+               if (partialWaterTiles.Contains(tileName)) {
+                  return CellTypesContainer.MapCellType.PartialWater;
+               }
+
+               // If we're in one of the outdoor areas, we need to check specific tile numbers
+               if (tileName.Contains("_tiles")) {
+                  string[] split = tileName.Split('_');
+                  int num = int.Parse(split[split.Length - 1]);
+
+                  if (stoneTiles.Contains(num)) {
+                     return CellTypesContainer.MapCellType.Stone;
+                  }
+                  if (woodTiles.Contains(num)) {
+                     return CellTypesContainer.MapCellType.Wood;
+                  }
+                  if (grassTiles.Contains(num)) {
+                     return CellTypesContainer.MapCellType.Grass;
+                  }
+               }
+
+               // If this tile is not among non blocking tiles, stop searching
+               if (!tileName.Contains("water") && !nonWaterBlockingTiles.Contains(tileName)) {
+                  break;
+               }
+            }
+
+            return CellTypesContainer.MapCellType.None;
+         }
       }
 
       private struct TileInLayer
@@ -746,6 +871,7 @@ namespace MapCreationTool.Serialization
       public ExportedLayer001[] layers;
       public SpecialTileChunk[] specialTileChunks;
       public ExportedLayer001 additionalTileColliders;
+      public CellTypesContainer.MapCellType[] mapCellTypes;
    }
 
    [Serializable]

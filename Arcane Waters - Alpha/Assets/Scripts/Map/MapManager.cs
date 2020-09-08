@@ -245,7 +245,10 @@ public class MapManager : MonoBehaviour
                   WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
                }
             }
-         } 
+         }
+
+         // Set up cell types container
+         result.area.cellTypes = new CellTypesContainer(exportedProject.mapCellTypes, exportedProject.size, result.area);
 
          // Destroy the template component
          Destroy(result);

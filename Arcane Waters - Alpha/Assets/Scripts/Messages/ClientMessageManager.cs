@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
+using System;
 
 public class ClientMessageManager : MonoBehaviour {
    #region Public Variables
@@ -63,6 +64,7 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.AlreadyOnline:
          case ErrorMessage.Type.Banned:
          case ErrorMessage.Type.ClientOutdated:
+            Global.lastLoginFail = DateTime.Now;
             TitleScreen.self.displayError(msg.errorType);
             return;
          case ErrorMessage.Type.NameTaken:

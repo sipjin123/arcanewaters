@@ -90,6 +90,9 @@ public class Area : MonoBehaviour
    // The value that determines if the screen is too wide for the area
    public static float WIDE_RESOLUTION_VALUE = 1920;
 
+   // Container for checking types of cell(a stack of tiles in the same XY position)
+   public CellTypesContainer cellTypes;
+
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,

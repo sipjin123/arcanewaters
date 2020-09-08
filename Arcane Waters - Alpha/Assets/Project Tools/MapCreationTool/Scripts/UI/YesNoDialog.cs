@@ -19,7 +19,7 @@ namespace MapCreationTool
          this.onYes = onYes;
          this.onNo = onNo;
 
-         titleText.text = title;
+         titleText.text = title.ToUpper();
          contentText.text = content;
 
          show();

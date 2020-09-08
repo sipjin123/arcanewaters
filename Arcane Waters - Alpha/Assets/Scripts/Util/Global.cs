@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using static MyNetworkManager;
+using System;
 
 public class Global {
    #region Public Variables
@@ -71,6 +72,10 @@ public class Global {
 
    // The current ID of the Basic Attack ability to use as a failsafe if the player has no other abilities
    public static int BASIC_ATTACK_ID = 9;
+
+   // Last time user failed to login
+   public static DateTime lastLoginFail;
+
    #endregion
 
    public static void setUserEquipment (Item weapon, Item armor, Item hat) {
