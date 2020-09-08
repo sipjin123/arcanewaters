@@ -38,40 +38,48 @@ public class MyCamera : BaseCamera
       }
    }
 
-   private void setInternalOrthographicSize () {
+   public void setInternalOrthographicSize () {
       _orthographicSize = Screen.height / getPPUScale();
 
-      //CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>(); 
-      //if (confiner != null) {
-      //   if (confiner.m_BoundingShape2D != null) {
-      //      float confinerScale = confiner.m_BoundingShape2D.transform.localScale.x;
-      //      if (confinerScale != CONFINER_DEFAULT_SCALE) {
-      //         confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_SCALE, CONFINER_DEFAULT_SCALE, 1);
-      //      }
-      //   }
-      //}
+      // Sets the confiner to the default scale if the current scale has been modified
+      if (_vcam.transform.parent != null) {
+         if (_vcam.transform.parent.GetComponent<Area>() != null) {
+            CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>();
+            if (confiner != null) {
+               if (confiner.m_BoundingShape2D != null) {
+                  float confinerScale = confiner.m_BoundingShape2D.transform.localScale.x;
+                  if (confinerScale != CONFINER_DEFAULT_SCALE) {
+                     confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_SCALE, CONFINER_DEFAULT_SCALE, 1);
+                     D.debug(gameObject.name + ": CAMERA CONFINER Scaled into default: " + CONFINER_DEFAULT_SCALE);
+                  }
+               }
+            }
 
-      //foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
-      //   if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
-      //      if (confiner != null) {
-      //         if (confiner.m_BoundingShape2D != null) {
-      //            confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_WIDESCREEN_SCALE, CONFINER_DEFAULT_SCALE, 1);
-      //         }
-      //      }
-      //      break;
-      //   }
-      //}
+            // If the current resolution is included in the list of wide screen rsolutions, modify the confiner scales
+            // Confiner scales needs to be scaled up so that the cinemachine camera will behave properly, 
+            // If the camera ortho is bigger than the confiner collider then it will not properly function
+            foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
+               if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
+                  if (confiner != null) {
+                     if (confiner.m_BoundingShape2D != null) {
+                        confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_WIDESCREEN_SCALE, CONFINER_DEFAULT_SCALE, 1);
+                        D.debug(gameObject.name + ": CAMERA CONFINER Scaled into wide: " + CONFINER_WIDESCREEN_SCALE);
+                     }
+                  }
+                  break;
+               }
+            }
+         } else {
+            D.editorLog("Parent is invalid: " + transform.parent.gameObject.name, Color.red);
+         } 
+      } else {
+         D.editorLog("No parent!", Color.red);
+      }
 
       _initialSettings = getVirtualCameraSettings();
       _initialSettings.ppuScale = getPPUScale();
       _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
    }
-
-   // TODO: Confirm if this line is intended to be in update, this causes the inappropriate scaling of the character when changing resolution
-   /*
-   void Update () {
-      _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
-   }*/
 
    public Tween setOrthographicSize (float size) {
       Debug.Log("Setting size " + size);

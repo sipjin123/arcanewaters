@@ -187,8 +187,14 @@ public class Area : MonoBehaviour
 
       vcam.GetComponent<MyCamera>().mainGUICanvas = CameraManager.self.guiCanvas;
 
+      scaleVirtualCameraConfiner();
+
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
+   }
+
+   private void scaleVirtualCameraConfiner () {
+      vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
    }
 
    public void OnDestroy () {

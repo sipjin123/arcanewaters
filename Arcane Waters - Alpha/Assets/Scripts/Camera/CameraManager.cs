@@ -82,6 +82,11 @@ public class CameraManager : ClientMonoBehaviour {
 
    public void registerCamera (MyCamera newSceneCamera) {
       _baseCameras.Add(newSceneCamera);
+      if (newSceneCamera.transform.parent != null) {
+         if (newSceneCamera.transform.parent.GetComponent<Area>() != null) {
+            newSceneCamera.setInternalOrthographicSize();
+         }
+      }
    }
 
    private IEnumerator CO_ResetObjects () {
