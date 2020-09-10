@@ -115,6 +115,10 @@ public class MonsterSkillTemplate : MonoBehaviour
    public Button playCastAudioButton;
    public SoundEffect hitSoundEffect, castSoundEffect;
 
+   // The ability cast position
+   public Text abilityCastPositionText;
+   public Slider abilityCastPosition;
+
    // Holds the variables only available to ability types with projectile
    public GameObject[] projectileVariables;
 
@@ -177,6 +181,7 @@ public class MonsterSkillTemplate : MonoBehaviour
       buffType.maxValue = Enum.GetValues(typeof(BuffType)).Length - 1;
       buffActionType.maxValue = Enum.GetValues(typeof(BuffActionType)).Length - 1;
       bonusStatType.maxValue = Enum.GetValues(typeof(BonusStatType)).Length - 1;
+      abilityCastPosition.maxValue = Enum.GetValues(typeof(BasicAbilityData.AbilityCastPosition)).Length - 1; 
 
       itemName.onValueChanged.AddListener(_ => {
          skillName.text = itemName.text;
@@ -195,6 +200,9 @@ public class MonsterSkillTemplate : MonoBehaviour
       });
       bonusStatType.onValueChanged.AddListener(_ => {
          bonusStatText.text = ((BonusStatType) bonusStatType.value).ToString() + countSliderValue(bonusStatType);
+      });
+      abilityCastPosition.onValueChanged.AddListener(_ => {
+         abilityCastPositionText.text = ((BasicAbilityData.AbilityCastPosition) _).ToString() + countSliderValue(abilityCastPosition);
       });
       abilityActionType.onValueChanged.AddListener(_ => {
          abilityActionTypeText.text = ((AbilityActionType) abilityActionType.value).ToString() + countSliderValue(abilityActionType);
@@ -228,6 +236,7 @@ public class MonsterSkillTemplate : MonoBehaviour
       abilityActionType.onValueChanged.Invoke(abilityActionType.value);
       buffType.onValueChanged.Invoke(buffType.value);
       buffActionType.onValueChanged.Invoke(buffActionType.value);
+      abilityCastPosition.onValueChanged.Invoke(abilityCastPosition.value);
    }
 
    #endregion
@@ -348,6 +357,9 @@ public class MonsterSkillTemplate : MonoBehaviour
       abilityCost.text = abilityData.abilityCost.ToString();
       fxTimerPerFrame.text = abilityData.FXTimePerFrame.ToString();
 
+      abilityCastPositionText.text = abilityData.abilityCastPosition.ToString();
+      abilityCastPosition.value = (int) abilityData.abilityCastPosition;
+
       if (abilityData.castSpritesPath != null) {
          castSpritePath.text = abilityData.castSpritesPath[0];
          castSprite.sprite = ImageManager.getSprite(abilityData.castSpritesPath[0]);
@@ -407,7 +419,8 @@ public class MonsterSkillTemplate : MonoBehaviour
          abilityType,
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
-         float.Parse(fxTimerPerFrame.text));
+         float.Parse(fxTimerPerFrame.text),
+         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value);
 
       AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData,
          hasKnockup.isOn,
@@ -417,6 +430,7 @@ public class MonsterSkillTemplate : MonoBehaviour
          float.Parse(projectileSpeed.text),
          projectileSpritePath.text,
          float.Parse(projectileScale.text));
+      attackData.abilityCastPosition = (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value;
 
       return attackData;
    }
@@ -451,12 +465,14 @@ public class MonsterSkillTemplate : MonoBehaviour
          abilityType,
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
-         float.Parse(fxTimerPerFrame.text));
+         float.Parse(fxTimerPerFrame.text),
+         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value);
 
       BuffType buffType = (BuffType) this.buffType.value;
       BuffActionType buffActionType = (BuffActionType) this.buffActionType.value;
       BonusStatType bonusStatType = (BonusStatType) this.bonusStatType.value;
       BuffAbilityData buffData = BuffAbilityData.CreateInstance(basicData, float.Parse(buffDuration.text), buffType, buffActionType, buffIconPath.text, int.Parse(buffValue.text), bonusStatType);
+      buffData.abilityCastPosition = (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value;
 
       return buffData;
    }

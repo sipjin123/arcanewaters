@@ -220,13 +220,14 @@ public class EffectManager : MonoBehaviour {
             castSprites.Add(sprite);
          }
       }
+      bool castAboveTarget = ability.abilityCastPosition == BasicAbilityData.AbilityCastPosition.AboveTarget || ability.abilityCastPosition == BasicAbilityData.AbilityCastPosition.AboveSelf;
 
       // Process ability effects, skip if the ability effect was intentionally not assigned
       CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);
       if (effectInstance) {
          effectInstance.transform.position = new Vector3(
             targetPos.x,
-            targetPos.y,
+            targetPos.y + (castAboveTarget ? .5f : 0),
             source.transform.position.z - .001F
             );
          effectInstance.transform.SetParent(self.transform, false);

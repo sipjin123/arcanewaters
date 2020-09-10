@@ -44,7 +44,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
    public static string PERKS_DATA_TABLE = "perks_config_xml";
    public static string QUEST_DATA_TABLE = "quest_data_xml_v1";
-   public static string PALETTE_DATA_TABLE = "palette";
+   public static string PALETTE_DATA_TABLE = "palette_recolors";
    public static string ITEM_DEFINITIONS_TABLE = "item_definitions";
 
    // TEXT FILE NAMES (Do not Modify)

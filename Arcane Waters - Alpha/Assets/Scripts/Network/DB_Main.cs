@@ -543,7 +543,7 @@ public class DB_Main : DB_MainStub
       if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
          addedFields = ", ability_type";
       } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
-         contentToFetch = "paletteId, xml_content ";
+         contentToFetch = "id, xmlContent ";
       } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
          contentToFetch = "xmlId, xmlContent ";
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
@@ -569,15 +569,16 @@ public class DB_Main : DB_MainStub
                   if (toolType == EditorSQLManager.EditorToolType.BattlerAbility) {
                      addedContent = dataReader.GetInt32("ability_type") + "[space]";
                   } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
-                     xmlId = dataReader.GetInt32("paletteId");
-                     xmlContent = dataReader.GetString("xml_content");
+                     xmlId = dataReader.GetInt32("id");
+                     xmlContent = dataReader.GetString("xmlContent");
                   } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("serializedData");
-                     addedContent = dataReader.GetInt32("category") + "[space]";
+                     // TODO: Confirm if this is no longer needed, it no longer exists in the SQL Table
+                     //addedContent = dataReader.GetInt32("category") + "[space]";
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent"); ;
@@ -622,11 +623,12 @@ public class DB_Main : DB_MainStub
    public static new string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
       string updateContent = "";
       string tableName = EditorSQLManager.getSqlTable(editorType);
-
+      string lastUserUpdateKey = editorType == EditorSQLManager.EditorToolType.Palette ? "lastUpdate" : "lastUserUpdate";
+    
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT lastUserUpdate FROM arcane." + tableName + " order by lastUserUpdate DESC limit 1", conn)) {
+            "SELECT " + lastUserUpdateKey + " FROM arcane." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -634,7 +636,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  string lastUserUpdate = dataReader.GetString("lastUserUpdate");
+                  string lastUserUpdate = dataReader.GetString(lastUserUpdateKey);
                   updateContent = tableName + "[space]" + lastUserUpdate + "[next]\n";
                }
             }
@@ -3337,20 +3339,22 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
+            "SELECT * FROM arcane.palette_recolors" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
 
             conn.Open();
             cmd.Prepare();
-
+            
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXML = new XMLPair {
                      isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
-                     rawXmlData = dataReader.GetString("xml_content"),
-                     xmlId = dataReader.GetInt32("paletteId"),
-                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
-                     tag = dataReader.GetString("tag"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("id"),
+                     xmlOwnerId = dataReader.GetInt32("creatorUserId"),
+
+                     // TODO: Confirm if this is no longer needed, it no longer exists in the SQL Table
+                     //tag = dataReader.GetString("tag"),
                   };
                   rawDataList.Add(newXML);
                }
@@ -3367,7 +3371,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette WHERE tag = @tag", conn)) {
+            "SELECT * FROM arcane.palette_recolors WHERE tag = @tag", conn)) {
 
             conn.Open();
             cmd.Prepare();

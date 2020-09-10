@@ -3628,7 +3628,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
-
+      
       // Enter the background thread to determine if the user has at least one ability equipped
       bool hasAbilityEquipped = false;
 

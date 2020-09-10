@@ -147,7 +147,7 @@ public class NPCToolManager : XmlDataToolManager {
 
       // Create an empty npc
       NPCData npcData = new NPCData(npcId, "", "", "", "", "", "", "", "", "NPC", true, true, true, -1, -1,
-         new List<NPCGiftData>() { }, "", "", false, 0, -1, false, 0, 1);
+         new List<NPCGiftData>() { }, "", "", false, 0, -1, false, 0, 1, false);
 
       // Add the data to the dictionary
       _npcData.Add(npcData.npcId, npcData);

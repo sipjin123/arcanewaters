@@ -61,6 +61,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Determines if this npc is a shop npc
    public bool isShopNpc;
 
+   // Determines if this npc is staying still or moving around
+   public bool isStationary;
+
    // Reference to the shadow
    public Transform shadowTransform;
 
@@ -93,6 +96,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          animator.SetInteger("facing", (int) facing);
       }
 
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
+      isStationary = npcData.isStationary;
+
       string spriteAddress = spritePath;
       List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
       if (newSprites.Count > 0) {
@@ -107,7 +113,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       // Continually pick new move targets
-      if (isServer) {
+      if (isServer && !isStationary) {
          _seeker = GetComponent<Seeker>();
          if (_seeker == null) {
             D.debug("There has to be a Seeker Script attached to the NPC Prefab");
@@ -124,7 +130,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          setupClientSideValues();
       }
 
-      NPCData npcData = NPCManager.self.getNPCData(npcId);
       shadowTransform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
       shadowTransform.localPosition = new Vector3(0, npcData.shadowOffsetY, 0);
 
@@ -236,7 +241,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             if (distanceToWaypoint < .1f) {
                ++_currentPathIndex;
             }
-         } else if (!isShopNpc && _seeker.IsDone() && _moving) {
+         } else if (!isShopNpc && !isStationary && _seeker.IsDone() && _moving) {
             _moving = false;
             // Generate a new path
             Invoke("generateNewWaypoints", PAUSE_BETWEEN_PATHS);

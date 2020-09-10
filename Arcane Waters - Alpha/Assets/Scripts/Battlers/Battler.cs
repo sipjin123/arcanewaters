@@ -1045,7 +1045,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
-
+            
             // Plays the melee cast ability
             EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
@@ -1270,7 +1270,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play any sounds that go along with the ability being cast
                attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
 
-               EffectManager.playCastAbilityVFX(sourceBattler, action, sourcePos, BattleActionType.Attack);
+               Vector3 castPosition = sourcePos;
+               switch (abilityDataReference.abilityCastPosition) {
+                  case BasicAbilityData.AbilityCastPosition.AboveSelf:
+                     castPosition = sourceBattler.transform.position;
+                     break;
+                  case BasicAbilityData.AbilityCastPosition.AboveTarget:
+                     castPosition = targetBattler.transform.position;
+                     break;
+                  case BasicAbilityData.AbilityCastPosition.Self:
+                     castPosition = sourceBattler.transform.position;
+                     break;
+               }
+               EffectManager.playCastAbilityVFX(sourceBattler, action, castPosition, BattleActionType.Attack);
             }
             yield return new WaitForSeconds(PRE_CAST_DELAY);
 

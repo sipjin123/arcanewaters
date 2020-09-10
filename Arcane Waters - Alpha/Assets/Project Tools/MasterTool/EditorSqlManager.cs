@@ -78,8 +78,6 @@ public class EditorSQLManager {
             return "background_xml_v2";
          case EditorToolType.Perks:
             return "perks_config_xml";
-         case EditorToolType.Palette:
-            return "palette";
          case EditorToolType.ItemDefinitions:
             return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
       }
@@ -119,6 +117,8 @@ public class EditorSQLManager {
             return "treasure_drops_xml_v2";
          case EditorToolType.Quest:
             return "quest_data_xml_v1";
+         case EditorToolType.Palette:
+            return "palette_recolors";
          case EditorToolType.ItemDefinitions:
             return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
       }

@@ -41,6 +41,9 @@ public class NPCData
    // Can players interact (talk) with this NPC
    public bool interactable = true;
 
+   // If the npc can move around or stay still
+   public bool isStationary = false;
+
    // Gets set to true when the NPC has the crop rumor dialogue option
    public bool hasTradeGossipDialogue = true;
 
@@ -84,7 +87,7 @@ public class NPCData
    public NPCData (int npcId, string greetingTextStranger, string greetingTextAcquaintance,
       string greetingTextCasualFriend, string greetingTextCloseFriend, string greetingTextBestFriend,
       string giftOfferNPCText, string giftLikedText, string giftNotLikedText, string name, bool interactable, bool hasTradeGossipDialogue, bool hasGoodbyeDialogue,
-      int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive, float shadowOffsetY, float shadowScale) {
+      int lastUsedQuestId, int questId, List<NPCGiftData> gifts, string iconPath, string spritePath, bool isHireable, int landMonsterId, int achievementIdHiringRequirement, bool isActive, float shadowOffsetY, float shadowScale, bool isStationary) {
       this.npcId = npcId;
       this.greetingTextStranger = greetingTextStranger;
       this.greetingTextAcquaintance = greetingTextAcquaintance;
@@ -109,6 +112,7 @@ public class NPCData
       this.isActive = isActive;
       this.shadowOffsetY = shadowOffsetY;
       this.shadowScale = shadowScale;
+      this.isStationary = isStationary;
    }
 
    #region Private Variables

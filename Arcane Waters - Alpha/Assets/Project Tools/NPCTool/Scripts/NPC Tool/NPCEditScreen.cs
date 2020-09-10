@@ -21,6 +21,7 @@ public class NPCEditScreen : MonoBehaviour
    public Toggle hasTradeGossip;
    public Toggle hasGoodbye;
    public Toggle isActive;
+   public Toggle isStationary;
    public InputField greetingStranger;
    public InputField greetingAcquaintance;
    public InputField greetingCasualFriend;
@@ -259,6 +260,7 @@ public class NPCEditScreen : MonoBehaviour
       npcIdText.text = npcData.npcId.ToString();
       npcName.text = npcData.name;
       interactable.isOn = npcData.interactable;
+      isStationary.isOn = npcData.isStationary;
       hasTradeGossip.isOn = npcData.hasTradeGossipDialogue;
       hasGoodbye.isOn = npcData.hasGoodbyeDialogue;
       greetingStranger.text = npcData.greetingTextStranger;
@@ -346,7 +348,7 @@ public class NPCEditScreen : MonoBehaviour
          greetingCasualFriend.text, greetingCloseFriend.text, greetingBestFriend.text, giftOfferText.text,
          giftLiked.text, giftNotLiked.text, npcName.text, interactable.isOn, hasTradeGossip.isOn, hasGoodbye.isOn, _lastUsedQuestId,
          int.Parse(questIdText.text), newGiftDataList, npcIconPath, npcSpritePath, isHireableToggle.isOn, int.Parse(selectedBattlerIndex.text), 
-         int.Parse(achievementRequirementHireID.text), isActive.isOn, shadowOffsetY.value, shadowScale.value);
+         int.Parse(achievementRequirementHireID.text), isActive.isOn, shadowOffsetY.value, shadowScale.value, isStationary.isOn);
 
       if (startingID != int.Parse(npcID.text)) {
          // Delete overwritten npc

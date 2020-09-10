@@ -69,12 +69,8 @@ public class MyCamera : BaseCamera
                   break;
                }
             }
-         } else {
-            D.editorLog("Parent is invalid: " + transform.parent.gameObject.name, Color.red);
          } 
-      } else {
-         D.editorLog("No parent!", Color.red);
-      }
+      } 
 
       _initialSettings = getVirtualCameraSettings();
       _initialSettings.ppuScale = getPPUScale();
