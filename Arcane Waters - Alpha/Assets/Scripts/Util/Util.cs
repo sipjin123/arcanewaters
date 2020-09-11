@@ -119,7 +119,12 @@ public class Util : MonoBehaviour {
    }
 
    public static Vector3 getMousePos () {
-      Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      // Cache a reference to the main camera if it doesn't exist
+      if (_mainCamera == null) {
+         _mainCamera = Camera.main;
+      }
+
+      Vector3 worldPos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
       worldPos.z = 0f;
       return worldPos;
    }
@@ -178,6 +183,16 @@ public class Util : MonoBehaviour {
       }
 
       return angle;
+   }
+
+   public static float lerpDouble (double start, double end, double value) {
+      // This is exactly like Mathf.Lerp, but takes doubles as parameters
+      return (float)(start + (end - start) * value);
+   }
+
+   public static float inverseLerpDouble (double start, double end, double value) {
+      // This is exactly like Mathf.InverseLerp, but takes doubles as parameters
+      return (float)((value - start) / (end - start));
    }
 
    public static Direction getFacing (float angle) {
@@ -944,4 +959,7 @@ public class Util : MonoBehaviour {
 
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
+
+   // A cached reference to the main camera
+   private static Camera _mainCamera;
 }

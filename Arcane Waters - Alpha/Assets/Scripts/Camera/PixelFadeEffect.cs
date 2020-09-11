@@ -55,7 +55,11 @@ public class PixelFadeEffect : MonoBehaviour, IScreenFader {
       return FADE_OUT_DURATION;
    }
 
-   public float fadeIn () {      
+   public float fadeIn () {
+      if (getPixelAmount() <= MIN_PIXEL_AMOUNT) {
+         return 0;
+      }
+
       // Make sure the effect is enabled
       camFX_Pixel.enabled = true;
 

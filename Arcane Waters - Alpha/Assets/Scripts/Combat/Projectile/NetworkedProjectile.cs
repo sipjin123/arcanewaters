@@ -40,6 +40,9 @@ public class NetworkedProjectile : MonoBehaviour {
    // Our End Point
    public Vector2 endPos;
 
+   // Whether the projectile travels in an arc
+   public bool usesArc;
+
    // Returns the instance id
    public int instanceId { get { return _instanceId; } }
 
@@ -52,46 +55,8 @@ public class NetworkedProjectile : MonoBehaviour {
 
    #endregion
 
-   public void init (uint netID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos) {
-      this.startPos = startPos;
-      transform.position = startPos;
-
-      _creatorNetId = netID;
-      _instanceId = instanceID;
-      _impactMagnitude = impactType;
-
-      ShipAbilityData newAbilityData = ShipAbilityManager.self.getAbility(abilityId);
-      abilityData = newAbilityData;
-
-      projectileEndType = ProjectileEndType.None;
-      switch (abilityData.selectedAttackType) {
-         case Attack.Type.Boulder:
-            projectileEndType = ProjectileEndType.EndPoint;
-
-            lifeTime = .75f;
-            archHeight = .1f;
-            moveSpeed = 1.55f;
-            break;
-         case Attack.Type.Venom:
-            lifeTime = 1.25f;
-            archHeight = .10f;
-            moveSpeed = 1.55f;
-            break;
-         case Attack.Type.Cannon:
-            lifeTime = NetworkedCannonBall.LIFETIME;
-            archHeight = .10f;
-            moveSpeed = NetworkedCannonBall.MOVE_SPEED;
-            break;
-      }
-      attackType = abilityData.selectedAttackType;
-
-      foreach (SpriteRenderer spriteRenderer in projectileSprites) {
-         spriteRenderer.sprite = ImageManager.getSprite(abilityData.projectileSpritePath);
-      }
-   }
-
    protected virtual void Start () {
-      _startTime = TimeManager.self.getSyncedTime();
+      _startTime = NetworkTime.time;
 
       if (!Util.isBatch()) {
          // Play a sound effect
@@ -118,23 +83,66 @@ public class NetworkedProjectile : MonoBehaviour {
       }
    }
 
+   public void init (uint netID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, float lifetime = -1, bool usesArc = false, float damageMultiplier = 1) {
+      this.startPos = startPos;
+      this.usesArc = usesArc;
+      transform.position = startPos;
+
+      _damageMultiplier = damageMultiplier;
+      _creatorNetId = netID;
+      _instanceId = instanceID;
+      _impactMagnitude = impactType;
+
+      ShipAbilityData newAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+      abilityData = newAbilityData;
+
+      projectileEndType = ProjectileEndType.None;
+      switch (abilityData.selectedAttackType) {
+         case Attack.Type.Boulder:
+            projectileEndType = ProjectileEndType.EndPoint;
+
+            lifeTime = lifetime > 0 ? lifetime : .75f;
+            archHeight = .1f;
+            moveSpeed = 1.55f;
+            break;
+         case Attack.Type.Venom:
+            lifeTime = lifetime > 0 ? lifetime : 1.25f;
+            archHeight = .10f;
+            moveSpeed = 1.55f;
+            break;
+         case Attack.Type.Cannon:
+            lifeTime = lifetime > 0 ? lifetime : NetworkedCannonBall.LIFETIME;
+            archHeight = .10f;
+            moveSpeed = NetworkedCannonBall.MOVE_SPEED;
+            break;
+      }
+      attackType = abilityData.selectedAttackType;
+
+      foreach (SpriteRenderer spriteRenderer in projectileSprites) {
+         spriteRenderer.sprite = ImageManager.getSprite(abilityData.projectileSpritePath);
+      }
+   }
+
+
    protected virtual void Update () {
       // Adjusts the height of the projectile sprite based in an arch
-      float timeAlive = TimeManager.self.getSyncedTime() - _startTime;
+      double timeAlive = NetworkTime.time - _startTime;
       float lerpTime = 0;
 
       if (attackType == Attack.Type.Boulder) {
          // The boulder projectiles lerp is for target position
-         lerpTime = (timeAlive / lifeTime);
+         lerpTime = (float)(timeAlive / lifeTime);
       } else {
          // The other attack type uses lerp time for trajectory and lifespan
-         lerpTime = 1f - (timeAlive / lifeTime);
+         lerpTime = (float)(1f - (timeAlive / lifeTime));
       }
 
-      float angleInDegrees = lerpTime * 180f;
-      float ballHeight = Util.getSinOfAngle(angleInDegrees) * archHeight;
+      if (usesArc) {
+         float angleInDegrees = lerpTime * 180f;
+         float ballHeight = Util.getSinOfAngle(angleInDegrees) * archHeight;
 
-      Util.setLocalY(projectileSpriteObj.transform, ballHeight);
+         Util.setLocalY(projectileSpriteObj.transform, ballHeight);
+      }
 
       if (projectileEndType == ProjectileEndType.EndPoint) {
          // Move from the start to the end point
@@ -197,7 +205,7 @@ public class NetworkedProjectile : MonoBehaviour {
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
-         int damage = (int) (sourceEntity.damage / 3f);
+         int damage = (int) ((sourceEntity.damage / 3f) * _damageMultiplier);
          hitEntity.currentHealth -= damage;
 
          switch (attackType) {
@@ -243,7 +251,7 @@ public class NetworkedProjectile : MonoBehaviour {
    #region Private Variables
 
    // Our Start Time
-   protected float _startTime;
+   protected double _startTime;
 
    // Blocks update func if the projectile collided
    protected bool _hasCollided;
@@ -253,6 +261,9 @@ public class NetworkedProjectile : MonoBehaviour {
 
    // The instance id for this projectile
    protected int _instanceId;
+
+   // The damage multiplier of this projectile considering the current travel force
+   protected float _damageMultiplier = 1;
 
    // Determines the impact level of this projectile
    protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;

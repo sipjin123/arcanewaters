@@ -64,11 +64,7 @@ public class CameraManager : ClientMonoBehaviour {
       // Fade out screen and show loading progress
       // Get fade effect
       IScreenFader fader = defaultCamera.getPixelFadeEffect();
-
-      // Lets track loading by checking if CharacterScreen was populated with data, break if login fails
-      DateTime currentTime = DateTime.Now;
-      PanelManager.self.loadingScreen.show(
-         () => CharacterScreen.self.startingArmorData == null && Global.lastLoginFail < currentTime ? 0 : 1, fader, fader);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.Login, fader, fader);
    }
 
    private void LateUpdate () {

@@ -94,7 +94,7 @@ public class SelectionSprite : MonoBehaviour {
          setColors(Util.getColor(90, 255, 90));
       } else {
          // Calculate the time since the last shot was fired
-         float timeSinceFired = Time.time - ourShip.getLastAttackTime();
+         double timeSinceFired = NetworkTime.time - ourShip.getLastAttackTime();
 
          // If we've recently fired, or are ready to fire again, show red
          if (ourShip.hasReloaded() || timeSinceFired < 1f) {

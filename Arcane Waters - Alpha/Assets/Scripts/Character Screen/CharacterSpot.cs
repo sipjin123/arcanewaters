@@ -83,7 +83,7 @@ public class CharacterSpot : ClientMonoBehaviour {
       ClientManager.sendAccountNameAndUserId();
 
       // Show loading screen until player warps to map
-      PanelManager.self.loadingScreen.show(MapManager.getPlayerActiveInMapProgressObserver(), SpotFader.self, SpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
    }
 
    public void deleteButtonWasPressed () {

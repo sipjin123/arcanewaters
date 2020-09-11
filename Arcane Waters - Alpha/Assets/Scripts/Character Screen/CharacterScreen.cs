@@ -158,6 +158,9 @@ public class CharacterScreen : MonoBehaviour
 
       // Enable character buttons
       Util.enableCanvasGroup(canvasGroup);
+
+      // Hide loading screen
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
    #region Private Variables

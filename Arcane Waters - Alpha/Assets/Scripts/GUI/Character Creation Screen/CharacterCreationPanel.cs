@@ -154,16 +154,19 @@ public class CharacterCreationPanel : ClientMonoBehaviour
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks));
 
          // Show loading screen until player warps to map
-         System.Func<float> loadingObserver = () => {
-            if (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
-               return 0;
-            }
-
-            return 1f;
-         };
-         
-         PanelManager.self.loadingScreen.show(loadingObserver, SpotFader.self, SpotFader.self);
+         StartCoroutine(showLoadingScreen());
       });
+   }
+
+   private IEnumerator showLoadingScreen() {
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreated, SpotFader.self, SpotFader.self);
+
+      while (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
+         yield return new WaitForEndOfFrame();
+      }
+
+      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.CharacterCreated, 1);
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreated);
    }
 
    public void onCharacterCreationValid () {      
@@ -175,7 +178,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       SpotFader.self.closeSpot();
 
       // Show loading screen while starting map is being created
-      PanelManager.self.loadingScreen.show(MapManager.getPlayerActiveInMapProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), SpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, CameraManager.defaultCamera.getPixelFadeEffect(), SpotFader.self);
 
       // Return camera to its original position
       CharacterScreen.self.myCamera.setDefaultSettings();

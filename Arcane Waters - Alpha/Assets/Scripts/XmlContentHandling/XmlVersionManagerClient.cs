@@ -81,7 +81,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          // Add progress to loading screen if it is showing already
          if (PanelManager.self.loadingScreen.isShowing()) {
-            PanelManager.self.loadingScreen.show(getExtractionProgressObserver(), CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.XmlExtraction, CameraManager.defaultCamera.getPixelFadeEffect(), CameraManager.defaultCamera.getPixelFadeEffect());
+            updateLoadingProgress();
          }
 
          initializeLoadingXmlData.RemoveAllListeners();
@@ -124,6 +125,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                clientMessage = "Client is up to date: Ver = " + clientXmlVersion;
                _downloadProgress = 1f;
                _writeProgress = 1f;
+               updateLoadingProgress();
                D.debug(clientMessage);
                processClientXml();
             }
@@ -173,6 +175,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    private async void downloadClientData (int targetVersion) {
       string zipDataRequest = await NubisClient.call(nameof(DB_Main.fetchZipRawData), NubisDataFetcher.getSlotIndex());
       _downloadProgress = 1f;
+      updateLoadingProgress();
       writeData(zipDataRequest, targetVersion);
    }
    
@@ -206,6 +209,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
          D.editorLog("Finished Extracting Zip", Color.green);
          PlayerPrefs.SetInt(XML_VERSION, targetVersion);
          _writeProgress = 1f;
+         updateLoadingProgress();
          processClientXml();
       }
    }
@@ -648,8 +652,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
    private void checkTextExtractionProgress () {
       debugLog("Progress is: " + currentProgress + " / " + targetProgress);
       _extractProgress = (float) currentProgress / targetProgress;
+      updateLoadingProgress();
 
       if (currentProgress >= targetProgress) {
+         PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.XmlExtraction);
          isInitialized = true;
          finishedLoadingXmlData.Invoke();
          D.debug("Finished assigning Xml Data");
@@ -657,16 +663,8 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
    }
 
-   private Func<float> getExtractionProgressObserver () {
-      return () => {
-         // If we are initialized, that means the process is done
-         if (isInitialized) {
-            return 1f;
-         } else {
-            // Otherwise, show progress
-            return Mathf.Clamp(_writeProgress + _extractProgress + _downloadProgress, 0, 0.95f);
-         }
-      };
+   private void updateLoadingProgress () {
+      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.XmlExtraction, _writeProgress + _extractProgress + _downloadProgress);
    }
 
    private void debugLog (string message) {

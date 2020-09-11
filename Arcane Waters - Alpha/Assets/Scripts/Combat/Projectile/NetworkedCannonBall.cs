@@ -35,7 +35,7 @@ public class NetworkedCannonBall : NetworkedProjectile
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
-         int damage = (int) (sourceEntity.damage / 3f);
+         int damage = (int) (sourceEntity.damage / 3f * _damageMultiplier);
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect

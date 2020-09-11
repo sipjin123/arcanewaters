@@ -100,22 +100,6 @@ public class GenericSeaProjectile : MonoBehaviour {
       float lerpTime = (TimeManager.self.getSyncedTime() - _startTime) / totalLifetime;
       Util.setXY(this.transform, Vector2.Lerp(_startPos, _endPos, lerpTime));
 
-      if (shipAbilitydata.hasArch) {
-         if (shipAbilitydata.selectedAttackType == Attack.Type.Tentacle_Range) {
-            archHeight = .60f;
-         }
-
-         // Adjusts the height of the projectile sprite based in an arch
-         float angleInDegrees = lerpTime * 180f;
-         float ballHeight = Util.getSinOfAngle(angleInDegrees) * archHeight;
-         Util.setLocalY(projectileObj.transform, ballHeight);
-      }
-
-      if (shipAbilitydata.syncHeightToArch) {
-         // Adjusts the height of the projectile sprite based in an arch
-         Util.setLocalY(projectileObj.transform, AttackManager.getArcHeight(_startPos, _endPos, lerpTime, false));
-      }
-
       // If we've been alive long enough, destroy ourself
       if (TimeManager.self.getSyncedTime() > this._endTime) {
          // Detach the trails so that they continue to show up a little while longer

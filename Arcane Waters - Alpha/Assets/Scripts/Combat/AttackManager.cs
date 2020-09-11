@@ -25,6 +25,9 @@ public class AttackManager : ClientMonoBehaviour {
    // The trajectory dotted line
    public AttackTrajectory trajectory;
 
+   // True when the local player is aiming
+   public bool isAiming;
+
    // Self
    public static AttackManager self;
 
@@ -50,33 +53,30 @@ public class AttackManager : ClientMonoBehaviour {
       }
 
       // Get the player ship
-      PlayerShipEntity playerShipEntity = (PlayerShipEntity) Global.player;
+      _playerShipEntity = _playerShipEntity == null ? (PlayerShipEntity) Global.player : _playerShipEntity;
 
       // Check if the player is aiming a shot
-      bool isAiming = Input.GetMouseButton(1) && !VoyageGroupPanel.self.isMouseOverAnyMemberCell();
-
-      // Hide the cursor when the player is aiming
-      Cursor.visible = !isAiming;
+      isAiming = _playerShipEntity.isAiming;
 
       // Get the mouse position
-      Vector2 mousePosition = Util.getMousePos();      
+      Vector2 aimPosition = _playerShipEntity.getAimPosition();
 
       // Show or hide the attack UI
       if (isAiming) {
          // Move the clamped aim indicator to the mouse position - clamped inside the range zone
-         Util.setXY(clampedCursor.transform, playerShipEntity.clampToRange(mousePosition));
+         Util.setXY(clampedCursor.transform, _playerShipEntity.clampToRange(aimPosition));
 
          // Determine the modifier for the target
-         _normalizedDistanceToCursor = playerShipEntity.getNormalizedTargetDistance(mousePosition);
+         _normalizedDistanceToCursor = _playerShipEntity.getNormalizedTargetDistance(aimPosition);
 
          // Determine the color of the indicators
-         Color indicatorColor = getColorForDistance(_normalizedDistanceToCursor);
+         Color indicatorColor = getColorForDistance(1 - _normalizedDistanceToCursor);
 
          // Set the color and animation speed of the cursor
          clampedCursor.update(indicatorColor, 0.5f + 0.5f / _normalizedDistanceToCursor);
 
          // Move the free aim indicator to the mouse position
-         Util.setXY(freeCursor.transform, mousePosition);
+         Util.setXY(freeCursor.transform, aimPosition);
 
          // Display the range circle
          maxRangeCircle.show();
@@ -86,7 +86,7 @@ public class AttackManager : ClientMonoBehaviour {
 
          // Draw the trajectory
          trajectory.draw(Global.player.transform.position, clampedCursor.transform.position,
-            indicatorColor, playerShipEntity.getAttackRange());
+            indicatorColor, _playerShipEntity.getAttackRange());
 
          // Display the relevant indicators
          freeCursor.enabled =true;
@@ -103,11 +103,11 @@ public class AttackManager : ClientMonoBehaviour {
       maxRangeCircle.update();
 
       // Check if the next shot is defined
-      if (playerShipEntity.isNextShotDefined) {
+      if (_playerShipEntity.isNextShotDefined) {
          nextShotIndicator.SetActive(true);
 
          // Place the indicator at the next shot coordinates
-         Util.setXY(nextShotIndicator.transform, playerShipEntity.nextShotTarget);
+         Util.setXY(nextShotIndicator.transform, _playerShipEntity.nextShotTarget);
       } else {
          nextShotIndicator.SetActive(false);
       }
@@ -137,22 +137,26 @@ public class AttackManager : ClientMonoBehaviour {
    }
 
    public static float getArcHeight (Vector2 startPos, Vector2 endPos, float lerpTime, bool applyHeightModifier) {
-      float attackDistance = Vector2.Distance(startPos, endPos);
-      float distanceModifier = Mathf.Clamp(attackDistance, .25f, 2f);
-      float heightModifier = 1f;
-      if (applyHeightModifier) {
-         heightModifier = Mathf.Clamp(attackDistance, PlayerShipEntity.MIN_RANGE, 1.5f) / 1.5f;
-      }
-      float angleInDegrees = lerpTime * 180f;
-      float ballHeight = Util.getSinOfAngle(angleInDegrees) * distanceModifier * .5f * heightModifier;
+      //float attackDistance = Vector2.Distance(startPos, endPos);
+      //float distanceModifier = Mathf.Clamp(attackDistance, .25f, 2f);
+      //float heightModifier = 1f;
+      //if (applyHeightModifier) {
+      //   heightModifier = Mathf.Clamp(attackDistance, PlayerShipEntity.MIN_RANGE, 1.5f) / 1.5f;
+      //}
+      //float angleInDegrees = 0;
+      //float ballHeight = Util.getSinOfAngle(angleInDegrees) * distanceModifier * .5f * heightModifier;
 
-      return ballHeight;
+      //return ballHeight;
+      return 0;
    }
 
    #region Private Variables
 
    // The current distance between the player and the aiming cursor, normalized to the max range
    private float _normalizedDistanceToCursor = 0f;
+
+   // The player ship entity
+   private PlayerShipEntity _playerShipEntity;
 
    #endregion
 }

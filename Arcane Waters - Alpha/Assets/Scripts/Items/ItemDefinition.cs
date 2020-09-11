@@ -55,6 +55,26 @@ public class ItemDefinition
       return weaponDataXML;
    }
 
+   public static ItemDefinition create (Category category) {
+      switch (category) {
+         // case x : 
+         // return <call appropriate subclass constructor with provided parameters>
+         case Category.None:
+            return new ItemDefinition();
+         case Category.Weapon:
+            return new WeaponDefinition();
+         case Category.Armor:
+            return new ArmorDefinition();
+         case Category.Hats:
+            return new HatDefinition();
+         case Category.Prop:
+            return new PropDefinition();
+         default:
+            D.debug($"Undefined creation of an item category: { category }");
+            return new ItemDefinition();
+      }
+   }
+
    public static ItemDefinition deserialize (string data, Category category) {
       switch (category) {
          // case x : 
@@ -63,6 +83,10 @@ public class ItemDefinition
             return deserialize<ItemDefinition>(data);
          case Category.Weapon:
             return deserialize<WeaponDefinition>(data);
+         case Category.Armor:
+            return deserialize<ArmorDefinition>(data);
+         case Category.Hats:
+            return deserialize<HatDefinition>(data);
          case Category.Prop:
             return deserialize<PropDefinition>(data);
          default:

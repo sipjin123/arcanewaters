@@ -106,32 +106,63 @@ public class BugReportManager : MonoBehaviour {
       }
       int fps = Mathf.FloorToInt(((float)frameCount) / totalTime);
 
-      byte[] screenshotBytesPNG = takeScreenshot().EncodeToPNG();
       string screenResolution = Screen.currentResolution.ToString();
       string operatingSystem = SystemInfo.operatingSystem;
 
-      // Find image quality of size small enough to send through Mirror Networking
-      if (screenshotBytesPNG.Length < Transport.activeTransport.GetMaxPacketSize()) {
-         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytesPNG, screenResolution, operatingSystem);
+      int width = Screen.width;
+      int height = Screen.height;
+      int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
+
+      // Find image quality of size small enough to send through Mirror Networking      
+      Texture2D standardTex = takeScreenshot(width, height);
+      byte[] screenshotBytes = standardTex.EncodeToPNG();
+      if (screenshotBytes.Length < maxPacketSize) {
+         // Full quality image
+         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
       } else {
-         int quality = 100;
-         while (quality > 0) {
-            byte[] screenshotBytesJPG = takeScreenshot().EncodeToJPG(quality);
-            if (screenshotBytesJPG.Length < Transport.activeTransport.GetMaxPacketSize()) {
-               Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytesJPG, screenResolution, operatingSystem);
-               break;
+         // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
+         screenshotBytes = removeEvenRowsAndColumns(standardTex).EncodeToPNG();
+         if (screenshotBytes.Length < maxPacketSize) {
+            Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+         } else {
+            // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
+            int quality = 100;
+            while (quality > 0) {
+               Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
+               screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
+               if (screenshotBytes.Length < maxPacketSize) {
+                  Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+                  yield break;
+               }
+               quality -= 5;
             }
-            quality -= 5;
          }
       }
 
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 
-   private Texture2D takeScreenshot () {
+   private Texture2D removeEvenRowsAndColumns(Texture2D tex) {
+      List<Color[]> listColors = new List<Color[]>();
+      List<Color> finalColors = new List<Color>();
+
+      for (int y = 0; y < tex.height; y += 2) {
+         listColors.Add(tex.GetPixels(0, y, tex.width, 1));
+      }
+
+      for (int i = 0; i < listColors.Count; i++) {
+         for (int x = 0; x < listColors[i].Length; x += 2) {
+            finalColors.Add(listColors[i][x]);
+         }
+      }
+      tex = new Texture2D(tex.width / 2, tex.height / 2);
+      tex.SetPixels(finalColors.ToArray());
+
+      return tex;
+   }
+
+   private Texture2D takeScreenshot (int resWidth, int resHeight) {
       // Prepare data
-      int resWidth = Screen.width;
-      int resHeight = Screen.height;
       Camera camera = Camera.main;
       RenderTexture savedCameraRT = camera.targetTexture;
       RenderTexture savedActiveRT = RenderTexture.active;

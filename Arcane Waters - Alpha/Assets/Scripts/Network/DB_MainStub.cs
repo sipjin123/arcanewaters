@@ -1103,14 +1103,6 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void createJsonEnumsTable () {
-
-   }
-
-   public static void saveJsonEnum (string jsonName, string jsonContent) {
-
-   }
-
    public static T exec<T> (Func<object, T> action) {
       return default;
    }

@@ -502,7 +502,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    }
 
    public bool canAttack () {
-      float timeSinceAttack = Time.time - _lastAttackTime;
+      double timeSinceAttack = NetworkTime.time - _lastAttackTime;
       return timeSinceAttack > seaMonsterData.attackFrequency;
    }
 

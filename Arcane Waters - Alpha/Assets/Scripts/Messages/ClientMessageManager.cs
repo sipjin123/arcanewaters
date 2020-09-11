@@ -64,7 +64,7 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.AlreadyOnline:
          case ErrorMessage.Type.Banned:
          case ErrorMessage.Type.ClientOutdated:
-            Global.lastLoginFail = DateTime.Now;
+            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
             TitleScreen.self.displayError(msg.errorType);
             return;
          case ErrorMessage.Type.NameTaken:

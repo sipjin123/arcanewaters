@@ -14,6 +14,9 @@ public class LoadingScreen : MonoBehaviour
 {
    #region Public Variables
 
+   // The type of process that is requiring the loading screen
+   public enum LoadingType { Login = 1, MapCreation = 2, XmlExtraction = 3, CharacterCreated = 4 }
+
    // Canvas group of the entire loading screen
    public CanvasGroup mainCanvasGroup;
 
@@ -28,9 +31,9 @@ public class LoadingScreen : MonoBehaviour
 
    #endregion
 
-   // progressHandler should return the loading progress from 0 to 1, where 1 will indicate that the loading is complete
-   public void show (Func<float> progressHandler, IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
-      _loadingObservers.Add(progressHandler);
+   public void show (LoadingType loadingType, IScreenFader fadeOutEffect, IScreenFader fadeInEffect) {
+      _loadingProcesses.Add(new LoadingProcess { type = loadingType, progress = 0 });
+
       if (!_isShowing) {
          _isShowing = true;
 
@@ -44,6 +47,19 @@ public class LoadingScreen : MonoBehaviour
          loadingFinishedMessage.enabled = false;
 
          StartCoroutine(CO_Show(fadeOutEffect, fadeInEffect));
+      }
+   }
+
+   public void hide (LoadingType loadingType) {
+      // Remove the loading process, which was started by the given caller
+      _loadingProcesses.RemoveAll(lp => lp.type == loadingType);
+   }
+
+   public void setProgress (LoadingType loadingType, float progress) {
+      foreach (LoadingProcess loadingProcess in _loadingProcesses) {
+         if (loadingProcess.type == loadingType) {
+            loadingProcess.progress = progress;
+         }
       }
    }
 
@@ -78,8 +94,9 @@ public class LoadingScreen : MonoBehaviour
       yield return new WaitForSeconds(0.25f);
 
       // For our current loading percentage, lets take the slowest of all current loading processes
-      float progress;
-      while ((progress = getCurrentProgress()) < 1f) {
+
+      while (_loadingProcesses.Count > 0) {
+         float progress = getCurrentProgress();
          barImage.fillAmount = progress;
 
          // Check if we exceeded maximum wait time
@@ -123,30 +140,13 @@ public class LoadingScreen : MonoBehaviour
 
    public float getCurrentProgress () {
       // Use slowest observer for current value
-      float min = 1f;
-
-      for (int i = 0; i < _loadingObservers.Count; i++) {
-         float progress = _loadingObservers[i].Invoke();
-
-         // Remove completed progresses
-         if (progress >= 1f) {
-            _loadingObservers.RemoveAt(i);
-            i--;
-            continue;
-         }
-
-         if (progress < min) {
-            min = progress;
-         }
-      }
-
-      return min;
+      return _loadingProcesses.Count == 0 ? 1f : _loadingProcesses.Min(lp => lp.progress);
    }
 
    #region Private Variables
 
-   // List of functions, created by systems that are currently loading. Functions return their loading progress from 0 to 1
-   private List<Func<float>> _loadingObservers = new List<Func<float>>();
+   // List of processes that require the loading screen at a given point of time
+   private List<LoadingProcess> _loadingProcesses = new List<LoadingProcess>();
 
    // Whether the loading screen is currently showing
    private bool _isShowing = false;
@@ -156,6 +156,15 @@ public class LoadingScreen : MonoBehaviour
 
    // A timeout in case the loading screen gets frozen
    private const float LOADING_TIMEOUT = 15.0f;
+
+   public class LoadingProcess
+   {
+      // The type of process
+      public LoadingType type;
+
+      // Progress of the loading
+      public float progress;
+   }
 
    #endregion
 }

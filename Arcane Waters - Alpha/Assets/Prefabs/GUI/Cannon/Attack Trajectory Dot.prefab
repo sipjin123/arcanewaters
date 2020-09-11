@@ -64,15 +64,15 @@ MonoBehaviour:
   dotRenderer: {fileID: 212500291648708482}
   dotSprites:
   - {fileID: 21300000, guid: 2fc9e193f626e6e4ebdd6df8b29fc002, type: 3}
-  - {fileID: 21300000, guid: 9c9cb162e1e02a842bcdb2f863168f80, type: 3}
-  - {fileID: 21300000, guid: 42c73fd660278da4fbff960fb35a33f7, type: 3}
-  - {fileID: 21300000, guid: 180d7b3da7dd42a4e8deacf3f3483596, type: 3}
-  - {fileID: 21300000, guid: d02fab559e7b18c4b9549d37216243d7, type: 3}
-  - {fileID: 21300000, guid: d02fab559e7b18c4b9549d37216243d7, type: 3}
-  - {fileID: 21300000, guid: 180d7b3da7dd42a4e8deacf3f3483596, type: 3}
-  - {fileID: 21300000, guid: 42c73fd660278da4fbff960fb35a33f7, type: 3}
-  - {fileID: 21300000, guid: 9c9cb162e1e02a842bcdb2f863168f80, type: 3}
   - {fileID: 21300000, guid: 2fc9e193f626e6e4ebdd6df8b29fc002, type: 3}
+  - {fileID: 21300000, guid: 9c9cb162e1e02a842bcdb2f863168f80, type: 3}
+  - {fileID: 21300000, guid: 9c9cb162e1e02a842bcdb2f863168f80, type: 3}
+  - {fileID: 21300000, guid: 42c73fd660278da4fbff960fb35a33f7, type: 3}
+  - {fileID: 21300000, guid: 42c73fd660278da4fbff960fb35a33f7, type: 3}
+  - {fileID: 21300000, guid: 180d7b3da7dd42a4e8deacf3f3483596, type: 3}
+  - {fileID: 21300000, guid: 180d7b3da7dd42a4e8deacf3f3483596, type: 3}
+  - {fileID: 21300000, guid: d02fab559e7b18c4b9549d37216243d7, type: 3}
+  - {fileID: 21300000, guid: c0f395fa70a5b6743ac9069ffb17070f, type: 3}
 --- !u!1 &1821438018120402
 GameObject:
   m_ObjectHideFlags: 0

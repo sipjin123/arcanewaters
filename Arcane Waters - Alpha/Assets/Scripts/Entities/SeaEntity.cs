@@ -372,7 +372,7 @@ public class SeaEntity : NetEntity
       _lastAttackTime = Time.time;
    }
 
-   public float getLastAttackTime () {
+   public double getLastAttackTime () {
       return _lastAttackTime;
    }
 
@@ -390,8 +390,7 @@ public class SeaEntity : NetEntity
    }
 
    public bool hasReloaded () {
-      float timeSinceAttack = Time.time - _lastAttackTime;
-
+      double timeSinceAttack = NetworkTime.time - _lastAttackTime;
       return timeSinceAttack > this.reloadDelay;
    }
 
@@ -738,7 +737,7 @@ public class SeaEntity : NetEntity
    protected Transform _projectileSpawnLocation;
 
    // The time at which we last fired an attack
-   protected float _lastAttackTime = float.MinValue;
+   protected double _lastAttackTime = float.MinValue;
 
    // The time at which we last took damage
    protected float _lastDamagedTime = float.MinValue;

@@ -73,7 +73,7 @@ public class SeaMonsterBars : MonoBehaviour
       healthBarImage.fillAmount -= predictedDamage;
 
       // Update our reload bar when we recently fired
-      reloadBarImage.fillAmount = (Time.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
+      reloadBarImage.fillAmount = (float)(NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
 
       // Show a different background for ships owned by other players
       if (Global.player != null && _entity != Global.player) {

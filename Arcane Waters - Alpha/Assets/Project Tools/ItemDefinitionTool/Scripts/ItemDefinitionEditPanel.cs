@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 namespace ItemDefinitionTool
 {
@@ -58,6 +59,9 @@ namespace ItemDefinitionTool
          if (MasterToolAccountManager.self != null && !MasterToolAccountManager.canAlterData()) {
             saveAndExitButton.gameObject.SetActive(false);
          }
+
+         // Gather all type specific attribute sections
+         _typeSpecificAttributes = GetComponentsInChildren<TypeSpecificAttributes>(true);
       }
 
       public void show () {
@@ -73,6 +77,16 @@ namespace ItemDefinitionTool
          }
 
          setGenericAttributeControlValues(ItemDefinitionToolManager.selectedItemDefinition);
+
+         // Update which attribute sections should be shown
+         updateShownAttributeSections();
+
+         // For every shown attribute section, set values control values
+         foreach (TypeSpecificAttributes section in _typeSpecificAttributes) {
+            if (section.gameObject.activeSelf) {
+               section.setValuesWithoutNotify(ItemDefinitionToolManager.selectedItemDefinition);
+            }
+         }
       }
 
       private void setGenericAttributeControlValues (ItemDefinition model) {
@@ -89,17 +103,59 @@ namespace ItemDefinitionTool
          descriptionInput.SetTextWithoutNotify(model.description);
       }
 
+      public void categoryDropdownChanged () {
+         ItemDefinition.Category newCat = (ItemDefinition.Category) Enum.Parse(typeof(ItemDefinition.Category), categoryDropdown.options[categoryDropdown.value].text);
+
+         // If category is the same, do nothing
+         if (ItemDefinitionToolManager.selectedItemDefinition.category == newCat) return;
+
+         // Create item definition, use class based on category
+         int id = ItemDefinitionToolManager.selectedItemDefinition.id;
+         int userId = ItemDefinitionToolManager.selectedItemDefinition.creatorUserId;
+
+         ItemDefinitionToolManager.selectedItemDefinition = ItemDefinition.create(newCat);
+         ItemDefinitionToolManager.selectedItemDefinition.id = id;
+         ItemDefinitionToolManager.selectedItemDefinition.creatorUserId = userId;
+         applyBaseValues(ItemDefinitionToolManager.selectedItemDefinition);
+
+         updateShownAttributeSections();
+
+         // For every shown attribute section, set values control values
+         foreach (TypeSpecificAttributes section in _typeSpecificAttributes) {
+            if (section.gameObject.activeSelf) {
+               section.setValuesWithoutNotify(ItemDefinitionToolManager.selectedItemDefinition);
+            }
+         }
+      }
+
+      private void updateShownAttributeSections () {
+         HashSet<Type> targetTypes = new HashSet<Type>(getAllBaseTypes(ItemDefinitionToolManager.selectedItemDefinition.GetType()));
+         foreach (TypeSpecificAttributes section in _typeSpecificAttributes) {
+            section.gameObject.SetActive(targetTypes.Contains(section.targetType));
+         }
+      }
+
       public void saveAndExit () {
          // Apply attributes from the controls
-         ItemDefinitionToolManager.selectedItemDefinition.name = nameInput.text;
-         ItemDefinitionToolManager.selectedItemDefinition.description = descriptionInput.text;
-         ItemDefinitionToolManager.selectedItemDefinition.iconPath = iconSelector.value;
-         ItemDefinitionToolManager.selectedItemDefinition.enabled = enabledToggle.isOn;
-         ItemDefinitionToolManager.selectedItemDefinition.category =
-            (ItemDefinition.Category) Enum.Parse(typeof(ItemDefinition.Category), categoryDropdown.options[categoryDropdown.value].text);
+         applyBaseValues(ItemDefinitionToolManager.selectedItemDefinition);
+
+         // Apply type specific attributes
+         foreach (TypeSpecificAttributes attributes in _typeSpecificAttributes) {
+            if (attributes.gameObject.activeSelf) {
+               attributes.applyAttributeValues(ItemDefinitionToolManager.selectedItemDefinition);
+            }
+         }
 
          hide();
          ItemDefinitionToolManager.self.saveSelectedDefinition();
+      }
+
+      private void applyBaseValues (ItemDefinition target) {
+         target.name = nameInput.text;
+         target.description = descriptionInput.text;
+         target.iconPath = iconSelector.value;
+         target.enabled = enabledToggle.isOn;
+         target.category = (ItemDefinition.Category) Enum.Parse(typeof(ItemDefinition.Category), categoryDropdown.options[categoryDropdown.value].text);
       }
 
       public void hide () {
@@ -108,7 +164,18 @@ namespace ItemDefinitionTool
          canvasGroup.blocksRaycasts = false;
       }
 
+      private IEnumerable<Type> getAllBaseTypes (Type type) {
+         // Recursively get all of all parent types
+         while (type != null) {
+            yield return type;
+            type = type.BaseType;
+         }
+      }
+
       #region Private Variables
+
+      // Attribute sections that target specific item definition types
+      private TypeSpecificAttributes[] _typeSpecificAttributes;
 
       #endregion
    }

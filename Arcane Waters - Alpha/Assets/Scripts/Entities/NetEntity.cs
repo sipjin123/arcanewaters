@@ -335,7 +335,7 @@ public class NetEntity : NetworkBehaviour
       if (isLocalPlayer && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
          // Show the loading screen
          if (PanelManager.self.loadingScreen != null) {
-            PanelManager.self.loadingScreen.show(MapManager.getPlayerActiveInMapProgressObserver(), SpotFader.self, SpotFader.self);
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
          }
 
          if (LocationBanner.self != null) {
@@ -557,6 +557,10 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual float getInputDelay () {
+      return .25f;
+   }
+
+   public virtual float getFireCannonDelay () {
       return .25f;
    }
 

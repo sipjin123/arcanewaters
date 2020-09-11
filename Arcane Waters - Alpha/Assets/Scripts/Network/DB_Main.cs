@@ -7972,41 +7972,6 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
-   public static new void createJsonEnumsTable () {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "DROP TABLE IF EXISTS json_enums;" +
-            "CREATE TABLE json_enums(json_id INTEGER PRIMARY KEY AUTO_INCREMENT, json_name VARCHAR(50), json_content TEXT)", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new void saveJsonEnum (string jsonName, string jsonContent) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO json_enums (json_name,json_content) VALUES " +
-            "(@json_name, @json_content)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@json_name", jsonName);
-            cmd.Parameters.AddWithValue("@json_content", jsonContent);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
    #region Wrapper Call Methods
 
    public static new T exec<T> (Func<object, T> action) {

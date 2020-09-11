@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 [Serializable]
 [XmlRoot("Item")]
-public class WeaponDefinition : ItemDefinition
+public class WeaponDefinition : EquipmentDefinition
 {
    #region Public Variables
 
@@ -20,8 +20,23 @@ public class WeaponDefinition : ItemDefinition
       Chop = 6
    }
 
+   // The weapon class type
+   public enum Class { Any = 0, Melee = 1, Ranged = 2, Magic = 3 }
+
    // Type of action the weapon can perform
    public ActionType actionType;
+
+   // The Weapon class
+   public Class weaponClass = Class.Any;
+
+   // The damage of the weapon
+   public int baseDamage = 0;
+
+   // The elemental damage of the weapons
+   public int fireDamage;
+   public int waterDamage;
+   public int airDamage;
+   public int earthDamage;
 
    #endregion
 

@@ -54,6 +54,9 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public string guildIconSigilPalettes;
 
+   // True when the local player is aiming   
+   public bool isAiming;
+
    // The effect that indicates this ship is speeding up
    public GameObject speedUpEffectHolder;
    public Canvas speedupGUI;
@@ -80,6 +83,10 @@ public class PlayerShipEntity : ShipEntity
 
    protected override bool isBot () { return false; }
 
+   private void OnGUI () {
+      //GUILayout.Box("Moving: " + getVelocity().magnitude.ToString("f1") +" : "+ _body.velocity.magnitude.ToString("f1") + " : "+ isMoving());
+   }
+
    protected override void Start () {
       base.Start();
 
@@ -98,6 +105,7 @@ public class PlayerShipEntity : ShipEntity
          rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
 
+         _localAimAngle = desiredAngle;            
          speedUpEffectHolder.SetActive(false);
       }
    }
@@ -132,6 +140,34 @@ public class PlayerShipEntity : ShipEntity
       // Check if input is allowed
       if (!Util.isGeneralInputAllowed() || isDisabled) {
          return;
+      }
+
+      if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
+         if (Input.GetKeyDown(KeyCode.Space) && hasReloaded()) {
+            Cmd_StartedAiming(_aimDirection);
+            _currentAimPosition = transform.position;
+            _localAimAngle = desiredAngle;
+         }
+
+         if (isAiming) {
+            if (Input.GetKey(KeyCode.Space)) {
+               Vector2 aimDirection = Quaternion.AngleAxis(_localAimAngle + 90 * getAimDirectionMultiplier(), Vector3.forward) * Vector3.up;
+               Vector2 shipPosition = transform.position;
+               Vector2 startPosition = shipPosition + aimDirection * MIN_CANNON_DISTANCE_FROM_SHIP;
+               float timeAiming = (float)(NetworkTime.time - _startedAimingTime);
+               float progress = Mathf.InverseLerp(0, TIME_TO_REACH_MAX_CANNON_FORCE, timeAiming);
+               _currentAimPosition = Vector2.Lerp(startPosition, shipPosition + aimDirection * getAttackRange(), progress);
+            }
+
+            if (Input.GetKeyUp(KeyCode.Space)) {
+               Cmd_FireMainCannon(_localAimAngle);
+            }
+
+         }
+
+         if (Input.GetKeyDown(KeyCode.Tab)) {
+            switchAimDirection();
+         }
       }
 
       // Right-click to attack in a circle
@@ -194,11 +230,115 @@ public class PlayerShipEntity : ShipEntity
       /*if (Input.GetKeyUp(KeyCode.Space) && !ChatManager.isTyping() && SelectionManager.self.selectedEntity != null && SeaManager.combatMode == SeaManager.CombatMode.Select) {
          Cmd_FireAtTarget(SelectionManager.self.selectedEntity.gameObject);
       }*/
-      
+
       // Right click to fire out the sides
       if (Input.GetMouseButtonUp(1) && SeaManager.getAttackType() == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
          Cmd_FireTimedCannonBall(Util.getMousePos());
       }
+
+      handleDirectionChange();
+   }
+
+   private void handleDirectionChange () {
+      int direction = 0;
+      if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
+         direction = 1;
+      } else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
+         direction = -1;
+      }
+
+      if (direction != 0) {
+         // Modify the local angle
+         _localAimAngle += direction * Time.deltaTime * getAngleChangeSpeed() / getAngleDelay();
+
+         // Check if enough time has passed for us to change our facing direction
+         if (Time.time - _lastAngleChangeTime > getAngleDelay()) {
+            Cmd_ModifyAngle(direction);
+            _lastAngleChangeTime = Time.time;
+         }
+      }
+   }
+
+   public Vector2 getAimPosition () {
+      return _currentAimPosition;
+   }
+
+   private int getAimDirectionMultiplier () {
+      return _aimDirection == AimDirection.Left ? -1 : 1;
+   }
+
+   private void switchAimDirection () {
+      _aimDirection = _aimDirection == AimDirection.Left ? AimDirection.Right : AimDirection.Left;
+
+      // Notify the server we switched the direction
+      Cmd_SetAimDirection(_aimDirection);
+   }
+
+   [Command]
+   private void Cmd_SetAimDirection (AimDirection direction) {
+      _aimDirection = direction;
+   }
+
+   [TargetRpc]
+   private void Target_SetStartedAiming (double startTime) {
+      _startedAimingTime = startTime;
+      isAiming = true;
+   }
+
+   [TargetRpc]
+   private void Target_SetStoppedAiming () {
+      isAiming = false;
+   }
+
+   [Command]
+   protected void Cmd_StartedAiming (AimDirection direction) {
+      if (hasReloaded()) {
+         _aimDirection = direction;
+         _startedAimingTime = NetworkTime.time;
+         isAiming = true;
+
+         // Notify the player
+         Target_SetStartedAiming(_startedAimingTime);
+      }
+   }
+
+   [Command]
+   protected void Cmd_FireMainCannon (float angle) {
+      // Make sure the player isn't dead, has reloaded and has prepared a shot
+      if (isAiming && isDead() || !hasReloaded()) {
+         return;
+      }
+
+      // The player is no longer aiming
+      isAiming = false;
+      Target_SetStoppedAiming();
+
+      // Get the time since the player started aiming
+      double timeAiming = NetworkTime.time - _startedAimingTime;
+
+      // Calculate the normalized percentage 
+      float progress = Util.inverseLerpDouble(0, TIME_TO_REACH_MAX_CANNON_FORCE, timeAiming);
+
+      // Calculate the total force multiplier to apply
+      float speedMultiplier = Mathf.Lerp(MIN_CANNON_FORCE_SCALE, MAX_CANNON_FORCE_SCALE, progress);
+
+      // If the client's desired aim direction is too far from the one predicted by the server, force the server one on the client
+      if (Mathf.Abs(angle - desiredAngle) > 80) {
+         Target_SetAimAngle(desiredAngle);
+
+         // We'll use the server angle to fire
+         angle = desiredAngle;
+      }
+
+      // Get the aiming direction
+      Vector2 aimDirection = Quaternion.AngleAxis(angle + 90 * getAimDirectionMultiplier(), Vector3.forward) * Vector3.up;
+
+      Rpc_FireTimedCannonBall(NetworkTime.time + getFireCannonDelay(), aimDirection * speedMultiplier, speedMultiplier);
+   }
+
+   [TargetRpc]
+   private void Target_SetAimAngle (float aimAngle) {
+      _localAimAngle = aimAngle;
    }
 
    [Command]
@@ -256,8 +396,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [ClientRpc]
-   public void Rpc_FireTimedCannonBall (float startTime, Vector2 velocity) {
-      StartCoroutine(CO_FireTimedCannonBall(startTime, velocity));
+   public void Rpc_FireTimedCannonBall (double startTime, Vector2 velocity, float damageMultiplier) {
+      StartCoroutine(CO_FireTimedCannonBall(startTime, velocity, damageMultiplier));
    }
 
    public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo) {
@@ -358,19 +498,6 @@ public class PlayerShipEntity : ShipEntity
       // Make note of the time
       _lastMoveChangeTime = Time.time;
 
-      // Check if enough time has passed for us to change our facing direction
-      bool canChangeDirection = (Time.time - _lastAngleChangeTime > getAngleDelay());
-
-      if (canChangeDirection) {
-         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-            Cmd_ModifyAngle(+1);
-            _lastAngleChangeTime = Time.time;
-         } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-            Cmd_ModifyAngle(-1);
-            _lastAngleChangeTime = Time.time;
-         }
-      }
-
       if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
          // If the ship wasn't moving, apply a small force locally to make up for delay
          if (_body.velocity.sqrMagnitude < 0.025f) {          
@@ -469,15 +596,16 @@ public class PlayerShipEntity : ShipEntity
       target.noteAttacker(source);
    }
 
-   protected IEnumerator CO_FireTimedCannonBall (float startTime, Vector2 velocity) {
-      float delay = startTime - TimeManager.self.getSyncedTime();
-
-      yield return new WaitForSeconds(delay);
+   protected IEnumerator CO_FireTimedCannonBall (double startTime, Vector2 velocity, float damageMultiplier) {
+      // Wait until it's time to fire
+      while (NetworkTime.time < startTime) {
+         yield return null;
+      }
 
       // Create the cannon ball object from the prefab
       GameObject ballObject = Instantiate(PrefabsManager.self.networkedCannonBallPrefab, this.transform.position, Quaternion.identity);
       NetworkedCannonBall netBall = ballObject.GetComponent<NetworkedCannonBall>();
-
+      
       int abilityId = -1;
       if (shipAbilities.Count > 0) {
          ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
@@ -485,13 +613,11 @@ public class PlayerShipEntity : ShipEntity
             abilityId = shipAbilityData.abilityId;
          }
       }
-      netBall.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position);
+            
+      netBall.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position, NetworkedCannonBall.LIFETIME, false, damageMultiplier);
 
       // Add velocity to the ball
       netBall.body.velocity = velocity;
-
-      // Destroy the cannon ball after a couple seconds
-      Destroy(ballObject, NetworkedCannonBall.LIFETIME);
    }
 
    protected IEnumerator CO_TemporarilyDisableShip () {
@@ -570,20 +696,20 @@ public class PlayerShipEntity : ShipEntity
          Vector2 velocity = direction.normalized * NetworkedCannonBall.MOVE_SPEED;
 
          // Delay the firing a little bit to compensate for lag
-         float timeToStartFiring = TimeManager.self.getSyncedTime() + .150f;
+         double timeToStartFiring = NetworkTime.time + 0.3;
 
          // Note the time at which we last successfully attacked
-         _lastAttackTime = Time.time;
+         _lastAttackTime = NetworkTime.time;
 
          // Make note on the clients that the ship just attacked
          Rpc_NoteAttack();
 
          // Tell all clients to fire the cannon ball at the same time
-         Rpc_FireTimedCannonBall(timeToStartFiring, velocity);
+         Rpc_FireTimedCannonBall(timeToStartFiring, velocity, 1);
 
          // Standalone Server needs to call this as well
          if (!MyNetworkManager.isHost) {
-            StartCoroutine(CO_FireTimedCannonBall(timeToStartFiring, velocity));
+            StartCoroutine(CO_FireTimedCannonBall(timeToStartFiring, velocity, 1));
          }
       }
    }
@@ -605,9 +731,9 @@ public class PlayerShipEntity : ShipEntity
          ship.desiredAngle += modifier * getAngleChangeSpeed();
 
          // Set the new facing direction
-         Direction newFacingDirection = DirectionUtil.getDirectionForAngle(ship.desiredAngle);
-         if (newFacingDirection != ship.facing) {
-            ship.facing = newFacingDirection;
+         Direction newFacingDirection = DirectionUtil.getDirectionForAngle(desiredAngle);
+         if (newFacingDirection != facing) {
+            facing = newFacingDirection;
          }
       }
    }
@@ -648,9 +774,40 @@ public class PlayerShipEntity : ShipEntity
    // Our ship movement sound
    protected AudioSource _movementAudioSource;
 
+   // The position the player is currently aiming at
+   private Vector2 _currentAimPosition;
+
+   // The direction this ship is aiming at
+   private AimDirection _aimDirection;
+
    // A multiplier for the force added locally in order to mask delay
    [SerializeField]
    private float _clientSideForce = 0.1f;
+
+   // The directions ships can use for aiming
+   protected enum AimDirection
+   {
+      Left = 0,
+      Right = 1
+   }
+
+   // The time at which the ship started aiming   
+   private double _startedAimingTime;
+
+   // The client-side aiming direction
+   private float _localAimAngle;
+
+   // The minimum force multiplier for cannon balls
+   private const float MIN_CANNON_FORCE_SCALE = 0.5f;
+
+   // The maximum force multiplier for cannon balls
+   private const float MAX_CANNON_FORCE_SCALE = 3.0f;
+
+   // The time it takes for a ship to reach the max force when firing
+   private const float TIME_TO_REACH_MAX_CANNON_FORCE = 3.0f;
+
+   // The minimum distance the cannon ball can travel from the ship
+   private const float MIN_CANNON_DISTANCE_FROM_SHIP = 0.5f;
 
    #endregion
 }

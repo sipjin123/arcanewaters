@@ -58,7 +58,6 @@ public class MapManager : MonoBehaviour
 
       // Save the area as under creation
       _areasUnderCreation.Add(areaKey, mapPosition);
-      _creationProgress = 0f;
 
       // Find out if we are creating an owned map, if so, get owner id
       int ownerId = -1;
@@ -164,7 +163,8 @@ public class MapManager : MonoBehaviour
          foreach (ExportedLayer001 layer in exportedProject.layers.OrderByDescending(layer => layer.z)) {
             MapImporter.instantiateTilemapLayer(tilemaps, mapInfo, layer, result.tilemapParent,
                result.collisionTilemapParent, exportedProject.biome, ref unrecognizedTiles);
-            _creationProgress = (0.1f / exportedProject.layers.Length) * tilemaps.Count;
+
+            PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, (0.1f / exportedProject.layers.Length) * tilemaps.Count);
             yield return null;
          }
 
@@ -190,7 +190,7 @@ public class MapManager : MonoBehaviour
                mapColliderChunks.Add(MapImporter.instantiateTilemapColliderChunk(exportedProject, result.collisionTilemapParent,
                   exportedProject.biome, rect));
 
-               _creationProgress = 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count;
+               PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.1f + (0.8f / chunkCount) * mapColliderChunks.Count);
                yield return null;
             }
          }
@@ -267,7 +267,8 @@ public class MapManager : MonoBehaviour
       // Set the area as available
       AreaManager.self.storeArea(area);
 
-      _creationProgress = 1f;
+      // Hide loading screen once player is ready
+      StartCoroutine(CO_HideLoadingScreen());
 
       area.vcam.VirtualCameraGameObject.SetActive(false);
 
@@ -289,40 +290,23 @@ public class MapManager : MonoBehaviour
       }
    }
 
-   public static Func<float> getPlayerActiveInMapProgressObserver () {
-      return () => {
-         return getPlayerActiveInMapProgress();
-      };
-   }
+   private IEnumerator CO_HideLoadingScreen () {
+      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.9f);
 
-   public static float getPlayerActiveInMapProgress () {
       // Check that player exists
-      if (Global.player == null || Global.player.areaKey == null) {
-         return 0f;
-      }
+      while (Global.player == null || Global.player.areaKey == null) yield return new WaitForEndOfFrame();
 
       // Check that player is registered in entity manager
-      if (EntityManager.self.getEntity(Global.player.userId) == null) {
-         return 0f;
-      }
+      while (EntityManager.self.getEntity(Global.player.userId) == null) yield return new WaitForEndOfFrame();
 
       // Check if area is already created
-      Area area = AreaManager.self.getArea(Global.player.areaKey);
-      if (area != null) {
-         // Check that player is added to that area
-         if (area.userParent == Global.player.transform.parent) {
-            return 1f;
-         } else {
-            return 0.9f;
-         }
-      }
+      Area area = null;
+      while ((area = AreaManager.self.getArea(Global.player.areaKey)) == null) yield return new WaitForEndOfFrame();
 
-      // Otherwise, check for the creation progress
-      if (self.isAreaUnderCreation(Global.player.areaKey)) {
-         return Mathf.Clamp(self._creationProgress, 0, 0.9f);
-      }
+      // Check that player is added to that area
+      while (area.userParent != Global.player.transform.parent) yield return new WaitForEndOfFrame();
 
-      return 0f;
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }
 
    public void setCustomizations (Area area, MapCustomizationData customizationData) {
@@ -448,9 +432,6 @@ public class MapManager : MonoBehaviour
    private MapInfo _nextMapInfo;
    private Vector3 _nextMapPosition;
    private MapCustomizationData _nextMapCustomizationData;
-
-   // Current progress of area creation
-   private float _creationProgress = 0f;
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();
