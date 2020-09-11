@@ -51,6 +51,9 @@ namespace BackgroundTool
       // Determines the biome type of the background
       public Dropdown biomeDropdown;
 
+      // Determines the weather type of the background
+      public Dropdown weatherDropDown;
+
       // The id of the owner of the content
       public int currentOwnerID;
 
@@ -70,8 +73,12 @@ namespace BackgroundTool
             string currentOption = dropDownFiles.options[dropDownFiles.value].text;
             BackgroundContentData contentData = backgroundContentList.Find(_ => _.backgroundName == currentOption);
             if (contentData != null) {
-               Dropdown.OptionData optionData = biomeDropdown.options.Find(_ => _.text == contentData.biomeType.ToString());
-               biomeDropdown.value = biomeDropdown.options.IndexOf(optionData);
+               Dropdown.OptionData biomeOptionData = biomeDropdown.options.Find(_ => _.text == contentData.biomeType.ToString());
+               biomeDropdown.value = biomeDropdown.options.IndexOf(biomeOptionData);
+
+               Dropdown.OptionData weatherOptionData = weatherDropDown.options.Find(_ => _.text == contentData.weatherType.ToString());
+               weatherDropDown.value = weatherDropDown.options.IndexOf(weatherOptionData);
+
                ImageManipulator.self.generateSprites(contentData.spriteTemplateList);
                currentOwnerID = contentData.ownerId;
             }
@@ -97,6 +104,18 @@ namespace BackgroundTool
          }
          biomeDropdown.options = biomeOptions;
 
+         // Setup weather options
+         List<Dropdown.OptionData> weatherOptions = new List<Dropdown.OptionData>();
+         foreach (WeatherEffectType weatherType in Enum.GetValues(typeof(WeatherEffectType))) {
+            Dropdown.OptionData newOptionData = new Dropdown.OptionData {
+               image = null,
+               text = weatherType.ToString()
+            };
+
+            weatherOptions.Add(newOptionData);
+         }
+         weatherDropDown.options = weatherOptions;
+
          Invoke("loadData", MasterToolScene.loadDelay);
       }
 
@@ -116,6 +135,9 @@ namespace BackgroundTool
             // Get biome data
             string biomeName = biomeDropdown.options[biomeDropdown.value].text;
             newContentData.biomeType = (Biome.Type) Enum.Parse(typeof(Biome.Type), biomeName);
+
+            string weatherName = weatherDropDown.options[weatherDropDown.value].text;
+            newContentData.weatherType = (WeatherEffectType) Enum.Parse(typeof(WeatherEffectType), weatherName);
 
             // Save to SQL Database
             saveData(newContentData);

@@ -29,19 +29,23 @@ public class CloudObject : MonoBehaviour {
    public bool isActive;
 
    // The root position
-   public Vector2 rootPosition;
+   public Vector3 rootPosition;
 
    // The shadow object
    public GameObject shadowObj;
 
+   // If the weather type is for the battle background
+   public bool isBattleBackgroundWeather;
+
    #endregion
 
-   public void resetObject (WeatherEffectType weatherType, Direction direction, Vector2 startPosition, Vector2 rootPosition) {
+   public void resetObject (WeatherEffectType weatherType, Direction direction, Vector3 startPosition, Vector3 rootPosition, bool isBattleBackgroundWeather) {
       this.weatherType = weatherType;
       currentThresold++;
       movementSpeed = Random.Range(.1f, .3f);
       this.direction = direction;
       this.rootPosition = rootPosition;
+      this.isBattleBackgroundWeather = isBattleBackgroundWeather;
       transform.position = startPosition;
 
       Sprite[] sprites = WeatherManager.self.cloudSpriteList.Find(_ => _.weatherType == weatherType).spriteReferences;
@@ -64,24 +68,26 @@ public class CloudObject : MonoBehaviour {
       switch (direction) {
          case Direction.East:
             transform.position += transform.right * movementSpeed * Time.deltaTime;
-            if (transform.position.x > rootPosition.x + WeatherManager.maxRightPos) {
+            if (transform.position.x > rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
                float newYValue = transform.position.y;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
-                  newYValue = Random.Range(rootPosition.y + WeatherManager.maxUpPos, rootPosition.y + WeatherManager.maxDownPos);
+                  newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
+                     rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector2(rootPosition.x + WeatherManager.maxLeftPos, newYValue), rootPosition);
+               resetObject(weatherType, direction, new Vector3(rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxLeftPos : WeatherManager.maxLeftPos), newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
          case Direction.West:
             transform.position -= transform.right * movementSpeed * Time.deltaTime;
-            if (transform.position.x < rootPosition.x - WeatherManager.maxRightPos) {
+            if (transform.position.x < rootPosition.x - (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
                float newYValue = transform.position.y;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
-                  newYValue = Random.Range(rootPosition.y + WeatherManager.maxUpPos, rootPosition.y + WeatherManager.maxDownPos);
+                  newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
+                     rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector2(rootPosition.x + WeatherManager.maxRightPos, newYValue), rootPosition);
+               resetObject(weatherType, direction, new Vector3(rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos), newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
          case Direction.South:
@@ -92,7 +98,7 @@ public class CloudObject : MonoBehaviour {
                   newXValue = Random.Range(rootPosition.x + WeatherManager.maxLeftPos, rootPosition.x + WeatherManager.maxRightPos);
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector2(newXValue, rootPosition.y + WeatherManager.maxUpPos), rootPosition);
+               resetObject(weatherType, direction, new Vector3(newXValue, rootPosition.y + WeatherManager.maxUpPos, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
          case Direction.North:
@@ -103,7 +109,7 @@ public class CloudObject : MonoBehaviour {
                   newXValue = Random.Range(rootPosition.x + WeatherManager.maxLeftPos, rootPosition.x + WeatherManager.maxRightPos);
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector2(newXValue, rootPosition.y - WeatherManager.maxUpPos), rootPosition);
+               resetObject(weatherType, direction, new Vector3(newXValue, rootPosition.y - WeatherManager.maxUpPos, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
       }

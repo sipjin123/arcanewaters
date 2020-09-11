@@ -225,7 +225,7 @@ public class WeatherManager : MonoBehaviour {
                   spawnXPosition = Random.Range(maxLeftPos, maxRightPos);
                   spawnYPosition = Random.Range(maxUpPos, maxDownPos);
                }
-               cloudObj.resetObject(weatherEffectType, direction, new Vector2(spawnXPosition, spawnYPosition), spawnRoot ? new Vector2(spawnRoot.position.x, spawnRoot.position.y) : Vector2.zero);
+               cloudObj.resetObject(weatherEffectType, direction, new Vector2(spawnXPosition, spawnYPosition), spawnRoot ? new Vector2(spawnRoot.position.x, spawnRoot.position.y) : Vector2.zero, false);
             }
             break;
          case WeatherEffectType.Rain:

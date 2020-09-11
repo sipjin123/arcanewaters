@@ -137,6 +137,9 @@ public class BackgroundGameManager : MonoBehaviour {
          D.debug("Failed to fetch board centerpoint");
       }
 
+      // Set up weather type
+      board.setWeather(bgContentData.weatherType);
+
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;
          GameObject spriteTempObj = Instantiate(isAnimatedSprite ? spriteTemplateAnimatedPrefab : spriteTemplatePrefab);

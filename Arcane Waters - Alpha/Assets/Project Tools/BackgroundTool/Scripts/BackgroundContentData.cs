@@ -24,5 +24,8 @@ namespace BackgroundTool
 
       // Determines the biome type of this bg data
       public Biome.Type biomeType = Biome.Type.Forest;
+
+      // The weather type of the biome
+      public WeatherEffectType weatherType;
    }
 }
