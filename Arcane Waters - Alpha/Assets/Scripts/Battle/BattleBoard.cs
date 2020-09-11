@@ -37,7 +37,7 @@ public class BattleBoard : MonoBehaviour {
    public const float maxRightPos = 3.5f, maxLeftPos = -3.5f;
 
    // The max vetical position
-   public const float maxUpPos = .5f, maxDownPos = -.3f;
+   public const float maxUpPos = .4f, maxDownPos = -.2f;
 
    // The object reference for the particle based weather system
    public GameObject rainObjectHolder, snowObjectHolder;
@@ -79,11 +79,12 @@ public class BattleBoard : MonoBehaviour {
                float randomYPosition = Random.Range(maxUpPos, maxDownPos);
                float randomXPosition = Random.Range(maxRightPos, maxLeftPos);
                Vector3 newPosition = new Vector3(parentObj.position.x + randomXPosition, parentObj.position.y + randomYPosition, weatherSpawnRight.position.z);
+               Vector3 newCenterPosition = new Vector3(centerPoint.transform.position.x, parentObj.position.y, parentObj.position.z);
 
                CloudObject cloudObj = Instantiate(cloudObjectPrefab, parentObj);
                cloudObj.direction = randomDirection == 1 ? Direction.West : Direction.East;
-               cloudObj.resetObject(weatherEffectType, cloudObj.direction, newPosition, centerPoint.position, true);
-               
+               cloudObj.resetObject(weatherEffectType, cloudObj.direction, newPosition, newCenterPosition, true);
+              
                cloudObjList.Add(cloudObj);
             }
             break;

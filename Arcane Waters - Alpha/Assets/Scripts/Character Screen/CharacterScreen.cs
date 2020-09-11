@@ -34,6 +34,9 @@ public class CharacterScreen : MonoBehaviour
    // The MyCamera component
    public MyCamera myCamera;
 
+   // The battleboard reference for weather simulation
+   public BattleBoard battleBoard;
+
    public class StartingArmorData {
       // The sql id 
       public int equipmentId;
@@ -56,6 +59,8 @@ public class CharacterScreen : MonoBehaviour
       }
 
       myCamera = virtualCam.GetComponent<MyCamera>();
+
+      battleBoard.setWeather(WeatherEffectType.Cloud);
    }
 
    public StartingArmorData getStartingArmor (int index) {

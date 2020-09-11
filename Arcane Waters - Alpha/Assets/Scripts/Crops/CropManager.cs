@@ -125,9 +125,6 @@ public class CropManager : NetworkBehaviour {
 
                // Send the new Crop to the player
                this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, false);
-
-               // Let them know they gained experience
-               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
             } 
          });
       });
@@ -183,9 +180,6 @@ public class CropManager : NetworkBehaviour {
 
             // Send the update Crop to the player
             this.Target_ReceiveCrop(_player.connectionToClient, cropToWater, true);
-
-            // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
          });
       });
    }
@@ -240,9 +234,6 @@ public class CropManager : NetworkBehaviour {
 
             // Send their new silo info
             _player.Target_ReceiveSiloInfo(_player.connectionToClient, siloInfo.ToArray());
-
-            // Let them know they gained experience
-            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Farmer, cropNumber, true);
          });
       });
    }

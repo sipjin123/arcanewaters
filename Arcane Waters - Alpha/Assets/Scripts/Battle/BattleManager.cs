@@ -41,6 +41,9 @@ public class BattleManager : MonoBehaviour {
    // Holds the prefab reference for each monster type
    public List<PrefabTypes> prefabTypes;
 
+   // The list of battleboars
+   public List<BattleBoard> battleBoardList;
+
    #endregion
 
    public void Awake () {
@@ -49,7 +52,7 @@ public class BattleManager : MonoBehaviour {
 
    public void initializeBattleBoards () {
       // Store all of the Battle Boards that exist in the Scene
-      foreach (BattleBoard board in FindObjectsOfType<BattleBoard>()) {
+      foreach (BattleBoard board in battleBoardList) {
          _boards[board.biomeType] = board;
          BackgroundGameManager.self.setSpritesToBattleBoard(board);
          board.gameObject.SetActive(false);

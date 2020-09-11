@@ -57,7 +57,11 @@ public class CloudObject : MonoBehaviour {
       }
       isActive = true;
 
-      shadowObj.SetActive(weatherType != WeatherEffectType.Mist);
+      if (isBattleBackgroundWeather) {
+         shadowObj.SetActive(false);
+      } else {
+         shadowObj.SetActive(weatherType != WeatherEffectType.Mist);
+      }
    }
 
    public void move () {
@@ -69,25 +73,29 @@ public class CloudObject : MonoBehaviour {
          case Direction.East:
             transform.position += transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x > rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
-               float newYValue = transform.position.y;
+               float newYValue = rootPosition.y; // transform.position.y;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
                      rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector3(rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxLeftPos : WeatherManager.maxLeftPos), newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
+               float newXValue = rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxLeftPos : WeatherManager.maxLeftPos);
+              
+               resetObject(weatherType, direction, new Vector3(newXValue, newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
          case Direction.West:
             transform.position -= transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x < rootPosition.x - (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
-               float newYValue = transform.position.y;
+               float newYValue = rootPosition.y; // transform.position.y;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
                      rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
                   currentThresold = 0;
                }
-               resetObject(weatherType, direction, new Vector3(rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos), newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
+               float newXValue = rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos);
+             
+               resetObject(weatherType, direction, new Vector3(newXValue, newYValue, transform.position.z), rootPosition, isBattleBackgroundWeather);
             }
             break;
          case Direction.South:
