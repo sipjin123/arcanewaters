@@ -64,14 +64,16 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.AlreadyOnline:
          case ErrorMessage.Type.Banned:
          case ErrorMessage.Type.ClientOutdated:
-            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
+            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
             TitleScreen.self.displayError(msg.errorType);
             return;
          case ErrorMessage.Type.NameTaken:
+            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreation);
             PanelManager.self.noticeScreen.show("The selected username is already taken.");
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.InvalidUsername:
+            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
             PanelManager.self.noticeScreen.show("That is not a valid username.");
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;

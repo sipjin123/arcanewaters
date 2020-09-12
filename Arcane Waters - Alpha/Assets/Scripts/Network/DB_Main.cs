@@ -577,8 +577,7 @@ public class DB_Main : DB_MainStub
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("serializedData");
-                     // TODO: Confirm if this is no longer needed, it no longer exists in the SQL Table
-                     //addedContent = dataReader.GetInt32("category") + "[space]";
+                     addedContent = dataReader.GetInt32("category") + "[space]";
                   } else {
                      xmlId = dataReader.GetInt32("xml_id");
                      xmlContent = dataReader.GetString("xmlContent"); ;
@@ -3366,25 +3365,80 @@ public class DB_Main : DB_MainStub
       return rawDataList;
    }
 
-   public static new List<XMLPair> getPaletteXML (string tag) {
+   public static new int getPaletteTagID (string tag) {
+      int id = -1;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.palette_tags WHERE name = @name", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@name", tag);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  id = dataReader.GetInt32("id");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return id;
+   }
+
+   public static new List<XMLPair> getPaletteXML (int tagId) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_recolors WHERE tag = @tag", conn)) {
+            "SELECT * FROM arcane.palette_recolors WHERE tagId = @tagId", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@tag", tag);
+            cmd.Parameters.AddWithValue("@tagId", tagId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newXML = new XMLPair {
                      isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
-                     rawXmlData = dataReader.GetString("xml_content"),
-                     xmlId = dataReader.GetInt32("paletteId"),
-                     xmlOwnerId = dataReader.GetInt32("creator_userID"),
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("id"),
+                     xmlOwnerId = dataReader.GetInt32("creatorUserID"),
+                  };
+                  rawDataList.Add(newXML);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return rawDataList;
+   }
+
+   public static new List<XMLPair> getPaletteXML (int tagId, string subcategory) {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.palette_recolors WHERE tagId = @tagId AND subcategory = @subcategory", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@tagId", tagId);
+            cmd.Parameters.AddWithValue("@subcategory", subcategory);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  XMLPair newXML = new XMLPair {
+                     isEnabled = dataReader.GetInt32("isEnabled") == 1 ? true : false,
+                     rawXmlData = dataReader.GetString("xmlContent"),
+                     xmlId = dataReader.GetInt32("id"),
+                     xmlOwnerId = dataReader.GetInt32("creatorUserID"),
                   };
                   rawDataList.Add(newXML);
                }

@@ -149,6 +149,25 @@ public class PaletteSwapManager : MonoBehaviour {
       return "TEMP COLOR";
    }
 
+   public static Color getRepresentingColor (string[] hexColors) {
+      List<Color> colors = new List<Color>();
+      foreach (string hex in hexColors) {
+         colors.Add(PaletteToolManager.convertHexToRGB(hex));
+      }
+
+      float r = 0.0f;
+      float g = 0.0f;
+      float b = 0.0f;
+
+      foreach (Color color in colors) {
+         r += color.r;
+         g += color.g;
+         b += color.b;
+      }
+
+      return new Color(r / (float) colors.Count, g / (float) colors.Count, b / (float) colors.Count, 1.0f);
+   }
+
    public static Color getRepresentingColor (string paletteName) {
       string p = paletteName;
       if (p == PaletteDef.Eyes.Black ) {

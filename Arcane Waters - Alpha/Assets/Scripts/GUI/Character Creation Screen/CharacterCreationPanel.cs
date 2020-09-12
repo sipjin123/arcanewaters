@@ -159,14 +159,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    private IEnumerator showLoadingScreen() {
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreated, SpotFader.self, SpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, SpotFader.self, SpotFader.self);
 
       while (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
          yield return new WaitForEndOfFrame();
       }
 
-      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.CharacterCreated, 1);
-      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreated);
+      PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.CharacterCreation, 1);
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreation);
    }
 
    public void onCharacterCreationValid () {      

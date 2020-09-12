@@ -628,18 +628,24 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
 
          case EditorToolType.ItemDefinitions:
+            string errors = "";
             foreach (string subGroup in xmlGroup) {
-               // Subgroup should have 3 entries in this structure:
-               // id <spacer> category <spacer> serializer data
-               string[] entries = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.RemoveEmptyEntries);
-               if (entries.Length == 3) {
-                  try {
-                     ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
-                     ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
-                  } catch {
-                     D.debug("Error storing Item Definitions!");
-                  }
+               // We might get an empty entry, remove skip if so
+               if (string.IsNullOrWhiteSpace(subGroup)) {
+                  continue;
                }
+               try {
+                  // Subgroup should have 3 entries in this structure:
+                  // id <spacer> category <spacer> serializer data
+                  string[] entries = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.RemoveEmptyEntries);
+                  ItemDefinition itemDefinition = ItemDefinition.deserialize(entries[2], (ItemDefinition.Category) int.Parse(entries[1]));
+                  ItemDefinitionManager.self.storeItemDefinition(itemDefinition);
+               } catch (Exception ex) {
+                  errors += ex + Environment.NewLine;
+               }
+            }
+            if (!string.IsNullOrEmpty(errors)) {
+               D.error("There were errors when storing item definitions:" + Environment.NewLine + errors);
             }
             break;
       }

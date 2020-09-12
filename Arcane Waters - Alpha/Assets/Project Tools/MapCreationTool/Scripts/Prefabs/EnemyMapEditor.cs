@@ -8,7 +8,9 @@ namespace MapCreationTool
       [SerializeField]
       private bool isSea = false;
 
-      private SpriteRenderer ren;
+      // Main sprite renderer used for the body of the enemy
+      public SpriteRenderer ren;
+
       private SpriteOutline outline;
 
       private void Awake () {
@@ -28,12 +30,27 @@ namespace MapCreationTool
          }
       }
 
-      public override void createdForPreview () {
-         setDefaultSprite();
-      }
-
       public override void createdInPalette () {
          setDefaultSprite();
+         if (isSea) {
+            ren.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            transform.localScale = Vector3.one * 0.5f;
+         }
+      }
+
+      public override void createdForPreview () {
+         setDefaultSprite();
+         if (isSea) {
+            ren.maskInteraction = SpriteMaskInteraction.None;
+            transform.localScale = Vector3.one;
+         }
+      }
+
+      public override void placedInEditor () {
+         if (isSea) {
+            ren.maskInteraction = SpriteMaskInteraction.None;
+            transform.localScale = Vector3.one;
+         }
       }
 
       public void setDefaultSprite () {

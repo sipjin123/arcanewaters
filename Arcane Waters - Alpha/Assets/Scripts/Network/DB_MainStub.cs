@@ -1166,11 +1166,19 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static int getPaletteTagID (string tag) {
+      return -1;
+   }
+
    public static List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       return new List<XMLPair>();
    }
 
-   public static List<XMLPair> getPaletteXML (string tag) {
+   public static List<XMLPair> getPaletteXML (int tagId) {
+      return new List<XMLPair>();
+   }
+
+   public static List<XMLPair> getPaletteXML (int tagId, string subcategory) {
       return new List<XMLPair>();
    }
 

@@ -15,7 +15,7 @@ public class LoadingScreen : MonoBehaviour
    #region Public Variables
 
    // The type of process that is requiring the loading screen
-   public enum LoadingType { Login = 1, MapCreation = 2, XmlExtraction = 3, CharacterCreated = 4 }
+   public enum LoadingType { Login = 1, MapCreation = 2, XmlExtraction = 3, CharacterCreation = 4 }
 
    // Canvas group of the entire loading screen
    public CanvasGroup mainCanvasGroup;
@@ -50,9 +50,11 @@ public class LoadingScreen : MonoBehaviour
       }
    }
 
-   public void hide (LoadingType loadingType) {
-      // Remove the loading process, which was started by the given caller
-      _loadingProcesses.RemoveAll(lp => lp.type == loadingType);
+   public void hide (params LoadingType[] loadingTypes) {
+      // Remove the loading processes
+      foreach (LoadingType type in loadingTypes) {
+         _loadingProcesses.RemoveAll(lp => lp.type == type);
+      }
    }
 
    public void setProgress (LoadingType loadingType, float progress) {
@@ -146,6 +148,7 @@ public class LoadingScreen : MonoBehaviour
    #region Private Variables
 
    // List of processes that require the loading screen at a given point of time
+   [SerializeField]
    private List<LoadingProcess> _loadingProcesses = new List<LoadingProcess>();
 
    // Whether the loading screen is currently showing
@@ -157,6 +160,7 @@ public class LoadingScreen : MonoBehaviour
    // A timeout in case the loading screen gets frozen
    private const float LOADING_TIMEOUT = 15.0f;
 
+   [Serializable]
    public class LoadingProcess
    {
       // The type of process

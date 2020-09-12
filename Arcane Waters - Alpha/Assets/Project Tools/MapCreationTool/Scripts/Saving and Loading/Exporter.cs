@@ -822,16 +822,16 @@ namespace MapCreationTool.Serialization
                // If we're in one of the outdoor areas, we need to check specific tile numbers
                if (tileName.Contains("_tiles")) {
                   string[] split = tileName.Split('_');
-                  int num = int.Parse(split[split.Length - 1]);
-
-                  if (stoneTiles.Contains(num)) {
-                     return CellTypesContainer.MapCellType.Stone;
-                  }
-                  if (woodTiles.Contains(num)) {
-                     return CellTypesContainer.MapCellType.Wood;
-                  }
-                  if (grassTiles.Contains(num)) {
-                     return CellTypesContainer.MapCellType.Grass;
+                  if (int.TryParse(split[split.Length - 1], out int num)) {
+                     if (stoneTiles.Contains(num)) {
+                        return CellTypesContainer.MapCellType.Stone;
+                     }
+                     if (woodTiles.Contains(num)) {
+                        return CellTypesContainer.MapCellType.Wood;
+                     }
+                     if (grassTiles.Contains(num)) {
+                        return CellTypesContainer.MapCellType.Grass;
+                     }
                   }
                }
 

@@ -136,6 +136,12 @@ public class PaletteToolManager : XmlDataToolManager {
       public PaletteToolData paletteData;
    }
 
+   public class PaletteRepresentation
+   {
+      public string name;
+      public Color color;
+   }
+
    [Header("Palette category")]
    // Dropdown element to populate with palette categories to choose from
    public TMPro.TMP_Dropdown dropdownPaletteCategory;
@@ -540,18 +546,23 @@ public class PaletteToolManager : XmlDataToolManager {
       preparePaletteTypeDropdown();
    }
 
-   public static List<PaletteDataPair> getColors (PaletteImageType type, string tagToFind) {
-      if ((int)type >= (int)PaletteImageType.MAX || (int)type <= (int) PaletteImageType.None) {
+   public static List<PaletteRepresentation> getColors (PaletteImageType type, string subcategoryName, string tagToFind) {
+      if ((int) type >= (int) PaletteImageType.MAX || (int) type <= (int) PaletteImageType.None) {
          D.error("Incorrect palette type specified");
-         return new List<PaletteDataPair>();
+         return new List<PaletteRepresentation>();
       }
-      List<PaletteDataPair> pairs = new List<PaletteDataPair>();
 
-      if (XmlLoadingPanel.self) {
-         XmlLoadingPanel.self.startLoading();
+      string key = type.ToString() + "_" + tagToFind + "_" + subcategoryName;
+      if (_cachedGetColorData.ContainsKey(key)) {
+         return _cachedGetColorData[key];
       }
+
+      List<PaletteDataPair> pairs = new List<PaletteDataPair>();
+      List<PaletteRepresentation> paletteRepresentations = new List<PaletteRepresentation>();
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<XMLPair> rawXMLData = DB_Main.getPaletteXML(tagToFind);
+         int tagId = DB_Main.getPaletteTagID(tagToFind);
+         List<XMLPair> rawXMLData = subcategoryName != "" ? DB_Main.getPaletteXML(tagId, subcategoryName) : DB_Main.getPaletteXML(tagId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             foreach (XMLPair xmlPair in rawXMLData) {
@@ -566,17 +577,29 @@ public class PaletteToolManager : XmlDataToolManager {
                   isEnabled = xmlPair.isEnabled,
                   tag = xmlPair.tag
                };
-               if (paletteData.paletteType == (int)type) {
+               if (paletteData.paletteType == (int) type) {
                   pairs.Add(newDataPair);
+
+                  PaletteRepresentation paletteRepresentation = new PaletteRepresentation();
+                  paletteRepresentation.name = newDataPair.paletteData.paletteName;
+                  paletteRepresentation.color = PaletteSwapManager.getRepresentingColor(newDataPair.paletteData.dstColor);
+                  paletteRepresentations.Add(paletteRepresentation);
                }
             }
-            if (XmlLoadingPanel.self) {
-               XmlLoadingPanel.self.finishLoading();
+
+            if (!_cachedGetColorData.ContainsKey(key)) {
+               _cachedGetColorData.Add(key, paletteRepresentations);
             }
+
+            return paletteRepresentations;
          });
       });
 
-      return pairs;
+      return new List<PaletteRepresentation>();
+   }
+
+   public static List<PaletteRepresentation> getColors (PaletteImageType type, string tagToFind) {
+      return getColors(type, "", tagToFind);
    }
 
    public void updatePickingColorFromSprite (Color color) {
@@ -1965,6 +1988,9 @@ public class PaletteToolManager : XmlDataToolManager {
 
    // Current palette image type
    private PaletteImageType _paletteImageType = PaletteImageType.None;
+
+   // Cached data for getColors function
+   private static Dictionary<string, List<PaletteRepresentation>> _cachedGetColorData = new Dictionary<string, List<PaletteRepresentation>>();
 
    // Value of hue shift in current palette;
    private List<int> _hueShiftValues = new List<int>();
