@@ -60,7 +60,7 @@ public class CharacterScreen : MonoBehaviour
 
       myCamera = virtualCam.GetComponent<MyCamera>();
 
-      battleBoard.setWeather(WeatherEffectType.Cloud);
+      battleBoard.setWeather(WeatherEffectType.Cloud, battleBoard.biomeType);
    }
 
    public StartingArmorData getStartingArmor (int index) {

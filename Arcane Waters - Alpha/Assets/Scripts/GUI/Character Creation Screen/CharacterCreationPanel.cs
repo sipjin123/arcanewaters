@@ -73,6 +73,15 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Get the RectTransforms of our different screens to animate them
       _rectTransform = transform as RectTransform;
+
+      // Cache data to create character in background thread
+      if (!Util.isBatch()) {
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, _characterCreationPaletteTag);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+      }
    }
 
    private void Start () {
@@ -452,16 +461,26 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    public void updateColorBoxes (Gender.Type genderType) {
       // Fill in the color boxes
-      fillInColorBoxes(eyeGroup1, _eyePalettes);
-      fillInColorBoxes(hairGroup1, (genderType == Gender.Type.Male) ? _maleHairPalettes : _femaleHairPalettes);
-      fillInColorBoxes(hairGroup2, (genderType == Gender.Type.Male) ? _maleHairPalettes : _femaleHairPalettes);
-      fillInColorBoxes(armorGroup1, (genderType == Gender.Type.Male) ? _maleArmorPalettes1 : _femaleArmorPalettes1);
-      fillInColorBoxes(armorGroup2, (genderType == Gender.Type.Male) ? _maleArmorPalettes2 : _femaleArmorPalettes2);
+      List<PaletteToolManager.PaletteRepresentation> eyes = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, _characterCreationPaletteTag);
+      List<PaletteToolManager.PaletteRepresentation> primaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
+      List<PaletteToolManager.PaletteRepresentation> secondaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+      List<PaletteToolManager.PaletteRepresentation> armorPrimary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
+      List<PaletteToolManager.PaletteRepresentation> armorSecondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+
+
+      fillInColorBoxes(eyeGroup1, eyes);
+      fillInColorBoxes(hairGroup1, primaryHair);
+      fillInColorBoxes(hairGroup2, secondaryHair);
+      fillInColorBoxes(armorGroup1, armorPrimary);
+      fillInColorBoxes(armorGroup2, armorSecondary);
    }
 
    protected string getSelected (ToggleGroup toggleGroup) {
       foreach (Toggle toggle in toggleGroup.GetComponentsInChildren<Toggle>()) {
          if (toggle.isOn) {
+            if (toggle.GetComponent<Text>() == null) {
+               return "";
+            }
             return toggle.GetComponent<Text>().text;
          }
       }
@@ -555,19 +574,22 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   protected void fillInColorBoxes (ToggleGroup toggleGroup, List<string> paletteList) {
+   protected void fillInColorBoxes (ToggleGroup toggleGroup, List<PaletteToolManager.PaletteRepresentation> paletteList) {
       int index = 0;
 
       foreach (Toggle toggle in toggleGroup.GetComponentsInChildren<Toggle>()) {
          if (paletteList.Count > index) {
-            string paletteName = paletteList[index++];
-            toggle.image.color = PaletteSwapManager.getRepresentingColor(paletteName);
+            string paletteName = paletteList[index].name;
+            toggle.image.color = paletteList[index].color;
+            toggle.group = toggleGroup;
 
             // Ensure colors can only be clicked on non-transparent areas instead of using the whole rect
             toggle.image.alphaHitTestMinimumThreshold = 0.1f;
             Text text = toggle.GetComponent<Text>() ? toggle.GetComponent<Text>() : toggle.gameObject.AddComponent<Text>();
             text.enabled = false;
             text.text = paletteName;
+
+            index++;
          }
       }
    }
@@ -579,20 +601,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    // The character associated with this panel
    protected OfflineCharacter _char;
 
-   // The allowed colors we can choose from
-   protected List<string> _eyePalettes = new List<string>() { PaletteDef.Eyes.Blue, PaletteDef.Eyes.Brown, PaletteDef.Eyes.Green, PaletteDef.Eyes.Purple, PaletteDef.Eyes.Black };
-   protected List<string> _maleHairPalettes = new List<string>() { PaletteDef.Hair.Brown, PaletteDef.Hair.Red, PaletteDef.Hair.Black, PaletteDef.Hair.Yellow, PaletteDef.Hair.White };
-   protected List<string> _femaleHairPalettes = new List<string>() { PaletteDef.Hair.Brown, PaletteDef.Hair.Red, PaletteDef.Hair.Black, PaletteDef.Hair.Yellow, PaletteDef.Hair.Blue };
-   protected List<string> _maleArmorPalettes1 = new List<string>() { PaletteDef.Armor1.Brown, PaletteDef.Armor1.Red, PaletteDef.Armor1.Blue, PaletteDef.Armor1.White, PaletteDef.Armor1.Green };
-   protected List<string> _maleArmorPalettes2 = new List<string>() { PaletteDef.Armor2.Brown, PaletteDef.Armor2.White, PaletteDef.Armor2.Blue, PaletteDef.Armor2.Red, PaletteDef.Armor2.Green };
-   protected List<string> _femaleArmorPalettes1 = new List<string>() { PaletteDef.Armor1.Brown, PaletteDef.Armor1.Red, PaletteDef.Armor1.Yellow, PaletteDef.Armor1.Blue, PaletteDef.Armor1.Teal };
-   protected List<string> _femaleArmorPalettes2 = new List<string>() { PaletteDef.Armor2.Brown, PaletteDef.Armor2.White, PaletteDef.Armor2.Yellow, PaletteDef.Armor2.Blue, PaletteDef.Armor2.Teal };
-
    // The list containing all the grids for the different styles
    private List<CharacterStyleGrid> _styleGrids = new List<CharacterStyleGrid>();
 
    // The transform as a rect transform
    private RectTransform _rectTransform;
+
+   // Tag used to mark palettes for character creation content
+   private static string _characterCreationPaletteTag = "Starter";
 
    #endregion
 }

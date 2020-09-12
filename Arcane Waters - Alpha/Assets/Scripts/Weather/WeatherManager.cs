@@ -44,6 +44,9 @@ public class WeatherManager : MonoBehaviour {
    // List of cloud sprite combinations
    public List<CloudSpritePair> cloudSpriteList;
 
+   // List of cloud sprite combinations for battleboards
+   public List<CloudBiomeSpritePair> battleBoardCloudSpriteList;
+
    // The root of the spawn-able clouds
    public Transform spawnRoot;
 
@@ -311,4 +314,21 @@ public class CloudSpritePair {
 
    // Reference to the sprite shadow
    public Sprite[] spriteShadowReferences;
+}
+
+[Serializable]
+public class CloudBiomeSpritePair
+{
+   // Type of biome
+   public Biome.Type biomeType;
+
+   // Reference to the sprite
+   public Sprite[] spriteReferences;
+}
+
+public enum CloudType {
+   None = 0,
+   LowCloud = 1,
+   MediumCloud = 2,
+   HighCloud = 3
 }

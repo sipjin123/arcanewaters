@@ -183,7 +183,7 @@ public class EffectManager : MonoBehaviour {
       }
 
       // Process ability effects, skip if the ability effect was intentionally not assigned
-      CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.FXTimePerFrame);
+      CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.hitFXTimePerFrame);
       if (effectInstance != null) {
          // Instantiate and play the effect at that position
          effectInstance.transform.position = new Vector3(

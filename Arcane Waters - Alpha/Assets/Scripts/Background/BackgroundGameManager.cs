@@ -138,7 +138,7 @@ public class BackgroundGameManager : MonoBehaviour {
       }
 
       // Set up weather type
-      board.setWeather(bgContentData.weatherType);
+      board.setWeather(bgContentData.weatherType, bgContentData.biomeType);
 
       foreach (SpriteTemplateData spriteTempData in bgContentData.spriteTemplateList) {
          bool isAnimatedSprite = spriteTempData.contentCategory == ImageLoader.BGContentCategory.Interactive || spriteTempData.contentCategory == ImageLoader.BGContentCategory.Animating;

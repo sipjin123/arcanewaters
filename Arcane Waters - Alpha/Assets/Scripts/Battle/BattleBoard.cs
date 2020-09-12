@@ -36,7 +36,7 @@ public class BattleBoard : MonoBehaviour {
    // The max horizontal position
    public const float maxRightPos = 3.5f, maxLeftPos = -3.5f;
 
-   // The max vetical position
+   // The max vertical position
    public const float maxUpPos = .4f, maxDownPos = -.2f;
 
    // The object reference for the particle based weather system
@@ -59,7 +59,7 @@ public class BattleBoard : MonoBehaviour {
       centerPoint.transform.position = new Vector3(centerPoint.transform.position.x, centerPoint.transform.position.y, BattleManager.self.transform.position.z + layerOffset);
    }
 
-   public void setWeather (WeatherEffectType weather) {
+   public void setWeather (WeatherEffectType weather, Biome.Type biomeType) {
       isWeatherActive = true;
       weatherEffectType = weather;
       weatherSpawnRight.gameObject.DestroyChildren();
@@ -67,7 +67,7 @@ public class BattleBoard : MonoBehaviour {
       rainObjectHolder.SetActive(false);
       snowObjectHolder.SetActive(false);
 
-      int randomCloudCount = Random.Range(5, 10);
+      int randomCloudCount = Random.Range(3, 6);
       int randomDirection = Random.Range(1, 3);
       cloudObjList = new List<CloudObject>();
 
@@ -83,7 +83,7 @@ public class BattleBoard : MonoBehaviour {
 
                CloudObject cloudObj = Instantiate(cloudObjectPrefab, parentObj);
                cloudObj.direction = randomDirection == 1 ? Direction.West : Direction.East;
-               cloudObj.resetObject(weatherEffectType, cloudObj.direction, newPosition, newCenterPosition, true);
+               cloudObj.resetObject(weatherEffectType, cloudObj.direction, newPosition, newCenterPosition, true, biomeType);
               
                cloudObjList.Add(cloudObj);
             }

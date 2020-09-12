@@ -37,6 +37,10 @@ public class BasicAbilityData : BattleItemData
    // Visual effect time per frame
    public float FXTimePerFrame = 0.10f;
 
+   // The hit vfx time per frame
+   public float hitFXTimePerFrame = 0.10f;
+
+   // The predefined position where the ability cast vfx will spawn
    public AbilityCastPosition abilityCastPosition;
 
    public enum AbilityCastPosition
@@ -65,7 +69,7 @@ public class BasicAbilityData : BattleItemData
    // Builder for the ability data
    public static BasicAbilityData CreateInstance (BattleItemData basicData, int abCost, string[] castSprites,
       int castSoundEffectId, Battler.Stance[] _allowedStances, AbilityType abilityType, float cooldown,
-      int apChange, float fxTimePerFrame, AbilityCastPosition castPosition) {
+      int apChange, float fxTimePerFrame, AbilityCastPosition castPosition, float hitFXTimePerFrame) {
       BasicAbilityData data = new BasicAbilityData();
 
       // Basic battle item data
@@ -85,6 +89,7 @@ public class BasicAbilityData : BattleItemData
       data.apChange = apChange;
       data.FXTimePerFrame = fxTimePerFrame;
       data.abilityCastPosition = castPosition;
+      data.hitFXTimePerFrame = hitFXTimePerFrame;
 
       return data;
    }
@@ -102,6 +107,7 @@ public class BasicAbilityData : BattleItemData
       castSpritesPath = basicAbilityData.castSpritesPath;
 
       FXTimePerFrame = basicAbilityData.FXTimePerFrame;
+      hitFXTimePerFrame = basicAbilityData.hitFXTimePerFrame;
       abilityCastPosition = basicAbilityData.abilityCastPosition;
    }
 

@@ -61,9 +61,13 @@ namespace ServerCommunicationHandlerv2 {
          VoyageInviteCompiler newInvitesCompiler = new VoyageInviteCompiler();
          newInvitesCompiler.serverVoyageInviteData = remoteVoyageInvites;
          string[] content = Util.serialize(remoteVoyageInvites);
-         
+
          // Write to file to be read by other servers
-         File.WriteAllText(invitePath + voyageInviteText, content.Length > 0 ? content[0] : "");
+         try {
+            File.WriteAllText(invitePath + voyageInviteText, content.Length > 0 ? content[0] : "");
+         } catch {
+            D.debug("Cancelled File Write to avoid violation");
+         }
       }
 
       public List<VoyageInviteData> fetchVoyageInvitesFromText () {

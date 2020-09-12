@@ -127,9 +127,13 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
                canBlendInteract2 = field.v.ToLower() == "true";
                break;
             case DataField.WARP_TARGET_MAP_KEY:
-               string areaName = AreaManager.self.getAreaName(int.Parse(value));
-               areaTarget = areaName;
-               cachedSecretEntrance.warpAreaText.text = areaTarget;
+               try {
+                  string areaName = AreaManager.self.getAreaName(int.Parse(value));
+                  areaTarget = areaName;
+                  cachedSecretEntrance.warpAreaText.text = areaTarget;
+               } catch {
+                  D.editorLog("Cant get warp key: " + value, Color.red);
+               }
                break;
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = value;

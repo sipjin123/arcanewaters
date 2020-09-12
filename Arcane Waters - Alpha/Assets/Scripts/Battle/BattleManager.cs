@@ -41,7 +41,7 @@ public class BattleManager : MonoBehaviour {
    // Holds the prefab reference for each monster type
    public List<PrefabTypes> prefabTypes;
 
-   // The list of battleboars
+   // The list of battleboards
    public List<BattleBoard> battleBoardList;
 
    #endregion
