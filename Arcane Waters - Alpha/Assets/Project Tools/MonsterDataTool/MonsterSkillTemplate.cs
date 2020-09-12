@@ -64,6 +64,7 @@ public class MonsterSkillTemplate : MonoBehaviour
    public InputField apChange;
    public InputField abilityCost;
    public InputField fxTimerPerFrame;
+   public InputField hitFxTimerPerFrame;
    public Slider abilityActionType;
    public Text abilityActionTypeText;
    public Image itemIcon;
@@ -356,6 +357,7 @@ public class MonsterSkillTemplate : MonoBehaviour
       apChange.text = abilityData.apChange.ToString();
       abilityCost.text = abilityData.abilityCost.ToString();
       fxTimerPerFrame.text = abilityData.FXTimePerFrame.ToString();
+      hitFxTimerPerFrame.text = abilityData.hitFXTimePerFrame.ToString();
 
       abilityCastPositionText.text = abilityData.abilityCastPosition.ToString();
       abilityCastPosition.value = (int) abilityData.abilityCastPosition;
@@ -420,7 +422,8 @@ public class MonsterSkillTemplate : MonoBehaviour
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
          float.Parse(fxTimerPerFrame.text),
-         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value);
+         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value,
+         float.Parse(hitFxTimerPerFrame.text));
 
       AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData,
          hasKnockup.isOn,
@@ -466,7 +469,8 @@ public class MonsterSkillTemplate : MonoBehaviour
          int.Parse(abilityCooldown.text),
          int.Parse(apChange.text),
          float.Parse(fxTimerPerFrame.text),
-         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value);
+         (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value,
+         float.Parse(hitFxTimerPerFrame.text));
 
       BuffType buffType = (BuffType) this.buffType.value;
       BuffActionType buffActionType = (BuffActionType) this.buffActionType.value;
