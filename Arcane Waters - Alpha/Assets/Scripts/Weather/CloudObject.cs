@@ -116,14 +116,9 @@ public class CloudObject : MonoBehaviour {
          return;
       }
 
-      float speeBoost = 1;
-      if (Input.GetKey(KeyCode.J)) {
-         speeBoost = 6;
-      }
-
       switch (direction) {
          case Direction.East:
-            transform.position += transform.right * (movementSpeed * speeBoost) * Time.deltaTime;
+            transform.position += transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x > rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
                float newYValue = rootPosition.y; 
                if (currentThresold >= RANDOMIZE_THRESOLD) {
@@ -137,7 +132,7 @@ public class CloudObject : MonoBehaviour {
             }
             break;
          case Direction.West:
-            transform.position -= transform.right * (movementSpeed * speeBoost) * Time.deltaTime;
+            transform.position -= transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x < rootPosition.x - (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
                float newYValue = rootPosition.y; 
                if (currentThresold >= RANDOMIZE_THRESOLD) {
