@@ -100,7 +100,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
          case Item.Category.CraftingIngredients:
             item = item.getCastItem();
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
-            icon.sprite =  ImageManager.getSprite(CraftingIngredients.getIconPath(ingredientType));
+            icon.sprite =  ImageManager.getSprite(CraftingIngredients.getBorderlessIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
             icon.sprite = ImageManager.getSprite(EquipmentXMLManager.self.getItemIconPath(item));

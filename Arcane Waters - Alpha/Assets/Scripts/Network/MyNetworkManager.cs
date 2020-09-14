@@ -188,6 +188,9 @@ public class MyNetworkManager : NetworkManager
       // Download all palette configurations from DB
       PaletteSwapManager.self.fetchPaletteData();
 
+      // Start the auction management
+      AuctionManager.self.startAuctionManagement();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }

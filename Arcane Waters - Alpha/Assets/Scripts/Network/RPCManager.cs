@@ -27,150 +27,163 @@ public class RPCManager : NetworkBehaviour {
    #region Auction Features
 
    [Command]
-   public void Cmd_RequestCancelBid (int auctionId) {
-      processCancelBid(auctionId);
-   }
-
-   [Server]
-   private void processCancelBid (int auctionId) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string rawAuctionData = DB_Main.fetchAuctionDataById(auctionId.ToString());
-         if (rawAuctionData.Length > 10) {
-            AuctionItemData auctionData = JsonConvert.DeserializeObject<AuctionItemData>(rawAuctionData);
-
-            Item newItem = new Item();
-            newItem.category = (Item.Category) auctionData.itemCategory;
-            newItem.itemTypeId = auctionData.itemTypeId;
-            newItem.id = auctionData.itemId;
-            newItem.count = auctionData.itemCount;
-
-            Item item = DB_Main.createItemOrUpdateItemCount(auctionData.sellerId, newItem);
-            item.count = auctionData.itemCount;
-
-            DB_Main.removeAuctionEntry(auctionData.auctionId);
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ReceiveCancelAutionResult(_player.connectionToClient, JsonConvert.SerializeObject(item), AuctionRequestResult.Cancelled);
-            });
-         }
-      });
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveCancelAutionResult (NetworkConnection connection, string rawItemData, AuctionRequestResult requestResult) {
-      Item receivedItem = JsonConvert.DeserializeObject<Item>(rawItemData);
-
-      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-      panel.show();
-      RewardManager.self.showItemInRewardPanel(receivedItem);
-   }
-
-   [Command]
-   public void Cmd_RequestPostBid (Item item, int startingBid, int buyoutBid) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int newId = DB_Main.createAuctionEntry(_player.nameText.text, _player.userId, item, startingBid, buyoutBid);
-
-         if (item.category == Item.Category.CraftingIngredients) {
-            DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, item.count);
-         } else {
-            DB_Main.deleteItem(_player.userId, item.id);
-         }
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceivePostBidResult(_player.connectionToClient, newId, AuctionRequestResult.Successfull);
-         });
-      });
-   }
-
-   [TargetRpc]
-   public void Target_ReceivePostBidResult (NetworkConnection connection, int auctionId, AuctionRequestResult requestResult) {
-      PanelManager.self.noticeScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.noticeScreen.show("Item successfully submitted item for auction, auction Id: " + auctionId);
-      PanelManager.self.noticeScreen.confirmButton.onClick.AddListener(() => PanelManager.self.noticeScreen.hide());
-   }
-
-   [Command]
-   public void Cmd_RequestItemBid (int bidId, int bidPrice) {
-      AuctionRequestResult resultToSend = AuctionRequestResult.None;
-      Item newItem = new Item();
-
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string rawAuctionData = DB_Main.fetchAuctionDataById(bidId.ToString());
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            AuctionItemData auctionData = JsonConvert.DeserializeObject<AuctionItemData>(rawAuctionData);
-            newItem.category = (Item.Category) auctionData.itemCategory;
-            newItem.itemTypeId = auctionData.itemTypeId;
-            newItem.count = auctionData.itemCount;
-            newItem.id = auctionData.itemId;
-
-            if (bidPrice >= auctionData.itembuyOutPrice) {
-               resultToSend = AuctionRequestResult.Buyout;
-               processAuctionTransaction(_player.userId, auctionData, bidPrice, newItem);
-            } else {
-               if (bidPrice > auctionData.highestBidPrice) {
-                  resultToSend = AuctionRequestResult.HighestBidder;
-                  processAuctionReplacement(_player.userId, auctionData, bidPrice);
-               }
-            }
-
-            Target_ReceiveBidRequestResult(_player.connectionToClient, JsonConvert.SerializeObject(newItem), resultToSend);
-         });
-      });
-   }
-
-   [Server]
-   public void processAuctionReplacement (int buyerId, AuctionItemData auctionData, int buyerFinalPrice) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         DB_Main.modifyAuctionData(auctionData.auctionId.ToString(), buyerId.ToString(), buyerFinalPrice.ToString());
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Do Server Logic Here
-            D.editorLog("Done Loading Auction Bid update");
-         });
-      });
-   }
-
-   [Server]
-   public void processAuctionTransaction (int buyerId, AuctionItemData auctionData, int buyerFinalPrice, Item item) {
-      auctionData.buyerId = buyerId;
-      Item newItem = new Item();
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         if (Item.Category.CraftingIngredients == (Item.Category) auctionData.itemCategory) {
-            newItem = DB_Main.createItemOrUpdateItemCount(buyerId, item);
-         } else {
-            newItem = DB_Main.createNewItem(buyerId, item);
-         }
-
-         DB_Main.addGold(auctionData.sellerId, buyerFinalPrice);
-         DB_Main.addGold(buyerId, -buyerFinalPrice);
-         int result = DB_Main.addToAuctionHistory(auctionData);
-         if (result == 1) {
-            DB_Main.removeAuctionEntry(auctionData.auctionId);
-         } else {
-            D.debug("Could not properly add auction to history: " + auctionData.auctionId);
-         }
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Do Server Logic Here
-            D.editorLog("Done Loading Auction Transaction update");
-         });
-      });
-   }
-
-   [TargetRpc]
-   public void Target_ReceiveBidRequestResult (NetworkConnection connection, string rawInfo, AuctionRequestResult requestResult) {
-      Item receivedItem = JsonConvert.DeserializeObject<Item>(rawInfo);
-      AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-      switch (requestResult) {
-         case AuctionRequestResult.HighestBidder:
-            NubisDataFetcher.self.checkAuctionMarket(panel.marketPanel.currentPage, panel.marketPanel.currentItemCategory, false);
-            PanelManager.self.noticeScreen.show("You have successfully bid the item: " + EquipmentXMLManager.self.getItemName(receivedItem));
-            break;
-         case AuctionRequestResult.Buyout:
-            panel.show();
-            NubisDataFetcher.self.checkAuctionMarket(panel.marketPanel.currentPage, panel.marketPanel.currentItemCategory, false);
-            RewardManager.self.showItemInRewardPanel(receivedItem);
-            break;
+   public void Cmd_CancelAuction (int auctionId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
       }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         AuctionItemData auction = DB_Main.getAuction(auctionId, false);
+         DateTime expiryDate = DateTime.FromBinary(auction.expiryDate);
+
+         if (expiryDate <= DateTime.UtcNow) {
+            sendError("This auction has ended!");
+            return;
+         }
+
+         if (auction.sellerId != _player.userId) {
+            sendError("You do not own this auction!");
+            return;
+         }
+
+         // Return his gold to the previous highest bidder - if any
+         if (auction.highestBidUser > 0) {
+            DB_Main.addGold(auction.highestBidUser, auction.highestBidPrice);
+         }
+
+         // Deliver the item to the seller and delete the auction
+         DB_Main.deliverAuction(auction.auctionId, auction.mailId, auction.sellerId);
+         DB_Main.deleteAuction(auctionId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ModifiedOwnAuction, _player, "Your auction has been cancelled and the item delivered to you by mail!");
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_CreateAuction (Item item, int startingBid, int buyoutPrice, long expiryDateBinary) {
+      DateTime expiryDate = DateTime.FromBinary(expiryDateBinary);
+
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      if (startingBid <= 0) {
+         sendError("The starting bid must be higher than 0.");
+         return;
+      }
+
+      if (buyoutPrice <= 0) {
+         sendError("The buyout price must be higher than 0.");
+         return;
+      }
+
+      if (buyoutPrice <= startingBid) {
+         sendError("The buyout price must be higher than the starting bid!");
+         return;
+      }
+
+      if (expiryDate <= DateTime.UtcNow) {
+         sendError("The auction duration is inconsistent.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Create a mail without recipient, with the auctioned item as attachment - this will also verify the item validity
+         int mailId = createMailCommon(-1, "Auction House - Item Delivery", "", new int[] { item.id }, new int[] { item.count });
+
+         // Create the auction
+         int newId = DB_Main.createAuction(_player.userId, _player.nameText.text, mailId, expiryDate, startingBid,
+            buyoutPrice, item.category, EquipmentXMLManager.self.getItemName(item), item.count);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ModifiedOwnAuction, _player, "Your item has been successfully submitted for auction!");
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_BidOnAuction (int auctionId, int bidAmount) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         AuctionItemData auction = DB_Main.getAuction(auctionId, false);
+         DateTime expiryDate = DateTime.FromBinary(auction.expiryDate);
+
+         if (expiryDate <= DateTime.UtcNow) {
+            sendError("This auction has ended!");
+            return;
+         }
+
+         if (auction.sellerId == _player.userId) {
+            sendError("You cannot bid on your auctions!");
+            return;
+         }
+
+         if (bidAmount <= auction.highestBidPrice) {
+            sendError("You must set an amount higher than the highest bid.");
+            return;
+         }
+
+         // Clamp the bid amount to the buyout price
+         bidAmount = Mathf.Clamp(bidAmount, 0, auction.buyoutPrice);
+
+         // Withdraw the gold from the user
+         int gold = DB_Main.getGold(_player.userId);
+         if (gold < bidAmount) {
+            sendError("You do not have enough gold!");
+            return;
+         }
+         DB_Main.addGold(_player.userId, -bidAmount);
+
+         // Return his gold to the previous highest bidder - if any
+         if (auction.highestBidUser > 0) {
+            DB_Main.addGold(auction.highestBidUser, auction.highestBidPrice);
+         }
+
+         string resultMessage = "";
+         if (bidAmount >= auction.buyoutPrice) {
+            // Set this user as the highest bidder and close the auction. The item is delivered by the auction manager.
+            DB_Main.updateAuction(auctionId, _player.userId, bidAmount, DateTime.UtcNow);
+            resultMessage = "You have won the auction! The item will be delivered to you shortly by mail.";
+         } else {
+            // Set this user as the highest bidder
+            DB_Main.updateAuction(auctionId, _player.userId, bidAmount, expiryDate);
+            resultMessage = "Your bid has been successfully registered";
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.BidOnAuction, _player, resultMessage);
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_GetAuction (int auctionId) {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         AuctionItemData auction = DB_Main.getAuction(auctionId, true);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveAuctionInfo(_player.connectionToClient, auction);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveAuctionInfo (NetworkConnection connection, AuctionItemData auctionInfo) {
+      PanelManager.self.pushIfNotShowing(Panel.Type.Auction);
+      ((AuctionPanel) PanelManager.self.get(Panel.Type.Auction)).auctionInfoPanel.receiveAuctionFromServer(auctionInfo);
    }
 
    #endregion
@@ -703,15 +716,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveInventoryItemsForItemSelection (NetworkConnection connection, InventoryMessage msg) {
-      // Only if the screen is showing
-      if (PanelManager.self.itemSelectionScreen.isShowing()) {
-         PanelManager.self.itemSelectionScreen.receiveItemsFromServer(msg.userObjects, msg.pageNumber, msg.totalItemCount,
-            msg.equippedArmorId, msg.equippedWeaponId, msg.itemArray);
-      }
-   }
-
-   [TargetRpc]
    public void Target_OnEquipItem (NetworkConnection connection, Item equippedWeapon, Item equippedArmor, Item equippedHat) {
       // Refresh the inventory panel
       InventoryPanel panel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
@@ -1083,53 +1087,6 @@ public class RPCManager : NetworkBehaviour {
             _player.rpc.Target_ReceiveLeaderBoards(_player.connectionToClient, period, timeLeftUntilRecalculation.TotalSeconds,
                farmingEntries.ToArray(), sailingEntries.ToArray(), exploringEntries.ToArray(), tradingEntries.ToArray(),
                craftingEntries.ToArray(), miningEntries.ToArray());
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_RequestItemsFromServerForItemSelection (Item.Category category, int pageNumber, int itemsPerPage,
-      bool filterEquippedItems, int[] itemIdsToFilterArray) {
-      // Enforce a reasonable max here
-      if (itemsPerPage > 200) {
-         D.warning("Requesting too many items per page.");
-         return;
-      }
-
-      Item.Category[] categoryArray = new Item.Category[1];
-      categoryArray[0] = category;
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
-         UserInfo userInfo = userObjects.userInfo;
-
-         List<Item> items;
-
-         // Add equipped items to the list of item ids to filter
-         List<int> itemIdsToFilter = itemIdsToFilterArray.ToList();
-         if (filterEquippedItems) {
-            itemIdsToFilter.Add(userInfo.weaponId);
-            itemIdsToFilter.Add(userInfo.armorId);
-         }
-
-         int[] categoryInt = Array.ConvertAll(categoryArray.ToArray(), x => (int) x);
-         string categoryJson = JsonConvert.SerializeObject(categoryInt);
-         
-         string idFilterJson = JsonConvert.SerializeObject(itemIdsToFilter.ToArray());
-
-         // Get the item count and item list from the database
-         string totalItemCountStr = DB_Main.getItemCount(_player.userId.ToString(), categoryJson, idFilterJson, "");
-
-         items = DB_Main.getItems(_player.userId, categoryArray, pageNumber, itemsPerPage, itemIdsToFilter, new List<Item.Category>());
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            List<Item> processedItemList = EquipmentXMLManager.setEquipmentData(items);
-
-            InventoryMessage inventoryMessage = new InventoryMessage(_player.netId, userObjects, new Item.Category[] { category },
-               pageNumber, userInfo.gold, userInfo.gems, int.Parse(totalItemCountStr), userInfo.armorId, userInfo.weaponId, processedItemList.ToArray());
-            Target_ReceiveInventoryItemsForItemSelection(_player.connectionToClient, inventoryMessage);
          });
       });
    }
@@ -2123,109 +2080,95 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      string feedbackMessage = "";
-      bool success = true;
-
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Try to retrieve the recipient info
          UserInfo recipientUserInfo = DB_Main.getUserInfo(recipientName);
          if (recipientUserInfo == null) {
-            feedbackMessage = "The player " + recipientName + " does not exist!";
-            success = false;
-         }
-
-         // Verify the attached items validity
-         if (success) {
-            // Verify that the number of attached items is below the maximum
-            if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
-               D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserInfo.userId, attachedItemsIds.Length));
-               return;
-            }
-
-            for (int i = 0; i < attachedItemsIds.Length; i++) {
-               // Retrieve the item from the player's inventory
-               Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
-
-               // Verify if the player has the item in his inventory
-               if (item == null) {
-                  feedbackMessage = "One of the items is not present in your inventory!";
-                  success = false;
-                  break;
-               }
-
-               // Verify that there are enough items in the stack
-               if (item.count < attachedItemsCount[i]) {
-                  feedbackMessage = "You don't have enough " + item.getName() + " to send!";
-                  success = false;
-                  break;
-               }
-
-               // Verify that the item is not equipped
-               string userInfoString = DB_Main.getUserInfoJSON(_player.userId.ToString());
-               UserInfo userInfo = JsonUtility.FromJson<UserInfo>(userInfoString);
-
-               if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
-                  feedbackMessage = "You cannot send an equipped item!";
-                  success = false;
-                  break;
-               }
-            }
-         }
-
-         MailInfo mail = null;
-
-         if (success) {
-            // Create the mail object
-            mail = new MailInfo(-1, recipientUserInfo.userId, _player.userId, DateTime.UtcNow,
-               false, mailSubject, message);
-
-            // Write the mail in the database
-            mail.mailId = DB_Main.createMail(mail);
-
-            if (mail.mailId == -1) {
-               D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", _player.userId, recipientUserInfo.userId));
-               feedbackMessage = "An error occurred when sending the mail!";
-               success = false;
-            }
-         }
-
-         if (success) {
-            // Attach the items
-            for (int i = 0; i < attachedItemsIds.Length; i++) {
-               // Retrieve the item from the player's inventory
-               Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
-
-               // Check if the item was correctly retrieved
-               if (item == null) {
-                  D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, _player.userId));
-                  continue;
-               }
-
-               // Transfer the item from the user inventory to the mail
-               DB_Main.transferItem(item, _player.userId, -mail.mailId, attachedItemsCount[i]);
-            }
-
-            // Prepare a feedback message
-            feedbackMessage = "The mail has been successfully sent to " + recipientName + "!";
+            sendError("The player " + recipientName + " does not exist!");
+            return;
          }
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            if (success) {
+            // Create the mail
+            int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount);
+
+            if (mailId >= 0) {
                // Let the player know that the mail was sent
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, feedbackMessage);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, "The mail has been successfully sent to " + recipientName + "!");
 
                if (attachedItemsIds.Length > 0) {
                   // Update the shortcuts panel in case the transferred items were set in slots
                   sendItemShortcutList();
                }
-            } else {
-               ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
          });
       });
+   }
+
+   // This function must be called from the background thread!
+   [Server]
+   private int createMailCommon (int recipientUserId, string mailSubject, string message, int[] attachedItemsIds, int[] attachedItemsCount) {
+      // Verify that the number of attached items is below the maximum
+      if (attachedItemsIds.Length > MailManager.MAX_ATTACHED_ITEMS) {
+         D.error(string.Format("The mail from user {0} to recipient {1} has too many attached items ({2}).", _player.userId, recipientUserId, attachedItemsIds.Length));
+         return -1;
+      }
+
+      // Verify the validity of the attached items
+      for (int i = 0; i < attachedItemsIds.Length; i++) {
+         Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+
+         if (item == null) {
+            sendError("An item is not present in your inventory!");
+            return -1;
+         }
+
+         if (item.count < attachedItemsCount[i]) {
+            sendError("You don't have enough " + item.getName() + "!");
+            return -1;
+         }
+
+         // Verify that the item is not equipped
+         string userInfoString = DB_Main.getUserInfoJSON(_player.userId.ToString());
+         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(userInfoString);
+
+         if (userInfo.armorId == item.id || userInfo.weaponId == item.id) {
+            sendError("You cannot select an equipped item!");
+            return -1;
+         }
+      }
+
+      MailInfo mail = null;
+
+      // Create the mail
+      mail = new MailInfo(-1, recipientUserId, _player.userId, DateTime.UtcNow, false, mailSubject, message);
+      mail.mailId = DB_Main.createMail(mail);
+
+      if (mail.mailId == -1) {
+         D.error(string.Format("Error when creating a mail from sender {0} to recipient {1}.", _player.userId, recipientUserId));
+         sendError("An error occurred when creating a mail!");
+         return -1;
+      }
+
+      // Attach the items
+      for (int i = 0; i < attachedItemsIds.Length; i++) {
+         // Retrieve the item from the player's inventory
+         Item item = DB_Main.getItem(_player.userId, attachedItemsIds[i]);
+
+         // Check if the item was correctly retrieved
+         if (item == null) {
+            D.warning(string.Format("Could not retrieve the item {0} attached to mail {1} of user {2}.", attachedItemsIds[i], mail.mailId, _player.userId));
+            continue;
+         }
+
+         // Transfer the item from the user inventory to the mail
+         DB_Main.transferItem(item, _player.userId, -mail.mailId, attachedItemsCount[i]);
+      }
+
+      return mail.mailId;
    }
 
    [Command]

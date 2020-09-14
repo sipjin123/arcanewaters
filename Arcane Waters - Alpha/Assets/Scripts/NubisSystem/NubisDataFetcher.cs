@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 public enum XmlSlotIndex
 {
@@ -48,15 +49,6 @@ namespace NubisDataHandling {
 
       // Self
       public static NubisDataFetcher self;
-
-      // The category types that are being fetched
-      public Item.Category categoryFilter;
-
-      // The current item cap per page
-      public int itemsPerPage;
-
-      // The current page of the item preview
-      public int pageIndex;
 
       // The web directory
       public string webDirectory = "";
@@ -103,125 +95,38 @@ namespace NubisDataHandling {
 
       #region Auction Features
 
-      public void fetchAuctionHistory (int page) {
-         processFetchAuctionHistory(page);
-      }
+      public async void getAuctionList (int pageNumber, int rowsPerPage, Item.Category[] categoryFilters,
+         bool onlyHistory, bool onlyOwnAuctions) {
+         AuctionPanel panel = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
+         panel.setLoadBlocker(true);
 
-      private async void processFetchAuctionHistory (int page) {
-         string result = await NubisClient.call(nameof(DB_Main.fetchAuctionPurchaseHistory), Global.player.userId.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), page.ToString());
-         if (result.Length > VALID_XML_LENGTH) {
-            List<AuctionItemData> auctionItemList = Util.xmlLoad<List<AuctionItemData>>(result);
+         // Prepare the category filter
+         List<int> categoryFilterInt = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
+         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
 
-            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-            panel.marketPanel.loadAuctionHistory(auctionItemList);
-         } else {
-            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchAuctionPurchaseHistory));
-         }
-      }
+         // Call the list and list count in parallel
+         Task<string> listTask = NubisClient.call(nameof(DB_Main.getAuctionList), pageNumber.ToString(),
+            rowsPerPage.ToString(), categoryFilterJSON, Global.player.userId.ToString(),
+            onlyHistory ? "1" : "0", onlyOwnAuctions ? "1" : "0");
+         Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.getAuctionListCount),
+            Global.player.userId.ToString(), categoryFilterJSON,
+            onlyHistory ? "1" : "0", onlyOwnAuctions ? "1" : "0");
 
-      public void requestUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
-         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-         panel.userPanel.setBlockers (true);
-         processUserItemsForAuction(pageIndex, categoryFilters);
-      }
+         await Task.WhenAll(listTask, totalCountTask);
 
-      private async void processUserItemsForAuction (int pageIndex, Item.Category categoryFilters) {
-         // Fetched data from db_main
-         string userItemData = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), Global.player.userId.ToString());
-         if (userItemData.Length > VALID_XML_LENGTH) {
-            Item equippedWeapon = new Item();
-            Item equippedArmor = new Item();
-            Item equippedHat = new Item();
-
-            EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(userItemData);
-            equippedWeapon = equippedItemData.weaponItem;
-            equippedArmor = equippedItemData.armorItem;
-            equippedHat = equippedItemData.hatItem;
-
-            List<Item.Category> newcategoryList = new List<Item.Category>();
-            if (categoryFilters == Item.Category.None) {
-               newcategoryList.Add(Item.Category.Weapon);
-               newcategoryList.Add(Item.Category.Armor);
-               newcategoryList.Add(Item.Category.CraftingIngredients);
-               newcategoryList.Add(Item.Category.Blueprint);
-            }
-
-            int[] categoryInt = Array.ConvertAll(newcategoryList.ToArray(), x => (int) x);
-            string categoryJson = JsonConvert.SerializeObject(categoryInt);
-
-            List<int> itemIdFilter = new List<int>();
-            if (equippedWeapon.itemTypeId > 0) {
-               itemIdFilter.Add(equippedWeapon.id);
-            }
-            if (equippedArmor.itemTypeId > 0) {
-               itemIdFilter.Add(equippedArmor.id);
-            }
-            if (equippedHat.itemTypeId > 0) {
-               itemIdFilter.Add(equippedHat.id);
-            }
-
-            int totalItemCount = 10;
-            string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
-            string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), Global.player.userId.ToString(), categoryJson, itemIdJson, "0");
-
-            try {
-               totalItemCount = int.Parse(itemCountResponse);
-            } catch {
-               D.editorLog("Failed to parse: " + itemCountResponse);
-            }
-
-            string returnCode = await NubisClient.call(nameof(DB_Main.userInventory), Global.player.userId, pageIndex.ToString(), ((int) categoryFilters).ToString(), equippedWeapon.id, equippedArmor.id, equippedHat.id, AuctionUserPanel.MAX_PAGE_COUNT.ToString());
-            if (returnCode.Length > VALID_XML_LENGTH) {
-               AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-               if (panel.isShowing()) {
-                  List<Item> itemList = UserInventory.processUserInventory(returnCode);
-                  panel.userPanel.gameObject.SetActive(true);
-                  panel.userPanel.loadUserItemList(itemList, totalItemCount);
-                  panel.show();
-               }
-            } else {
-               D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.userInventory) +" : "+returnCode);
-            }
-         } else {
-            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchEquippedItems));
-         }
-      }
-
-      public void checkAuctionMarket (int pageIndex, Item.Category[] categoryFilters, bool checkOwnItems) {
-         AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-         if (checkOwnItems) {
-            panel.marketPanel.toggleAuctionedUserItemLoader(true);
-         } else {
-            panel.setBlockers(true);
+         // Parse the received data
+         List<AuctionItemData> auctionList = new List<AuctionItemData>();
+         int totalAuctionCount = 0;
+         try {
+            auctionList = Util.xmlLoad<List<AuctionItemData>>(listTask.Result);
+            totalAuctionCount = int.Parse(totalCountTask.Result);
+         } catch {
+            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.getAuctionList));
          }
 
-         processAuctionMarket (pageIndex, categoryFilters, checkOwnItems);
-      }
-
-      private async void processAuctionMarket (int pageIndex, Item.Category[] categoryFilters, bool checkOwnItems) {
-         List<int> categoryFilter = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
-         string jsonFilter = JsonConvert.SerializeObject(categoryFilter);
-
-         string result = await NubisClient.call(nameof(DB_Main.fetchAuctionData), Global.player.userId.ToString(), pageIndex.ToString(), AuctionMarketPanel.MAX_PAGE_COUNT.ToString(), jsonFilter, checkOwnItems ? "1" : "0");
-         if (result.Length > VALID_XML_LENGTH) {
-            AuctionRootPanel panel = (AuctionRootPanel) PanelManager.self.get(Panel.Type.Auction);
-
-            if (panel.isShowing()) {
-               List<AuctionItemData> actualData = Util.xmlLoad<List<AuctionItemData>>(result);
-
-               int totalAuctionedItems = 10;
-               string totalAuctonedItemsRaw = await NubisClient.call(nameof(DB_Main.getMarketAuctionItemCount), "0", jsonFilter);
-               if (totalAuctonedItemsRaw.Length > 0) {
-                  totalAuctionedItems = int.Parse(totalAuctonedItemsRaw);
-               }
-
-               panel.marketPanel.loadAuctionItems(actualData, checkOwnItems, totalAuctionedItems);
-               panel.setBlockers(false);
-               panel.show();
-            }
-         } else {
-            D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.fetchAuctionData));
-         }
+         // Update the panel with the results
+         PanelManager.self.pushIfNotShowing(Panel.Type.Auction);
+         panel.receiveAuctionsFromServer(auctionList, categoryFilters, onlyHistory, onlyOwnAuctions, pageNumber, totalAuctionCount);
       }
 
       #endregion
@@ -309,38 +214,20 @@ namespace NubisDataHandling {
 
       #region Equipment Features
 
-      public void fetchEquipmentData (int pageIndex = 1, int itemsPerPage = 42, Item.Category[] categoryFilter = null) {
-         if (itemsPerPage > 200) {
-            D.debug("Requesting too many items per page.");
+      public async void getUserInventory (List<Item.Category> categoryFilter, int pageIndex = 1, int itemsPerPage = 42) {
+         if (Global.player == null) {
             return;
          }
 
-         processUserInventory(pageIndex, itemsPerPage, categoryFilter);
-      }
+         int userId = Global.player.userId;
+         int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
+         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
 
-      private async void processUserInventory (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
-         // Get the inventory panel
-         InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+         // Request the inventory to Nubis
+         string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage",
+            userId.ToString(), categoryFilterJSON, pageIndex.ToString(), itemsPerPage.ToString());
 
-         // Make sure the inventory panel is showing
-         if (!inventoryPanel.isShowing()) {
-            PanelManager.self.pushPanel(Panel.Type.Inventory);
-         }
-         inventoryPanel.clearPanel();
-
-         int userId = Global.player == null ? 0 : Global.player.userId;
-
-         this.categoryFilter = categoryFilter == null ? Item.Category.None : categoryFilter[0];
-         this.pageIndex = pageIndex;
-         this.itemsPerPage = itemsPerPage;
-
-         string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage", userId, Enum.GetName(typeof(Item.Category), this.categoryFilter).ToString(), pageIndex, InventoryPanel.ITEMS_PER_PAGE);
          var inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
-
-         List<Item> userInventory = new List<Item>();
-         userInventory.Add(inventoryBundle.equippedWeapon);
-         userInventory.Add(inventoryBundle.equippedArmor);
-         userInventory.Add(inventoryBundle.equippedHat);
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
          foreach (Item item in itemList) {
@@ -356,16 +243,8 @@ namespace NubisDataHandling {
                HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
                item.paletteNames = hatData.palettes;
             }
-            if (item.id != inventoryBundle.user.weaponId && item.id != inventoryBundle.user.armorId && item.id != inventoryBundle.user.hatId) {
-               userInventory.Add(item);
-            }
          }
 
-         UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
-         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, inventoryBundle.totalItemCount,true);
-      }
-
-      private async void processUserInventoryOld (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
          // Get the inventory panel
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
 
@@ -375,103 +254,163 @@ namespace NubisDataHandling {
          }
          inventoryPanel.clearPanel();
 
-         int userId = Global.player == null ? 0 : Global.player.userId;
-         List<Item> userInventory = new List<Item>();
+         UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
+         inventoryPanel.receiveItemForDisplay(itemList, userObjects, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
+      }
 
-         this.categoryFilter = categoryFilter == null ? Item.Category.None : categoryFilter[0];
-         this.pageIndex = pageIndex;
-         this.itemsPerPage = itemsPerPage;
-
-         // Fetch the cached user info which was provided by the server upon login
-         UserInfo newUserInfo = Global.getUserObjects().userInfo;
-         EquippedItemData equippedItemData = new EquippedItemData();
-         equippedItemData.weaponItem = Global.getUserObjects().weapon;
-         equippedItemData.armorItem = Global.getUserObjects().armor;
-         equippedItemData.hatItem = Global.getUserObjects().hat;
-
-         List<Item.Category> newcategoryList = new List<Item.Category>();
-         newcategoryList.Add(Item.Category.Weapon);
-         newcategoryList.Add(Item.Category.Armor);
-         newcategoryList.Add(Item.Category.CraftingIngredients);
-         newcategoryList.Add(Item.Category.Blueprint);
-
-         int[] categoryInt = Array.ConvertAll(newcategoryList.ToArray(), x => (int) x);
-         string categoryJson = JsonConvert.SerializeObject(categoryInt);
-
-         List<int> itemIdFilter = new List<int>();
-
-         // Filter equipped item id so it will not be part of the inventory fetch
-         UserObjects cachedUserObj = Global.getUserObjects();
-         itemIdFilter.Add(cachedUserObj.weapon.id);
-         itemIdFilter.Add(cachedUserObj.armor.id);
-         itemIdFilter.Add(cachedUserObj.hat.id);
-
-         userInventory.Add(cachedUserObj.weapon);
-         userInventory.Add(cachedUserObj.armor);
-         userInventory.Add(cachedUserObj.hat);
-
-         // Fetch the total item count for pagination
-         string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
-         string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId.ToString(), categoryJson, itemIdJson, "0");
-         int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
-
-         try {
-            totalItemCount = int.Parse(itemCountResponse);
-         } catch {
-            D.editorLog("Failed to parse: " + itemCountResponse);
+      public async void getInventoryForItemSelection (List<Item.Category> categoryFilter, List<int> itemIdsToExclude,
+         int pageIndex, int itemsPerPage) {
+         if (Global.player == null) {
+            return;
          }
 
-         if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
-            string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId, pageIndex, (int) this.categoryFilter, equippedItemData.weaponItem.id, equippedItemData.armorItem.id, equippedItemData.hatItem.id, InventoryPanel.ITEMS_PER_PAGE);
-            List<Item> itemList = UserInventory.processUserInventory(inventoryData);
-            foreach (Item item in itemList) {
-               if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
-                  WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-                  item.paletteNames = weaponData.palettes;
-               }
-               if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
-                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-                  item.paletteNames = armorData.palettes;
-               }
-               if (item.category == Item.Category.Hats) {
-                  HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-                  item.paletteNames = hatData.palettes;
-               }
-               if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId && item.id != newUserInfo.hatId) {
-                  userInventory.Add(item);
-               }
+         PanelManager.self.itemSelectionScreen.setLoadBlocker(true);
+
+         int userId = Global.player.userId;
+         int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
+         string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
+         string itemIdsToExcludeJSON = JsonConvert.SerializeObject(itemIdsToExclude);
+
+         // Call the list and list count in parallel
+         Task<string> listTask = NubisClient.call(nameof(DB_Main.userInventory), userId.ToString(), categoryFilterJSON,
+            itemIdsToExcludeJSON, "1", pageIndex.ToString(), itemsPerPage.ToString());
+         Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.userInventoryCount), userId.ToString(), categoryFilterJSON,
+            itemIdsToExcludeJSON, "1");
+
+         await Task.WhenAll(listTask, totalCountTask);
+
+         // Parse the received data
+         if (!int.TryParse(totalCountTask.Result, out int totalCount)) {
+            totalCount = 0;
+         }
+
+         List<Item> itemList = UserInventory.processUserInventory(listTask.Result);
+
+         foreach (Item item in itemList) {
+            if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               item.paletteNames = weaponData.palettes;
+            }
+            if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               item.paletteNames = armorData.palettes;
+            }
+            if (item.category == Item.Category.Hats) {
+               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               item.paletteNames = hatData.palettes;
             }
          }
 
-         // Provide the user with the Nubis fetched items and the cached version of the user info
-         UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
-         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, false);
-
-         // Refresh user info after the inventory has been loaded in the inventory panel, to make sure that user data is accurate and to improve the speed of the inventory loading reaction
-         newUserInfo = await NubisClient.callJSONClass<UserInfo>(nameof(DB_Main.getUserInfoJSON), userId);
-         if (newUserInfo == null) {
-            D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
-         }
-
-         // Process user equipped items
-         string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
-         Item equippedWeapon = new Item();
-         Item equippedArmor = new Item();
-         Item equippedHat = new Item();
-
-         equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
-         equippedWeapon = equippedItemData.weaponItem;
-         equippedArmor = equippedItemData.armorItem;
-         equippedHat = equippedItemData.hatItem;
-
-         userInventory.Add(equippedWeapon);
-         userInventory.Add(equippedArmor);
-         userInventory.Add(equippedHat);
-
-         // Provide the inventory panel with the updated equipped items and user info
-         userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
-         inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, true);
+         PanelManager.self.itemSelectionScreen.receiveItemsFromServer(itemList, pageIndex, totalCount);
       }
+
+      //private async void processUserInventoryOld (int pageIndex = 1, int itemsPerPage = 10, Item.Category[] categoryFilter = null) {
+      //   // Get the inventory panel
+      //   InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
+
+      //   // Make sure the inventory panel is showing
+      //   if (!inventoryPanel.isShowing()) {
+      //      PanelManager.self.pushPanel(Panel.Type.Inventory);
+      //   }
+      //   inventoryPanel.clearPanel();
+
+      //   int userId = Global.player == null ? 0 : Global.player.userId;
+      //   List<Item> userInventory = new List<Item>();
+
+      //   this.categoryFilter = categoryFilter == null ? Item.Category.None : categoryFilter[0];
+      //   this.pageIndex = pageIndex;
+      //   this.itemsPerPage = itemsPerPage;
+
+      //   // Fetch the cached user info which was provided by the server upon login
+      //   UserInfo newUserInfo = Global.getUserObjects().userInfo;
+      //   EquippedItemData equippedItemData = new EquippedItemData();
+      //   equippedItemData.weaponItem = Global.getUserObjects().weapon;
+      //   equippedItemData.armorItem = Global.getUserObjects().armor;
+      //   equippedItemData.hatItem = Global.getUserObjects().hat;
+
+      //   List<Item.Category> newcategoryList = new List<Item.Category>();
+      //   newcategoryList.Add(Item.Category.Weapon);
+      //   newcategoryList.Add(Item.Category.Armor);
+      //   newcategoryList.Add(Item.Category.CraftingIngredients);
+      //   newcategoryList.Add(Item.Category.Blueprint);
+
+      //   int[] categoryInt = Array.ConvertAll(newcategoryList.ToArray(), x => (int) x);
+      //   string categoryJson = JsonConvert.SerializeObject(categoryInt);
+
+      //   List<int> itemIdFilter = new List<int>();
+
+      //   // Filter equipped item id so it will not be part of the inventory fetch
+      //   UserObjects cachedUserObj = Global.getUserObjects();
+      //   itemIdFilter.Add(cachedUserObj.weapon.id);
+      //   itemIdFilter.Add(cachedUserObj.armor.id);
+      //   itemIdFilter.Add(cachedUserObj.hat.id);
+
+      //   userInventory.Add(cachedUserObj.weapon);
+      //   userInventory.Add(cachedUserObj.armor);
+      //   userInventory.Add(cachedUserObj.hat);
+
+      //   // Fetch the total item count for pagination
+      //   string itemIdJson = JsonConvert.SerializeObject(itemIdFilter.ToArray());
+      //   string itemCountResponse = await NubisClient.call(nameof(DB_Main.getItemCount), userId.ToString(), categoryJson, itemIdJson, "0");
+      //   int totalItemCount = InventoryPanel.ITEMS_PER_PAGE;
+
+      //   try {
+      //      totalItemCount = int.Parse(itemCountResponse);
+      //   } catch {
+      //      D.editorLog("Failed to parse: " + itemCountResponse);
+      //   }
+
+      //   if (this.categoryFilter == Item.Category.Weapon || this.categoryFilter == Item.Category.Armor || this.categoryFilter == Item.Category.Hats || this.categoryFilter == Item.Category.CraftingIngredients || this.categoryFilter == Item.Category.None) {
+      //      string inventoryData = await NubisClient.call(nameof(DB_Main.userInventory), userId, pageIndex, (int) this.categoryFilter, equippedItemData.weaponItem.id, equippedItemData.armorItem.id, equippedItemData.hatItem.id, InventoryPanel.ITEMS_PER_PAGE);
+      //      List<Item> itemList = UserInventory.processUserInventory(inventoryData);
+      //      foreach (Item item in itemList) {
+      //         if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
+      //            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+      //            item.paletteNames = weaponData.palettes;
+      //         }
+      //         if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
+      //            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+      //            item.paletteNames = armorData.palettes;
+      //         }
+      //         if (item.category == Item.Category.Hats) {
+      //            HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+      //            item.paletteNames = hatData.palettes;
+      //         }
+      //         if (item.id != newUserInfo.weaponId && item.id != newUserInfo.armorId && item.id != newUserInfo.hatId) {
+      //            userInventory.Add(item);
+      //         }
+      //      }
+      //   }
+
+      //   // Provide the user with the Nubis fetched items and the cached version of the user info
+      //   UserObjects userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
+      //   inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, false);
+
+      //   // Refresh user info after the inventory has been loaded in the inventory panel, to make sure that user data is accurate and to improve the speed of the inventory loading reaction
+      //   newUserInfo = await NubisClient.callJSONClass<UserInfo>(nameof(DB_Main.getUserInfoJSON), userId);
+      //   if (newUserInfo == null) {
+      //      D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
+      //   }
+
+      //   // Process user equipped items
+      //   string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
+      //   Item equippedWeapon = new Item();
+      //   Item equippedArmor = new Item();
+      //   Item equippedHat = new Item();
+
+      //   equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
+      //   equippedWeapon = equippedItemData.weaponItem;
+      //   equippedArmor = equippedItemData.armorItem;
+      //   equippedHat = equippedItemData.hatItem;
+
+      //   userInventory.Add(equippedWeapon);
+      //   userInventory.Add(equippedArmor);
+      //   userInventory.Add(equippedHat);
+
+      //   // Provide the inventory panel with the updated equipped items and user info
+      //   userObjects = new UserObjects { userInfo = newUserInfo, weapon = equippedItemData.weaponItem, armor = equippedItemData.armorItem, hat = equippedItemData.hatItem };
+      //   inventoryPanel.receiveItemForDisplay(userInventory.ToArray(), userObjects, this.categoryFilter, pageIndex, totalItemCount, true);
+      //}
 
       #endregion
 

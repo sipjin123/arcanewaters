@@ -10,7 +10,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    #region Public Variables
 
    // The number of items to display per page
-   public static int ITEMS_PER_PAGE = 42;
+   public static int ITEMS_PER_PAGE = 48;
 
    // The container of the item cells
    public GameObject itemCellsContainer;
@@ -50,24 +50,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
    public ItemDropZone inventoryDropZone;
    public ItemDropZone equipmentDropZone;
 
-   // The inventory tab renderers
-   public Image allTabRenderer;
-   public Image weaponTabRenderer;
-   public Image armorTabRenderer;
-   public Image ingredientsTabRenderer;
-   public Image othersTabRenderer;
-   public Text allTabIconRenderer;
-   public Image weaponTabIconRenderer;
-   public Image armorTabIconRenderer;
-   public Image ingredientsTabIconRenderer;
-   public Image othersTabIconRenderer;
-
-   // The inventory tab buttons
-   public Button allTabButton;
-   public Button weaponTabButton;
-   public Button armorTabButton;
-   public Button ingredientsTabButton;
-   public Button othersTabButton;
+   // The item tab filters
+   public ItemTabs itemTabs;
 
    // The stat rows for each element
    public InventoryStatRow physicalStatRow;
@@ -88,23 +72,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       // Deactivate the grabbed item
       grabbedItem.deactivate();
 
-      // Create a hashset with all the item categories
-      HashSet<Item.Category> workSet = new HashSet<Item.Category>();
-      foreach (Item.Category c in Enum.GetValues(typeof(Item.Category))) {
-         workSet.Add(c);
-      }
-
-      // Remove the categories managed by the other tabs
-      workSet.Remove(Item.Category.None);
-      workSet.Remove(Item.Category.Weapon);
-      workSet.Remove(Item.Category.Armor);
-      workSet.Remove(Item.Category.CraftingIngredients);
-
-      // Save the categories in a list
-      _othersTabCategories = new List<Item.Category>();
-      foreach (Item.Category c in workSet) {
-         _othersTabCategories.Add(c);
-      }
+      // Initialize the inventory tabs
+      itemTabs.initialize(onTabButtonPress);
 
       // Initialize the stat rows
       physicalStatRow.clear();
@@ -116,7 +85,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    public void refreshPanel () {
       loadBlocker.SetActive(true);
-      NubisDataFetcher.self.fetchEquipmentData(_currentPage, ITEMS_PER_PAGE, _categoryFilters.ToArray());
+      NubisDataFetcher.self.getUserInventory(itemTabs.categoryFilters, _currentPage, ITEMS_PER_PAGE);
    }
 
    public void clearPanel () {
@@ -217,7 +186,8 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
    }
 
-   public void receiveItemForDisplay (Item[] itemArray, UserObjects userObjects, Item.Category category, int pageIndex, int totalItems, bool overrideEquipmentCache) {
+   public void receiveItemForDisplay (List<Item> itemArray, UserObjects userObjects, List<Item.Category> categoryFilter,
+      int pageIndex, int totalItems, bool overrideEquipmentCache) {
       loadBlocker.SetActive(false);
       Global.lastUserGold = userObjects.userInfo.gold;
       Global.lastUserGems = userObjects.userInfo.gems;
@@ -254,7 +224,7 @@ public class InventoryPanel : Panel, IPointerClickHandler {
       }
 
       // Select the correct tab
-      updateCategoryTabs(category);
+      itemTabs.updateCategoryTabs(categoryFilter[0]);
 
       // Clear stat rows
       physicalStatRow.clear();
@@ -265,188 +235,59 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
-      equippedWeaponCellContainer.DestroyChildren();
-      equippedArmorCellContainer.DestroyChildren();
-      equippedHatCellContainer.DestroyChildren();
 
       // Create the item cells
       foreach (Item item in itemArray) {
          if (item.itemTypeId != 0) {
-            if (item.category != Item.Category.Blueprint) {
-               // Instantiates the cell
-               ItemCell cell = Instantiate(itemCellPrefab, itemCellsContainer.transform, false);
-
-               // Initializes the cell
-               cell.setCellForItem(item);
-
-               if (InventoryManager.isEquipped(item.id)) {
-                  if (item.category == Item.Category.Weapon) {
-                     equippedWeaponCellContainer.DestroyChildren();
-                     cell.transform.SetParent(equippedWeaponCellContainer.transform, false);
-                     refreshStats(Weapon.castItemToWeapon(item));
-                  } else if (item.category == Item.Category.Armor) {
-                     equippedArmorCellContainer.DestroyChildren();
-                     cell.transform.SetParent(equippedArmorCellContainer.transform, false);
-                     refreshStats(Armor.castItemToArmor(item));
-                  } else if (item.category == Item.Category.Hats) {
-                     equippedHatCellContainer.DestroyChildren();
-                     cell.transform.SetParent(equippedHatCellContainer.transform, false);
-                     refreshStats(Hat.castItemToHat(item));
-                  }
-               }
-
-               // Set the cell click events
-               cell.leftClickEvent.RemoveAllListeners();
-               cell.rightClickEvent.RemoveAllListeners();
-               cell.doubleClickEvent.RemoveAllListeners();
-               cell.rightClickEvent.AddListener(() => showContextMenu(cell));
-               cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
-            } else {
-               D.editorLog("Warning, Item Type is 0", Color.red);
-            }
+            instantiateItemCell(item, itemCellsContainer.transform);
          } 
+      }
+
+      // Update the equipped item cells
+      equippedWeaponCellContainer.DestroyChildren();
+      equippedArmorCellContainer.DestroyChildren();
+      equippedHatCellContainer.DestroyChildren();
+
+      Item equippedWeapon = Global.getUserObjects().weapon;
+      if (equippedWeapon.itemTypeId != 0) {
+         instantiateItemCell(equippedWeapon, equippedWeaponCellContainer.transform);
+         refreshStats(Weapon.castItemToWeapon(equippedWeapon));
+      }
+
+      Item equippedArmor = Global.getUserObjects().armor;
+      if (equippedArmor.itemTypeId != 0) {
+         instantiateItemCell(equippedArmor, equippedArmorCellContainer.transform);
+         refreshStats(Armor.castItemToArmor(equippedArmor));
+      }
+
+      Item equippedHat = Global.getUserObjects().hat;
+      if (equippedHat.itemTypeId != 0) {
+         instantiateItemCell(equippedHat, equippedHatCellContainer.transform);
+         refreshStats(Hat.castItemToHat(equippedHat));
       }
 
       // Trigger the tutorial
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenInventory);
    }
 
-   private void updateCategoryTabs (Item.Category itemCategory) {
-      switch (itemCategory) {
-         case Item.Category.None:
-            allTabRenderer.enabled = true;
-            weaponTabRenderer.enabled = false;
-            armorTabRenderer.enabled = false;
-            ingredientsTabRenderer.enabled = false;
-            othersTabRenderer.enabled = false;
+   private ItemCell instantiateItemCell (Item item, Transform parent) {
+      // Instantiates the cell
+      ItemCell cell = Instantiate(itemCellPrefab, parent, false);
 
-            allTabIconRenderer.enabled = true;
-            weaponTabIconRenderer.enabled = false;
-            armorTabIconRenderer.enabled = false;
-            ingredientsTabIconRenderer.enabled = false;
-            othersTabIconRenderer.enabled = false;
+      // Initializes the cell
+      cell.setCellForItem(item);
 
-            allTabButton.interactable = false;
-            weaponTabButton.interactable = true;
-            armorTabButton.interactable = true;
-            ingredientsTabButton.interactable = true;
-            othersTabButton.interactable = true;
-            break;
-         case Item.Category.Weapon:
-            allTabRenderer.enabled = false;
-            weaponTabRenderer.enabled = true;
-            armorTabRenderer.enabled = false;
-            ingredientsTabRenderer.enabled = false;
-            othersTabRenderer.enabled = false;
+      // Set the cell click events
+      cell.leftClickEvent.RemoveAllListeners();
+      cell.rightClickEvent.RemoveAllListeners();
+      cell.doubleClickEvent.RemoveAllListeners();
+      cell.rightClickEvent.AddListener(() => showContextMenu(cell));
+      cell.doubleClickEvent.AddListener(() => InventoryManager.tryEquipOrUseItem(cell.getItem()));
 
-            allTabIconRenderer.enabled = false;
-            weaponTabIconRenderer.enabled = true;
-            armorTabIconRenderer.enabled = false;
-            ingredientsTabIconRenderer.enabled = false;
-            othersTabIconRenderer.enabled = false;
-
-            allTabButton.interactable = true;
-            weaponTabButton.interactable = false;
-            armorTabButton.interactable = true;
-            ingredientsTabButton.interactable = true;
-            othersTabButton.interactable = true;
-            break;
-         case Item.Category.Armor:
-            allTabRenderer.enabled = false;
-            weaponTabRenderer.enabled = false;
-            armorTabRenderer.enabled = true;
-            ingredientsTabRenderer.enabled = false;
-            othersTabRenderer.enabled = false;
-
-            allTabIconRenderer.enabled = false;
-            weaponTabIconRenderer.enabled = false;
-            armorTabIconRenderer.enabled = true;
-            ingredientsTabIconRenderer.enabled = false;
-            othersTabIconRenderer.enabled = false;
-
-            allTabButton.interactable = true;
-            weaponTabButton.interactable = true;
-            armorTabButton.interactable = false;
-            ingredientsTabButton.interactable = true;
-            othersTabButton.interactable = true;
-            break;
-         case Item.Category.CraftingIngredients:
-            allTabRenderer.enabled = false;
-            weaponTabRenderer.enabled = false;
-            armorTabRenderer.enabled = false;
-            ingredientsTabRenderer.enabled = true;
-            othersTabRenderer.enabled = false;
-
-            allTabIconRenderer.enabled = false;
-            weaponTabIconRenderer.enabled = false;
-            armorTabIconRenderer.enabled = false;
-            ingredientsTabIconRenderer.enabled = true;
-            othersTabIconRenderer.enabled = false;
-
-            allTabButton.interactable = true;
-            weaponTabButton.interactable = true;
-            armorTabButton.interactable = true;
-            ingredientsTabButton.interactable = false;
-            othersTabButton.interactable = true;
-            break;
-         default:
-            // "Others" tab
-            allTabRenderer.enabled = false;
-            weaponTabRenderer.enabled = false;
-            armorTabRenderer.enabled = false;
-            ingredientsTabRenderer.enabled = false;
-            othersTabRenderer.enabled = true;
-
-            allTabIconRenderer.enabled = false;
-            weaponTabIconRenderer.enabled = false;
-            armorTabIconRenderer.enabled = false;
-            ingredientsTabIconRenderer.enabled = false;
-            othersTabIconRenderer.enabled = true;
-
-            allTabButton.interactable = true;
-            weaponTabButton.interactable = true;
-            armorTabButton.interactable = true;
-            ingredientsTabButton.interactable = true;
-            othersTabButton.interactable = false;
-            break;
-      }
+      return cell;
    }
 
-   public void onAllTabButtonPress () {
-      _categoryFilters.Clear();
-      _categoryFilters.Add(Item.Category.None);
-      _currentPage = 0;
-      refreshPanel();
-   }
-
-   public void onWeaponTabButtonPress () {
-      _categoryFilters.Clear();
-      _categoryFilters.Add(Item.Category.Weapon);
-      _currentPage = 0;
-      refreshPanel();
-   }
-
-   public void onArmorTabButtonPress () {
-      _categoryFilters.Clear();
-      _categoryFilters.Add(Item.Category.Armor);
-      _currentPage = 0;
-      refreshPanel();
-   }
-
-   public void onIngredientsTabButtonPress () {
-      _categoryFilters.Clear();
-      _categoryFilters.Add(Item.Category.CraftingIngredients);
-      _currentPage = 0;
-      refreshPanel();
-   }
-
-   public void onOthersTabButtonPress () {
-      // Get the list of categories managed by this tab
-      _categoryFilters.Clear();
-      foreach (Item.Category c in _othersTabCategories) {
-         _categoryFilters.Add(c);
-      }
-
+   public void onTabButtonPress () {
       _currentPage = 0;
       refreshPanel();
    }
@@ -650,12 +491,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
    // The maximum page index (starting at 1)
    private int _maxPage = 3;
-
-   // The category used to filter the displayed items
-   private List<Item.Category> _categoryFilters = new List<Item.Category> { Item.Category.None };
-
-   // The list of categories listed by the 'others' tab
-   private List<Item.Category> _othersTabCategories;
 
    // The cell from which an item was grabbed
    private ItemCellInventory _grabbedItemCell;

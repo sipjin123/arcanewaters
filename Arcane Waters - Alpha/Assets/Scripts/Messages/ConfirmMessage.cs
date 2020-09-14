@@ -17,7 +17,8 @@ public class ConfirmMessage : MessageBase {
       ConfirmDeleteItem = 6, ContainerOpened = 7, StoreItemBought = 8, UsedHairDye = 9,
       DeletedUser = 10, UsedShipSkin = 11, UsedHaircut = 12, CreatedGuild = 13,
       ShipBought = 14, FriendshipInvitationSent = 15, FriendshipInvitationAccepted = 16,
-      FriendshipDeleted = 17, MailSent = 18, MailDeleted = 19, ItemsAddedToInventory = 20
+      FriendshipDeleted = 17, MailSent = 18, MailDeleted = 19, ItemsAddedToInventory = 20,
+      ModifiedOwnAuction = 21, BidOnAuction = 22
    }
 
    // The Type of confirmation

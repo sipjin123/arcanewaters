@@ -352,6 +352,10 @@ public class CraftingIngredients : RecipeItem
    }
 
    public override string getBorderlessIconPath () {
-      return "Icons/CraftingIngredients/NoBorder/ingredient_" + this.type;
+      return getBorderlessIconPath(this.type);
+   }
+
+   public static string getBorderlessIconPath (CraftingIngredients.Type craftingIngredientType) {
+      return "Icons/NoBorderCraftingIngredients/ingredient_" + craftingIngredientType;
    }
 }

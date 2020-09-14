@@ -224,7 +224,7 @@ public class MailPanel : Panel
       PanelManager.self.itemSelectionScreen.cancelButton.onClick.AddListener(() => PanelManager.self.itemSelectionScreen.hide());
 
       // Show the item selection screen
-      PanelManager.self.itemSelectionScreen.show(itemIdsToFilter, Item.Category.None);
+      PanelManager.self.itemSelectionScreen.show(itemIdsToFilter);
    }
 
    public void returnFromItemSelection () {

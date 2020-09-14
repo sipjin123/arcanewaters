@@ -99,45 +99,30 @@ public class DB_Main : DB_MainStub
       return "";
    }
 
-   public static new string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr, string inventoryCountLimit) {
+   public static new string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
+      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr) {
       int usrId = int.Parse(usrIdStr);
       int currentPage = int.Parse(currentPageStr);
-      int category = int.Parse(categoryStr);
-      int weaponId = int.Parse(weaponIdStr);
-      int armorId = int.Parse(armorIdStr);
-      int hatId = int.Parse(hatIdStr);
-      int inventoryCountMax = int.Parse(inventoryCountLimit);
+      int itemsPerPage = int.Parse(itemsPerPageStr);
+      int offset = currentPage * itemsPerPage;
 
-      int offset = currentPage * inventoryCountMax;
-      bool hasItemFilter = category != 0;
-      string itemFilterContent = "and (itmCategory = " + category + ")";
-      if (!hasItemFilter) {
-         itemFilterContent = "and (itmCategory = " + (int) Item.Category.Weapon +
-            " or itmCategory = " + (int) Item.Category.Armor +
-            " or itmCategory = " + (int) Item.Category.Hats +
-            " or itmCategory = " + (int) Item.Category.CraftingIngredients + ")";
-      }
+      int[] categoryFilter = categoryFilterJSON.Length > 1 ?
+         JsonConvert.DeserializeObject<int[]>(categoryFilterJSON) :
+         new int[0];
+      int[] itemIdsToExclude = itemIdsToExcludeJSON.Length > 1 ?
+         JsonConvert.DeserializeObject<int[]>(itemIdsToExcludeJSON) :
+         new int[0];
 
-      string weaponFilter = "";
-      string armorFilter = "";
-      string hatFilter = "";
-      if (weaponId > 0) {
-         weaponFilter = " and itmId != " + weaponId;
-      }
-      if (armorId > 0) {
-         armorFilter = " and itmId != " + armorId;
-      }
-      if (hatId > 0) {
-         hatFilter = " and itmId != " + hatId;
-      }
+      string whereClause = getUserInventoryWhereClause(usrId, categoryFilter, itemIdsToExclude,
+         mustExcludeEquippedItemsStr == "1");
 
       try {
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-            "SELECT itmId, itmCategory, itmType, itmCount, itmData, itmPalette1, itmPalette2 FROM arcane.items where (usrId = @usrId " + itemFilterContent + weaponFilter + armorFilter + hatFilter + ") order by itmCategory limit " + inventoryCountMax + " offset " + offset, connection)) {
-               command.Parameters.AddWithValue("@usrId", usrId);
-
+            "SELECT * FROM arcane.items " + whereClause + " order by itmCategory limit " + itemsPerPage +
+            " offset " + offset, connection)) {
+               D.editorLog(command.CommandText);
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -170,6 +155,83 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
       return "Failed to Query";
+   }
+
+   public static new string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
+      string mustExcludeEquippedItemsStr) {
+      int usrId = int.Parse(usrIdStr);
+
+      int[] categoryFilter = categoryFilterJSON.Length > 1 ?
+         JsonConvert.DeserializeObject<int[]>(categoryFilterJSON) :
+         new int[0];
+      int[] itemIdsToExclude = itemIdsToExcludeJSON.Length > 1 ?
+         JsonConvert.DeserializeObject<int[]>(itemIdsToExcludeJSON) :
+         new int[0];
+
+      int count = 0;
+      string whereClause = getUserInventoryWhereClause(usrId, categoryFilter, itemIdsToExclude,
+         mustExcludeEquippedItemsStr == "1");
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT COUNT(*) AS itemCount FROM arcane.items " + whereClause
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+            D.editorLog(cmd.CommandText);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  count = dataReader.GetInt32("itemCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return count.ToString();
+   }
+
+   private static string getUserInventoryWhereClause (int userId, int[] categoryFilter, 
+      int[] itemIdsToExclude, bool mustExcludeEquippedItems) {
+      StringBuilder clause = new StringBuilder();
+      clause.Append(" WHERE usrId = " + userId + " ");
+
+      // If the category filter only contains 'none', this is skipped and all the categories are selected
+      if ((categoryFilter.Length > 0 && categoryFilter[0] != 0) || categoryFilter.Length > 1) {
+         // Setup multiple categories
+         clause.Append("AND (itmCategory=" + (int) categoryFilter[0]);
+         for (int i = 1; i < categoryFilter.Length; i++) {
+            clause.Append(" OR itmCategory=" + +(int) categoryFilter[i]);
+         }
+         clause.Append(") ");
+      }
+
+      // Exclude item ids (not necesarily equipped items)
+      if (itemIdsToExclude.Length > 0) {
+         clause.Append("AND itmId NOT IN (");
+         for (int i = 0; i < itemIdsToExclude.Length; i++) {
+            clause.Append(itemIdsToExclude[i] + ", ");
+         }
+
+         // Delete the last ", "
+         clause.Length = clause.Length - 2;
+
+         clause.Append(") ");
+      }
+
+      // Exclude equipped item ids
+      if (mustExcludeEquippedItems) {
+         clause.Append("AND itmId NOT IN (" +
+            "SELECT itmId FROM items RIGHT JOIN users ON " +
+            "(items.itmId = users.armId OR items.itmId = users.wpnId OR items.itmId = users.hatId) " +
+            "WHERE items.usrId = " + userId + ") ");
+      }
+
+      return clause.ToString();
    }
 
    public static new string fetchXmlVersion (string slotstr) {
@@ -7315,75 +7377,7 @@ public class DB_Main : DB_MainStub
 
    #region Auction Features
 
-   public static new string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
-      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
-
-      // Param translation
-      int itemCountLimit = int.Parse(itemCountLimitStr);
-      int pageNumber = int.Parse(pageNumberStr);
-      int offset = pageNumber * itemCountLimit;
-
-      string query = "SELECT * FROM arcane.auction_history_v1 where (buyerId = " + userIdStr + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
-            conn.Open();
-            cmd.Prepare();
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
-                  auctionContentList.Add(newAuctionItem);
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return AuctionItemData.getXmlDataGroup(auctionContentList);
-   }
-
-   public static new int addToAuctionHistory (AuctionItemData auctionData) {
-      Item newItem = new Item { category = (Item.Category) auctionData.itemCategory, id = auctionData.itemId, itemTypeId = auctionData.itemTypeId, count = auctionData.itemCount };
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO auction_history_v1 (buyerId, sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount, auctionId) " +
-            "VALUES(@buyerId, @sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount, @auctionId)", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@auctionId", auctionData.auctionId);
-            cmd.Parameters.AddWithValue("@sellerName", auctionData.sellerName);
-            cmd.Parameters.AddWithValue("@sellerId", auctionData.sellerId);
-            cmd.Parameters.AddWithValue("@buyerId", auctionData.buyerId);
-            cmd.Parameters.AddWithValue("@itemPrice", auctionData.itemPrice);
-            cmd.Parameters.AddWithValue("@itembuyOutPrice", auctionData.itembuyOutPrice);
-            cmd.Parameters.AddWithValue("@itemName", EquipmentXMLManager.self.getItemName(newItem));
-
-            cmd.Parameters.AddWithValue("@itemCategory", newItem.category);
-            cmd.Parameters.AddWithValue("@itemType", newItem.itemTypeId);
-            cmd.Parameters.AddWithValue("@itemId", newItem.id);
-            cmd.Parameters.AddWithValue("@itemCount", newItem.count);
-            //D.editorLog("Date posted is: " + DateTime.UtcNow, Color.green);
-            //D.editorLog("Date posted is: " + DateTime.UtcNow.AddHours(12), Color.green);
-            //cmd.Parameters.AddWithValue("@datePosted", DateTime.UtcNow.ToString());
-            //cmd.Parameters.AddWithValue("@dateExpiry", DateTime.UtcNow.AddHours(12).ToString());
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-
-            return 1;
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-         return 0;
-      }
-   }
-
-   public static new void removeAuctionEntry (int auctionId) {
+   public static new void deleteAuction (int auctionId) {
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -7401,31 +7395,28 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int createAuctionEntry (string sellerName, int userId, Item item, int startingPrice, int buyoutPrice) {
+   public static new int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate,
+      int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
       int auctionId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO auction_table_v1 (sellerName, sellerId, itemPrice, itembuyOutPrice, itemName, itemCategory, itemType, itemId, itemCount) " + //, datePosted, dateExpiry
-            "VALUES(@sellerName, @sellerId, @itemPrice, @itembuyOutPrice, @itemName, @itemCategory, @itemType, @itemId, @itemCount)", conn)) { //, @datePosted, @dateExpiry
+            "INSERT INTO auction_table_v1 (sellerId, sellerName, mailId, expiryDate, buyoutPrice, highestBidPrice, highestBidUser, itemCategory, itemName, itemCount) " +
+            "VALUES(@sellerId, @sellerName, @mailId, @expiryDate, @buyoutPrice, @highestBidPrice, @highestBidUser, @itemCategory, @itemName, @itemCount)", conn)) {
 
             conn.Open();
             cmd.Prepare();
+            cmd.Parameters.AddWithValue("@sellerId", sellerUserId);
             cmd.Parameters.AddWithValue("@sellerName", sellerName);
-            cmd.Parameters.AddWithValue("@sellerId", userId);
-            cmd.Parameters.AddWithValue("@itemPrice", startingPrice);
-            cmd.Parameters.AddWithValue("@itembuyOutPrice", buyoutPrice);
-            cmd.Parameters.AddWithValue("@itemName", EquipmentXMLManager.self.getItemName(item));
-
-            cmd.Parameters.AddWithValue("@itemCategory", item.category);
-            cmd.Parameters.AddWithValue("@itemType", item.itemTypeId);
-            cmd.Parameters.AddWithValue("@itemId", item.id);
-            cmd.Parameters.AddWithValue("@itemCount", item.count);
-            //D.editorLog("Date posted is: " + DateTime.UtcNow, Color.green);
-            //D.editorLog("Date posted is: " + DateTime.UtcNow.AddHours(12), Color.green);
-            //cmd.Parameters.AddWithValue("@datePosted", DateTime.UtcNow.ToString());
-            //cmd.Parameters.AddWithValue("@dateExpiry", DateTime.UtcNow.AddHours(12).ToString());
+            cmd.Parameters.AddWithValue("@mailId", mailId);
+            cmd.Parameters.AddWithValue("@expiryDate", expiryDate);
+            cmd.Parameters.AddWithValue("@buyoutPrice", buyoutPrice);
+            cmd.Parameters.AddWithValue("@highestBidPrice", highestBidPrice);
+            cmd.Parameters.AddWithValue("@highestBidUser", -1);
+            cmd.Parameters.AddWithValue("@itemCategory", itemCategory);
+            cmd.Parameters.AddWithValue("@itemName", itemName);
+            cmd.Parameters.AddWithValue("@itemCount", itemCount);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7438,45 +7429,36 @@ public class DB_Main : DB_MainStub
       return auctionId;
    }
 
-   public static new string fetchAuctionData (string userIdStr, string pageNumberStr, string itemCountLimitStr, string filterData, string fetchSelfData) {
-      List<AuctionItemData> auctionContentList = new List<AuctionItemData>();
-
+   public static new string getAuctionList (string pageNumberStr, string rowsPerPageStr, string categoryFilter, string userIdStr, string onlyHistory, string onlySelfAuctions) {
+      List<AuctionItemData> auctionList = new List<AuctionItemData>();
+      
       // Param translation
-      int itemCountLimit = int.Parse(itemCountLimitStr);
-      int userId = int.Parse(userIdStr);
+      int rowsPerPage = int.Parse(rowsPerPageStr);
       int pageNumber = int.Parse(pageNumberStr);
-      int offset = pageNumber * itemCountLimit;
-      bool fetchSelf = fetchSelfData == "0" ? false : true;
 
-      // Determine if should fetch own auctioned items or others
-      string userIdFilter = fetchSelf ? "sellerId = " + userId : "sellerId != " + userId;
-
-      // Filter Setup
-      List<int> categoryInt = JsonConvert.DeserializeObject<List<int>>(filterData);
-      string categoryFilters = categoryInt.Count > 0 ? " and (" : "";
-      int index = 0;
-      foreach (int categ in categoryInt) {
-         if (index > 0) {
-            categoryFilters += " or ";
-         }
-         categoryFilters += "itemCategory = " + categ;
-         index++;
-      }
-      categoryFilters += categoryInt.Count > 0 ? ")" : "";
-
-      string query = "SELECT * FROM arcane.auction_table_v1 where (" + userIdFilter + categoryFilters + ") order by auctionId limit " + itemCountLimit + " offset " + offset;
-      D.editorLog("Query is: " + query, Color.white);
+      string whereClause = getAuctionListWhereClause(userIdStr, categoryFilter, onlyHistory, onlySelfAuctions);
+      
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM auction_table_v1 auctions " +
+            "LEFT JOIN items ON(items.usrId = -auctions.mailId AND auctions.mailId > 0) " +
+            whereClause +
+            " ORDER BY expiryDate LIMIT @start, @perPage"
+            , conn)) {
             conn.Open();
             cmd.Prepare();
+
+            UnityEngine.Debug.Log("list query " + cmd.CommandText);
+            cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("@start", (pageNumber - 1) * rowsPerPage);
+            cmd.Parameters.AddWithValue("@perPage", rowsPerPage);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
-                  auctionContentList.Add(newAuctionItem);
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader, true);
+                  auctionList.Add(newAuctionItem);
                }
             }
          }
@@ -7484,20 +7466,133 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return AuctionItemData.getXmlDataGroup(auctionContentList);
+      return AuctionItemData.getXmlDataGroup(auctionList);
    }
 
-   public static new void modifyAuctionData (string auctionId, string bidderUserId, string bidderPrice) {
+   public static new string getAuctionListCount (string userIdStr, string filterData, string onlyHistory, string onlyOwnAuctions) {
+      int auctionCount = 0;
+      string whereClause = getAuctionListWhereClause(userIdStr, filterData, onlyHistory, onlyOwnAuctions);
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "UPDATE arcane.auction_table_v1 SET highestBidPrice=@highestBidPrice, highestBidUser=@highestBidUser WHERE auctionId=@auctionId", conn)) {
+            "SELECT COUNT(*) AS auctionCount FROM arcane.auction_table_v1 " + whereClause
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  auctionCount = dataReader.GetInt32("auctionCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return auctionCount.ToString();
+   }
+
+   private static string getAuctionListWhereClause (string userIdStr, string categoryFilter, string onlyHistory, string onlyOwnAuctions) {
+      StringBuilder clause = new StringBuilder();
+      clause.Append(" WHERE ");
+
+      // Set the history and self filters
+      if (onlyHistory == "1") {
+         clause.Append("expiryDate < @expiryDate AND highestBidUser = ");
+         clause.Append(userIdStr);
+      } else {
+         clause.Append("expiryDate >= @expiryDate ");
+         if (onlyOwnAuctions == "1") {
+            clause.Append(" AND sellerId = " + userIdStr);
+         }
+      }
+
+      // Add the category filter
+      List<int> categoryInt = JsonConvert.DeserializeObject<List<int>>(categoryFilter);
+      if (categoryInt.Count > 0 && categoryInt[0] != 0) {
+         clause.Append(" AND (itemCategory = ");
+         clause.Append(categoryInt[0]);
+         for (int i = 1; i < categoryInt.Count; i++) {
+            clause.Append(" OR itemCategory = " + categoryInt[i]);
+         }
+         clause.Append(") ");
+      }
+
+      return clause.ToString();
+   }
+
+   public static new List<AuctionItemData> getAuctionsToDeliver () {
+      List<AuctionItemData> auctionList = new List<AuctionItemData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane.auction_table_v1 WHERE " +
+            "mailId > -1 AND expiryDate<=@expiryDate"
+            , conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader, false);
+                  auctionList.Add(newAuctionItem);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return auctionList;
+   }
+
+   public static new void deliverAuction (int auctionId, int mailId, int recipientUserId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("", conn)) {
+            conn.Open();
+
+            // Set the recipient in the mail linked to the auction, that has the item as attachment
+            cmd.CommandText = "UPDATE mails SET recipientUsrId=@recipientUsrId, receptionDate=@receptionDate WHERE mailId=@mailId";
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@mailId", mailId);
+            cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
+            cmd.Parameters.AddWithValue("@receptionDate", DateTime.UtcNow);
+            cmd.ExecuteNonQuery();
+
+            // Set the auction as delivered by clearing the mailId
+            cmd.CommandText = "UPDATE auction_table_v1 SET mailId=@mailId WHERE auctionId=@auctionId";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@mailId", -1);
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateAuction (int auctionId, int highestBidUser, int highestBidPrice, DateTime expiryDate) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE arcane.auction_table_v1 SET highestBidPrice=@highestBidPrice, highestBidUser=@highestBidUser, expiryDate=@expiryDate WHERE auctionId=@auctionId", conn)) {
 
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@highestBidPrice", int.Parse(bidderPrice));
-            cmd.Parameters.AddWithValue("@highestBidUser", int.Parse(bidderUserId));
-            cmd.Parameters.AddWithValue("@auctionId", int.Parse(auctionId));
+            cmd.Parameters.AddWithValue("@highestBidPrice", highestBidPrice);
+            cmd.Parameters.AddWithValue("@highestBidUser", highestBidUser);
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            cmd.Parameters.AddWithValue("@expiryDate", expiryDate);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7507,19 +7602,27 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new string fetchAuctionDataById (string auctionId) {
-      string query = "SELECT * FROM arcane.auction_table_v1 where auctionId = " + auctionId;
+   public static new AuctionItemData getAuction (int auctionId, bool readItemData) {
+      AuctionItemData auction = null;
+
+      string query = "SELECT * FROM arcane.auction_table_v1 auctions ";
+      if (readItemData) {
+         query += "LEFT JOIN items ON(items.usrId = -auctions.mailId AND auctions.mailId > 0) ";
+      }
+      query += "where auctionId=@auctionId";
+
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query
+            , conn)) {
             conn.Open();
             cmd.Prepare();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  AuctionItemData newAuctionItem = new AuctionItemData(dataReader);
-                  return JsonConvert.SerializeObject(newAuctionItem);
+                  auction = new AuctionItemData(dataReader, readItemData);
                }
             }
          }
@@ -7527,7 +7630,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return "";
+      return auction;
    }
 
    #endregion

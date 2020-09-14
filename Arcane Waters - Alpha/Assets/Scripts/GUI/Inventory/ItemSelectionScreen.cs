@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using Mirror;
 using System.Text;
+using NubisDataHandling;
 
 public class ItemSelectionScreen : MonoBehaviour
 {
@@ -20,6 +21,9 @@ public class ItemSelectionScreen : MonoBehaviour
 
    // Our associated Canvas Group
    public CanvasGroup canvasGroup;
+
+   // Load Blocker when data is fetching
+   public GameObject loadBlocker;
 
    // The grid container for the item icons
    public GameObject itemCellsContainer;
@@ -50,10 +54,20 @@ public class ItemSelectionScreen : MonoBehaviour
 
    #endregion
 
-   public void show (List<int> itemIdsToFilter, Item.Category categoryFilter = Item.Category.None) {
+   public void show () {
+      List<int> itemIdsToExclude = new List<int>();
+      show(itemIdsToExclude);
+   }
+
+   public void show (List<int> itemIdsToExclude) {
+      List<Item.Category> categoryFilter = new List<Item.Category>();
+      show(itemIdsToExclude, categoryFilter);
+   }
+
+   public void show (List<int> itemIdsToExclude, List<Item.Category> categoryFilter) {
       // Set the filters to be used every time the items are listed
       _categoryFilter = categoryFilter;
-      _itemIdsToFilter = itemIdsToFilter;
+      _itemIdsToExclude = itemIdsToExclude;
 
       // Clear out any current items
       itemCellsContainer.DestroyChildren();
@@ -62,11 +76,11 @@ public class ItemSelectionScreen : MonoBehaviour
       // Clear the selected item
       clearSelectedItem();
 
-      // Request the data from the server
-      Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
-
       // Removes the page number text
       pageNumberText.text = "";
+
+      // Request the data from the server
+      refreshPanel();
 
       // Make the panel visible
       this.canvasGroup.alpha = 1f;
@@ -85,20 +99,25 @@ public class ItemSelectionScreen : MonoBehaviour
       return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
    }
 
-   public void receiveItemsFromServer (UserObjects userObjects, int pageNumber, int totalItemCount, 
-      int equippedArmorId, int equippedWeaponId, Item[] itemArray) {
+   public void refreshPanel () {
+      loadBlocker.SetActive(true);
+      NubisDataFetcher.self.getInventoryForItemSelection(_categoryFilter, _itemIdsToExclude, _currentPage, ITEMS_PER_PAGE);
+   }
+
+   public void receiveItemsFromServer (List<Item> itemList, int pageNumber, int totalItemCount) {
+      setLoadBlocker(false);
 
       // Update the current page number
       _currentPage = pageNumber;
 
       // Calculate the maximum page number
       _maxPage = Mathf.CeilToInt((float) totalItemCount / ITEMS_PER_PAGE);
-      if (_maxPage == 0) {
-         _maxPage = 1;
-      }
+      //if (_maxPage == 0) {
+      //   _maxPage = 1;
+      //}
 
       // Update the current page text
-      pageNumberText.text = "Page " + _currentPage.ToString() + " of " + _maxPage.ToString();
+      pageNumberText.text = "Page " + (_currentPage + 1).ToString() + " of " + _maxPage.ToString();
 
       // Update the navigation buttons
       updateNavigationButtons();
@@ -111,7 +130,7 @@ public class ItemSelectionScreen : MonoBehaviour
       _cells.Clear();
 
       // Create the item cells
-      foreach (Item item in itemArray) {
+      foreach (Item item in itemList) {
          // Get the casted item
          Item castedItem = item.getCastItem();
 
@@ -134,7 +153,7 @@ public class ItemSelectionScreen : MonoBehaviour
    }
 
    public void setSelectedItem (ItemCell selectedCell) {
-      selectedItem = selectedCell.getItem();
+      selectedItem = selectedCell.itemCache;
 
       // Clear the previous selected item
       clearSelectedItem();
@@ -157,16 +176,16 @@ public class ItemSelectionScreen : MonoBehaviour
    }
 
    public void nextPage () {
-      if (_currentPage < _maxPage) {
+      if (_currentPage < _maxPage - 1) {
          _currentPage++;
-         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
+         refreshPanel();
       }
    }
 
    public void previousPage () {
-      if (_currentPage > 1) {
+      if (_currentPage > 0) {
          _currentPage--;
-         Global.player.rpc.Cmd_RequestItemsFromServerForItemSelection(_categoryFilter, _currentPage, ITEMS_PER_PAGE, true, _itemIdsToFilter.ToArray());
+         refreshPanel();
       }
    }
 
@@ -175,13 +194,17 @@ public class ItemSelectionScreen : MonoBehaviour
       previousPageButton.enabled = true;
       nextPageButton.enabled = true;
 
-      if (_currentPage <= 1) {
+      if (_currentPage <= 0) {
          previousPageButton.enabled = false;
       }
 
-      if (_currentPage >= _maxPage) {
+      if (_currentPage >= _maxPage - 1) {
          nextPageButton.enabled = false;
       }
+   }
+
+   public void setLoadBlocker (bool isOn) {
+      loadBlocker.SetActive(isOn);
    }
 
    private void clearSelectedItem () {
@@ -202,16 +225,16 @@ public class ItemSelectionScreen : MonoBehaviour
    #region Private Variables
 
    // The index of the current page
-   private int _currentPage = 1;
+   private int _currentPage = 0;
 
    // The maximum page index (starting at 1)
    private int _maxPage = 1;
 
    // The category used to filter the displayed items
-   private Item.Category _categoryFilter;
+   private List<Item.Category> _categoryFilter = new List<Item.Category>();
 
    // The list of items that must not be displayed in the item selection
-   private List<int> _itemIdsToFilter = new List<int>();
+   private List<int> _itemIdsToExclude = new List<int>();
 
    // The list of item cells
    private List<ItemCell> _cells = new List<ItemCell>();

@@ -389,6 +389,9 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingItem == null) {
+               return "";
+            }
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
                WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentIconPath;

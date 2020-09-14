@@ -24,8 +24,14 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static string userInventory (string usrIdStr, string currentPageStr, string categoryStr, string weaponIdStr, string armorIdStr, string hatIdStr, string inventoryCountLimit) {
+   public static string userInventory (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
+      string mustExcludeEquippedItemsStr, string currentPageStr, string itemsPerPageStr) {
       return "";
+   }
+
+   public static string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
+      string mustExcludeEquippedItemsStr) {
+      return "0";
    }
 
    public static string fetchXmlVersion (string slotstr) {
@@ -62,39 +68,37 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
-   public static string getAuctionItemHistoryCount (string userId) {
+   public static string getAuctionList (string pageNumberStr, string itemCountLimitStr, string categoryFilter, string userIdStr, string onlyHistory, string onlySelfAuctions) {
+      return "";
+   }
+
+   public static string getAuctionListCount (string userIdStr, string filterData, string onlyHistory, string onlySelfAuctions) {
       return "0";
    }
 
-   public static string getMarketAuctionItemCount (string rawData, string filteredCategory) {
-      return "0";
+   public static List<AuctionItemData> getAuctionsToDeliver () {
+      return null;
    }
 
-   public static string fetchAuctionPurchaseHistory (string userIdStr, string itemCountLimitStr, string pageNumberStr) {
-      return "";
-   }
-
-   public static void removeAuctionEntry (int auctionData) {
+   public static void deliverAuction (int auctionId, int mailId, int recipientUserId) {
 
    }
 
-   public static int addToAuctionHistory (AuctionItemData auctionData) {
+   public static void deleteAuction (int auctionId) {
+
+   }
+
+   public static int createAuction (int sellerUserId, string sellerName, int mailId, DateTime expiryDate,
+      int highestBidPrice, int buyoutPrice, Item.Category itemCategory, string itemName, int itemCount) {
       return 0;
    }
 
-   public static int createAuctionEntry (string sellerName, int userId, Item item, int startingPrice, int buyoutPrice) {
-      return 0;
+   public static void updateAuction (int auctionId, int highestBidUser, int highestBidPrice, DateTime expiryDate) {
+
    }
 
-   public static void modifyAuctionData (string auctionId, string bidderUserId, string bidderPrice) {
-   }
-
-   public static string fetchAuctionData (string userId, string pageNumber, string itemCountLimit, string filterData, string fetchSelf) {
-      return "";
-   }
-
-   public static string fetchAuctionDataById (string auctionId) {
-      return "";
+   public static AuctionItemData getAuction (int auctionId, bool readItemData) {
+      return null;
    }
 
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {

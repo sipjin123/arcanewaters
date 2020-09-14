@@ -32,12 +32,12 @@ public class ItemShortcutInfo
       this.slotNumber = DataUtil.getInt(dataReader, "slotNumber");
       this.itemId = DataUtil.getInt(dataReader, "itemId");
 
-      int itemId = dataReader.GetInt32("itmId");
-      Item.Category itemCategory = (Item.Category) dataReader.GetInt32("itmCategory");
-      int itemTypeId = dataReader.GetInt32("itmType");
-      string palettes = dataReader.GetString("itmPalettes");
-      string data = dataReader.GetString("itmData");
-      int count = dataReader.GetInt32("itmCount");
+      int itemId = DataUtil.getInt(dataReader, "itmId");
+      Item.Category itemCategory = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
+      int itemTypeId = DataUtil.getInt(dataReader, "itmType");
+      string palettes = DataUtil.getString(dataReader, "itmPalettes");
+      string data = DataUtil.getString(dataReader, "itmData");
+      int count = DataUtil.getInt(dataReader, "itmCount");
 
       this.item = new Item(itemId, itemCategory, itemTypeId, count, palettes, data);
    }

@@ -16,35 +16,33 @@ using MySql.Data.MySqlClient;
 public class AuctionItemData {
    #region Public Variables
 
-   // Name of the item
-   public string itemName;
-
-   // Seller Name
-   public string sellerName;
-
    // The unique database entry
    public int auctionId;
 
-   // Item Data
-   public int itemId;
-   public int itemCategory;
-   public int itemTypeId;
-   public int itemPrice;
-   public int itembuyOutPrice;
+   // The associated mail id, where the item is stored as attachment until the auction ends
+   public int mailId;
+
+   // The item data
+   public Item.Category itemCategory;
+   public string itemName;
    public int itemCount;
 
-   // User Ids
+   // The seller id
    public int sellerId;
-   public int buyerId;
 
-   // Bidding data
+   // The seller name
+   public string sellerName;
+
+   // The bidding data
    public int highestBidPrice;
    public int highestBidUser;
+   public int buyoutPrice;
 
-   // Date related to the auctioned item
-   public string auctionDateCreated;
-   public string auctionDateExpiry;
-   public string auctionDatePurchase;
+   // The date at which the auction ends
+   public long expiryDate;
+
+   // The auctioned item - only available when the auction is active
+   public Item item = null;
 
    #endregion
 
@@ -54,30 +52,65 @@ public class AuctionItemData {
 
 #if IS_SERVER_BUILD
 
-   public AuctionItemData (MySqlDataReader dataReader) {
-      this.itemName = dataReader.GetString("itemName");
-      this.sellerName = dataReader.GetString("sellerName");
-      this.auctionId = dataReader.GetInt32("auctionId");
+   public AuctionItemData (MySqlDataReader dataReader, bool readItemData) {
+      this.auctionId = DataUtil.getInt(dataReader, "auctionId");
+      this.mailId = DataUtil.getInt(dataReader, "mailId");
+      this.itemCategory = (Item.Category) DataUtil.getInt(dataReader, "itemCategory");
+      this.itemName = DataUtil.getString(dataReader, "itemName");
+      this.itemCount = DataUtil.getInt(dataReader, "itemCount");
+      this.sellerId = DataUtil.getInt(dataReader, "sellerId");
+      this.sellerName = DataUtil.getString(dataReader, "sellerName");
+      this.highestBidPrice = DataUtil.getInt(dataReader, "highestBidPrice");
+      this.highestBidUser = DataUtil.getInt(dataReader, "highestBidUser");
+      this.buyoutPrice = DataUtil.getInt(dataReader, "buyoutPrice");
+      this.expiryDate = DataUtil.getDateTime(dataReader, "expiryDate").ToBinary();
 
-      this.itemId = dataReader.GetInt32("itemId");
-      this.itemCategory = dataReader.GetInt32("itemCategory");
-      this.itemTypeId = dataReader.GetInt32("itemType");
-      this.itemPrice = dataReader.GetInt32("itemPrice");
-      this.itembuyOutPrice = dataReader.GetInt32("itembuyOutPrice");
-      this.itemCount = dataReader.GetInt32("itemCount");
+      // Read the item fields, when available
+      if (readItemData) {
+         int itemId = DataUtil.getInt(dataReader, "itmId");
+         Item.Category category = (Item.Category) DataUtil.getInt(dataReader, "itmCategory");
+         int itemTypeId = DataUtil.getInt(dataReader, "itmType");
+         string palettes = DataUtil.getString(dataReader, "itmPalettes");
+         string data = DataUtil.getString(dataReader, "itmData");
+         int count = DataUtil.getInt(dataReader, "itmCount");
 
-      this.sellerId = dataReader.GetInt32("sellerId");
-      this.buyerId = dataReader.GetInt32("buyerId");
-
-      this.auctionDateCreated = dataReader.GetString("datePosted");
-      this.auctionDateExpiry = dataReader.GetString("dateExpiry");
-      this.auctionDatePurchase = dataReader.GetString("dateSold");
-
-      this.highestBidPrice = dataReader.GetInt32("highestBidPrice");
-      this.highestBidUser = dataReader.GetInt32("highestBidUser");
+         this.item = new Item(itemId, category, itemTypeId, count, palettes, data);
+      } else {
+         this.item = new Item();
+      }
    }
 
 #endif
+
+   public TimeSpan getTimeLeftUntilExpiry () {
+      return DateTime.FromBinary(expiryDate) - DateTime.UtcNow;
+   }
+
+   public string getEstimatedTimeLeftUntilExpiry () {
+      TimeSpan timeLeft = getTimeLeftUntilExpiry();
+
+      if (timeLeft.Ticks <= 0) {
+         return "Ended";
+      }
+
+      if (timeLeft.TotalMinutes <= 10) {
+         return "Ending soon";
+      }
+
+      if (timeLeft.TotalHours <= 1) {
+         return "~1 hour left";
+      }
+
+      if (timeLeft.TotalHours <= 3) {
+         return "~3 hours left";
+      }
+
+      if (timeLeft.TotalHours <= 24) {
+         return "~1 day left";
+      }
+
+      return "Many days left";
+   }
 
    public static string getXmlData (AuctionItemData itemData) {
       XmlSerializer ser = new XmlSerializer(itemData.GetType());

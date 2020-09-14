@@ -249,6 +249,25 @@ public class ClientMessageManager : MonoBehaviour {
             ChatManager.self.addChat("Your bug has been successfully submitted!", msg.timestamp, ChatInfo.Type.System);
             return;
 
+         case ConfirmMessage.Type.ModifiedOwnAuction:
+            AuctionPanel auctionPanel = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
+            auctionPanel.auctionInfoPanel.hide();
+            auctionPanel.displayMyAuctions();
+
+            // Show a confirmation panel
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            return;
+
+         case ConfirmMessage.Type.BidOnAuction:
+            AuctionPanel auctionPanel2 = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
+            auctionPanel2.auctionInfoPanel.hide();
+            auctionPanel2.displayAllAuctions();
+
+            // Show a confirmation panel
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            return;
             /*case ConfirmMessage.Type.SeaWarp:
                // Pixelate the screen
                // PixelFadeEffect.self.fadeOut();

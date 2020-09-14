@@ -37,6 +37,7 @@ namespace NubisDataHandling {
                int itmType = int.Parse(dataGroup[2]);
                int itmCount = int.Parse(dataGroup[3]);
                string itmData = dataGroup[4];
+               string itmPalettes = dataGroup[5];
                //string itmPalette1 = dataGroup[5];
                //string itmPalette2 = dataGroup[6];
                //string itmPalettes = Item.parseItmPalette(new string[2] { itmPalette1, itmPalette2 });
@@ -55,7 +56,7 @@ namespace NubisDataHandling {
                            itemName = weaponData.equipmentName,
                            iconPath = weaponData.equipmentIconPath,
                            data = WeaponStatData.serializeWeaponStatData(weaponData),
-                           paletteNames = ""
+                           paletteNames = itmPalettes
                         };
 
                         newItemList.Add(weaponItem);
@@ -74,12 +75,12 @@ namespace NubisDataHandling {
                            itemName = armorData.equipmentName,
                            iconPath = armorData.equipmentIconPath,
                            data = ArmorStatData.serializeArmorStatData(armorData),
-                           paletteNames = ""
+                           paletteNames = itmPalettes
                         };
 
                         newItemList.Add(armorItem);
                      } catch {
-                        D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData + " : "+itmId, Color.red);
+                        D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData + " : " + itmId, Color.red);
                      }
                      break;
                   case Item.Category.Hats:
@@ -93,7 +94,7 @@ namespace NubisDataHandling {
                            itemName = hatData.equipmentName,
                            iconPath = hatData.equipmentIconPath,
                            data = HatStatData.serializeHatStatData(hatData),
-                           paletteNames = ""
+                           paletteNames = itmPalettes
                         };
 
                         newItemList.Add(hatItem);
@@ -119,7 +120,16 @@ namespace NubisDataHandling {
                      newItemList.Add(craftingIngredient);
                      break;
                   default:
-                     D.editorLog("Unsupported category: " + itmCategory);
+                     Item otherItem = new Item {
+                        category = categoryType,
+                        itemTypeId = itmType,
+                        id = itmId,
+                        count = itmCount,
+                        data = itmData,
+                        paletteNames = itmPalettes
+                     }.getCastItem();
+
+                     newItemList.Add(otherItem);
                      break;
                }
                index++;
