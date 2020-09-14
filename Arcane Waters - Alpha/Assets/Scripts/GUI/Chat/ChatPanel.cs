@@ -199,8 +199,8 @@ public class ChatPanel : MonoBehaviour {
          } else {
             // If we have a Ship for the specified sender, create a speech bubble
             SeaEntity seaEntity = SeaManager.self.getEntityByUserId(chatInfo.senderId);
-            if (seaEntity != null && seaEntity is ShipEntity) {
-               SpeechManager.self.showSpeechBubble((ShipEntity) seaEntity, chatInfo.text);
+            if (seaEntity != null && seaEntity is PlayerShipEntity) {
+               SpeechManager.self.showSpeechBubble((PlayerShipEntity) seaEntity, chatInfo.text);
             }
          }
       }

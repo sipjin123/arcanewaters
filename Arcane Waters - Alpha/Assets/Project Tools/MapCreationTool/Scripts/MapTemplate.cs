@@ -15,6 +15,7 @@ namespace MapCreationTool
       public CinemachineConfiner confiner;
       public Transform rugMarkerParent;
       public FlockManager flockManager;
+      public Transform rightBorder, leftBorder, topBorder, bottomBorder;
    }
 }
 

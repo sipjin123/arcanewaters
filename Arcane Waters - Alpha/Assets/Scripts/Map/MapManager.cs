@@ -198,6 +198,12 @@ public class MapManager : MonoBehaviour
          result.area.setTilemapLayers(tilemaps);
          result.area.setColliderChunks(mapColliderChunks);
 
+         // Setup border coordinates
+         result.leftBorder.localPosition = new Vector3(bounds.min.x, 0, result.leftBorder.localPosition.z);
+         result.rightBorder.localPosition = new Vector3(bounds.max.x, 0, result.rightBorder.localPosition.z);
+         result.topBorder.localPosition = new Vector3(0, bounds.max.y, result.topBorder.localPosition.z);
+         result.bottomBorder.localPosition = new Vector3(0, bounds.min.y, result.bottomBorder.localPosition.z);
+
          MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
          yield return null;
 

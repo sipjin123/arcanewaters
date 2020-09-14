@@ -41,7 +41,7 @@ public class CloudObject : MonoBehaviour {
    public Biome.Type biomeType;
 
    // The type of cloud { low / medium / high }
-   public CloudType cloudType;
+   public CloudType cloudType = CloudType.None;
 
    #endregion
 
@@ -120,7 +120,7 @@ public class CloudObject : MonoBehaviour {
          case Direction.East:
             transform.position += transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x > rootPosition.x + (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
-               float newYValue = rootPosition.y; 
+               float newYValue = isBattleBackgroundWeather ? rootPosition.y : transform.position.y; 
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
                      rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
@@ -134,7 +134,7 @@ public class CloudObject : MonoBehaviour {
          case Direction.West:
             transform.position -= transform.right * movementSpeed * Time.deltaTime;
             if (transform.position.x < rootPosition.x - (isBattleBackgroundWeather ? BattleBoard.maxRightPos : WeatherManager.maxRightPos)) {
-               float newYValue = rootPosition.y; 
+               float newYValue = isBattleBackgroundWeather ? rootPosition.y : transform.position.y;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newYValue = Random.Range(rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxUpPos : WeatherManager.maxUpPos), 
                      rootPosition.y + (isBattleBackgroundWeather ? BattleBoard.maxDownPos : WeatherManager.maxDownPos));
@@ -148,7 +148,7 @@ public class CloudObject : MonoBehaviour {
          case Direction.South:
             transform.position -= transform.up* movementSpeed * Time.deltaTime;
             if (transform.position.y < rootPosition.y - WeatherManager.maxRightPos) {
-               float newXValue = rootPosition.x;
+               float newXValue = isBattleBackgroundWeather ? rootPosition.x : transform.position.x;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newXValue = Random.Range(rootPosition.x + WeatherManager.maxLeftPos, rootPosition.x + WeatherManager.maxRightPos);
                   currentThresold = 0;
@@ -160,7 +160,7 @@ public class CloudObject : MonoBehaviour {
          case Direction.North:
             transform.position += transform.up * movementSpeed * Time.deltaTime;
             if (transform.position.y > rootPosition.y + WeatherManager.maxRightPos) {
-               float newXValue = rootPosition.x;
+               float newXValue = isBattleBackgroundWeather ? rootPosition.x : transform.position.x;
                if (currentThresold >= RANDOMIZE_THRESOLD) {
                   newXValue = Random.Range(rootPosition.x + WeatherManager.maxLeftPos, rootPosition.x + WeatherManager.maxRightPos);
                   currentThresold = 0;

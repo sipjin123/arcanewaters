@@ -13,12 +13,25 @@ public class CropPickup : MonoBehaviour {
    // The sprite renderer reference
    public SpriteRenderer spriteRender;
 
+   // The crop collected prefab
+   public CropCollected cropCollected;
+
    #endregion
 
    private void OnTriggerEnter2D (Collider2D collision) {
       if (collision.GetComponent<PlayerBodyEntity>() != null && collision.GetComponent<PlayerBodyEntity>() == Global.player) {
          cropSpot.cropPickupLocation = transform.position;
          Global.player.Cmd_HarvestCrop(cropSpot.cropNumber);
+
+         // Play a sound
+         SoundManager.create3dSound("crop_harvest_", transform.position, 5);
+
+         // Spawn collect harvest effect
+         CropCollected cropCollectedInstance = Instantiate(cropCollected, transform.position, transform.rotation);
+         cropCollectedInstance.gameObject.SetActive(true);
+         cropCollectedInstance.spriteRenderer.sprite = spriteRender.sprite;
+         Destroy(cropCollectedInstance.gameObject, 2);
+
          Destroy(gameObject);
       } 
    }

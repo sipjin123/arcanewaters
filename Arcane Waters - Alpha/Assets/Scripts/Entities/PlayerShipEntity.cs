@@ -66,7 +66,7 @@ public class PlayerShipEntity : ShipEntity
    public Color recoveringColor, defaultColor;
 
    // Speedup variables
-   public float speedMeter = 0;
+   public float speedMeter = 10;
    public static float SPEEDUP_METER_MAX = 10;
    public bool isReadyToSpeedup = true;
    public float fuelDepleteValue = 2;
@@ -221,6 +221,9 @@ public class PlayerShipEntity : ShipEntity
          }
       }
 
+      // Display the ship boost meter locally
+      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+
       // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
       if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
          isNextShotDefined = false;
@@ -351,16 +354,18 @@ public class PlayerShipEntity : ShipEntity
       shipAbilities = new List<int>(abilityIds);
    }
 
-   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
+   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool displayAcrossNetwork) {
       // Handle GUI
-      if (!forceDisable && (meter < SPEEDUP_METER_MAX)) {
-         speedupGUI.enabled = true;
-         speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
-      } else {
-         speedupGUI.enabled = false;
-      }
+      if (!displayAcrossNetwork) {
+         if (meter < SPEEDUP_METER_MAX) {
+            speedupGUI.enabled = true;
+            speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
+         } else {
+            speedupGUI.enabled = false;
+         }
 
-      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
+         speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
+      }
 
       // Handle sprite effects
       if (isOn) {
@@ -509,7 +514,7 @@ public class PlayerShipEntity : ShipEntity
          _lastInputChangeTime = NetworkTime.time;
 
          if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
-            Cmd_RequestServerAddForce();
+            Cmd_RequestServerAddForce(isSpeedingUp);
          }
       }
    }
@@ -667,8 +672,9 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_RequestServerAddForce () {
-      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {       
+   protected void Cmd_RequestServerAddForce (bool isSpeedingUp) {
+      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
+         this.isSpeedingUp = isSpeedingUp;
          Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed();
          _body.AddForce(forceToApply);
          _lastInputChangeTime = NetworkTime.time;

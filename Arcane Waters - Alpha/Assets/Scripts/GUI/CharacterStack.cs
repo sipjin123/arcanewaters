@@ -141,8 +141,6 @@ public class CharacterStack : MonoBehaviour {
                hatLayer.recolor(palettes);
             }
          } 
-      } else {
-         D.editorLog("Hat Layer is not set!", Color.red);
       }
    }
 
