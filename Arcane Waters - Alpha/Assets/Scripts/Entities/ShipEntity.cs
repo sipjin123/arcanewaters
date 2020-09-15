@@ -200,7 +200,7 @@ public class ShipEntity : SeaEntity
       }
 
       // Note the time at which we last successfully attacked
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
 
       ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
 
@@ -245,7 +245,7 @@ public class ShipEntity : SeaEntity
       }
 
       // Note the time at which we last successfully attacked
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
 
       // The target point is clamped to the attack range
       spot = clampToRange(spot);

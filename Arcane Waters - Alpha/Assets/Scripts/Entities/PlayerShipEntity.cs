@@ -83,10 +83,6 @@ public class PlayerShipEntity : ShipEntity
 
    protected override bool isBot () { return false; }
 
-   private void OnGUI () {
-      //GUILayout.Box("Moving: " + getVelocity().magnitude.ToString("f1") +" : "+ _body.velocity.magnitude.ToString("f1") + " : "+ isMoving());
-   }
-
    protected override void Start () {
       base.Start();
 
@@ -127,15 +123,15 @@ public class PlayerShipEntity : ShipEntity
       }
 
       // If the reload is finished and a shot was scheduled, fire it
-      if (isNextShotDefined && hasReloaded()) {
-         // Fire the scheduled shot
-         if (!SeaManager.self.isOffensiveAbility()) {
-            Cmd_CastAbility(SeaManager.getAttackType());
-         } else {
-            Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.getAttackType(), transform.position);
-         }
-         isNextShotDefined = false;
-      }
+      //if (isNextShotDefined && hasReloaded()) {
+      //   // Fire the scheduled shot
+      //   if (!SeaManager.self.isOffensiveAbility()) {
+      //      Cmd_CastAbility(SeaManager.getAttackType());
+      //   } else {
+      //      Cmd_FireMainCannonAtSpot(nextShotTarget, SeaManager.getAttackType(), transform.position);
+      //   }
+      //   isNextShotDefined = false;
+      //}
 
       // Check if input is allowed
       if (!Util.isGeneralInputAllowed() || isDisabled) {
@@ -143,10 +139,8 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
-         if (Input.GetKeyDown(KeyCode.Space) && hasReloaded()) {
-            Cmd_StartedAiming(_aimDirection);
-            _currentAimPosition = transform.position;
-            _localAimAngle = desiredAngle;
+         if ((Input.GetKeyDown(KeyCode.Space) || _isAimScheduled) && hasReloaded()) {
+            startAiming();
          }
 
          if (isAiming) {
@@ -157,34 +151,16 @@ public class PlayerShipEntity : ShipEntity
                float timeAiming = (float)(NetworkTime.time - _startedAimingTime);
                float progress = Mathf.InverseLerp(0, TIME_TO_REACH_MAX_CANNON_FORCE, timeAiming);
                _currentAimPosition = Vector2.Lerp(startPosition, shipPosition + aimDirection * getAttackRange(), progress);
-            }
-
-            if (Input.GetKeyUp(KeyCode.Space)) {
+            } else {
                Cmd_FireMainCannon(_localAimAngle);
+               isAiming = false;
             }
-
+         } else if (!hasReloaded()) {
+            _isAimScheduled = Input.GetKey(KeyCode.Space);
          }
 
          if (Input.GetKeyDown(KeyCode.Tab)) {
             switchAimDirection();
-         }
-      }
-
-      // Right-click to attack in a circle
-      if (Input.GetMouseButtonUp(1) && !isDead() && SeaManager.getAttackType() != Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
-         // If the ship is reloading, set the next shot
-         if (!hasReloaded()) {
-            nextShotTarget = clampToRange(Util.getMousePos());
-            isNextShotDefined = true;
-         } else {
-            if (!SeaManager.self.isOffensiveAbility()) {
-               Cmd_CastAbility(SeaManager.getAttackType());
-            } else {
-               Cmd_FireMainCannonAtSpot(Util.getMousePos(), SeaManager.getAttackType(), transform.position);
-
-               // Trigger the tutorial
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
-            }
          }
       }
 
@@ -224,20 +200,10 @@ public class PlayerShipEntity : ShipEntity
       // Display the ship boost meter locally
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
 
-      // If the right mouse button is being held and the left mouse button is clicked, clear the next shot
-      if (Input.GetMouseButton(1) && Input.GetMouseButtonDown(0)) {
-         isNextShotDefined = false;
-      }
-
       // Space to fire at the selected ship
       /*if (Input.GetKeyUp(KeyCode.Space) && !ChatManager.isTyping() && SelectionManager.self.selectedEntity != null && SeaManager.combatMode == SeaManager.CombatMode.Select) {
          Cmd_FireAtTarget(SelectionManager.self.selectedEntity.gameObject);
       }*/
-
-      // Right click to fire out the sides
-      if (Input.GetMouseButtonUp(1) && SeaManager.getAttackType() == Attack.Type.Air && !VoyageGroupPanel.self.isMouseOverAnyMemberCell()) {
-         Cmd_FireTimedCannonBall(Util.getMousePos());
-      }
 
       handleDirectionChange();
    }
@@ -260,6 +226,13 @@ public class PlayerShipEntity : ShipEntity
             _lastAngleChangeTime = Time.time;
          }
       }
+   }
+
+   private void startAiming () {
+      Cmd_StartedAiming(_aimDirection);
+      _currentAimPosition = transform.position;
+      _localAimAngle = desiredAngle;
+      _isAimScheduled = false;
    }
 
    public Vector2 getAimPosition () {
@@ -286,6 +259,7 @@ public class PlayerShipEntity : ShipEntity
    private void Target_SetStartedAiming (double startTime) {
       _startedAimingTime = startTime;
       isAiming = true;
+      _isAimScheduled = false;
    }
 
    [TargetRpc]
@@ -308,7 +282,7 @@ public class PlayerShipEntity : ShipEntity
    [Command]
    protected void Cmd_FireMainCannon (float angle) {
       // Make sure the player isn't dead, has reloaded and has prepared a shot
-      if (isAiming && isDead() || !hasReloaded()) {
+      if (!isAiming || isDead() || !hasReloaded()) {
          return;
       }
 
@@ -602,6 +576,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    protected IEnumerator CO_FireTimedCannonBall (double startTime, Vector2 velocity, float damageMultiplier) {
+      _lastAttackTime = NetworkTime.time;
+
       // Wait until it's time to fire
       while (NetworkTime.time < startTime) {
          yield return null;
@@ -756,7 +732,7 @@ public class PlayerShipEntity : ShipEntity
       spot = clampToRange(spot);
 
       // Note the time at which we last successfully attacked
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
 
       // Check how long we should take to get there
       float distance = Vector2.Distance(this.transform.position, spot);
@@ -802,6 +778,9 @@ public class PlayerShipEntity : ShipEntity
 
    // The client-side aiming direction
    private float _localAimAngle;
+
+   // Whether the player should start aiming again after reloading
+   private bool _isAimScheduled;
 
    // The minimum force multiplier for cannon balls
    private const float MIN_CANNON_FORCE_SCALE = 0.5f;

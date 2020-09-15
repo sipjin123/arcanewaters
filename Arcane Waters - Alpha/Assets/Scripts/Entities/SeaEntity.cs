@@ -116,12 +116,12 @@ public class SeaEntity : NetEntity
 
    public bool hasRecentCombat () {
       // Did we recently attack?
-      if (Time.time - _lastAttackTime < RECENT_COMBAT_COOLDOWN) {
+      if (NetworkTime.time - _lastAttackTime < RECENT_COMBAT_COOLDOWN) {
          return true;
       }
 
       // Did we recently take damage?
-      if (Time.time - _lastDamagedTime < RECENT_COMBAT_COOLDOWN) {
+      if (NetworkTime.time - _lastDamagedTime < RECENT_COMBAT_COOLDOWN) {
          return true;
       }
 
@@ -369,7 +369,7 @@ public class SeaEntity : NetEntity
    [ClientRpc]
    protected void Rpc_NoteAttack () {
       // Note the time at which we last performed an attack
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
    }
 
    public double getLastAttackTime () {
@@ -428,7 +428,7 @@ public class SeaEntity : NetEntity
       }
 
       // Note the time at which we last successfully attacked
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
 
       float distance = Vector2.Distance(this.transform.position, spot);
       float delay = Mathf.Clamp(distance, .5f, 1.5f);
@@ -488,7 +488,7 @@ public class SeaEntity : NetEntity
             break;
       }
 
-      _lastAttackTime = Time.time;
+      _lastAttackTime = NetworkTime.time;
       attackCounter++;
       Rpc_RegisterAttackTime(attackDelay);
       Rpc_NoteAttack();
@@ -683,7 +683,7 @@ public class SeaEntity : NetEntity
          float timeToStartFiring = TimeManager.self.getSyncedTime() + .150f;
 
          // Note the time at which we last successfully attacked
-         _lastAttackTime = Time.time;
+         _lastAttackTime = NetworkTime.time;
 
          // Make note on the clients that the ship just attacked
          Rpc_NoteAttack();
