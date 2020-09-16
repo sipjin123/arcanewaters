@@ -194,7 +194,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void onCharacterCreationFailed () {
-      canvasGroup.interactable = true;
+      Util.enableCanvasGroup(canvasGroup);
    }
 
    public void onCancelButtonClicked () {

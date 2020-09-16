@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 using DG.Tweening;
+using System;
 
 public class CharacterCreationSpotFader : ClientMonoBehaviour
 {
@@ -36,6 +37,24 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
    private void Start () {
       MAX_SPOT_SIZE = new Vector2(Screen.width * MAX_SIZE_MULTIPLIER, Screen.width * MAX_SIZE_MULTIPLIER);
       spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
+
+      // Update the position of the spot mask if the resolution changes
+      CameraManager.self.resolutionChanged += onResolutionChanged;
+   }
+   
+   private void onResolutionChanged () {
+      StartCoroutine(CO_UpdateSpotPosition());
+   }
+
+   private IEnumerator CO_UpdateSpotPosition () {
+      // Wait until the camera size is updated
+      yield return null;
+      yield return null;
+
+      // If the screen is visible, update the spot position
+      if (_canvasGroup.alpha > 0) {
+         spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(_currentFocusPosition) + _highlightPlayerOffset;
+      }
    }
 
    public void openSpotToMaxSize () {
@@ -76,6 +95,8 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       if (self == null) {
          return;
       }
+
+      _currentFocusPosition = worldPosition;
 
       _currentSizeTween?.Kill();
       spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
@@ -123,6 +144,10 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
          _currentBackgroundColorTween?.Kill();
          _currentSizeTween?.Kill();
       }
+
+      if (CameraManager.self != null) {
+         CameraManager.self.resolutionChanged -= onResolutionChanged;
+      }
    }
 
    #region Private Variables
@@ -142,6 +167,9 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
    // The total time to complete the effect
    [SerializeField]
    private float _totalEffectTime = 0.5f;
+
+   // The world position we're currently focusing on
+   private Vector3 _currentFocusPosition;
 
    // The tween that's changing the spot size
    private Tween _currentSizeTween;

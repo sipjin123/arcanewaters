@@ -30,6 +30,9 @@ public class MyCamera : BaseCamera
    protected override void Start () {
       CameraManager.self.registerCamera(this);
       setInternalOrthographicSize();
+
+      _initialSettings = getVirtualCameraSettings();
+      _initialSettings.ppuScale = getPPUScale();
    }
 
    public override void onResolutionChanged () {
@@ -70,10 +73,8 @@ public class MyCamera : BaseCamera
                }
             }
          } 
-      } 
+      }
 
-      _initialSettings = getVirtualCameraSettings();
-      _initialSettings.ppuScale = getPPUScale();
       _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
    }
 
@@ -102,6 +103,11 @@ public class MyCamera : BaseCamera
       s.Join(setOrthographicSize(Screen.height / settings.ppuScale));
       s.Join(setPosition(settings.position));
 
+      // Save the current settings
+      _currentSettings = settings;
+
+      _isUsingCustomSettings = _currentSettings.position != _initialSettings.position || _currentSettings.ppuScale != _initialSettings.ppuScale;
+
       return s;
    }
 
@@ -123,6 +129,10 @@ public class MyCamera : BaseCamera
       return settings;
    }
 
+   public override float getPPUScale () {
+      return _isUsingCustomSettings ? _currentSettings.ppuScale : base.getPPUScale();
+   }
+
    #region Private Variables
 
    // The current orthographic size
@@ -137,6 +147,12 @@ public class MyCamera : BaseCamera
 
    // The default settings
    protected VirtualCameraSettings _initialSettings;
+
+   // The current camera settings
+   protected VirtualCameraSettings _currentSettings;
+
+   // Whether the current settings are different from the initial ones
+   protected bool _isUsingCustomSettings;
 
    // The time needed to complete the animation
    protected const float ANIMATION_TIME = 0.25f;

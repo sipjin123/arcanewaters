@@ -68,28 +68,28 @@ public class SeaManager : MonoBehaviour {
       }
 
       // Allow pressing F1 through F2 to change the move mode
-      if (Input.GetKeyUp(KeyCode.F1)) {
-         Global.player.Cmd_ChangeMass(false);
-         moveMode = MoveMode.Instant;
-      }
-      if (Input.GetKeyUp(KeyCode.F2)) {
-         Global.player.Cmd_ChangeMass(false);
-         moveMode = MoveMode.Delay;
-      }
-      if (Input.GetKeyUp(KeyCode.F3)) {
-         Global.player.Cmd_ChangeMass(true);
-      }
-      if (Input.GetKeyUp(KeyCode.F4)) {
-         Global.player.Cmd_ChangeMass(true);
-         moveMode = MoveMode.Arrows;
-      }
-      if (Input.GetKeyUp(KeyCode.F5)) {
-         Global.player.Cmd_SetServerAuthoritativeMode();
-         moveMode = MoveMode.ServerAuthoritative;
-      }
-      if (Input.GetKeyUp(KeyCode.F12)) {
-         Global.player.Cmd_ToggleVelocityDrivenTransform();
-      }
+      //if (Input.GetKeyUp(KeyCode.F1)) {
+      //   Global.player.Cmd_ChangeMass(false);
+      //   moveMode = MoveMode.Instant;
+      //}
+      //if (Input.GetKeyUp(KeyCode.F2)) {
+      //   Global.player.Cmd_ChangeMass(false);
+      //   moveMode = MoveMode.Delay;
+      //}
+      //if (Input.GetKeyUp(KeyCode.F3)) {
+      //   Global.player.Cmd_ChangeMass(true);
+      //}
+      //if (Input.GetKeyUp(KeyCode.F4)) {
+      //   Global.player.Cmd_ChangeMass(true);
+      //   moveMode = MoveMode.Arrows;
+      //}
+      //if (Input.GetKeyUp(KeyCode.F5)) {
+      //   Global.player.Cmd_SetServerAuthoritativeMode();
+      //   moveMode = MoveMode.ServerAuthoritative;
+      //}
+      //if (Input.GetKeyUp(KeyCode.F12)) {
+      //   Global.player.Cmd_ToggleVelocityDrivenTransform();
+      //}
 
       // Allow spawning a pirate ship
       if (Input.GetKeyUp(KeyCode.F9) && Global.player is SeaEntity) {
