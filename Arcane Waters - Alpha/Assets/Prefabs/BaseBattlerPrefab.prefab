@@ -2038,6 +2038,8 @@ MonoBehaviour:
   isBossType: 0
   receivedCancelState: 0
   shadowTransform: {fileID: 1097139193521384825}
+  canCancelAction: 0
+  canCastAbility: 1
   _battlerBasicAbilities: []
   _alteredBattlerData:
     enemyName: unknown

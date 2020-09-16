@@ -69,10 +69,14 @@ public class AttackPanel : MonoBehaviour {
       recentAbilityRequest.abilityType = AbilityType.Standard;
       recentAbilityRequest.targetNetId = target.netId;
       recentAbilityRequest.abilityIndex = abilityIndex;
-      Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
 
-      // Trigger the tutorial
-      TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);
+      if (BattleManager.self.getPlayerBattler().canCastAbility()) {
+         BattleManager.self.getPlayerBattler().updateBattlerCasting(false);
+         Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
+
+         // Trigger the tutorial
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);
+      } 
    }
 
    private bool isValidRecentAbility () {

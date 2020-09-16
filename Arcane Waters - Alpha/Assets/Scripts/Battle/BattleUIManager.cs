@@ -156,7 +156,15 @@ public class BattleUIManager : MonoBehaviour {
       AbilityButton selectedButton = abilityTargetButtons.ToList().Find(_=>_.abilityIndex == keySlot);
       if (selectedButton != null) {
          if (selectedButton.isEnabled && BattleSelectionManager.self.selectedBattler != null) {
-            selectedButton.abilityButton.onClick.Invoke();
+            if (BattleManager.self.getPlayerBattler().canCastAbility()) {
+               if (selectedButton.cooldownValue < selectedButton.cooldownTarget - .1f) {
+                  D.error("Ability is cooling down!: " + selectedButton.cooldownValue + " / " + selectedButton.cooldownTarget);
+               } else {
+                  selectedButton.abilityButton.onClick.Invoke();
+               }
+            } else {
+               D.debug("Player cant cast ability yet! Ability ID: " + selectedButton.abilityTypeIndex);
+            }
          } else {
             selectedButton.invalidButtonClick();
          }

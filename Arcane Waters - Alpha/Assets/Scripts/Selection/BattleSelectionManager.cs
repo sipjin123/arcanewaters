@@ -44,80 +44,88 @@ public class BattleSelectionManager : MonoBehaviour {
             return;
          }
 
-         // Look up the player's Battle ID
-         PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
-         int battleId = body.battleId;
-
-         // Find the player's Battle object
-         Battle playerBattle = null;
-
-         foreach (Battle battle in FindObjectsOfType<Battle>()) {
-            if (battle.battleId == battleId) {
-               playerBattle = battle;
-            }
-         }
-
-         if (playerBattle == null || playerBattle.battleId <= 0) {
-            return;
-         }
-
          // Check where on the screen this click was
          Vector3 clickLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Input.mousePosition);
-         bool clickedBattler = false;
+         clickedArea(clickLocation);
+      }
+   }
 
-         // Cycle over each of the Battlers in the Battle
-         foreach (Battler battler in playerBattle.getParticipants()) {
-            // Gets the Bounds of the sprite, but scale it down a bit since it contains a lot of transparent border
-            Bounds bounds = battler.clickBox.bounds;
+   public void clickedArea (Vector3 clickLocation) {
+      // Look up the player's Battle ID
+      PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
+      if (body == null) {
+         D.debug("Skip click area due to null player body entity");
+         return;
+      }
+      int battleId = body.battleId;
 
-            // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
-            clickLocation.z = bounds.center.z;
+      // Find the player's Battle object
+      Battle playerBattle = null;
 
-            // Check if the click was within the sprite bounds of this Battler
-            if (bounds.Contains(clickLocation) && !battler.isDead()) {
-               clickedBattler = true;
+      foreach (Battle battle in FindObjectsOfType<Battle>()) {
+         if (battle.battleId == battleId) {
+            playerBattle = battle;
+         }
+      }
 
-               // Check if the newly selected battler is the same as the previous one, we deselect it
-               if (selectedBattler == battler) {
+      if (playerBattle == null || playerBattle.battleId <= 0) {
+         return;
+      }
+
+      bool clickedBattler = false;
+
+      // Cycle over each of the Battlers in the Battle
+      foreach (Battler battler in playerBattle.getParticipants()) {
+         // Gets the Bounds of the sprite, but scale it down a bit since it contains a lot of transparent border
+         Bounds bounds = battler.clickBox.bounds;
+
+         // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
+         clickLocation.z = bounds.center.z;
+
+         // Check if the click was within the sprite bounds of this Battler
+         if (bounds.Contains(clickLocation) && !battler.isDead()) {
+            clickedBattler = true;
+
+            // Check if the newly selected battler is the same as the previous one, we deselect it
+            if (selectedBattler == battler) {
+               selectedBattler.deselectThis();
+               selectedBattler = null;
+            } else {
+               BattleUIManager.self.highlightLocalBattler(false);
+
+               // If it is another battler
+               if (selectedBattler != null) {
                   selectedBattler.deselectThis();
-                  selectedBattler = null;
-               } else {
-                  BattleUIManager.self.highlightLocalBattler(false);
-                  
-                  // If it is another battler
-                  if (selectedBattler != null) {
-                     selectedBattler.deselectThis();
-                  }
-
-                  Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
-                  selectedBattler = battler;
-                  bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
-
-                  if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
-                     enemySelection.SetActive(false);
-                     allySelection.SetActive(true);
-                  } else {
-                     currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
-                     enemySelection.SetActive(true);
-                     allySelection.SetActive(false);
-                  }
-                  selectionSprite.initialYaxis = selectedBattler.transform.position.y;
-                  selectedBattler.selectThis();
                }
 
-               break;
-            }
-         }
+               Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
+               selectedBattler = battler;
+               bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
 
-         // If no Battler was clicked on, then select nothing
-         if (!clickedBattler) {
-            BattleUIManager.self.highlightLocalBattler(false);
-
-            if (selectedBattler != null) {
-               selectedBattler.deselectThis();
+               if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
+                  enemySelection.SetActive(false);
+                  allySelection.SetActive(true);
+               } else {
+                  currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
+                  enemySelection.SetActive(true);
+                  allySelection.SetActive(false);
+               }
+               selectionSprite.initialYaxis = selectedBattler.transform.position.y;
+               selectedBattler.selectThis();
             }
-            selectedBattler = null;
+
+            break;
          }
+      }
+
+      // If no Battler was clicked on, then select nothing
+      if (!clickedBattler) {
+         BattleUIManager.self.highlightLocalBattler(false);
+
+         if (selectedBattler != null) {
+            selectedBattler.deselectThis();
+         }
+         selectedBattler = null;
       }
    }
 

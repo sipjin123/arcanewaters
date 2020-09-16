@@ -725,7 +725,7 @@ public class BattleManager : MonoBehaviour {
                // Remove the action cooldown and animation duration from the source's timestamps
                animLength = abilityData.getTotalAnimLength(source, target);
             }
-            
+
             float timeToSubtract = action.cooldownDuration + animLength;
 
             // Update the battler's action timestamps here on the server
@@ -734,8 +734,13 @@ public class BattleManager : MonoBehaviour {
             source.cooldownEndTime -= timeToSubtract;
 
             // Create a Cancel Action to send to the clients
-            CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, Util.netTime(), timeToSubtract);
-            AbilityManager.self.execute(new[] { cancelAction });
+            if (source.canCancelAction) {
+               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, Util.netTime(), timeToSubtract);
+               D.debug("Target or Source is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
+               AbilityManager.self.execute(new[] { cancelAction });
+            } else {
+               D.debug("Cannot cancel action");
+            }
 
          } else {
             if (action is AttackAction) {
@@ -756,10 +761,13 @@ public class BattleManager : MonoBehaviour {
 
                yield return new WaitForSeconds(attackApplyDelay);
 
+               if (target.enemyType != Enemy.Type.PlayerBattler)
+               D.debug("Implementing action damage: TargetHealth: " + target.health + " : ActionDamage: " + attackAction.damage);
+
                // Apply damage
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-
+               source.canCancelAction = false;
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
 

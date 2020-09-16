@@ -178,6 +178,11 @@ namespace MapCreationTool
          };
 
          map.confiner.m_BoundingShape2D = map.camBounds;
+
+         Vector3 confinerScale = map.area.cameraBounds.transform.localScale;
+         Vector3 confinerPosition = map.area.cameraBounds.transform.localPosition;
+         map.area.cameraBounds.transform.localScale = new Vector3(confinerScale.x, confinerScale.y, confinerScale.z);
+         map.area.cameraBounds.transform.localPosition = new Vector3(confinerPosition.x, confinerPosition.y - .2f, confinerPosition.z);
       }
 
       public static Bounds calculateBounds (ExportedProject001 project) {

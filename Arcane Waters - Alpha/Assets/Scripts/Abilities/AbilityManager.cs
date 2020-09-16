@@ -198,13 +198,16 @@ public class AbilityManager : MonoBehaviour
                break;
 
             case BattleActionType.Cancel:
-               D.editorLog("Ability has been canceled!", Color.red);
                CancelAction cancelAction = action as CancelAction;
                actionToExecute = cancelAction;
-
-               // Update the battler's action timestamps
-               sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
-               sourceBattler.stopActionCoroutine();
+               if (sourceBattler.canCancelAction) {
+                  // Update the battler's action timestamps
+                  D.editorLog("Ability has been canceled!", Color.red);
+                  sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
+                  sourceBattler.stopActionCoroutine();
+               } else {
+                  D.editorLog("Ability can not be canceled!", Color.red);
+               }
                break;
          }
 

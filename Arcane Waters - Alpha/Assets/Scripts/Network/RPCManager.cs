@@ -3961,6 +3961,8 @@ public class RPCManager : NetworkBehaviour {
       AbilityType abilityType = (AbilityType) abilityTypeInt;
 
       if (_player == null || !(_player is PlayerBodyEntity)) {
+         D.editorLog("Invalid Source!");
+         Target_ReceiveRefreshCasting(connectionToClient);
          return;
       }
 
@@ -3992,11 +3994,13 @@ public class RPCManager : NetworkBehaviour {
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
          D.editorLog("Invalid Targets!");
+         Target_ReceiveRefreshCasting(connectionToClient);
          return;
       }
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
          D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
+         Target_ReceiveRefreshCasting(connectionToClient);
          return;
       }
 
@@ -4004,6 +4008,7 @@ public class RPCManager : NetworkBehaviour {
          // If it's a Melee Ability, make sure the target isn't currently protected
          if (((AttackAbilityData) abilityData).isMelee() && targetBattler.isProtected(battle)) {
             D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
+            Target_ReceiveRefreshCasting(connectionToClient);
             return;
          }
       }
@@ -4015,6 +4020,11 @@ public class RPCManager : NetworkBehaviour {
       } else {
          BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
       }
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveRefreshCasting (NetworkConnection connection) {
+      BattleManager.self.getPlayerBattler().updateBattlerCasting(true);
    }
 
    [Command]

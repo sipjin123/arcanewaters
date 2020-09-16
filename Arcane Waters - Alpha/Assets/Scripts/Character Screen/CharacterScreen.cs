@@ -47,7 +47,7 @@ public class CharacterScreen : MonoBehaviour
 
    #endregion
 
-   void Awake () {
+   private void Awake () {
       self = this;
 
       // Look up components
@@ -59,7 +59,9 @@ public class CharacterScreen : MonoBehaviour
       }
 
       myCamera = virtualCam.GetComponent<MyCamera>();
+   }
 
+   private void Start () {
       battleBoard.setWeather(WeatherEffectType.Cloud, battleBoard.biomeType);
    }
 

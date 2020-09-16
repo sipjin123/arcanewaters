@@ -244,6 +244,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Reference to the shadow
    public Transform shadowTransform;
 
+   // If action can be cancelled
+   public bool canCancelAction;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -357,9 +360,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
 
-      if (isLocalBattler()) {
-         BattleSelectionManager.self.selectedBattler = this;
+      if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
+         StartCoroutine(delaySelection());
       }
+   }
+
+   private IEnumerator delaySelection () {
+      // Simulate battle selection upon entering combat
+      yield return new WaitForSeconds(1);
+      BattleSelectionManager.self.clickedArea(transform.position);
    }
 
    public void upateBattleSpots () {
@@ -1378,6 +1387,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             D.warning("Ability doesn't know how to handle action: " + battleAction + ", ability: " + this);
             yield break;
       }
+
+      if (userId == Global.player.userId && enemyType == Enemy.Type.PlayerBattler) {
+         updateBattlerCasting(true);
+         canCancelAction = true;
+      }
    }
 
    private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action) {
@@ -2076,7 +2090,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
+   public bool canCastAbility () {
+      return _canCastAbility;
+   }
+
+   public void updateBattlerCasting (bool canCast) {
+      _canCastAbility = canCast;
+   }
+
    #region Private Variables
+
+   // If the user can cast an ability
+   [SerializeField]
+   private bool _canCastAbility = true;
 
    // Attack abilities that will be used in combat
    [SerializeField] private List<BasicAbilityData> _battlerBasicAbilities = new List<BasicAbilityData>();
