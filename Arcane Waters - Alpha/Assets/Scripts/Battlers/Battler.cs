@@ -1394,6 +1394,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
+   #region Combat Effect Simulation
+
    private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action) {
       if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
          // If this magic ability has knockup, then start it now
@@ -1537,6 +1539,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       battler.removeBuff(buff);
    }
 
+   #endregion
+
    private IEnumerator CO_initializeClientBattler () {
       // We will wait until this battler battle is in the BattleManager battle list
       yield return new WaitUntil(() => BattleManager.self.getBattle(battleId) != null);
@@ -1556,6 +1560,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #endregion
 
    #region Getters
+
+   #region Int / Float Functions
 
    public int getSpotInFront () {
       switch (this.boardPosition) {
@@ -1747,87 +1753,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return damage;
    }
 
-   public bool hasBuffOfType (int globalAbilityID) {
-      foreach (BuffTimer buff in this.buffs) {
-         if (buff.buffAbilityGlobalID == globalAbilityID) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
-   public bool isProtected (Battle battle) {
-      // Figure out the teammate spot that's in front of us
-      int spotInFront = getSpotInFront();
-
-      // If there isn't a spot in front of us, we're never protected
-      if (spotInFront == 0) {
-         return false;
-      }
-
-      // Otherwise, we're protected if there's a living Battler on our team in that spot
-      foreach (Battler battler in getTeam()) {
-         if (battler.boardPosition == spotInFront && !battler.isDead()) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
-   public bool isMonster () {
-      // Monsters have negative user IDs
-      return (userId < 0);
-   }
-
-   public bool isMovable () {
-      if (isBossType) {
-         return false;
-      }
-
-      return true;
-   }
-
-   private void setElementalWeakness () {
-      HashSet<Element> elementalWeakness = new HashSet<Element>();
-      HashSet<Element> elementalResistance = new HashSet<Element>();
-
-      BattlerData battleData = getBattlerData();
-
-      if (battleData.baseDefenseMultiplierSet.fireDefenseMultiplier < 0) {
-         elementalWeakness.Add(Element.Fire);
-      } else {
-         elementalResistance.Add(Element.Fire);
-      }
-
-      if (battleData.baseDefenseMultiplierSet.waterDefenseMultiplier < 0) {
-         elementalWeakness.Add(Element.Water);
-      } else {
-         elementalResistance.Add(Element.Water);
-      }
-
-      if (battleData.baseDefenseMultiplierSet.airDefenseMultiplier < 0) {
-         elementalWeakness.Add(Element.Air);
-      } else {
-         elementalResistance.Add(Element.Air);
-      }
-
-      if (battleData.baseDefenseMultiplierSet.earthDefenseMultiplier < 0) {
-         elementalWeakness.Add(Element.Earth);
-      } else {
-         elementalResistance.Add(Element.Earth);
-      }
-
-      battleData.elementalWeakness = elementalWeakness.ToArray();
-      battleData.elementalResistance = elementalResistance.ToArray();
-   }
-
-   public bool isWeakAgainst (Element outgoingElement) {
-      // Determines if the battler is weak against the element
-      return getBattlerData().elementalWeakness.Contains(outgoingElement);
-   }
-
    public static float getElementalMultiplier (Element outgoingElement, Element resistingElement) {
       float neutralDamage = 1;
       float weakDamage = 0;
@@ -1886,6 +1811,52 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return neutralDamage;
    }
 
+   #endregion 
+
+   #region Bool functions
+
+   public bool hasBuffOfType (int globalAbilityID) {
+      foreach (BuffTimer buff in this.buffs) {
+         if (buff.buffAbilityGlobalID == globalAbilityID) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public bool isProtected (Battle battle) {
+      // Figure out the teammate spot that's in front of us
+      int spotInFront = getSpotInFront();
+
+      // If there isn't a spot in front of us, we're never protected
+      if (spotInFront == 0) {
+         return false;
+      }
+
+      // Otherwise, we're protected if there's a living Battler on our team in that spot
+      foreach (Battler battler in getTeam()) {
+         if (battler.boardPosition == spotInFront && !battler.isDead()) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public bool isMonster () {
+      // Monsters have negative user IDs
+      return (userId < 0);
+   }
+
+   public bool isMovable () {
+      if (isBossType) {
+         return false;
+      }
+
+      return true;
+   }
+
    public bool canBlock () {
       // Monsters don't get to block, that would be annoying
       if (isMonster()) {
@@ -1903,6 +1874,70 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public bool isAttacker () {
       return teamType == Battle.TeamType.Attackers;
    }
+
+   private void setElementalWeakness () {
+      HashSet<Element> elementalWeakness = new HashSet<Element>();
+      HashSet<Element> elementalResistance = new HashSet<Element>();
+
+      BattlerData battleData = getBattlerData();
+
+      if (battleData.baseDefenseMultiplierSet.fireDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Fire);
+      } else {
+         elementalResistance.Add(Element.Fire);
+      }
+
+      if (battleData.baseDefenseMultiplierSet.waterDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Water);
+      } else {
+         elementalResistance.Add(Element.Water);
+      }
+
+      if (battleData.baseDefenseMultiplierSet.airDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Air);
+      } else {
+         elementalResistance.Add(Element.Air);
+      }
+
+      if (battleData.baseDefenseMultiplierSet.earthDefenseMultiplier < 0) {
+         elementalWeakness.Add(Element.Earth);
+      } else {
+         elementalResistance.Add(Element.Earth);
+      }
+
+      battleData.elementalWeakness = elementalWeakness.ToArray();
+      battleData.elementalResistance = elementalResistance.ToArray();
+   }
+
+   public bool isWeakAgainst (Element outgoingElement) {
+      // Determines if the battler is weak against the element
+      return getBattlerData().elementalWeakness.Contains(outgoingElement);
+   }
+
+   public bool isUnarmed () {
+      return weaponManager.weaponType == 0;
+   }
+
+   private bool isMouseHovering () {
+      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Input.mousePosition);
+
+      // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
+      mouseLocation.z = clickBox.bounds.center.z;
+
+      return clickBox.bounds.Contains(mouseLocation);
+   }
+
+   private bool isLocalBattler () {
+      if (Global.player == null || Global.player.userId <= 0) {
+         return false;
+      }
+
+      return (Global.player.userId == this.userId);
+   }
+
+   #endregion
+
+   #region Getters
 
    public Vector2 getMagicGroundPosition () {
       return new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
@@ -2034,10 +2069,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return getAttackAbilities()[indexID];
    }
 
-   public bool isUnarmed () {
-      return weaponManager.weaponType == 0;
-   }
-
    public BuffAbilityData getBuffAbilitiy (int indexID) {
       return getBuffAbilities()[indexID];
    }
@@ -2056,22 +2087,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return getAttackAbility(0);
    }
 
-   private bool isMouseHovering () {
-      Vector3 mouseLocation = BattleCamera.self.getCamera().ScreenToWorldPoint(Input.mousePosition);
-
-      // We don't care about the Z location for the purpose of Contains(), so make the click Z match the bounds Z
-      mouseLocation.z = clickBox.bounds.center.z;
-
-      return clickBox.bounds.Contains(mouseLocation);
-   }
-
-   private bool isLocalBattler () {
-      if (Global.player == null || Global.player.userId <= 0) {
-         return false;
-      }
-
-      return (Global.player.userId == this.userId);
-   }
+   #endregion
 
    #endregion
 

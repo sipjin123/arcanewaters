@@ -347,6 +347,10 @@ public class NetEntity : NetworkBehaviour
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer && AreaManager.self.getArea(this.areaKey) != null) {
          Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
+
+      if (isInBattle()) {
+         BattleManager.self.disconnectPlayerBattler(userId);
+      }
    }
 
    public virtual void resetCombatInit () {

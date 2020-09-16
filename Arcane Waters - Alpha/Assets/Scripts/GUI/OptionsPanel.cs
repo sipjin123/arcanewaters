@@ -74,11 +74,22 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    private void initializeFullScreenToggle () {
       fullscreenToggle.SetIsOnWithoutNotify(ScreenSettingsManager.IsFullScreen);
+      processCursorState();
+
       fullscreenToggle.onValueChanged.AddListener(setFullScreen);
+   }
+
+   private void processCursorState () {
+      if (ScreenSettingsManager.IsFullScreen) {
+         Cursor.lockState = CursorLockMode.Confined;
+      } else {
+         Cursor.lockState = CursorLockMode.None;
+      }
    }
 
    private void setFullScreen (bool fullscreen) {
       ScreenSettingsManager.setFullscreen(fullscreen);
+      processCursorState();
    }
 
    private void setResolution (int resolutionIndex) {

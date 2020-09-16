@@ -17,7 +17,6 @@ public class MyCamera : BaseCamera
    public Canvas mainGUICanvas;
 
    // The scale of the confiner at wide screen
-   public static float CONFINER_WIDESCREEN_SCALE = .3f;
    public static float CONFINER_DEFAULT_SCALE = 0.16f;
 
    #endregion
@@ -65,8 +64,8 @@ public class MyCamera : BaseCamera
                if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
                   if (confiner != null) {
                      if (confiner.m_BoundingShape2D != null) {
-                        confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_WIDESCREEN_SCALE, CONFINER_DEFAULT_SCALE, 1);
-                        D.debug(gameObject.name + ": CAMERA CONFINER Scaled into wide: " + CONFINER_WIDESCREEN_SCALE);
+                        confiner.m_BoundingShape2D.transform.localScale = new Vector3(resolutionData.widthScaleMax, resolutionData.heightScaleMax, 1);
+                        D.debug(gameObject.name + ": CAMERA CONFINER Scaled into wide: " + resolutionData.widthScaleMax + " : " + resolutionData.heightScaleMax);
                      }
                   }
                   break;

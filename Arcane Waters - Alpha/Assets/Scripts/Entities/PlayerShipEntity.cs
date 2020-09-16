@@ -70,11 +70,23 @@ public class PlayerShipEntity : ShipEntity
    public static float SPEEDUP_METER_MAX = 10;
    public bool isReadyToSpeedup = true;
    public float fuelDepleteValue = 2;
-   public float fuelRecoverValue = 1.2f;
+   public float fuelRecoverValue = 1.6f;
 
    // Gets set to true when the player ship is hidden and cannot be damaged or controlled
    [SyncVar]
    public bool isDisabled = true;
+
+   // The object icon indicating the shoop boost cooling down
+   public GameObject shipBoostCooldownObj;
+
+   // The icon indicating the shoop boost cooling down
+   public Image shipBoostCooldownIcon;
+
+   // List of icon sprites of the cooldown icon
+   public Sprite[] cooldownIconSprites;
+
+   // The anim reference indicating ship boost meter is full
+   public Animator maxBoostEffectAnimation;
 
    // Reference to the sprite swap
    public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
@@ -169,6 +181,7 @@ public class PlayerShipEntity : ShipEntity
          isSpeedingUp = true;
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
+            shipBoostCooldownObj.SetActive(false);
             Cmd_UpdateSpeedupDisplay(true);
          } else {
             isReadyToSpeedup = false;
@@ -192,7 +205,14 @@ public class PlayerShipEntity : ShipEntity
             speedMeter += Time.deltaTime * fuelRecoverValue;
             shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
             shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
+            shipBoostCooldownObj.SetActive(true);
+            shipBoostCooldownIcon.sprite = cooldownIconSprites[(int) speedMeter];
+
+            if (speedMeter >= SPEEDUP_METER_MAX) {
+               maxBoostEffectAnimation.Play("Trigger");
+            }
          } else {
+            shipBoostCooldownObj.SetActive(false);
             isReadyToSpeedup = true;
          }
       }

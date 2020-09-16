@@ -242,4 +242,6 @@ public class ResolutionOrthoClamp {
    public string resolutionName;
    public float resolutionWidth;
    public float orthoCap;
+   public float widthScaleMax = 0.16f;
+   public float heightScaleMax = 0.16f;
 }

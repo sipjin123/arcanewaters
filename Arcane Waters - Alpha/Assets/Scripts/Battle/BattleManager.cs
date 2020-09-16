@@ -132,6 +132,20 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
+   public void disconnectPlayerBattler (int userId) {
+      D.debug("Player (" + userId + ") has disconnected during combat, ending battle");
+      if (_activeBattles.ContainsKey(userId)) {
+         if (_activeBattles[userId] != null) {
+            // Manually forces the existing battle to end and making the player lose
+            // This is to cleanup the existing battle and allow the user to enter battle again on their next login
+            Battle.TeamType playerTeam = _activeBattles[userId].getBattler(userId).teamType;
+            _activeBattles[userId].teamThatWon = playerTeam == Battle.TeamType.Attackers ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;
+            _activeBattles[userId].onBattleEnded.Invoke();
+            StartCoroutine(endBattleAfterDelay(_activeBattles[userId], END_BATTLE_DELAY));
+         }
+      }
+   }
+
    public bool isInBattle (int userId) {
       if (_activeBattles.ContainsKey(userId)) {
          return (_activeBattles[userId] != null);
@@ -258,8 +272,8 @@ public class BattleManager : MonoBehaviour {
             // If a battle just ended, notify all the clients involved
             if (tickResult == Battle.TickResult.BattleOver) {
                StartCoroutine(endBattleAfterDelay(battle, END_BATTLE_DELAY));
-            }
-         }
+            } 
+         } 
       }
    }
 
