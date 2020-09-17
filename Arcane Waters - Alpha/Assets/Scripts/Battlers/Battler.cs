@@ -361,11 +361,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       checkIfSpritesShouldFlip();
 
       if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
-         StartCoroutine(delaySelection());
+         StartCoroutine(CO_DelaySelection());
       }
    }
 
-   private IEnumerator delaySelection () {
+   private IEnumerator CO_DelaySelection () {
       // Simulate battle selection upon entering combat
       yield return new WaitForSeconds(1);
       BattleSelectionManager.self.clickedArea(transform.position);
@@ -1389,7 +1389,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       if (userId == Global.player.userId && enemyType == Enemy.Type.PlayerBattler) {
-         updateBattlerCasting(true);
+         setBattlerCanCastAbility(true);
          canCancelAction = true;
       }
    }
@@ -2110,7 +2110,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       return _canCastAbility;
    }
 
-   public void updateBattlerCasting (bool canCast) {
+   public void setBattlerCanCastAbility (bool canCast) {
       _canCastAbility = canCast;
    }
 

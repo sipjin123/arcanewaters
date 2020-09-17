@@ -775,8 +775,9 @@ public class BattleManager : MonoBehaviour {
 
                yield return new WaitForSeconds(attackApplyDelay);
 
-               if (target.enemyType != Enemy.Type.PlayerBattler)
-               D.debug("Implementing action damage: TargetHealth: " + target.health + " : ActionDamage: " + attackAction.damage);
+               if (target.enemyType != Enemy.Type.PlayerBattler) {
+                  D.debug("Implementing action damage: TargetHealth: " + target.health + " : ActionDamage: " + attackAction.damage);
+               }
 
                // Apply damage
                target.health -= attackAction.damage;

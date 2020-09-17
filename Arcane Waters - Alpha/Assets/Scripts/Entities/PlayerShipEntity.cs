@@ -69,8 +69,8 @@ public class PlayerShipEntity : ShipEntity
    public float speedMeter = 10;
    public static float SPEEDUP_METER_MAX = 10;
    public bool isReadyToSpeedup = true;
-   public float fuelDepleteValue = 2;
-   public float fuelRecoverValue = 1.6f;
+   public float boostDepleteValue = 2;
+   public float boostRecoverValue = 1.6f;
 
    // Gets set to true when the player ship is hidden and cannot be damaged or controlled
    [SyncVar]
@@ -180,7 +180,7 @@ public class PlayerShipEntity : ShipEntity
       if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
          isSpeedingUp = true;
          if (speedMeter > 0) {
-            speedMeter -= Time.deltaTime * fuelDepleteValue;
+            speedMeter -= Time.deltaTime * boostDepleteValue;
             shipBoostCooldownObj.SetActive(false);
             Cmd_UpdateSpeedupDisplay(true);
          } else {
@@ -202,7 +202,7 @@ public class PlayerShipEntity : ShipEntity
          }
 
          if (speedMeter < SPEEDUP_METER_MAX) {
-            speedMeter += Time.deltaTime * fuelRecoverValue;
+            speedMeter += Time.deltaTime * boostRecoverValue;
             shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
             shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
             shipBoostCooldownObj.SetActive(true);

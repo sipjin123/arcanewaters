@@ -4024,7 +4024,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveRefreshCasting (NetworkConnection connection) {
-      BattleManager.self.getPlayerBattler().updateBattlerCasting(true);
+      BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(true);
    }
 
    [Command]
