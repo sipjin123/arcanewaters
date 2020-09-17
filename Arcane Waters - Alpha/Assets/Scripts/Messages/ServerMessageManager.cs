@@ -400,6 +400,9 @@ public class ServerMessageManager : MonoBehaviour {
          slotNumber++;
       }
 
+      // Add hammer for the user, but don't assign it to a shortcut
+      DB_Main.insertNewWeapon(userId, InventoryManager.HAMMER_ID, "");
+
       // Give some additional armor and weapons to test users
       /*if (true) {
          DB_Main.addGold(userId, 800);

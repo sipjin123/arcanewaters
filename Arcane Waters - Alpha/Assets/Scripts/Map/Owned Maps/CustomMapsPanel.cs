@@ -55,6 +55,10 @@ public class CustomMapsPanel : Panel
 
    public void selectBaseMap (int baseMapId) {
       Global.player.rpc.Cmd_SetCustomMapBaseMap(_customMapManager.mapTypeAreaKey, baseMapId, _warpAfterSelecting);
+
+      foreach (BaseMapEntry entry in mapBaseContainer.GetComponentsInChildren<BaseMapEntry>()) {
+         entry.setInteractable(false);
+      }
    }
 
    public void baseMapUpdated (string customMapKey, int baseMapId) {
@@ -66,6 +70,10 @@ public class CustomMapsPanel : Panel
       if (_warpAfterSelecting) {
          PanelManager.self.popPanel();
       } else {
+         foreach (BaseMapEntry entry in mapBaseContainer.GetComponentsInChildren<BaseMapEntry>()) {
+            entry.setInteractable(true);
+         }
+
          // TODO: update UI to show selected map
       }
    }

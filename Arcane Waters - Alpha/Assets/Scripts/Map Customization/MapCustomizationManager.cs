@@ -436,6 +436,12 @@ namespace MapCustomization
          // If we are customizing this map, the customization process will handle the change
          // Just keep track of changes that were approved by the server
          if (currentArea != null && currentArea.areaKey.CompareTo(areaKey) == 0) {
+            if (changes.created) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.PlaceObject);
+            } else if (changes.deleted) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.DeleteObject);
+            }
+
             if (_serverApprovedState.ContainsKey(changes.id)) {
                _serverApprovedState[changes.id] = _serverApprovedState[changes.id].add(changes);
             } else {

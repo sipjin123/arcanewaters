@@ -30,6 +30,7 @@ public class OfflineNPC : MonoBehaviour {
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
       _body = GetComponent<Rigidbody2D>();
+      _zsnap = GetComponent<ZSnap>();
 
       if (!isStill) {
          _seeker = GetComponent<Seeker>();
@@ -73,12 +74,12 @@ public class OfflineNPC : MonoBehaviour {
          // Only change our movement if enough time has passed
          float moveTime = Time.time - _lastMoveChangeTime;
          if (moveTime >= MOVE_CHANGE_INTERVAL) {
-            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
+            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) _zsnap.sortPoint.transform.position).normalized * moveSpeed);
             _lastMoveChangeTime = Time.time;
          }
 
          // Clears a node as the unit passes by
-         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
+         float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], _zsnap.sortPoint.transform.position);
          if (distanceToWaypoint < .1f) {
             ++_currentPathIndex;
          }
@@ -159,6 +160,7 @@ public class OfflineNPC : MonoBehaviour {
    protected List<Animator> _animators = new List<Animator>();
    protected List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
    protected Rigidbody2D _body;
+   protected ZSnap _zsnap;
 
    // How far the NPC will be able to move from it's starting position
    protected const float MAX_MOVE_DISTANCE = 0.5f;

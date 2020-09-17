@@ -4449,16 +4449,16 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Give rewards if user is entitled to them
-      foreach (ItemInstance reward in rewards) {
-         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, reward));
-      }
+      Target_BaseMapUpdated(customMapKey, baseMapId);
 
       if (warpIntoAfterSetting) {
          _player.spawnInNewMap(customMapKey);
       }
 
-      Target_BaseMapUpdated(customMapKey, baseMapId);
+      // Give rewards if user is entitled to them
+      foreach (ItemInstance reward in rewards) {
+         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, reward));
+      }
    }
 
    [TargetRpc]

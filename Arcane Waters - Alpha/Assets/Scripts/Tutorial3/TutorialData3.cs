@@ -54,6 +54,16 @@ public class TutorialData3 : MonoBehaviour
          new TutorialStep3(TutorialTrigger.Manual, "Welcome home! Have a look around!"),
       }),
 
+      new Tutorial3("PlaceFurniture", "Customize your property",
+      new List<TutorialStep3>{
+         new TutorialStep3(TutorialTrigger.Manual, "Let me show you how to customize your farm and house."),
+         new TutorialStep3(TutorialTrigger.EquipHammer, "You should have a hammer in your inventory. Open it and equip the hammer to enter the building mode."),
+         new TutorialStep3(TutorialTrigger.PlaceObject, "Select any object you like in the panel on the right, and click anywhere in the world to place it."),
+         new TutorialStep3(TutorialTrigger.DeleteObject, "Now click on the object you placed to select it and click the DELETE key to delete it."),
+         new TutorialStep3(TutorialTrigger.UnequipHammer, "Good job! To wrap it up, unequip the hammer in your inventory to exit the building mode."),
+         new TutorialStep3(TutorialTrigger.Manual, "After acquiring objects, you can use them to customize your farm and house. We gave you a few to get you started!")
+      }),
+
       new Tutorial3("PlantCrops", "Plant, water, and harvest some crops",
       new List<TutorialStep3>() {
          new TutorialStep3(TutorialTrigger.EquipSeedBag, "Let me show you how to grow crops. You should have a seed bag set to your first shortcut. Press 1 to equip it, or find it in your inventory by pressing I."),
@@ -149,4 +159,8 @@ public enum TutorialTrigger
    AttackBattleTarget = 24,
    EndBattle = 25,
    EnterTreasureSiteRange = 26,
+   EquipHammer = 27,
+   PlaceObject = 28,
+   DeleteObject = 29,
+   UnequipHammer = 30
 };

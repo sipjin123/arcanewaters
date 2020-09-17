@@ -14,7 +14,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    [Header("Settings")]
    // The color for the background of the spot
    public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
-
+      
    [Header("References")]
    // The button to go to the next screen
    public Button nextButton;
@@ -44,6 +44,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    // The perk questions grid
    public CreationPerksGrid perksGrid;
 
+   // The hair styles that make use of two color palettes
+   public List<HairLayer.Type> _multiplePaletteHairStyles;
+
    [Header("Random Initial Styles")]
    [Header("Female")]
    // The eye types to choose randomly from when the character starts being created
@@ -58,7 +61,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    // The hair styles to choose randomly from when the character starts being created
    public List<HairLayer.Type> initialMaleHair;
-
+      
    // Self
    public static CharacterCreationPanel self;
 
@@ -221,6 +224,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       _char.setBodyLayers(info);
 
       updateStyleIcons();
+
+      // Enable or disable the secondary color row based on the chosen style
+      hairGroup2.gameObject.SetActive(_multiplePaletteHairStyles.Contains(hairType));
    }
 
    public void setEyesType (EyesLayer.Type type) {

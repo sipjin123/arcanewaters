@@ -198,7 +198,7 @@ public class PlayerBodyEntity : BodyEntity {
          }
       }
 
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown) {
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown && !this.waterChecker.inWater()) {
          // Adjust the colider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {

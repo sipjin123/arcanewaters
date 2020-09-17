@@ -11,6 +11,9 @@ public class InventoryManager : MonoBehaviour
    // The weapons new characters start with
    public static int[] STARTING_WEAPON_TYPE_IDS = new int[] { 34, 17, 16, 35 };
 
+   // ID of the hammer item
+   public const int HAMMER_ID = 30;
+
    #endregion
 
    public static void tryEquipOrUseItem (Item castedItem) {
@@ -43,7 +46,15 @@ public class InventoryManager : MonoBehaviour
          Global.player.rpc.Cmd_RequestSetWeaponId(itemIdToSend);
 
          // Trigger the tutorial
+         if (Global.getUserObjects().weapon != null && Global.getUserObjects().weapon.itemTypeId == HAMMER_ID) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.UnequipHammer);
+         }
+
          if (itemIdToSend != 0) {
+            if (((Weapon) castedItem).getActionType() == Weapon.ActionType.CustomizeMap) {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipHammer);
+            }
+
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipWeapon);
 
             if (((Weapon)castedItem).getActionType() == Weapon.ActionType.PlantCrop) {

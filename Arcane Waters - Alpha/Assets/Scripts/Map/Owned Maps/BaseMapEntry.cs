@@ -31,4 +31,8 @@ public class BaseMapEntry : MonoBehaviour
       GetComponent<Button>().onClick.RemoveAllListeners();
       GetComponent<Button>().onClick.AddListener(onClick);
    }
+
+   public void setInteractable (bool interactable) {
+      GetComponent<Button>().interactable = interactable;
+   }
 }

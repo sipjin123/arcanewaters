@@ -9570,6 +9570,7 @@ MonoBehaviour:
   nameText: {fileID: 7457637216458131031}
   tabbedPanel: {fileID: 3529911551659007000}
   perksGrid: {fileID: 7055657390296440376}
+  _multiplePaletteHairStyles: 6c000000cf000000
   initialFemaleEyes: c9000000ca000000cb000000
   initialFemaleHair: c9000000ce000000cf000000d0000000d1000000d2000000
   initialMaleEyes: 650000006600000067000000
