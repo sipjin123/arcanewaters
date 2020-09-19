@@ -112,6 +112,7 @@ public class BookReaderPanel : Panel
 
       turnPageAnimationGameObject.gameObject.SetActive(true);
       _animator.SetTrigger("NextPages");
+      SoundManager.play2DClip(SoundManager.Type.Turning_Pages_On_Books);
 
       leftPage.contentText.firstVisibleCharacter = rightPage.contentText.firstOverflowCharacterIndex;
 
@@ -123,6 +124,7 @@ public class BookReaderPanel : Panel
 
       turnPageAnimationGameObject.gameObject.SetActive(true);
       _animator.SetTrigger("PreviousPages");
+      SoundManager.play2DClip(SoundManager.Type.Turning_Pages_On_Books);
 
       leftPage.contentText.firstVisibleCharacter = _pagesFirstVisibleCharacters[_currentPageIndex];
    }

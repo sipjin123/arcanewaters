@@ -90,6 +90,7 @@ public class FarmingTrigger : MonoBehaviour {
          currentCollider.gameObject.SetActive(true);
 
          // Interact with crops overlapping the cone collider
+         bool anyCropHarvested = false;
          RaycastHit2D[] rayHits = new RaycastHit2D[10];
          int hitNum = currentCollider.Cast(new Vector2(0, 0), rayHits);
          foreach (RaycastHit2D hit in rayHits) {
@@ -100,6 +101,7 @@ public class FarmingTrigger : MonoBehaviour {
                // Create dirt particle when colliding with crop spots with crops using a pitchfork
                if (currentActionType == Weapon.ActionType.HarvestCrop && cropSpot.crop != null) {
                   if (cropSpot.crop.isMaxLevel() && cropSpot.crop.gameObject.activeSelf) {
+                     anyCropHarvested = true;
                      ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
                      cropSpot.crop.gameObject.SetActive(false);
 
@@ -120,6 +122,15 @@ public class FarmingTrigger : MonoBehaviour {
                      cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
                   }
                }
+            }
+
+         }
+
+         if (currentActionType == Weapon.ActionType.HarvestCrop) {
+            if (anyCropHarvested) {
+               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Hit);
+            } else {
+               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
             }
          }
       }

@@ -19,6 +19,9 @@ public class GroundChecker : ClientMonoBehaviour
    // True if we're standing on wood
    public bool isOnWood = false;
 
+   // True if we're standing on bridge
+   public bool isOnBridge = false;
+
    #endregion
 
    void Start () {
@@ -31,7 +34,7 @@ public class GroundChecker : ClientMonoBehaviour
 
    protected void checkTheGround () {
       // Default to everything false
-      isOnGrass = isOnStone = isOnWood = false;
+      isOnGrass = isOnStone = isOnWood = isOnBridge = false;
 
       // If we're falling or in water, we're not on any type of ground
       if (_player.fallDirection != 0 || _player.waterChecker.inWater()) {
@@ -44,7 +47,7 @@ public class GroundChecker : ClientMonoBehaviour
          // Check if we have a precalculated cell types container, do dynamic check otherwise
          // TODO: just use cached check for everything in the future
          if (area.cellTypes.isInitialized) {
-            cachedCheck(area.cellTypes);
+            cachedCheck(area.cellTypes, area);
          } else {
             dynamicCheck(area);
          }
@@ -72,6 +75,10 @@ public class GroundChecker : ClientMonoBehaviour
             string[] split = tile.name.Split('_');
             int num = int.Parse(split[split.Length - 1]);
 
+
+            if (Exporter.bridgeTiles.Contains(tile.sprite.name)) {
+               isOnBridge = true;
+            }
             if (Exporter.stoneTiles.Contains(num)) {
                isOnStone = true;
             }
@@ -85,12 +92,28 @@ public class GroundChecker : ClientMonoBehaviour
       }
    }
 
-   private void cachedCheck (CellTypesContainer cellTypes) {
+   private void cachedCheck (CellTypesContainer cellTypes, Area area) {
       CellTypesContainer.MapCellType cellType = cellTypes.getCellType(_player.sortPoint.transform.position);
 
       isOnStone = cellType == CellTypesContainer.MapCellType.Stone;
       isOnWood = cellType == CellTypesContainer.MapCellType.Wood;
       isOnGrass = cellType == CellTypesContainer.MapCellType.Grass;
+
+      // TODO: Bridge type needs to be added to cached Cell containers, otherwise it'll have to be checked dynamically
+      if (!isOnStone && !isOnWood && !isOnGrass) {
+         Vector3Int cellPos = area.worldToCell(_player.sortPoint.transform.position);
+         foreach (TilemapLayer layer in area.getTilemapLayers()) {
+            Tile tile = layer.tilemap.GetTile<Tile>(cellPos);
+
+            if (tile == null) {
+               continue;
+            }
+
+            if (Exporter.bridgeTiles.Contains(tile.sprite.name)) {
+               isOnBridge = true;
+            }
+         }
+      }
    }
 
    #region Private Variables

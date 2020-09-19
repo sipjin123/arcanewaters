@@ -65,7 +65,9 @@ public class SoundManager : MonoBehaviour {
       Ship_Hit = 316, Seamonster_Hit = 317, Container_Found = 318, Container_Opened = 319,
       Character_Jump = 330, Sword_Swing = 331, Slash_Physical = 332, Slam_Physical = 333,
       Character_Block = 335, Death_Poof = 336, Clock_New = 337, Ship_Movement = 338,
-      Seagulls_x1 = 339, Seagulls_x3 = 340, Seagulls_x6 = 341,
+      Seagulls_x1 = 339, Seagulls_x3 = 340, Seagulls_x6 = 341, Turning_Pages_On_Books = 342,
+      Water_Fountain = 343, Ship_Destroyed = 344, Fish_Jump = 345, Harvesting_Pitchfork_Hit = 346,
+      Harvesting_Pitchfork_Miss = 347, Skeleton_Walk = 348, Bridge_Crunching_Wood = 349,
 
       // Melee enemy effects
       Golem_Death = 400, Enemy_Jump = 401, Flower_Death = 402, Plant_Chomp = 403, Slime_Attack = 404,
@@ -100,6 +102,9 @@ public class SoundManager : MonoBehaviour {
 
       // Cannons
       Splash_Cannon_1 = 1100, Ship_Hit_1 = 1101, Ship_Cannon_1 = 1102, Ship_Cannon_2 = 1103, Ship_Hit_2 = 1104,
+
+      // UI effects
+      Layouts_Destinations = 1200, Tutorial_Pop_Up = 1201, GUI_Change_Tab = 1202,
    }
 
    #endregion
@@ -185,6 +190,8 @@ public class SoundManager : MonoBehaviour {
             return .40f;
          case Type.GUI_Hover:
          case Type.GUI_Press:
+         case Type.Layouts_Destinations:
+         case Type.GUI_Change_Tab:
             return .15f;
          case Type.Seamonster_Hit:
          case Type.Ship_Hit:
@@ -213,6 +220,14 @@ public class SoundManager : MonoBehaviour {
          case Type.Ship_Cannon_2:
          case Type.Ship_Hit_2:
             return .25f;
+         case Type.Water_Fountain:
+         case Type.Fish_Jump:
+         case Type.Bridge_Crunching_Wood:
+            return .25f;
+         case Type.Tutorial_Pop_Up:
+            return .5f;
+         case Type.Skeleton_Walk:
+            return .1f;
          default:
             return 1f;
 

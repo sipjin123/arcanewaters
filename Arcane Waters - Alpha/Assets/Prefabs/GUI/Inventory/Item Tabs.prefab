@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5183897827350156116}
   - component: {fileID: 8147063688311032564}
   - component: {fileID: 5782069983468126388}
+  - component: {fileID: 4477631448082571437}
   m_Layer: 5
   m_Name: Others Tab Under
   m_TagString: Untagged
@@ -177,6 +178,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &4477631448082571437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 101374944286923110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &308185870134120368
 GameObject:
   m_ObjectHideFlags: 0
@@ -257,6 +270,7 @@ GameObject:
   - component: {fileID: 154808616341227760}
   - component: {fileID: 6368258858565404035}
   - component: {fileID: 3716590646983482269}
+  - component: {fileID: 6427095978610194564}
   m_Layer: 5
   m_Name: Armor Tab Under
   m_TagString: Untagged
@@ -420,6 +434,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &6427095978610194564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915124891233959157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1220732908334568351
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,6 +460,7 @@ GameObject:
   - component: {fileID: 1400069429301619930}
   - component: {fileID: 4389928432962696956}
   - component: {fileID: 2810729138506057939}
+  - component: {fileID: 849657910546008630}
   m_Layer: 5
   m_Name: Weapons Tab Under
   m_TagString: Untagged
@@ -597,6 +624,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &849657910546008630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220732908334568351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2307260997663704062
 GameObject:
   m_ObjectHideFlags: 0
@@ -855,6 +894,7 @@ GameObject:
   - component: {fileID: 2323415665169008141}
   - component: {fileID: 4287090736326487342}
   - component: {fileID: 4140708652840745614}
+  - component: {fileID: 7728182563488588373}
   m_Layer: 5
   m_Name: All Tab Under
   m_TagString: Untagged
@@ -1018,6 +1058,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &7728182563488588373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3083434215555601020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3782253412764056502
 GameObject:
   m_ObjectHideFlags: 0
@@ -2036,6 +2088,7 @@ GameObject:
   - component: {fileID: 3136158054966717847}
   - component: {fileID: 4246352399777436139}
   - component: {fileID: 1068639705052870377}
+  - component: {fileID: 3125803315211653779}
   m_Layer: 5
   m_Name: Crafting Ingredients Tab Under
   m_TagString: Untagged
@@ -2199,6 +2252,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &3125803315211653779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7082403625990375101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8054670449030784920
 GameObject:
   m_ObjectHideFlags: 0

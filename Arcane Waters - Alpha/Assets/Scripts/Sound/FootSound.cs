@@ -77,6 +77,16 @@ public class FootSound : ClientMonoBehaviour {
             currentFootStepAudioGroup = findFootStepData(STONE_FOOTSTEP);
          } else if (Global.player.groundChecker.isOnGrass) {
             currentFootStepAudioGroup = findFootStepData(GRASS_FOOTSTEP);
+         } else if (Global.player.groundChecker.isOnBridge) {
+            if (!_lastSoundTime.ContainsKey(BRIDGE_KEY) || _lastSoundTime[BRIDGE_KEY] + _minTimeBetweenBridgeSound < Time.time) {
+               SoundManager.playClipAtPoint(SoundManager.Type.Bridge_Crunching_Wood, Global.player.transform.position);
+
+               if (!_lastSoundTime.ContainsKey(BRIDGE_KEY)) {
+                  _lastSoundTime.Add(BRIDGE_KEY, Time.time);
+               } else {
+                  _lastSoundTime[BRIDGE_KEY] = Time.time;
+               }
+            }
          }
       }
 
@@ -89,6 +99,12 @@ public class FootSound : ClientMonoBehaviour {
 
    // Keeps track of when we last played sounds
    protected static Dictionary<string, float> _lastSoundTime = new Dictionary<string, float>();
+
+   // Bridge sound is a bit longer and more intensive - don't play it all the time
+   protected static float _minTimeBetweenBridgeSound = 5.0f;
+
+   // Key for _lastSoundTime dictionary, for bridge sound
+   protected static string BRIDGE_KEY = "bridge_crunching_wood";
 
    #endregion
 }

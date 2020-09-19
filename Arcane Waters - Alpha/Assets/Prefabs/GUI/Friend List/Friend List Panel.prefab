@@ -1533,6 +1533,7 @@ GameObject:
   - component: {fileID: 3015389634229460021}
   - component: {fileID: 3015389634229460020}
   - component: {fileID: 3015389634229460023}
+  - component: {fileID: 8466800108450259108}
   m_Layer: 5
   m_Name: Received Tab Under
   m_TagString: Untagged
@@ -1696,6 +1697,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &8466800108450259108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3015389634229460017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3015389634500532140
 GameObject:
   m_ObjectHideFlags: 0
@@ -2340,6 +2353,7 @@ GameObject:
   - component: {fileID: 8560019638828059416}
   - component: {fileID: 5931008357992937115}
   - component: {fileID: 3317276079061972438}
+  - component: {fileID: 1018629162653097854}
   m_Layer: 5
   m_Name: Sent Tab Under
   m_TagString: Untagged
@@ -2503,6 +2517,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &1018629162653097854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5309264260274633041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5387700981346819642
 GameObject:
   m_ObjectHideFlags: 0
@@ -4531,6 +4557,7 @@ GameObject:
   - component: {fileID: 6971222973291536845}
   - component: {fileID: 6971222973291536818}
   - component: {fileID: 6971222973291536817}
+  - component: {fileID: 3177946594552053857}
   m_Layer: 5
   m_Name: Friends Tab Under
   m_TagString: Untagged
@@ -4694,6 +4721,18 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &3177946594552053857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6971222973291536847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6971222973356161563
 GameObject:
   m_ObjectHideFlags: 0

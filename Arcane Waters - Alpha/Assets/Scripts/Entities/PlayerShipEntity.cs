@@ -230,9 +230,9 @@ public class PlayerShipEntity : ShipEntity
 
    private void handleDirectionChange () {
       int direction = 0;
-      if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
+      if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
          direction = 1;
-      } else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
+      } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
          direction = -1;
       }
 
@@ -475,10 +475,10 @@ public class PlayerShipEntity : ShipEntity
       bool canChangeDirection = (Time.time - _lastAngleChangeTime > getAngleDelay());
 
       if (canChangeDirection) {
-         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+         if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyAngle(+1);
             _lastAngleChangeTime = Time.time;
-         } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+         } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyAngle(-1);
             _lastAngleChangeTime = Time.time;
          }
@@ -497,7 +497,7 @@ public class PlayerShipEntity : ShipEntity
       // Make note of the time
       _lastMoveChangeTime = Time.time;
 
-      if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+      if (InputManager.getKeyAction(KeyAction.MoveUp)) {
          // If the ship wasn't moving, apply a small force locally to make up for delay
          if (_body.velocity.sqrMagnitude < 0.025f) {          
             _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * _clientSideForce);
@@ -507,7 +507,7 @@ public class PlayerShipEntity : ShipEntity
       if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
          _lastInputChangeTime = NetworkTime.time;
 
-         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+         if (InputManager.getKeyAction(KeyAction.MoveUp)) {
             Cmd_RequestServerAddForce(isSpeedingUp);
          }
       }

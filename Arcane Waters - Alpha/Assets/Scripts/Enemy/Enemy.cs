@@ -66,6 +66,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    // The possible spawn positions for the loot bags
    public Transform[] lootSpawnPositions;
 
+   // Sound when character starts moving around
+   public SoundManager.Type walkSound = SoundManager.Type.None;
+
    #endregion
 
    protected override void Awake () {
@@ -215,6 +218,14 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          } else if (this.facing == Direction.South) {
             newAnimType = Anim.Type.Run_South;
          }
+
+         // If enemy starts moving around - play sound
+         if (_isIdle) {
+            _isIdle = false;
+            if (getWalkingSound() != SoundManager.Type.None) {
+               SoundManager.playAttachedClip(getWalkingSound(), transform);
+            }
+         }
       } else {
          // Check our facing direction
          if (this.facing == Direction.North) {
@@ -224,6 +235,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          } else if (this.facing == Direction.South) {
             newAnimType = Anim.Type.Idle_South;
          }
+         _isIdle = true;
       }
 
       // Play the new animation
@@ -330,6 +342,16 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       this.transform.SetParent(area.enemyParent, worldPositionStays);
    }
 
+   private SoundManager.Type getWalkingSound () {
+      switch (enemyType) {
+         case Type.Skelly_Captain_Tutorial:
+         case Type.Skelly_Captain:
+            return SoundManager.Type.Skeleton_Walk;
+      }
+
+      return SoundManager.Type.None;
+   }
+
    #region Private Variables
 
    // Our zSnap component
@@ -343,6 +365,9 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
    // The current waypoint List
    protected List<Vector3> _currentPath = new List<Vector3>();
+
+   // Store velocity magnitude of enemy character from previous Update() frame
+   protected bool _isIdle = true;
 
    // The current Point Index of the path
    private int _currentPathIndex;

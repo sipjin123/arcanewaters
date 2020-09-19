@@ -79,11 +79,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Cache data to create character in background thread
       if (!Util.isBatch()) {
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, _characterCreationPaletteTag);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, PaletteDef.Tags.STARTER);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
+         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
       }
    }
 
@@ -467,11 +467,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    public void updateColorBoxes (Gender.Type genderType) {
       // Fill in the color boxes
-      List<PaletteToolManager.PaletteRepresentation> eyes = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, _characterCreationPaletteTag);
-      List<PaletteToolManager.PaletteRepresentation> primaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
-      List<PaletteToolManager.PaletteRepresentation> secondaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
-      List<PaletteToolManager.PaletteRepresentation> armorPrimary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, _characterCreationPaletteTag);
-      List<PaletteToolManager.PaletteRepresentation> armorSecondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, _characterCreationPaletteTag);
+      List<PaletteToolManager.PaletteRepresentation> eyes = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, PaletteDef.Tags.STARTER);
+      List<PaletteToolManager.PaletteRepresentation> primaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
+      List<PaletteToolManager.PaletteRepresentation> secondaryHair = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
+      List<PaletteToolManager.PaletteRepresentation> armorPrimary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
+      List<PaletteToolManager.PaletteRepresentation> armorSecondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
 
 
       fillInColorBoxes(eyeGroup1, eyes);
@@ -612,9 +612,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    // The transform as a rect transform
    private RectTransform _rectTransform;
-
-   // Tag used to mark palettes for character creation content
-   private static string _characterCreationPaletteTag = "Starter";
 
    #endregion
 }

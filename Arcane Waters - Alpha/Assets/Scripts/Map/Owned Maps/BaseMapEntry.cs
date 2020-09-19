@@ -30,6 +30,9 @@ public class BaseMapEntry : MonoBehaviour
 
       GetComponent<Button>().onClick.RemoveAllListeners();
       GetComponent<Button>().onClick.AddListener(onClick);
+      GetComponent<Button>().onClick.AddListener(() => {
+         SoundManager.play2DClip(SoundManager.Type.Layouts_Destinations);
+      });
    }
 
    public void setInteractable (bool interactable) {

@@ -145,6 +145,7 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public bool isActive () {
+      D.log($"Checking title screen active conditions: { NetworkClient.active }, { NetworkServer.active }, { Global.isRedirecting }, { CharacterScreen.self.isShowing() }");
       return !NetworkClient.active && !NetworkServer.active && !Global.isRedirecting && !CharacterScreen.self.isShowing();
    }
 

@@ -154,6 +154,7 @@ public class TutorialPanel3 : MonoBehaviour
 
    public void openPanel () {
       if (_mode == Mode.Closed) {
+         SoundManager.play2DClip(SoundManager.Type.Tutorial_Pop_Up);
          _mode = Mode.NPCSpeech;
          refreshPanelConfig();
          AutoTyper.SlowlyRevealText(npcSpeechText, _npcSpeech);

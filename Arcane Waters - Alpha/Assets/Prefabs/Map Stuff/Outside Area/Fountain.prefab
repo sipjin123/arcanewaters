@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 3712863252858198521}
   - component: {fileID: 6672099721373389714}
   - component: {fileID: 7723191124881305166}
+  - component: {fileID: 2898747523500824701}
   m_Layer: 0
   m_Name: Fountain
   m_TagString: Untagged
@@ -196,3 +197,16 @@ PolygonCollider2D:
       - {x: -0.3967307, y: -0.4899458}
       - {x: -0.08798766, y: -0.58676386}
       - {x: 0.09272826, y: -0.5827915}
+--- !u!114 &2898747523500824701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3608091366082937571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b55fee7791a0ed4ea630416c3c7e974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundType: 343

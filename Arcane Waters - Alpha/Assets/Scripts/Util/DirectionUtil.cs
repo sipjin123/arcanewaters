@@ -405,29 +405,6 @@ public class DirectionUtil {
       return false;
    }
 
-   public static bool isPressingDirection (Direction direction) {
-      switch (direction) {
-         case Direction.North:
-            return (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow));
-         case Direction.East:
-            return (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow));
-         case Direction.South:
-            return (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow));
-         case Direction.West:
-            return (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow));
-         case Direction.NorthEast:
-            return isPressingDirection(Direction.North) && isPressingDirection(Direction.East);
-         case Direction.SouthEast:
-            return isPressingDirection(Direction.South) && isPressingDirection(Direction.East);
-         case Direction.SouthWest:
-            return isPressingDirection(Direction.South) && isPressingDirection(Direction.West);
-         case Direction.NorthWest:
-            return isPressingDirection(Direction.North) && isPressingDirection(Direction.West);
-      }
-
-      return false;
-   }
-
    public static List<Direction> getAvailableDirections (bool includeDiagonals, bool onlyVertical = false) {
       if (onlyVertical) {
          return new List<Direction>() { Direction.North, Direction.South };

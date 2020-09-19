@@ -18,15 +18,15 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
       }
    }
 
-   public void OnPointerEnter (PointerEventData eventData) {
+   public virtual void OnPointerEnter (PointerEventData eventData) {
       play("Sound/Effects/ui_hover");
    }
 
-   public void OnPointerClick (PointerEventData eventData) {
+   public virtual void OnPointerClick (PointerEventData eventData) {
       
    }
 
-   public void OnPointerDown (PointerEventData eventData) {
+   public virtual void OnPointerDown (PointerEventData eventData) {
       play("Sound/Effects/GUI_Press");
    }
 

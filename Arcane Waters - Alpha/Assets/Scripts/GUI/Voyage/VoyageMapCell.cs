@@ -161,6 +161,9 @@ public class VoyageMapCell : MonoBehaviour {
    public void onPointerClickButton () {
       if (_interactable) {
          VoyagePanel.self.selectVoyageMap(_voyage);
+
+         // Play sound
+         SoundManager.play2DClip(SoundManager.Type.Layouts_Destinations);
       }
    }
 

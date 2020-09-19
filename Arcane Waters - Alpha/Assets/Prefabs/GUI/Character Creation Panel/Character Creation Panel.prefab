@@ -258,6 +258,7 @@ GameObject:
   - component: {fileID: 8497695998256781023}
   - component: {fileID: 7885001639621943094}
   - component: {fileID: 7923281634774006181}
+  - component: {fileID: 6878811448717868771}
   m_Layer: 5
   m_Name: General Tab
   m_TagString: Untagged
@@ -391,6 +392,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6878811448717868771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 70315246866965641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &101854448455614459
@@ -2160,6 +2173,7 @@ GameObject:
   - component: {fileID: 8178825491734738771}
   - component: {fileID: 2169012787654721218}
   - component: {fileID: 593168935491246842}
+  - component: {fileID: 7779552854588800353}
   m_Layer: 5
   m_Name: Clothes Tab
   m_TagString: Untagged
@@ -2283,6 +2297,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7779552854588800353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2597271811927510206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2636329564910771257
 GameObject:
   m_ObjectHideFlags: 0
@@ -2484,6 +2510,7 @@ GameObject:
   - component: {fileID: 173612702113907499}
   - component: {fileID: 6827055837043745185}
   - component: {fileID: 634353889204879401}
+  - component: {fileID: 8075457736243449502}
   m_Layer: 5
   m_Name: Hair Tab
   m_TagString: Untagged
@@ -2607,6 +2634,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &8075457736243449502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2718643507671065429}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2767498775141000068
 GameObject:
   m_ObjectHideFlags: 0
@@ -4300,6 +4339,7 @@ GameObject:
   - component: {fileID: 6503237145809538451}
   - component: {fileID: 8393641069964099397}
   - component: {fileID: 3481366513406638378}
+  - component: {fileID: 512154411445058490}
   m_Layer: 5
   m_Name: Perks Tab
   m_TagString: Untagged
@@ -4423,6 +4463,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &512154411445058490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4218092384856238542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c151c130e427e864aa4d91836c43470b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4255986887687265739
 GameObject:
   m_ObjectHideFlags: 0

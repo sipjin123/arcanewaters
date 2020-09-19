@@ -32,6 +32,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The fullscreen toggle
    public Toggle fullscreenToggle;
 
+   // The vsync toggle
+   public Toggle vsyncToggle;
+
    // Self
    public static OptionsPanel self;
 
@@ -46,6 +49,9 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    // Player pref key for gui scale
    public static string PREF_GUI_SCALE = "pref_gui_scale";
+
+   // Player Pref key for vsync
+   public static string VSYNC_COUNT_KEY = "vsync_count";
 
    #endregion
 
@@ -70,6 +76,22 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       mainGameCanvas.scaleFactor = guiScaleValue / 100;
       guiScaleSlider.value = guiScaleValue / 100;
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
+
+      // Loads vsync
+      vsyncToggle.onValueChanged.AddListener(setVSync);
+      int vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
+      vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
+      QualitySettings.vSyncCount = vsyncCount;
+   }
+
+   public void setVSync (bool vsync) {
+      int vsyncCount = vsync ? 1 : 0;
+      PlayerPrefs.SetInt(VSYNC_COUNT_KEY, vsyncCount);
+      QualitySettings.vSyncCount = vsyncCount;
+
+      if (vsyncToggle.isOn != vsync) {
+         vsyncToggle.SetIsOnWithoutNotify(vsync);
+      }
    }
 
    private void initializeFullScreenToggle () {
@@ -225,6 +247,10 @@ public class OptionsPanel : Panel, IPointerClickHandler {
 
    public void onTutorialButtonPress () {
       TutorialManager3.self.panel.openPanel();
+   }
+
+   public void onKeybindingsButtonPress () {
+      PanelManager.self.pushIfNotShowing(Type.Keybindings);
    }
 
    public void logOut () {

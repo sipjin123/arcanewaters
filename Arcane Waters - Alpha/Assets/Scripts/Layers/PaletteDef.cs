@@ -26,6 +26,12 @@ public class PaletteDef : MonoBehaviour {
       }
    }
 
+   // Tags used to mark different palette types
+   public class Tags
+   {
+      public static string STARTER = "Starter";
+   }
+
    public class Eyes
    {
       public static string Blue = "eyes_blue";

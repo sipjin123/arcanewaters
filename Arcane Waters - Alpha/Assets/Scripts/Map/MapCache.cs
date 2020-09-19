@@ -18,7 +18,12 @@ public static class MapCache {
    }
 
    public static void storeMapData (string areaKey, int version, string mapData) {
-      PlayerPrefs.SetString(areaKey + version, mapData);
+      try {
+         PlayerPrefs.SetString(areaKey + version, mapData);
+      } catch (PlayerPrefsException ex) {
+         D.error($"Caught an exception when storing map data in player prefs. Map key - { areaKey }, version - { version }, data symbol count - { mapData.Length }, exception - { ex }");
+         ChatPanel.self.addChatInfo(new ChatInfo(0, "WARNING: Failed to cache map data.", System.DateTime.Now, ChatInfo.Type.System));
+      }
    }
 
    #region Private Variables

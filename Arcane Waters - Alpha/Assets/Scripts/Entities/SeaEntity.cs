@@ -94,6 +94,9 @@ public class SeaEntity : NetEntity
                spritesContainer.SetActive(false);
                return;
             }
+         } else if (!_playedDestroySound && this is ShipEntity) {
+            _playedDestroySound = true;
+            SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
          }
 
          Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
@@ -753,6 +756,9 @@ public class SeaEntity : NetEntity
 
    // A flag to check if the attack anim has been triggered
    protected bool _hasAttackAnimTriggered = false;
+
+   // Check if sound used when ship is being destroyed, was already played
+   protected bool _playedDestroySound = false;
 
    #endregion
 }

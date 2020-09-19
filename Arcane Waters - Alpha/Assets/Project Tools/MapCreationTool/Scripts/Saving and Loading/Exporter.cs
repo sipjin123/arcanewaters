@@ -49,6 +49,16 @@ namespace MapCreationTool.Serialization
          "snow_tiles_51", "snow_tiles_55", "snow_tiles_68", "snow_tiles_72", "snow_tiles_85", "snow_tiles_89"
       };
 
+      // The names of bridge tiles
+      public static HashSet<string> bridgeTiles = new HashSet<string>() {
+         "desert_tiles_160", "desert_tiles_161", "desert_tiles_162", "desert_tiles_181", "desert_tiles_182", "desert_tiles_183", "desert_tiles_241", "desert_tiles_242", "desert_tiles_259", "desert_tiles_260", "desert_tiles_273", "desert_tiles_274",
+         "forest_tiles_154", "forest_tiles_155", "forest_tiles_156", "forest_tiles_175", "forest_tiles_176", "forest_tiles_177", "forest_tiles_235", "forest_tiles_236", "forest_tiles_253", "forest_tiles_254", "forest_tiles_267", "forest_tiles_268",
+         "lava_tiles_150", "lava_tiles_151", "lava_tiles_152", "lava_tiles_171", "lava_tiles_172", "lava_tiles_173", "lava_tiles_231", "lava_tiles_232", "lava_tiles_249", "lava_tiles_250",  "lava_tiles_263", "lava_tiles_264",
+         "mushroom_tiles_150", "mushroom_tiles_151", "mushroom_tiles_152", "mushroom_tiles_171", "mushroom_tiles_172", "mushroom_tiles_173", "mushroom_tiles_231", "mushroom_tiles_232", "mushroom_tiles_253", "mushroom_tiles_254", "mushroom_tiles_271", "mushroom_tiles_272",
+         "pine_tiles_152", "pine_tiles_153", "pine_tiles_154", "pine_tiles_173", "pine_tiles_174", "pine_tiles_175", "pine_tiles_233", "pine_tiles_234", "pine_tiles_251", "pine_tiles_252", "pine_tiles_265", "pine_tiles_266",
+         "snow_tiles_152", "snow_tiles_153", "snow_tiles_154", "snow_tiles_173", "snow_tiles_174", "snow_tiles_175", "snow_tiles_233", "snow_tiles_234", "snow_tiles_251", "snow_tiles_252", "snow_tiles_265", "snow_tiles_266"
+      };
+
       // The tile numbers for grass
       public static HashSet<int> grassTiles = new HashSet<int>() { 0, 1 };
 

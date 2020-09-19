@@ -87,6 +87,18 @@ public class SimpleAnimation : ClientMonoBehaviour {
       }
    }
 
+   public bool isWaitingForLoop () {
+      if (_sprites == null) {
+         return false;
+      }
+
+      float timeSinceLastFrameChange = Time.time - _lastFrameChangeTime;
+      if (_index == (_sprites.Length - 1) && timeSinceLastFrameChange < loopDelay) {
+         return true;
+      }
+      return false;
+   }
+
    public void playAnimation (Anim.Type newAnimType) {
       // If we're already playing that animation type, don't do anything
       if (this.currentAnimation == newAnimType) {
