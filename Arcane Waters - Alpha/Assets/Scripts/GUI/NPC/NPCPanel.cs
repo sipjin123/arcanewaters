@@ -195,8 +195,15 @@ public class NPCPanel : Panel
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
       bool canStartQuest = true;
 
+      NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
       if (questData != null) {
          if (questNodeId + 1 > questData.questDataNodes.Length) {
+            npcDialogueText.enabled = true;
+            _npcDialogueLine = npcData.greetingTextStranger;
+            if (isShowing()) {
+               AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+            }
+
             addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
             () => dialogueEndClickedOn(), true);
          } else {
@@ -249,7 +256,6 @@ public class NPCPanel : Panel
             }
          }
       } else {
-         NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
          npcDialogueText.enabled = true;
          _npcDialogueLine = npcData.greetingTextStranger;
          if (isShowing()) {

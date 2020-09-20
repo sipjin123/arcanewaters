@@ -7,7 +7,8 @@ using UnityEngine.EventSystems;
 using System;
 using static UnityEngine.UI.Dropdown;
 
-public class OptionsPanel : Panel, IPointerClickHandler {
+public class OptionsPanel : Panel, IPointerClickHandler
+{
 
    #region Public Variables
 
@@ -29,11 +30,10 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The available resolutions dropdown
    public Dropdown resolutionsDropdown;
 
-   // The fullscreen toggle
-   public Toggle fullscreenToggle;
-
    // The vsync toggle
    public Toggle vsyncToggle;
+   // The screen mode toggle
+   public Dropdown screenModeDropdown;
 
    // Self
    public static OptionsPanel self;
@@ -50,22 +50,29 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // Player pref key for gui scale
    public static string PREF_GUI_SCALE = "pref_gui_scale";
 
+   // Player pref key for screen mode
+   public static string PREF_SCREEN_MODE = "pref_screen_mode";
+
    // Player Pref key for vsync
    public static string VSYNC_COUNT_KEY = "vsync_count";
+
+   // The object containing all the UI of the panel, for initialization purposes only
+   public GameObject panelContainer;
+
+   // Size of the windows title bar
+   public Vector2Int borderSize;
+
+   // If the initial option settings have been loaded
+   public bool hasInitialized = false;
 
    #endregion
 
    public override void Awake () {
       base.Awake();
-
       self = this;
-   }
-
-   public override void Start () {
-      base.Start();
 
       initializeResolutionsDropdown();
-      initializeFullScreenToggle();
+      initializeFullScreenSettings();
 
       musicSlider.value = SoundManager.musicVolume;
       effectsSlider.value = SoundManager.effectsVolume;
@@ -84,6 +91,10 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       QualitySettings.vSyncCount = vsyncCount;
    }
 
+   public override void Start () {
+      base.Start();
+   }
+
    public void setVSync (bool vsync) {
       int vsyncCount = vsync ? 1 : 0;
       PlayerPrefs.SetInt(VSYNC_COUNT_KEY, vsyncCount);
@@ -94,11 +105,74 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       }
    }
 
-   private void initializeFullScreenToggle () {
-      fullscreenToggle.SetIsOnWithoutNotify(ScreenSettingsManager.IsFullScreen);
+   private void initializeFullScreenSettings () {
       processCursorState();
+      List<OptionData> screenModeOptions = new List<OptionData>();
 
-      fullscreenToggle.onValueChanged.AddListener(setFullScreen);
+      // Initialize override options
+      List<FullScreenMode> customScreenMode = new List<FullScreenMode>();
+      customScreenMode.Add(FullScreenMode.ExclusiveFullScreen);
+      customScreenMode.Add(FullScreenMode.FullScreenWindow);
+      customScreenMode.Add(FullScreenMode.Windowed);
+
+      // Initialize display options
+      screenModeOptions.Add(new OptionData { text = "Fullscreen" });
+      screenModeOptions.Add(new OptionData { text = "Borderless" });
+      screenModeOptions.Add(new OptionData { text = "Windowed" });
+
+      screenModeDropdown.options = screenModeOptions;
+      screenModeDropdown.onValueChanged.AddListener(_ => {
+         switch (customScreenMode[_]) {
+            case FullScreenMode.ExclusiveFullScreen:
+               StartCoroutine(CO_ProcessScreenAdjustments(true, FullScreenMode.ExclusiveFullScreen));
+               break;
+            case FullScreenMode.FullScreenWindow:
+               StartCoroutine(CO_ProcessScreenAdjustments(false, FullScreenMode.FullScreenWindow));
+               break;
+            case FullScreenMode.Windowed:
+               StartCoroutine(CO_ProcessScreenAdjustments(false, FullScreenMode.Windowed));
+               break;
+         }
+         PlayerPrefs.SetInt(PREF_SCREEN_MODE, _);
+         processCursorState();
+      });
+      int loadedScreenModeValue = PlayerPrefs.GetInt(PREF_SCREEN_MODE, customScreenMode.FindIndex(_=>_ == FullScreenMode.Windowed));
+      screenModeDropdown.value = loadedScreenModeValue;
+      screenModeDropdown.onValueChanged.Invoke(loadedScreenModeValue);
+   }
+
+   private IEnumerator CO_ProcessScreenAdjustments (bool isFullScreen, FullScreenMode mode) {
+      if (mode == FullScreenMode.ExclusiveFullScreen) {
+         ScreenSettingsManager.setFullscreen(true);
+      } else {
+         ScreenSettingsManager.setFullscreen(false);
+      }
+
+      yield return new WaitForSeconds(.5f);
+
+#if !UNITY_EDITOR
+      switch (mode) {
+         case FullScreenMode.Windowed:
+            setBorderedWindow();
+            break;
+         case FullScreenMode.FullScreenWindow:
+            setBorderlessWindow();
+            break;
+         case FullScreenMode.ExclusiveFullScreen:
+            setBorderedWindow();
+            break;
+      }
+#endif
+
+      if (!hasInitialized) {
+         endInitialSetup();
+      }
+   }
+
+   private void endInitialSetup () {
+      hasInitialized = true;
+      panelContainer.SetActive(true);
+      gameObject.SetActive(false);
    }
 
    private void processCursorState () {
@@ -107,11 +181,6 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       } else {
          Cursor.lockState = CursorLockMode.None;
       }
-   }
-
-   private void setFullScreen (bool fullscreen) {
-      ScreenSettingsManager.setFullscreen(fullscreen);
-      processCursorState();
    }
 
    private void setResolution (int resolutionIndex) {
@@ -290,7 +359,28 @@ public class OptionsPanel : Panel, IPointerClickHandler {
       }
    }
 
-   #region Private Variables
+   public void setBorderedWindow () {
+      if (BorderlessWindow.framed)
+         return;
+
+      BorderlessWindow.setBorder();
+      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width + borderSize.x, Screen.height + borderSize.y); // Compensating the border offset.
+   }
+
+   public void setBorderlessWindow () {
+      if (!BorderlessWindow.framed)
+         return;
+
+#if UNITY_EDITOR
+      BorderlessWindow.setBorder();
+#elif !UNITY_EDITOR
+      BorderlessWindow.setBorderless();
+#endif
+
+      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - borderSize.x, Screen.height - borderSize.y);
+   }
+
+#region Private Variables
 
    // The time at which we were last shown
    protected float _lastShownTime;
@@ -298,5 +388,5 @@ public class OptionsPanel : Panel, IPointerClickHandler {
    // The list of supported resolutions
    private List<Resolution> _supportedResolutions = new List<Resolution>();
 
-   #endregion
+#endregion
 }

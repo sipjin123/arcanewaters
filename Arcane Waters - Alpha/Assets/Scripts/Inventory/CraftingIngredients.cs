@@ -186,7 +186,7 @@ public class CraftingIngredients : RecipeItem
             return "An Onyx Gem";
 
          case Type.Silk:
-            return "A Silk CLoth";
+            return "A Silk Cloth";
 
          case Type.Wood:
             return "A piece of Wood";
@@ -322,7 +322,7 @@ public class CraftingIngredients : RecipeItem
             return "Onyx";
 
          case Type.Silk:
-            return "Silk CLoth";
+            return "Silk Cloth";
 
          case Type.Wood:
             return "Wood";

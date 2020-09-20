@@ -4181,6 +4181,61 @@ public class DB_Main : DB_MainStub
       return newItemList;
    }
 
+   #region Treasure Chest Interaction
+
+   public static new List<TreasureStateData> getTreasureStateForArea (string area, int userId) {
+      List<TreasureStateData> treasureData = new List<TreasureStateData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM treasure_chests WHERE (userId=@userId and areaId=@areaId)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@areaId", area);
+            
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TreasureStateData info = new TreasureStateData(dataReader);
+                  treasureData.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return treasureData;
+   }
+
+   public static new int updateTreasureStatus (int userId, int treasureId, string areaKey) {
+      int lastTreasureId = 0;
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO treasure_chests (userId, chestId, areaId, status) " +
+            "VALUES (@userId, @chestId, @areaId, @status);", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@chestId", treasureId);
+            cmd.Parameters.AddWithValue("@areaId", areaKey);
+            cmd.Parameters.AddWithValue("@status", 1);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+            lastTreasureId = (int) cmd.LastInsertedId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+      return lastTreasureId;
+   }
+
+   #endregion
+
    #region Crops Xml
 
    public static new List<CropInfo> getCropInfo (int userId) {
