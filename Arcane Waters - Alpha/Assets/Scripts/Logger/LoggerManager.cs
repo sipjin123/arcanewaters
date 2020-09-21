@@ -212,7 +212,7 @@ public class LoggerManager : MonoBehaviour {
          }
       }
       else {
-         Debug.Log("WWW Error: "+ www.error);
+         Debug.Log("WWW Error: " + www.error);
       }
 
       messagesAreSending = false;

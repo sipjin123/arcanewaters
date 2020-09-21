@@ -28,6 +28,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public ToggleGroup armorGroup1;
    public ToggleGroup armorGroup2;
    public ToggleGroup eyeGroup1;
+   public ToggleGroup skinGroup;
 
    // The male gender toggle
    public Toggle maleToggle;
@@ -347,9 +348,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       int bodyId = ((int) bodyType) % 10;
       int genderId = gender == Gender.Type.Female ? 200 : 100;
-
       bodyType = (BodyLayer.Type) (genderId + bodyId);
       setBodyType(bodyType);
+
+      // Update toggles based on current body type
+      skinGroup.SetAllTogglesOff(false);
+      Toggle[] toggles = skinGroup.GetComponentsInChildren<Toggle>();
+      toggles[bodyId - 1].SetIsOnWithoutNotify(true);
    }
 
    public void refreshHair () {

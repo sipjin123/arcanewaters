@@ -634,6 +634,9 @@ namespace MapCreationTool.Serialization
                         poly.points = new Vector2[] { bl, bl + new Vector2(0, 1), bl + new Vector2(1, 1) };
                      } else if (sur.bot == 0 && sur.left == 0) {
                         poly.points = new Vector2[] { bl + new Vector2(0, 1), bl + new Vector2(1, 1), bl + new Vector2(1, 0) };
+                     } else {
+                        // We only have tile horizontally or vertically, remove such a scenario
+                        UnityEngine.Object.Destroy(poly);
                      }
                   } else {
                      BoxCollider2D box = colOb.AddComponent<BoxCollider2D>();

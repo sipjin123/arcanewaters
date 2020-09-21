@@ -94,7 +94,7 @@ public class SoundManager : MonoBehaviour {
       Crusty_Titan_Attack = 860, Crusty_Titan_Hurt = 861, Crusty_Titan_Death = 862,
 
       // Misc effects
-      Blip_2 = 900, Powerup = 901,
+      Blip_2 = 900, Powerup = 901, Character_Type_1 = 902, Character_Type_2 = 903,
 
       // Ambience
       Ambience_Ship_Creeks = 1000, Ambience_Forest_Chirps = 1001, Ambience_House = 1002, Ambience_Town = 1003,
@@ -295,9 +295,9 @@ public class SoundManager : MonoBehaviour {
       return audioSource;
    }
 
-   public static AudioSource play2DClip (Type type, float spatialBlend = 1f) {
+   public static AudioSource play2DClip (Type type, float spatialBlend = 1f, bool allowBurst = false) {
       // Don't do anything if not enough time has passed since the last hover event
-      if (Time.time - getLastClipTime(type) < MIN_DELAY) {
+      if (!allowBurst && Time.time - getLastClipTime(type) < MIN_DELAY) {
          return null;
       }
 

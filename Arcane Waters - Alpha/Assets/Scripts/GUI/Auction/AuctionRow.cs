@@ -48,6 +48,7 @@ public class AuctionRow : MonoBehaviour
 
    public void setRowForAuction (AuctionItemData auction) {
       auctionData = auction;
+      auction.item = auction.item.getCastItem();
       
       itemCell.hideBackground();
       itemCell.hideItemCount();
@@ -85,10 +86,21 @@ public class AuctionRow : MonoBehaviour
          tooltip.text = auction.item.getTooltip();
 
          // Rarity stars
-         Sprite[] rarityStars = Rarity.getRarityStars(auction.item.getRarity());
-         star1Image.sprite = rarityStars[0];
-         star2Image.sprite = rarityStars[1];
-         star3Image.sprite = rarityStars[2];
+         if (auction.item.category == Item.Category.Weapon ||
+            auction.item.category == Item.Category.Armor ||
+            auction.item.category == Item.Category.Hats) {
+            Sprite[] rarityStars = Rarity.getRarityStars(auction.item.getRarity());
+            star1Image.sprite = rarityStars[0];
+            star2Image.sprite = rarityStars[1];
+            star3Image.sprite = rarityStars[2];
+            star1Image.enabled = true;
+            star2Image.enabled = true;
+            star3Image.enabled = true;
+         } else {
+            star1Image.enabled = false;
+            star2Image.enabled = false;
+            star3Image.enabled = false;
+         }
 
          // Recolor the text when the seller is the local user
          if (Global.player != null && auction.sellerId == Global.player.userId) {

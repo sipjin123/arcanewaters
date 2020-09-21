@@ -24,8 +24,14 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // The GUI scale slider
    public Slider guiScaleSlider;
 
+   // The minimap scale slider
+   public Slider minimapScaleSlider;
+
    // The label of the gui scale in percentage
    public Text guiScaleLabel;
+
+   // The label of the minimap scale in percentage
+   public Text minimapScaleLabel;
 
    // The available resolutions dropdown
    public Dropdown resolutionsDropdown;
@@ -47,8 +53,14 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 
+   // The reference to the UI Minimap Transform
+   public RectTransform minimapTransform;
+
    // Player pref key for gui scale
    public static string PREF_GUI_SCALE = "pref_gui_scale";
+
+   // Player pref key for minimap scale
+   public static string PREF_MINIMAP_SCALE = "pref_minimap_scale";
 
    // Player pref key for screen mode
    public static string PREF_SCREEN_MODE = "pref_screen_mode";
@@ -83,6 +95,13 @@ public class OptionsPanel : Panel, IPointerClickHandler
       mainGameCanvas.scaleFactor = guiScaleValue / 100;
       guiScaleSlider.value = guiScaleValue / 100;
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
+
+      // Loads the saved minimap scale
+      float minimapScaleValue = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 100);
+      minimapScaleLabel.text = (minimapScaleValue).ToString("f1") + " %";
+      minimapTransform.localScale = new Vector3(minimapScaleValue / 100, minimapScaleValue / 100, minimapScaleValue / 100);
+      minimapScaleSlider.value = minimapScaleValue / 100;
+      minimapScaleSlider.onValueChanged.AddListener(_ => minimapScaleSliderChanged());
 
       // Loads vsync
       vsyncToggle.onValueChanged.AddListener(setVSync);
@@ -273,6 +292,12 @@ public class OptionsPanel : Panel, IPointerClickHandler
       PlayerPrefs.SetFloat(PREF_GUI_SCALE, guiScaleSlider.value * 100);
    }
 
+   public void minimapScaleSliderChanged () {
+      minimapTransform.localScale = new Vector3(minimapScaleSlider.value, minimapScaleSlider.value, minimapScaleSlider.value);
+      minimapScaleLabel.text = (minimapScaleSlider.value * 100).ToString("f1") + " %";
+      PlayerPrefs.SetFloat(PREF_MINIMAP_SCALE, minimapScaleSlider.value * 100);
+   }
+
    public void onLogOutButtonPress () {
       if (Global.player == null) {
          return;
@@ -329,6 +354,9 @@ public class OptionsPanel : Panel, IPointerClickHandler
 
       // Hide the voyage group invite panel, if opened
       VoyageManager.self.refuseVoyageInvitation();
+
+      // Notice the tutorial
+      TutorialManager3.self.onUserLogOut();
 
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();

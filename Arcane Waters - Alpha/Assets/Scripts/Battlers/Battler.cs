@@ -394,7 +394,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // Basic method that will handle the functionality for whenever we click on this battler
    public void selectThis () {
       onBattlerSelect.Invoke();
-      TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectBattleEnemy);
    }
 
    public void initialize () {

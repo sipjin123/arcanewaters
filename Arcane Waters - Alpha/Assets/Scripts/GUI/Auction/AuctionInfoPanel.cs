@@ -60,7 +60,7 @@ public class AuctionInfoPanel : MonoBehaviour
 
    #endregion
 
-   public void displayAuction(int auctionId) {
+   public void displayAuction (int auctionId) {
       Global.player.rpc.Cmd_GetAuction(auctionId);
    }
 
@@ -195,13 +195,24 @@ public class AuctionInfoPanel : MonoBehaviour
       cell.hideBackground();
 
       // Set the item info
-      itemName.text = EquipmentXMLManager.self.getItemName(item);
-      itemDescription.text = EquipmentXMLManager.self.getItemDescription(item);
+      itemName.text = EquipmentXMLManager.self.getItemName(_selectedItem);
+      itemDescription.text = _selectedItem.getTooltip();// EquipmentXMLManager.self.getItemDescription(item);
 
-      Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());
-      star1Image.sprite = rarityStars[0];
-      star2Image.sprite = rarityStars[1];
-      star3Image.sprite = rarityStars[2];
+      if (_selectedItem.category == Item.Category.Weapon ||
+            _selectedItem.category == Item.Category.Armor ||
+            _selectedItem.category == Item.Category.Hats) {
+         Sprite[] rarityStars = Rarity.getRarityStars(_selectedItem.getRarity());
+         star1Image.sprite = rarityStars[0];
+         star2Image.sprite = rarityStars[1];
+         star3Image.sprite = rarityStars[2];
+         star1Image.enabled = true;
+         star2Image.enabled = true;
+         star3Image.enabled = true;
+      } else {
+         star1Image.enabled = false;
+         star2Image.enabled = false;
+         star3Image.enabled = false;
+      }
    }
 
    public void onItemCellPressed () {

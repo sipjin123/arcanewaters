@@ -9,13 +9,16 @@ public class TutorialManager3 : MonoBehaviour {
    #region Public Variables
 
    // The keys used to save the config and progress in PlayerPrefs
-   public static string MODE = "Tutorial_Mode";
-   public static string SELECTED = "Tutorial_Selected";
-   public static string STEP = "Tutorial_Step";
+   public static string MODE = "Tutorial_Mode_";
+   public static string SELECTED = "Tutorial_Selected_";
+   public static string STEP = "Tutorial_Step_";
    public static string COMPLETED = "Tutorial_Completed_";
 
    // A reference to the tutorial panel
    public TutorialPanel3 panel;
+
+   // A reference to the tutorial arrow
+   public TutorialArrow arrow;
 
    // Self
    public static TutorialManager3 self;
@@ -26,21 +29,33 @@ public class TutorialManager3 : MonoBehaviour {
       self = this;
    }
 
-   public void Start () {
+   public void onUserSpawns (int userId) {
+      updateArrow();
+
+      if (_userId == userId) {
+         return;
+      }
+
+      // If a new user has logged in, initialize the tutorial config, progress and panel
+      _userId = userId;
+
       // Set the default config
       TutorialPanel3.Mode panelMode = TutorialPanel3.Mode.NPCSpeech;
       string selectedTutorialKey = TutorialData3.tutorials[0].key;
       _currentStep = 0;
+      foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
+         tutorial.isCompleted = false;
+      }
 
       // Read the config from the PlayerPrefs
-      if (PlayerPrefs.HasKey(MODE) && PlayerPrefs.HasKey(SELECTED) && PlayerPrefs.HasKey(STEP)) {
-         panelMode = (TutorialPanel3.Mode) PlayerPrefs.GetInt(MODE);
-         selectedTutorialKey = PlayerPrefs.GetString(SELECTED);
-         _currentStep = PlayerPrefs.GetInt(STEP);
+      if (PlayerPrefs.HasKey(MODE + _userId) && PlayerPrefs.HasKey(SELECTED + _userId) && PlayerPrefs.HasKey(STEP + _userId)) {
+         panelMode = (TutorialPanel3.Mode) PlayerPrefs.GetInt(MODE + _userId);
+         selectedTutorialKey = PlayerPrefs.GetString(SELECTED + _userId);
+         _currentStep = PlayerPrefs.GetInt(STEP + _userId);
 
          // Read the completion state of each tutorial
          foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
-            if (PlayerPrefs.HasKey(COMPLETED + tutorial.key)) {
+            if (PlayerPrefs.HasKey(COMPLETED + _userId + "_" + tutorial.key)) {
                tutorial.isCompleted = true;
             }
          }
@@ -74,7 +89,21 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       saveConfigAndProgress();
-      refreshPanel();
+      refreshUI();
+   }
+
+   public void onUserLogOut () {
+      saveConfigAndProgress();
+      _userId = -1;
+   }
+
+   public void updateArrow () {
+      if (Global.player == null || !isActive()) {
+         return;
+      }
+
+      // Since we changed area, check if the tutorial arrow can point to something relevant
+      arrow.setTarget(_currentTutorial.steps[_currentStep].arrowTarget);
    }
 
    public void selectTutorial (Tutorial3 tutorial) {
@@ -86,7 +115,7 @@ public class TutorialManager3 : MonoBehaviour {
       _currentTutorial = tutorial;
       _currentStep = 0;
       _triggerCount = 0;
-      refreshPanel();
+      refreshUI();
    }
 
    public void previousStep () {
@@ -95,10 +124,10 @@ public class TutorialManager3 : MonoBehaviour {
       // Keep the navigation in the current tutorial
       if (_currentStep < 0) {
          _currentStep = 0;
+      } else {
+         _triggerCount = 0;
+         refreshUI();
       }
-
-      _triggerCount = 0;
-      refreshPanel();
    }
 
    public void nextStep () {
@@ -108,7 +137,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       _triggerCount = 0;
-      refreshPanel();
+      refreshUI();
    }
 
    public void tryCompletingStep (TutorialTrigger key) {
@@ -122,6 +151,21 @@ public class TutorialManager3 : MonoBehaviour {
          if (_triggerCount >= _currentTutorial.steps[_currentStep].countRequirement) {
             nextStep();
          }
+      }
+
+      // Special cases
+      if (key == TutorialTrigger.SpawnInFarm 
+         && _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.OpenFarmLayoutSelectionPanel) {
+         // If the farm layout has already been chosen, we skip this step
+         nextStep();
+         nextStep();
+      }
+
+      if (key == TutorialTrigger.SpawnInHouse
+         && _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.OpenHouseLayoutSelectionPanel) {
+         // If the house layout has already been chosen, we skip this step
+         nextStep();
+         nextStep();
       }
    }
 
@@ -148,11 +192,30 @@ public class TutorialManager3 : MonoBehaviour {
       saveConfigAndProgress();
    }
 
-   private void refreshPanel () {
+   private void refreshUI () {
       string selectedTutorialKey = _currentTutorial.key;
-      string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
       bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual;
-      panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, isNextStepManual);
+
+      string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
+
+      // Handle dynamic npc speechs
+      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.TurnShipLeft) {
+         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveLeft).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveLeft).secondary.ToString());
+      }
+
+      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.TurnShipRight) {
+         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveRight).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveRight).secondary.ToString());
+      }
+
+      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.MoveShipForward) {
+         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
+      }
+
+      panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count, isNextStepManual);
+      arrow.setTarget(_currentTutorial.steps[_currentStep].arrowTarget);
    }
 
    public void OnDestroy () {
@@ -160,12 +223,16 @@ public class TutorialManager3 : MonoBehaviour {
    }
 
    private void saveConfigAndProgress () {
-      PlayerPrefs.SetInt(MODE, (int) panel.getMode());
-      PlayerPrefs.SetString(SELECTED, _currentTutorial.key);
-      PlayerPrefs.SetInt(STEP, _currentStep);
+      if (_userId < 0) {
+         return;
+      }
+
+      PlayerPrefs.SetInt(MODE + _userId, (int) panel.getMode());
+      PlayerPrefs.SetString(SELECTED + _userId, _currentTutorial.key);
+      PlayerPrefs.SetInt(STEP + _userId, _currentStep);
 
       foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
-         string prefsKey = COMPLETED + tutorial.key;
+         string prefsKey = COMPLETED + _userId + "_" + tutorial.key;
          if (tutorial.isCompleted) {
             PlayerPrefs.SetInt(prefsKey, 1);
          } else {
@@ -201,12 +268,11 @@ public class TutorialManager3 : MonoBehaviour {
       return null;
    }
 
-   private bool isActive () {
+   public bool isActive () {
       switch (panel.getMode()) {
          case TutorialPanel3.Mode.TutorialList:
          case TutorialPanel3.Mode.NPCSpeech:
             return true;
-         case TutorialPanel3.Mode.QuestionMark:
          case TutorialPanel3.Mode.Closed:
          default:
             return false;
@@ -223,6 +289,9 @@ public class TutorialManager3 : MonoBehaviour {
 
    // The number of times the completion trigger has been set off for the current step
    private int _triggerCount = 0;
+
+   // The user whose tutorial config and progress is currently loaded
+   private int _userId = -1;
 
    #endregion
 }

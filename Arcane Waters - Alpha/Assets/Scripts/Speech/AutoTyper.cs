@@ -39,6 +39,10 @@ public class AutoTyper : MonoBehaviour {
       textElement.text = text;
    }
 
+   public static void FinishText (TextMeshProUGUI text) {
+      text.GetComponent<RollingTextFade>().finishFading();
+   }
+
    public static void SlowlyRevealText (Text textElement, string text) {
       textElement.StopAllCoroutines();
       textElement.text = CLEAR_START + text + CLEAR_END;

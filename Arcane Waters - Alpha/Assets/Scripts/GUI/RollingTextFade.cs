@@ -52,6 +52,18 @@ public class RollingTextFade : ClientMonoBehaviour {
       }
    }
 
+   public void finishFading () {
+      if (_changeTextCoroutine != null) {
+         // Clear the animation coroutine
+         StopCoroutine(_changeTextCoroutine);
+         _changeTextCoroutine = null;
+
+         // Force the full reveal of the text
+         _textComponent.color = _originalColor;
+         _textComponent.ForceMeshUpdate();
+      }
+   }
+
    /// <summary>
    /// Method to animate vertex colors of a TMP Text object.
    /// </summary>
@@ -105,9 +117,6 @@ public class RollingTextFade : ClientMonoBehaviour {
 
                startingCharacterRange += 1;
 
-               // Play a sound
-               SoundManager.play2DClip(SoundManager.Type.Blip_2);
-
                if (startingCharacterRange == characterCount) {
                   // Update mesh vertex data one last time.
                   _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
@@ -133,10 +142,15 @@ public class RollingTextFade : ClientMonoBehaviour {
             // Upload the changed vertex colors to the Mesh.
             _textComponent.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
+            bool wasSpaceBar = textInfo.characterInfo[currentCharacter].character == ' ';
+
+            // Play a sound
+            SoundManager.play2DClip(wasSpaceBar ? SoundManager.Type.Character_Type_2 : SoundManager.Type.Character_Type_1, allowBurst: true);
+
             if (currentCharacter + 1 < characterCount) currentCharacter += 1;
 
             if (_delayPerCharacter > 0f) {
-               yield return new WaitForSeconds(_delayPerCharacter);
+               yield return new WaitForSeconds(wasSpaceBar ? Random.Range(_delayPerCharacter, _delayPerCharacter * 4) : Random.Range(_delayPerCharacter * 0.5f, _delayPerCharacter * 2f));
             }
          }
       }
@@ -154,7 +168,7 @@ public class RollingTextFade : ClientMonoBehaviour {
    protected float _delayPerCharacter = DEFAULT_DELAY;
 
    // The default wait length per character
-   protected static float DEFAULT_DELAY = .03f;
+   protected static float DEFAULT_DELAY = .02f;
 
    // Holds the coroutine for the changing of the text
    protected Coroutine _changeTextCoroutine;

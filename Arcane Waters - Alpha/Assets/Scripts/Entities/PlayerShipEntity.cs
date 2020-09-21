@@ -232,8 +232,10 @@ public class PlayerShipEntity : ShipEntity
       int direction = 0;
       if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
          direction = 1;
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
       } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
          direction = -1;
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
       }
 
       if (direction != 0) {
@@ -478,17 +480,20 @@ public class PlayerShipEntity : ShipEntity
          if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyAngle(+1);
             _lastAngleChangeTime = Time.time;
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
          } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyAngle(-1);
             _lastAngleChangeTime = Time.time;
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
          }
       }
 
       if (Time.time - _lastInputChangeTime > getInputDelay()) {
          _lastInputChangeTime = Time.time;
 
-         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+         if (InputManager.getKeyAction(KeyAction.MoveUp)) {
             Cmd_RequestMovement();
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShipForward);
          }
       }
    }
@@ -509,6 +514,7 @@ public class PlayerShipEntity : ShipEntity
 
          if (InputManager.getKeyAction(KeyAction.MoveUp)) {
             Cmd_RequestServerAddForce(isSpeedingUp);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShipForward);
          }
       }
    }

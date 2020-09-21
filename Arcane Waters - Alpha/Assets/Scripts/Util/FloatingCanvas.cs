@@ -25,7 +25,7 @@ public class FloatingCanvas : MonoBehaviour {
       _canvasGroup = GetComponentInChildren<CanvasGroup>();
 
       // Make sure we show up in front
-      Util.setZ(this.transform, -.32f);
+      Util.setZ(this.transform, -2f);
 
       // Start floating upwards
       InvokeRepeating("floatUp", 0f, .02f);
