@@ -343,8 +343,20 @@ public class MyNetworkManager : NetworkManager
                   if (map != null) {
                      player.rpc.Target_ReceiveMapInfo(map);
                   }
-
                   player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
+
+                  // Gathers all the other client positions to be sent to the player being spawned for the purpose of syncing the updated transform positions
+                  List<CompressedClientPositions> clientPositions = new List<CompressedClientPositions>();
+                  foreach (NetworkBehaviour clientData in instance.getPlayerEntities()) {
+                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) clientData;
+
+                     clientPositions.Add(new CompressedClientPositions {
+                        userId = bodyEntity.userId,
+                        xPosition = bodyEntity.transform.localPosition.x,
+                        yPosition = bodyEntity.transform.localPosition.y
+                     });
+                  }
+                  player.rpc.Target_ReceiveUpdatedPlayersPosition(player.connectionToClient, clientPositions.ToArray());
                });
             });
 

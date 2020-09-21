@@ -226,6 +226,11 @@ public class NetEntity : NetworkBehaviour
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
+      } else {
+         if (userId > 0) {
+            // Register this player body to the instance manager queue for non local clients
+            InstanceManager.self.registerClientPlayerBody(this);
+         }
       }
 
       // Routinely clean the attackers set

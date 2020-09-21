@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using System;
+using System.Linq;
 
 [Serializable]
 public class Instance : NetworkBehaviour
@@ -102,6 +103,9 @@ public class Instance : NetworkBehaviour
       // On clients, set the instance manager as the parent transform
       if (isClient) {
          transform.SetParent(InstanceManager.self.transform);
+
+         // Register this instance to the instance manager for non local clients
+         InstanceManager.self.registerClientInstance(this);
       }
 
       // Spawn all the area prefabs that are specific to this instance
@@ -125,8 +129,24 @@ public class Instance : NetworkBehaviour
       return count;
    }
 
+   public void registerClientPlayerBody (NetworkBehaviour entity) {
+      this.entities.Add(entity);
+   }
+
    public List<NetworkBehaviour> getEntities () { 
       return entities;
+   }
+
+   public List<NetworkBehaviour> getPlayerEntities () {
+      List<NetworkBehaviour> newEntityList = new List<NetworkBehaviour>();
+      
+      // Gathers all the player bodies in the area
+      foreach (NetworkBehaviour existingEntity in entities) {
+         if (existingEntity is PlayerBodyEntity) {
+            newEntityList.Add(existingEntity);
+         }
+      }
+      return newEntityList;
    }
 
    public int getMaxPlayers () {

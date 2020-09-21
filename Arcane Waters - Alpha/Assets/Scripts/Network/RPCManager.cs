@@ -922,7 +922,32 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveMapInfo (Map map) {
       AreaManager.self.storeAreaInfo(map);
    }
+   
+   [TargetRpc]
+   public void Target_ReceiveUpdatedPlayersPosition (NetworkConnection connection, CompressedClientPositions[] clientPositions) {
+      // Local client received the other client positions in the area
+      StartCoroutine(CO_UpdateLocalPlayersPositions(clientPositions));
+   }
 
+   private IEnumerator CO_UpdateLocalPlayersPositions (CompressedClientPositions[] clientPositions) {
+      // Wait for the area to be generated before updating the character positions
+      while (AreaManager.self.getArea(_player.areaKey) == null) {
+         yield return 0;
+      }
+
+      if (clientPositions.Length > 0) {
+         foreach (var temp in _player.getInstance().getPlayerEntities()) {
+            PlayerBodyEntity existingBodies = (PlayerBodyEntity) temp;
+            if (existingBodies != null) {
+               // Manually update the other client character positions to sync with the updated positions
+               CompressedClientPositions matchingPositions = clientPositions.ToList().Find(_ => _.userId == existingBodies.userId);
+               if (matchingPositions != null) {
+                  temp.transform.localPosition = new Vector3(matchingPositions.xPosition, matchingPositions.yPosition, existingBodies.transform.localPosition.z);
+               }
+            } 
+         }
+      }
+   }
 
    [TargetRpc]
    public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations) {
