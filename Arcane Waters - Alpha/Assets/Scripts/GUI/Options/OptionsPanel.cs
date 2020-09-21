@@ -38,6 +38,7 @@ public class OptionsPanel : Panel, IPointerClickHandler
 
    // The vsync toggle
    public Toggle vsyncToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -108,10 +109,6 @@ public class OptionsPanel : Panel, IPointerClickHandler
       int vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
       vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
       QualitySettings.vSyncCount = vsyncCount;
-   }
-
-   public override void Start () {
-      base.Start();
    }
 
    public void setVSync (bool vsync) {
@@ -408,7 +405,7 @@ public class OptionsPanel : Panel, IPointerClickHandler
       BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - borderSize.x, Screen.height - borderSize.y);
    }
 
-#region Private Variables
+   #region Private Variables
 
    // The time at which we were last shown
    protected float _lastShownTime;
@@ -416,5 +413,5 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // The list of supported resolutions
    private List<Resolution> _supportedResolutions = new List<Resolution>();
 
-#endregion
+   #endregion
 }

@@ -101,9 +101,16 @@ public class InstanceManager : MonoBehaviour {
       _instances.Add(clientInstance.id, clientInstance);
 
       // Register non local client player body entities to the instance
-      for (int i = 0; i < queuedPlayerRegistry.Count; i++) {
+      int queueCount = queuedPlayerRegistry.Count;
+      for (int i = 0; i < queueCount; i++) {
          clientInstance.registerClientPlayerBody(queuedPlayerRegistry[i]);
-         queuedPlayerRegistry.Remove(queuedPlayerRegistry[i]);
+      }
+
+      // Clear the queue based on how many was registered
+      for (int i = 0; i < queueCount; i++) {
+         if (queuedPlayerRegistry.Count > 0) {
+            queuedPlayerRegistry.RemoveAt(0);
+         }
       }
    }
 
