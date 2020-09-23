@@ -278,6 +278,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    public static AudioSource createLoopedAudio (Type type, Transform creator) {
+      if (Util.isBatch()) {
+         return null;
+      }
+
       // Create an AudioSource for the specified type of sound
       AudioSource audioSource = createAudioSource(type, creator.transform.position);
 
@@ -330,6 +334,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    public static AudioSource playClipAtPoint (AudioClip clip, Vector3 pos) {
+      if (Util.isBatch()) {
+         return null;
+      }
+
       AudioSource source = createAudioSource(clip, pos);
       source.Play();
 
@@ -340,6 +348,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    public static AudioSource playClipAtPoint (Type type, Vector3 pos) {
+      if (Util.isBatch()) {
+         return null;
+      }
+
       AudioSource source = createAudioSource(type, pos);
       source.Play();
 
@@ -369,6 +381,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    protected static AudioSource createAudioSource (Type type, Vector3 pos) {
+      if (Util.isBatch()) {
+         return null;
+      }
+
       // Get the Z position of the currently active camera
       float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
       pos = new Vector3(pos.x, pos.y, posZ);
@@ -387,6 +403,10 @@ public class SoundManager : MonoBehaviour {
    }
 
    protected static AudioSource createAudioSource (AudioClip clip, Vector3 pos) {
+      if (Util.isBatch()) {
+         return null;
+      }
+
       // Get the Z position of the currently active camera
       float posZ = Global.isInBattle() ? BattleCamera.self.getCamera().transform.position.z : Camera.main.transform.position.z;
       pos = new Vector3(pos.x, pos.y, posZ);

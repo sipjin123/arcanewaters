@@ -43,7 +43,10 @@ public class TitleScreen : MonoBehaviour {
    public Button setToMaxScreenWindows;
    public Button setToMaxScreenExclusive;
    public Text windowResolutionText, monitorResolutionText;
-      
+
+   // The gameobject referencing the title screen map
+   public GameObject titleScreenReference;
+
    #endregion
 
    private void Awake () {
@@ -116,10 +119,17 @@ public class TitleScreen : MonoBehaviour {
          if (_canvasGroup.alpha < 1) {
             _canvasGroup.alpha = 1;
          }
+         if (!titleScreenReference.activeInHierarchy) {
+            titleScreenReference.SetActive(true);
+         }
       } else {
          // Slowly fade out the canvas group if the screen isn't active
          if (_canvasGroup.alpha > 0) {
             _canvasGroup.alpha = currentAlpha - Time.smoothDeltaTime;
+         }
+
+         if (titleScreenReference.activeInHierarchy) {
+            titleScreenReference.SetActive(false);
          }
       }
    }

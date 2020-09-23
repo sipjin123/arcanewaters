@@ -53,6 +53,18 @@ public class InstanceManager : MonoBehaviour {
       // Add the player to the list
       instance.entities.Add(player);
 
+      // Gathers all the treasure chest status for the player in this area
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<TreasureStateData> treasureStateList = DB_Main.getTreasureStateForArea(player.areaKey, player.userId);
+
+         // Assign the player user id to the treasure chest fetched so that it will marked as opened
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+           foreach(TreasureStateData treasureState in treasureStateList) {
+               instance.addTreasureState(treasureState);
+            }
+         });
+      });
+
       // If we just hit the max number of players, we need to recheck which areas are open
       if (instance.getPlayerCount() >= instance.getMaxPlayers()) {
          recalculateOpenAreas();

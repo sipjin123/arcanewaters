@@ -42,6 +42,12 @@ public class TreasureManager : MonoBehaviour {
 
             // The Instance needs to keep track of all Networked objects inside
             instance.entities.Add(chest);
+
+            foreach (TreasureStateData statData in instance.treasureStateDataList) {
+               if (statData.treasureId == chestId && !chest.userIds.Contains(statData.userId)) {
+                  chest.userIds.Add(statData.userId);
+               }
+            }
          }
          chestId++;
       }

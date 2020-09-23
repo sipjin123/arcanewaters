@@ -3433,7 +3433,6 @@ public class RPCManager : NetworkBehaviour {
          item = DB_Main.createNewItem(_player.userId, item);
 
          // Update the treasure chest status if is opened
-         D.debug("Updating treasure status: " + _player.userId + " : " + chest.chestSpawnId + " : " + _player.areaKey);
          DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
       });
 
