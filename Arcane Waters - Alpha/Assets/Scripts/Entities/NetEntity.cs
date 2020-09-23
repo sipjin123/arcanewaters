@@ -337,7 +337,9 @@ public class NetEntity : NetworkBehaviour
 
       Vector3 localPos = this.transform.localPosition;
 
+      D.log($"NetEntity is being destroyed: { isLocalPlayer }, { this is PlayerShipEntity }, { ClientManager.isApplicationQuitting }, { TitleScreen.self.isActive() }");
       if (isLocalPlayer && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
+         D.log("Should show loading screen");
          // Show the loading screen
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
@@ -766,7 +768,7 @@ public class NetEntity : NetworkBehaviour
 
       // Check if we're pressing the keys for any of the directions, and if so, add an appropriate force
       foreach (Direction direction in availableDirections) {
-         if (DirectionUtil.isPressingDirection(direction)) {
+         if (InputManager.isPressingDirection(direction)) {
             // Check if we need to update our facing direction SyncVar
             Direction newFacingDirection = DirectionUtil.getFacingDirection(hasDiagonals, direction);
             if (this.facing != newFacingDirection) {
@@ -812,17 +814,17 @@ public class NetEntity : NetworkBehaviour
       bool canChangeDirection = (Time.time - _lastFacingChangeTime > getTurnDelay());
 
       if (canChangeDirection) {
-         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+         if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyFacing(-1);
             _lastFacingChangeTime = Time.time;
-         } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+         } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyFacing(+1);
             _lastFacingChangeTime = Time.time;
          }
       }
 
       // Figure out the force vector we should apply
-      if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+      if (InputManager.getKeyAction(KeyAction.MoveUp)) {
          Vector2 forceToApply = DirectionUtil.getVectorForDirection(this.facing);
          _body.AddForce(forceToApply.normalized * getMoveSpeed());
 
@@ -1247,6 +1249,9 @@ public class NetEntity : NetworkBehaviour
          // Show the Area name
          LocationBanner.self.setText(Area.getName(this.areaKey));
 
+         // Update the tutorial
+         TutorialManager3.self.onUserSpawns(this.userId);
+
          // Trigger the tutorial
          if (AreaManager.self.isSeaArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInSeaArea);
@@ -1266,6 +1271,10 @@ public class NetEntity : NetworkBehaviour
 
          if (string.Equals(areaKey, TutorialData3.tutorialCemeteryAreaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInTutorialTownCemetery);
+         }
+
+         if (string.Equals(areaKey, TutorialData3.tutorialTownAreaKey)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInTutorialTown);
          }
 
          // Signal the server

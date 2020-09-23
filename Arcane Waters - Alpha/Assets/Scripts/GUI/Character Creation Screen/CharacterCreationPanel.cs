@@ -164,7 +164,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
          canvasGroup.blocksRaycasts = false;
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks));
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName));
 
          // Show loading screen until player warps to map
          StartCoroutine(showLoadingScreen());

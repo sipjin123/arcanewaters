@@ -44,92 +44,47 @@ namespace NubisDataHandling {
 
                Item.Category categoryType = (Item.Category) itmCategory;
 
+               Item otherItem = new Item {
+                  category = categoryType,
+                  itemTypeId = itmType,
+                  id = itmId,
+                  count = itmCount,
+                  data = itmData,
+                  paletteNames = itmPalettes
+               }.getCastItem();
+
+               newItemList.Add(otherItem);
+
                switch (categoryType) {
                   case Item.Category.Weapon:
                      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itmType);
-                     try {
-                        Item weaponItem = new Item {
-                           category = Item.Category.Weapon,
-                           itemTypeId = itmType,
-                           id = itmId,
-                           itemDescription = weaponData.equipmentDescription,
-                           itemName = weaponData.equipmentName,
-                           iconPath = weaponData.equipmentIconPath,
-                           data = WeaponStatData.serializeWeaponStatData(weaponData),
-                           paletteNames = itmPalettes
-                        };
-
-                        newItemList.Add(weaponItem);
-                     } catch {
+                     if (weaponData != null) {
+                        otherItem.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription,
+                           weaponData.equipmentIconPath);
+                     } else {
                         D.editorLog("Failed to gather data for weapon: " + itmType + " : " + weaponData, Color.red);
                      }
                      break;
                   case Item.Category.Armor:
                      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itmType);
-                     try {
-                        Item armorItem = new Item {
-                           category = Item.Category.Armor,
-                           itemTypeId = itmType,
-                           id = itmId,
-                           itemDescription = armorData.equipmentDescription,
-                           itemName = armorData.equipmentName,
-                           iconPath = armorData.equipmentIconPath,
-                           data = ArmorStatData.serializeArmorStatData(armorData),
-                           paletteNames = itmPalettes
-                        };
-
-                        newItemList.Add(armorItem);
-                     } catch {
+                     if (armorData != null) {
+                        otherItem.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription,
+                           armorData.equipmentIconPath);
+                     } else {
                         D.editorLog("Failed to gather data for armor: " + itmType + " : " + armorData + " : " + itmId, Color.red);
                      }
                      break;
                   case Item.Category.Hats:
                      HatStatData hatData = EquipmentXMLManager.self.getHatData(itmType);
                      if (hatData != null) {
-                        Item hatItem = new Item {
-                           category = Item.Category.Hats,
-                           itemTypeId = itmType,
-                           id = itmId,
-                           itemDescription = hatData.equipmentDescription,
-                           itemName = hatData.equipmentName,
-                           iconPath = hatData.equipmentIconPath,
-                           data = HatStatData.serializeHatStatData(hatData),
-                           paletteNames = itmPalettes
-                        };
-
-                        newItemList.Add(hatItem);
+                        otherItem.setBasicInfo(hatData.equipmentName, hatData.equipmentDescription,
+                           hatData.equipmentIconPath);
                      } else {
-                        D.editorLog("Failed to process data of Hat: " + itmType, Color.red);
+                        D.editorLog("Failed to gather data for hat: " + itmType + " : " + hatData + " : " + itmId, Color.red);
                      }
                      break;
-                  case Item.Category.CraftingIngredients:
-                     Item craftingIngredient = new Item {
-                        category = categoryType,
-                        itemTypeId = itmType,
-                        id = itmId,
-                        data = "",
-                        paletteNames = ""
-                     };
-
-                     Item castedItem = craftingIngredient.getCastItem();
-                     craftingIngredient.itemDescription = castedItem.getDescription();
-                     craftingIngredient.itemName = castedItem.getName();
-                     craftingIngredient.iconPath = castedItem.getIconPath();
-                     craftingIngredient.count = itmCount;
-
-                     newItemList.Add(craftingIngredient);
-                     break;
                   default:
-                     Item otherItem = new Item {
-                        category = categoryType,
-                        itemTypeId = itmType,
-                        id = itmId,
-                        count = itmCount,
-                        data = itmData,
-                        paletteNames = itmPalettes
-                     }.getCastItem();
-
-                     newItemList.Add(otherItem);
+                     otherItem.setBasicInfo(otherItem.getName(), otherItem.getDescription(), otherItem.getIconPath());
                      break;
                }
                index++;

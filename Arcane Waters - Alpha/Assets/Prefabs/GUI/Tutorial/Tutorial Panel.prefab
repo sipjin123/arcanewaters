@@ -2149,6 +2149,7 @@ MonoBehaviour:
   expandButtonAnim: {fileID: 8054573397835590692}
   rightButtonAnim: {fileID: 8045765936423960952}
   leftButton: {fileID: 7414801960238351608}
+  rightButton: {fileID: 7830717791388862825}
   navigationRowCanvasGroup: {fileID: 4882292644786304615}
   panelHoveringZone: {fileID: 8335491659127850969}
   stepText: {fileID: 5760914045830223267}

@@ -52,6 +52,9 @@ public class TutorialPanel3 : MonoBehaviour
    // The button allowing to return to the previous step
    public Button leftButton;
 
+   // The button allowing to go to the next step
+   public Button rightButton;
+
    // The section showing the step index and navigation buttons
    public CanvasGroup navigationRowCanvasGroup;
 
@@ -109,11 +112,20 @@ public class TutorialPanel3 : MonoBehaviour
          leftButton.interactable = true;
       }
 
+      // In case the last step is manual, we allow clicking on the right button
       if (isNextStepManual) {
+         rightButton.interactable = true;
          rightButtonAnim.SetActive(true);
          _isNavigationRowVisible = true;
       } else {
          rightButtonAnim.SetActive(false);
+
+         // The right button is disabled on the last step
+         if (currentStepIndex == maxStepIndex) {
+            rightButton.interactable = false;
+         } else {
+            rightButton.interactable = true;
+         }
       }
 
       // Special case: when the user must click on the 'expand' button, enable an highlight animation
@@ -248,7 +260,6 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    private void refreshPanelConfig () {
-      D.log("refreshing panel config with mode " + _mode);
       if (!gameObject.activeSelf) {
          gameObject.SetActive(true);
       }

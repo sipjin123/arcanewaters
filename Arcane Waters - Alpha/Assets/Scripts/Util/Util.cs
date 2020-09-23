@@ -955,6 +955,9 @@ public class Util : MonoBehaviour {
 
       // Clear the current area - if we reconnect to another server, the area position could be different
       MapManager.self.destroyLastMap();
+
+      // Notice the tutorial
+      TutorialManager3.self.onUserLogOut();
    }
 
    // A Random instance we can use for generating random numbers

@@ -51,7 +51,7 @@ namespace Assets.Scripts.Network
                // Server.area_instances
                var areaInstances = InstanceManager.self.getAreas();
                //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
-               DB_Main.setMetricAreaInstancesCount(machineID, procName, procID, areaInstances.Count());
+               DB_Main.setMetricAreaInstancesCount(machineID, procName, procID, areaInstances.Length);
 
                // Server.port
                var port = MyNetworkManager.self.telepathy.port;

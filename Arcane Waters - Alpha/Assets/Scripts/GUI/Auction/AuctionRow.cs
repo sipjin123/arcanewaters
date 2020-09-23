@@ -48,7 +48,6 @@ public class AuctionRow : MonoBehaviour
 
    public void setRowForAuction (AuctionItemData auction) {
       auctionData = auction;
-      auction.item = auction.item.getCastItem();
       
       itemCell.hideBackground();
       itemCell.hideItemCount();
@@ -83,7 +82,7 @@ public class AuctionRow : MonoBehaviour
       } else {
          // Set detailed item data only if the auction is still running (otherwise the item could not exist anymore)
          itemCell.setCellForItem(auction.item);
-         tooltip.text = auction.item.getTooltip();
+         tooltip.text = itemCell.getItem().getTooltip();
 
          // Rarity stars
          if (auction.item.category == Item.Category.Weapon ||

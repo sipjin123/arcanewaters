@@ -1198,6 +1198,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent, string loginSource) {
+
+   }
+
    /*
 
    public static void refillSupplies (int userId) {

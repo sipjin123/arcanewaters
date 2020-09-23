@@ -195,7 +195,7 @@ public class DB_Main : DB_MainStub
       return count.ToString();
    }
 
-   private static string getUserInventoryWhereClause (int userId, int[] categoryFilter, 
+   private static string getUserInventoryWhereClause (int userId, int[] categoryFilter,
       int[] itemIdsToExclude, bool mustExcludeEquippedItems) {
       StringBuilder clause = new StringBuilder();
       clause.Append(" WHERE usrId = " + userId + " ");
@@ -429,7 +429,7 @@ public class DB_Main : DB_MainStub
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
                      string equipmentXML = reader.GetString("equipmentXML");
-                     string itemPalette = reader.GetString("itmPalettes"); 
+                     string itemPalette = reader.GetString("itmPalettes");
                      string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{equipmentXML}[space]{itemPalette}[space]";
                      stringBuilder.AppendLine(result);
                   }
@@ -685,7 +685,7 @@ public class DB_Main : DB_MainStub
       string updateContent = "";
       string tableName = EditorSQLManager.getSqlTable(editorType);
       string lastUserUpdateKey = editorType == EditorSQLManager.EditorToolType.Palette ? "lastUpdate" : "lastUserUpdate";
-    
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -2829,7 +2829,7 @@ public class DB_Main : DB_MainStub
    }
 
    #endregion
-   
+
    #region Achievement XML Data
 
    public static new void updateAchievementXML (string rawData, string name, int xmlId) {
@@ -3404,7 +3404,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
-            
+
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -4193,7 +4193,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@areaId", area);
-            
+
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -7486,13 +7486,13 @@ public class DB_Main : DB_MainStub
 
    public static new string getAuctionList (string pageNumberStr, string rowsPerPageStr, string categoryFilter, string userIdStr, string onlyHistory, string onlySelfAuctions) {
       List<AuctionItemData> auctionList = new List<AuctionItemData>();
-      
+
       // Param translation
       int rowsPerPage = int.Parse(rowsPerPageStr);
       int pageNumber = int.Parse(pageNumberStr);
 
       string whereClause = getAuctionListWhereClause(userIdStr, categoryFilter, onlyHistory, onlySelfAuctions);
-      
+
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
@@ -8311,6 +8311,27 @@ public class DB_Main : DB_MainStub
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
+   }
+
+   public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent, string loginSource) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO logins (usrId, accId, ipAddress, machineIdent, loginSource) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource);", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", usrId);
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@ipAddress", ipAddress);
+            cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
+            cmd.Parameters.AddWithValue("@loginSource", loginSource);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
    }
 
    #endregion

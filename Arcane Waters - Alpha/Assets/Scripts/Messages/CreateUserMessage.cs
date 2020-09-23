@@ -24,6 +24,9 @@ public class CreateUserMessage : MessageBase {
    // The perks for this user
    public Perk[] perks;
 
+   // The user's machine identifier
+   public string machineIdentifier;
+
    #endregion
 
    public CreateUserMessage () { }
@@ -32,12 +35,13 @@ public class CreateUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
       this.armorPalettes = armorPalettes;
       this.characterSpot = userInfo.charSpot;
       this.perks = perks;
+      this.machineIdentifier = machineIdentifier;
    }
 }

@@ -63,6 +63,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
             Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
             newWeapon.id = item.id;
+            newWeapon.paletteNames = item.paletteNames;
             item = newWeapon;
 
             icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
@@ -73,6 +74,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
             Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
             newArmor.id = item.id;
+            newArmor.paletteNames = item.paletteNames;
             item = newArmor;
 
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
@@ -83,6 +85,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
             Hat newHat = HatStatData.translateDataToHat(hatData);
             newHat.id = item.id;
+            newHat.paletteNames = item.paletteNames;
             item = newHat;
 
             icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);

@@ -115,7 +115,7 @@ public class ServerMessageManager : MonoBehaviour {
 
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
-                  userObjects.accountEmail, userObjects.accountCreationTime);
+                  userObjects.accountEmail, userObjects.accountCreationTime, logInUserMessage.machineIdentifier);
                conn.Send(msg);
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
@@ -445,7 +445,7 @@ public class ServerMessageManager : MonoBehaviour {
 
             // Now tell the client to move forward with the login process
             LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,
-               userObjects.accountEmail, userObjects.accountCreationTime);
+               userObjects.accountEmail, userObjects.accountCreationTime, msg.machineIdentifier);
             conn.Send(loginCompleteMsg);
          } else {
             sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

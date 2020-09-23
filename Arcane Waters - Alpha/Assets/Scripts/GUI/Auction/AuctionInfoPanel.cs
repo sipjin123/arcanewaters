@@ -196,12 +196,12 @@ public class AuctionInfoPanel : MonoBehaviour
 
       // Set the item info
       itemName.text = EquipmentXMLManager.self.getItemName(_selectedItem);
-      itemDescription.text = _selectedItem.getTooltip();// EquipmentXMLManager.self.getItemDescription(item);
+      itemDescription.text = cell.getItem().getTooltip();// EquipmentXMLManager.self.getItemDescription(item);
 
       if (_selectedItem.category == Item.Category.Weapon ||
             _selectedItem.category == Item.Category.Armor ||
             _selectedItem.category == Item.Category.Hats) {
-         Sprite[] rarityStars = Rarity.getRarityStars(_selectedItem.getRarity());
+         Sprite[] rarityStars = Rarity.getRarityStars(item.getRarity());
          star1Image.sprite = rarityStars[0];
          star2Image.sprite = rarityStars[1];
          star3Image.sprite = rarityStars[2];

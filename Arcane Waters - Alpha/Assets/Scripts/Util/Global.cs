@@ -73,6 +73,9 @@ public class Global {
    // The current ID of the Basic Attack ability to use as a failsafe if the player has no other abilities
    public static int BASIC_ATTACK_ID = 9;
 
+   // The client's machine identifier
+   public static string machineIdentifier;
+
    #endregion
 
    public static void setUserEquipment (Item weapon, Item armor, Item hat) {

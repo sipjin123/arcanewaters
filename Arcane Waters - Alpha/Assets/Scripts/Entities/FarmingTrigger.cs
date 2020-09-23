@@ -105,21 +105,12 @@ public class FarmingTrigger : MonoBehaviour {
                      ExplosionManager.createFarmingParticle(currentActionType, hit.collider.transform.position, fadeSpeed, 4, false);
                      cropSpot.crop.gameObject.SetActive(false);
 
-                     GameObject cropBounce = Instantiate(PrefabsManager.self.cropBouncePrefab);
-                     CropHarvest cropHarvest = cropBounce.GetComponent<CropHarvest>();
-                     cropHarvest.cropSpot = cropSpot;
-                     cropHarvest.setSprite(cropSpot.crop.cropType);
-                     cropBounce.transform.position = hit.collider.transform.position;
-
-                     cropSpawnEffectDirection = DirectionUtil.getDirectionFromPoint(transform.position, cropSpot.transform.position);
-                     if (cropSpawnEffectDirection == Direction.East) {
-                        cropBounce.transform.localScale = new Vector3(-1, 1, 1);
-                     }
-                     else if (cropSpawnEffectDirection == Direction.North || cropSpawnEffectDirection == Direction.South) {
-                        cropHarvest.animator.SetFloat(FACING_KEY, (float) cropSpawnEffectDirection);
-                     }
-
-                     cropBounce.GetComponent<Animator>().speed = Random.Range(.8f, 1.2f);
+                     CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab).GetComponent<CropProjectile>();
+                     cropProjectile.transform.position = hit.collider.transform.position;
+                     Vector2 dir = cropSpot.transform.position - transform.position;
+                     dir /= dir.magnitude;
+                     cropProjectile.setSprite(cropSpot.crop.cropType);
+                     cropProjectile.init(hit.collider.transform.position, dir, cropSpot);
                   }
                }
             }

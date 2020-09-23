@@ -103,33 +103,27 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          return;
       }
 
-      // Associate a new function with the confirmation button
-      PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => confirmLeaveGroup());
+      PanelManager.self.showConfirmationPanel("Are you sure you want to leave the voyage group?",
+         () => {
+            // Initialize the countdown screen
+            PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
+            PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
+            PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
+            PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
+            PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
 
-      // Show a confirmation panel
-      PanelManager.self.confirmScreen.show("Are you sure you want to leave the voyage group?");
-   }
-
-   public void confirmLeaveGroup () {
-      // Hide the confirm panel
-      PanelManager.self.confirmScreen.hide();
-
-      // Initialize the countdown screen
-      PanelManager.self.countdownScreen.cancelButton.onClick.RemoveAllListeners();
-      PanelManager.self.countdownScreen.onCountdownEndEvent.RemoveAllListeners();
-      PanelManager.self.countdownScreen.cancelButton.onClick.AddListener(() => PanelManager.self.countdownScreen.hide());
-      PanelManager.self.countdownScreen.onCountdownEndEvent.AddListener(() => onLeaveCountdownEnd());
-      PanelManager.self.countdownScreen.customText.text = "Leaving Voyage Group in";
-
-      // Start the countdown
-      PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
-      PanelManager.self.countdownScreen.show();
+            // Start the countdown
+            PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
+            PanelManager.self.countdownScreen.show();
+         });
    }
 
    public void onLeaveCountdownEnd () {
       // Hide the countdown
       PanelManager.self.countdownScreen.hide();
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.LeaveVoyageGroup);
 
       // Request the server to remove the user from the group
       Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();

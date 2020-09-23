@@ -34,11 +34,11 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating collectable ore
    public GameObject orePickupPrefab;
 
-   // The Prefab we use for creating crop bounce effect for harvesting
-   public GameObject cropBouncePrefab;
-
    // The Prefab we use for creating collectable crops
    public GameObject cropPickupPrefab;
+
+   // The Prefab we use for creating projectile crops that will spawn pickup at the end
+   public GameObject cropProjectilePrefab;
 
    [Header("Sea Combat Projectiles")]
    // The Prefab we use for creating dynamic projectiles

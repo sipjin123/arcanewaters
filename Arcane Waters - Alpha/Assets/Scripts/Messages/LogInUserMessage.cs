@@ -36,6 +36,9 @@ public class LogInUserMessage : MessageBase {
    // The data size of the ticket
    public uint steamTicketSize;
 
+   // The client's machine identifier
+   public string machineIdentifier;
+
    #endregion
 
    public LogInUserMessage () { }
@@ -44,7 +47,7 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -55,5 +58,6 @@ public class LogInUserMessage : MessageBase {
       this.isSteamLogin = isSteamLogin;
       this.steamAuthTicket = steamAuthTicket;
       this.steamTicketSize = steamTicketSize;
+      this.machineIdentifier = machineIdentifier;
    }
 }

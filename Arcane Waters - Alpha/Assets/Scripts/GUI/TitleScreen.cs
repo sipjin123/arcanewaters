@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using NubisDataHandling;
 
 public class TitleScreen : MonoBehaviour {
    #region Public Variables
@@ -145,7 +146,6 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public bool isActive () {
-      D.log($"Checking title screen active conditions: { NetworkClient.active }, { NetworkServer.active }, { Global.isRedirecting }, { CharacterScreen.self.isShowing() }");
       return !NetworkClient.active && !NetworkServer.active && !Global.isRedirecting && !CharacterScreen.self.isShowing();
    }
 

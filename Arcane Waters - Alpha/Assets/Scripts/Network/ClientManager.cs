@@ -6,7 +6,8 @@ using Mirror;
 using Steamworks;
 using SteamLoginSystem;
 
-public class ClientManager : MonoBehaviour {
+public class ClientManager : MonoBehaviour
+{
    #region Public Variables
 
    // Gets set to true when the Application is shutting down
@@ -56,7 +57,7 @@ public class ClientManager : MonoBehaviour {
       }
 
       if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
-         int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST+"");
+         int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
          QuickLaunchPanel.self.accountInputField.text = "tester" + testerNumber;
          QuickLaunchPanel.self.passwordInputField.text = "test";
          QuickLaunchPanel.self.clientToggle.isOn = true;
@@ -79,6 +80,8 @@ public class ClientManager : MonoBehaviour {
    }
 
    public static void sendAccountNameAndUserId () {
+      string machineIdentifier = SystemInfo.deviceName;
+
       if (SteamManager.Initialized) {
          SteamLoginManager.self.getAuthTicketEvent.RemoveAllListeners();
          SteamLoginManager.self.getAuthTicketEvent = new GetAuthTicketEvent();
@@ -86,7 +89,7 @@ public class ClientManager : MonoBehaviour {
          // Wait for the php request response
          SteamLoginManager.self.getAuthTicketEvent.AddListener(_ => {
             // Extract the credentials
-            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket);
+            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket, machineIdentifier);
 
             // Send a message to the Server letting them know which of our Users we want to log in to
             NetworkClient.Send(msg);
@@ -96,7 +99,7 @@ public class ClientManager : MonoBehaviour {
          SteamLoginManager.self.getAuthenticationTicket();
       } else {
          LogInUserMessage msg = new LogInUserMessage(Global.netId,
-             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0);
+             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0, machineIdentifier);
 
          // Send a message to the Server letting them know which of our Users we want to log in to
          NetworkClient.Send(msg);

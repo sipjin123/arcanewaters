@@ -230,20 +230,6 @@ namespace NubisDataHandling {
          var inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);
-         foreach (Item item in itemList) {
-            if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-               item.paletteNames = weaponData.palettes;
-            }
-            if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-               item.paletteNames = armorData.palettes;
-            }
-            if (item.category == Item.Category.Hats) {
-               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-               item.paletteNames = hatData.palettes;
-            }
-         }
 
          // Get the inventory panel
          InventoryPanel inventoryPanel = (InventoryPanel) PanelManager.self.get(Panel.Type.Inventory);
@@ -285,21 +271,6 @@ namespace NubisDataHandling {
          }
 
          List<Item> itemList = UserInventory.processUserInventory(listTask.Result);
-
-         foreach (Item item in itemList) {
-            if (item.category == Item.Category.Weapon && EquipmentXMLManager.self.getWeaponData(item.itemTypeId) != null) {
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-               item.paletteNames = weaponData.palettes;
-            }
-            if (item.category == Item.Category.Armor && EquipmentXMLManager.self.getArmorData(item.itemTypeId) != null) {
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-               item.paletteNames = armorData.palettes;
-            }
-            if (item.category == Item.Category.Hats) {
-               HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-               item.paletteNames = hatData.palettes;
-            }
-         }
 
          PanelManager.self.itemSelectionScreen.receiveItemsFromServer(itemList, pageIndex, totalCount);
       }

@@ -144,7 +144,7 @@ public class MyNetworkManager : NetworkManager
    public override void OnStopClient () {
       clientStopping?.Invoke();
 
-      base.OnStopClient();      
+      base.OnStopClient();
    }
 
    #endregion
@@ -330,6 +330,11 @@ public class MyNetworkManager : NetworkManager
 
             // Tell the player information about the Area we're going to send them to
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               // Storing Login info
+               if (conn.address != "localhost") {
+                  DB_Main.storeLoginInfo(player.accountId, player.userId, conn.address, Global.machineIdentifier, "game");
+               }
+
                // Get map customizations if needed
                MapCustomizationData customizationData = new MapCustomizationData();
                if (mapOwnerId != -1) {
@@ -388,7 +393,7 @@ public class MyNetworkManager : NetworkManager
          // Creates a copy of the npc data with a cleared list of Quests and Gifts
          NPCData newNPCData = new NPCData(npcData.npcId, npcData.greetingTextStranger, npcData.greetingTextAcquaintance,
             npcData.greetingTextCasualFriend, npcData.greetingTextCloseFriend, npcData.greetingTextBestFriend, npcData.giftOfferNPCText,
-            npcData.giftLikedText, npcData.giftNotLikedText, npcData.name, 
+            npcData.giftLikedText, npcData.giftNotLikedText, npcData.name,
             npcData.interactable, npcData.hasTradeGossipDialogue, npcData.hasGoodbyeDialogue, npcData.lastUsedQuestId, npcData.questId, new List<NPCGiftData>(),
             npcData.iconPath, npcData.spritePath, npcData.isHireable, npcData.landMonsterId, npcData.achievementIdHiringRequirement, npcData.isActive, npcData.shadowOffsetY, npcData.shadowScale, npcData.isStationary);
 

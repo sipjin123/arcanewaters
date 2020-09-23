@@ -87,14 +87,13 @@ public class TutorialData3 : MonoBehaviour
       new Tutorial3("JoinVoyage", "Join a voyage",
       new List<TutorialStep3>() {
          new TutorialStep3(TutorialTrigger.OpenVoyagePanel, "Great adventures await you at sea! Near most docks in a town, you will find a voyage signboard. Look for one and click on it!"),
-         new TutorialStep3(TutorialTrigger.Manual, "Voyages are set in distant, unexplored seas. These destinations regularly change."),
-         new TutorialStep3(TutorialTrigger.SpawnInVoyage, "By selecting a map, you will be automatically matched with other players. Choose a PvE map and join the expedition!"),
+         new TutorialStep3(TutorialTrigger.SpawnInVoyage, "Voyages are set in distant, unexplored seas. By selecting a map, you will be automatically matched with other players. Choose a PvE map and join the expedition!"),
          new TutorialStep3(TutorialTrigger.Manual, "The group composition is displayed on the left of your screen. You can interact with the members of your group through the chat."),
          new TutorialStep3(TutorialTrigger.Manual, "You can leave your group and the map at any time by pressing the X button above the group members. But avast! Don't do it yet!"),
          new TutorialStep3(TutorialTrigger.Manual, "The goal of this voyage is to find and capture treasure sites before rival groups do."),
          new TutorialStep3(TutorialTrigger.EnterTreasureSiteRange, "Treasure sites show up as chests in the minimap. Search for one now! Beware the sea monsters and pirates, though."),
          new TutorialStep3(TutorialTrigger.Manual, "There, you found one! We won't go further in this tutorial, but I can tell you that once captured, a treasure site can be explored in search of riches!"),
-         new TutorialStep3(TutorialTrigger.Manual, "This is all for voyages. To continue with other tutorials, click on the right arrow."),
+         new TutorialStep3(TutorialTrigger.LeaveVoyageGroup, "This is all for voyages. To continue with other tutorials, leave the voyage by clicking on the X button above the group members."),
       }),
 
 
@@ -152,4 +151,5 @@ public enum TutorialTrigger
    MoveShipForward = 32,
    TurnShipLeft = 33,
    TurnShipRight = 34,
+   LeaveVoyageGroup = 35,
 };
