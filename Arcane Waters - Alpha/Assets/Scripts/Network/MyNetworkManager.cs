@@ -332,7 +332,7 @@ public class MyNetworkManager : NetworkManager
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                // Storing Login info
                if (conn.address != "localhost") {
-                  DB_Main.storeLoginInfo(player.accountId, player.userId, conn.address, Global.machineIdentifier, "game");
+                  DB_Main.storeLoginInfo(player.userId, player.accountId, conn.address, Global.machineIdentifier ?? "", "game");
                }
 
                // Get map customizations if needed

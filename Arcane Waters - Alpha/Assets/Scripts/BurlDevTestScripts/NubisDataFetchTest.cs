@@ -16,7 +16,7 @@ public class NubisDataFetchTest : MonoBehaviour
 
    #endregion
 
-   public static bool isDevTestDevice () {
+   public static bool isUsingDevTestDevice () {
       if (SystemInfo.deviceName == DEVICE_NAME1 || SystemInfo.deviceName == DEVICE_NAME2) {
          return true;
       }

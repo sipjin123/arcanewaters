@@ -145,7 +145,7 @@ public class RollingTextFade : ClientMonoBehaviour {
             bool wasSpaceBar = textInfo.characterInfo[currentCharacter].character == ' ';
 
             // Play a sound
-            SoundManager.play2DClip(wasSpaceBar ? SoundManager.Type.Character_Type_2 : SoundManager.Type.Character_Type_1, allowBurst: true);
+            SoundManager.play2DClip(SoundManager.Type.Character_Type_3);
 
             if (currentCharacter + 1 < characterCount) currentCharacter += 1;
 

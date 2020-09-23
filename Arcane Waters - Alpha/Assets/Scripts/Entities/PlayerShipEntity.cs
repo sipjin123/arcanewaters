@@ -381,10 +381,15 @@ public class PlayerShipEntity : ShipEntity
       updateSpeedUpDisplay(0, isOn, false, true);
    }
 
-   [ServerOnly]
    protected override void OnDestroy () {
       base.OnDestroy();
 
+      // Handle OnDestroy logic in a separate method so it can be correctly stripped
+      onBeingDestroyedServer();
+   }
+
+   [ServerOnly]
+   private void onBeingDestroyedServer () {
       // We don't care when the Destroy was initiated by a warp
       if (this.isAboutToWarpOnServer) {
          return;

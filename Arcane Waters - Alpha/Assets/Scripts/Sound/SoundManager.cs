@@ -94,7 +94,7 @@ public class SoundManager : MonoBehaviour {
       Crusty_Titan_Attack = 860, Crusty_Titan_Hurt = 861, Crusty_Titan_Death = 862,
 
       // Misc effects
-      Blip_2 = 900, Powerup = 901, Character_Type_1 = 902, Character_Type_2 = 903,
+      Blip_2 = 900, Powerup = 901, Character_Type_1 = 902, Character_Type_2 = 903, Character_Type_3 = 904,
 
       // Ambience
       Ambience_Ship_Creeks = 1000, Ambience_Forest_Chirps = 1001, Ambience_House = 1002, Ambience_Town = 1003,
@@ -214,6 +214,8 @@ public class SoundManager : MonoBehaviour {
          case Type.Ambience_Outdoor:
          case Type.Ambience_Town:
             return 3f;
+         case Type.Character_Type_3:
+            return 0.35f;
          case Type.Battle_Intro:
          case Type.Battle_Outro:
             return .4f;
