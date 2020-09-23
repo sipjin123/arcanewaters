@@ -38,7 +38,7 @@ namespace ServerCommunicationHandlerv2 {
       public List<ServerData> serversToUpdate = new List<ServerData>();
 
       // The valid time interval to determine if server is active
-      public static int SERVER_ACTIVE_TIME = 3;
+      public static int SERVER_ACTIVE_TIME = 5;
 
       // Reference to the shared server data handler
       public SharedServerDataHandler sharedServerDataHandler;
@@ -116,27 +116,28 @@ namespace ServerCommunicationHandlerv2 {
 
       private void processServerDeclaredInvites () {
          // This function is for non main servers, the function will fetch all invites that is declared by the main server and send the invites to the connected users
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         try {
             // Fetch invites for this server
             List<VoyageInviteData> serverDeclaredInvites = ServerDataWriter.self.fetchVoyageInvitesFromText();
 
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (VoyageInviteData voyageInvite in serverDeclaredInvites) {
-                  bool existsInProcessedList = existsInProcessList(ourServerData, voyageInvite);
+            foreach (VoyageInviteData voyageInvite in serverDeclaredInvites) {
+               bool existsInProcessedList = existsInProcessList(ourServerData, voyageInvite);
 
-                  // Send out the invite to the connected user and cache it as processed invites for the origin server to see
-                  if (ourServerData.connectedUserIds.Contains(voyageInvite.inviteeId) && !existsInProcessedList) {
-                     ServerNetwork.self.server.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
-                     ourServerData.processedVoyageInvites.Add(voyageInvite);
+               // Send out the invite to the connected user and cache it as processed invites for the origin server to see
+               if (ourServerData.connectedUserIds.Contains(voyageInvite.inviteeId) && !existsInProcessedList) {
+                  ServerNetwork.self.server.handleVoyageGroupInvite(voyageInvite.voyageGroupId, voyageInvite.inviterName, voyageInvite.inviteeId);
+                  ourServerData.processedVoyageInvites.Add(voyageInvite);
 
-                     // Only keep reference to 100 entries then delete the first entry if it exceeds
-                     if (ourServerData.processedVoyageInvites.Count > MAX_PROCESSED_INVITE_CACHE) {
-                        ourServerData.processedVoyageInvites.RemoveAt(0);
-                     }
+                  // Only keep reference to 100 entries then delete the first entry if it exceeds
+                  if (ourServerData.processedVoyageInvites.Count > MAX_PROCESSED_INVITE_CACHE) {
+                     ourServerData.processedVoyageInvites.RemoveAt(0);
                   }
                }
-            });
-         });
+            }
+         } catch {
+            D.debug("Blocked Action: Avoid sharing violation on Read!");
+            return;
+         }
 
          // If we have a pending voyage invite, check other servers if they have successfully processed it
          if (ourServerData.pendingVoyageInvites.Count > 0) {

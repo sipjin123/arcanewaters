@@ -296,18 +296,26 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          NetEntity iEntity = iBehaviour as NetEntity;
 
          // If the entity is a fellow bot ship with same guild, ignore it
-         if (iEntity == null || (iEntity.isBotShip() && iEntity.guildId == guildId))
-            continue;
-
-         // If enemy isn't within radius, early out
-         if ((transform.position - iEntity.transform.position).sqrMagnitude > aggroConeRadius * aggroConeRadius)
-            continue;
-
-         // If enemy isn't within cone aggro range, early out
-         if (Vector2.Dot(Util.getDirectionFromFacing(facing), (iEntity.transform.position - transform.position).normalized) < 1.0f - degreesToDot) {
+         if (iEntity == null || (iEntity.isBotShip() && iEntity.guildId == guildId)) {
             continue;
          }
 
+         // Reset the z axis value to ensure the square magnitude is not compromised by the z axis
+         Vector3 currentPosition = transform.position;
+         currentPosition.z = 0;
+         Vector3 targetPosition = iEntity.transform.position;
+         targetPosition.z = 0;
+
+         // If enemy isn't within radius, early out
+         if ((currentPosition - targetPosition).sqrMagnitude > aggroConeRadius * aggroConeRadius) {
+            continue;
+         }
+
+         // If enemy isn't within cone aggro range, early out
+         if (Vector2.Dot(Util.getDirectionFromFacing(facing), (targetPosition - currentPosition).normalized) < 1.0f - degreesToDot) {
+            continue;
+         }
+       
          // We can see the enemy, attack it
          _attackers[iEntity.netId] = TimeManager.self.getSyncedTime();
       }
@@ -365,7 +373,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             // Get ID from ship data field
             // Field arrives in format <ship type>: <ship name>
             int type = int.Parse(field.v.Split(':')[0]);
-            isDebug = true;
 
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;

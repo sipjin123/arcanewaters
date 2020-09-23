@@ -33,11 +33,17 @@ public class TreasureManager : MonoBehaviour {
       Area area = AreaManager.self.getArea(instance.areaKey);
 
       // Find all of the possible treasure spots in this Area
+      int chestId = 0;
       foreach (TreasureSpot spot in area.GetComponentsInChildren<TreasureSpot>()) {
          // Have a random chance of spawning a treasure chest there
          if (Random.Range(0f, 1f) <= spot.spawnChance) {
             TreasureChest chest = createTreasure(instance, spot);
+            chest.chestSpawnId = chestId;
+
+            // The Instance needs to keep track of all Networked objects inside
+            instance.entities.Add(chest);
          }
+         chestId++;
       }
    }
 
@@ -60,9 +66,6 @@ public class TreasureManager : MonoBehaviour {
 
       // Keep track of the chests that we've created
       _chests.Add(chest.id, chest);
-
-      // The Instance needs to keep track of all Networked objects inside
-      instance.entities.Add(chest);
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(chest.gameObject);

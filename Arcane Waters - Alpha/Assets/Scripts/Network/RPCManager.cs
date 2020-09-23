@@ -925,8 +925,9 @@ public class RPCManager : NetworkBehaviour {
    
    [TargetRpc]
    public void Target_ReceiveUpdatedPlayersPosition (NetworkConnection connection, CompressedClientPositions[] clientPositions) {
+      // TODO: Confirm cause of location sync issue before implementing or removing this
       // Local client received the other client positions in the area
-      StartCoroutine(CO_UpdateLocalPlayersPositions(clientPositions));
+      //StartCoroutine(CO_UpdateLocalPlayersPositions(clientPositions));
    }
 
    private IEnumerator CO_UpdateLocalPlayersPositions (CompressedClientPositions[] clientPositions) {
@@ -3430,6 +3431,10 @@ public class RPCManager : NetworkBehaviour {
       // Add it to their inventory
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          item = DB_Main.createNewItem(_player.userId, item);
+
+         // Update the treasure chest status if is opened
+         D.debug("Updating treasure status: " + _player.userId + " : " + chest.chestSpawnId + " : " + _player.areaKey);
+         DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
       });
 
       // Registers the interaction of treasure chests to the achievement database for recording

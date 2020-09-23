@@ -92,6 +92,9 @@ public class Instance : NetworkBehaviour
    // Our network ident
    public NetworkIdentity netIdent;
 
+   // List of treasure state data
+   public List<TreasureStateData> treasureStateDataList = new List<TreasureStateData>();
+
    #endregion
 
    public void Awake () {
@@ -105,7 +108,9 @@ public class Instance : NetworkBehaviour
          transform.SetParent(InstanceManager.self.transform);
 
          // Register this instance to the instance manager for non local clients
-         InstanceManager.self.registerClientInstance(this);
+         if (!NetworkServer.active) {
+            InstanceManager.self.registerClientInstance(this);
+         }
       }
 
       // Spawn all the area prefabs that are specific to this instance
@@ -115,6 +120,10 @@ public class Instance : NetworkBehaviour
 
       // Routinely check if the instance is empty
       InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
+   }
+
+   public void addTreasureState (TreasureStateData stateData) {
+      treasureStateDataList.Add(stateData);
    }
 
    public int getPlayerCount() {

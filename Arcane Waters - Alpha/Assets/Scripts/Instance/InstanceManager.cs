@@ -77,25 +77,30 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public void registerClientPlayerBody (NetworkBehaviour entity) {
+      // TODO: Confirm cause of location sync issue before implementing or removing this
+      /*
       if (!queuedPlayerRegistry.Contains(entity)) {
          if (_instances.Count > 0) {
-            PlayerBodyEntity bodyNew = (PlayerBodyEntity) entity;
-            
-            if (_instances.Values.ToList().Find(_=>_.id == bodyNew.instanceId) != null) {
-               // If the instance exists, register the entity directly to the player body list
-               _instances.Values.ToList()[0].registerClientPlayerBody(entity);
-            } else {
-               // If the instance does not exists, add to queue
-               this.queuedPlayerRegistry.Add(entity);
+            PlayerBodyEntity newBody = (PlayerBodyEntity) entity;
+            if (newBody != null) {
+               if (_instances.Values.ToList().Find(_ => _.id == newBody.instanceId) != null) {
+                  // If the instance exists, register the entity directly to the player body list
+                  _instances.Values.ToList()[0].registerClientPlayerBody(entity);
+               } else {
+                  // If the instance does not exists, add to queue
+                  this.queuedPlayerRegistry.Add(entity);
+               }
             }
          } else {
             // If there is no instance, add to queue
             this.queuedPlayerRegistry.Add(entity);
          }
-      }
+      }*/
    }
 
    public void registerClientInstance (Instance clientInstance) {
+      // TODO: Confirm cause of location sync issue before implementing or removing this
+      /*
       // Local clients only have access to one instance, the current instance they are spawned in
       _instances.Clear();
       _instances.Add(clientInstance.id, clientInstance);
@@ -111,7 +116,7 @@ public class InstanceManager : MonoBehaviour {
          if (queuedPlayerRegistry.Count > 0) {
             queuedPlayerRegistry.RemoveAt(0);
          }
-      }
+      }*/
    }
 
    public void addDiscoveryToInstance (Discovery discovery, Instance instance) {

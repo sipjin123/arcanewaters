@@ -20,6 +20,9 @@ public class TreasureChest : NetworkBehaviour {
    [SyncVar]
    public long creationTime;
 
+   // The spawn id of the chest based on the map data
+   public int chestSpawnId;
+
    // Our sprite renderer
    public SpriteRenderer spriteRenderer;
 

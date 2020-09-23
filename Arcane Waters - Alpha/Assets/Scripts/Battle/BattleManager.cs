@@ -855,19 +855,25 @@ public class BattleManager : MonoBehaviour {
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
-                  Vector3 chestPos = battler.player.transform.position;
-                  if (!foundPlayer) {
-                     foundPlayer = true;
+                  Vector3 chestPos = Vector3.zero;
+                  try {
+                     chestPos = battler.player.transform.position;
+                     if (!foundPlayer) {
+                        foundPlayer = true;
 
-                     // Initialize the spawn positions if there are multiple enemies dropping loots
-                     if (spawnPositions.Count < 1) {
-                        Transform[] spawnNodeList = ((Enemy) battler.player).lootSpawnPositions;
-                        foreach (Transform spawnNode in spawnNodeList) {
-                           float randomOffset = Random.Range(-distanceMagnitude, distanceMagnitude);
-                           Vector3 newPosition = new Vector3(spawnNode.position.x + randomOffset, spawnNode.position.y + randomOffset, spawnNode.position.z);
-                           spawnPositions.Add(newPosition);
+                        // Initialize the spawn positions if there are multiple enemies dropping loots
+                        if (spawnPositions.Count < 1) {
+                           Transform[] spawnNodeList = ((Enemy) battler.player).lootSpawnPositions;
+                           foreach (Transform spawnNode in spawnNodeList) {
+                              float randomOffset = Random.Range(-distanceMagnitude, distanceMagnitude);
+                              Vector3 newPosition = new Vector3(spawnNode.position.x + randomOffset, spawnNode.position.y + randomOffset, spawnNode.position.z);
+                              spawnPositions.Add(newPosition);
+                           }
                         }
                      }
+                  } catch {
+                     D.debug("Error! Battler Player does not exist!");
+                     continue;
                   }
 
                   // Registers the kill count of the combat
