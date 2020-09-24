@@ -310,7 +310,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       // Only change our movement if enough time has passed
-      if (this is SeaEntity && Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+      if (this is SeaEntity && NetworkTime.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
          return;
       }
 
@@ -337,9 +337,7 @@ public class NetEntity : NetworkBehaviour
 
       Vector3 localPos = this.transform.localPosition;
 
-      D.log($"NetEntity is being destroyed: { isLocalPlayer }, { this is PlayerShipEntity }, { ClientManager.isApplicationQuitting }, { TitleScreen.self.isActive() }");
       if (isLocalPlayer && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
-         D.log("Should show loading screen");
          // Show the loading screen
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
@@ -649,9 +647,9 @@ public class NetEntity : NetworkBehaviour
       List<uint> oldAttackers = new List<uint>();
 
       // Take note of all the attackers that must be removed
-      foreach (KeyValuePair<uint, float> KV in _attackers) {
+      foreach (KeyValuePair<uint, double> KV in _attackers) {
          NetEntity entity = MyNetworkManager.fetchEntityFromNetId<NetEntity>(KV.Key);
-         if (entity == null || entity.isDead() || TimeManager.self.getSyncedTime() - KV.Value > ATTACKER_STATUS_DURATION) {
+         if (entity == null || entity.isDead() || NetworkTime.time - KV.Value > ATTACKER_STATUS_DURATION) {
             oldAttackers.Add(KV.Key);
          }
       }
@@ -788,7 +786,7 @@ public class NetEntity : NetworkBehaviour
             _body.AddForce(forceToApply.normalized * baseMoveSpeed * frameRateMultiplier);
 
             // Make note of the time
-            _lastMoveChangeTime = Time.time;
+            _lastMoveChangeTime = NetworkTime.time;
 
             break;
          }
@@ -811,15 +809,15 @@ public class NetEntity : NetworkBehaviour
 
    protected virtual void handleDelayMoveMode () {
       // Check if enough time has passed for us to change our facing direction
-      bool canChangeDirection = (Time.time - _lastFacingChangeTime > getTurnDelay());
+      bool canChangeDirection = (NetworkTime.time - _lastFacingChangeTime > getTurnDelay());
 
       if (canChangeDirection) {
          if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyFacing(-1);
-            _lastFacingChangeTime = Time.time;
+            _lastFacingChangeTime = NetworkTime.time;
          } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyFacing(+1);
-            _lastFacingChangeTime = Time.time;
+            _lastFacingChangeTime = NetworkTime.time;
          }
       }
 
@@ -829,7 +827,7 @@ public class NetEntity : NetworkBehaviour
          _body.AddForce(forceToApply.normalized * getMoveSpeed());
 
          // Make note of the time
-         _lastMoveChangeTime = Time.time;
+         _lastMoveChangeTime = NetworkTime.time;
       }
    }
 
@@ -1317,13 +1315,13 @@ public class NetEntity : NetworkBehaviour
    protected List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
 
    // The time at which we last applied a change to our movement
-   protected float _lastMoveChangeTime;
+   protected double _lastMoveChangeTime;
 
    // The time at which we last changed our facing direction
-   protected float _lastFacingChangeTime;
+   protected double _lastFacingChangeTime;
 
    // The time at which we last changed our movement angle
-   protected float _lastAngleChangeTime;
+   protected double _lastAngleChangeTime;
 
    // The time at which we last sent our input to the server
    protected double _lastInputChangeTime;
@@ -1332,7 +1330,7 @@ public class NetEntity : NetworkBehaviour
    protected Text _nameText;
 
    // Entities that have attacked us and the time when they attacked
-   protected Dictionary<uint, float> _attackers = new Dictionary<uint, float>();
+   protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();
 
    // Did the Entity move last frame?
    private bool _movedLastFrame;

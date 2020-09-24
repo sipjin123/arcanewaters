@@ -213,14 +213,14 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Handles attack animations
-      if (Util.netTime() > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
+      if (NetworkTime.time > _attackStartAnimateTime && !_hasAttackAnimTriggered) {
          _simpleAnim.stayAtLastFrame = true;
          isAttacking = true;
          _hasAttackAnimTriggered = true;
-         _attackEndAnimateTime = Util.netTime() + ATTACK_DURATION;
+         _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
       } else {
-         if (isAttacking && (Util.netTime() > _attackEndAnimateTime)) {
-            _attackStartAnimateTime = Util.netTime() + 50;
+         if (isAttacking && (NetworkTime.time > _attackEndAnimateTime)) {
+            _attackStartAnimateTime = NetworkTime.time + 50;
             isAttacking = false;
             _simpleAnim.stayAtLastFrame = false;
             isMinionPlanning = false;
@@ -261,7 +261,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Only change our movement if enough time has passed
-      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+      if (NetworkTime.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
          return;
       }
 
@@ -291,7 +291,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2)sortPoint.transform.position).normalized;
 
          _body.AddForce(waypointDirection * getMoveSpeed());
-         _lastMoveChangeTime = Time.time;
+         _lastMoveChangeTime = NetworkTime.time;
 
          // Clears a node as the unit passes by
          float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - sortPoint.transform.position);

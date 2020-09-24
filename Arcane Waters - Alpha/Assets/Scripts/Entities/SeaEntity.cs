@@ -142,7 +142,7 @@ public class SeaEntity : NetEntity
    }
 
    [TargetRpc]
-   public void Target_CreateLocalAttackCircle (NetworkConnection connection, Vector2 startPos, Vector2 endPos, float startTime, float endTime) {
+   public void Target_CreateLocalAttackCircle (NetworkConnection connection, Vector2 startPos, Vector2 endPos, double startTime, double endTime) {
       // Create a new Attack Circle object from the prefab
       AttackCircle attackCircle = Instantiate(localAttackCirclePrefab, endPos, Quaternion.identity);
       attackCircle.creator = this;
@@ -218,7 +218,7 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, float startTime, float endTime, int abilityId, bool showCircle) {
+   public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, double startTime, double endTime, int abilityId, bool showCircle) {
       ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
 
       if (showCircle) {
@@ -280,7 +280,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_ShowExplosion (uint attackerNetId, Vector2 pos, int damage, Attack.Type attackType) {
-      _lastDamagedTime = Time.time;
+      _lastDamagedTime = NetworkTime.time;
 
       if (attackType == Attack.Type.None) {
          List<Effect.Type> effectTypes = EffectManager.getEffects(attackType);
@@ -389,7 +389,7 @@ public class SeaEntity : NetEntity
    }
 
    public virtual void noteAttacker (uint netId) {
-      _attackers[netId] = TimeManager.self.getSyncedTime();
+      _attackers[netId] = NetworkTime.time;
    }
 
    public bool hasReloaded () {
@@ -521,10 +521,10 @@ public class SeaEntity : NetEntity
    protected void spawnProjectileAndIndicatorsOnClients (Vector2 spot, int abilityId, Vector2 spawnPosition, float delay) {
       // Creates the projectile and the target circle
       if (this is PlayerShipEntity) {
-         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, Util.netTime(), Util.netTime() + delay);
-         Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, false);
+         Target_CreateLocalAttackCircle(connectionToClient, this.transform.position, spot, NetworkTime.time, NetworkTime.time + delay);
+         Rpc_CreateAttackCircle(spawnPosition, spot, NetworkTime.time, NetworkTime.time + delay, abilityId, false);
       } else {
-         Rpc_CreateAttackCircle(spawnPosition, spot, Util.netTime(), Util.netTime() + delay, abilityId, true);
+         Rpc_CreateAttackCircle(spawnPosition, spot, NetworkTime.time, NetworkTime.time + delay, abilityId, true);
       }
    }
 
@@ -683,7 +683,7 @@ public class SeaEntity : NetEntity
          Vector2 velocity = direction.normalized * abilityData.projectileSpeed;//NetworkedVenomProjectile.MOVE_SPEED;
 
          // Delay the firing a little bit to compensate for lag
-         float timeToStartFiring = TimeManager.self.getSyncedTime() + .150f;
+         double timeToStartFiring = NetworkTime.time + .150f;
 
          // Note the time at which we last successfully attacked
          _lastAttackTime = NetworkTime.time;
@@ -702,14 +702,14 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_FireTimedGenericProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
+   public void Rpc_FireTimedGenericProjectile (double startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
       StartCoroutine(CO_FireTimedGenericProjectile(startTime, velocity, startPos, endPos, abilityId));
    }
 
-   protected IEnumerator CO_FireTimedGenericProjectile (float startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
-      float delay = startTime - TimeManager.self.getSyncedTime();
-
-      yield return new WaitForSeconds(delay);
+   protected IEnumerator CO_FireTimedGenericProjectile (double startTime, Vector2 velocity, Vector3 startPos, Vector3 endPos, int abilityId) {
+      while (NetworkTime.time < startTime) {
+         yield return null;
+      }
 
       ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
 
@@ -743,16 +743,16 @@ public class SeaEntity : NetEntity
    protected double _lastAttackTime = float.MinValue;
 
    // The time at which we last took damage
-   protected float _lastDamagedTime = float.MinValue;
+   protected double _lastDamagedTime = float.MinValue;
 
    // How far back in time we check to see if this ship was recently involved in some combat action
    protected static float RECENT_COMBAT_COOLDOWN = 5f;
 
    // The time expected to play the animation
-   protected float _attackStartAnimateTime = 100;
+   protected double _attackStartAnimateTime = 100;
 
    // The time expected to reset the animation
-   protected float _attackEndAnimateTime = 0;
+   protected double _attackEndAnimateTime = 0;
 
    // A flag to check if the attack anim has been triggered
    protected bool _hasAttackAnimTriggered = false;

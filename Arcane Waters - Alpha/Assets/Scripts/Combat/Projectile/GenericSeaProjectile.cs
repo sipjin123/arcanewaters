@@ -33,7 +33,7 @@ public class GenericSeaProjectile : MonoBehaviour {
 
    #endregion
 
-   public void init (float startTime, float endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, int abilityId, GameObject targetObj = null) {
+   public void init (double startTime, double endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, int abilityId, GameObject targetObj = null) {
       if (targetObj != null) {
          _targetObject = targetObj;
       }
@@ -96,12 +96,12 @@ public class GenericSeaProjectile : MonoBehaviour {
       }
 
       // Move from the start to the end point
-      float totalLifetime = _endTime - _startTime;
-      float lerpTime = (TimeManager.self.getSyncedTime() - _startTime) / totalLifetime;
-      Util.setXY(this.transform, Vector2.Lerp(_startPos, _endPos, lerpTime));
+      double totalLifetime = _endTime - _startTime;
+      double lerpTime = (NetworkTime.time - _startTime) / totalLifetime;
+      Util.setXY(this.transform, Vector2.Lerp(_startPos, _endPos, (float)lerpTime));
 
       // If we've been alive long enough, destroy ourself
-      if (TimeManager.self.getSyncedTime() > this._endTime) {
+      if (NetworkTime.time > this._endTime) {
          // Detach the trails so that they continue to show up a little while longer
          if (particleSystemTrail != null && particleSystemTrail.isPlaying) {
             particleSystemTrail.transform.parent = null;
@@ -134,10 +134,10 @@ public class GenericSeaProjectile : MonoBehaviour {
    protected Vector2 _endPos;
 
    // Our Start Time
-   protected float _startTime;
+   protected double _startTime;
 
    // Our End Time
-   protected float _endTime;
+   protected double _endTime;
 
    #endregion
 }

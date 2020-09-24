@@ -470,7 +470,7 @@ public class BattleManager : MonoBehaviour {
             }
 
             // Force the cooldown to reach current time so a new ability can be casted
-            source.cooldownEndTime = Util.netTime() - .1f;
+            source.cooldownEndTime = NetworkTime.time - .1f;
 
             // Send it to clients
             battle.Rpc_SendCombatAction(stringList.ToArray(), BattleActionType.Attack, true);
@@ -500,7 +500,7 @@ public class BattleManager : MonoBehaviour {
       bool wasBlocked = false;
       bool wasCritical = false;
       bool isMultiTarget = targets.Count > 1;
-      float timeToWait = battle.getTimeToWait(source, targets);
+      double timeToWait = battle.getTimeToWait(source, targets);
 
       List<BattleAction> actions = new List<BattleAction>();
 
@@ -585,7 +585,7 @@ public class BattleManager : MonoBehaviour {
             damage *= decreaseMultiply;
             
             // Make note of the time that this battle action is going to be fully completed, considering animation times
-            float timeAttackEnds = Util.netTime() + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
+            double timeAttackEnds = NetworkTime.time + timeToWait + attackAbilityData.getTotalAnimLength(source, target);
 
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeAttackEnds + cooldownDuration;
@@ -642,7 +642,7 @@ public class BattleManager : MonoBehaviour {
 
          foreach (Battler target in targets) {
             // Make note of the time that this battle action is going to be fully completed, considering animation times
-            float timeBuffEnds = Util.netTime() + timeToWait + buffAbility.getTotalAnimLength(source, target);
+            double timeBuffEnds = NetworkTime.time + timeToWait + buffAbility.getTotalAnimLength(source, target);
             float cooldownDuration = abilityData.abilityCooldown * source.getCooldownModifier();
             source.cooldownEndTime = timeBuffEnds + cooldownDuration;
 
@@ -675,7 +675,7 @@ public class BattleManager : MonoBehaviour {
 
    // Stance action does not requires another target or an ability inventory index, thus, being removed from executeBattleAction
    public void executeStanceChangeAction (Battle battle, Battler source, Battler.Stance newStance) {
-      float timeActionEnds = Util.netTime() + source.getStanceCooldown(newStance);
+      double timeActionEnds = NetworkTime.time + source.getStanceCooldown(newStance);
       StanceAction stanceAction = new StanceAction(battle.battleId, source.userId, timeActionEnds, newStance);
 
       string serializedValue = stanceAction.serialize();
@@ -708,8 +708,8 @@ public class BattleManager : MonoBehaviour {
       return total;
    }
 
-   protected IEnumerator applyActionAfterDelay (float timeToWait, BattleAction actionToApply, bool hasMultipleTargets) {
-      yield return new WaitForSeconds(timeToWait);
+   protected IEnumerator applyActionAfterDelay (double timeToWait, BattleAction actionToApply, bool hasMultipleTargets) {
+      yield return new WaitForSecondsDouble(timeToWait);
 
       // Check if the battle has ended
       Battle battle = getBattle(actionToApply.battleId);
@@ -749,7 +749,7 @@ public class BattleManager : MonoBehaviour {
 
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
-               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, Util.netTime(), timeToSubtract);
+               CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
                D.debug("Target or Source is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
                AbilityManager.self.execute(new[] { cancelAction });
             } else {

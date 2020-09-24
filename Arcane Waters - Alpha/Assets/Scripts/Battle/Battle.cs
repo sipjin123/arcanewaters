@@ -94,7 +94,7 @@ public class Battle : NetworkBehaviour {
             battler.transform.SetParent(transform, false);
          }
 
-         float bufferedCooldown = battler.cooldownEndTime + MONSTER_ATTACK_BUFFER;
+         float bufferedCooldown = (float)battler.cooldownEndTime + MONSTER_ATTACK_BUFFER;
 
          // Dead battlers don't do anything
          if (battler.isDead()) {
@@ -103,7 +103,7 @@ public class Battle : NetworkBehaviour {
 
          // Basic Monster AI.
          // If any of our monsters are ready to attack, then do so
-         if (battler.isMonster() && Util.netTime() > battler.animatingUntil && Util.netTime() > bufferedCooldown) {
+         if (battler.isMonster() && NetworkTime.time > battler.animatingUntil && NetworkTime.time > bufferedCooldown) {
             BattlePlan battlePlan = battler.getBattlePlan(this);
             BattlerData battlerData = MonsterManager.self.getBattler(battler.enemyType);
             List<Battler> battlerAllies = new List<Battler>();
@@ -255,17 +255,17 @@ public class Battle : NetworkBehaviour {
       return true;
    }
 
-   public float getTimeToWait (Battler sourceBattler, List<Battler> targetBattlers) {
-      float timeToWait = 0f;
+   public double getTimeToWait (Battler sourceBattler, List<Battler> targetBattlers) {
+      double timeToWait = 0f;
 
       // Check if our sprite or the target sprite is busy being animated
       foreach (Battler targetBattler in targetBattlers) {
-         if (sourceBattler.animatingUntil > Util.netTime() || targetBattler.animatingUntil > Util.netTime()) {
+         if (sourceBattler.animatingUntil > NetworkTime.time || targetBattler.animatingUntil > NetworkTime.time) {
             // Check if the source or the target has the longer wait time
-            float diff = Mathf.Max(sourceBattler.animatingUntil - Util.netTime(), targetBattler.animatingUntil - Util.netTime());
+            double diff = Util.maxDouble(sourceBattler.animatingUntil - NetworkTime.time, targetBattler.animatingUntil - NetworkTime.time);
 
             // Set our timeToWait to the largest value we've found so far
-            timeToWait = Mathf.Max(timeToWait, diff);
+            timeToWait = Util.maxDouble(timeToWait, diff);
          }
       }
 

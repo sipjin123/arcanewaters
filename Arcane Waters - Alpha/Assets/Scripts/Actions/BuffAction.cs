@@ -10,10 +10,10 @@ public class BuffAction : BattleAction {
    #region Public Variables
 
    // The time at which the buff starts
-   public float buffStartTime;
+   public double buffStartTime;
 
    // The time at which the buff ends
-   public float buffEndTime;
+   public double buffEndTime;
 
    // The value of the buff is there is one
    public int buffValue;
@@ -31,8 +31,8 @@ public class BuffAction : BattleAction {
 
    public BuffAction () { }
 
-   public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, float buffStartTime, float buffEndTime,
-           float cooldownDuration, float actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal, Element buffElement, BonusStatType bonusStatType, BuffActionType buffActionType) {
+   public BuffAction (int battleId, int abilityInventoryIndex, int sourceId, int targetId, double buffStartTime, double buffEndTime,
+           float cooldownDuration, double actionEndTime, int sourceApChange, int targetApChange, int abilityGlobalID, int buffVal, Element buffElement, BonusStatType bonusStatType, BuffActionType buffActionType) {
       this.battleId = battleId;
       this.abilityInventoryIndex = abilityInventoryIndex;
       this.sourceId = sourceId;

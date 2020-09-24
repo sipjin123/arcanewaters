@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using Mirror;
 
 public class BattleSelectionSprite : MonoBehaviour {
    #region Public Variables
@@ -92,7 +93,7 @@ public class BattleSelectionSprite : MonoBehaviour {
       }*/
 
       // A small offset applied to make the arrows bounce
-      float offset = (Util.netTime() % 1 > .5f) ? .01f : -.01f;
+      float offset = (NetworkTime.time % 1 > .5f) ? .01f : -.01f;
 
       north.transform.localPosition = new Vector3(0f, verticalDistance + offset, north.transform.localPosition.z);
       south.transform.localPosition = new Vector3(0f, -verticalDistance - offset, south.transform.localPosition.z);

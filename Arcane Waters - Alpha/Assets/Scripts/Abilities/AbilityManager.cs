@@ -140,7 +140,7 @@ public class AbilityManager : MonoBehaviour
          Battle battle = BattleManager.self.getBattle(action.battleId);
          Battler sourceBattler = battle.getBattler(action.sourceId);
          Battler targetBattler = battle.getBattler(action.targetId);
-         float timeToWait = 0;
+         double timeToWait = 0;
 
          // Update timestamps
          sourceBattler.lastAbilityEndTime = action.actionEndTime;
@@ -169,7 +169,7 @@ public class AbilityManager : MonoBehaviour
                actionToExecute = attackAction;
 
                // Check how long we need to wait before displaying this action
-               timeToWait = actionToExecute.actionEndTime - Util.netTime() - animationLength ;
+               timeToWait = actionToExecute.actionEndTime - NetworkTime.time - animationLength ;
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
@@ -182,7 +182,7 @@ public class AbilityManager : MonoBehaviour
                sourceBattler.lastStanceChange = actionToExecute.actionEndTime;
 
                // Check how long we need to wait before displaying this action
-               timeToWait = actionToExecute.actionEndTime - Util.netTime();
+               timeToWait = actionToExecute.actionEndTime - NetworkTime.time;
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
@@ -192,7 +192,7 @@ public class AbilityManager : MonoBehaviour
                actionToExecute = buffAction;
 
                // Check how long we need to wait before displaying this action
-               timeToWait = actionToExecute.actionEndTime - Util.netTime();
+               timeToWait = actionToExecute.actionEndTime - NetworkTime.time;
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.buffDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;

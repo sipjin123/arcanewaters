@@ -117,27 +117,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    // The time at which we can use the next ability
    [SyncVar]
-   public float cooldownEndTime;
+   public double cooldownEndTime;
 
    // The time at which we can switch into another stance.
    [SyncVar]
-   public float stanceCooldownEndTime;
+   public double stanceCooldownEndTime;
 
    // Used for showing in the UI the time remaining for changing into another stance.
-   public float stanceCurrentCooldown;
+   public double stanceCurrentCooldown;
 
    // The current battle stance
    [SyncVar]
    public Stance stance = Stance.Balanced;
 
    // The time at which we last changed stances
-   public float lastStanceChange = float.MinValue;
+   public double lastStanceChange = float.MinValue;
 
    // The time at which we last finished using an ability
-   public float lastAbilityEndTime;
+   public double lastAbilityEndTime;
 
    // The time at which this Battler is no longer busy displaying attack/hit animations
-   public float animatingUntil;
+   public double animatingUntil;
 
    // Determines the enemy type which is used to retrieve enemy data from XML
    [SyncVar]
@@ -455,7 +455,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             setBattlerAbilities(basicAbilityDataList, battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
-            this.cooldownEndTime = Util.netTime() + 5f;
+            this.cooldownEndTime = NetworkTime.time + 5f;
          } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
@@ -688,7 +688,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       this.buffs.Add(buff);
 
       // Calculate the duration of the buff
-      float buffDuration = buff.buffEndTime - Util.netTime();
+      double buffDuration = buff.buffEndTime - NetworkTime.time;
 
       // Start up a coroutine to remove this buff at the appropriate time
       BattleManager.self.StartCoroutine(removeBuffAfterDelay(buffDuration, this, buff));
@@ -831,7 +831,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public IEnumerator buffDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
+   public IEnumerator buffDisplay (double timeToWait, BattleAction battleAction, bool isFirstAction) {
       // This feature handles all possible buffs such as Healing, Attack Buff etc etc
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
@@ -846,7 +846,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             Battler targetBattler = battle.getBattler(buffAction.targetId);
 
             // Don't start animating until both sprites are available
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSecondsDouble(timeToWait);
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {
@@ -899,7 +899,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                targetBattler = battle.getBattler(buffAction.targetId);
 
                // Don't start animating until both sprites are available
-               yield return new WaitForSeconds(timeToWait);
+               yield return new WaitForSecondsDouble(timeToWait);
 
                // Make sure the battlers are still alive at this point
                if (sourceBattler.isDead()) {
@@ -970,7 +970,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
    }
 
-   public IEnumerator attackDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction) {
+   public IEnumerator attackDisplay (double timeToWait, BattleAction battleAction, bool isFirstAction) {
       // In here we will check all the information related to the ability we want to execute
       // If it is a melee attack, then normally we will get close to the target battler and execute an animation
       // If it is a ranged attack, then normally we will stay in our place, executing our cast particles (if any)
@@ -1022,7 +1022,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             float jumpDuration = attackerAbility.getJumpDuration(sourceBattler, targetBattler);
 
             // Don't start animating until both sprites are available
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSecondsDouble(timeToWait);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // Make sure the source battler is still alive at this point
@@ -1156,7 +1156,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler = battle.getBattler(action.targetId);
 
             // Don't start animating until both sprites are available
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSecondsDouble(timeToWait);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // The unused code is on the MagicAbility script
@@ -1255,7 +1255,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler = battle.getBattler(action.targetId);
 
             // Don't start animating until both sprites are available
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSecondsDouble(timeToWait);
             triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
 
             // Make sure the battlers are still alive at this point
@@ -1359,7 +1359,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          case AbilityActionType.Cancel:
             // Cancel requires time before activating.
-            yield return new WaitForSeconds(timeToWait);
+            yield return new WaitForSecondsDouble(timeToWait);
 
             // Cast version of the Attack Action
             CancelAction cancelAction = (CancelAction) battleAction;
@@ -1533,8 +1533,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       transform.position = new Vector3(startPos.x, startPos.y, transform.position.z);
    }
 
-   private IEnumerator removeBuffAfterDelay (float delay, Battler battler, BuffTimer buff) {
-      yield return new WaitForSeconds(delay);
+   private IEnumerator removeBuffAfterDelay (double delay, Battler battler, BuffTimer buff) {
+      yield return new WaitForSecondsDouble(delay);
 
       battler.removeBuff(buff);
    }
@@ -1613,10 +1613,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public float getActionTimerPercent () {
       // Figure out how full our timer bar should be
       float fillPercent = 1f;
-      float cooldownLength = (this.cooldownEndTime - this.lastAbilityEndTime);
+      float cooldownLength = (float)(this.cooldownEndTime - this.lastAbilityEndTime);
 
       if (cooldownLength > 0f) {
-         fillPercent = (Util.netTime() - this.lastAbilityEndTime) / cooldownLength;
+         fillPercent = (float)(NetworkTime.time - this.lastAbilityEndTime) / cooldownLength;
       }
 
       return Util.clamp<float>(fillPercent, 0f, 1f);

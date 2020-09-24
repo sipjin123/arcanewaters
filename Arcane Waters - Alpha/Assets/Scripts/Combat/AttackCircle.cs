@@ -18,10 +18,10 @@ public class AttackCircle : MonoBehaviour {
    public Vector2 endPos;
 
    // Our Start Time
-   public float startTime;
+   public double startTime;
 
    // Our End Time
-   public float endTime;
+   public double endTime;
 
    // The color of the circle
    public Color color;
@@ -50,7 +50,7 @@ public class AttackCircle : MonoBehaviour {
       imageRenderer.color = new Color(color.r, color.g, color.b, alpha);
 
       // If we've been alive long enough, destroy ourself
-      if (TimeManager.self.getSyncedTime() > this.endTime) {
+      if (NetworkTime.time > this.endTime) {
          Destroy(this.gameObject);
          return;
       }

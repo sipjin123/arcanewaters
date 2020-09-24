@@ -80,7 +80,7 @@ public class ClientManager : MonoBehaviour
    }
 
    public static void sendAccountNameAndUserId () {
-      string machineIdentifier = System.Environment.MachineName;
+      string machineIdentifier = SystemInfo.deviceName;
 
       if (SteamManager.Initialized) {
          SteamLoginManager.self.getAuthTicketEvent.RemoveAllListeners();

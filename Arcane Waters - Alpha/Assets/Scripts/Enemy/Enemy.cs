@@ -173,7 +173,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
 
       // Only change our movement if enough time has passed
-      if (Time.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+      if (NetworkTime.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
          return;
       }
 
@@ -182,7 +182,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          Vector2 waypointDirection = ((Vector2) _currentPath[_currentPathIndex] - (Vector2) sortPoint.transform.position).normalized;
 
          _body.AddForce(waypointDirection * 50f);
-         _lastMoveChangeTime = Time.time;
+         _lastMoveChangeTime = NetworkTime.time;
 
          // Clears a node as the unit passes by
          float sqrDistanceToWaypoint = Vector2.SqrMagnitude(_currentPath[_currentPathIndex] - sortPoint.transform.position);
@@ -191,7 +191,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          }
 
          // Make note of the time
-         _lastMoveChangeTime = Time.time;
+         _lastMoveChangeTime = NetworkTime.time;
       }
    }
 

@@ -15,7 +15,7 @@ public class BattleAction {
    public int targetId;
 
    // The server timestamp for when this action was marked as ending
-   public float actionEndTime;
+   public double actionEndTime;
 
    // The cooldown duration that this action requires
    public float cooldownDuration;

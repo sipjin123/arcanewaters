@@ -20,7 +20,7 @@ public class StatusManager : MonoBehaviour {
       Status statusEffect = Instantiate(PrefabsManager.self.statusPrefab);
       statusEffect.transform.SetParent(self.transform, false);
       statusEffect.statusType = statusType;
-      statusEffect.startTime = Util.netTime();
+      statusEffect.startTime = NetworkTime.time;
       statusEffect.endTime = statusEffect.startTime + length;
 
       // Keep track of the status effects

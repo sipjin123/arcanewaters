@@ -301,6 +301,9 @@ public class ClientMessageManager : MonoBehaviour {
    public static void On_CharacterList (NetworkConnection conn, CharacterListMessage msg) {
       XmlVersionManagerClient.self.initializeClient();
 
+      // Delete local map files if user has too many
+      MapCache.pruneExcessMaps();
+
       // Activate the Character screen camera
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 

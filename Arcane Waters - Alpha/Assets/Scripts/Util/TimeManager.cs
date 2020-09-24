@@ -33,16 +33,6 @@ public class TimeManager : MonoBehaviour {
       return ((DateTimeOffset) getLastServerDateTime()).ToUnixTimeSeconds();
    }
 
-   public float getSyncedTime () {
-      // On the server, we just return the time
-      if (NetworkServer.active) {
-         return Time.time;
-      }
-
-      // On the client, we need to calculate the difference between our time and the server time
-      return Time.time + _lastOffset;
-   }
-
    public void setTimeOffset (float serverTime, float roundTripTime) {
       _lastOffset = serverTime - Time.time + (roundTripTime / 1000f);
    }

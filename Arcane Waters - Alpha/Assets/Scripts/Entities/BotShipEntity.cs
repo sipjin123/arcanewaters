@@ -199,10 +199,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    private void moveAlongCurrentPath () {
       if (_currentPath != null && _currentPathIndex < _currentPath.Count) {
          // Only change our movement if enough time has passed
-         float moveTime = Time.time - _lastMoveChangeTime;
+         double moveTime = NetworkTime.time - _lastMoveChangeTime;
          if (moveTime >= MOVE_CHANGE_INTERVAL) {
             _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * getMoveSpeed());
-            _lastMoveChangeTime = Time.time;
+            _lastMoveChangeTime = NetworkTime.time;
          }
 
          // Advance along the path as the unit comes close enough to the current waypoint
@@ -317,7 +317,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          }
        
          // We can see the enemy, attack it
-         _attackers[iEntity.netId] = TimeManager.self.getSyncedTime();
+         _attackers[iEntity.netId] = NetworkTime.time;
       }
    }
 

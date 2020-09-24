@@ -14,7 +14,7 @@ public class StanceAction : BattleAction
 
    public StanceAction () { }
 
-   public StanceAction (int battleId, int sourceId, float actionEndTime, Battler.Stance newStance) {
+   public StanceAction (int battleId, int sourceId, double actionEndTime, Battler.Stance newStance) {
       this.battleId = battleId;
       this.sourceId = sourceId;
       this.actionEndTime = actionEndTime;

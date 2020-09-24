@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 /// <summary>
@@ -121,12 +122,12 @@ public class BasicAbilityData : BattleItemData
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
-         if (Util.netTime() < sourceBattler.cooldownEndTime) {
+         if (NetworkTime.time < sourceBattler.cooldownEndTime) {
             D.editorLog("User is still cooling down ability cast!", Color.red);
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }
 
-         return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);
+         return (sourceBattler.AP >= abilityCost) && (NetworkTime.time >= sourceBattler.cooldownEndTime);
 
       } else if (abilityType == AbilityType.BuffDebuff) {
 
@@ -134,14 +135,14 @@ public class BasicAbilityData : BattleItemData
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating low AP)
          }
 
-         if (Util.netTime() < sourceBattler.cooldownEndTime) {
+         if (NetworkTime.time < sourceBattler.cooldownEndTime) {
             // TODO: Insert Logic Here (Could be spawn effect prefab indicating ability is on cooldown)
          }
 
-         return (sourceBattler.AP >= abilityCost) && (Util.netTime() >= sourceBattler.cooldownEndTime);
+         return (sourceBattler.AP >= abilityCost) && (NetworkTime.time >= sourceBattler.cooldownEndTime);
 
       } else if (abilityType == AbilityType.Stance) {
-         return Util.netTime() >= sourceBattler.stanceCooldownEndTime;
+         return NetworkTime.time >= sourceBattler.stanceCooldownEndTime;
 
       } else {
          Debug.Log("The ability type is undefined");
@@ -155,7 +156,7 @@ public class BasicAbilityData : BattleItemData
 // Interface method
 public interface IAttackBehaviour
 {
-   IEnumerator attackDisplay (float timeToWait, BattleAction battleAction, bool isFirstAction);
+   IEnumerator attackDisplay (double timeToWait, BattleAction battleAction, bool isFirstAction);
 }
 
 public enum AbilityType

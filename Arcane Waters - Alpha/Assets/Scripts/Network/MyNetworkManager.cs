@@ -213,6 +213,7 @@ public class MyNetworkManager : NetworkManager
       XmlVersionManagerServer.self.initializeServerData();
       TreasureDropsDataManager.self.initializeServerDataCache();
       NPCQuestManager.self.initializeServerDataCache();
+      ItemDefinitionManager.self.loadFromDatabase();
    }
 
    public override void OnStopServer () {
@@ -330,9 +331,13 @@ public class MyNetworkManager : NetworkManager
 
             // Tell the player information about the Area we're going to send them to
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               // Storing Login info
-               if (conn.address != "localhost") {
-                  DB_Main.storeLoginInfo(player.userId, player.accountId, conn.address, Global.machineIdentifier ?? "", "game");
+               // Storing Login info, excluding both localhost (IPv4) and ::1 (IPv6)
+               if (conn.address != "localhost" && conn.address != "::1" && conn.address.Contains("::ffff:")) {
+                  // We need to split the IP Address because its format, ::ffff:0.0.0.0, for example
+                  string[] finalAddressArray = conn.address.Split(':');
+                  string finalAddress = finalAddressArray[finalAddressArray.Length - 1];
+
+                  DB_Main.storeLoginInfo(player.userId, player.accountId, finalAddress, Global.machineIdentifier ?? "", "game");
                }
 
                // Get map customizations if needed

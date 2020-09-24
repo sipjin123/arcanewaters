@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 public static class MapCache
@@ -9,7 +10,34 @@ public static class MapCache
    // Path to maps directory
    public static string MAP_FOLDER_PATH = Application.persistentDataPath + "/MapData";
 
+   // After how many maps will we start deleting old ones
+   public const int MAX_MAPS = 4;
+
    #endregion
+
+   public static void pruneExcessMaps () {
+      int previousMapCount = -1;
+      int removedMapsCount = 0;
+
+      try {
+         // Get information about files in maps directory
+         DirectoryInfo dirInfo = new DirectoryInfo(MAP_FOLDER_PATH);
+         FileInfo[] files = dirInfo.GetFiles().OrderBy(f => f.LastWriteTime).ToArray();
+         previousMapCount = files.Length;
+
+         // Remove excess old maps
+         for (int i = 0; i < previousMapCount - MAX_MAPS; i++) {
+            files[i].Delete();
+            removedMapsCount++;
+         }
+      } catch (Exception ex) {
+         D.error("There was an error pruning excess maps in MapCache: " + ex);
+      }
+
+      if (removedMapsCount != 0) {
+         D.log($"Map data files pruning: had { previousMapCount }, aimed for { MAX_MAPS }, removed { removedMapsCount }.");
+      }
+   }
 
    private static string getMapPath (string areaKey, int version) {
       return MAP_FOLDER_PATH + "/" + areaKey + " (" + version + ").json";
@@ -22,8 +50,12 @@ public static class MapCache
    public static string getMapData (string areaKey, int version) {
       Directory.CreateDirectory(MAP_FOLDER_PATH);
 
-      if (File.Exists(getMapPath(areaKey, version))) {
-         return File.ReadAllText(getMapPath(areaKey, version));
+      string path = getMapPath(areaKey, version);
+      if (File.Exists(path)) {
+         // Write a white space to file to update write date so we know which files were used recently
+         File.AppendAllText(path, " ");
+
+         return File.ReadAllText(path);
       } else {
          return "";
       }

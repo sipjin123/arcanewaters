@@ -243,9 +243,9 @@ public class PlayerShipEntity : ShipEntity
          _localAimAngle += direction * Time.deltaTime * getAngleChangeSpeed() / getAngleDelay();
 
          // Check if enough time has passed for us to change our facing direction
-         if (Time.time - _lastAngleChangeTime > getAngleDelay()) {
+         if (NetworkTime.time - _lastAngleChangeTime > getAngleDelay()) {
             Cmd_ModifyAngle(direction);
-            _lastAngleChangeTime = Time.time;
+            _lastAngleChangeTime = NetworkTime.time;
          }
       }
    }
@@ -476,25 +476,25 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void handleArrowsMoveMode () {
       // Make note of the time
-      _lastMoveChangeTime = Time.time;
+      _lastMoveChangeTime = NetworkTime.time;
 
       // Check if enough time has passed for us to change our facing direction
-      bool canChangeDirection = (Time.time - _lastAngleChangeTime > getAngleDelay());
+      bool canChangeDirection = (NetworkTime.time - _lastAngleChangeTime > getAngleDelay());
 
       if (canChangeDirection) {
          if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyAngle(+1);
-            _lastAngleChangeTime = Time.time;
+            _lastAngleChangeTime = NetworkTime.time;
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
          } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyAngle(-1);
-            _lastAngleChangeTime = Time.time;
+            _lastAngleChangeTime = NetworkTime.time;
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
          }
       }
 
-      if (Time.time - _lastInputChangeTime > getInputDelay()) {
-         _lastInputChangeTime = Time.time;
+      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
+         _lastInputChangeTime = NetworkTime.time;
 
          if (InputManager.getKeyAction(KeyAction.MoveUp)) {
             Cmd_RequestMovement();
@@ -505,7 +505,7 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void handleServerAuthoritativeMode () {
       // Make note of the time
-      _lastMoveChangeTime = Time.time;
+      _lastMoveChangeTime = NetworkTime.time;
 
       if (InputManager.getKeyAction(KeyAction.MoveUp)) {
          // If the ship wasn't moving, apply a small force locally to make up for delay

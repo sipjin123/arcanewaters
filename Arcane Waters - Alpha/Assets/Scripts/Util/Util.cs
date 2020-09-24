@@ -278,6 +278,10 @@ public class Util : MonoBehaviour {
       return Vector2.right;
    }
 
+   public static double maxDouble (double a, double b) {
+      return a > b ? a : b;
+   }
+
    public static T clamp<T> (T value, T min, T max)
           where T : System.IComparable<T> {
       T result = value;
@@ -662,10 +666,6 @@ public class Util : MonoBehaviour {
 
          return num - (num % (int) Mathf.Pow(10, numDigits - 3));
       }
-   }
-
-   public static float netTime () {
-      return TimeManager.self.getSyncedTime();
    }
 
    public static int getCommandLineInt (string key) {

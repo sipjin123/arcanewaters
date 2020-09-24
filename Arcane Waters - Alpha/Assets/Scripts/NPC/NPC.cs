@@ -229,11 +229,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          if (_currentPathIndex < _currentPath.Count) {
             // Move towards our current waypoint
             // Only change our movement if enough time has passed
-            float moveTime = Time.time - _lastMoveChangeTime;
+            double moveTime = NetworkTime.time - _lastMoveChangeTime;
             if (moveTime >= MOVE_CHANGE_INTERVAL) {
                float moveSpeed = getMoveSpeed() * 0.5f;
                _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * moveSpeed);
-               _lastMoveChangeTime = Time.time;
+               _lastMoveChangeTime = NetworkTime.time;
             }
 
             // Clears a node as the unit passes by

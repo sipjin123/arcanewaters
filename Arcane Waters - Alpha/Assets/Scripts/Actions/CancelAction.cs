@@ -15,7 +15,7 @@ public class CancelAction : BattleAction {
 
    }
 
-   public CancelAction (int battleId, int sourceId, int targetId, float actionEndTime, float timeToSubtract) {
+   public CancelAction (int battleId, int sourceId, int targetId, double actionEndTime, float timeToSubtract) {
       this.battleId = battleId;
       this.sourceId = sourceId;
       this.targetId = targetId;

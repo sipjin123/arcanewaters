@@ -45,7 +45,7 @@ public class ItemDefinitionManager : MonoBehaviour
       return result;
    }
 
-   public void loadFromDatabase (Action<List<ItemDefinition>> callback) {
+   public void loadFromDatabase (Action<List<ItemDefinition>> callback = null) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<ItemDefinition> itemDefinitions = DB_Main.getItemDefinitions();
 

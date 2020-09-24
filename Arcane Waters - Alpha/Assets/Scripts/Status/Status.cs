@@ -14,10 +14,10 @@ public class Status : MonoBehaviour {
    public Type statusType;
 
    // When this Status effect started
-   public float startTime;
+   public double startTime;
 
    // When this Status effect ends
-   public float endTime;
+   public double endTime;
       
    #endregion
 

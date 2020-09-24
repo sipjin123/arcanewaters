@@ -25,7 +25,7 @@ public class AttackAction : BattleAction {
 
    public AttackAction () { }
 
-   public AttackAction (int battleId, ActionType actionType, int sourceId, int targetId, int damage, float actionEndTime,
+   public AttackAction (int battleId, ActionType actionType, int sourceId, int targetId, int damage, double actionEndTime,
            int abilityInventoryIndex, bool wasCritical, bool wasBlocked, float cooldownDuration,
            int sourceApChange, int targetApChange, int abilityGlobalID, DamageMagnitude damageMagnitude) {
       this.battleId = battleId;

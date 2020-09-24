@@ -112,7 +112,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      float currentCooldown = BattleManager.self.getPlayerBattler().stanceCurrentCooldown;
+      double currentCooldown = BattleManager.self.getPlayerBattler().stanceCurrentCooldown;
       RectTransform frameRectTransform = null;
 
       switch (abilityOrigin) {

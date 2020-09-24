@@ -13,10 +13,10 @@ public struct BuffTimer {
    public int buffAbilityGlobalID;
 
    // The time at which the buff starts
-   public float buffStartTime;
+   public double buffStartTime;
 
    // The time at which the buff ends
-   public float buffEndTime;
+   public double buffEndTime;
 
    #endregion
 
