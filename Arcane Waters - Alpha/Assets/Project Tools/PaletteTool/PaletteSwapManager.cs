@@ -97,7 +97,7 @@ public class PaletteSwapManager : MonoBehaviour {
             continue;
          }
 
-         PaletteToolData data = _paletteDataList.Find((PaletteToolData toolData) => toolData.paletteName.Equals(name));
+         PaletteToolData data = self.getPaletteList().Find((PaletteToolData toolData) => toolData.paletteName.Equals(name));
          if (data == null) {
             continue;
          }
@@ -243,10 +243,15 @@ public class PaletteSwapManager : MonoBehaviour {
       return new Color((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
    }
 
+   public List<PaletteToolData> getPaletteList () {
+      return _paletteDataList;
+   }
+
    #region Private Variables
 
    // Cached data from database about created palettes
-   private static List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
+   [SerializeField]
+   private protected List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
 
    #endregion
 }

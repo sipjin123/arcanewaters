@@ -8,6 +8,8 @@ using static EditorSQLManager;
 using System.IO;
 using System;
 using System.Text;
+using System.Xml.Serialization;
+using System.Xml;
 
 public class XmlVersionManagerServer : MonoBehaviour {
    #region Public Variables
@@ -262,7 +264,9 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 
          string perkData = DB_Main.getXmlContent(PERKS_DATA_TABLE);
-         string paletteData = DB_Main.getXmlContent(PALETTE_DATA_TABLE, EditorToolType.Palette);
+
+         // Manually assign the xml data of the perks content due to its data struct not uniformed
+         string paletteData = overridePaletteDataXML();
          string treasureDropsData = DB_Main.getXmlContent(TREASURE_DROPS_TABLE, EditorToolType.Treasure_Drops);
          string questData = DB_Main.getXmlContent(QUEST_DATA_TABLE, EditorToolType.Quest);
          string itemDefinitionsData = DB_Main.getXmlContent(ITEM_DEFINITIONS_TABLE, EditorToolType.ItemDefinitions);
@@ -297,6 +301,30 @@ public class XmlVersionManagerServer : MonoBehaviour {
             finalizeZipData();
          });
       });
+   }
+
+   private string overridePaletteDataXML () {
+      string newContent = "";
+      List<RawPaletteToolData> paletteDatabaseContent = DB_Main.getPaletteXmlContent(PALETTE_DATA_TABLE);
+
+      foreach (RawPaletteToolData paletteData in paletteDatabaseContent) {
+         PaletteToolData xmlData = Util.xmlLoad<PaletteToolData>(paletteData.xmlData);
+
+         // Manually inject these values to the newly fetched xml translated data
+         xmlData.subcategory = paletteData.subcategory;
+         xmlData.tagId = paletteData.tagId;
+
+         // Translate to xml again, this time the class has the updated subcategory and tag
+         XmlSerializer ser = new XmlSerializer(xmlData.GetType());
+         var sb = new StringBuilder();
+         using (var writer = XmlWriter.Create(sb)) {
+            ser.Serialize(writer, xmlData);
+         }
+         string newXmlData = sb.ToString();
+
+         newContent += paletteData.xmlId + "[space]" + newXmlData + "[next]\n";
+      }
+      return newContent;
    }
 
    private void writeAndCache (string fileName, string fileContent) {

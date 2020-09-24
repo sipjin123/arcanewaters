@@ -85,7 +85,7 @@ namespace ServerCommunicationHandlerv2 {
          if (ourPort == 7777) {
             ServerDataWriter.self.initializeMainServerInviteFile();
          } 
-         InvokeRepeating("processServerDeclaredInvites", 3, 1);
+         InvokeRepeating("processServerDeclaredInvites", 3, 2);
 
          // Initialize data
          newServerData.voyageList = new List<Voyage>();
@@ -188,7 +188,9 @@ namespace ServerCommunicationHandlerv2 {
             // Check if the other servers are active recently
             TimeSpan fileAlterInterval = DateTime.UtcNow - serverData.latestUpdateTime;
             if (fileAlterInterval.TotalSeconds > SERVER_ACTIVE_TIME) {
+               #if UNITY_EDITOR
                D.editorLog("Removing Server Entry due to inactivity: " + serverData.port + " Time Delay: " + fileAlterInterval.TotalSeconds, Color.red);
+               #endif
 
                // Remove the server data entry from the list
                ServerData selectedServerData = serverDataList.Find(_ => _.port == serverData.port);
@@ -290,27 +292,22 @@ namespace ServerCommunicationHandlerv2 {
       }
 
       public void fetchOtherServerData () {
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            // Fetch active servers in background thread
-            List<ServerData> activeServers = ServerDataWriter.self.getServers();
+         List<ServerData> activeServers = ServerDataWriter.self.getServers();
 
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               // Handle Server Data update and registry
-               serversToUpdate = new List<ServerData>();
-               foreach (ServerData newServerData in activeServers) {
-                  if (newServerData.port != ourPort) {
-                     ServerData existingServerData = serverDataList.Find(_ => _.port == newServerData.port);
-                     if (existingServerData != null) {
-                        serversToUpdate.Add(existingServerData);
-                     } else {
-                        processNewServerDataEntry(newServerData);
-                     }
-                  }
+         // Handle Server Data update and registry
+         serversToUpdate = new List<ServerData>();
+         foreach (ServerData newServerData in activeServers) {
+            if (newServerData.port != ourPort) {
+               ServerData existingServerData = serverDataList.Find(_ => _.port == newServerData.port);
+               if (existingServerData != null) {
+                  serversToUpdate.Add(existingServerData);
+               } else {
+                  processNewServerDataEntry(newServerData);
                }
+            }
+         }
 
-               processServerContent(serversToUpdate);
-            });
-         });
+         processServerContent(serversToUpdate);
       }
 
       private void processNewServerDataEntry (ServerData newServerData) {
@@ -323,37 +320,36 @@ namespace ServerCommunicationHandlerv2 {
             // Add server data if not yet existing in server data list
             serversToUpdate.Add(newServerData);
             if (!serverDataList.Exists(_ => _.port == newServerData.port)) {
+               #if UNITY_EDITOR
                D.editorLog("This server is recently active, Caching now: " + newServerData.port, Color.green);
+               #endif
                addNewServer(newServerData, false);
             }
          } else {
+            #if UNITY_EDITOR
             D.editorLog("The server was not active for: " + SERVER_ACTIVE_TIME + " Choosing to ignore this server as a remote");
+            #endif
          }
       }
 
       public void processServerContent (List<ServerData> serverList) {
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            // Fetch the content of the recently updated servers in background thread
-            List<ServerData> serverListContent = ServerDataWriter.self.getServerContent(serverList);
+         List<ServerData> serverListContent = ServerDataWriter.self.getServerContent(serverList);
 
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (ServerData newServerData in serverListContent) {
-                  ServerData existingData = serverDataList.Find(_ => _.port == newServerData.port);
-                  if (existingData != null) {
-                     if (existingData.port != ourPort) {
-                        // Assign the content of the recently updated servers
-                        existingData.voyageList = newServerData.voyageList;
-                        existingData.connectedUserIds = newServerData.connectedUserIds;
-                        existingData.pendingVoyageInvites = newServerData.pendingVoyageInvites;
-                        existingData.processedVoyageInvites = newServerData.processedVoyageInvites;
-                        existingData.openAreas = newServerData.openAreas;
-                        existingData.latestUpdateTime = newServerData.latestUpdateTime;
-                        overwriteNetworkServer(newServerData);
-                     }
-                  }
+         foreach (ServerData newServerData in serverListContent) {
+            ServerData existingData = serverDataList.Find(_ => _.port == newServerData.port);
+            if (existingData != null) {
+               if (existingData.port != ourPort) {
+                  // Assign the content of the recently updated servers
+                  existingData.voyageList = newServerData.voyageList;
+                  existingData.connectedUserIds = newServerData.connectedUserIds;
+                  existingData.pendingVoyageInvites = newServerData.pendingVoyageInvites;
+                  existingData.processedVoyageInvites = newServerData.processedVoyageInvites;
+                  existingData.openAreas = newServerData.openAreas;
+                  existingData.latestUpdateTime = newServerData.latestUpdateTime;
+                  overwriteNetworkServer(newServerData);
                }
-            });
-         });
+            }
+         }
       }
 
       private void overwriteNetworkServer (ServerData newData, bool localServer = false) {
@@ -373,7 +369,9 @@ namespace ServerCommunicationHandlerv2 {
                }
             } else {
                StartCoroutine(CO_ResetServerData(newData));
+               #if UNITY_EDITOR
                D.editorLog("Missing server, it is not existing yet: " + newData.port, Color.green);
+               #endif
             }
          }
       }

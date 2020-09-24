@@ -140,6 +140,10 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static List<RawPaletteToolData> getPaletteXmlContent (string tableName) {
+      return new List<RawPaletteToolData>();
+   }
+
    public static int getLatestXmlVersion () {
       return 0;
    }

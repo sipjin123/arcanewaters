@@ -20,6 +20,12 @@ public class PaletteToolData
    // Type of palette e.g. hair/eyes/weapon
    public int paletteType;
 
+   // The subcategory for referencing
+   public string subcategory;
+
+   // The tag id for referencing
+   public int tagId;
+
    #endregion
 
    public PaletteToolData () { }
@@ -30,8 +36,23 @@ public class PaletteToolData
       this.dstColor = dstColor;
       this.paletteType = paletteType;
    }
- 
+
    #region Private Variables
 
    #endregion
+}
+
+[Serializable]
+public class RawPaletteToolData {
+   // The database Id
+   public int xmlId;
+
+   // The xml content
+   public string xmlData;
+
+   // The subcategory for referencing
+   public string subcategory;
+
+   // The tag id for referencing
+   public int tagId;
 }

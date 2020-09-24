@@ -656,6 +656,41 @@ public class DB_Main : DB_MainStub
       return content;
    }
 
+   public static new List<RawPaletteToolData> getPaletteXmlContent (string tableName) {
+      List<RawPaletteToolData> newPaletteDataList = new List<RawPaletteToolData>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM arcane." + tableName, conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  string xmlContent = dataReader.GetString("xmlContent");
+                  int xmlId = dataReader.GetInt32("id");
+                  string subcategory = dataReader.GetString("subcategory");
+                  int tagId = dataReader.GetInt32("tagId");
+
+                  newPaletteDataList.Add(new RawPaletteToolData {
+                     xmlData = xmlContent,
+                     subcategory = subcategory,
+                     tagId = tagId,
+                     xmlId = xmlId
+                  });
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + tableName + " : " + e.ToString());
+      }
+
+      return newPaletteDataList;
+   }
+
    public static new int getLatestXmlVersion () {
       int latestVersion = 0;
 

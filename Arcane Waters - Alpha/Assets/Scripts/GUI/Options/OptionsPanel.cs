@@ -78,6 +78,9 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // If the initial option settings have been loaded
    public bool hasInitialized = false;
 
+   // The current full screen mode
+   public FullScreenMode selectedMode;
+
    #endregion
 
    public override void Awake () {
@@ -149,6 +152,7 @@ public class OptionsPanel : Panel, IPointerClickHandler
                StartCoroutine(CO_ProcessScreenAdjustments(false, FullScreenMode.Windowed));
                break;
          }
+         selectedMode = customScreenMode[_];
          PlayerPrefs.SetInt(PREF_SCREEN_MODE, _);
          processCursorState();
       });
@@ -201,6 +205,17 @@ public class OptionsPanel : Panel, IPointerClickHandler
 
    private void setResolution (int resolutionIndex) {
       ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height);
+      StartCoroutine(CO_RefreshBorders());
+   }
+
+   private IEnumerator CO_RefreshBorders () {
+      if (selectedMode == FullScreenMode.FullScreenWindow) {
+         setBorderedWindow();
+      }
+      yield return new WaitForSeconds(.15f);
+      if (selectedMode == FullScreenMode.FullScreenWindow) {
+         setBorderlessWindow();
+      }
    }
 
    public override void show () {

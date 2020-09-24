@@ -36,7 +36,7 @@ namespace ServerCommunicationHandlerv2 {
          }
          
          // Continously handle shared server data
-         InvokeRepeating("handleSharedServerData", 10, 1);
+         InvokeRepeating("handleSharedServerData", 10, 2);
       }
 
       private void handleSharedServerData () {
