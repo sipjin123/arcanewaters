@@ -127,6 +127,9 @@ public class BattleUIManager : MonoBehaviour {
    // Reference to the attack panel
    public AttackPanel attackPanel;
 
+   // The selection id
+   public int selectionId = 0;
+
    #endregion
 
    private void Awake () {
@@ -290,6 +293,30 @@ public class BattleUIManager : MonoBehaviour {
             triggerAbilityByKey(3);
          } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
             triggerAbilityByKey(4);
+         } else if (Input.GetKeyUp(KeyCode.Tab)) {
+            // Select the list of opponents
+            List<Battler> battlerList = BattleManager.self.getPlayerBattler().isAttacker() 
+               ? BattleManager.self.getBattle(BattleManager.self.getPlayerBattler().battleId).getDefenders() 
+               : BattleManager.self.getBattle(BattleManager.self.getPlayerBattler().battleId).getAttackers();
+
+            if (battlerList.Count > 1) {
+               if (BattleSelectionManager.self.selectedBattler != null) {
+                  // Check if the selected battler is an opponent
+                   if (BattleManager.self.getPlayerBattler().isAttacker() != BattleSelectionManager.self.selectedBattler.isAttacker()) {
+                     // Select the current index of the selected battler
+                     selectionId = battlerList.IndexOf(BattleSelectionManager.self.selectedBattler);
+                  }
+               }
+
+               // Iterate to the next opponent
+               selectionId++;
+               if (selectionId >= battlerList.Count) {
+                  selectionId = 0;
+               }
+
+               // Simulate battle selection
+               BattleSelectionManager.self.clickBattler(battlerList[selectionId]);
+            }
          }
 
          // Display the health of the ally

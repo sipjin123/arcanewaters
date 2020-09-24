@@ -86,34 +86,7 @@ public class BattleSelectionManager : MonoBehaviour {
          if (bounds.Contains(clickLocation) && !battler.isDead()) {
             clickedBattler = true;
 
-            // Check if the newly selected battler is the same as the previous one, we deselect it
-            if (selectedBattler == battler) {
-               selectedBattler.deselectThis();
-               selectedBattler = null;
-            } else {
-               BattleUIManager.self.highlightLocalBattler(false);
-
-               // If it is another battler
-               if (selectedBattler != null) {
-                  selectedBattler.deselectThis();
-               }
-
-               Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
-               selectedBattler = battler;
-               bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
-
-               if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
-                  enemySelection.SetActive(false);
-                  allySelection.SetActive(true);
-               } else {
-                  currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
-                  enemySelection.SetActive(true);
-                  allySelection.SetActive(false);
-               }
-               selectionSprite.initialYaxis = selectedBattler.transform.position.y;
-               selectedBattler.selectThis();
-            }
-
+            clickBattler(battler);
             break;
          }
       }
@@ -126,6 +99,36 @@ public class BattleSelectionManager : MonoBehaviour {
             selectedBattler.deselectThis();
          }
          selectedBattler = null;
+      }
+   }
+
+   public void clickBattler (Battler battler) {
+      // Check if the newly selected battler is the same as the previous one, we deselect it
+      if (selectedBattler == battler) {
+         selectedBattler.deselectThis();
+         selectedBattler = null;
+      } else {
+         BattleUIManager.self.highlightLocalBattler(false);
+
+         // If it is another battler
+         if (selectedBattler != null) {
+            selectedBattler.deselectThis();
+         }
+
+         Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
+         selectedBattler = battler;
+         bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
+
+         if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
+            enemySelection.SetActive(false);
+            allySelection.SetActive(true);
+         } else {
+            currentEnemySprite.sprite = selectedBattler.isBossType ? largeEnemyTarget : smallEnemyTarget;
+            enemySelection.SetActive(true);
+            allySelection.SetActive(false);
+         }
+         selectionSprite.initialYaxis = selectedBattler.transform.position.y;
+         selectedBattler.selectThis();
       }
    }
 

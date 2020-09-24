@@ -310,6 +310,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // When our Battle is created, we need to switch to the Battle camera
       if (isLocalBattler()) {
+         BattleUIManager.self.selectionId = 0;
          CameraManager.enableBattleDisplay();
 
          BattleUIManager.self.usernameText.text = Global.player.entityName;

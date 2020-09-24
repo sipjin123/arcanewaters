@@ -235,7 +235,9 @@ public class PlayerBodyEntity : BodyEntity {
          jumpCooldownTimer = 0;
       }
 
-      if (Input.GetKeyDown(KeyCode.Mouse1)) {
+      if (InputManager.isRightClickKeyPressed()) {
+         Direction newDirection = forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
          bool isNearInteractables = false;
          float overlapRadius = .5f;
          Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
@@ -274,14 +276,14 @@ public class PlayerBodyEntity : BodyEntity {
          }
 
          if (!isNearInteractables) {
-            if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
-               || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
+            if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+               || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
                requestAnimationPlay(Anim.Type.Interact_East);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
-            } else if (facing == Direction.North) {
+            } else if (newDirection == Direction.North) {
                requestAnimationPlay(Anim.Type.Interact_North);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
-            } else if (facing == Direction.South) {
+            } else if (newDirection == Direction.South) {
                requestAnimationPlay(Anim.Type.Interact_South);
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
             }
@@ -324,6 +326,36 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+   }
+
+   private Direction forceLookByClick (Vector2 clickPosition) {
+      // Get horizontal axis difference
+      float xAxisDifference = clickPosition.x - transform.position.x;
+      xAxisDifference = Mathf.Abs(xAxisDifference);
+
+      // Get vertical axis difference
+      float yAxisDifference = clickPosition.y - transform.position.y;
+      yAxisDifference = Mathf.Abs(yAxisDifference);
+
+      Direction newDirection = facing;
+
+      // Force player to look at direction
+      if (xAxisDifference > yAxisDifference) {
+         if (clickPosition.x > transform.position.x && facing != Direction.East) {
+            newDirection = Direction.East;
+         } else if (clickPosition.x < transform.position.x && facing != Direction.West) {
+            newDirection = Direction.West;
+         }
+      } else {
+         if (clickPosition.y < transform.position.y && facing != Direction.South) {
+            newDirection = Direction.South;
+         } else if (clickPosition.y > transform.position.y && facing != Direction.North) {
+            newDirection = Direction.North;
+         }
+      }
+
+      Cmd_ForceFaceDirection(newDirection);
+      return newDirection;
    }
 
    private void setDustParticles (bool isActive) {
