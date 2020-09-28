@@ -4222,22 +4222,22 @@ public class DB_Main : DB_MainStub
 
    #region Treasure Chest Interaction
 
-   public static new List<TreasureStateData> getTreasureStateForArea (string area, int userId) {
-      List<TreasureStateData> treasureData = new List<TreasureStateData>();
+   public static new TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM treasure_chests WHERE (userId=@userId and areaId=@areaId)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM treasure_chests WHERE (userId=@userId and chestId=@chestId and areaId=@areaId)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
-            cmd.Parameters.AddWithValue("@areaId", area);
+            cmd.Parameters.AddWithValue("@chestId", chestId);
+            cmd.Parameters.AddWithValue("@areaId", areaId);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   TreasureStateData info = new TreasureStateData(dataReader);
-                  treasureData.Add(info);
+                  return info;
                }
             }
          }
@@ -4245,7 +4245,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return treasureData;
+      return null;
    }
 
    public static new int updateTreasureStatus (int userId, int treasureId, string areaKey) {

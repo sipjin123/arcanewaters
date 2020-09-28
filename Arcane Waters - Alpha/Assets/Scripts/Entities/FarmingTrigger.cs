@@ -130,6 +130,7 @@ public class FarmingTrigger : MonoBehaviour {
                   cropSpot.crop.hideCrop();
 
                   CropProjectile cropProjectile = Instantiate(PrefabsManager.self.cropProjectilePrefab, AreaManager.self.getArea(cropSpot.areaKey).transform).GetComponent<CropProjectile>();
+                  cropProjectile.cropReference = cropSpot.crop;
                   cropProjectile.transform.position = hit.collider.transform.position;
                   Vector2 dir = cropSpot.transform.position - transform.position;
                   dir /= dir.magnitude;

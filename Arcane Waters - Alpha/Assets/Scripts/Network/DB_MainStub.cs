@@ -68,8 +68,8 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
-   public static List<TreasureStateData> getTreasureStateForArea (string area, int userId) {
-      return new List<TreasureStateData>();
+   public static TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
+      return new TreasureStateData();
    }
 
    public static int updateTreasureStatus (int userId, int treasureId, string areaKey) {

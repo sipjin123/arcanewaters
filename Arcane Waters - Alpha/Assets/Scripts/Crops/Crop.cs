@@ -54,6 +54,9 @@ public class Crop : ClientMonoBehaviour {
    // If the data is set
    public bool dataIsSet;
 
+   // The Object Holder
+   public GameObject objectHolder;
+
    #endregion
 
    protected override void Awake () {
@@ -61,6 +64,11 @@ public class Crop : ClientMonoBehaviour {
 
       // Look up components
       anim = GetComponent<SimpleAnimation>();
+   }
+
+   public void hideCrop () {
+      objectHolder.SetActive(false);
+      GetComponent<SpriteRenderer>().enabled = false;
    }
 
    public void setData (Crop.Type cropType, int spotNumber, long lastWaterTimeStamp) {

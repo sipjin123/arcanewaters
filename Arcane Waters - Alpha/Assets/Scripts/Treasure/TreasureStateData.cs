@@ -22,6 +22,10 @@ public class TreasureStateData {
    // The auto generated id 
    public int dataId;
 
+   public TreasureStateData () {
+
+   }
+
 #if IS_SERVER_BUILD
 
    public TreasureStateData (MySqlDataReader dataReader) {

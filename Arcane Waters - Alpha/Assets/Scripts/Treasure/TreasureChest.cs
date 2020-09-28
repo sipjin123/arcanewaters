@@ -21,6 +21,7 @@ public class TreasureChest : NetworkBehaviour {
    public long creationTime;
 
    // The spawn id of the chest based on the map data
+   [SyncVar]
    public int chestSpawnId;
 
    // Our sprite renderer
@@ -81,6 +82,16 @@ public class TreasureChest : NetworkBehaviour {
    // The standard sprite count of a chest open animation to be based upon
    public const int DEFAULT_SPRITES_PER_SHEET = 24;
 
+   // The player pref key for saving a treasure state
+   public const string PREF_CHEST_STATE = "TREASURE_CHEST_STATE_";
+
+   // If is interacted locally
+   public bool isLocallyInteracted;
+
+   // The areakey
+   [SyncVar]
+   public string areaKey;
+
    #endregion
 
    private void Awake () {
@@ -127,6 +138,13 @@ public class TreasureChest : NetworkBehaviour {
 
          if (effectsHolder != null) {
             effectsHolder.SetActive(false);
+         }
+      }
+
+      // Check if this chest is marked as interacted
+      if (Global.userObjects != null) {
+         if (PlayerPrefs.GetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId+ "_" + areaKey + "_" + chestSpawnId, 0) == 1) {
+            isLocallyInteracted = true;
          }
       }
    }
@@ -246,6 +264,10 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public bool hasBeenOpened () {
+      if (isLocallyInteracted) {
+         return true;
+      }
+
       if (Global.player == null) {
          return false;
       }

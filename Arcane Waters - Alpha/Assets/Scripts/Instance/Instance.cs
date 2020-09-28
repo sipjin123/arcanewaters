@@ -92,9 +92,6 @@ public class Instance : NetworkBehaviour
    // Our network ident
    public NetworkIdentity netIdent;
 
-   // List of treasure state data
-   public List<TreasureStateData> treasureStateDataList = new List<TreasureStateData>();
-
    #endregion
 
    public void Awake () {
@@ -120,10 +117,6 @@ public class Instance : NetworkBehaviour
 
       // Routinely check if the instance is empty
       InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
-   }
-
-   public void addTreasureState (TreasureStateData stateData) {
-      treasureStateDataList.Add(stateData);
    }
 
    public int getPlayerCount() {

@@ -39,15 +39,10 @@ public class TreasureManager : MonoBehaviour {
          if (Random.Range(0f, 1f) <= spot.spawnChance) {
             TreasureChest chest = createTreasure(instance, spot);
             chest.chestSpawnId = chestId;
+            chest.areaKey = instance.areaKey;
 
             // The Instance needs to keep track of all Networked objects inside
             instance.entities.Add(chest);
-
-            foreach (TreasureStateData statData in instance.treasureStateDataList) {
-               if (statData.treasureId == chestId && !chest.userIds.Contains(statData.userId)) {
-                  chest.userIds.Add(statData.userId);
-               }
-            }
          }
          chestId++;
       }

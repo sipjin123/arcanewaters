@@ -25,6 +25,9 @@ public class CropProjectile : MonoBehaviour {
    // The list of crops and their associated sprites
    public List<CropSprite> cropSpriteList;
 
+   // The crop reference
+   public Crop cropReference;
+
    #endregion
 
    private void Update () {
@@ -71,7 +74,7 @@ public class CropProjectile : MonoBehaviour {
    }
 
    protected void processDestruction () {
-      GameObject spawnedObj = Instantiate(PrefabsManager.self.cropPickupPrefab);
+      GameObject spawnedObj = Instantiate(PrefabsManager.self.cropPickupPrefab, cropReference.transform);
       spawnedObj.transform.position = transform.position;
       spawnedObj.transform.localScale = new Vector3(transform.localScale.x, 1, 1);
 

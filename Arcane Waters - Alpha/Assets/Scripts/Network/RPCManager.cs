@@ -652,7 +652,6 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_OpenChest (NetworkConnection connection, Item item, int chestId) {
-      item = item.getCastItem();
 
       // Locate the Chest
       TreasureChest chest = null;
@@ -670,11 +669,18 @@ public class RPCManager : NetworkBehaviour {
          chest.spriteRenderer.sprite = chest.openedChestSprite;
          chest.chestOpeningAnimation.enabled = false;
       }
-      chest.StartCoroutine(chest.CO_CreatingFloatingIcon(item));
+
+      if (item.category != Item.Category.None && item.itemTypeId > 0) {
+         item = item.getCastItem();
+         chest.StartCoroutine(chest.CO_CreatingFloatingIcon(item));
+      }
 
       // Play some sounds
       SoundManager.create3dSound("Door_open", Global.player.transform.position);
       SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
+
+      // Register chest id player pref data and set as true
+      PlayerPrefs.SetInt(TreasureChest.PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + _player.areaKey + "_" + chest.chestSpawnId, 1);
 
       if (chest.autoDestroy) {
          chest.disableChest();
@@ -949,7 +955,7 @@ public class RPCManager : NetworkBehaviour {
          }
       }
    }
-
+   
    [TargetRpc]
    public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations) {
       // Check if we already have the Area created
@@ -3427,6 +3433,27 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_OpenChest (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         TreasureStateData interactedTreasure = DB_Main.getTreasureStateForChest(_player.userId, chest.chestSpawnId, _player.areaKey);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (interactedTreasure == null) {
+               processChestRewards(chestId);
+            } else {
+               chest.userIds.Add(_player.userId);
+
+               // Display empty open chest
+               Target_OpenChest(_player.connectionToClient, new Item { category = Item.Category.None, itemTypeId = -1 }, chest.id);
+            }
+         });
+      });
+
+   }
+
+   [Server]
+   private void processChestRewards (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 
       // Make sure we found the Treasure Chest
