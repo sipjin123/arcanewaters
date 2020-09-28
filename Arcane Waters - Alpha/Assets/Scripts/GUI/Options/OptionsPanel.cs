@@ -84,6 +84,9 @@ public class OptionsPanel : Panel
    // The single player toggle
    public Toggle singlePlayerToggle;
 
+   // The delay for the screen resizing transition
+   public const float SCREEN_TRANSITION = .25f;
+
    #endregion
 
    public override void Awake () {
@@ -170,13 +173,11 @@ public class OptionsPanel : Panel
    }
 
    private IEnumerator CO_ProcessScreenAdjustments (bool isFullScreen, FullScreenMode mode) {
-      if (mode == FullScreenMode.ExclusiveFullScreen) {
-         ScreenSettingsManager.setFullscreen(true);
-      } else {
+      // Make sure the full screen flag is set to false
+      if (mode != FullScreenMode.ExclusiveFullScreen) {
          ScreenSettingsManager.setFullscreen(false);
       }
-
-      yield return new WaitForSeconds(.5f);
+      yield return new WaitForSeconds(SCREEN_TRANSITION);
 
 #if !UNITY_EDITOR
       switch (mode) {
@@ -191,6 +192,12 @@ public class OptionsPanel : Panel
             break;
       }
 #endif
+
+      // Only setup full screen after resizing the window
+      if (mode == FullScreenMode.ExclusiveFullScreen) {
+         yield return new WaitForSeconds(SCREEN_TRANSITION);
+         ScreenSettingsManager.setFullscreen(true);
+      } 
 
       if (!hasInitialized) {
          endInitialSetup();
@@ -219,7 +226,7 @@ public class OptionsPanel : Panel
    private IEnumerator CO_RefreshBorders () {
       if (selectedMode == FullScreenMode.FullScreenWindow) {
          setBorderedWindow();
-      }
+      } 
       yield return new WaitForSeconds(.15f);
       if (selectedMode == FullScreenMode.FullScreenWindow) {
          setBorderlessWindow();
