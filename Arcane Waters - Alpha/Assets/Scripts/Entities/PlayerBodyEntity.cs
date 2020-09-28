@@ -236,8 +236,6 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (InputManager.isRightClickKeyPressed()) {
-         Direction newDirection = forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
          bool isNearInteractables = false;
          float overlapRadius = .5f;
          Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
@@ -263,6 +261,7 @@ public class PlayerBodyEntity : BodyEntity {
                if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) { 
                   // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
                   isNearInteractables = true;
+                  forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
                }
             }
 
@@ -276,20 +275,26 @@ public class PlayerBodyEntity : BodyEntity {
          }
 
          if (!isNearInteractables) {
-            if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-               || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-               requestAnimationPlay(Anim.Type.Interact_East);
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
-            } else if (newDirection == Direction.North) {
-               requestAnimationPlay(Anim.Type.Interact_North);
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
-            } else if (newDirection == Direction.South) {
-               requestAnimationPlay(Anim.Type.Interact_South);
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
-            }
+            if (isMoving()) {
+               farmingTrigger.interactFarming();
+            } else {
+               Direction newDirection = forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-            farmingTrigger.interactFarming();
-            miningTrigger.interactOres();
+               if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+                  || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+                  requestAnimationPlay(Anim.Type.Interact_East);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
+               } else if (newDirection == Direction.North) {
+                  requestAnimationPlay(Anim.Type.Interact_North);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
+               } else if (newDirection == Direction.South) {
+                  requestAnimationPlay(Anim.Type.Interact_South);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+               }
+
+               farmingTrigger.interactFarming();
+               miningTrigger.interactOres();
+            }
          }
       }
 

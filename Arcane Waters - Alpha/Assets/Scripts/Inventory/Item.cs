@@ -50,6 +50,13 @@ public class Item {
       this.iconPath = iconPath;
    }
 
+   public void setBasicInfo (string name, string description, string iconPath, string paletteNames) {
+      this.itemName = name;
+      this.itemDescription = description;
+      this.iconPath = iconPath;
+      this.paletteNames = paletteNames;
+   }
+
    public Item (int id, Category category, int itemTypeId, int count, string paletteNames, string data) {
       this.id = id;
       this.category = category;

@@ -5,8 +5,9 @@ using TMPro;
 using Mirror;
 using System.Text;
 using System;
+using UnityEngine.EventSystems;
 
-public class AuctionInfoPanel : MonoBehaviour
+public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
 {
    #region Public Variables
 
@@ -338,6 +339,13 @@ public class AuctionInfoPanel : MonoBehaviour
 
    public bool isShowing () {
       return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      // If the black background outside is clicked, hide the panel
+      if (eventData.rawPointerPress == this.gameObject) {
+         hide();
+      }
    }
 
    #region Private Variables

@@ -77,15 +77,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Get the RectTransforms of our different screens to animate them
       _rectTransform = transform as RectTransform;
-
-      // Cache data to create character in background thread
-      if (!Util.isBatch()) {
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Eyes, PaletteDef.Eyes.primary.name, PaletteDef.Tags.STARTER);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
-         PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Hair, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
-      }
    }
 
    private void Start () {

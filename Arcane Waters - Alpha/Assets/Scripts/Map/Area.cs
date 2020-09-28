@@ -269,6 +269,12 @@ public class Area : MonoBehaviour
    public static SoundManager.Type getBackgroundMusic (string areaKey) {
       Biome.Type biome = getBiome(areaKey);
 
+      if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
+         if (customMapManager is CustomFarmManager) {
+            return SoundManager.Type.Farm_Music;
+         }
+      }
+
       if (AreaManager.self.isInteriorArea(areaKey)) {
          return SoundManager.Type.None;
       } else if (AreaManager.self.isSeaArea(areaKey)) {

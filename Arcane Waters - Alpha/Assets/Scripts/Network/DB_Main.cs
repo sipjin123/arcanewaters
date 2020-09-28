@@ -3986,29 +3986,33 @@ public class DB_Main : DB_MainStub
 
             // Update item's fields to represent newly updated entry
             item.id = existingInstance.id;
-            item.count = existingInstance.count + item.count;
          } else {
             // Otherwise, create a new stack
             createNewItemInstance(cmd, item);
          }
       } else {
+         int count = item.count;
+
          // Since the item cannot be stacked, set its count to 1
          item.count = 1;
 
-         // Create the item
-         createNewItemInstance(cmd, item);
+         for (int i = 0; i < count; i++) {
+            // Create the item
+            createNewItemInstance(cmd, item);
+         }
       }
    }
 
    public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
       MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity) " +
-         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity);";
+      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity, palettes) " +
+         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity, @palettes);";
       cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
       cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
       cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
       cmd.Parameters.AddWithValue("@palette1", itemInstance.palette1);
       cmd.Parameters.AddWithValue("@palette2", itemInstance.palette2);
+      cmd.Parameters.AddWithValue("@palettes", itemInstance.palettes);
       cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
       cmd.ExecuteNonQuery();
 
@@ -6511,6 +6515,30 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
+   public static new int getMemberCountForGuild (int guildId) {
+      int memberCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT COUNT(*) AS memberCount FROM users WHERE gldId=@gldId ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@gldId", guildId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  memberCount = dataReader.GetInt32("memberCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return memberCount;
+   }
+
    public static new int createGuild (GuildInfo guildInfo) {
       int guildId = 0;
 
@@ -6537,6 +6565,22 @@ public class DB_Main : DB_MainStub
       }
 
       return guildId;
+   }
+
+   public static new void deleteGuild (int guildId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM guilds WHERE gldId=@gldId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@gldId", guildId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    public static new void assignGuild (int userId, int guildId) {

@@ -181,6 +181,9 @@ namespace MapCreationTool.Serialization
          // Force some wall tiles to be rendered on top of player
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
+               // Dont force it if they have a doorframe on top though
+               if (cellMatrix[i, j].hasDoorframe) continue;
+
                for (int k = 0; k < cellMatrix[i, j].tiles.Length; k++) {
                   if (Layer.isWall(cellMatrix[i, j].tiles[k].layer) && wallForceTopTiles.Contains(cellMatrix[i, j].tiles[k].tileBase.name)) {
                      cellMatrix[i, j].tiles[k].forceAbsoluteTop = true;
@@ -218,22 +221,19 @@ namespace MapCreationTool.Serialization
                   }
 
                   // Check 1 above, left and right (horizontal path doorframe)
-                  if (tryGetLeftRightDoorframes(i, j, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
-                     if (left.collisionType == TileCollisionType.CancelDisabled && right.collisionType == TileCollisionType.CancelDisabled) {
+                  if (tryGetLeftRightDoorframes(i, j + 1, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
+                     if (left.collisionType == TileCollisionType.CancelEnabled && right.collisionType == TileCollisionType.CancelEnabled) {
                         continue;
                      }
                   }
                }
 
-               //// If this is a wall tile, check if it has a horizontal doorframe on top
-               //if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
-               //   if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
-               //      // Force this wall tile to be rendered on top of player
-               //      cellMatrix[i, j].getTileFromTopRef(Layer.WALL_KEY).forceAbsoluteTop = true;
-               //
-               //      continue;
-               //   }
-               //}
+               // If this is a wall tile, check if it has a horizontal doorframe on top
+               if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
+                  if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
+                     continue;
+                  }
+               }
 
                BoardCell column = cellMatrix[i, j];
                for (int z = column.tiles.Length - 1; z >= 0; z--) {

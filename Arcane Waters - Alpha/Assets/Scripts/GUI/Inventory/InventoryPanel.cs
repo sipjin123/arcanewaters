@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using System;
 using NubisDataHandling;
 
-public class InventoryPanel : Panel, IPointerClickHandler {
+public class InventoryPanel : Panel {
 
    #region Public Variables
 
@@ -474,13 +474,6 @@ public class InventoryPanel : Panel, IPointerClickHandler {
 
       if (_currentPage >= _maxPage - 1) {
          nextPageButton.enabled = false;
-      }
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the Inventory panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
       }
    }
 

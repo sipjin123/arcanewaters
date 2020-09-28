@@ -49,6 +49,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The cahed item data
    public Item itemCache;
 
+   // The item instance that is being displayed
+   public ItemInstance targetItem;
+
    #endregion
 
    public void setCellForItem (Item item) {
@@ -133,6 +136,31 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
 
       // Saves the item
       _item = item;
+
+      // Hides the selection box
+      hideSelectedBox();
+   }
+
+   public void setCellForItem (ItemInstance item) {
+      targetItem = item;
+      icon.sprite = ImageManager.getSprite(item.getDefinition().iconPath);
+
+      // Set the sprite of the shadow
+      iconShadow.sprite = icon.sprite;
+
+      // Recolor
+      recoloredSprite.recolor(item.palettes);
+
+      // Show the item count when relevant
+      if (item.count > 1 || item.getDefinition().category == ItemDefinition.Category.CraftingIngredients) {
+         itemCountText.SetText(item.count.ToString());
+         itemCountText.gameObject.SetActive(true);
+      } else {
+         itemCountText.gameObject.SetActive(false);
+      }
+
+      // Set the tooltip
+      tooltip.text = item.getTooltip();
 
       // Hides the selection box
       hideSelectedBox();

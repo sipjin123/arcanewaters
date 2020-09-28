@@ -8277,7 +8277,7 @@ MonoBehaviour:
     - layer: door-frame
       sublayer: 1
       cluster: 0
-      collisionType: 3
+      collisionType: 2
     - layer: door-frame
       sublayer: 1
       cluster: 0
@@ -8397,7 +8397,7 @@ MonoBehaviour:
     - layer: door-frame
       sublayer: 1
       cluster: 0
-      collisionType: 3
+      collisionType: 2
     - layer: door-frame
       sublayer: 1
       cluster: 0

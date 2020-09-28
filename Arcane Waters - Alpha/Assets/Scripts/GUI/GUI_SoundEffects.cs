@@ -16,10 +16,13 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
       if (_audioSource == null) {
          _audioSource = GameObject.FindGameObjectWithTag("GUI Audio Source").GetComponent<AudioSource>();
       }
+      _button = GetComponent<Button>();
    }
 
    public virtual void OnPointerEnter (PointerEventData eventData) {
-      play("Sound/Effects/ui_hover");
+      if (_button && _button.IsInteractable()) {
+         play("Sound/Effects/ui_hover");
+      }
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
@@ -27,7 +30,9 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    }
 
    public virtual void OnPointerDown (PointerEventData eventData) {
-      play("Sound/Effects/GUI_Press");
+      if (_button && _button.IsInteractable()) {
+         play("Sound/Effects/GUI_Press");
+      }
    }
 
    protected void play (string path) {
@@ -50,6 +55,9 @@ public class GUI_SoundEffects : MonoBehaviour, IPointerEnterHandler, IPointerCli
    }
 
    #region Private Variables
+
+   // Button that is causing sound after hovering/pressing
+   protected Button _button;
 
    // Our Audio Source
    protected static AudioSource _audioSource;

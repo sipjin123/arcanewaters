@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class ShortcutBox : MonoBehaviour, IPointerClickHandler
 {
@@ -24,6 +25,12 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    // The zone where grabbed items can be dropped
    public ItemDropZone dropZone;
 
+   // The tooltip panel
+   public GameObject toolTipPanel;
+
+   // The text of the tooltip
+   public TextMeshProUGUI toolTipText;
+
    #endregion
 
    private void Start () {
@@ -42,7 +49,7 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       // Make the box highlighted if we've equipped the associated weapon
       _containerImage.color = Color.white;
       if (InventoryManager.isEquipped(_itemCell.getItem().id)) {
-         _containerImage.color = Util.getColor(255, 160, 160);
+         _containerImage.color = Util.getColor(28, 255, 0);
       }
    }
 
@@ -59,6 +66,16 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       }
    }
 
+   public void onPointerEnter () {
+      if (_itemCell != null) {
+         toolTipPanel.SetActive(true);
+      }
+   }
+
+   public void onPointerExit () {
+      toolTipPanel.SetActive(false);
+   }
+
    public void setItem(Item item) {
       clear();
 
@@ -69,12 +86,15 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       _itemCell.hideBackground();
       _itemCell.hideItemCount();
       _itemCell.hideSelectedBox();
+
+      toolTipText.SetText(_itemCell.getItem().getName());
    }
 
    public void clear () {
       itemCellContainer.DestroyChildren();
       _itemCell = null;
       _containerImage.color = Color.white;
+      toolTipText.SetText("");
    }
 
    public bool isInDropZone (Vector2 screenPoint) {

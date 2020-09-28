@@ -105,15 +105,6 @@ public class WeaponManager : EquipmentManager {
          weaponData = WeaponStatData.getDefaultData();
       }
 
-      if (weaponData.weaponType == 0) {
-         // No weapon to equip
-         equippedWeaponId = 0;
-         weaponType = 0;
-         equipmentDataId = 0;
-         updateSprites(0, "");
-         return;
-      }
-
       actionTypeValue = weaponData.actionTypeValue;
       cachedWeaponData = weaponData;
 

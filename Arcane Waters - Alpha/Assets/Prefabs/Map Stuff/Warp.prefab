@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 114106990}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 1}
   m_Children: []
   m_Father: {fileID: 8767709667724932454}
@@ -107,6 +107,8 @@ MonoBehaviour:
   maxIndex: 1000
   currentAnimation: 0
   group: 0
+  freezeAlpha: 0
+  _index: 0
 --- !u!114 &8174240170507634763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,6 +172,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   areaTarget: 
   spawnTarget: 0
+  targetInfo:
+    id: 0
+    name: 
+    displayName: 
+    creatorID: 0
+    publishedVersion: -1
+    sourceMapId: 0
+    notes: 
+    editorType: 0
+    biome: 0
+    specialType: 0
+    weatherEffectType: 0
+    creatorName: 
   newFacingDirection: 1
   arrow: {fileID: 114106990}
 --- !u!61 &5635096014128105181
@@ -196,5 +211,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3, y: 3}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0

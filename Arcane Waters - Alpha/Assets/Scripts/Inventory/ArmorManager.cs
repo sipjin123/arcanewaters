@@ -90,14 +90,6 @@ public class ArmorManager : EquipmentManager {
          armorData = ArmorStatData.getDefaultData();
       }
 
-      if (armorData.armorType == 0) {
-         // No armor to equip
-         equippedArmorId = 0;
-         armorType = 0;
-         updateSprites(0, "");
-         return;
-      }
-
       cachedArmorData = armorData;
 
       // Assign the armor ID

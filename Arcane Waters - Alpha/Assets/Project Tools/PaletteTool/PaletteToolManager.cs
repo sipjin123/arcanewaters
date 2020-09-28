@@ -546,60 +546,72 @@ public class PaletteToolManager : XmlDataToolManager {
       preparePaletteTypeDropdown();
    }
 
-   public static List<PaletteRepresentation> getColors (PaletteImageType type, string subcategoryName, string tagToFind) {
+   public static List<PaletteRepresentation> getColors (PaletteImageType type, string subcategoryName, int tagToFind) {
       if ((int) type >= (int) PaletteImageType.MAX || (int) type <= (int) PaletteImageType.None) {
          D.error("Incorrect palette type specified");
          return new List<PaletteRepresentation>();
       }
 
-      string key = type.ToString() + "_" + tagToFind + "_" + subcategoryName;
+      string key = type.ToString() + "_" + subcategoryName + "_" + tagToFind;
       if (_cachedGetColorData.ContainsKey(key)) {
          return _cachedGetColorData[key];
       }
 
-      List<PaletteDataPair> pairs = new List<PaletteDataPair>();
       List<PaletteRepresentation> paletteRepresentations = new List<PaletteRepresentation>();
+      List<PaletteToolData> paletteList = PaletteSwapManager.self.getPaletteList();
+      if (paletteList == null || paletteList.Count == 0) {
+         return new List<PaletteRepresentation>();
+      }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int tagId = DB_Main.getPaletteTagID(tagToFind);
-         List<XMLPair> rawXMLData = subcategoryName != "" ? DB_Main.getPaletteXML(tagId, subcategoryName) : DB_Main.getPaletteXML(tagId);
+      foreach (PaletteToolData paletteData in paletteList) {
+         if (paletteData.paletteType == (int) type && paletteData.tagId == tagToFind && paletteData.subcategory == subcategoryName) {
+            PaletteRepresentation paletteRepresentation = new PaletteRepresentation();
+            paletteRepresentation.name = paletteData.paletteName;
+            paletteRepresentation.color = PaletteSwapManager.getRepresentingColor(paletteData.dstColor);
+            paletteRepresentations.Add(paletteRepresentation);
+         }
+      }
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (XMLPair xmlPair in rawXMLData) {
-               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
-               PaletteToolData paletteData = Util.xmlLoad<PaletteToolData>(newTextAsset);
-
-               // Save the palette data in the memory cache
-               PaletteDataPair newDataPair = new PaletteDataPair {
-                  paletteData = paletteData,
-                  creatorID = xmlPair.xmlOwnerId,
-                  paletteId = xmlPair.xmlId,
-                  isEnabled = xmlPair.isEnabled,
-                  tag = xmlPair.tag
-               };
-               if (paletteData.paletteType == (int) type) {
-                  pairs.Add(newDataPair);
-
-                  PaletteRepresentation paletteRepresentation = new PaletteRepresentation();
-                  paletteRepresentation.name = newDataPair.paletteData.paletteName;
-                  paletteRepresentation.color = PaletteSwapManager.getRepresentingColor(newDataPair.paletteData.dstColor);
-                  paletteRepresentations.Add(paletteRepresentation);
-               }
-            }
-
-            if (!_cachedGetColorData.ContainsKey(key)) {
-               _cachedGetColorData.Add(key, paletteRepresentations);
-            }
-
-            return paletteRepresentations;
-         });
-      });
+      if (!_cachedGetColorData.ContainsKey(key)) {
+         _cachedGetColorData.Add(key, paletteRepresentations);
+         return paletteRepresentations;
+      }
 
       return new List<PaletteRepresentation>();
    }
 
-   public static List<PaletteRepresentation> getColors (PaletteImageType type, string tagToFind) {
-      return getColors(type, "", tagToFind);
+   public static List<PaletteRepresentation> getColors (PaletteImageType type, string subcategoryName) {
+      if ((int) type >= (int) PaletteImageType.MAX || (int) type <= (int) PaletteImageType.None) {
+         D.error("Incorrect palette type specified");
+         return new List<PaletteRepresentation>();
+      }
+
+      string key = type.ToString() + "_" + subcategoryName;
+      if (_cachedGetColorData.ContainsKey(key)) {
+         return _cachedGetColorData[key];
+      }
+
+      List<PaletteRepresentation> paletteRepresentations = new List<PaletteRepresentation>();
+      List<PaletteToolData> paletteList = PaletteSwapManager.self.getPaletteList();
+      if (paletteList == null || paletteList.Count == 0) {
+         return new List<PaletteRepresentation>();
+      }
+
+      foreach (PaletteToolData paletteData in paletteList) {
+         if (paletteData.paletteType == (int) type && paletteData.subcategory == subcategoryName) {
+            PaletteRepresentation paletteRepresentation = new PaletteRepresentation();
+            paletteRepresentation.name = paletteData.paletteName;
+            paletteRepresentation.color = PaletteSwapManager.getRepresentingColor(paletteData.dstColor);
+            paletteRepresentations.Add(paletteRepresentation);
+         }
+      }
+
+      if (!_cachedGetColorData.ContainsKey(key)) {
+         _cachedGetColorData.Add(key, paletteRepresentations);
+         return paletteRepresentations;
+      }
+
+      return new List<PaletteRepresentation>();
    }
 
    public void updatePickingColorFromSprite (Color color) {

@@ -72,6 +72,17 @@ public class RewardScreen : Panel
       }
    }
 
+   public void setItemDataGroup (IEnumerable<ItemInstance> items) {
+      // Disable all the rows
+      disableAll();
+
+      int i = 0;
+      foreach(ItemInstance item in items) {
+         // Sets data and makes row active
+         rewardRows[i++].activateRowForItem(item);
+      }
+   }
+
    private void disableAll() {
       for(int i = 0; i < rewardRows.Count; i++) {
          rewardRows[i].gameObject.SetActive(false);

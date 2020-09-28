@@ -1040,10 +1040,10 @@ RectTransform:
   - {fileID: 7326136765009738563}
   - {fileID: 3313509742707864472}
   - {fileID: 7401189715390144721}
+  - {fileID: 7325998922469481593}
   - {fileID: 7326227881759229579}
   - {fileID: 7326048825416436473}
   - {fileID: 7325944054035573777}
-  - {fileID: 7325998922469481593}
   - {fileID: 2840933151417472132}
   - {fileID: 462832422577533030}
   - {fileID: 7325344861034953849}
@@ -1129,7 +1129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31ae373f1512140418c0139ce6208025, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapCustomizationButton: {fileID: 0}
 --- !u!1 &7399468140860881303
 GameObject:
   m_ObjectHideFlags: 0
@@ -2127,7 +2126,7 @@ RectTransform:
   m_Children:
   - {fileID: 7326181031000773329}
   m_Father: {fileID: 7325668441928092473}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3204,7 +3203,7 @@ RectTransform:
   m_Children:
   - {fileID: 7325919064946232091}
   m_Father: {fileID: 7325668441928092473}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4117,7 +4116,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 12
   m_Viewport: {fileID: 7326164343455745145}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 7434972853129020893}
@@ -4174,8 +4173,8 @@ CanvasGroup:
   m_GameObject: {fileID: 7400312856274305303}
   m_Enabled: 1
   m_Alpha: 1
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &7400383379905619513
 GameObject:
@@ -5137,7 +5136,7 @@ RectTransform:
   m_Children:
   - {fileID: 7325855128706257575}
   m_Father: {fileID: 7325668441928092473}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5419,11 +5418,15 @@ MonoBehaviour:
   otherPlayerSpeechColor: {r: 0.6901961, g: 0.9372549, b: 1, a: 1}
   serverChatColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
   systemChatColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
+  globalChatLocalColor: {r: 0.9622642, g: 0.5954664, b: 0.34042364, a: 1}
+  globalChatOtherColor: {r: 0.21804914, g: 0.42326927, b: 0.9433962, a: 1}
   enemyNameColor: {r: 0.9098039, g: 0.015686275, b: 0.015686275, a: 1}
   playerNameColor: {r: 1, g: 0.8784314, b: 0.2, a: 1}
   otherPlayerNameColor: {r: 0.29411766, g: 0.85882354, b: 1, a: 1}
   serverNameColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
   systemNameColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
+  globalNameLocalColor: {r: 0.8509804, g: 0.82137495, b: 0.16470587, a: 1}
+  globalNameOtherColor: {r: 0.04405483, g: 0.27101472, b: 0.8490566, a: 1}
 --- !u!225 &7320058996177905761
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -5469,7 +5472,7 @@ RectTransform:
   m_Children:
   - {fileID: 7325678421956264033}
   m_Father: {fileID: 7325668441928092473}
-  m_RootOrder: 7
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}

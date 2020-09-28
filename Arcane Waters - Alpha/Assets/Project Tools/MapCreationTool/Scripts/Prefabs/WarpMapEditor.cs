@@ -16,8 +16,8 @@ namespace MapCreationTool
       private string targetMap = "";
       private string targetSpawn = "";
 
-      private float width = 3f;
-      private float height = 3f;
+      private float width = 1f;
+      private float height = 1f;
 
       private Direction arriveFacing = Direction.North;
 

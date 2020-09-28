@@ -29,10 +29,16 @@ public class CropProjectile : MonoBehaviour {
 
    private void Update () {
       double timeAlive = Time.time - _startTime;
-      float lerpTime = lerpTime = (float) (timeAlive / _lifeTime);
+      float lerpTime = (float) (timeAlive / _lifeTime);
 
       float angleInDegrees = lerpTime * 180f;
       float cropHeight = Util.getSinOfAngle(angleInDegrees) * _archHeight;
+
+      Vector3 rot = projectileSpriteObj.transform.localRotation.eulerAngles;
+
+      // Calculating -log(x + 0.1) + 1; There is no physical basis to this equation
+      float rotLerp = -Mathf.Log(lerpTime + 0.1f) + 1.0f;
+      projectileSpriteObj.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(rot.x, rot.y, _totalRotation * rotLerp));
 
       Util.setLocalY(projectileSpriteObj.transform, cropHeight);
 
@@ -48,6 +54,9 @@ public class CropProjectile : MonoBehaviour {
       _archHeight = Random.Range(archHeightMin, archHeightMax) * TILE_SIZE;
       _lifeTime = Random.Range(lifeTimeMin, lifeTimeMax);
       _distance = Random.Range(distanceMin, distanceMax) * TILE_SIZE;
+
+      // Use one or two full rotation (360 degree) when crop is in the air
+      _totalRotation = Random.Range(1, 3) * 360.0f;
 
       _startPos = startPos;
       _endPos = _startPos + dir * _distance;
@@ -84,8 +93,11 @@ public class CropProjectile : MonoBehaviour {
    // Life time (how long projectile will be in the air) of crop
    private float _lifeTime;
 
-   // distance that projectile will move from initial position
+   // Distance that projectile will move from initial position
    private float _distance;
+
+   // Rotation value for full flight
+   private float _totalRotation;
 
    // Initial position of projectile
    private Vector2 _startPos;

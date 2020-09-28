@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class OverworldScreen : Panel, IPointerClickHandler {
+public class OverworldScreen : Panel {
    #region Public Variables
 
    // Self
@@ -17,13 +17,6 @@ public class OverworldScreen : Panel, IPointerClickHandler {
       base.Awake();
 
       self = this;
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
    }
 
    #region Private Variables

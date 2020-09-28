@@ -11,7 +11,7 @@ public static class MapCache
    public static string MAP_FOLDER_PATH = Application.persistentDataPath + "/MapData";
 
    // After how many maps will we start deleting old ones
-   public const int MAX_MAPS = 4;
+   public const int MAX_MAPS = 200;
 
    #endregion
 

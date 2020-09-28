@@ -74,7 +74,9 @@ namespace ItemDefinitionTool
       }
 
       public void newDefinition () {
-         selectedItemDefinition = new ItemDefinition { id = -1, creatorUserId = MasterToolAccountManager.self.currentAccountID };
+         selectedItemDefinition = ItemDefinition.create(ItemDefinition.Category.None);
+         selectedItemDefinition.id = -1;
+         selectedItemDefinition.creatorUserId = MasterToolAccountManager.self.currentAccountID;
          ItemDefinitionEditPanel.self.show();
       }
 

@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class Panel : MonoBehaviour {
+public class Panel : MonoBehaviour, IPointerClickHandler
+{
    #region Public Variables
 
    // The type of Panel this is
@@ -13,7 +14,7 @@ public class Panel : MonoBehaviour {
       None = 0, Login = 1, CharSelect = 2, CharCreate = 3, Options = 4, BuySellCargo = 5,
       Starved = 6, Inventory = 7, Sound = 8, Ship = 9, Shipyard = 10,
       ItemShop = 11, CharPreview = 12, WorldMap = 13, Store = 14, Merchant = 15,
-      Adventure = 16, CharacterInfo = 17, Guild = 18, GuildCreate = 19, Flagship = 20,
+      Adventure = 16, CharacterInfo = 17, Guild = 18, Flagship = 20,
       NPC_Panel = 21, Overworld = 22, Craft = 23, Reward = 24, TradeHistory = 25, RandomMaps = 26,
       LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31,
       Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35,
@@ -72,6 +73,12 @@ public class Panel : MonoBehaviour {
       return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
    }
 
+   public void close () {
+      if (isShowing()) {
+         PanelManager.self.popPanel();
+      }
+   }
+
    public void titlebarDrag (BaseEventData baseData) {
       PointerEventData data = (PointerEventData) baseData;
 
@@ -85,6 +92,13 @@ public class Panel : MonoBehaviour {
       yield return null;
 
       canvasGroup.alpha = 1f;
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      // If the black background outside is clicked, hide the panel
+      if (eventData.rawPointerPress == this.gameObject) {
+         close();
+      }
    }
 
    #region Private Variables

@@ -27,8 +27,6 @@ namespace ItemDefinitionTool
       #endregion
 
       public void set (ItemDefinition definition) {
-         enabledToggle.isOn = definition.enabled;
-
          Sprite sprite = ImageManager.getSprite(definition.iconPath);
          if (sprite == null) {
             sprite = ImageManager.self.blankSprite;

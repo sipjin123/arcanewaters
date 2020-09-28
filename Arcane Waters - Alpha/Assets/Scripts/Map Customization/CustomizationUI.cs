@@ -126,6 +126,9 @@ namespace MapCustomization
          }
       }
 
+      public override void OnPointerClick (PointerEventData eventData) {
+      }
+
       #region Private Variables
 
       // Canvas group that wraps the entire UI

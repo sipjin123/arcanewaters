@@ -8507,8 +8507,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: popPanel
+      - m_Target: {fileID: 8151950769612851927}
+        m_MethodName: close
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -11533,6 +11533,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -12375,6 +12380,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -15830,6 +15840,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -16064,6 +16079,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -16300,6 +16320,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -16534,6 +16559,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -16770,6 +16800,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -17004,6 +17039,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -17240,6 +17280,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -17474,6 +17519,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -17710,6 +17760,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -17944,6 +17999,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -18180,6 +18240,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -18414,6 +18479,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -18650,6 +18720,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -18884,6 +18959,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
@@ -19120,6 +19200,11 @@ PrefabInstance:
       propertyPath: m_textAlignment
       value: 65535
       objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}
       propertyPath: m_Material
@@ -19354,6 +19439,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textAlignment
       value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 2003605969581535466, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 10.5
       objectReference: {fileID: 0}
     - target: {fileID: 3030369865867791586, guid: 6db3ea0738cbc9d44ade4a6cc462efc8,
         type: 3}

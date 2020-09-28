@@ -16,6 +16,9 @@ public class EquipmentDefinition : ItemDefinition {
    // Determines if all colors should be set
    public bool setAllColors = false;
 
+   // The path to the main texture of the equipment that is used in game
+   public string mainTexturePath = "";
+
    // Rarity value modifiers
    public RarityModifier[] rarityModifiers = new RarityModifier[0];
 

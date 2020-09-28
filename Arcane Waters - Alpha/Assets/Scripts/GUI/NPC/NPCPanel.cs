@@ -105,19 +105,10 @@ public class NPCPanel : Panel
    public override void show () {
       base.show();
 
-      // If we're already active and visible, then there's nothing to do
-      if (this.gameObject.activeSelf && canvasGroup.alpha == 1) {
-         return;
-      }
-
-      // Start invisible initially
-      canvasGroup.alpha = 0f;
-      canvasGroup.interactable = true;
-
-      // Then turn on the game object so that everything gets positioned
-      this.gameObject.SetActive(true);
-
+      // Start with a hidden panel until receiving the data from the server
       this.ContentCanvasGroup.alpha = 0f;
+
+      isHireableNotification.SetActive(false);
 
       // Get the head image from the npc and update it
       headAnim.setNewTexture(_npc.getHeadIconSprite().texture);

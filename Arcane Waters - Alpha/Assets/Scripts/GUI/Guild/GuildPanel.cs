@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System;
 
-public class GuildPanel : Panel, IPointerClickHandler {
+public class GuildPanel : Panel {
    #region Public Variables
 
    // The button for creating a guild
@@ -32,6 +32,9 @@ public class GuildPanel : Panel, IPointerClickHandler {
 
    // The guild icon
    public GuildIcon guildIcon;
+
+   // The guild creation panel
+   public GuildCreatePanel guildCreatePanel;
 
    // Self
    public static GuildPanel self;
@@ -76,7 +79,7 @@ public class GuildPanel : Panel, IPointerClickHandler {
    }
 
    public void createGuildPressed () {
-      PanelManager.self.pushPanel(Type.GuildCreate);
+      guildCreatePanel.show();
    }
 
    public void leaveGuildPressed () {
@@ -94,13 +97,6 @@ public class GuildPanel : Panel, IPointerClickHandler {
       // Exit all panels
       PanelManager.self.confirmScreen.hide();
       PanelManager.self.popPanel();
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
    }
 
    #region Private Variables

@@ -93,10 +93,6 @@ public class KeyBindingsPanel : Panel
       _initialized = true;
    }
 
-   public void close () {
-      PanelManager.self.popPanel();
-   }
-
    #region Private Variables
 
    // Has the panel been initialized yet

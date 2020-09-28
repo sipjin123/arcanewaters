@@ -181,13 +181,6 @@ public class AuctionPanel : Panel
       }
    }
 
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
-   }
-
    #region Private Variables
 
    // The index of the current page

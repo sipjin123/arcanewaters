@@ -48,7 +48,7 @@ public class SpriteSelector : MonoBehaviour
 
    #endregion
 
-   private void Awake () {
+   private void Start () {
       if (!initialized) {
          initialize();
       }
@@ -57,7 +57,6 @@ public class SpriteSelector : MonoBehaviour
       setValueWithoutNotify(value);
 
       _startFolder = getFolder(startInPath, false);
-      Debug.Log(_startFolder.name);
    }
 
    public void setValueWithoutNotify (string value) {
@@ -318,7 +317,7 @@ public class SpriteSelector : MonoBehaviour
    #region Private Variables
 
    // The root texture folder - beginning of traversal tree
-   private TextureFolder _rootFolder;
+   private static TextureFolder _rootFolder;
 
    // Currently openned folder
    private TextureFolder _currentFolder;

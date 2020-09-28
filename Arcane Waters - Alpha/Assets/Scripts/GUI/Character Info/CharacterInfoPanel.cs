@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using TMPro;
 using System.Linq;
 
-public class CharacterInfoPanel : Panel, IPointerClickHandler {
+public class CharacterInfoPanel : Panel {
 
    #region Public Variables
 
@@ -156,13 +156,6 @@ public class CharacterInfoPanel : Panel, IPointerClickHandler {
 
    public void guildInviteButtonPressed () {
       Global.player.rpc.Cmd_InviteToGuild(_userObjects.userInfo.userId);
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
    }
 
    public override void hide () {

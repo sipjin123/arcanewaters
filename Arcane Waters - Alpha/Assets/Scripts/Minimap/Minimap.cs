@@ -640,6 +640,13 @@ public class Minimap : ClientMonoBehaviour {
          }
       }
 
+      float[,] depthValues = new float[layerSizeX, layerSizeY];
+      for (int x = 0; x < layerSizeX; x++) {
+         for (int y = 0; y < layerSizeY; y++) {
+            depthValues[x, y] = float.MaxValue;
+         }
+      }
+
       int layerOriginX = -layerSizeX / 2;
       int layerOriginY = -layerSizeY / 2;
 
@@ -1281,11 +1288,20 @@ public class Minimap : ClientMonoBehaviour {
                                  (int) sprite.textureRect.width,
                                  (int) sprite.textureRect.height);
 
-                           map.SetPixels(areaEffector2DCellPosition.x + icon.offset.x, (layerSizeY - areaEffector2DCellPosition.y) + icon.offset.y, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
+                           for (int y = 0; y < (int) sprite.rect.height; y++) {
+                              for (int x = 0; x < (int) sprite.rect.width; x++) {
+                                 Color pixel = pixels[y * (int) sprite.rect.width + x];
+                                 float z = areaEffector2D.transform.position.z;
+                                 Vector2Int pos = new Vector2Int(areaEffector2DCellPosition.x + icon.offset.x + x, (layerSizeY - areaEffector2DCellPosition.y) + icon.offset.y + y);
+                                 if (pixel.a != 0.0f && depthValues[pos.x, pos.y] > z) {
+                                    map.SetPixel(pos.x, pos.y, pixel);
+                                    depthValues[pos.x, pos.y] = z;
+                                 }
+                              }
+                           }
 
                            map.Apply();
                            textureList.Add(map);
-
                         }
                      }
                   }
@@ -1310,11 +1326,20 @@ public class Minimap : ClientMonoBehaviour {
                            int xSetPixel = Mathf.Clamp(collider2DCellPosition.x + icon.offset.x - (-layerSizeX / 2), 0, map.width - (int) sprite.textureRect.width);
                            int ySetPixel = Mathf.Clamp(layerSizeY + icon.offset.y - (collider2DCellPosition.y - (-layerSizeY / 2)), 0, map.height - (int) sprite.textureRect.height);
 
-                           map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
+                           for (int y = 0; y < (int) sprite.rect.height; y++) {
+                              for (int x = 0; x < (int) sprite.rect.width; x++) {
+                                 Color pixel = pixels[y * (int) sprite.rect.width + x];
+                                 float z = collider2D.transform.position.z;
+                                 Vector2Int pos = new Vector2Int(xSetPixel + x, ySetPixel + y);
+                                 if (pixel.a != 0.0f && depthValues[pos.x, pos.y] > z) {
+                                    map.SetPixel(pos.x, pos.y, pixel);
+                                    depthValues[pos.x, pos.y] = z;
+                                 }
+                              }
+                           }
 
                            map.Apply();
                            textureList.Add(map);
-
                         }
                      }
                   }
@@ -1380,7 +1405,17 @@ public class Minimap : ClientMonoBehaviour {
                                  createdPrefabIcons[icon.iconLayerName].Add(new Vector2Int(xSetPixel, ySetPixel));
                               }
 
-                              map.SetPixels(xSetPixel, ySetPixel, (int) sprite.rect.width, (int) sprite.rect.height, pixels);
+                              for (int y = 0; y < (int) sprite.rect.height; y++) {
+                                 for (int x = 0; x < (int) sprite.rect.width; x++) {
+                                    Color pixel = pixels[y * (int) sprite.rect.width + x];
+                                    float z = pref.transform.position.z;
+                                    Vector2Int pos = new Vector2Int(xSetPixel + x, ySetPixel + y);
+                                    if (pixel.a != 0.0f && depthValues[pos.x, pos.y] > z) {
+                                       map.SetPixel(pos.x, pos.y, pixel);
+                                       depthValues[pos.x, pos.y] = z;
+                                    }
+                                 }
+                              }
 
                               map.Apply();
                               textureList.Add(map);

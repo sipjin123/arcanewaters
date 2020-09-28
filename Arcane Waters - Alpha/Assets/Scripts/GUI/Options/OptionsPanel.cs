@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using System;
 using static UnityEngine.UI.Dropdown;
 
-public class OptionsPanel : Panel, IPointerClickHandler
+public class OptionsPanel : Panel
 {
 
    #region Public Variables
@@ -45,8 +45,11 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // Self
    public static OptionsPanel self;
 
-   // The section that only appears when a user is logged in
-   public GameObject loggedInOnlySection;
+   // The objects that only appears when a user is logged in
+   public GameObject[] loggedInObjects;
+
+   // The objects that only appears when a user is NOT logged in
+   public GameObject[] notLoggedInObjects;
 
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
@@ -81,6 +84,9 @@ public class OptionsPanel : Panel, IPointerClickHandler
    // The current full screen mode
    public FullScreenMode selectedMode;
 
+   // The single player toggle
+   public Toggle singlePlayerToggle;
+
    #endregion
 
    public override void Awake () {
@@ -112,6 +118,11 @@ public class OptionsPanel : Panel, IPointerClickHandler
       int vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
       vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
       QualitySettings.vSyncCount = vsyncCount;
+
+      // Set the single player toggle event
+      singlePlayerToggle.onValueChanged.AddListener(_ => {
+         Global.isSinglePlayer = _;
+      });
    }
 
    public void setVSync (bool vsync) {
@@ -221,8 +232,22 @@ public class OptionsPanel : Panel, IPointerClickHandler
    public override void show () {
       base.show();
 
-      // Hide some options when called from the title screen
-      loggedInOnlySection.SetActive(NetworkServer.active || NetworkClient.active);
+      // Show/hide some options when the user is logged in and when he is not
+      if (NetworkServer.active || NetworkClient.active) {
+         foreach (GameObject go in loggedInObjects) {
+            go.SetActive(true);
+         }
+         foreach (GameObject go in notLoggedInObjects) {
+            go.SetActive(false);
+         }
+      } else {
+         foreach (GameObject go in loggedInObjects) {
+            go.SetActive(false);
+         }
+         foreach (GameObject go in notLoggedInObjects) {
+            go.SetActive(true);
+         }
+      }
    }
 
    private void initializeResolutionsDropdown () {
@@ -273,13 +298,6 @@ public class OptionsPanel : Panel, IPointerClickHandler
       effectsSlider.value = SoundManager.effectsVolume / 1f;
    }
 
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
-   }
-
    public void musicSliderChanged () {
       // If the panel just switched on, ignore the change
       if (Time.time - _lastShownTime < .1f) {
@@ -312,6 +330,17 @@ public class OptionsPanel : Panel, IPointerClickHandler
 
    public void onLogOutButtonPress () {
       if (Global.player == null) {
+         // If we are at the character screen, lets go back to title
+         if (CharacterScreen.self.isShowing()) {
+            // Return to the title screen
+            Util.stopHostAndReturnToTitleScreen();
+
+            // Close this panel
+            if (isShowing()) {
+               PanelManager.self.popPanel();
+            }
+         }
+
          return;
       }
 
@@ -357,6 +386,13 @@ public class OptionsPanel : Panel, IPointerClickHandler
 
    public void onKeybindingsButtonPress () {
       PanelManager.self.pushIfNotShowing(Type.Keybindings);
+   }
+
+   public void onExitButtonPress () {
+      PanelManager.self.showConfirmationPanel("Are you sure you want to exit the game?",
+         () => {
+            Application.Quit();
+         });
    }
 
    public void logOut () {
@@ -415,6 +451,9 @@ public class OptionsPanel : Panel, IPointerClickHandler
 #endif
 
       BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - borderSize.x, Screen.height - borderSize.y);
+   }
+
+   public override void OnPointerClick (PointerEventData eventData) {
    }
 
    #region Private Variables

@@ -29,9 +29,6 @@ namespace ItemDefinitionTool
       // Label which shows the creator id of the item
       public Text creatorIdLabel;
 
-      // Toggle for changing enabled/disabled state of the item
-      public Toggle enabledToggle;
-
       // Dropdown for changing category of an item
       public Dropdown categoryDropdown;
 
@@ -95,8 +92,6 @@ namespace ItemDefinitionTool
          idLabel.text = $"ID - { model.id }";
          creatorIdLabel.text = $"Creator ID - { model.creatorUserId }";
 
-         enabledToggle.SetIsOnWithoutNotify(model.enabled);
-
          categoryDropdown.SetValueWithoutNotify(categoryDropdown.options.FindIndex(c => c.text.Equals(model.category.ToString())));
 
          nameInput.SetTextWithoutNotify(model.name);
@@ -154,7 +149,6 @@ namespace ItemDefinitionTool
          target.name = nameInput.text;
          target.description = descriptionInput.text;
          target.iconPath = iconSelector.value;
-         target.enabled = enabledToggle.isOn;
          target.category = (ItemDefinition.Category) Enum.Parse(typeof(ItemDefinition.Category), categoryDropdown.options[categoryDropdown.value].text);
       }
 

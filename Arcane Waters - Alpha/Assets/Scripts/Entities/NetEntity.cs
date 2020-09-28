@@ -141,8 +141,9 @@ public class NetEntity : NetworkBehaviour
    // The farm layout for this user, if chosen
    public int customFarmBaseId;
 
-   // Gets set to true on the server when we're about to execute a warp
+   // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
+   public bool isAboutToWarpOnClient = false;
 
    // Determines if the player is animating an interact clip
    public bool interactingAnimation = false;
@@ -304,8 +305,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void FixedUpdate () {
-      // We can only control movement for our own player, when chat isn't focused, we're not falling down or dead and the area has been loaded
-      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInStack() || !AreaManager.self.hasArea(areaKey)) {
+      // We can only control movement for our own player, when chat isn't focused, we're not falling down or dead or warping and the area has been loaded
+      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInStack() || !AreaManager.self.hasArea(areaKey) || isAboutToWarpOnClient) {
          return;
       }
 
@@ -636,6 +637,28 @@ public class NetEntity : NetworkBehaviour
          CinemachineVirtualCamera vcam = area.vcam;
          Util.activateVirtualCamera(vcam);
          vcam.Follow = this.transform;
+      }
+   }
+
+   public void setupForWarpClient () {
+      // Execute any changes, visual modifications for warping
+      // Should only be called on client
+      // Assumes this gameObject will be destroyed shortly during the warp
+
+      // Indicate that we are about to warp
+      isAboutToWarpOnClient = true;
+
+      // Freeze rigidbody
+      getRigidbody().bodyType = RigidbodyType2D.Static;
+
+      // Disable all sprite animations in children
+      foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
+         anim.enabled = false;
+      }
+
+      // Disable all animators in children
+      foreach (Animator anim in GetComponentsInChildren<Animator>()) {
+         anim.enabled = false;
       }
    }
 

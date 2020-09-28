@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
-public class PaletteDef : MonoBehaviour {
+public class PaletteDef : MonoBehaviour
+{
    #region Public Variables
 
    public struct Subcategory
@@ -19,7 +20,7 @@ public class PaletteDef : MonoBehaviour {
       public string[] colorsHex;
 
       // Constructor requiring all of above variables
-      public Subcategory(string name_, PaletteToolManager.PaletteImageType type_, string[] colorsHex_) {
+      public Subcategory (string name_, PaletteToolManager.PaletteImageType type_, string[] colorsHex_) {
          name = name_;
          type = type_;
          colorsHex = colorsHex_;
@@ -29,7 +30,7 @@ public class PaletteDef : MonoBehaviour {
    // Tags used to mark different palette types
    public class Tags
    {
-      public static string STARTER = "Starter";
+      public static int STARTER = 4;
    }
 
    public class Eyes
@@ -84,9 +85,9 @@ public class PaletteDef : MonoBehaviour {
       public static string Black = "";
       public static string White = "";
 
-      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#D9E9FB", "#A1B7CC", "#748EA7", "#4F6276" } );
-      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#70B9FF", "#3284D2", "#075CA7", "#083B6B" } );
-      public static Subcategory accent = new Subcategory("accent", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#F82727", "#E21414", "#B71212", "#900202" } );
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#D9E9FB", "#A1B7CC", "#748EA7", "#4F6276" });
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#70B9FF", "#3284D2", "#075CA7", "#083B6B" });
+      public static Subcategory accent = new Subcategory("accent", PaletteToolManager.PaletteImageType.Armor, new string[4] { "#F82727", "#E21414", "#B71212", "#900202" });
    }
 
    public class Weapon
@@ -119,6 +120,12 @@ public class PaletteDef : MonoBehaviour {
    }
 
    // The guild icon palette names and their representing color
+
+   public class GuildIcon
+   {
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.GuildIconBackground, new string[4] { "#00FF00", "#00C400", "#FF0000", "#AC0000" });
+   }
+
    public static Dictionary<string, Color> guildIcon1 = new Dictionary<string, Color>() {
       {"guild_icon_one_orange_2", PaletteSwapManager.intToColor (236, 134, 13) },
       {"guild_icon_one_yellow", PaletteSwapManager.intToColor (243, 235, 21) },

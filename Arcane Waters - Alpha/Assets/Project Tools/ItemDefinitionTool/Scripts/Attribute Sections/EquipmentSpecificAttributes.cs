@@ -23,6 +23,7 @@ namespace ItemDefinitionTool
       public InputField vitalityInput;
       public InputField precisionInput;
       public InputField luckInput;
+      public SpriteSelector mainTextureSelector;
 
       // Elemental modifiers section
       public Text elementalTitleLabel;
@@ -60,6 +61,7 @@ namespace ItemDefinitionTool
          eq.statsData.vitality = int.Parse(vitalityInput.text);
          eq.statsData.precision = int.Parse(precisionInput.text);
          eq.statsData.luck = int.Parse(luckInput.text);
+         eq.mainTexturePath = mainTextureSelector.value;
 
          eq.elementModifiers = new ElementModifier[_elementalEntries.Count];
          eq.rarityModifiers = new RarityModifier[_rarityEntries.Count];
@@ -84,6 +86,7 @@ namespace ItemDefinitionTool
          vitalityInput.SetTextWithoutNotify(eq.statsData.vitality.ToString());
          precisionInput.SetTextWithoutNotify(eq.statsData.precision.ToString());
          luckInput.SetTextWithoutNotify(eq.statsData.luck.ToString());
+         mainTextureSelector.setValueWithoutNotify(eq.mainTexturePath);
 
          // Remove if too many entries
          while (eq.elementModifiers.Length < _elementalEntries.Count) {

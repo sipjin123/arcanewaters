@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using MapCreationTool;
 using MapCreationTool.Serialization;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 public class Warp : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -52,12 +51,30 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          return;
       }
 
-      // If a player entered this warp on the server, move them
-      if (player.isServer && player.connectionToClient != null && canPlayerUseWarp(player)) {
-         player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+      if (canPlayerUseWarp(player)) {
+         // If a player entered this warp on the server, move them
+         if (player.isServer && player.connectionToClient != null) {
+            // Lets give a bit more time for the client to perform any visual animations for warping
+            StartCoroutine(CO_ExecWarpServer(player, 0.5f));
+         }
 
-         warpEvent.Invoke(player);
+         // If a player is client, show loading screen and stop the player
+         if (player.isLocalPlayer) {
+            player.setupForWarpClient();
+
+            if (PanelManager.self.loadingScreen != null) {
+               PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
+            }
+         }
       }
+   }
+
+   [ServerOnly]
+   private IEnumerator CO_ExecWarpServer (NetEntity player, float delay) {
+      yield return new WaitForSeconds(delay);
+
+      player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+      warpEvent.Invoke(player);
    }
 
    public void receiveData (DataField[] dataFields) {

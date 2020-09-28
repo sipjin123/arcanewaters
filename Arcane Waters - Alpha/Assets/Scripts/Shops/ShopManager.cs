@@ -32,6 +32,7 @@ public class ShopManager : MonoBehaviour {
       ShipAbilityManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       ShopXMLManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
       EquipmentXMLManager.self.finishedDataSetup.AddListener(() => checkIfDataSetupIsFinished());
+      PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => checkIfDataSetupIsFinished());
    }
 
    private void checkIfDataSetupIsFinished () {
@@ -39,7 +40,7 @@ public class ShopManager : MonoBehaviour {
       if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
          InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       }
-      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment) {
+      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && PaletteSwapManager.self.getPaletteList().Count > 0) {
          // Routinely change out the items
          InvokeRepeating("generateItemsFromXML", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
          InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
@@ -117,9 +118,21 @@ public class ShopManager : MonoBehaviour {
                   int randomizedPrice = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
                   string data = "";
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
+                     List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.primary.name);
+                     List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.secondary.name);
+                     List<PaletteToolManager.PaletteRepresentation> power = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.power.name);
+                     string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", power.Count > 0 ? power.ChooseRandom().name : "" };
+                     item.paletteNames = Item.parseItmPalette(palettes);
+
                      data = string.Format("damage={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   }
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Armor) {
+                     List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name);
+                     List<PaletteToolManager.PaletteRepresentation> secondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name);
+                     List<PaletteToolManager.PaletteRepresentation> accent = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.accent.name);
+                     string[] palettes = new string[3] { primary.Count > 0 ? primary.ChooseRandom().name : "", secondary.Count > 0 ? secondary.ChooseRandom().name : "", accent.Count > 0 ? accent.ChooseRandom().name : "" };
+                     item.paletteNames = Item.parseItmPalette(palettes);
+
                      data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                   }
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Hats) {

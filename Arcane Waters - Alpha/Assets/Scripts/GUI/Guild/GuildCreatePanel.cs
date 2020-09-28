@@ -5,9 +5,14 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using System;
+using UnityEngine.EventSystems;
 
-public class GuildCreatePanel : Panel {
+public class GuildCreatePanel : MonoBehaviour, IPointerClickHandler
+{
    #region Public Variables
+
+   // Our associated Canvas Group
+   public CanvasGroup canvasGroup;
 
    // The main guild icon
    public GuildIcon guildIcon;
@@ -39,9 +44,7 @@ public class GuildCreatePanel : Panel {
 
    #endregion
 
-   public override void Awake () {
-      base.Awake(); 
-
+   public void Awake () {
       _inputField = GetComponentInChildren<InputField>();
 
       // Keep a list of all sprites for guild icon layers
@@ -61,9 +64,7 @@ public class GuildCreatePanel : Panel {
       }
    }
 
-   public override void Start () {
-      base.Start();
-
+   public void Start () {
       // Set default values
       _borderIndex = UnityEngine.Random.Range(0, _borders.Count);
       _backgroundIndex = UnityEngine.Random.Range(0, _backgrounds.Count);
@@ -117,7 +118,7 @@ public class GuildCreatePanel : Panel {
    }
 
    public void onCancelButtonPressed () {
-      PanelManager.self.popPanel();
+      hide();
    }
 
    public void createGuildConfirmed () {
@@ -233,6 +234,30 @@ public class GuildCreatePanel : Panel {
    private void refreshSigil () {
       guildIcon.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
       sigilSelection.setSigil(_sigils[_sigilIndex], Item.parseItmPalette(new string[2] { _sigilPalette1, _sigilPalette2 }));
+   }
+
+   public void show () {
+      this.canvasGroup.alpha = 1f;
+      this.canvasGroup.blocksRaycasts = true;
+      this.canvasGroup.interactable = true;
+      this.gameObject.SetActive(true);
+   }
+
+   public void hide () {
+      this.canvasGroup.alpha = 0f;
+      this.canvasGroup.blocksRaycasts = false;
+      this.canvasGroup.interactable = false;
+   }
+
+   public bool isShowing () {
+      return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      // If the black background outside is clicked, hide the panel
+      if (eventData.rawPointerPress == this.gameObject) {
+         hide();
+      }
    }
 
    #region Private Variables

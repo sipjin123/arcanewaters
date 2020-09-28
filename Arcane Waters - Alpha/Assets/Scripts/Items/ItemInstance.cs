@@ -22,10 +22,15 @@ public class ItemInstance
    public int count = 1;
 
    // Name of palette that changes color of item
+   [Obsolete]
    public string palette1 = "";
 
    // Name of palette that changes color of item
+   [Obsolete]
    public string palette2 = "";
+
+   // Name of palettes that changes color of item
+   public string palettes;
 
    // The rarity of the item
    public Rarity.Type rarity = Rarity.Type.None;
@@ -45,10 +50,31 @@ public class ItemInstance
       count = DataUtil.getInt(dataReader, "count");
       palette1 = DataUtil.getString(dataReader, "palette1");
       palette2 = DataUtil.getString(dataReader, "palette2");
+      palettes = DataUtil.getString(dataReader, "palettes");
       rarity = (Rarity.Type) DataUtil.getInt(dataReader, "rarity");
    }
 
 #endif
+
+   public string getName () {
+      // Add any special handling if needed
+
+      return getDefinition().name;
+   }
+
+   public string getDescription () {
+      // Add any special handling if needed
+
+      return getDefinition().description;
+   }
+
+   public string getTooltip () {
+      switch (getDefinition().category) {
+         // TODO: add tooltips for various item categories
+         default:
+            return getDescription();
+      }
+   }
 
    // Hardcoded item rewards for when player gets his first house/farm
    // 2 Tables, 6 Chairs, 5 Trees, 1 Stumps, 2 Bushes

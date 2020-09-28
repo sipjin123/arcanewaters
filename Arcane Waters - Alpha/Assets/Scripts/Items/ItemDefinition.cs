@@ -5,9 +5,8 @@ using UnityEngine;
 /// <summary>
 /// Represents a description of an item - it's name, images and various properties.
 /// When this item is used/owned/created inside the game, it takes form of 'ItemInstance'.
-/// 
-/// NOTE: Include '[XmlRoot("Item")]' in every derived class to avoid type errors when deserializing.
 /// </summary>
+// NOTE: Include '[XmlRoot("Item")]' in every derived class to avoid type errors when deserializing.
 [Serializable]
 [XmlRoot("Item")]
 public class ItemDefinition
@@ -23,9 +22,6 @@ public class ItemDefinition
    // Unique identifier of item's definition
    public int id;
 
-   // If item definition is enabled in the game;
-   public bool enabled;
-
    // The category of item this is
    public Category category;
 
@@ -39,6 +35,10 @@ public class ItemDefinition
    public int creatorUserId;
 
    #endregion
+
+   protected ItemDefinition () {
+
+   }
 
    public virtual bool canBeStacked () {
       // By default, items can be stacked
@@ -67,6 +67,18 @@ public class ItemDefinition
             return new ArmorDefinition();
          case Category.Hats:
             return new HatDefinition();
+         case Category.Potion:
+            return new PotionDefinition();
+         case Category.Usable:
+            return new UsableItemDefinition();
+         case Category.CraftingIngredients:
+            return new CraftingIngredientDefinition();
+         case Category.Blueprint:
+            return new BlueprintDefinition();
+         case Category.Currency:
+            return new CurrencyDefinition();
+         case Category.Quest_Item:
+            return new QuestItemDefinition();
          case Category.Prop:
             return new PropDefinition();
          default:
@@ -87,6 +99,18 @@ public class ItemDefinition
             return deserialize<ArmorDefinition>(data);
          case Category.Hats:
             return deserialize<HatDefinition>(data);
+         case Category.Potion:
+            return deserialize<PotionDefinition>(data);
+         case Category.Usable:
+            return deserialize<UsableItemDefinition>(data);
+         case Category.CraftingIngredients:
+            return deserialize<CraftingIngredientDefinition>(data);
+         case Category.Blueprint:
+            return deserialize<BlueprintDefinition>(data);
+         case Category.Currency:
+            return deserialize<CurrencyDefinition>(data);
+         case Category.Quest_Item:
+            return deserialize<QuestItemDefinition>(data);
          case Category.Prop:
             return deserialize<PropDefinition>(data);
          default:

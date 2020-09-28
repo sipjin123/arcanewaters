@@ -58,6 +58,9 @@ public class SoundManager : MonoBehaviour {
       // Battle Music
       Battle_Music = 200,
 
+      // Farm Music
+      Farm_Music = 250,
+
       // Map effects
       Tick = 300, Tock = 301, Click = 302, Clock = 303, Coin_Pickup = 304, Coin_XP_Gain = 305,
       Door_Close = 306, Door_Open = 307, Footstep = 308, Footstep_Muffled = 309, Furnace = 310,

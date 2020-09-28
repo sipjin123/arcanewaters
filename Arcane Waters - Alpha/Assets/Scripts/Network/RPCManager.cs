@@ -2486,9 +2486,18 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_LeaveGuild () {
+      int guildId = _player.guildId;
+
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Remove the player from the guild
          DB_Main.assignGuild(_player.userId, 0);
          _player.guildId = 0;
+
+         // Delete the guild if it has no more members
+         int memberCount = DB_Main.getMemberCountForGuild(guildId);
+         if (memberCount == 0) {
+            DB_Main.deleteGuild(guildId);
+         }
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You have left your guild!");
@@ -3400,6 +3409,22 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [Server]
+   private async void giveItemRewardsToPlayer (int userID, List<ItemInstance> rewardList, bool showPanel) {
+      // Assign item id for the reward
+      foreach (ItemInstance item in rewardList) {
+         item.ownerUserId = userID;
+      }
+
+      // Add all items to database in parallel
+      await Task.WhenAll(rewardList.Select(async item => await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, item))));
+
+      // Show panel to player if needed
+      if (showPanel) {
+         Target_ReceiveItemRewardList(rewardList.ToArray());
+      }
+   }
+
    [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
@@ -4179,19 +4204,19 @@ public class RPCManager : NetworkBehaviour {
             case Item.Category.Weapon:
                WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
                if (weaponData != null) {
-                  item.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath);
+                  item.setBasicInfo(weaponData.equipmentName, weaponData.equipmentDescription, weaponData.equipmentIconPath, item.paletteNames);
                }
                break;
             case Item.Category.Armor:
                ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
                if (armorData != null) {
-                  item.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath);
+                  item.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath, item.paletteNames);
                }
                break;
             case Item.Category.Hats:
                HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
                if (hatData != null) {
-                  item.setBasicInfo(hatData.equipmentName, hatData.equipmentDescription, hatData.equipmentIconPath);
+                  item.setBasicInfo(hatData.equipmentName, hatData.equipmentDescription, hatData.equipmentIconPath, item.paletteNames);
                }
                break;
          }
@@ -4545,6 +4570,15 @@ public class RPCManager : NetworkBehaviour {
    public void Rpc_AddPrefabCustomizationSuccess (string areaKey, PrefabState changes) {
       MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, changes);
    }
+
+   #region Item Instances
+
+   [TargetRpc]
+   public void Target_ReceiveItemRewardList (ItemInstance[] items) {
+      RewardManager.self.showItemsInRewardPanel(items);
+   } 
+
+   #endregion
 
    [Command]
    public void Cmd_FetchPerkPointsForUser () {

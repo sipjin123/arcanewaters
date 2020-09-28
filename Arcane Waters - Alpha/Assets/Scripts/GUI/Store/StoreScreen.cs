@@ -6,7 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System.Linq;
 
-public class StoreScreen : Panel, IPointerClickHandler {
+public class StoreScreen : Panel {
    #region Public Variables
 
    // The text that displays our Gold count
@@ -122,13 +122,6 @@ public class StoreScreen : Panel, IPointerClickHandler {
 
       // Update our character preview stack
       this.characterStack.updateLayers(userObjects);
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
    }
 
    public void updateGemsAmount (int amount) {

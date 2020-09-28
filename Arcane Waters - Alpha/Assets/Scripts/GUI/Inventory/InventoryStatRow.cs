@@ -36,6 +36,8 @@ public class InventoryStatRow : MonoBehaviour
    public void clear () {
       attackText.text = "0";
       defenseText.text = "0";
+      _equippedAttackValue = 0;
+      _equippedDefenseValue = 0;
       disableStatModifiers();
    }
 

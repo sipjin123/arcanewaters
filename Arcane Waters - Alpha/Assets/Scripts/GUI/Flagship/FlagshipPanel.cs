@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class FlagshipPanel : Panel, IPointerClickHandler {
+public class FlagshipPanel : Panel {
    #region Public Variables
 
    // The prefab we use for creating rows
@@ -21,13 +21,6 @@ public class FlagshipPanel : Panel, IPointerClickHandler {
 
    public override void show () {
       base.show();
-   }
-
-   public void OnPointerClick (PointerEventData eventData) {
-      // If the black background outside is clicked, hide the panel
-      if (eventData.rawPointerPress == this.gameObject) {
-         PanelManager.self.popPanel();
-      }
    }
 
    public void updatePanelWithShips (List<ShipInfo> shipList, int flagshipId) {

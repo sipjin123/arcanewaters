@@ -126,7 +126,7 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ConfirmMessage.Type.CreatedGuild:
             // Close the panel
-            PanelManager.self.popPanel();
+            ((GuildPanel) PanelManager.self.get(Panel.Type.Guild)).guildCreatePanel.hide();
 
             // Get updated info
             Global.player.rpc.Cmd_RequestGuildInfoFromServer();

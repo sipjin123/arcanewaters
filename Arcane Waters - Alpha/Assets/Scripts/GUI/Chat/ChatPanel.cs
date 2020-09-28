@@ -90,14 +90,6 @@ public class ChatPanel : MonoBehaviour {
          _isScrolling = false;
       }
 
-      // Allow scrolling up and down with the scroll wheel
-      float scrollWheel = Input.GetAxis("Mouse ScrollWheel");
-      if (scrollWheel > 0f) {
-         scrollRect.verticalScrollbar.value += .1f;
-      } else if (scrollWheel < 0f) {
-         scrollRect.verticalScrollbar.value -= .1f;
-      }
-
       // Keep track of when the chat input is focused
       if (inputField.isFocused) {
          _lastFocusTime = Time.time;
