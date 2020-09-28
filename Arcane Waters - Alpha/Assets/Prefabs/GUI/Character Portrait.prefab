@@ -372,7 +372,10 @@ MonoBehaviour:
   landBackground: {fileID: 21300000, guid: 09690ec1d68bdd64283439a6e7451892, type: 3}
   combatBackground: {fileID: 21300000, guid: 0da0ee09b7b503c459611da4c6e90dfe, type: 3}
   unknownBackground: {fileID: 21300000, guid: 166e40d906d48be499744e04ea4a70d2, type: 3}
-  canvasGroup: {fileID: 0}
+  useMouseEventAnimations: 0
+  toggle: {fileID: 0}
+  overlayImage: {fileID: 0}
+  scaleOnMouseHover: 1.5
 --- !u!114 &567073698968334239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -594,12 +597,12 @@ PrefabInstance:
     - target: {fileID: 224440324614003848, guid: 64bdebd21468ff348a9c0f36f4a29264,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 3.3
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 224440324614003848, guid: 64bdebd21468ff348a9c0f36f4a29264,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -30.2
+      value: -30
       objectReference: {fileID: 0}
     - target: {fileID: 224440324614003848, guid: 64bdebd21468ff348a9c0f36f4a29264,
         type: 3}
@@ -644,12 +647,12 @@ PrefabInstance:
     - target: {fileID: 224440324614003848, guid: 64bdebd21468ff348a9c0f36f4a29264,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.6
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 224440324614003848, guid: 64bdebd21468ff348a9c0f36f4a29264,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.6
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 64bdebd21468ff348a9c0f36f4a29264, type: 3}

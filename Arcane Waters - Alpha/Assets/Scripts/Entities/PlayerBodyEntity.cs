@@ -169,14 +169,6 @@ public class PlayerBodyEntity : BodyEntity {
          animator.speed = 1;
       }
 
-      // Allow right clicking people to bring up the context menu, only if no panel is opened
-      if (Input.GetMouseButtonUp(1) && !PanelManager.self.hasPanelInStack()) {
-         PlayerBodyEntity body = getClickedBody();
-         if (body != null) {
-            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
-         }
-      }
-
       if (!isInBattle()) {
          if (Input.GetKeyUp(KeyCode.Alpha1)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(1);
@@ -236,64 +228,68 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (InputManager.isRightClickKeyPressed()) {
-         bool isNearInteractables = false;
-         float overlapRadius = .5f;
-         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
-         List<NPC> npcsNearby = new List<NPC>();
-         List<TreasureChest> treasuresNearby = new List<TreasureChest>();
+         PlayerBodyEntity body = getClickedBody();
+         if (body != null && !PanelManager.self.hasPanelInStack()) {
+            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
+         } else {
+            bool isNearInteractables = false;
+            float overlapRadius = .35f;
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
+            List<NPC> npcsNearby = new List<NPC>();
+            List<TreasureChest> treasuresNearby = new List<TreasureChest>();
 
-         int currentCount = 0;
-         if (hits.Length > 0) {
-            foreach (Collider2D hit in hits) {
-               if (currentCount > MAX_COLLISION_COUNT) {
-                  break;
+            int currentCount = 0;
+            if (hits.Length > 0) {
+               foreach (Collider2D hit in hits) {
+                  if (currentCount > MAX_COLLISION_COUNT) {
+                     break;
+                  }
+                  currentCount++;
+
+                  if (hit.GetComponent<NPC>() != null) {
+                     npcsNearby.Add(hit.GetComponent<NPC>());
+                  }
+
+                  if (hit.GetComponent<TreasureChest>() != null) {
+                     treasuresNearby.Add(hit.GetComponent<TreasureChest>());
+                  }
                }
-               currentCount++;
 
-               if (hit.GetComponent<NPC>() != null) {
-                  npcsNearby.Add(hit.GetComponent<NPC>());
-               }
-
-               if (hit.GetComponent<TreasureChest>() != null) {
-                  treasuresNearby.Add(hit.GetComponent<TreasureChest>());
-               }
-
-               if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) { 
+               if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) {
                   // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
                   isNearInteractables = true;
-                  forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+               }
+
+               // Loot the nearest lootbag/treasure chest
+               interactNearestLoot(treasuresNearby);
+
+               // If there are no loots nearby, interact with nearest npc
+               if (treasuresNearby.Count < 1) {
+                  interactNearestNpc(npcsNearby);
                }
             }
 
-            // Loot the nearest lootbag/treasure chest
-            interactNearestLoot(treasuresNearby);
+            if (!isNearInteractables) {
+               if (isMoving()) {
+                  farmingTrigger.interactFarming();
+               } else {
+                  Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-            // If there are no loots nearby, interact with nearest npc
-            if (treasuresNearby.Count < 1) {
-               interactNearestNpc(npcsNearby);
-            }
-         }
+                  if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+                     || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+                     requestAnimationPlay(Anim.Type.Interact_East);
+                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
+                  } else if (newDirection == Direction.North) {
+                     requestAnimationPlay(Anim.Type.Interact_North);
+                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
+                  } else if (newDirection == Direction.South) {
+                     requestAnimationPlay(Anim.Type.Interact_South);
+                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+                  }
 
-         if (!isNearInteractables) {
-            if (isMoving()) {
-               farmingTrigger.interactFarming();
-            } else {
-               Direction newDirection = forceLookByClick(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-               if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-                  || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-                  requestAnimationPlay(Anim.Type.Interact_East);
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
-               } else if (newDirection == Direction.North) {
-                  requestAnimationPlay(Anim.Type.Interact_North);
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
-               } else if (newDirection == Direction.South) {
-                  requestAnimationPlay(Anim.Type.Interact_South);
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+                  farmingTrigger.interactFarming();
+                  miningTrigger.interactOres();
                }
-
-               farmingTrigger.interactFarming();
-               miningTrigger.interactOres();
             }
          }
       }
@@ -333,28 +329,28 @@ public class PlayerBodyEntity : BodyEntity {
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
    }
 
-   private Direction forceLookByClick (Vector2 clickPosition) {
+   private Direction forceLookAt (Vector2 targetPosition) {
       // Get horizontal axis difference
-      float xAxisDifference = clickPosition.x - transform.position.x;
+      float xAxisDifference = targetPosition.x - transform.position.x;
       xAxisDifference = Mathf.Abs(xAxisDifference);
 
       // Get vertical axis difference
-      float yAxisDifference = clickPosition.y - transform.position.y;
+      float yAxisDifference = targetPosition.y - transform.position.y;
       yAxisDifference = Mathf.Abs(yAxisDifference);
 
       Direction newDirection = facing;
 
       // Force player to look at direction
       if (xAxisDifference > yAxisDifference) {
-         if (clickPosition.x > transform.position.x && facing != Direction.East) {
+         if (targetPosition.x > transform.position.x && facing != Direction.East) {
             newDirection = Direction.East;
-         } else if (clickPosition.x < transform.position.x && facing != Direction.West) {
+         } else if (targetPosition.x < transform.position.x && facing != Direction.West) {
             newDirection = Direction.West;
          }
       } else {
-         if (clickPosition.y < transform.position.y && facing != Direction.South) {
+         if (targetPosition.y < transform.position.y && facing != Direction.South) {
             newDirection = Direction.South;
-         } else if (clickPosition.y > transform.position.y && facing != Direction.North) {
+         } else if (targetPosition.y > transform.position.y && facing != Direction.North) {
             newDirection = Direction.North;
          }
       }
@@ -474,6 +470,7 @@ public class PlayerBodyEntity : BodyEntity {
 
       if (targetChest != null) {
          targetChest.sendOpenRequest();
+         forceLookAt(targetChest.transform.position);
       } else {
          chestList.Clear();
       }
@@ -493,6 +490,7 @@ public class PlayerBodyEntity : BodyEntity {
 
       if (targetNpc != null) {
          targetNpc.clientClickedMe();
+         forceLookAt(targetNpc.sortPoint.transform.position);
       } else {
          npcList.Clear();
       }

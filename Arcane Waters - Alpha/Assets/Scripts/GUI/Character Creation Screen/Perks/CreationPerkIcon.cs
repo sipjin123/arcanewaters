@@ -46,7 +46,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       TooltipManager.self.showTooltip(_tooltipText + _tooltipAssignedPointsText);
    }
 
-   public void setAssignedPoints (int points) {
+   public void setAssignedPoints (int points, bool updateTooltip) {
       _borderImage.sprite = CreationPerksGrid.self.getBorderForLevel(points);
       _hasAssignedPoints = points > 0;
 
@@ -60,7 +60,9 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       }
 
       _tooltipAssignedPointsText = $"\nAssigned Points: {points}";
-      showTooltip();
+      if (updateTooltip) {
+         showTooltip();
+      }
 
       _assignedPointsText.text = points.ToString();
       _assignedPointsIndicator.gameObject.SetActive(_hasAssignedPoints);

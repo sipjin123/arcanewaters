@@ -25,7 +25,7 @@ public class CreationPerksGrid : MonoBehaviour {
       self = this;
 
       _assignedPerkPoints = new Dictionary<int, int>();
-      _icons.ForEach(icon => icon.setAssignedPoints(0));
+      _icons.ForEach(icon => icon.setAssignedPoints(0, false));
       _availablePoints = AVAILABLE_POINTS;
       _availablePointsText.SetText(_availablePoints.ToString());
 
@@ -65,7 +65,7 @@ public class CreationPerksGrid : MonoBehaviour {
 
          _availablePoints--;
          _availablePointsText.SetText(_availablePoints.ToString());
-         icon.setAssignedPoints(_assignedPerkPoints[perkId]);
+         icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
       }
    }
 
@@ -76,7 +76,7 @@ public class CreationPerksGrid : MonoBehaviour {
          _assignedPerkPoints[perkId]--;
          _availablePoints++;
          _availablePointsText.SetText(_availablePoints.ToString());
-         icon.setAssignedPoints(_assignedPerkPoints[perkId]);
+         icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
       }
    }
 

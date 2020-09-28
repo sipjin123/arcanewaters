@@ -72,9 +72,6 @@ public class OptionsPanel : Panel
    // Player Pref key for vsync
    public static string VSYNC_COUNT_KEY = "vsync_count";
 
-   // The object containing all the UI of the panel, for initialization purposes only
-   public GameObject panelContainer;
-
    // Size of the windows title bar
    public Vector2Int borderSize;
 
@@ -202,7 +199,7 @@ public class OptionsPanel : Panel
 
    private void endInitialSetup () {
       hasInitialized = true;
-      panelContainer.SetActive(true);
+      canvasGroup.Show();
       gameObject.SetActive(false);
    }
 
@@ -451,9 +448,6 @@ public class OptionsPanel : Panel
 #endif
 
       BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - borderSize.x, Screen.height - borderSize.y);
-   }
-
-   public override void OnPointerClick (PointerEventData eventData) {
    }
 
    #region Private Variables

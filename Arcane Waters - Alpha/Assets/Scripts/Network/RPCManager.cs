@@ -14,6 +14,7 @@ using NubisDataHandling;
 using MapCreationTool.Serialization;
 using MapCreationTool;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 public class RPCManager : NetworkBehaviour {
    #region Public Variables
@@ -2774,7 +2775,6 @@ public class RPCManager : NetworkBehaviour {
 
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.voyageGroupId = voyageGroup.groupId;
             Target_CloseVoyagePanel(_player.connectionToClient);
 
             // Warp the player to the voyage map immediately
@@ -4547,10 +4547,7 @@ public class RPCManager : NetworkBehaviour {
          _player.spawnInNewMap(customMapKey);
       }
 
-      // Give rewards if user is entitled to them
-      foreach (ItemInstance reward in rewards) {
-         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, reward));
-      }
+      giveItemRewardsToPlayer(_player.userId, rewards, false);
    }
 
    [TargetRpc]
