@@ -232,6 +232,10 @@ public class NetEntity : NetworkBehaviour
             // Register this player body to the instance manager queue for non local clients
             InstanceManager.self.registerClientPlayerBody(this);
          }
+
+         if (this is PlayerBodyEntity) {
+            BattleManager.self.checkIfPlayerIsInBattle(userId, (PlayerBodyEntity) this);
+         }
       }
 
       // Routinely clean the attackers set
@@ -353,10 +357,6 @@ public class NetEntity : NetworkBehaviour
       if (MyNetworkManager.wasServerStarted && !isAboutToWarpOnServer && AreaManager.self.getArea(this.areaKey) != null) {
          Util.tryToRunInServerBackground(() => DB_Main.setNewLocalPosition(this.userId, localPos, this.facing, this.areaKey));
       }
-
-      if (isInBattle()) {
-         BattleManager.self.disconnectPlayerBattler(userId);
-      }
    }
 
    public virtual void resetCombatInit () {
@@ -377,13 +377,6 @@ public class NetEntity : NetworkBehaviour
       this.eyesType = userInfo.eyesType;
       this.eyesPalettes = userInfo.eyesPalettes;
       this.bodyType = userInfo.bodyType;
-
-      // Update the user info cache
-      if (Global.getUserObjects() == null) {
-         Global.userObjects = new UserObjects();
-      }
-
-      Global.userObjects.userInfo = userInfo;
 
       if (weapon.itemTypeId > 0) {
          WeaponStatData weaponStatData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
@@ -411,8 +404,6 @@ public class NetEntity : NetworkBehaviour
             D.debug("Hat was null! error here");
          }
       }
-
-      Global.setUserEquipment(weapon, armor, hat);
    }
 
    public bool isMale () {

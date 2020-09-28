@@ -132,18 +132,10 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public void disconnectPlayerBattler (int userId) {
-      D.debug("Player (" + userId + ") has disconnected during combat, ending battle");
+   public void checkIfPlayerIsInBattle (int userId, PlayerBodyEntity playerBody) {
       if (_activeBattles.ContainsKey(userId)) {
-         if (_activeBattles[userId] != null) {
-            // Manually forces the existing battle to end and making the player lose
-            // This is to cleanup the existing battle and allow the user to enter battle again on their next login
-            Battle.TeamType playerTeam = _activeBattles[userId].getBattler(userId).teamType;
-            _activeBattles[userId].teamThatWon = playerTeam == Battle.TeamType.Attackers ? Battle.TeamType.Defenders : Battle.TeamType.Attackers;
-            _activeBattles[userId].onBattleEnded.Invoke();
-            StartCoroutine(endBattleAfterDelay(_activeBattles[userId], END_BATTLE_DELAY));
-         }
-      }
+         addPlayerToBattle(getBattleForUser(playerBody.userId), playerBody, Battle.TeamType.Attackers, true);
+      } 
    }
 
    public bool isInBattle (int userId) {
@@ -170,7 +162,7 @@ public class BattleManager : MonoBehaviour {
       return getBattler(Global.player.userId);
    }
 
-   public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+   public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType, bool isExistingBattler = false) {
       // Maintain a Mapping of which players are in which Battles
       _activeBattles[player.userId] = battle;
 
@@ -178,7 +170,7 @@ public class BattleManager : MonoBehaviour {
       ServerCommunicationHandler.self.claimPlayer(player.userId);
 
       // Create a Battler for this Player
-      Battler battler = createBattlerForPlayer(battle, player, teamType);
+      Battler battler = isExistingBattler ? createExistingBattlerForPlayer(battle, player, teamType) : createBattlerForPlayer(battle, player, teamType);
       BattleManager.self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -196,6 +188,10 @@ public class BattleManager : MonoBehaviour {
 
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
+
+      // Send player the data of the background and their abilities
+      player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, battle.battleBoard.xmlID);
+      player.rpc.processPlayerAbilities(player, new List<PlayerBodyEntity> { player });
    }
    
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp) {
@@ -277,9 +273,51 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
+
+   protected Battler createExistingBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+      // Fetch the old battler
+      Battler oldBattler = battle.getBattler(player.userId);
+
+      // We need to make a new one
+      Battler battler = Instantiate(baseBattlerPrefab);
+      battler = assignBattlerData(battle, battler, player, teamType);
+      battler.health = oldBattler.health;
+
+      // Destroy old battler and replace with this reconnected one
+      NetworkServer.Destroy(oldBattler.gameObject);
+      battle.attackers.Remove(battle.attackers.Find(_=>_ == oldBattler.userId));
+
+      // Set new battler to the old battle position
+      battler.boardPosition = oldBattler.boardPosition;
+      BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
+      battler.battleSpot = battleSpot;
+      battler.transform.position = battleSpot.transform.position;
+
+      // Actually spawn the Battler as a Network object now
+      NetworkServer.Spawn(battler.gameObject);
+
+      return battler;
+   }
+
    protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // We need to make a new one
       Battler battler = Instantiate(baseBattlerPrefab);
+      battler = assignBattlerData(battle, battler, player, teamType);
+      battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
+
+      // Figure out which Battle Spot we should be placed in
+      battler.boardPosition = battle.getTeam(teamType).Count + 1;
+      BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
+      battler.battleSpot = battleSpot;
+      battler.transform.position = battleSpot.transform.position;
+
+      // Actually spawn the Battler as a Network object now
+      NetworkServer.Spawn(battler.gameObject);
+
+      return battler;
+   }
+
+   private Battler assignBattlerData (Battle battle, Battler battler, PlayerBodyEntity player, Battle.TeamType teamType) {
       battler.battlerType = BattlerType.PlayerControlled;
 
       // Set up our initial data and position
@@ -290,7 +328,6 @@ public class BattleManager : MonoBehaviour {
 
       // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
       battler.initialize();
-      battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
 
       // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
       battler.battleId = battle.battleId;
@@ -306,15 +343,6 @@ public class BattleManager : MonoBehaviour {
       battler.hairType = player.hairType;
       battler.hairPalettes = player.hairPalettes;
       battler.eyesPalettes = player.eyesPalettes;
-
-      // Figure out which Battle Spot we should be placed in
-      battler.boardPosition = battle.getTeam(teamType).Count + 1;
-      BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
-      battler.battleSpot = battleSpot;
-      battler.transform.position = battleSpot.transform.position;
-
-      // Actually spawn the Battler as a Network object now
-      NetworkServer.Spawn(battler.gameObject);
 
       // Copy the Armor Info
       if (player.armorManager.armorType < 1) {

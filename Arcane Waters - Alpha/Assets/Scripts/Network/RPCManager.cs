@@ -3652,51 +3652,44 @@ public class RPCManager : NetworkBehaviour {
 
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
-      
-      // Enter the background thread to determine if the user has at least one ability equipped
-      bool hasAbilityEquipped = false;
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieve the skill list from database
-         string rawUserAbilityData = DB_Main.userAbilities(localBattler.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
-         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawUserAbilityData);
          List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
-
-         // Cache Attackers Info
-         foreach (BattlerInfo battlerInfo in attackers) {
-            // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
-
-               if (rawEntity != null) {
-                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-                  if (bodyEntity != null) {
-                     bodyEntities.Add(bodyEntity);
-                  } else {
-                     D.warning("Server cant find this ID: " + rawEntity.userId);
-                  }
-               }
-            }
-         }
-
-         // Cache Defenders Info
-         foreach (BattlerInfo battlerInfo in defenders) {
-            // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
-
-               if (rawEntity != null) {
-                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-                  if (bodyEntity != null) {
-                     bodyEntities.Add(bodyEntity);
-                  } else {
-                     D.warning("Server cant find this ID: " + rawEntity.userId);
-                  }
-               }
-            }
-         }
-
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Cache Attackers Info
+            foreach (BattlerInfo battlerInfo in attackers) {
+               // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+               if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+                  BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+
+                  if (rawEntity != null) {
+                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                     if (bodyEntity != null) {
+                        bodyEntities.Add(bodyEntity);
+                     } else {
+                        D.warning("Server cant find this ID: " + rawEntity.userId);
+                     }
+                  }
+               }
+            }
+
+            // Cache Defenders Info
+            foreach (BattlerInfo battlerInfo in defenders) {
+               // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+               if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+                  BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+
+                  if (rawEntity != null) {
+                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                     if (bodyEntity != null) {
+                        bodyEntities.Add(bodyEntity);
+                     } else {
+                        D.warning("Server cant find this ID: " + rawEntity.userId);
+                     }
+                  }
+               }
+            }
+
             Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
             int attackerCount = attackers.Length < 1 ? 1 : attackers.Length;
             List<BattlerInfo> modifiedDefenderList = defenders.ToList();
@@ -3721,6 +3714,7 @@ public class RPCManager : NetworkBehaviour {
                }
             }
 
+            // This block will handle the randomizing of the enemy count 
             int maximumEnemyCount = (attackerCount * 2) - 1;
             int combatantCount = 0;
             bool forceCombatantEntry = false;
@@ -3757,21 +3751,6 @@ public class RPCManager : NetworkBehaviour {
                }
             }
 
-            // Determine if at least one ability is equipped
-            hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
-
-            // If no ability is equipped, Add "Basic Attack" to player abilities in slot 0.
-            if (!hasAbilityEquipped) {
-               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                  DB_Main.updateAbilitySlot(_player.userId, Global.BASIC_ATTACK_ID, 0);
-               });
-            }
-
-            // Set user to only use skill if no weapon is equipped
-            if (localBattler.weaponManager.equipmentDataId == 0) {
-               abilityDataList = modifiedUnarmedAbilityList();
-            }
-
             // Declare the voyage group engaging the enemy
             if (enemy.battleId < 1) {
                if (_player.voyageGroupId == -1) {
@@ -3783,15 +3762,60 @@ public class RPCManager : NetworkBehaviour {
 
             // Get or create the Battle instance
             Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
-
+          
             // If the Battle is full, we can't proceed
             if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
                return;
             }
 
-            // Add the player to the Battle
+            // Adds the player to the newly created or existing battle
             BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
+
+            // Handles ability related logic
+            processPlayerAbilities(localBattler, bodyEntities);
+
+            // Send Battle Bg data
+            int bgXmlID = battle.battleBoard.xmlID;
+            Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+
+            // Send SoundEffects to the Client
+            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
+            Target_ReceiveSoundEffects(_player.connectionToClient, Util.serialize(currentSoundEffects));
+
+            // Only invite other players, host should not receive this invite
+            foreach (PlayerBodyEntity inviteeBattlers in bodyEntities) {
+               if (inviteeBattlers.userId != localBattler.userId) {
+                  Battle.TeamType teamType = attackers.ToList().Find(_ => _.battlerName == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
+                  inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, netId, teamType);
+               }
+            }
+         });
+      });
+   }
+
+   [Server]
+   public void processPlayerAbilities (PlayerBodyEntity localBattler, List<PlayerBodyEntity> bodyEntities) {
+      // Enter the background thread to determine if the user has at least one ability equipped
+      bool hasAbilityEquipped = false;
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Retrieve the skill list from database
+         string rawUserAbilityData = DB_Main.userAbilities(localBattler.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
+         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawUserAbilityData);
+
+         // Determine if at least one ability is equipped
+         hasAbilityEquipped = abilityDataList.Exists(_ => _.equipSlotIndex != -1);
+
+         // If no ability is equipped, Add "Basic Attack" to player abilities in slot 0.
+         if (!hasAbilityEquipped) {
+            DB_Main.updateAbilitySlot(_player.userId, Global.BASIC_ATTACK_ID, 0);
+         }
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Set user to only use skill if no weapon is equipped
+            if (localBattler.weaponManager.equipmentDataId == 0) {
+               abilityDataList = modifiedUnarmedAbilityList();
+            }
 
             // Provides the client with the info of the Equipped Abilities
             int weaponId = localBattler.weaponManager.equipmentDataId;
@@ -3835,24 +3859,7 @@ public class RPCManager : NetworkBehaviour {
 
             // Provides all the abilities for the players in the party
             setupAbilitiesForPlayers(bodyEntities, validAbilities > 0, weaponCategory);
-
             Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
-
-            // Send Battle Bg data
-            int bgXmlID = battle.battleBoard.xmlID;
-            Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
-
-            // Send SoundEffects to the Client
-            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
-            Target_ReceiveSoundEffects(_player.connectionToClient, Util.serialize(currentSoundEffects));
-
-            foreach (PlayerBodyEntity inviteeBattlers in bodyEntities) {
-               // Only invite other players, host should not receive this invite
-               if (inviteeBattlers.userId != localBattler.userId) {
-                  Battle.TeamType teamType = attackers.ToList().Find(_ => _.battlerName == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
-                  inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, netId, teamType);
-               }
-            }
          });
       });
    }
@@ -3992,7 +3999,11 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
 
-                  battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                  try {
+                     battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                  } catch {
+                     D.debug("Cant add battler abilities for: " + battler);
+                  }
                }
             });
          }
