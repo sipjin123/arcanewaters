@@ -76,49 +76,6 @@ public class InstanceManager : MonoBehaviour {
       return instance;
    }
 
-   public void registerClientPlayerBody (NetworkBehaviour entity) {
-      // TODO: Confirm cause of location sync issue before implementing or removing this
-      /*
-      if (!queuedPlayerRegistry.Contains(entity)) {
-         if (_instances.Count > 0) {
-            PlayerBodyEntity newBody = (PlayerBodyEntity) entity;
-            if (newBody != null) {
-               if (_instances.Values.ToList().Find(_ => _.id == newBody.instanceId) != null) {
-                  // If the instance exists, register the entity directly to the player body list
-                  _instances.Values.ToList()[0].registerClientPlayerBody(entity);
-               } else {
-                  // If the instance does not exists, add to queue
-                  this.queuedPlayerRegistry.Add(entity);
-               }
-            }
-         } else {
-            // If there is no instance, add to queue
-            this.queuedPlayerRegistry.Add(entity);
-         }
-      }*/
-   }
-
-   public void registerClientInstance (Instance clientInstance) {
-      // TODO: Confirm cause of location sync issue before implementing or removing this
-      /*
-      // Local clients only have access to one instance, the current instance they are spawned in
-      _instances.Clear();
-      _instances.Add(clientInstance.id, clientInstance);
-
-      // Register non local client player body entities to the instance
-      int queueCount = queuedPlayerRegistry.Count;
-      for (int i = 0; i < queueCount; i++) {
-         clientInstance.registerClientPlayerBody(queuedPlayerRegistry[i]);
-      }
-
-      // Clear the queue based on how many was registered
-      for (int i = 0; i < queueCount; i++) {
-         if (queuedPlayerRegistry.Count > 0) {
-            queuedPlayerRegistry.RemoveAt(0);
-         }
-      }*/
-   }
-
    public void addDiscoveryToInstance (Discovery discovery, Instance instance) {
       instance.entities.Add(discovery);
       discovery.instanceId = instance.id;      
@@ -361,10 +318,6 @@ public class InstanceManager : MonoBehaviour {
 
    // The instances we've created
    protected Dictionary<int, Instance> _instances = new Dictionary<int, Instance>();
-
-   // The players queued to be registered to the instance
-   [SerializeField]
-   protected List<NetworkBehaviour> queuedPlayerRegistry = new List<NetworkBehaviour>();
 
    #endregion
 }

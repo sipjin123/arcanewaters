@@ -19,6 +19,10 @@ public class Battle : NetworkBehaviour {
    [SyncVar]
    public int battleId;
 
+   // The id of the Instance that this battle is in
+   [SyncVar]
+   public int instanceId;
+
    // The Biome Type this Battle is in
    [SyncVar]
    public Biome.Type biomeType;
@@ -157,6 +161,10 @@ public class Battle : NetworkBehaviour {
 
    public Battler getBattler (int userId) {
       foreach (Battler battler in getParticipants()) {
+         if (battler == null) {
+            continue;
+         }
+
          if (battler.userId == userId) {
             return battler;
          }

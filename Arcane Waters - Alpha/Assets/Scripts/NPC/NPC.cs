@@ -97,6 +97,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       NPCData npcData = NPCManager.self.getNPCData(npcId);
+
+      if (npcData == null) {
+         D.error("No npc data for npc id: " + npcId);
+         gameObject.SetActive(false);
+         return;
+      }
+
       isStationary = npcData.isStationary;
 
       string spriteAddress = spritePath;

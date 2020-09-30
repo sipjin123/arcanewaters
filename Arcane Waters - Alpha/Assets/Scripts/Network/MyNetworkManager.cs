@@ -333,6 +333,12 @@ public class MyNetworkManager : NetworkManager
             Instance instance = InstanceManager.self.getInstance(player.instanceId);
             InstanceManager.self.rebuildInstanceObservers(player, instance);
 
+            // If player was in battle, reconnect player to existing battle
+            if (BattleManager.self.getActiveBattlersData().ContainsKey(player.userId)) {
+               Battle activeBattle = BattleManager.self.getActiveBattlersData()[player.userId];
+               BattleManager.self.addPlayerToBattle(activeBattle, (PlayerBodyEntity) player, Battle.TeamType.Attackers, true);
+            }
+
             // Tell the player information about the Area we're going to send them to
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                // Storing Login info, excluding both localhost (IPv4) and ::1 (IPv6)
@@ -358,19 +364,6 @@ public class MyNetworkManager : NetworkManager
                      player.rpc.Target_ReceiveMapInfo(map);
                   }
                   player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
-
-                  // Gathers all the other client positions to be sent to the player being spawned for the purpose of syncing the updated transform positions
-                  List<CompressedClientPositions> clientPositions = new List<CompressedClientPositions>();
-                  foreach (NetworkBehaviour clientData in instance.getPlayerEntities()) {
-                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) clientData;
-
-                     clientPositions.Add(new CompressedClientPositions {
-                        userId = bodyEntity.userId,
-                        xPosition = bodyEntity.transform.localPosition.x,
-                        yPosition = bodyEntity.transform.localPosition.y
-                     });
-                  }
-                  player.rpc.Target_ReceiveUpdatedPlayersPosition(player.connectionToClient, clientPositions.ToArray());
                });
             });
 

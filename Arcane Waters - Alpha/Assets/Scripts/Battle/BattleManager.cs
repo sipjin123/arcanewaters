@@ -82,6 +82,7 @@ public class BattleManager : MonoBehaviour {
       battle.biomeType = biomeType;
       battle.battleBoard = battleBoard;
       battle.transform.SetParent(this.transform);
+      battle.instanceId = instance.id;
       Util.setXY(battle.transform, battleBoard.transform.position);
 
       // Actually spawn the Battle as a Network object now
@@ -132,12 +133,6 @@ public class BattleManager : MonoBehaviour {
       return null;
    }
 
-   public void checkIfPlayerIsInBattle (int userId, PlayerBodyEntity playerBody) {
-      if (_activeBattles.ContainsKey(userId)) {
-         addPlayerToBattle(getBattleForUser(playerBody.userId), playerBody, Battle.TeamType.Attackers, true);
-      } 
-   }
-
    public bool isInBattle (int userId) {
       if (_activeBattles.ContainsKey(userId)) {
          return (_activeBattles[userId] != null);
@@ -170,14 +165,19 @@ public class BattleManager : MonoBehaviour {
       ServerCommunicationHandler.self.claimPlayer(player.userId);
 
       // Create a Battler for this Player
-      Battler battler = isExistingBattler ? createExistingBattlerForPlayer(battle, player, teamType) : createBattlerForPlayer(battle, player, teamType);
-      BattleManager.self.storeBattler(battler);
+      if (isExistingBattler) {
+         battle.attackers.Add(player.userId);
+      }
+      Battler battler = isExistingBattler ? processExistingBattlerForPlayer(battle, player, teamType) : createBattlerForPlayer(battle, player, teamType);
 
       // Add the Battler to the Battle
-      if (teamType == Battle.TeamType.Attackers) {
-         battle.attackers.Add(battler.userId);
-      } else if (teamType == Battle.TeamType.Defenders) {
-         battle.defenders.Add(battler.userId);
+      if (!isExistingBattler) {
+         storeBattler(battler);
+         if (teamType == Battle.TeamType.Attackers) {
+            battle.attackers.Add(battler.userId);
+         } else if (teamType == Battle.TeamType.Defenders) {
+            battle.defenders.Add(battler.userId);
+         }
       }
 
       // Assign the Battle ID to the Sync Var
@@ -274,29 +274,11 @@ public class BattleManager : MonoBehaviour {
    }
 
 
-   protected Battler createExistingBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
-      // Fetch the old battler
-      Battler oldBattler = battle.getBattler(player.userId);
+   protected Battler processExistingBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
+      Battler existingBattler = battle.getBattler(player.userId);
+      existingBattler = assignBattlerData(battle, existingBattler, player, teamType);
 
-      // We need to make a new one
-      Battler battler = Instantiate(baseBattlerPrefab);
-      battler = assignBattlerData(battle, battler, player, teamType);
-      battler.health = oldBattler.health;
-
-      // Destroy old battler and replace with this reconnected one
-      NetworkServer.Destroy(oldBattler.gameObject);
-      battle.attackers.Remove(battle.attackers.Find(_=>_ == oldBattler.userId));
-
-      // Set new battler to the old battle position
-      battler.boardPosition = oldBattler.boardPosition;
-      BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
-      battler.battleSpot = battleSpot;
-      battler.transform.position = battleSpot.transform.position;
-
-      // Actually spawn the Battler as a Network object now
-      NetworkServer.Spawn(battler.gameObject);
-
-      return battler;
+      return existingBattler;
    }
 
    protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
@@ -310,6 +292,9 @@ public class BattleManager : MonoBehaviour {
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
       battler.battleSpot = battleSpot;
       battler.transform.position = battleSpot.transform.position;
+      
+      InstanceManager.self.getInstance(player.instanceId).entities.Add(battler);
+      battler.instanceId = player.instanceId;
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
@@ -392,6 +377,7 @@ public class BattleManager : MonoBehaviour {
       battler.name = data.enemyName;
       battler.companionId = companionId;
       battler.XP = battlerXp;
+      battler.instanceId = battle.instanceId;
 
       // Set starting stats
       battler.health = battler.getStartingHealth(overrideType);
@@ -936,6 +922,8 @@ public class BattleManager : MonoBehaviour {
    }
 
    public List<BattlerData> getAllBattlersData () { return _allBattlersData; }
+
+   public Dictionary<int, Battle> getActiveBattlersData () { return _activeBattles; }
 
    #region Private Variables
 

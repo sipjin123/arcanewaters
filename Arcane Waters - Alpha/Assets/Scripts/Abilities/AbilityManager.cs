@@ -140,6 +140,15 @@ public class AbilityManager : MonoBehaviour
          Battle battle = BattleManager.self.getBattle(action.battleId);
          Battler sourceBattler = battle.getBattler(action.sourceId);
          Battler targetBattler = battle.getBattler(action.targetId);
+         if (sourceBattler == null) {
+            D.debug("Cannot execute, Source battler not existing: " + action.sourceId);
+            continue;
+         }
+         if (targetBattler == null) {
+            D.debug("Cannot execute, Target battler not existing: " + action.targetId);
+            continue;
+         }
+
          double timeToWait = 0;
 
          // Update timestamps

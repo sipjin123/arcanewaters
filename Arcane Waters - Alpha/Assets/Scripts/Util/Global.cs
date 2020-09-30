@@ -108,7 +108,7 @@ public class Global {
    }
 
    public static bool isInBattle () {
-      return (Global.player != null && Global.player.isInBattle()) ;
+      return (Global.player != null && Global.player.isInBattle());
    }
 
 

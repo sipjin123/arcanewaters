@@ -59,6 +59,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int companionId = -1;
 
+   // The id of the Instance that this battler is in
+   [SyncVar]
+   public int instanceId;
+
    // The battle ID that this Battler is in
    [SyncVar]
    public int battleId;
@@ -245,6 +249,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If action can be cancelled
    public bool canCancelAction;
 
+   // If setup is completed
+   public bool hasAssignedNetId = false;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -272,11 +279,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void Start () {
-      initialize();
-
       // Look up our associated player object
-      NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
-      this.player = enemyIdent.GetComponent<NetEntity>();
+      if (NetworkIdentity.spawned.ContainsKey(playerNetId)) {
+         NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
+         this.player = enemyIdent.GetComponent<NetEntity>();
+      } else {
+         StartCoroutine(CO_AssignPlayerNetId());
+         return;
+      }
+      hasAssignedNetId = true;
+
+      initialize();
 
       // Set our sprite sheets according to our types
       if (battlerType == BattlerType.PlayerControlled && isLocalBattler()) {
@@ -359,15 +372,32 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Flip sprites for the attackers
       checkIfSpritesShouldFlip();
 
+      // This simulates the click on the enemy battler on client side
       if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
-         StartCoroutine(CO_DelaySelection());
+         StartCoroutine(CO_SelectionEnemyBattler());
       }
    }
 
-   private IEnumerator CO_DelaySelection () {
+   private IEnumerator CO_AssignPlayerNetId () {
+      // Wait until the player is available in the spawned network identities
+      while (NetworkIdentity.spawned.ContainsKey(playerNetId) == false) {
+         yield return 0;
+      }
+
+      NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
+      this.player = enemyIdent.GetComponent<NetEntity>();
+      Start();
+   }
+
+   private IEnumerator CO_SelectionEnemyBattler () {
       // Simulate battle selection upon entering combat
       yield return new WaitForSeconds(1);
-      BattleSelectionManager.self.clickedArea(transform.position);
+
+      if (BattleSelectionManager.self.selectedBattler != this) {
+         BattleSelectionManager.self.clickedArea(transform.position);
+      } else {
+         D.debug("Cannot select Battler since it is currently Selected");
+      }
    }
 
    public void upateBattleSpots () {
@@ -384,6 +414,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void Update () {
+      if (!hasAssignedNetId) {
+         return;
+      }
+
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
          handleSpriteOutline();

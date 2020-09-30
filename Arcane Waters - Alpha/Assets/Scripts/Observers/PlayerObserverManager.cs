@@ -65,7 +65,7 @@ public class PlayerObserverManager : NetworkVisibility
          _instanceId = ((SecretEntranceHolder) _entity).instanceId;
       } else if (_entity is Discovery) {
          _instanceId = ((Discovery) _entity).instanceId;
-      }
+      } 
 
       return _instanceId;
    }

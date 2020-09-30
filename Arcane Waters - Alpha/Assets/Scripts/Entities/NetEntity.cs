@@ -136,9 +136,11 @@ public class NetEntity : NetworkBehaviour
    public bool isJumping = false;
 
    // The house layout for this user, if chosen
+   [SyncVar]
    public int customHouseBaseId;
 
    // The farm layout for this user, if chosen
+   [SyncVar]
    public int customFarmBaseId;
 
    // Gets set to true when we're about to execute a warp on the server or client
@@ -227,16 +229,7 @@ public class NetEntity : NetworkBehaviour
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
-      } else {
-         if (userId > 0 && this is PlayerBodyEntity && !NetworkServer.active) {
-            // Register this player body to the instance manager queue for non local clients
-            InstanceManager.self.registerClientPlayerBody(this);
-         }
-
-         if (this is PlayerBodyEntity) {
-            BattleManager.self.checkIfPlayerIsInBattle(userId, (PlayerBodyEntity) this);
-         }
-      }
+      } 
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);

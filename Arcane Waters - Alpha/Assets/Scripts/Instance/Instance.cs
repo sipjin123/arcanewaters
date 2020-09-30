@@ -103,11 +103,6 @@ public class Instance : NetworkBehaviour
       // On clients, set the instance manager as the parent transform
       if (isClient) {
          transform.SetParent(InstanceManager.self.transform);
-
-         // Register this instance to the instance manager for non local clients
-         if (!NetworkServer.active) {
-            InstanceManager.self.registerClientInstance(this);
-         }
       }
 
       // Spawn all the area prefabs that are specific to this instance

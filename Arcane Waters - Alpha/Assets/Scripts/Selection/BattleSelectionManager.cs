@@ -54,7 +54,6 @@ public class BattleSelectionManager : MonoBehaviour {
       // Look up the player's Battle ID
       PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
       if (body == null) {
-         D.debug("Skip click area due to null player body entity");
          return;
       }
       int battleId = body.battleId;
@@ -76,6 +75,10 @@ public class BattleSelectionManager : MonoBehaviour {
 
       // Cycle over each of the Battlers in the Battle
       foreach (Battler battler in playerBattle.getParticipants()) {
+         if (battler == null) {
+            continue;
+         }
+
          // Gets the Bounds of the sprite, but scale it down a bit since it contains a lot of transparent border
          Bounds bounds = battler.clickBox.bounds;
 
@@ -116,6 +119,10 @@ public class BattleSelectionManager : MonoBehaviour {
          }
 
          Battler currentBattler = BattleManager.self.getBattler(Global.player.userId);
+         if (currentBattler == null) {
+            D.debug("Battler has not loaded yet");
+            return;
+         }
          selectedBattler = battler;
          bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
 
