@@ -33,6 +33,21 @@ public class MouseManager : ClientMonoBehaviour
       // Check if the mouse is over interactable objects
       bool isOverInteractableObject = isMouseOverSomething();
 
+      // Let the box know if it's been clicked
+      if (_boxBeingHovered != null) {
+         if (Input.GetMouseButtonDown(0)) {
+            _boxBeingHovered.onMouseButtonDown(MouseButton.Left);
+         } else if (Input.GetMouseButtonUp(0)) {
+            _boxBeingHovered.onMouseButtonUp(MouseButton.Left);
+         }
+
+         if (Input.GetMouseButtonDown(1)) {
+            _boxBeingHovered.onMouseButtonDown(MouseButton.Right);
+         } else if (Input.GetMouseButtonUp(1)) {
+            _boxBeingHovered.onMouseButtonUp(MouseButton.Right);
+         }
+      }
+
       // Determine our mouse texture based on whether or not we're pressing a button
       bool isPressing = Input.GetMouseButton(0) || Input.GetMouseButton(1);
       Vector2 hotSpot = isOverInteractableObject ? handHotSpot : normalHotSpot;

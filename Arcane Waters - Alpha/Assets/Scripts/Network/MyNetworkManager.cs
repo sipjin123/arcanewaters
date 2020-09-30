@@ -64,20 +64,24 @@ public class MyNetworkManager : NetworkManager
    public override void Awake () {
       self = this;
 
-      #if FORCE_AMAZON_SERVER
+#if FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is defined, updating the Network Manager server override.");
       this.serverOverride = ServerType.AmazonVPC;
-      #endif
-      #if FORCE_SYDNEY
+#endif
+#if FORCE_AMAZON_SERVER_PROD
+      Debug.Log("FORCE_AMAZON_SERVER_PROD is defined, updating the Network Manager server override.");
+      this.serverOverride = ServerType.AmazonVPC;
+#endif
+#if FORCE_SYDNEY
       this.serverOverride = ServerType.AmazonSydney;
-      #endif
-      #if FORCE_LOCALHOST
+#endif
+#if FORCE_LOCALHOST
       this.serverOverride = ServerType.Localhost;
-      #endif
+#endif
 
-      #if !FORCE_AMAZON_SERVER
+#if !FORCE_AMAZON_SERVER
       Debug.Log("FORCE_AMAZON_SERVER is not defined.");
-      #endif
+#endif
 
       foreach (string arg in System.Environment.GetCommandLineArgs()) {
          if (arg.Contains("port=")) {

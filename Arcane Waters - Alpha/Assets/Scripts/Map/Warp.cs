@@ -60,6 +60,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          // If a player is client, show loading screen and stop the player
          if (player.isLocalPlayer) {
+            // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
+            if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
+               if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> _)) {
+                  return;
+               }
+            }
+
             player.setupForWarpClient();
 
             if (PanelManager.self.loadingScreen != null) {

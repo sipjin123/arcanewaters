@@ -4005,13 +4005,11 @@ public class DB_Main : DB_MainStub
 
    public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
       MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, palette1, palette2, rarity, palettes) " +
-         "VALUES(@itemDefinitionId, @userId, @count, @palette1, @palette2, @rarity, @palettes);";
+      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, rarity, palettes) " +
+         "VALUES(@itemDefinitionId, @userId, @count, @rarity, @palettes);";
       cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
       cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
       cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
-      cmd.Parameters.AddWithValue("@palette1", itemInstance.palette1);
-      cmd.Parameters.AddWithValue("@palette2", itemInstance.palette2);
       cmd.Parameters.AddWithValue("@palettes", itemInstance.palettes);
       cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
       cmd.ExecuteNonQuery();
@@ -9517,11 +9515,18 @@ public class DB_Main : DB_MainStub
 
    #region Private Variables
 
+   private static string _database = "arcane";
+#if FORCE_AMAZON_SERVER_PROD
+    // Database connection settings
+   private static string _remoteServer = "proddb.c1whxibm6zeb.us-east-2.rds.amazonaws.com";
+   private static string _uid = "r00Tus__r";
+   private static string _password = "e1f3D03d7B59917A5374a37e92e66D83";
+#else
    // Database connection settings
    private static string _remoteServer = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; // 52.72.202.104 // "127.0.0.1";//
-   private static string _database = "arcane";
    private static string _uid = "userAdKmE";
    private static string _password = "HEqbVDsvvCza5n4N";
+#endif
    private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion

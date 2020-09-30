@@ -34,9 +34,7 @@ public class GenericSeaProjectile : MonoBehaviour {
    #endregion
 
    public void init (double startTime, double endTime, Vector2 startPos, Vector2 endPos, SeaEntity creator, int abilityId, GameObject targetObj = null) {
-      if (targetObj != null) {
-         _targetObject = targetObj;
-      }
+      _targetObject = targetObj;
 
       _startTime = startTime;
       _endTime = endTime;

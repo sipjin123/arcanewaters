@@ -97,6 +97,7 @@ public class NetworkedProjectile : MonoBehaviour {
       abilityData = newAbilityData;
 
       projectileEndType = ProjectileEndType.None;
+
       switch (abilityData.selectedAttackType) {
          case Attack.Type.Boulder:
             projectileEndType = ProjectileEndType.EndPoint;
@@ -122,7 +123,6 @@ public class NetworkedProjectile : MonoBehaviour {
          spriteRenderer.sprite = ImageManager.getSprite(abilityData.projectileSpritePath);
       }
    }
-
 
    protected virtual void Update () {
       // Adjusts the height of the projectile sprite based in an arch
@@ -192,7 +192,7 @@ public class NetworkedProjectile : MonoBehaviour {
       endPos = endposNew;
    }
 
-   protected void OnTriggerStay2D (Collider2D other) {
+   protected virtual void OnTriggerStay2D (Collider2D other) {
       // Check if the other object is a Sea Entity
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 

@@ -136,6 +136,9 @@ public class FarmingTrigger : MonoBehaviour {
                   dir /= dir.magnitude;
                   cropProjectile.setSprite(cropSpot.crop.cropType);
                   cropProjectile.init(hit.collider.transform.position, dir, cropSpot);
+
+                  // Play 2D clip instead of attached to avoid layering multiple sounds (sounds like single one with higher volume because of timing)
+                  SoundManager.play2DClip(SoundManager.Type.Harvesting_Flying);
                }
             }
          }

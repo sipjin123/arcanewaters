@@ -82,6 +82,8 @@ public class CropProjectile : MonoBehaviour {
       cropPickup.cropSpot = _cropSpot;
       cropPickup.spriteRender.sprite = projectileSpriteObj.GetComponent<SpriteRenderer>().sprite;
 
+      SoundManager.playClipAtPoint(SoundManager.Type.Harvesting_Hit, transform.position);
+
       Destroy(this.gameObject);
    }
 

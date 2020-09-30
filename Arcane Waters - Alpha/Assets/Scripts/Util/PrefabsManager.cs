@@ -69,6 +69,9 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for creating network projectiles
    public GameObject networkProjectilePrefab;
 
+   // The prefab we use for creating server-controlled cannonballs
+   public ServerCannonBall serverCannonBallPrefab;
+
    [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;

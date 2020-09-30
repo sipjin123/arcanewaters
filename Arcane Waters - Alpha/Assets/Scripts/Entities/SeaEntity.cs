@@ -16,7 +16,7 @@ public class SeaEntity : NetEntity
    
    // How long we have to wait to reload
    [SyncVar]
-   public float reloadDelay = 1f;
+   public float reloadDelay = 1.5f;
 
    // Keeps track of the consecutive attack count
    [SyncVar]
@@ -260,7 +260,7 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
-   public void Rpc_FireHomingCannonBall (GameObject source, GameObject target, float startTime, float endTime) {
+   public void Rpc_FireHomingCannonBall (GameObject source, GameObject target, double startTime, double endTime) {
       // Create a cannon smoke effect
       Vector2 direction = target.transform.position - source.transform.position;
       Vector3 offset = direction.normalized * .1f;

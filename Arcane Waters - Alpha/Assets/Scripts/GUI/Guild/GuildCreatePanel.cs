@@ -76,33 +76,38 @@ public class GuildCreatePanel : MonoBehaviour, IPointerClickHandler
       sigilColorGroup1.gameObject.DestroyChildren();
       sigilColorGroup2.gameObject.DestroyChildren();
 
-      instantiateColorToggles(PaletteDef.guildIcon1, backgroundColorGroup1, onBackgroundColor1TogglePress);
-      instantiateColorToggles(PaletteDef.guildIcon2, backgroundColorGroup2, onBackgroundColor2TogglePress);
-      instantiateColorToggles(PaletteDef.guildIcon1, sigilColorGroup1, onSigilColor1TogglePress);
-      instantiateColorToggles(PaletteDef.guildIcon2, sigilColorGroup2, onSigilColor2TogglePress);
+      List<PaletteToolManager.PaletteRepresentation> guildIconPrimary = PaletteToolManager.getColors(
+         PaletteToolManager.PaletteImageType.GuildIconBackground, PaletteDef.GuildIconBackground.primary.name, 0);
+      List<PaletteToolManager.PaletteRepresentation> guildIconSecondary = PaletteToolManager.getColors(
+         PaletteToolManager.PaletteImageType.GuildIconBackground, PaletteDef.GuildIconBackground.secondary.name, 0);
+
+      instantiateColorToggles(guildIconPrimary, backgroundColorGroup1, onBackgroundColor1TogglePress);
+      instantiateColorToggles(guildIconSecondary, backgroundColorGroup2, onBackgroundColor2TogglePress);
+      instantiateColorToggles(guildIconPrimary, sigilColorGroup1, onSigilColor1TogglePress);
+      instantiateColorToggles(guildIconSecondary, sigilColorGroup2, onSigilColor2TogglePress);
       refreshBorder();
 
       nameErrorText.text = "";
       nameValidIcon.enabled = false;
    }
 
-   private void instantiateColorToggles (Dictionary<string, Color> palettes, ToggleGroup group, Action<bool, string> onValueChangedAction) {
-      int selectedToggleIndex = UnityEngine.Random.Range(0, palettes.Count);
+   private void instantiateColorToggles (List<PaletteToolManager.PaletteRepresentation> paletteList, ToggleGroup group, Action<bool, string> onValueChangedAction) {
+      int selectedToggleIndex = UnityEngine.Random.Range(0, paletteList.Count);
       int k = 0;
 
-      foreach (KeyValuePair<string, Color> KV in palettes) {
+      foreach (PaletteToolManager.PaletteRepresentation palette in paletteList) {
          // Make sure the value is captured for the click event
-         string paletteName = KV.Key;
+         string paletteName = palette.name;
 
          Toggle colorToggle = Instantiate(colorTogglePrefab, group.transform, false);
          colorToggle.group = group;
          colorToggle.onValueChanged.AddListener((_) => onValueChangedAction(_, paletteName));
-         colorToggle.image.color = KV.Value;
+         colorToggle.image.color = palette.color;
 
          // Initialize a random toggle as selected
          if (k == selectedToggleIndex) {
             colorToggle.isOn = true;
-            onValueChangedAction(true, KV.Key);
+            onValueChangedAction(true, palette.name);
          }
          k++;
       }

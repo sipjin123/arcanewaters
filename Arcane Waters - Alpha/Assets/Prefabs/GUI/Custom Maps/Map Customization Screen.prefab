@@ -597,21 +597,6 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 5
-    callback:
-      m_PersistentCalls:
-        m_Calls:
-        - m_Target: {fileID: 2429474773634063309}
-          m_MethodName: pointerDrag
-          m_Mode: 0
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
   - eventID: 0
     callback:
       m_PersistentCalls:
@@ -1007,9 +992,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 957c43b4a511dbb4e865ff9714abfdd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 40
-  canvasGroup: {fileID: 3330719193923090153}
-  draggableRect: {fileID: 0}
   titleText: {fileID: 496507970545858027}
   prefabSelection: {fileID: 4268214538538440920}
   prefabSelectEntryParent: {fileID: 1490372321457430905}

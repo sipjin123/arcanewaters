@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace MapCustomization
 {
-   public class CustomizationUI : Panel
+   public class CustomizationUI : MonoBehaviour
    {
       #region Public Variables
 
@@ -34,23 +34,26 @@ namespace MapCustomization
 
       #endregion
 
-      private void OnEnable () {
+      private void Awake () {
          self = this;
 
          _cGroup = GetComponent<CanvasGroup>();
+
+         ensureHidden();
       }
 
-      public override void Update () {
-         if (!isShowing() || isLoading) return;
+      private void Update () {
+         if (!_isShowing || isLoading) return;
 
-         Vector2 pointerPos = Input.mousePosition;
-         if (pointerPos != _lastPointerPos) {
-            if (!Input.GetMouseButton(0)) {
-               MapCustomizationManager.pointerHover(Camera.main.ScreenToWorldPoint(pointerPos));
-            }
+         Vector2 pointerPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            _lastPointerPos = pointerPos;
+         if (!Input.GetMouseButton(0)) {
+            MapCustomizationManager.pointerHover(pointerPos);
+         } else {
+            MapCustomizationManager.pointerDrag(pointerPos - _lastPointerPos);
          }
+
+         _lastPointerPos = pointerPos;
 
          if (Input.GetKey(KeyCode.Delete)) {
             MapCustomizationManager.keyDelete();
@@ -65,11 +68,6 @@ namespace MapCustomization
       public void pointerExit (BaseEventData eventData) {
          PointerEventData pointerData = eventData as PointerEventData;
          MapCustomizationManager.pointerExit(Camera.main.ScreenToWorldPoint(pointerData.position));
-      }
-
-      public void pointerDrag (BaseEventData eventData) {
-         PointerEventData pointerData = eventData as PointerEventData;
-         MapCustomizationManager.pointerDrag(Camera.main.ScreenToWorldPoint(pointerData.position) - Camera.main.ScreenToWorldPoint(pointerData.position - pointerData.delta));
       }
 
       public void pointerUp (BaseEventData eventData) {
@@ -93,6 +91,23 @@ namespace MapCustomization
             selectedPrefabEntry.setSelected(true);
             MapCustomizationManager.selectPrefab(null);
          }
+      }
+
+      public static void ensureShowing () {
+         if (_isShowing) {
+            return;
+         }
+
+         Util.enableCanvasGroup(self._cGroup);
+
+
+         _isShowing = true;
+      }
+
+      public static void ensureHidden () {
+         Util.disableCanvasGroup(self._cGroup);
+
+         _isShowing = false;
       }
 
       public static void setLoading (bool loading) {
@@ -126,9 +141,6 @@ namespace MapCustomization
          }
       }
 
-      public override void OnPointerClick (PointerEventData eventData) {
-      }
-
       #region Private Variables
 
       // Canvas group that wraps the entire UI
@@ -139,6 +151,9 @@ namespace MapCustomization
 
       // Entries of prefabs that can be selected and placed
       private static List<PrefabSelectionEntry> _prefabEntries = new List<PrefabSelectionEntry>();
+
+      // Is panel currently showing
+      private static bool _isShowing = false;
 
       #endregion
    }

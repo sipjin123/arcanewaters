@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using System;
 
 public class Panel : MonoBehaviour, IPointerClickHandler
 {
@@ -18,8 +19,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       NPC_Panel = 21, Overworld = 22, Craft = 23, Reward = 24, TradeHistory = 25, RandomMaps = 26,
       LeaderBoards = 27, FriendList = 28, Ability_Panel = 29, Mail = 30, Team_Combat = 31,
       Voyage = 32, BookReader = 33, Companion = 34, Discovery = 35,
-      CustomMaps = 38, StepCompletedNotification = 39, MapCustomization = 40, Auction = 41,
-      Keybindings = 42
+      CustomMaps = 38, StepCompletedNotification = 39, Auction = 41, Keybindings = 42
    }
 
    // The type of Panel this is

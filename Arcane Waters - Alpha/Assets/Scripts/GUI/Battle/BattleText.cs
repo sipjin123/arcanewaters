@@ -14,7 +14,7 @@ public class BattleText : MonoBehaviour {
 
     #endregion
 
-    void Start() {
+    void Awake() {
         _creationTime = Time.time;
         _text = GetComponent<Text>();
     }
@@ -83,6 +83,14 @@ public class BattleText : MonoBehaviour {
         _text.text = "Crit!";
         _text.fontSize = (int)(_text.fontSize * 1.25f);
     }
+
+   public void setCustomText (string text, Color color, int fontSizeMultiplier = 1) {
+      _text.text = text;
+      _text.color = color;
+      _text.fontSize *= fontSizeMultiplier;
+
+      transform.localScale = Vector3.zero;      
+   }
 
     #region Private Variables
 

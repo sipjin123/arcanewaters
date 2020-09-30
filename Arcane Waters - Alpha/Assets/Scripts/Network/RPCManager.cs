@@ -3416,7 +3416,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private async void giveItemRewardsToPlayer (int userID, List<ItemInstance> rewardList, bool showPanel) {
+   private async Task giveItemRewardsToPlayer (int userID, List<ItemInstance> rewardList, bool showPanel) {
       // Assign item id for the reward
       foreach (ItemInstance item in rewardList) {
          item.ownerUserId = userID;
@@ -3424,7 +3424,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Add all items to database in parallel
       await Task.WhenAll(rewardList.Select(async item => await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, item))));
-
+      
       // Show panel to player if needed
       if (showPanel) {
          Target_ReceiveItemRewardList(rewardList.ToArray());
@@ -4547,7 +4547,7 @@ public class RPCManager : NetworkBehaviour {
          _player.spawnInNewMap(customMapKey);
       }
 
-      giveItemRewardsToPlayer(_player.userId, rewards, false);
+      await giveItemRewardsToPlayer(_player.userId, rewards, false);
    }
 
    [TargetRpc]

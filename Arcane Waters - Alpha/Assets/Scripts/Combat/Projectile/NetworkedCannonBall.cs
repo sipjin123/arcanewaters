@@ -9,8 +9,8 @@ public class NetworkedCannonBall : NetworkedProjectile
    #region Public Variables
 
    // Static values for this specific projectile
-   public static float MOVE_SPEED = 2;
-   public static float LIFETIME = 1.25f;
+   public static float MOVE_SPEED = 2.0f;
+   public static float LIFETIME = 1.0f;
 
    #endregion
 
@@ -22,20 +22,28 @@ public class NetworkedCannonBall : NetworkedProjectile
       base.Update();
    }
 
+   protected override void OnTriggerStay2D (Collider2D other) {
+      // Cannonball handles collision OnTriggerEnter, so we disable OnTriggerStay from NetworkedProjectile
+   }
+
    private void OnTriggerEnter2D (Collider2D other) {
       // Check if the other object is a Sea Entity
-      SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
+      SeaEntity hitEntity = other.transform.GetComponent<SeaEntity>();
+
+      if (hitEntity == null) {
+         hitEntity = other.transform.GetComponentInParent<SeaEntity>();
+      }
 
       // We only care about hitting other sea entities in our instance
       if (hitEntity == null || hitEntity.instanceId != this._instanceId || hitEntity.netId == this._creatorNetId) {
          return;
       }
 
-      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
-
       // The Server will handle applying damage
       if (NetworkServer.active) {
-         int damage = (int) (sourceEntity.damage / 3f * _damageMultiplier);
+         SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+
+         int damage = (int) (sourceEntity.damage * _damageMultiplier);
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect
@@ -43,7 +51,12 @@ public class NetworkedCannonBall : NetworkedProjectile
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(sourceEntity.netId, circleCollider.transform.position, damage, Attack.Type.Cannon);
+
+         // Registers Damage throughout the clients
+         hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);
       }
+
+      _hasCollided = true;
 
       processDestruction();
    }

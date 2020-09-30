@@ -98,7 +98,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.02
+  m_Radius: 0.05
 --- !u!1 &1322573946227394
 GameObject:
   m_ObjectHideFlags: 0
@@ -173,6 +173,7 @@ MonoBehaviour:
   abilityData:
     abilityId: 0
     abilityName: 
+    seaEntityAbilityType: 0
     selectedAttackType: 0
     abilityDescription: 
     shipTypeVariety: 0
@@ -202,6 +203,7 @@ MonoBehaviour:
   projectileEndType: 0
   startPos: {x: 0, y: 0}
   endPos: {x: 0, y: 0}
+  usesArc: 0
 --- !u!50 &50551729850668140
 Rigidbody2D:
   serializedVersion: 4

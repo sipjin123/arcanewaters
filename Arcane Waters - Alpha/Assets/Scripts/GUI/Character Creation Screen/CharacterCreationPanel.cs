@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
+using System.Text.RegularExpressions;
 
 public class CharacterCreationPanel : ClientMonoBehaviour
 {
@@ -80,8 +81,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    private void Start () {
-      // Only enable the "next" button if the name is valid
       nameText.onValueChanged.AddListener((name) => {
+
+         // Check for white space and remove if in name
+         name = Regex.Replace(name, " ", "");
+         nameText.text = name;
+
+         // Only enable the "next" button if the name is valid
          nextButton.interactable = NameUtil.isValid(name);
       });
 

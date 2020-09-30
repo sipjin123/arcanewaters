@@ -554,7 +554,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual float getAngleDelay () {
-      return .10f;
+      return .25f;
    }
 
    public virtual float getInputDelay () {
@@ -1339,6 +1339,9 @@ public class NetEntity : NetworkBehaviour
 
    // The time at which we last sent our input to the server
    protected double _lastInputChangeTime;
+
+   // The time at which we last sent our aim angle to the server
+   protected double _lastAimChangeTime;
 
    // The nameText that follows us around
    protected Text _nameText;

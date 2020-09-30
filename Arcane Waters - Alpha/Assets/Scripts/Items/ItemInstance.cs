@@ -21,14 +21,6 @@ public class ItemInstance
    // The number of these items that are stacked together
    public int count = 1;
 
-   // Name of palette that changes color of item
-   [Obsolete]
-   public string palette1 = "";
-
-   // Name of palette that changes color of item
-   [Obsolete]
-   public string palette2 = "";
-
    // Name of palettes that changes color of item
    public string palettes;
 
@@ -48,8 +40,6 @@ public class ItemInstance
       itemDefinitionId = DataUtil.getInt(dataReader, "itemDefinitionId");
       ownerUserId = DataUtil.getInt(dataReader, "userId");
       count = DataUtil.getInt(dataReader, "count");
-      palette1 = DataUtil.getString(dataReader, "palette1");
-      palette2 = DataUtil.getString(dataReader, "palette2");
       palettes = DataUtil.getString(dataReader, "palettes");
       rarity = (Rarity.Type) DataUtil.getInt(dataReader, "rarity");
    }

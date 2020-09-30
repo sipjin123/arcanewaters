@@ -1030,6 +1030,7 @@ Transform:
   - {fileID: 9136348498758523032}
   - {fileID: 6066112005619649504}
   - {fileID: 8215464527651392013}
+  - {fileID: 6866860030373926413}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1089,7 +1090,7 @@ MonoBehaviour:
   - {fileID: 3476353292930757795}
   _animators: []
   damage: 90
-  reloadDelay: 1
+  reloadDelay: 1.5
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
     type: 3}
@@ -1155,8 +1156,8 @@ MonoBehaviour:
   defaultColor: {r: 0.8980392, g: 0.8666667, b: 0.12156863, a: 0.8156863}
   speedMeter: 10
   isReadyToSpeedup: 1
-  fuelDepleteValue: 2
-  fuelRecoverValue: 1.6
+  boostDepleteValue: 2
+  boostRecoverValue: 1.6
   isDisabled: 1
   shipBoostCooldownObj: {fileID: 1012508857810683419}
   shipBoostCooldownIcon: {fileID: 4662923214789379973}
@@ -1175,7 +1176,6 @@ MonoBehaviour:
   maxBoostEffectAnimation: {fileID: 3476353292930757795}
   shipBoostSpriteSwapFront: {fileID: 8177799164720691564}
   shipBoostSpriteSwapBack: {fileID: 4726464375513170578}
-  _clientSideForce: 0.1
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -1188,7 +1188,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 6
+  m_Mass: 5
   m_LinearDrag: 2.5
   m_AngularDrag: 10
   m_GravityScale: 0
@@ -2848,6 +2848,66 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &2102604196874457986
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6866860030373926413}
+  - component: {fileID: 3638991538483863767}
+  - component: {fileID: 2834582228623850269}
+  m_Layer: 20
+  m_Name: Player Target Selector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6866860030373926413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102604196874457986}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 19304}
+  m_RootOrder: 11
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3638991538483863767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102604196874457986}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91db2175db9346c419ff63b02a977fd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!58 &2834582228623850269
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102604196874457986}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 4
 --- !u!1 &2701565263438437482
 GameObject:
   m_ObjectHideFlags: 0
@@ -4418,6 +4478,7 @@ GameObject:
   - component: {fileID: 7556367191975051034}
   - component: {fileID: 5741383049522766175}
   - component: {fileID: 684837115597309388}
+  - component: {fileID: 8805432062233994649}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -4491,6 +4552,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdd399ff4912c0c4f9662af9104d4d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8805432062233994649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5605178062057352201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecbf0817f488c04ba934ffef4922e91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6117704228605984004

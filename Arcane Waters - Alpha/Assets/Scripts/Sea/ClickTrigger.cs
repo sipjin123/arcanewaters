@@ -3,55 +3,54 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using System;
 
+[RequireComponent(typeof(ClickableBox))]
 public class ClickTrigger : MonoBehaviour {
    #region Public Variables
 
    #endregion
 
-   void Start () {
-      // Set our name and position
-      this.name = "Click Trigger";
-      this.transform.localPosition = new Vector3(0f, 0f, -.1f);
+   private void Awake () {
+      _entity = GetComponentInParent<SeaEntity>();
+      _clickableBox = GetComponent<ClickableBox>();
+
+      _clickableBox.mouseButtonDown += onMouseButtonDown;
+      _clickableBox.mouseButtonUp += onMouseButtonUp;
    }
 
-   void Update () {
-      if (SeaManager.combatMode != SeaManager.CombatMode.Select) {
-         return;
+   private void OnDestroy () {
+      if (_clickableBox != null) {
+         _clickableBox.mouseButtonDown -= onMouseButtonDown;
+         _clickableBox.mouseButtonUp -= onMouseButtonUp;
       }
+   }
 
-      // If we just clicked down on a trigger, take note
-      if (Input.GetMouseButtonDown(0)) {
-         Vector2 downClickLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-         // If the click was close to our position, it was this ship
-         if (Vector2.Distance(downClickLocation, this.transform.position) < .15f) {
-            SelectionManager.hasClickedOnObject = true;
+   private void onMouseButtonUp (MouseButton button) {
+      if (button == MouseButton.Left) {
+         if (SelectionManager.self.selectedEntity == _entity) {
+            SelectionManager.self.selectedEntity = null;
+         } else if (!_entity.isDead() && _entity != Global.player) {
+            SelectionManager.self.selectedEntity = _entity;
          }
-      }
 
-      // Check if the mouse was released over this click trigger
-      if (Input.GetMouseButtonUp(0)) {
          SelectionManager.hasClickedOnObject = false;
-         Vector2 clickLocation = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      }
+   }
 
-         // If the click was close to this entity's position, select this entity
-         if (Vector2.Distance(clickLocation, this.transform.position) < .15f) {
-            SeaEntity clickedEntity = this.GetComponentInParent<SeaEntity>();
-
-            // If we clicked on the already selected entity, unselect it
-            if (clickedEntity == SelectionManager.self.selectedEntity) {
-               SelectionManager.self.selectedEntity = null;
-            } else {
-               if (!clickedEntity.isDead()) {
-                  SelectionManager.self.selectedEntity = clickedEntity;
-               }
-            }
-         }
+   private void onMouseButtonDown (MouseButton button) {
+      if (button == MouseButton.Left) {
+         SelectionManager.hasClickedOnObject = true;
       }
    }
 
    #region Private Variables
+
+   // The entity this click trigger belongs to
+   private SeaEntity _entity;
+
+   // The clickable box
+   private ClickableBox _clickableBox;
 
    #endregion
 }

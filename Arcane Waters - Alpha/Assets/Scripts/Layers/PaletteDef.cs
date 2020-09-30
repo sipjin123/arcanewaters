@@ -121,9 +121,16 @@ public class PaletteDef : MonoBehaviour
 
    // The guild icon palette names and their representing color
 
-   public class GuildIcon
+   public class GuildIconBackground
    {
-      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.GuildIconBackground, new string[4] { "#00FF00", "#00C400", "#FF0000", "#AC0000" });
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.GuildIconBackground, new string[2] { "#FF0000", "#AC0000" });
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.GuildIconBackground, new string[2] { "#00FF00", "#00C400" });
+   }
+
+   public class GuildIconSigil
+   {
+      public static Subcategory primary = new Subcategory("primary", PaletteToolManager.PaletteImageType.GuildIconSigil, new string[2] { "#FF0000", "#AC0000" });
+      public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.GuildIconSigil, new string[2] { "#00FF00", "#00C400" });
    }
 
    public static Dictionary<string, Color> guildIcon1 = new Dictionary<string, Color>() {

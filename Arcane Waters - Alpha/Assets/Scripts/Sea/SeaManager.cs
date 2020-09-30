@@ -18,7 +18,7 @@ public class SeaManager : MonoBehaviour {
    public enum CombatMode { Circle = 1, Straight = 2, Select = 3 }
 
    // The current combat mode
-   public static CombatMode combatMode = CombatMode.Circle;
+   public static CombatMode combatMode = CombatMode.Select;
 
    // The currently selected ability id
    public static int selectedAbilityId = 1;

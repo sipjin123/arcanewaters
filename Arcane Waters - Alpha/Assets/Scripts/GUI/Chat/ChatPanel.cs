@@ -76,6 +76,17 @@ public class ChatPanel : MonoBehaviour {
    void Update () {
       mainContainer.SetActive(shouldShowChat());
 
+      // Focus the chat window if the forward slash key is released and the chat is allowed
+      if ((Input.GetKeyUp(KeyCode.Slash)) && shouldShowChat()) {
+
+         if (!wasJustFocused()) {
+            inputField.text = "/";
+
+            // Activate the input field in the next frame to avoid weird interactions
+            StartCoroutine(activateAfterDelay());
+         }
+      }
+
       // Only show the scroll bars if we're in that mode
       scrollBarContainer.SetActive(_showScrollBars);
 

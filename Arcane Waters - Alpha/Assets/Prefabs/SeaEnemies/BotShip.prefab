@@ -295,8 +295,9 @@ MonoBehaviour:
   interactingAnimation: 0
   isSpeedingUp: 0
   _ignoredAnimators: []
+  _animators: []
   damage: 25
-  reloadDelay: 1
+  reloadDelay: 1.5
   attackCounter: 0
   localAttackCirclePrefab: {fileID: 2921645448827512062, guid: 351ed76644c9d96439cd9bec5632f6a1,
     type: 3}
@@ -2374,14 +2375,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2877690396598944950}
-  - component: {fileID: 4552077831244690088}
+  - component: {fileID: 4900190777571460660}
   m_Layer: 19
   m_Name: Projectile Detection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2877690396598944950
 Transform:
   m_ObjectHideFlags: 0
@@ -2396,8 +2397,8 @@ Transform:
   m_Father: {fileID: 4900218821786150}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &4552077831244690088
-CircleCollider2D:
+--- !u!61 &4900190777571460660
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -2410,8 +2411,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
   serializedVersion: 2
-  m_Radius: 0.15
+  m_Size: {x: 0.3, y: 0.5}
+  m_EdgeRadius: 0
 --- !u!1 &6334897482679909241
 GameObject:
   m_ObjectHideFlags: 0
@@ -2735,6 +2746,7 @@ GameObject:
   - component: {fileID: 4876185648244406187}
   - component: {fileID: 8033384075726895300}
   - component: {fileID: 3875529328221324806}
+  - component: {fileID: 3879433380134408247}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -2808,6 +2820,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bdd399ff4912c0c4f9662af9104d4d70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3879433380134408247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8553265619735879506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aecbf0817f488c04ba934ffef4922e91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &8713907016052538065

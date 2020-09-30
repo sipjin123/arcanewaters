@@ -71,6 +71,7 @@ public class SoundManager : MonoBehaviour {
       Seagulls_x1 = 339, Seagulls_x3 = 340, Seagulls_x6 = 341, Turning_Pages_On_Books = 342,
       Water_Fountain = 343, Ship_Destroyed = 344, Fish_Jump = 345, Harvesting_Pitchfork_Hit = 346,
       Harvesting_Pitchfork_Miss = 347, Skeleton_Walk = 348, Bridge_Crunching_Wood = 349,
+      Harvesting_Flying = 350, Harvesting_Hit = 351, Harvesting_Picking = 352,
 
       // Melee enemy effects
       Golem_Death = 400, Enemy_Jump = 401, Flower_Death = 402, Plant_Chomp = 403, Slime_Attack = 404,

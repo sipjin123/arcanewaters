@@ -60,6 +60,8 @@ public class Attack : MonoBehaviour {
             return 1.50f;
          case Type.Shock_Ball:
             return 1.25f;
+         case Type.Cannon:
+            return 1.75f;
          default:
             return 1.0f;
       }
