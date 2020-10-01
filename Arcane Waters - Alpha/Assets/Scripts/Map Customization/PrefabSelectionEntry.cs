@@ -16,9 +16,6 @@ namespace MapCustomization
       // Text that shows how much of the prefab is left
       public Text countText;
 
-      // Target prefab that this entry is referencing
-      public PlaceablePrefabData target;
-
       // Image that is displaying the frame of the entry
       public Image frameImage;
 
@@ -28,14 +25,38 @@ namespace MapCustomization
       // Sprite that is used for the frame when the entry is selected
       public Sprite selectedFrame;
 
+      // The prop item definition id that this entry is targeting
+      public int propDefinitionId;
+
+      // Arrow buttons for selecting different prefabs
+      public Button previousButton;
+      public Button nextButton;
+
       #endregion
+
+      public PlaceablePrefabData getSelectedData () {
+         return _prefabs[_selectedIndex];
+      }
+
+      public void setData (int propDefinitionId, PlaceablePrefabData[] prefabs) {
+         this.propDefinitionId = propDefinitionId;
+         _prefabs = prefabs;
+
+         previousButton.gameObject.SetActive(prefabs.Length > 1);
+         nextButton.gameObject.SetActive(prefabs.Length > 1);
+
+         selectIndex(0);
+      }
+
+      private void selectIndex (int index) {
+         _selectedIndex = index;
+         iconImage.sprite = _prefabs[index].displaySprite;
+         previousButton.interactable = _selectedIndex != 0;
+         nextButton.interactable = _selectedIndex != _prefabs.Length - 1;
+      }
 
       public void setSelected (bool selected) {
          frameImage.sprite = selected ? selectedFrame : defaultFrame;
-      }
-
-      public void setImage (Sprite sprite) {
-         iconImage.sprite = sprite;
       }
 
       public void setCount (int count) {
@@ -49,7 +70,25 @@ namespace MapCustomization
          CustomizationUI.selectEntry(this);
       }
 
+      public void onPrevious () {
+         if (_selectedIndex == 0) return;
+         selectIndex(_selectedIndex - 1);
+         previousButton.interactable = _selectedIndex != 0;
+         nextButton.interactable = _selectedIndex != _prefabs.Length - 1;
+      }
+
+      public void onNext () {
+         if (_selectedIndex == _prefabs.Length - 1) return;
+         selectIndex(_selectedIndex + 1);
+      }
+
       #region Private Variables
+
+      // Prefabs that can be selected by this entry
+      private PlaceablePrefabData[] _prefabs;
+
+      // Which prefab is currently selected
+      private int _selectedIndex;
 
       #endregion
    }

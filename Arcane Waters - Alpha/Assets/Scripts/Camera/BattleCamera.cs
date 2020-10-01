@@ -23,7 +23,11 @@ public class BattleCamera : BaseCamera {
    }
 
    public override void onResolutionChanged () {
-      _cam.orthographicSize = (Screen.height / 300.0f) * 0.5f;
+      base.onResolutionChanged();
+
+      if (_vcam != null) {
+         _cam.orthographicSize = _vcam.m_Lens.OrthographicSize;
+      }
 
       // Save the original values
       _originalSize = _cam.orthographicSize;

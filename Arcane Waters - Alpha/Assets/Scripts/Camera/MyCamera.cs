@@ -13,9 +13,6 @@ public class MyCamera : BaseCamera
    // The PPU scale when creating a character
    public const float CHARACTER_CREATION_PPU_SCALE = 1200.0f;
 
-   // Reference to the main GUI canvas
-   public Canvas mainGUICanvas;
-
    // The scale of the confiner at wide screen
    public static float CONFINER_DEFAULT_SCALE = 0.16f;
 
@@ -41,7 +38,7 @@ public class MyCamera : BaseCamera
    }
 
    public void setInternalOrthographicSize () {
-      _orthographicSize = Screen.height / getPPUScale();
+      _orthographicSize = (Screen.height / 2) / getPPUScale();
 
       // Sets the confiner to the default scale if the current scale has been modified
       if (_vcam.transform.parent != null) {
@@ -74,7 +71,7 @@ public class MyCamera : BaseCamera
          } 
       }
 
-      _vcam.m_Lens.OrthographicSize = _orthographicSize / getScaleFactor();
+      _vcam.m_Lens.OrthographicSize = _orthographicSize;
    }
 
    public Tween setOrthographicSize (float size) {
@@ -99,7 +96,7 @@ public class MyCamera : BaseCamera
 
    public Sequence setSettings (VirtualCameraSettings settings) {
       Sequence s = DOTween.Sequence();
-      s.Join(setOrthographicSize(Screen.height / settings.ppuScale));
+      s.Join(setOrthographicSize((Screen.height / 2) / settings.ppuScale));
       s.Join(setPosition(settings.position));
 
       // Save the current settings
@@ -110,20 +107,10 @@ public class MyCamera : BaseCamera
       return s;
    }
 
-   private float getScaleFactor () {
-      float scaleFactor = 1;
-      if (mainGUICanvas != null) {
-         scaleFactor = mainGUICanvas.scaleFactor *.75f;
-         scaleFactor = Mathf.Clamp(scaleFactor, 1, 1.5f);
-      }
-
-      return scaleFactor;
-   }
-
    public VirtualCameraSettings getVirtualCameraSettings () {
       VirtualCameraSettings settings = new VirtualCameraSettings();
       settings.position = _vcam.transform.position;
-      settings.ppuScale = Screen.height / _vcam.m_Lens.OrthographicSize;
+      settings.ppuScale = (Screen.height / 2) / _vcam.m_Lens.OrthographicSize;
 
       return settings;
    }

@@ -84,7 +84,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       nameText.onValueChanged.AddListener((name) => {
 
          // Check for white space and remove if in name
-         name = Regex.Replace(name, " ", "");
+         name = Regex.Replace(name, @"[^0-9a-zA-Z]+", "");
          nameText.text = name;
 
          // Only enable the "next" button if the name is valid

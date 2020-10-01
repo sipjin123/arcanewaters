@@ -17,7 +17,7 @@ public class PlayerTargetSelector : MonoBehaviour {
       }
 
       // Select the next nearby target using Tab
-      if (Input.GetKeyDown(KeyCode.Tab)) {
+      if (InputManager.isSelectNextTargetKeyDown()) {
          selectNextTarget();
       }
 
@@ -30,7 +30,7 @@ public class PlayerTargetSelector : MonoBehaviour {
 
             // If the target has been out of our area for longer than ESCAPE_TIME, unselect it
             if (_selectedTargetTimeOutOfArea > ESCAPE_TIME) {
-               SelectionManager.self.selectedEntity = null;
+               SelectionManager.self.setSelectedEntity(null);
 
                // Notify the player their target has escaped
                showTargetEscaped();
@@ -100,7 +100,7 @@ public class PlayerTargetSelector : MonoBehaviour {
 
       // Set the new target
       _currentTarget = _nearbyShips[_currentTargetIndex];
-      SelectionManager.self.selectedEntity = _currentTarget;
+      SelectionManager.self.setSelectedEntity(_currentTarget);
    }
 
    #region Private Variables

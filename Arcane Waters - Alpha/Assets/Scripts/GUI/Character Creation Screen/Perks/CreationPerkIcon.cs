@@ -78,6 +78,8 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       _borderImage.color = Color.white;
       _iconImage.color = Color.white;
 
+      SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
+
       showTooltip();
    }
 

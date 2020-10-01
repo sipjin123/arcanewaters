@@ -6,7 +6,8 @@ using Mirror;
 using static MyNetworkManager;
 using System;
 
-public class Global {
+public class Global
+{
    #region Public Variables
 
    // The version of the client
@@ -97,7 +98,11 @@ public class Global {
          case ServerType.Localhost:
             return "localhost";
          case ServerType.AmazonVPC:
-            return "18.217.126.169";
+#if FORCE_AMAZON_SERVER_PROD
+            return "arcanewaters.com"; // "18.217.126.169";
+#else
+            return "dev.arcanewaters.com"; // "3.137.185.163";
+#endif
          case ServerType.AmazonSydney:
             return "13.55.171.249";
          case ServerType.AmazonPerformance:

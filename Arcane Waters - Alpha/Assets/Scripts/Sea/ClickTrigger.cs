@@ -29,9 +29,9 @@ public class ClickTrigger : MonoBehaviour {
    private void onMouseButtonUp (MouseButton button) {
       if (button == MouseButton.Left) {
          if (SelectionManager.self.selectedEntity == _entity) {
-            SelectionManager.self.selectedEntity = null;
+            SelectionManager.self.setSelectedEntity(null);
          } else if (!_entity.isDead() && _entity != Global.player) {
-            SelectionManager.self.selectedEntity = _entity;
+            SelectionManager.self.setSelectedEntity(_entity);
          }
 
          SelectionManager.hasClickedOnObject = false;

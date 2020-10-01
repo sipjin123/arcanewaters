@@ -228,14 +228,6 @@ public class PaletteSwapManager : MonoBehaviour {
          return intToColor(0, 153, 51);
       }
 
-      if (PaletteDef.guildIcon1.ContainsKey(p)) {
-         return PaletteDef.guildIcon1[p];
-      }
-
-      if (PaletteDef.guildIcon2.ContainsKey(p)) {
-         return PaletteDef.guildIcon2[p];
-      }
-
       return Color.magenta;
    }
 

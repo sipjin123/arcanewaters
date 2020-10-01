@@ -8,26 +8,6 @@ public class TutorialArrow : MonoBehaviour
 {
    #region Public Variables
 
-   // The different targets the arrow can point to
-   public enum Target
-   {
-      None = 0,
-      TutorialTown = 1,
-      Cemetery = 2,
-      Farm = 3,
-      House = 4,
-      Docks = 5,
-   };
-
-   // The arrow targets and the corresponding warp it should point to
-   public static Dictionary<Target, string> targetToWarpDestination = new Dictionary<Target, string>() {
-      { Target.TutorialTown, "Tutorial Town" },
-      { Target.Cemetery, "Tutorial Town Cemetery v2" },
-      { Target.Farm, "customfarm" },
-      { Target.House, "customhouse" },
-      { Target.Docks, "Tutorial Sea Map" },
-   };
-
    // The parameter for smooth movement (smaller is faster)
    private static float SMOOTH_TIME = 0.05f;
 
@@ -104,8 +84,8 @@ public class TutorialArrow : MonoBehaviour
       }
    }
 
-   public void setTarget (Target target) {
-      if (target != Target.None) {
+   public void setTarget (TutorialData3.Location target) {
+      if (target != TutorialData3.Location.None) {
          gameObject.SetActive(true);
          _targetWarp = null;
          StopAllCoroutines();
@@ -142,7 +122,7 @@ public class TutorialArrow : MonoBehaviour
       }
    }
 
-   private IEnumerator CO_PointTo (Target target) {
+   private IEnumerator CO_PointTo (TutorialData3.Location target) {
       // Wait until we have finished instantiating the area
       while (Global.player == null || AreaManager.self.getArea(Global.player.areaKey) == null) {
          yield return 0;
@@ -150,7 +130,7 @@ public class TutorialArrow : MonoBehaviour
 
       // Search for the correct warp (entrance to target)
       foreach (Warp warp in AreaManager.self.getArea(Global.player.areaKey).getWarps()) {
-         if (string.Equals(warp.targetInfo.name, targetToWarpDestination[target])) {
+         if (string.Equals(warp.targetInfo.name, TutorialData3.locationToAreaKey[target])) {
             _targetWarp = warp;
             break;
          }

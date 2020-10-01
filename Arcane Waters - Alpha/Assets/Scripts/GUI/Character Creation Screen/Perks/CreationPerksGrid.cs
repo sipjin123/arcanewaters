@@ -66,6 +66,10 @@ public class CreationPerksGrid : MonoBehaviour {
          _availablePoints--;
          _availablePointsText.SetText(_availablePoints.ToString());
          icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
+
+         SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
+      } else {
+         SoundManager.play2DClip(SoundManager.Type.GUI_Press);
       }
    }
 
@@ -78,6 +82,8 @@ public class CreationPerksGrid : MonoBehaviour {
          _availablePointsText.SetText(_availablePoints.ToString());
          icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
       }
+
+      SoundManager.play2DClip(SoundManager.Type.GUI_Press);
    }
 
    public List<Perk> getAssignedPoints () {

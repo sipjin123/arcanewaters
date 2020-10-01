@@ -133,42 +133,6 @@ public class PaletteDef : MonoBehaviour
       public static Subcategory secondary = new Subcategory("secondary", PaletteToolManager.PaletteImageType.GuildIconSigil, new string[2] { "#00FF00", "#00C400" });
    }
 
-   public static Dictionary<string, Color> guildIcon1 = new Dictionary<string, Color>() {
-      {"guild_icon_one_orange_2", PaletteSwapManager.intToColor (236, 134, 13) },
-      {"guild_icon_one_yellow", PaletteSwapManager.intToColor (243, 235, 21) },
-      {"guild_icon_one_green_1", PaletteSwapManager.intToColor (130, 232, 137) },
-      {"guild_icon_one_green_2", PaletteSwapManager.intToColor (13, 236, 29) },
-      {"guild_icon_one_green_3", PaletteSwapManager.intToColor (20, 172, 30) },
-      {"guild_icon_one_cyan", PaletteSwapManager.intToColor (13, 233, 236) },
-      {"guild_icon_one_blue", PaletteSwapManager.intToColor (19, 79, 118) },
-      {"guild_icon_one_blue_2", PaletteSwapManager.intToColor (13, 107, 236) },
-      {"guild_icon_one_blue_3", PaletteSwapManager.intToColor (60, 141, 193) },
-      {"guild_icon_one_purple", PaletteSwapManager.intToColor (149, 15, 193) },
-      {"guild_icon_one_pink", PaletteSwapManager.intToColor (236, 15, 228) },
-      {"guild_icon_one_red", PaletteSwapManager.intToColor (246, 18, 18) },
-      {"guild_icon_one_orange", PaletteSwapManager.intToColor (224, 170, 154) },
-      {"guild_icon_one_black", PaletteSwapManager.intToColor (39, 39, 39) },
-      {"guild_icon_one_white", PaletteSwapManager.intToColor (255, 255, 255) },
-   };
-
-   public static Dictionary<string, Color> guildIcon2 = new Dictionary<string, Color>() {
-      {"guild_icon_two_orange_2", PaletteSwapManager.intToColor (236, 134, 13) },
-      {"guild_icon_two_yellow", PaletteSwapManager.intToColor (243, 235, 21) },
-      {"guild_icon_two_green_1", PaletteSwapManager.intToColor (130, 232, 137) },
-      {"guild_icon_two_green_2", PaletteSwapManager.intToColor (13, 236, 29) },
-      {"guild_icon_two_green_3", PaletteSwapManager.intToColor (20, 172, 30) },
-      {"guild_icon_two_cyan", PaletteSwapManager.intToColor (13, 233, 236) },
-      {"guild_icon_two_blue", PaletteSwapManager.intToColor (19, 79, 118) },
-      {"guild_icon_two_blue_2", PaletteSwapManager.intToColor (13, 107, 236) },
-      {"guild_icon_two_blue_3", PaletteSwapManager.intToColor (60, 141, 193) },
-      {"guild_icon_two_purple", PaletteSwapManager.intToColor (149, 15, 193) },
-      {"guild_icon_two_pink", PaletteSwapManager.intToColor (236, 15, 228) },
-      {"guild_icon_two_red", PaletteSwapManager.intToColor (246, 18, 18) },
-      {"guild_icon_two_orange", PaletteSwapManager.intToColor (224, 170, 154) },
-      {"guild_icon_two_black", PaletteSwapManager.intToColor (39, 39, 39) },
-      {"guild_icon_two_white", PaletteSwapManager.intToColor (255, 255, 255) },
-   };
-
    #endregion
 
    #region Private Variables

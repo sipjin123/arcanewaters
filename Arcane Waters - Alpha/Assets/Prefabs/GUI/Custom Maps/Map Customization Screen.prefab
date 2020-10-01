@@ -627,6 +627,21 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 7
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 2429474773634063309}
+          m_MethodName: pointerScroll
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!222 &4375559264429268141
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1074,12 +1089,12 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 76
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -75
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
@@ -1099,7 +1114,7 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
@@ -1109,7 +1124,7 @@ PrefabInstance:
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4200897938078685967, guid: c75b901c677e994479015050cfafde44,
         type: 3}

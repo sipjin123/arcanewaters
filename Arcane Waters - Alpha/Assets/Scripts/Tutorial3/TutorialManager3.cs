@@ -103,7 +103,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       // Since we changed area, check if the tutorial arrow can point to something relevant
-      arrow.setTarget(_currentTutorial.steps[_currentStep].arrowTarget);
+      arrow.setTarget(_currentTutorial.steps[_currentStep].targetLocation);
    }
 
    public void selectTutorial (Tutorial3 tutorial) {
@@ -116,6 +116,9 @@ public class TutorialManager3 : MonoBehaviour {
       _currentStep = 0;
       _triggerCount = 0;
       refreshUI();
+
+      // If the first step requires the player to be in a given location, check if he is already there
+      tryCompletingStepByLocation();
    }
 
    public void previousStep () {
@@ -138,6 +141,9 @@ public class TutorialManager3 : MonoBehaviour {
 
       _triggerCount = 0;
       refreshUI();
+
+      // If the new step requires the player to be in a given location, check if he is already there
+      tryCompletingStepByLocation();
    }
 
    public void tryCompletingStep (TutorialTrigger key) {
@@ -152,19 +158,15 @@ public class TutorialManager3 : MonoBehaviour {
             nextStep();
          }
       }
+   }
 
-      // Special cases
-      if (key == TutorialTrigger.SpawnInFarm 
-         && _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.OpenFarmLayoutSelectionPanel) {
-         // If the farm layout has already been chosen, we skip this step
-         nextStep();
-         nextStep();
+   public void tryCompletingStepByLocation () {
+      if (!isActive()) {
+         return;
       }
 
-      if (key == TutorialTrigger.SpawnInHouse
-         && _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.OpenHouseLayoutSelectionPanel) {
-         // If the house layout has already been chosen, we skip this step
-         nextStep();
+      // Complete the step if the user reached the target location
+      if (isUserAtTargetLocation()) {
          nextStep();
       }
    }
@@ -192,6 +194,28 @@ public class TutorialManager3 : MonoBehaviour {
       saveConfigAndProgress();
    }
 
+   private bool isUserAtTargetLocation () {
+      TutorialData3.Location targetLocation = _currentTutorial.steps[_currentStep].targetLocation;
+
+      if (targetLocation == TutorialData3.Location.None || Global.player == null) {
+         return false;
+      }
+
+      switch (targetLocation) {
+         case TutorialData3.Location.Farm:
+            return AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId);
+         case TutorialData3.Location.House:
+            return AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId);
+         default:
+            if (TutorialData3.locationToAreaKey.TryGetValue(targetLocation, out string targetAreaKey)) {
+               if (string.Equals(Global.player.areaKey, targetAreaKey)) {
+                  return true;
+               }
+            }
+            return false;
+      }
+   }
+
    private void refreshUI () {
       string selectedTutorialKey = _currentTutorial.key;
       bool isNextStepManual = _currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.Manual;
@@ -214,8 +238,9 @@ public class TutorialManager3 : MonoBehaviour {
          npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
       }
 
-      panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count, isNextStepManual);
-      arrow.setTarget(_currentTutorial.steps[_currentStep].arrowTarget);
+      panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,
+         isNextStepManual, _currentTutorial.isCompleted);
+      arrow.setTarget(_currentTutorial.steps[_currentStep].targetLocation);
    }
 
    public void OnDestroy () {

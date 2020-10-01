@@ -16,6 +16,9 @@ public static class MapCache
    #endregion
 
    public static void pruneExcessMaps () {
+      // Ensure we have maps data directory created
+      Directory.CreateDirectory(MAP_FOLDER_PATH);
+
       int previousMapCount = -1;
       int removedMapsCount = 0;
 

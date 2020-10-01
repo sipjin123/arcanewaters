@@ -185,7 +185,6 @@ public class Area : MonoBehaviour
 
       configurePathfindingGraph();
 
-      vcam.GetComponent<MyCamera>().mainGUICanvas = CameraManager.self.guiCanvas;
       vcam.GetComponent<MyCamera>().setInternalOrthographicSize();
 
       // Store it in the Area Manager

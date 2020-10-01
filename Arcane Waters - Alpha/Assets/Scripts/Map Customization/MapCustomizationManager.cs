@@ -173,8 +173,8 @@ namespace MapCustomization
 
       public static void pointerEnter (Vector2 worldPosition) {
          // If we have a prefab to place, show it in the map
-         if (CustomizationUI.selectedPrefabEntry != null) {
-            updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+         if (CustomizationUI.getSelectedPrefabData() != null) {
+            updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
             updatePrefabOutlines(null);
          }
       }
@@ -193,8 +193,8 @@ namespace MapCustomization
       /// <param name="worldPosition"></param>
       public static void pointerHover (Vector2 worldPosition) {
          // Check if we have a prefab that can be placed right now
-         if (_selectedPrefab == null && getPrefabAtPosition(worldPosition) == null && CustomizationUI.selectedPrefabEntry != null) {
-            updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+         if (_selectedPrefab == null && getPrefabAtPosition(worldPosition) == null && CustomizationUI.getSelectedPrefabData() != null) {
+            updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
          } else if (_newPrefab != null) {
             _newPrefab.revertUnappliedChanges();
             _newPrefab = null;
@@ -230,8 +230,8 @@ namespace MapCustomization
             _draggedPrefab = hoveredPrefab;
             updatePrefabOutlines(worldPosition);
          } else {
-            if (CustomizationUI.selectedPrefabEntry != null) {
-               updateToBePlacedPrefab(worldPosition, CustomizationUI.selectedPrefabEntry.target.serializationId);
+            if (CustomizationUI.getSelectedPrefabData() != null) {
+               updateToBePlacedPrefab(worldPosition, CustomizationUI.getSelectedPrefabData().Value.serializationId);
                _newPrefab.setGameInteractionsActive(true);
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
 
@@ -410,16 +410,20 @@ namespace MapCustomization
          return true;
       }
 
-      public static int amountOfPropLeft (ItemInstance[] items, CustomizablePrefab propPrefab) {
+      public static int amountOfPropLeft (ItemInstance[] items, int propDefinitionId) {
          if (items == null) return 0;
 
          foreach (ItemInstance item in items) {
-            if (item.itemDefinitionId == propPrefab.propDefinitionId) {
+            if (item.itemDefinitionId == propDefinitionId) {
                return item.count;
             }
          }
 
          return 0;
+      }
+
+      public static int amountOfPropLeft (ItemInstance[] items, CustomizablePrefab propPrefab) {
+         return amountOfPropLeft(items, propPrefab.propDefinitionId);
       }
 
       public static CustomizablePrefab getPrefab (Area area, int prefabId) {
@@ -440,6 +444,8 @@ namespace MapCustomization
                TutorialManager3.self.tryCompletingStep(TutorialTrigger.PlaceObject);
             } else if (changes.deleted) {
                TutorialManager3.self.tryCompletingStep(TutorialTrigger.DeleteObject);
+            } else {
+               TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveObject);
             }
 
             if (_serverApprovedState.ContainsKey(changes.id)) {

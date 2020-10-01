@@ -61,6 +61,8 @@ public class RollingTextFade : ClientMonoBehaviour {
          // Force the full reveal of the text
          _textComponent.color = _originalColor;
          _textComponent.ForceMeshUpdate();
+
+         this.isDone = true;
       }
    }
 

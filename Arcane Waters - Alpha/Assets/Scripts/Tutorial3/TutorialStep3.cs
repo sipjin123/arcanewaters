@@ -11,31 +11,39 @@ public class TutorialStep3
    // The key that will trigger the completion of the step
    public TutorialTrigger completionTrigger;
 
+   // Where the tutorial arrow must point to - also used as trigger under certain conditions
+   public TutorialData3.Location targetLocation = TutorialData3.Location.None;
+
    // The number of times the trigger must be set off for the step to be completed
    public int countRequirement = 1;
 
    // The text spoken by the NPC during this step
    public string npcSpeech;
 
-   // The target that must be pointed to with an arrow, if any
-   public TutorialArrow.Target arrowTarget = TutorialArrow.Target.None;
-
    #endregion
 
    public TutorialStep3 (TutorialTrigger completionTrigger, string npcSpeech)
-      : this(completionTrigger, npcSpeech, 1, TutorialArrow.Target.None) { }
+      : this(completionTrigger, npcSpeech, 1) { }
 
    public TutorialStep3 (TutorialTrigger completionTrigger, string npcSpeech, int countRequirement)
-      : this(completionTrigger, npcSpeech, countRequirement, TutorialArrow.Target.None) { }
+      : this(completionTrigger, TutorialData3.Location.None, npcSpeech, countRequirement) { }
 
-   public TutorialStep3 (TutorialTrigger completionTrigger, string npcSpeech, TutorialArrow.Target arrowTarget)
-      : this(completionTrigger, npcSpeech, 1, arrowTarget) { }
+   public TutorialStep3 (TutorialTrigger completionTrigger, TutorialData3.Location targetLocation, string npcSpeech)
+      : this(completionTrigger, targetLocation, npcSpeech, 1) { }
 
-   public TutorialStep3 (TutorialTrigger completionTrigger, string npcSpeech, int countRequirement, TutorialArrow.Target arrowTarget) {
+   public TutorialStep3 (TutorialTrigger completionTrigger, TutorialData3.Location targetLocation, string npcSpeech, int countRequirement) {
       this.completionTrigger = completionTrigger;
+      this.targetLocation = targetLocation;
       this.npcSpeech = npcSpeech;
       this.countRequirement = countRequirement;
-      this.arrowTarget = arrowTarget;
+      this.targetLocation = targetLocation;
+   }
+
+   public TutorialStep3 (TutorialData3.Location targetLocation, string npcSpeech) {
+      this.completionTrigger = TutorialTrigger.None;
+      this.countRequirement = 1;
+      this.targetLocation = targetLocation;
+      this.npcSpeech = npcSpeech;
    }
 
    #region Private Variables

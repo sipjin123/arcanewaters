@@ -72,6 +72,7 @@ public class SoundManager : MonoBehaviour {
       Water_Fountain = 343, Ship_Destroyed = 344, Fish_Jump = 345, Harvesting_Pitchfork_Hit = 346,
       Harvesting_Pitchfork_Miss = 347, Skeleton_Walk = 348, Bridge_Crunching_Wood = 349,
       Harvesting_Flying = 350, Harvesting_Hit = 351, Harvesting_Picking = 352,
+      Clock_Chime = 353,
 
       // Melee enemy effects
       Golem_Death = 400, Enemy_Jump = 401, Flower_Death = 402, Plant_Chomp = 403, Slime_Attack = 404,
@@ -108,7 +109,7 @@ public class SoundManager : MonoBehaviour {
       Splash_Cannon_1 = 1100, Ship_Hit_1 = 1101, Ship_Cannon_1 = 1102, Ship_Cannon_2 = 1103, Ship_Hit_2 = 1104,
 
       // UI effects
-      Layouts_Destinations = 1200, Tutorial_Pop_Up = 1201, GUI_Change_Tab = 1202,
+      Layouts_Destinations = 1200, Tutorial_Pop_Up = 1201, GUI_Change_Tab = 1202, Perk_Point_Assigned = 1203
    }
 
    #endregion
@@ -192,11 +193,12 @@ public class SoundManager : MonoBehaviour {
             return .8f;
          case Type.Footstep:
             return .40f;
-         case Type.GUI_Hover:
          case Type.GUI_Press:
          case Type.Layouts_Destinations:
          case Type.GUI_Change_Tab:
             return .15f;
+         case Type.GUI_Hover:
+            return .25f;
          case Type.Seamonster_Hit:
          case Type.Ship_Hit:
             return .5f;

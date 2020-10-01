@@ -102,9 +102,10 @@ public class OptionsPanel : Panel
       // Loads the saved gui scale
       float guiScaleValue = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100);
       guiScaleLabel.text = (guiScaleValue).ToString("f1") + " %";
-      mainGameCanvas.scaleFactor = guiScaleValue / 100;
       guiScaleSlider.value = guiScaleValue / 100;
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
+      updateGUIScaling();
+      CameraManager.self.resolutionChanged += updateGUIScaling;
 
       // Loads the saved minimap scale
       float minimapScaleValue = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 100);
@@ -320,10 +321,24 @@ public class OptionsPanel : Panel
       SoundManager.effectsVolume = effectsSlider.value;
    }
 
+   public void updateGUIScaling () {
+      float userSettingsFactor = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100) / 100f;
+      float screenSizeFactor = getConstantUIScalingFactor();
+      mainGameCanvas.scaleFactor = userSettingsFactor * screenSizeFactor;
+   }
+
    public void guiScaleSliderChanged () {
-      mainGameCanvas.scaleFactor = guiScaleSlider.value;
       guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
       PlayerPrefs.SetFloat(PREF_GUI_SCALE, guiScaleSlider.value * 100);
+      updateGUIScaling();
+   }
+
+   public static float getConstantUIScalingFactor () {
+      if (Screen.width >= ScreenSettingsManager.largeScreenWidth && Screen.height >= ScreenSettingsManager.largeScreenHeight) {
+         return 2f;
+      }
+
+      return 1f;
    }
 
    public void minimapScaleSliderChanged () {

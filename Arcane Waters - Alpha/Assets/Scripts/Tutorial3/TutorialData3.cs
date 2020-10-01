@@ -8,9 +8,25 @@ public class TutorialData3 : MonoBehaviour
 {
    #region Public Variables
 
-   // Area keys used in triggers
-   public static string tutorialCemeteryAreaKey = "Tutorial Town Cemetery v2";
-   public static string tutorialTownAreaKey = "Tutorial Town";
+   // The tutorial locations
+   public enum Location
+   {
+      None = 0,
+      TutorialTown = 1,
+      Cemetery = 2,
+      Farm = 3,
+      House = 4,
+      TutorialSeaMap = 5,
+   }
+
+   // The locations and the corresponding area key
+   public static Dictionary<Location, string> locationToAreaKey = new Dictionary<Location, string>() {
+      { Location.TutorialTown, "Tutorial Town" },
+      { Location.Cemetery, "Tutorial Town Cemetery v2" },
+      { Location.Farm, "customfarm" },
+      { Location.House, "customhouse" },
+      { Location.TutorialSeaMap, "Tutorial Sea Map" },
+   };
 
    // The tutorials and, for each step, the npc speech and completion triggers
    public static List<Tutorial3> tutorials = new List<Tutorial3>() {
@@ -32,51 +48,57 @@ public class TutorialData3 : MonoBehaviour
 
       new Tutorial3("TestMeleeBattle", "Do a test melee battle",
       new List<TutorialStep3>() {
+         new TutorialStep3(Location.TutorialTown, "Let's have a look at melee battles. Go to the starting town to begin!"),
          new TutorialStep3(TutorialTrigger.EquipWeapon, "You should have a sword in your fourth shortcut. Press <#FF8000>4</color> to equip it. You can also search for one in your inventory by pressing <#FF8000>I</color>."),
-         new TutorialStep3(TutorialTrigger.SpawnInTutorialTownCemetery, "There is an old cemetery to the east of the starting town. Head there now!", TutorialArrow.Target.Cemetery), 
+         new TutorialStep3(Location.Cemetery, "There is an old cemetery to the east of the starting town. Head there now!"),
          new TutorialStep3(TutorialTrigger.EnterBattle, "Many skeletons keep coming back to life in this place. Help the village out by reminding them they should be dead. Move close to one to enter battle!"),
          new TutorialStep3(TutorialTrigger.AttackBattleTarget, "He may look scary, but the skeleton is old and weak. At the top of the screen are your skills. Pick an attack skill and cast it!"),
          new TutorialStep3(TutorialTrigger.EndBattle, "Well done! Now give the skeleton no quarter until it is defeated!"),
-         new TutorialStep3(TutorialTrigger.SpawnInTutorialTown, "Congratulations on your battle victory! The first of many I'm sure. Leave the cemetery to start the next tutorial!", TutorialArrow.Target.TutorialTown),
+         new TutorialStep3(Location.TutorialTown, "Congratulations on your battle victory! The first of many I'm sure. Leave the cemetery to start the next tutorial!"),
       }),
 
       new Tutorial3("PickFarmLayout", "Pick your farm layout",
       new List<TutorialStep3>() {
-         new TutorialStep3(TutorialTrigger.OpenFarmLayoutSelectionPanel, "Your farm lies north of the starting town. Follow the road to the north to head there now.", TutorialArrow.Target.Farm),
-         new TutorialStep3(TutorialTrigger.SpawnInFarm, "The first time you visit your farm, you will be asked to choose which layout you would like. Take your pick!"),
-         new TutorialStep3(TutorialTrigger.OpenHouseLayoutSelectionPanel, "Welcome to your farm. Have a look around! When you are ready to continue, enter your house.", TutorialArrow.Target.House),
-         new TutorialStep3(TutorialTrigger.SpawnInHouse, "Time to choose your house layout!"),
-         new TutorialStep3(TutorialTrigger.SpawnInFarm, "Welcome home! Have a look around!"),
+         new TutorialStep3(TutorialTrigger.OpenFarmLayoutSelectionPanel, Location.Farm, "Your farm lies north of the starting town. Follow the road to the north to head there now."),
+         new TutorialStep3(Location.Farm, "The first time you visit your farm, you will be asked to choose which layout you would like. Take your pick!"),
+         new TutorialStep3(TutorialTrigger.OpenHouseLayoutSelectionPanel, Location.House, "Welcome to your farm. Have a look around! When you are ready to continue, enter your house."),
+         new TutorialStep3(Location.House, "Time to choose your house layout!"),
+         new TutorialStep3(Location.Farm, "Welcome home! Have a look around! Leave the house when you are ready to continue."),
       }),
 
       new Tutorial3("PlaceFurniture", "Customize your property",
       new List<TutorialStep3>{
+         new TutorialStep3(Location.Farm, "Head to your farm. I'll explain everything when you reach it!"),
          new TutorialStep3(TutorialTrigger.EquipHammer, "Let me show you how to customize your farm and house. You should have a hammer in your inventory. Equip the hammer to enter the building mode."),
-         new TutorialStep3(TutorialTrigger.PlaceObject, "We gave you a few items to get you started! Select one you like in the panel on the right, and click anywhere in the world to place it."),
+         new TutorialStep3(TutorialTrigger.SelectObject, "We gave you a few items to get you started! Select one you like in the panel on the right."),
+         new TutorialStep3(TutorialTrigger.PlaceObject, "Click anywhere in the world to place it. You can also change it's variation with the <#FF8000>Mouse Wheel</color>."),
+         new TutorialStep3(TutorialTrigger.MoveObject, "To adjust it's position, click on the object you placed, drag it to a new position and release."),
          new TutorialStep3(TutorialTrigger.DeleteObject, "Now click on the object you placed to select it and press the <#FF8000>Delete</color> key to delete it."),
          new TutorialStep3(TutorialTrigger.UnequipHammer, "Good job! To wrap it up, unequip the hammer in your inventory to exit the building mode."),
       }),
 
       new Tutorial3("PlantCrops", "Plant, water, and harvest some crops",
       new List<TutorialStep3>() {
+         new TutorialStep3(Location.Farm, "Head to your farm. I'll explain everything when you reach it!"),
          new TutorialStep3(TutorialTrigger.EquipSeedBag, "Let me show you how to grow crops. You should have a seed bag set to your first shortcut. Press <#FF8000>1</color> to equip it, or find it in your inventory by pressing <#FF8000>I</color>."),
          new TutorialStep3(TutorialTrigger.PlantCrop, "Now, look around your farm for some patches of dirt. They have holes ready for seeds. Stand next to the holes and press <#FF8000>Right-Click</color> to plant your seeds."),
          new TutorialStep3(TutorialTrigger.PlantCrop, "You're a farmer already! Now, let's plant a few more.", 4),
          new TutorialStep3(TutorialTrigger.CropGrewToMaxLevel, "Press <#FF8000>2</color> to equip the watering pot and <#FF8000>Right-Click</color> to use it on a plant. Your crops will need to be watered a few times before they are ready for harvest.", 5),
          new TutorialStep3(TutorialTrigger.HarvestCrop, "The crops are ready to be harvested! Press <#FF8000>3</color> to equip the pitchfork and collect your vegetables.", 5),
-         new TutorialStep3(TutorialTrigger.SpawnInTutorialTown, "Now that's good sweaty work! All your harvests can be sold at the crop merchant. You will find merchants in most villages.", TutorialArrow.Target.TutorialTown),
+         new TutorialStep3(Location.TutorialTown, "Now that's good sweaty work! All your harvests can be sold at the crop merchant. You will find merchants in most villages."),
       }),
 
       new Tutorial3("SailShip", "Sail your ship",
       new List<TutorialStep3>() {
-         new TutorialStep3(TutorialTrigger.SpawnInSeaArea, "To sail your ship, go to the docks. In the starting town, they are located south.", TutorialArrow.Target.Docks),
-         new TutorialStep3(TutorialTrigger.TurnShipLeft, "First, let's turn it around. Press <#FF8000>[primary]</color> or <#FF8000>[secondary]</color> to turn left."),
+         new TutorialStep3(Location.TutorialSeaMap, "Time to sail! In the starting town, head to the docks located south."),
+         new TutorialStep3(TutorialTrigger.TurnShipLeft, "Alright! First, let's move your ship around. Press <#FF8000>[primary]</color> or <#FF8000>[secondary]</color> to turn left."),
          new TutorialStep3(TutorialTrigger.TurnShipRight, "Press <#FF8000>[primary]</color> or <#FF8000>[secondary]</color> to turn right."),
          new TutorialStep3(TutorialTrigger.MoveShipForward, "Finally, press <#FF8000>[primary]</color> or <#FF8000>[secondary]</color> to move forward."),
          new TutorialStep3(TutorialTrigger.ShipSpeedUp, "You can boost your movement by holding the <#FF8000>Shift</color> key. Try it now!"),
-         new TutorialStep3(TutorialTrigger.FireShipCannon, "Let's have a look at your combat controls. You can fire your ship cannons by aiming with the mouse and pressing <#FF8000>Right-Click</color>. Fire in the hole!"),
-         new TutorialStep3(TutorialTrigger.DefeatPirateShip, "You are ready to fight some pirates! You can usually find them to the east of the starting town. Time to challenge them!"),
-         new TutorialStep3(TutorialTrigger.SpawnInTutorialTown, "Congratulations on your first sea battle victory! When you are ready to continue, return to the town.", TutorialArrow.Target.TutorialTown),
+         new TutorialStep3(TutorialTrigger.SelectPirateShip, "Let's have a look at your combat controls. First, sail west and look for a pirate ship. Careful, don't get too close! When you see one, click on it or press <#FF8000>Tab</color> to auto-target."),
+         new TutorialStep3(TutorialTrigger.FireShipCannon, "Try firing your cannons by pressing <#FF8000>Space</color>. You will automatically aim towards the selected ship. Fire in the hole!"),
+         new TutorialStep3(TutorialTrigger.DefeatPirateShip, "You are ready to challenge the pirates. Get in range and show them what you got!"),
+         new TutorialStep3(Location.TutorialTown, "Congratulations on your first sea battle victory! When you are ready to continue, return to the town."),
       }),
 
       //new Tutorial3("EnterTreasureSite", "Enter a treasure site",
@@ -121,7 +143,6 @@ public enum TutorialTrigger
    Manual = 1,
    TalkShopOwner = 2,
    BuyWeapon = 3,
-   SpawnInSeaArea = 4,
    ExpandTutorialPanel = 5,
    OpenInventory = 6,
    EquipWeapon = 7,
@@ -133,12 +154,9 @@ public enum TutorialTrigger
    CropGrewToMaxLevel = 13,
    HarvestCrop = 14,
    OpenFarmLayoutSelectionPanel = 15,
-   SpawnInFarm = 16,
    OpenHouseLayoutSelectionPanel = 17,
-   SpawnInHouse = 18,
    OpenVoyagePanel = 19,
    SpawnInVoyage = 20,
-   SpawnInTutorialTownCemetery = 21,
    EnterBattle = 22,
    AttackBattleTarget = 24,
    EndBattle = 25,
@@ -147,9 +165,11 @@ public enum TutorialTrigger
    PlaceObject = 28,
    DeleteObject = 29,
    UnequipHammer = 30,
-   SpawnInTutorialTown = 31,
    MoveShipForward = 32,
    TurnShipLeft = 33,
    TurnShipRight = 34,
    LeaveVoyageGroup = 35,
+   SelectPirateShip = 36,
+   MoveObject = 37,
+   SelectObject = 38
 };

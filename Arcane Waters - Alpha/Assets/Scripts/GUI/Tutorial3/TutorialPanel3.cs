@@ -88,9 +88,18 @@ public class TutorialPanel3 : MonoBehaviour
    }
 
    public void refreshTutorialStep (string selectedTutorialKey, string npcSpeech, int currentStepIndex,
-      int maxStepIndex, bool isNextStepManual) {
+      int maxStepIndex, bool isNextStepManual, bool isTutorialCompleted) {
       _npcSpeech = npcSpeech;
       _isNavigationRowVisible = false;
+
+      // The navigation buttons are only visible if the tutorial has been completed before
+      if (isTutorialCompleted) {
+         rightButton.gameObject.SetActive(true);
+         leftButton.gameObject.SetActive(true);
+      } else {
+         rightButton.gameObject.SetActive(false);
+         leftButton.gameObject.SetActive(false);
+      }
 
       // Select the correct row
       foreach (TutorialRow3 row in _rows) {
@@ -114,6 +123,7 @@ public class TutorialPanel3 : MonoBehaviour
 
       // In case the last step is manual, we allow clicking on the right button
       if (isNextStepManual) {
+         rightButton.gameObject.SetActive(true);
          rightButton.interactable = true;
          rightButtonAnim.SetActive(true);
          _isNavigationRowVisible = true;

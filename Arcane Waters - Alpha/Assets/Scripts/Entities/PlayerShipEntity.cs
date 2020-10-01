@@ -129,6 +129,13 @@ public class PlayerShipEntity : ShipEntity
       base.Update();
 
       if (!isLocalPlayer) {
+         // Display the ship boost meter for remote players
+         if (isSpeedingUp) {
+            updateSpeedUpDisplay(0, true, false, true);
+         } else if (speedUpEffectHolder.activeSelf) {
+            updateSpeedUpDisplay(0, false, false, true);
+         }
+
          return;
       }
 
@@ -159,34 +166,19 @@ public class PlayerShipEntity : ShipEntity
 
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
          SeaEntity target = _targetSelector.getTarget();
-         if (target != null && hasReloaded() && Input.GetKeyDown(KeyCode.Space)) {
+         if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
             Cmd_FireMainCannonAtTarget(target.gameObject);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
          }
       }
 
       // Speed ship boost feature
-      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup) {
-         isSpeedingUp = true;
-         if (speedMeter > 0) {
-            speedMeter -= Time.deltaTime * boostDepleteValue;
-            shipBoostCooldownObj.SetActive(false);
-            Cmd_UpdateSpeedupDisplay(true);
-         } else {
-            isReadyToSpeedup = false;
-            isSpeedingUp = false;
-            Cmd_UpdateSpeedupDisplay(false);
+      if (!isSpeedingUp) {
+         if (isReadyToSpeedup && InputManager.isSpeedUpKeyPressed()) {
+            isSpeedingUp = true;
 
-            // Trigger the tutorial
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
-         }
-      } else {
-         // Only notify other clients once if disabling
-         if (isSpeedingUp) {
-            Cmd_UpdateSpeedupDisplay(false);
-            isSpeedingUp = false;
-
-            // Trigger the tutorial
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
+            // Let the server and other clients know we started speeding up
+            Cmd_StartSpeedUp();
          }
 
          if (speedMeter < SPEEDUP_METER_MAX) {
@@ -203,10 +195,28 @@ public class PlayerShipEntity : ShipEntity
             shipBoostCooldownObj.SetActive(false);
             isReadyToSpeedup = true;
          }
-      }
+      } else {
+         if (InputManager.isSpeedUpKeyReleased()) {
+            isSpeedingUp = false;
+            Cmd_StopSpeedUp();
 
-      // Display the ship boost meter locally
-      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+            // Trigger the tutorial
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
+         }
+
+         if (speedMeter > 0) {
+            speedMeter -= Time.deltaTime * boostDepleteValue;
+            shipBoostCooldownObj.SetActive(false);
+         } else {
+            isReadyToSpeedup = false;
+            isSpeedingUp = false;
+
+            Cmd_StopSpeedUp();
+
+            // Trigger the tutorial
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
+         }
+      }
 
       // Space to fire at the selected ship
       /*if (Input.GetKeyUp(KeyCode.Space) && !ChatManager.isTyping() && SelectionManager.self.selectedEntity != null && SeaManager.combatMode == SeaManager.CombatMode.Select) {
@@ -218,12 +228,17 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void handleDirectionChange () {      
-      int moveDirection = 0;
-      if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-         moveDirection = 1;
-      } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
-         moveDirection = -1;
+   public override bool isMoving () {
+      return getVelocity().magnitude > 0.1f;
+   }
+
+   private void handleDirectionChange () {
+      int moveDirection = InputManager.getHorizontalAxis() * -1;
+
+      if (moveDirection < 0) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
+      } else if (moveDirection > 0) {         
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
       }
 
       bool canRequestAngleChange = NetworkTime.time - _lastAngleChangeTime > getAngleDelay();
@@ -237,29 +252,17 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   private void startAiming () {
-      Cmd_StartedAiming(_aimDirection);
-      _currentAimPosition = transform.position;
-      _isAimScheduled = false;
-   }
-
    public Vector2 getAimPosition () {
       return _currentAimPosition;
    }
 
-   private int getAimDirectionMultiplier () {
-      return _aimDirection == AimDirection.Left ? -1 : 1;
-   }
-
-   private void switchAimDirection () {
-      _aimDirection = _aimDirection == AimDirection.Left ? AimDirection.Right : AimDirection.Left;
-
-      // Notify the server we switched the direction
-      Cmd_SetAimDirection(_aimDirection);
-   }
-
    [Command]
    public void Cmd_ModifyMoveAngle (float modifier) {
+      if (isDead() || NetworkTime.time - _lastAngleChangeTime < getAngleDelay()) {
+         return;
+      }
+
+      _lastAngleChangeTime = NetworkTime.time;
       _serverSideMoveAngle += modifier * getAngleChangeSpeed();
 
       // Set the new facing direction
@@ -268,40 +271,6 @@ public class PlayerShipEntity : ShipEntity
          _serverSideMoveAngle = DirectionUtil.getAngle(newFacingDirection);
          desiredAngle = _serverSideMoveAngle;
          facing = newFacingDirection;
-      }
-   }
-
-   [Command]
-   public void Cmd_ModifyAimAngle (int modifier) {
-      _serverSideAimAngle += modifier * getAngleChangeSpeed();
-   }
-
-   [Command]
-   private void Cmd_SetAimDirection (AimDirection direction) {
-      _aimDirection = direction;
-   }
-
-   [TargetRpc]
-   private void Target_SetStartedAiming (double startTime) {
-      _startedAimingTime = startTime;
-      isAiming = true;
-      _isAimScheduled = false;
-   }
-
-   [TargetRpc]
-   private void Target_SetStoppedAiming () {
-      isAiming = false;
-   }
-
-   [Command]
-   protected void Cmd_StartedAiming (AimDirection direction) {
-      if (hasReloaded()) {
-         _aimDirection = direction;
-         _startedAimingTime = NetworkTime.time;
-         isAiming = true;
-
-         // Notify the player
-         Target_SetStartedAiming(_startedAimingTime);
       }
    }
 
@@ -319,45 +288,6 @@ public class PlayerShipEntity : ShipEntity
       Vector2 targetPosition = target.transform.position;
 
       fireCannonBallAtTarget(startPosition, targetPosition);
-   }
-
-   [Command]
-   protected void Cmd_FireMainCannon (float angle) {
-      // Make sure the player isn't dead, has reloaded and has prepared a shot
-      if (!isAiming || isDead() || !hasReloaded()) {
-         return;
-      }
-
-      // The player is no longer aiming
-      isAiming = false;
-      Target_SetStoppedAiming();
-
-      // Get the time since the player started aiming
-      double timeAiming = NetworkTime.time - _startedAimingTime;
-
-      // Calculate the normalized percentage 
-      float progress = Util.inverseLerpDouble(0, TIME_TO_REACH_MAX_CANNON_FORCE, timeAiming);
-
-      // Calculate the total force multiplier to apply
-      float speedMultiplier = Mathf.Lerp(MIN_CANNON_FORCE_SCALE, MAX_CANNON_FORCE_SCALE, progress);
-
-      // If the client's desired aim direction is too far from the one predicted by the server, force the server one on the client
-      if (Mathf.Abs(angle - _serverSideAimAngle) > 80) {
-         Target_SetAimAngle(_serverSideAimAngle);
-
-         // We'll use the server angle to fire
-         angle = _serverSideAimAngle;
-      }
-
-      // Get the aiming direction
-      Vector2 aimDirection = Quaternion.AngleAxis(angle + 90 * getAimDirectionMultiplier(), Vector3.forward) * Vector3.up;
-
-      Rpc_FireTimedCannonBall(NetworkTime.time + getFireCannonDelay(), aimDirection * speedMultiplier, speedMultiplier);
-   }
-
-   [TargetRpc]
-   private void Target_SetAimAngle (float aimAngle) {
-      _localAimAngle = aimAngle;
    }
 
    [Command]
@@ -392,12 +322,20 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   private void Cmd_UpdateSpeedupDisplay (bool isOn) {
-      Rpc_UpdateSpeedupDisplay(isOn);
+   private void Cmd_StartSpeedUp () {
+      isSpeedingUp = true;
+      Rpc_UpdateSpeedupDisplay(isSpeedingUp);
+   }
+
+   [Command]
+   private void Cmd_StopSpeedUp () {
+      isSpeedingUp = false;
+      Rpc_UpdateSpeedupDisplay(isSpeedingUp);
    }
 
    [ClientRpc]
    public void Rpc_UpdateSpeedupDisplay (bool isOn) {
+      isSpeedingUp = isOn;
       updateSpeedUpDisplay(0, isOn, false, true);
    }
 
@@ -454,11 +392,12 @@ public class PlayerShipEntity : ShipEntity
       base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo);
 
       // Ship stuff
-      initialize(shipInfo);
       shipId = shipInfo.shipId;
 
       ShipData shipData = ShipDataManager.self.getShipData(shipInfo.shipType);
       shipSize = shipData.shipSize;
+
+      initialize(shipData);
 
       foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
          shipAbilities.Add(newShipAbility);
@@ -526,12 +465,14 @@ public class PlayerShipEntity : ShipEntity
       bool canChangeDirection = (NetworkTime.time - _lastAngleChangeTime > getAngleDelay());
 
       if (canChangeDirection) {
-         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+         if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyMoveAngle(+1);
             _lastAngleChangeTime = NetworkTime.time;
-         } else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
+         } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyMoveAngle(-1);
             _lastAngleChangeTime = NetworkTime.time;
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
          }
       }
 
@@ -653,7 +594,7 @@ public class PlayerShipEntity : ShipEntity
 
       // If we don't currently have a target selected, assign the attacker as our new target
       if (isLocalPlayer && !isDead() && _targetSelector.getTarget() == null) {
-         SelectionManager.self.selectedEntity = (SeaEntity)entity;
+         SelectionManager.self.setSelectedEntity((SeaEntity)entity);
       }
    }
 

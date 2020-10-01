@@ -17,9 +17,6 @@ namespace MapCustomization
       // Is the UI showing the loading screen
       public static bool isLoading { get; private set; }
 
-      // Which prefab data is currently selected 
-      public static PrefabSelectionEntry selectedPrefabEntry;
-
       // Title text of UI
       public Text titleText;
 
@@ -72,24 +69,45 @@ namespace MapCustomization
 
       public void pointerUp (BaseEventData eventData) {
          PointerEventData pointerData = eventData as PointerEventData;
-         MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerData.position));
+         if (pointerData.button == PointerEventData.InputButton.Left) {
+            MapCustomizationManager.pointerUp(Camera.main.ScreenToWorldPoint(pointerData.position));
+         }
       }
 
       public void pointerDown (BaseEventData eventData) {
          PointerEventData pointerData = eventData as PointerEventData;
-         MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
+         if (pointerData.button == PointerEventData.InputButton.Left) {
+            MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
+         }
+      }
+
+      public void pointerScroll (BaseEventData eventData) {
+         PointerEventData pointerData = eventData as PointerEventData;
+
+         // Allow user to select prefab variations with scroll wheel
+         if (_selectedPrefabEntry != null) {
+            int change = Mathf.Clamp(Mathf.RoundToInt(pointerData.scrollDelta.y), -10, 10);
+            for (int i = change; i < 0; i++) {
+               _selectedPrefabEntry.onNext();
+            }
+            for (int i = 0; i < change; i++) {
+               _selectedPrefabEntry.onPrevious();
+            }
+         }
       }
 
       public static void selectEntry (PrefabSelectionEntry entry) {
-         if (selectedPrefabEntry != null) {
-            selectedPrefabEntry.setSelected(false);
+         if (_selectedPrefabEntry != null) {
+            _selectedPrefabEntry.setSelected(false);
          }
 
-         selectedPrefabEntry = entry;
+         _selectedPrefabEntry = entry;
 
-         if (selectedPrefabEntry != null) {
-            selectedPrefabEntry.setSelected(true);
+         if (_selectedPrefabEntry != null) {
+            _selectedPrefabEntry.setSelected(true);
             MapCustomizationManager.selectPrefab(null);
+
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectObject);
          }
       }
 
@@ -100,7 +118,6 @@ namespace MapCustomization
 
          Util.enableCanvasGroup(self._cGroup);
 
-
          _isShowing = true;
       }
 
@@ -110,24 +127,32 @@ namespace MapCustomization
          _isShowing = false;
       }
 
+      public static PlaceablePrefabData? getSelectedPrefabData () {
+         if (_selectedPrefabEntry == null) return null;
+         return _selectedPrefabEntry.getSelectedData();
+      }
+
       public static void setLoading (bool loading) {
          isLoading = loading;
          self.titleText.text = loading ? "Loading..." : "Customization";
          self.prefabSelection.gameObject.SetActive(!loading);
       }
 
-      public static void setPlaceablePrefabData (IEnumerable<PlaceablePrefabData> dataCollection) {
-         selectedPrefabEntry = null;
+      public static void setPlaceablePrefabData (ICollection<PlaceablePrefabData> dataCollection) {
+         // Clear the current entries
+         _selectedPrefabEntry = null;
          foreach (PrefabSelectionEntry entry in self.prefabSelectEntryParent.GetComponentsInChildren<PrefabSelectionEntry>(true)) {
             Destroy(entry.gameObject);
          }
          _prefabEntries.Clear();
 
-         foreach (PlaceablePrefabData data in dataCollection) {
+         // Group prefabs by their item id
+         IEnumerable<IGrouping<int, PlaceablePrefabData>> itemPrefabs = dataCollection.GroupBy(d => d.prefab.propDefinitionId);
+
+         foreach (IGrouping<int, PlaceablePrefabData> itemPrefab in itemPrefabs) {
             PrefabSelectionEntry entry = Instantiate(self.prefabSelectEntryPref, self.prefabSelectEntryParent);
-            entry.target = data;
-            entry.setImage(data.displaySprite);
-            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, data.prefab);
+            entry.setData(itemPrefab.Key, itemPrefab.ToArray());
+            int count = MapCustomizationManager.amountOfPropLeft(MapCustomizationManager.remainingProps, itemPrefab.Key);
             entry.setCount(count);
             _prefabEntries.Add(entry);
          }
@@ -135,7 +160,7 @@ namespace MapCustomization
 
       public static void updatePropCount (ItemInstance prop) {
          foreach (PrefabSelectionEntry entry in _prefabEntries) {
-            if (entry.target.prefab.propDefinitionId == prop.itemDefinitionId) {
+            if (entry.propDefinitionId == prop.itemDefinitionId) {
                entry.setCount(prop.count);
             }
          }
@@ -154,6 +179,9 @@ namespace MapCustomization
 
       // Is panel currently showing
       private static bool _isShowing = false;
+
+      // Which prefab data is currently selected 
+      private static PrefabSelectionEntry _selectedPrefabEntry;
 
       #endregion
    }

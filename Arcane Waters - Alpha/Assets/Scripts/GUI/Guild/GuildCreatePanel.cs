@@ -281,10 +281,10 @@ public class GuildCreatePanel : MonoBehaviour, IPointerClickHandler
    private int _sigilIndex = 0;
 
    // The names of the selected palettes
-   private string _backgroundPalette1 = PaletteDef.guildIcon1.RandomKey();
-   private string _backgroundPalette2 = PaletteDef.guildIcon2.RandomKey();
-   private string _sigilPalette1 = PaletteDef.guildIcon1.RandomKey();
-   private string _sigilPalette2 = PaletteDef.guildIcon2.RandomKey();
+   private string _backgroundPalette1 = "";
+   private string _backgroundPalette2 = "";
+   private string _sigilPalette1 = "";
+   private string _sigilPalette2 = "";
 
    #endregion
 }

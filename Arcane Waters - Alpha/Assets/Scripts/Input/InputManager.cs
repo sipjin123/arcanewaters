@@ -41,6 +41,11 @@ public class InputManager : MonoBehaviour
       _keybindings[KeyAction.MoveRight].secondary = KeyCode.RightArrow;
       _keybindings[KeyAction.MoveDown].secondary = KeyCode.DownArrow;
       _keybindings[KeyAction.MoveLeft].secondary = KeyCode.LeftArrow;
+      _keybindings[KeyAction.SpeedUp].primary = KeyCode.LeftShift;
+
+      // Set sea battle keys
+      _keybindings[KeyAction.FireMainCannon].primary = KeyCode.Space;
+      _keybindings[KeyAction.SelectNextSeaTarget].primary = KeyCode.Tab;
    }
 
    public static bool isPressingDirection (Direction direction) {
@@ -90,37 +95,78 @@ public class InputManager : MonoBehaviour
       return false;
    }
 
+   public static int getHorizontalAxis () {
+      int axis = 0;
+
+      if (getKeyAction(KeyAction.MoveLeft)) {
+         axis = -1;
+      } else if (getKeyAction(KeyAction.MoveRight)) {
+         axis = 1;
+      }
+
+      return axis;
+   }
+
    public static bool isRightClickKeyPressed () {
-      // Don't respond to action keys while the player is dead
-      if (Global.player == null || Global.player.isDead()) {
-         return false;
+      if (isActionInputEnabled()) {
+         // Define the set of keys that we want to allow as "action" keys
+         return Input.GetKeyDown(KeyCode.Mouse1);
       }
 
-      // Can't initiate actions while typing
-      if (ChatManager.isTyping()) {
-         return false;
-      }
-
-      // Define the set of keys that we want to allow as "action" keys
-      return Input.GetKeyDown(KeyCode.Mouse1);
+      return false;
    }
 
    public static bool isActionKeyPressed () {
-      // Don't respond to action keys while the player is dead
-      if (Global.player == null || Global.player.isDead()) {
-         return false;
+      if (isActionInputEnabled()) {
+         // Define the set of keys that we want to allow as "action" keys
+         return Input.GetKeyDown(KeyCode.E);
       }
 
-      // Can't initiate actions while typing
-      if (ChatManager.isTyping()) {
-         return false;
-      }
-
-      // Define the set of keys that we want to allow as "action" keys
-      return Input.GetKeyDown(KeyCode.E);
+      return false;
    }
 
    public static bool isJumpKeyPressed () {
+      if (isActionInputEnabled()) {
+         // Define the set of keys that we want to allow as "action" keys
+         return Input.GetKeyDown(KeyCode.Space);
+      }
+
+      return false;
+   }
+
+   public static bool isFireCannonKeyDown () {
+      if (isActionInputEnabled()) {
+         return getKeyActionDown(KeyAction.FireMainCannon);
+      }
+
+      return false;
+   }
+
+   public static bool isSelectNextTargetKeyDown () {
+      if (isActionInputEnabled()) {
+         return getKeyActionDown(KeyAction.SelectNextSeaTarget);
+      }
+
+      return false;
+   }
+
+   public static bool isSpeedUpKeyPressed () {
+      if (isActionInputEnabled()) {
+         return getKeyAction(KeyAction.SpeedUp);
+      }
+
+      return false;
+   }
+
+   public static bool isSpeedUpKeyReleased () {
+      if (isActionInputEnabled()) {
+         return getKeyActionUp(KeyAction.SpeedUp);
+      }
+
+      return false;
+   }
+
+   public static bool isActionInputEnabled () {
       // Don't respond to action keys while the player is dead
       if (Global.player == null || Global.player.isDead()) {
          return false;
@@ -131,8 +177,7 @@ public class InputManager : MonoBehaviour
          return false;
       }
 
-      // Define the set of keys that we want to allow as "action" keys
-      return Input.GetKeyDown(KeyCode.Space);
+      return true;
    }
 
    public static void setBindingKey (KeyAction action, KeyCode key, bool isPrimary) {

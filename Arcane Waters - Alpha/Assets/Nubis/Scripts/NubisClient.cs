@@ -51,7 +51,6 @@ internal class NubisClient
       string server = Global.getAddress(MyNetworkManager.ServerType.Localhost);
 #else
       string server = Global.getAddress(MyNetworkManager.ServerType.AmazonVPC);
-      
 #endif
 
 #if UNITY_EDITOR

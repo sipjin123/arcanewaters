@@ -122,6 +122,8 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       // Show the increment locally so the UI doesn't look laggy
       assignedPoints++;
 
+      SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
+
       Global.player.rpc.Cmd_AssignPerkPoint(_perkData.perkId);
    }
 

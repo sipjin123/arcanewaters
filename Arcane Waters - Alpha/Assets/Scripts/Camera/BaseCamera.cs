@@ -9,7 +9,7 @@ public class BaseCamera : MonoBehaviour {
    #region Public Variables
 
    // The default PPU scale
-   public const float DEFAULT_PPU_SCALE = 400.0f;
+   public const float DEFAULT_PPU_SCALE = 100.0f;
 
    // The Camera quake effect
    public CameraFilterPack_FX_EarthQuake quakeEffect;
@@ -19,6 +19,9 @@ public class BaseCamera : MonoBehaviour {
 
    // The PPU scale of this camera
    public float customPPUScale = -1.0f;
+
+   // Is this camera targeting a battle scebe, or a scene which features a battle scene
+   public bool isBattleScreenCamera;
 
    #endregion
 
@@ -48,11 +51,6 @@ public class BaseCamera : MonoBehaviour {
       _cam.depth = newDepth;
    }
 
-   public void setOrthoSize (float newScale) {
-      float ppu = 100f * newScale;
-      _cam.orthographicSize = (Screen.height / 2f) / ppu;
-   }
-
    public PixelFadeEffect getPixelFadeEffect () {
       return _pixelFadeEffect;
    }
@@ -72,14 +70,29 @@ public class BaseCamera : MonoBehaviour {
 
    public virtual void onResolutionChanged () {
       if (_vcam != null) {
-         _vcam.m_Lens.OrthographicSize = Screen.height / getPPUScale();
+         _vcam.m_Lens.OrthographicSize = (Screen.height / 2) / getPPUScale();
       } else if (_cam != null) {
-         _cam.orthographicSize = Screen.height / getPPUScale();
+         _cam.orthographicSize = (Screen.height / 2) / getPPUScale();
       }
    }
 
    public virtual float getPPUScale () {
-      return useCustomPPUScale ? customPPUScale : DEFAULT_PPU_SCALE;
+      float ppu = useCustomPPUScale ? customPPUScale : DEFAULT_PPU_SCALE;
+      return ppu * getConstantCameraScalingFactor(isBattleScreenCamera);
+   }
+
+   public static float getConstantCameraScalingFactor (bool isBattleScreen = false) {
+      // NOTE: as of writing, we are using the 'battle' screen for title and character screens,
+      // so for them isBattleScreen should be set to 'true'
+
+      float sizeFactor =
+         (Screen.width >= ScreenSettingsManager.largeScreenWidth && Screen.height >= ScreenSettingsManager.largeScreenHeight)
+         ? 2f
+         : 1f;
+
+      float typeFactor = isBattleScreen ? 3f : 2f;
+
+      return sizeFactor * typeFactor;
    }
 
    #region Private Variables

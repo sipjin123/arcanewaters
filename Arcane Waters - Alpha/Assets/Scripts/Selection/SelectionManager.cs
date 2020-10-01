@@ -26,14 +26,22 @@ public class SelectionManager : MonoBehaviour {
    }
 
    void Update () {
-      // We only support entity selection in one of the combat modes
-      if (SeaManager.combatMode != SeaManager.CombatMode.Select) {
+      // We can only select entities if we're using the Select combat mode and we're in the sea and not dead
+      if (SeaManager.combatMode != SeaManager.CombatMode.Select || Global.player == null || Global.player.isDead() || !(Global.player is SeaEntity)) {
          selectedEntity = null;
       }
 
       // If our target has died, deselect it
       if (selectedEntity != null && selectedEntity.isDead()) {
          selectedEntity = null;
+      }
+   }
+
+   public void setSelectedEntity (SeaEntity entity) {
+      selectedEntity = entity;
+
+      if (entity != null && entity.guildId == BotShipEntity.PIRATES_GUILD_ID) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectPirateShip);
       }
    }
 
