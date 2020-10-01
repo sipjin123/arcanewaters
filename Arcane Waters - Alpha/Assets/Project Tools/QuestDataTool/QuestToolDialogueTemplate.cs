@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using UnityEngine.Analytics;
+using UnityEngine.EventSystems;
+using MapCreationTool;
+using EventTrigger = UnityEngine.EventSystems.EventTrigger;
 
 public class QuestToolDialogueTemplate : MonoBehaviour {
    // The item ui template of the item requirement
@@ -42,7 +46,18 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
    public Dropdown jobTypeDropdown;
    public InputField jobLevelField;
 
+   // The move bar obj
+   public GameObject moveBar;
+
+   // Adding dialogue in between nodes
+   public Button addDialogueBelow, addDialogueAbove;
+
    private void Awake () {
+      // Add event trigger for dragging
+      EventTrigger eventTrigger = moveBar.GetComponent<EventTrigger>();
+      Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerDown, (e) => onKeyDown());
+      Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => onKeyHover());
+      
       abilityDropDownRewardIndex = new List<int>();
       List<Dropdown.OptionData> abilityOptionsList = new List<Dropdown.OptionData>();
 
@@ -89,6 +104,20 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
             Destroy(itemTemplate.gameObject);
          });
       });
+
+      addDialogueBelow.onClick.AddListener(() => {
+         int newIndex = transform.GetSiblingIndex() + 1;
+         QuestDataToolPanel.self.createDialogueTemplate(new QuestDialogueNode(), newIndex);
+         QuestDataToolPanel.self.recalibrateDialogueIds();
+      });
+      addDialogueAbove.onClick.AddListener(() => {
+         int newIndex = transform.GetSiblingIndex() - 1;
+         if (newIndex < 0) {
+            newIndex = 0;
+         }
+         QuestDataToolPanel.self.createDialogueTemplate(new QuestDialogueNode(), newIndex);
+         QuestDataToolPanel.self.recalibrateDialogueIds();
+      });
    }
 
    public void setDialogueData (QuestDialogueNode dialogueData) {
@@ -116,6 +145,16 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
             loadItemTemplate(item, questRequirementParent);
          }
       }
+   }
+
+   public void onKeyDown () {
+      if (QuestDataToolPanel.self.selectedDialogueTemplate != this) {
+         QuestDataToolPanel.self.selectDialogueNode(this);
+      }
+   }
+
+   public void onKeyHover () {
+      QuestDataToolPanel.self.hoverDialogueNode(this);
    }
 
    public QuestDialogueNode getData () {

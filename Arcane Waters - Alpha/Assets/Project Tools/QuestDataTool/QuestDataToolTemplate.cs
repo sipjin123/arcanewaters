@@ -23,6 +23,19 @@ public class QuestDataToolTemplate : MonoBehaviour {
    // The indicator that the template is selected
    public GameObject highlightObj;
 
+   // Moves the quest node up or down
+   public Button moveUpButton, moveDownButton;
+
+   private void Awake () {
+      moveUpButton.onClick.AddListener(() => {
+         QuestDataToolPanel.self.modifyQuestNodeOrder(this, transform.GetSiblingIndex() - 1);
+      });
+
+      moveDownButton.onClick.AddListener(() => {
+         QuestDataToolPanel.self.modifyQuestNodeOrder(this, transform.GetSiblingIndex() + 1);
+      });
+   }
+
    public void loadQuestData (QuestDataNode questData) {
       questDataCache = questData;
 

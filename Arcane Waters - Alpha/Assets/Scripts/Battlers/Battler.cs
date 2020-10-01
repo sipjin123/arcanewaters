@@ -59,10 +59,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int companionId = -1;
 
-   // The id of the Instance that this battler is in
-   [SyncVar]
-   public int instanceId;
-
    // The battle ID that this Battler is in
    [SyncVar]
    public int battleId;
@@ -287,9 +283,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          StartCoroutine(CO_AssignPlayerNetId());
          return;
       }
-      hasAssignedNetId = true;
+      initializeBattler();
+   }
 
-      initialize();
+   private void initializeBattler () {
+      hasAssignedNetId = true;
+      initializeBattlerData();
 
       // Set our sprite sheets according to our types
       if (battlerType == BattlerType.PlayerControlled && isLocalBattler()) {
@@ -374,7 +373,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // This simulates the click on the enemy battler on client side
       if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
-         StartCoroutine(CO_SelectionEnemyBattler());
+         StartCoroutine(CO_SelectEnemyBattler());
       }
    }
 
@@ -386,10 +385,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
-      Start();
+      initializeBattler();
    }
 
-   private IEnumerator CO_SelectionEnemyBattler () {
+   private IEnumerator CO_SelectEnemyBattler () {
       // Simulate battle selection upon entering combat
       yield return new WaitForSeconds(1);
 
@@ -429,7 +428,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       onBattlerSelect.Invoke();
    }
 
-   public void initialize () {
+   public void initializeBattlerData () {
       if (!_hasInitializedStats) {
          BattlerData battlerData = MonsterManager.self.getBattler(enemyType);
 

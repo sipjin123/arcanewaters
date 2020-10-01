@@ -19,10 +19,6 @@ public class Battle : NetworkBehaviour {
    [SyncVar]
    public int battleId;
 
-   // The id of the Instance that this battle is in
-   [SyncVar]
-   public int instanceId;
-
    // The Biome Type this Battle is in
    [SyncVar]
    public Biome.Type biomeType;

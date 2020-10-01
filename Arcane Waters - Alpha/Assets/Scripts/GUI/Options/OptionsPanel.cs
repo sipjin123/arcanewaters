@@ -440,17 +440,6 @@ public class OptionsPanel : Panel
       }
    }
 
-   public void requestTeamCombat () {
-      PanelManager.self.popPanel();
-      TeamCombatPanel panel = (TeamCombatPanel) PanelManager.self.get(Panel.Type.Team_Combat);
-
-      if (!panel.isShowing()) {
-         panel.fetchSQLData();
-      } else {
-         PanelManager.self.pushPanel(Panel.Type.Team_Combat);
-      }
-   }
-
    public void setBorderedWindow () {
       if (BorderlessWindow.framed)
          return;

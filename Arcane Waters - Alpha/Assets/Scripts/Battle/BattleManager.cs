@@ -82,7 +82,6 @@ public class BattleManager : MonoBehaviour {
       battle.biomeType = biomeType;
       battle.battleBoard = battleBoard;
       battle.transform.SetParent(this.transform);
-      battle.instanceId = instance.id;
       Util.setXY(battle.transform, battleBoard.transform.position);
 
       // Actually spawn the Battle as a Network object now
@@ -157,27 +156,21 @@ public class BattleManager : MonoBehaviour {
       return getBattler(Global.player.userId);
    }
 
-   public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType, bool isExistingBattler = false) {
+   public void addPlayerToBattle (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // Maintain a Mapping of which players are in which Battles
       _activeBattles[player.userId] = battle;
 
       // The Player needs to return to this specific server if they reconnect
       ServerCommunicationHandler.self.claimPlayer(player.userId);
 
-      // Create a Battler for this Player
-      if (isExistingBattler) {
-         battle.attackers.Add(player.userId);
-      }
-      Battler battler = isExistingBattler ? processExistingBattlerForPlayer(battle, player, teamType) : createBattlerForPlayer(battle, player, teamType);
+      Battler battler = createBattlerForPlayer(battle, player, teamType);
 
       // Add the Battler to the Battle
-      if (!isExistingBattler) {
-         storeBattler(battler);
-         if (teamType == Battle.TeamType.Attackers) {
-            battle.attackers.Add(battler.userId);
-         } else if (teamType == Battle.TeamType.Defenders) {
-            battle.defenders.Add(battler.userId);
-         }
+      storeBattler(battler);
+      if (teamType == Battle.TeamType.Attackers) {
+         battle.attackers.Add(battler.userId);
+      } else if (teamType == Battle.TeamType.Defenders) {
+         battle.defenders.Add(battler.userId);
       }
 
       // Assign the Battle ID to the Sync Var
@@ -188,10 +181,6 @@ public class BattleManager : MonoBehaviour {
 
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
-
-      // Send player the data of the background and their abilities
-      player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, battle.battleBoard.xmlID);
-      player.rpc.processPlayerAbilities(player, new List<PlayerBodyEntity> { player });
    }
    
    public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp) {
@@ -273,14 +262,6 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-
-   protected Battler processExistingBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
-      Battler existingBattler = battle.getBattler(player.userId);
-      existingBattler = assignBattlerData(battle, existingBattler, player, teamType);
-
-      return existingBattler;
-   }
-
    protected Battler createBattlerForPlayer (Battle battle, PlayerBodyEntity player, Battle.TeamType teamType) {
       // We need to make a new one
       Battler battler = Instantiate(baseBattlerPrefab);
@@ -292,9 +273,6 @@ public class BattleManager : MonoBehaviour {
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
       battler.battleSpot = battleSpot;
       battler.transform.position = battleSpot.transform.position;
-      
-      InstanceManager.self.getInstance(player.instanceId).entities.Add(battler);
-      battler.instanceId = player.instanceId;
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
@@ -312,7 +290,7 @@ public class BattleManager : MonoBehaviour {
       battler.userId = player.userId;
 
       // This function will handle the computed stats of the player depending on their Specialty/Faction/Job/Class
-      battler.initialize();
+      battler.initializeBattlerData();
 
       // Zeronev: this will not sync the battle ID to all created battlers, a CMD is needed.
       battler.battleId = battle.battleId;
@@ -377,7 +355,6 @@ public class BattleManager : MonoBehaviour {
       battler.name = data.enemyName;
       battler.companionId = companionId;
       battler.XP = battlerXp;
-      battler.instanceId = battle.instanceId;
 
       // Set starting stats
       battler.health = battler.getStartingHealth(overrideType);
@@ -405,7 +382,7 @@ public class BattleManager : MonoBehaviour {
       return battler;
    }
 
-   protected void rebuildObservers (Battler newBattler, Battle battle) {
+   public void rebuildObservers (Battler newBattler, Battle battle) {
       // If this entity is a Bot and not a Player, then all it needs to do is make itself visible to clients in the Battle
       if (!(newBattler.player is PlayerBodyEntity)) {
          newBattler.netIdentity.RebuildObservers(false);

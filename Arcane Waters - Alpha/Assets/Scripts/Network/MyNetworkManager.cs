@@ -326,6 +326,10 @@ public class MyNetworkManager : NetworkManager
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo);
 
+            // Send SoundEffects to the Client
+            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
+            player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
+
             // Keep track
             _players[conn.connectionId] = player;
 
@@ -336,7 +340,21 @@ public class MyNetworkManager : NetworkManager
             // If player was in battle, reconnect player to existing battle
             if (BattleManager.self.getActiveBattlersData().ContainsKey(player.userId)) {
                Battle activeBattle = BattleManager.self.getActiveBattlersData()[player.userId];
-               BattleManager.self.addPlayerToBattle(activeBattle, (PlayerBodyEntity) player, Battle.TeamType.Attackers, true);
+               Battler activeBattlerObj = activeBattle.getBattler(player.userId);
+
+               // Reassign the updated info
+               activeBattlerObj.playerNetId = player.netId;
+               activeBattlerObj.player = player;
+
+               // Assign the Battle ID to the Sync Var
+               player.battleId = activeBattle.battleId;
+
+               // Update the observers associated with the Battle and the associated players
+               BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
+
+               // Send player the data of the background and their abilities
+               player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
+               player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity)player });
             }
 
             // Tell the player information about the Area we're going to send them to
@@ -369,10 +387,6 @@ public class MyNetworkManager : NetworkManager
 
             // Server provides clients with info of the npc
             List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
-
-            // TODO: Check if this is still necessary
-            // Sends npc data of the area to the client
-            // player.rpc.Target_ReceiveNPCsForCurrentArea(player.connectionToClient, serializedNPCData(referenceNPCData));
 
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();

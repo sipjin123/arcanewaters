@@ -256,6 +256,21 @@ namespace MapCreationTool
             } else { 
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
+               // Register treasure spot prefab id 
+               if (original.GetComponent<TreasureSpot>() != null) {
+                  int prefabId = 0;
+                  foreach (DataField field in prefab.d) {
+                     if (field.k.CompareTo(DataField.PLACED_PREFAB_ID) == 0) {
+                        // Get ID from ore data field
+                        if (field.tryGetIntValue(out int id)) {
+                           prefabId = id;
+                           break;
+                        }
+                     }
+                  }
+                  original.GetComponent<TreasureSpot>().mapDataId = prefabId;
+               }
+
                var pref = UnityEngine.Object.Instantiate(
                   original,
                   prefabParent.TransformPoint(targetLocalPos),

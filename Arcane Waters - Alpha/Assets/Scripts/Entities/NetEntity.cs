@@ -436,6 +436,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
+               SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_START_ID);
                animator.SetBool("jump", true); 
                isJumping = true;
                if (!freezeAnim) {
@@ -460,6 +461,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_South:
                isJumping = false;
                animator.SetBool("jump", false);
+               SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID);
                break;
          }
       }

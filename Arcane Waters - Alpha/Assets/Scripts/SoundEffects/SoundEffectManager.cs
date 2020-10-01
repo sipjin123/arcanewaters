@@ -14,6 +14,12 @@ public class SoundEffectManager : MonoBehaviour
    // The AudioSource used to play the SoundEffects
    public AudioSource source;
 
+   // The database id of the jump start
+   public const int JUMP_START_ID = 4;
+
+   // The database id of the jump end
+   public const int JUMP_END_ID = 5;
+
    #endregion
 
    private void Awake () {

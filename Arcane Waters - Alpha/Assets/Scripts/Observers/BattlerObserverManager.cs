@@ -29,16 +29,6 @@ public class BattlerObserverManager : NetworkVisibility
             connectionsToObserve.Add(battler.player.connectionToClient);
          }
       }
-
-      // Look up our instance
-      Instance instance = InstanceManager.self.getInstance(GetComponent<Battler>().instanceId);
-
-      // Allow everything in the instance with a connection to see this entity
-      foreach (NetworkBehaviour entity in instance.entities) {
-         if (entity != null && entity.connectionToClient != null) {
-            connectionsToObserve.Add(entity.connectionToClient);
-         }
-      }
    }
 
    // Called hiding and showing objects on the host

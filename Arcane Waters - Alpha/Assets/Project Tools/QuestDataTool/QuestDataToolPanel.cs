@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using CloudBuildDataFetch;
 
 public class QuestDataToolPanel : MonoBehaviour {
    #region Public Variables
+
+   // Self
+   public static QuestDataToolPanel self;
 
    // The quest template
    public QuestDataToolTemplate questDataTemplate;
@@ -54,9 +58,25 @@ public class QuestDataToolPanel : MonoBehaviour {
    // The selection popup
    public GenericSelectionPopup selectionPopup;
 
+   // The selected dialogue node
+   public QuestToolDialogueTemplate selectedDialogueTemplate;
+
+   // The hovered dialogue node
+   public QuestToolDialogueTemplate hoveredDialogueTemplate;
+
+   // The draggable node information
+   public Transform draggedNodeInfo;
+
+   // The selected draggable node text notice
+   public Text draggedNodeTextSelected;
+
+   // Canvas reference
+   public Canvas canvas;
+
    #endregion
 
    private void Awake () {
+      self = this;
       saveButton.onClick.AddListener(() => {
          saveDialogueDataToNode();
          processSavingData();
@@ -84,6 +104,40 @@ public class QuestDataToolPanel : MonoBehaviour {
       questGroupIconButton.onClick.AddListener(() => {
          selectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.NpcIcon, questGroupIcon, questIconPath);
       });
+   }
+
+   private void Update () {
+      if (selectedDialogueTemplate != null) {
+         Vector2 pos;
+         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, Input.mousePosition, canvas.worldCamera, out pos);
+         draggedNodeInfo.transform.position = canvas.transform.TransformPoint(pos);
+      }
+   }
+
+   private void LateUpdate () {
+      if (selectedDialogueTemplate != null) {
+         if (Input.GetKeyUp(KeyCode.Mouse0)) {
+            if (hoveredDialogueTemplate != null) {
+               if (hoveredDialogueTemplate != selectedDialogueTemplate) {
+                  selectedDialogueTemplate.transform.SetSiblingIndex(hoveredDialogueTemplate.transform.GetSiblingIndex());
+                  recalibrateDialogueIds();
+               }
+            } 
+
+            selectedDialogueTemplate = null;
+            draggedNodeInfo.gameObject.SetActive(false);
+         }
+      }
+   }
+
+   public void selectDialogueNode (QuestToolDialogueTemplate template) {
+      selectedDialogueTemplate = template;
+      draggedNodeInfo.gameObject.SetActive(true);
+      draggedNodeTextSelected.text = template.dialogueIdText.text;
+   }
+
+   public void hoverDialogueNode (QuestToolDialogueTemplate template) {
+      hoveredDialogueTemplate = template;
    }
 
    public void loadPanel (QuestData questData) {
@@ -164,6 +218,11 @@ public class QuestDataToolPanel : MonoBehaviour {
       }
    }
 
+   public void modifyQuestNodeOrder (QuestDataToolTemplate template, int index) {
+      template.transform.SetSiblingIndex(index);
+      modifyQuestNodeIndexes();
+   }
+
    private void modifyQuestNodeIndexes () {
       int index = 0;
       foreach (Transform questNodeChild in questNodeParent) {
@@ -181,7 +240,7 @@ public class QuestDataToolPanel : MonoBehaviour {
       }
    }
 
-   private void createDialogueTemplate (QuestDialogueNode questDialogueData) {
+   public void createDialogueTemplate (QuestDialogueNode questDialogueData, int indexId = -1) {
       QuestToolDialogueTemplate questDialogueTemplate = Instantiate(questToolDialogueTemplate.gameObject, questDialogueHolder).GetComponent<QuestToolDialogueTemplate>();
       questDialogueTemplate.setDialogueData(questDialogueData);
       questDialogueTemplate.deleteButton.onClick.AddListener(() => {
@@ -189,6 +248,17 @@ public class QuestDataToolPanel : MonoBehaviour {
          modifyQuestDialogueIndexes();
          Destroy(questDialogueTemplate.gameObject);
       });
+      if (indexId > -1) {
+         questDialogueTemplate.transform.SetSiblingIndex(indexId);
+      }
+   }
+
+   public void recalibrateDialogueIds () {
+      int id = 0;
+      foreach (Transform dialogueNode in questDialogueHolder) {
+         dialogueNode.GetComponent<QuestToolDialogueTemplate>().dialogueIdText.text = id.ToString();
+         id++;
+      }
    }
 
    private List<QuestDataNode> getQuestNodesData () {

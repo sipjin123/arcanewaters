@@ -3734,7 +3734,6 @@ public class RPCManager : NetworkBehaviour {
 
             // Get or create the Battle instance
             Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
-            battle.instanceId = instance.id;
 
             // If the Battle is full, we can't proceed
             if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -3751,18 +3750,6 @@ public class RPCManager : NetworkBehaviour {
             // Send Battle Bg data
             int bgXmlID = battle.battleBoard.xmlID;
             Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
-
-            // Send SoundEffects to the Client
-            List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
-            Target_ReceiveSoundEffects(_player.connectionToClient, Util.serialize(currentSoundEffects));
-
-            // Only invite other players, host should not receive this invite
-            foreach (PlayerBodyEntity inviteeBattlers in bodyEntities) {
-               if (inviteeBattlers.userId != localBattler.userId) {
-                  Battle.TeamType teamType = attackers.ToList().Find(_ => _.battlerName == inviteeBattlers.entityName) != null ? Battle.TeamType.Attackers : Battle.TeamType.Defenders;
-                  inviteeBattlers.rpc.Target_InvitePlayerToCombat(inviteeBattlers.connectionToClient, netId, teamType);
-               }
-            }
          });
       });
    }
@@ -3898,11 +3885,6 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveMsgFromServer (NetworkConnection connection, string message) {
       Debug.LogError("Server Msg is: " + message);
-   }
-
-   [TargetRpc]
-   public void Target_InvitePlayerToCombat (NetworkConnection connection, uint enemyNetId, Battle.TeamType teamType) {
-      Cmd_StartNewBattle(enemyNetId, teamType);
    }
 
    #region Abilities
