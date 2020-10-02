@@ -26,6 +26,9 @@ public class QuestDataToolTemplate : MonoBehaviour {
    // Moves the quest node up or down
    public Button moveUpButton, moveDownButton;
 
+   // The id requirement for this quest to be available
+   public InputField questNodeIdRequirement;
+
    private void Awake () {
       moveUpButton.onClick.AddListener(() => {
          QuestDataToolPanel.self.modifyQuestNodeOrder(this, transform.GetSiblingIndex() - 1);
@@ -42,6 +45,7 @@ public class QuestDataToolTemplate : MonoBehaviour {
       nodeIdText.text = questData.questDataNodeId.ToString();
       questTitle.text = questData.questNodeTitle;
       questLevelRequirement.text = questData.friendshipLevelRequirement.ToString();
+      questNodeIdRequirement.text = questData.questNodeLevelRequirement.ToString();
    }
 
    public void highlightTemplate (bool isActive) {
@@ -52,5 +56,6 @@ public class QuestDataToolTemplate : MonoBehaviour {
       questDataCache.questNodeTitle = questTitle.text;
       questDataCache.friendshipLevelRequirement = int.Parse(questLevelRequirement.text);
       questDataCache.questDataNodeId = int.Parse(nodeIdText.text);
+      questDataCache.questNodeLevelRequirement = int.Parse(questNodeIdRequirement.text);
    }
 }

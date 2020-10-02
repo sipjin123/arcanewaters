@@ -601,7 +601,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static QuestStatusInfo getQuestStatus (int npcId, int userId, int questId) {
+   public static QuestStatusInfo getQuestStatus (int npcId, int userId, int questId, int questNodeId) {
       return null;
    }
 

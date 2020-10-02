@@ -29,7 +29,9 @@ public class NubisDataFetchTest : MonoBehaviour
    private void OnGUI () {
       if (SystemInfo.deviceName == DEVICE_NAME1) {
          if (GUILayout.Button("Get XML Version Directly from Nubis")) {
-
+            nubisXmlVer();
+         }
+         if (GUILayout.Button("Get XML Version Directly from DB_Main")) {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = DB_Main.fetchXmlVersion("3");
 

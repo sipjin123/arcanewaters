@@ -174,7 +174,7 @@ public class PlayerShipEntity : ShipEntity
 
       // Speed ship boost feature
       if (!isSpeedingUp) {
-         if (isReadyToSpeedup && InputManager.isSpeedUpKeyPressed()) {
+         if (isReadyToSpeedup && InputManager.isSpeedUpKeyPressed() && getVelocity().magnitude >= SHIP_MOVING_MAGNITUDE) {
             isSpeedingUp = true;
 
             // Let the server and other clients know we started speeding up
@@ -196,7 +196,7 @@ public class PlayerShipEntity : ShipEntity
             isReadyToSpeedup = true;
          }
       } else {
-         if (InputManager.isSpeedUpKeyReleased()) {
+         if (InputManager.isSpeedUpKeyReleased() || (InputManager.isSpeedUpKeyPressed() && getVelocity().magnitude < SHIP_MOVING_MAGNITUDE)) {
             isSpeedingUp = false;
             Cmd_StopSpeedUp();
 

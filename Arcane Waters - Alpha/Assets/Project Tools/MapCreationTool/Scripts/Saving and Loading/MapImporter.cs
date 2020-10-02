@@ -261,7 +261,7 @@ namespace MapCreationTool
                   int prefabId = 0;
                   foreach (DataField field in prefab.d) {
                      if (field.k.CompareTo(DataField.PLACED_PREFAB_ID) == 0) {
-                        // Get ID from ore data field
+                        // Get ID from the data field
                         if (field.tryGetIntValue(out int id)) {
                            prefabId = id;
                            break;

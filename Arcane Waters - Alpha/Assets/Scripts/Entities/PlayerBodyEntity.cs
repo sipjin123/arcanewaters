@@ -126,9 +126,30 @@ public class PlayerBodyEntity : BodyEntity {
       _outline.recreateOutlineIfVisible();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
+         sprintRecovery();
          return;
       }
 
+      if (!isInBattle()) {
+         if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(1);
+         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(2);
+         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(3);
+         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(4);
+         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+            PanelManager.self.itemShortcutPanel.activateShortcut(5);
+         }
+      }
+
+      processJumpLogic();
+      processActionLogic();
+      processSprintLogic();
+   }
+
+   private void processJumpLogic () {
       float y = spritesTransform.localPosition.y;
 
       // Blocks movement when unit is jumping over an obstacle
@@ -162,26 +183,6 @@ public class PlayerBodyEntity : BodyEntity {
          y -= y > 0 ? Time.deltaTime * jumpDownMagnitude : 0;
       }
       spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
-
-      // Sets animators speed to default
-      dashAnimator.speed = 1;
-      foreach (Animator animator in animators) {
-         animator.speed = 1;
-      }
-
-      if (!isInBattle()) {
-         if (Input.GetKeyUp(KeyCode.Alpha1)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(1);
-         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(2);
-         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(3);
-         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(4);
-         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(5);
-         }
-      }
 
       if (isJumpCoolingDown) {
          jumpCooldownTimer += Time.deltaTime;
@@ -226,7 +227,62 @@ public class PlayerBodyEntity : BodyEntity {
          isJumpCoolingDown = true;
          jumpCooldownTimer = 0;
       }
+   }
 
+   private void sprintRecovery () {
+      if (!canSprint()) {
+         // Only notify other clients once if disabling
+         if (isSpeedingUp) {
+            Cmd_UpdateSpeedupDisplay(false);
+            isSpeedingUp = false;
+         }
+
+         if (speedMeter < SPEEDUP_METER_MAX) {
+            speedMeter += Time.deltaTime * fuelRecoverValue;
+         } else {
+            isReadyToSpeedup = true;
+         }
+         dashAnimator.gameObject.SetActive(false);
+         setDustParticles(false);
+      }
+      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+   }
+
+   private void processSprintLogic () {
+      // Sets animators speed to default
+      dashAnimator.speed = 1;
+      foreach (Animator animator in animators) {
+         animator.speed = 1;
+      }
+
+      // Speed sprint boost feature
+      if (canSprint()) {
+         isSpeedingUp = true;
+         if (speedMeter > 0 && !waterChecker.inWater()) {
+            speedMeter -= Time.deltaTime * fuelDepleteValue;
+
+            Direction overrideDirection = facing;
+            dashAnimator.SetInteger("direction", (int) overrideDirection);
+            Cmd_UpdateSpeedupDisplay(true);
+            dashAnimator.gameObject.SetActive(true);
+            setDustParticles(true);
+         } else {
+            isReadyToSpeedup = false;
+            isSpeedingUp = false;
+            Cmd_UpdateSpeedupDisplay(false);
+         }
+
+         updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
+      } else {
+         sprintRecovery();
+      }
+   }
+
+   private bool canSprint () {
+      return (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+   }
+
+   private void processActionLogic () {
       if (InputManager.isRightClickKeyPressed()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null && !PanelManager.self.hasPanelInStack()) {
@@ -293,40 +349,6 @@ public class PlayerBodyEntity : BodyEntity {
             }
          }
       }
-
-      // Speed ship boost feature
-      if (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius && getVelocity().magnitude > .2f) {
-         isSpeedingUp = true;
-         if (speedMeter > 0 && !waterChecker.inWater()) {
-            speedMeter -= Time.deltaTime * fuelDepleteValue;
-
-            Direction overrideDirection = facing;
-            dashAnimator.SetInteger("direction", (int) overrideDirection);
-            Cmd_UpdateSpeedupDisplay(true);
-            dashAnimator.gameObject.SetActive(true);
-            setDustParticles(true);
-         } else {
-            isReadyToSpeedup = false;
-            isSpeedingUp = false;
-            Cmd_UpdateSpeedupDisplay(false);
-         }
-      } else {
-         // Only notify other clients once if disabling
-         if (isSpeedingUp) {
-            Cmd_UpdateSpeedupDisplay(false);
-            isSpeedingUp = false;
-         }
-
-         if (speedMeter < SPEEDUP_METER_MAX) {
-            speedMeter += Time.deltaTime * fuelRecoverValue;
-         } else {
-            isReadyToSpeedup = true;
-         }
-         dashAnimator.gameObject.SetActive(false);
-         setDustParticles(false);
-      }
-
-      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
    }
 
    private Direction forceLookAt (Vector2 targetPosition) {

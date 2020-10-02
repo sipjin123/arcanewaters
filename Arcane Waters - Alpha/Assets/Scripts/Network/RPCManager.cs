@@ -1518,9 +1518,65 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestNPCQuestSelectionListFromServer (int npcId) {
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
+      int questId = npcData.questId;
+      QuestData questData = NPCQuestManager.self.getQuestData(questId);
+      List<QuestDataNode> xmlQuestNodeList = new List<QuestDataNode>(questData.questDataNodes);
+      List<QuestDataNode> removeNodeList = new List<QuestDataNode>();
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
+         List<QuestStatusInfo> databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
+            foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
+               QuestStatusInfo databaseQuestStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questDataNodeId);
+               if (databaseQuestStatus == null) {
+                  // Remove the quest that requires a certain level requirement
+                  if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
+                     removeNodeList.Add(xmlQuestNode);
+                  } 
+               } else {
+                  // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
+                  if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
+                     removeNodeList.Add(xmlQuestNode);
+                  }
+
+                  // Remove the quest that requires a certain level requirement
+                  if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
+                     removeNodeList.Add(xmlQuestNode);
+                  }
+               }
+            }
+
+            // Clear the invalid quests
+            for (int i = 0; i < removeNodeList.Count; i++) {
+               xmlQuestNodeList.Remove(removeNodeList[i]);
+            }
+            removeNodeList.Clear();
+
+            // Retrieve other data only available server-side
+            string greetingText = NPCManager.self.getGreetingText(npcId, friendshipLevel);
+            Target_ReceiveNPCQuestTitles(_player.connectionToClient, questId, Util.serialize(xmlQuestNodeList), npcId, npcData.name, friendshipLevel, greetingText);
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveNPCQuestTitles (NetworkConnection connection, int questId, string[] rawQuestNodeList, int npcId, string npcName, int friendshipLevel, string greetingText) {
+      // Get the NPC panel
+      NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
+
+      List<QuestDataNode> questDataNodes = Util.unserialize<QuestDataNode>(rawQuestNodeList);
+
+      // Pass the data to the panel
+      panel.updatePanelWithQuestSelection(questId, questDataNodes.ToArray(), npcId, npcName, friendshipLevel, greetingText);
+   }
+
+   [Command]
+   public void Cmd_SelectQuestTitle (int npcId, int questId, int questNodeId) {
       // Initialize key indexes
-      int questId = 0;
-      int questNodeId = 0;
       int dialogueId = 0;
 
       // Initialize item dependencies
@@ -1548,12 +1604,10 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.createNPCRelationship(npcId, _player.userId, friendshipLevel);
          }
 
-         // Retrieve the status of all running and completed quests
-         List<QuestStatusInfo> questStatuses = DB_Main.getQuestStatuses(npcId, _player.userId);
+         //List<QuestStatusInfo> questStatuses = DB_Main.getQuestStatuses(npcId, _player.userId);
+         QuestStatusInfo statusInfo = DB_Main.getQuestStatus(npcId, _player.userId, questId, questNodeId);
          List<AchievementData> playerAchievements = DB_Main.getAchievementDataList(_player.userId);
 
-         // Return the current quest node step
-         QuestStatusInfo statusInfo = questStatuses.Find(_ => _.questId == questData.questId && _.npcId == npcId);
          if (questData != null) {
             questId = questData.questId;
             if (questData.questDataNodes != null) {
@@ -1581,7 +1635,7 @@ public class RPCManager : NetworkBehaviour {
 
          if (itemRequirementList.Count > 0) {
             List<Item> currentItems = DB_Main.getRequiredItems(itemRequirementList, _player.userId);
-            itemStock = getItemStock(itemRequirementList, currentItems); 
+            itemStock = getItemStock(itemRequirementList, currentItems);
          }
 
          // Back to the Unity thread
@@ -1669,12 +1723,15 @@ public class RPCManager : NetworkBehaviour {
             });
          });
       } else {
-         newDialogueId = 0;
-         newQuestNodeId++;
+         newDialogueId++;
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
+            if (questData.questDataNodes.Length > questNodeId) {
+               newQuestNodeId++;
+               DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, 0);
+            }
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
 

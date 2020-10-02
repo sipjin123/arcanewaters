@@ -134,6 +134,40 @@ public class NPCPanel : Panel
       }
    }
 
+   public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText) {
+      initLoadBlockers(false);
+
+      // Clear out the old clickable options
+      clearDialogueOptions();
+
+      // Show the correct section
+      configurePanelForMode(Mode.QuestNode);
+
+      // Initialize the NPC characteristics
+      setNPC(npcId, npcName, friendshipLevel);
+
+      // Set the panel content common to the different modes
+      npcDialogueText.enabled = true;
+      setCommonPanelContent(greetingText, friendshipLevel);
+
+      if (questDataArray.Length > 0) {
+         foreach (QuestDataNode questNode in questDataArray) {
+            addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
+               () => questSelectionTitleSelected(questId, questNode.questDataNodeId, questNode), true, questNode.questNodeTitle);
+         }
+      } else {
+         // End the conversation if there are no quest titles fetched
+         npcDialogueText.enabled = true;
+         _npcDialogueLine = greetingText;
+         if (isShowing()) {
+            AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+         }
+
+         addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
+         () => dialogueEndClickedOn(), true);
+      }
+   }
+
    public void updatePanelWithQuestSelection (int npcId, string npcName,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasGoodbyeDialogue,
       bool isHireable, int landMonsterId, int questId, int questNodeId, int dialogueId, int[] itemStock, Jobs newJobsXp) {
@@ -189,6 +223,7 @@ public class NPCPanel : Panel
       NPCData npcData = NPCManager.self.getNPCData(_npc.npcId);
       if (questData != null) {
          if (questNodeId + 1 > questData.questDataNodes.Length) {
+            // End the dialogue if the quest node is greater than the quest list
             npcDialogueText.enabled = true;
             _npcDialogueLine = npcData.greetingTextStranger;
             if (isShowing()) {
@@ -200,53 +235,68 @@ public class NPCPanel : Panel
          } else {
             QuestDataNode questDataNode = new List<QuestDataNode>(questData.questDataNodes).Find(_ => _.questDataNodeId == questNodeId);
             QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
-            npcDialogueText.enabled = true;
-            _npcDialogueLine = dialogueNode.npcDialogue;
-            if (isShowing()) {
-               AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
-            }
-
-            if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
-               canStartQuest = false;
-               questStatus = "Friendship too Low";
-            } else {
-               questStatus = null;
-            }
-
-            // Clear the quest objectives grid
-            questObjectivesContainer.DestroyChildren();
-            if (dialogueNode.itemRequirements == null || dialogueNode.itemRequirements.Length == 0) {
-               questObjectivesGO.SetActive(false);
-            } else {
-               questObjectivesGO.SetActive(true);
-            }
-
-            // Add each quest objective
-            bool hasCompleteIngredients = false;
-            if (dialogueNode.itemRequirements.Length < 1) {
-               hasCompleteIngredients = true;
-            } else {
-               hasCompleteIngredients = displayItemRequirements(dialogueNode.itemRequirements, itemStock);
-            }
-
-            if (hasCompleteIngredients) {
-               Jobs.Type dialogueJobTypeRequirement = (Jobs.Type) dialogueNode.jobTypeRequirement;
-               if (dialogueJobTypeRequirement != Jobs.Type.None) {
-                  if (newJobsXp.getXP(dialogueJobTypeRequirement) < dialogueNode.jobLevelRequirement) {
-                     canStartQuest = false;
-                     questStatus = "Not enough " + dialogueJobTypeRequirement + " experience!";
-                  }
+            if (dialogueNode != null) {
+               npcDialogueText.enabled = true;
+               _npcDialogueLine = dialogueNode.npcDialogue;
+               if (isShowing()) {
+                  AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
                }
-               addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
-                  () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
+
+               if (friendshipLevel < questDataNode.friendshipLevelRequirement) {
+                  canStartQuest = false;
+                  questStatus = "Friendship too Low";
+               } else {
+                  questStatus = null;
+               }
+
+               // Clear the quest objectives grid
+               questObjectivesContainer.DestroyChildren();
+               if (dialogueNode.itemRequirements == null || dialogueNode.itemRequirements.Length == 0) {
+                  questObjectivesGO.SetActive(false);
+               } else {
+                  questObjectivesGO.SetActive(true);
+               }
+
+               // Add each quest objective
+               bool hasCompleteIngredients = false;
+               if (dialogueNode.itemRequirements.Length < 1) {
+                  hasCompleteIngredients = true;
+               } else {
+                  hasCompleteIngredients = displayItemRequirements(dialogueNode.itemRequirements, itemStock);
+               }
+
+               if (hasCompleteIngredients) {
+                  // Allow the dialogue to progress since the user has the complete ingredients
+                  Jobs.Type dialogueJobTypeRequirement = (Jobs.Type) dialogueNode.jobTypeRequirement;
+                  if (dialogueJobTypeRequirement != Jobs.Type.None) {
+                     if (newJobsXp.getXP(dialogueJobTypeRequirement) < dialogueNode.jobLevelRequirement) {
+                        canStartQuest = false;
+                        questStatus = "Not enough " + dialogueJobTypeRequirement + " experience!";
+                     }
+                  }
+                  addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
+                     () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
+               } else {
+                  // Block progression due to lack of requirements
+                  canStartQuest = false;
+                  questStatus = "Not enough items!";
+                  addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
+                     () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
+               }
             } else {
-               canStartQuest = false;
-               questStatus = "Not enough items!";
-               addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,
-                  () => questSelectionRowClickedOn(questId, questNodeId, dialogueId), canStartQuest, dialogueNode.playerDialogue, questStatus);
+               // End the dialogue if the quest node is greater than the quest list
+               npcDialogueText.enabled = true;
+               _npcDialogueLine = npcData.greetingTextStranger;
+               if (isShowing()) {
+                  AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
+               }
+
+               addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueEnd,
+               () => dialogueEndClickedOn(), true);
             }
          }
       } else {
+         // End dialogue of no quest was loaded
          npcDialogueText.enabled = true;
          _npcDialogueLine = npcData.greetingTextStranger;
          if (isShowing()) {
@@ -315,6 +365,11 @@ public class NPCPanel : Panel
    public void questSelectionRowClickedOn (int questId, int questNodeId, int dialogueId) {
       Global.player.rpc.Cmd_SelectNextNPCDialogue(_npc.npcId, questId, questNodeId, dialogueId);
 
+      initLoadBlockers(true);
+   }
+   
+   public void questSelectionTitleSelected (int questId, int questNodeId, QuestDataNode questData) {
+      Global.player.rpc.Cmd_SelectQuestTitle(_npc.npcId, questId, questNodeId);
       initLoadBlockers(true);
    }
 
@@ -422,7 +477,7 @@ public class NPCPanel : Panel
    private void setCommonPanelContent (string npcText) {
       // Set the current npc text line
       _npcDialogueLine = npcText;
-
+      
       // If the panel is already showing, start writing the new text
       if (isShowing()) {
          AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);

@@ -37,6 +37,9 @@ public class QuestDataNode {
 
    // The quest dialogue node array
    public QuestDialogueNode[] questDialogueNodes;
+
+   // The current quest progress required so that this quest node will be available
+   public int questNodeLevelRequirement = 0;
 }
 
 [Serializable]

@@ -129,7 +129,7 @@ public class InputManager : MonoBehaviour
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
          return Input.GetKeyDown(KeyCode.Space);
-      }
+      } 
 
       return false;
    }

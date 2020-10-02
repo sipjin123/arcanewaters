@@ -1272,11 +1272,10 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createQuestStatus (int npcId, int userId, int questId, int questNodeId) {
-
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO quest_status (npcId, usrId, questId, questNodeId) " +
+            "INSERT INTO quest_status_v3 (npcId, usrId, questId, questNodeId) " +
             "VALUES (@npcId, @usrId, @questId, @questNodeId)", conn)) {
 
             conn.Open();
@@ -1351,7 +1350,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO quest_status_v2 (npcId, usrId, questId, questNodeId, questDialogueId) " +
+            "INSERT INTO quest_status_v3 (npcId, usrId, questId, questNodeId, questDialogueId) " +
             "VALUES(@npcId, @usrId, @questId, @questNodeId, @questDialogueId) " +
             "ON DUPLICATE KEY UPDATE questNodeId=@questNodeId, questDialogueId=@questDialogueId", conn)) {
 
@@ -1371,21 +1370,21 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new QuestStatusInfo getQuestStatus (int npcId, int userId, int questId) {
-
+   public static new QuestStatusInfo getQuestStatus (int npcId, int userId, int questId, int questNodeId) {
       QuestStatusInfo questStatus = null;
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM quest_status WHERE npcId=@npcId AND usrId=@usrId AND questId=@questId", conn)) {
+            "SELECT * FROM quest_status_v3 WHERE npcId=@npcId AND usrId=@usrId AND questId=@questId and questNodeId=@questNodeId", conn)) {
 
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
-
+            cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -1406,7 +1405,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM quest_status_v2 WHERE npcId=@npcId AND usrId=@usrId ORDER BY questId", conn)) {
+            "SELECT * FROM quest_status_v3 WHERE npcId=@npcId AND usrId=@usrId ORDER BY questId", conn)) {
 
             conn.Open();
             cmd.Prepare();

@@ -1084,6 +1084,7 @@ MonoBehaviour:
   customHouseBaseId: 0
   customFarmBaseId: 0
   isAboutToWarpOnServer: 0
+  isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
   _ignoredAnimators:
@@ -5792,7 +5793,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8879704578403716768}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}

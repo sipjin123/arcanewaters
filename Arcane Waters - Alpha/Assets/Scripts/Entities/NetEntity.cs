@@ -143,6 +143,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int customFarmBaseId;
 
+   // Values that determines if the magnitude indicates moving
+   public const float MOVING_MAGNITUDE = .2f;
+   public const float SHIP_MOVING_MAGNITUDE = .1f;
+
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
    public bool isAboutToWarpOnClient = false;

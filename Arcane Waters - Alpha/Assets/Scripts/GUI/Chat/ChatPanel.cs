@@ -121,6 +121,14 @@ public class ChatPanel : MonoBehaviour {
 
          // Deselect the input field
          inputField.DeactivateInputField();
+
+         // Unselect the input field UI from the event system so ChatManager.isTyping() will be set to false
+         GameObject currentSelection = EventSystem.current.currentSelectedGameObject;
+         
+         // Check if we're typing in an input field
+         if (currentSelection != null && Util.hasInputField(currentSelection)) {
+            EventSystem.current.SetSelectedGameObject(null);
+         }
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the
