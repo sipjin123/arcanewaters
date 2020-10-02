@@ -227,6 +227,7 @@ public class TreasureSite : NetworkBehaviour
 
       // Set the site as a child of the area
       Area area = AreaManager.self.getArea(this.areaKey);
+      setBiome(area.biome);
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 

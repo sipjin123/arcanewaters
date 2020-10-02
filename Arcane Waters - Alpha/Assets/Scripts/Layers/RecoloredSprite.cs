@@ -47,7 +47,7 @@ public class RecoloredSprite : MonoBehaviour {
       checkMaterialAvailability();
       _palettes = Item.parseItmPalette(palettesToUse.ToArray());
 
-      getMaterial().SetTexture(slot == 0 ? "_Palette" : "_Palette2", PaletteSwapManager.generateTexture2D(palettesToUse.ToArray()));
+      getMaterial().SetTexture(slot == 0 ? "_Palette" : "_Palette2", PaletteSwapManager.getPaletteTexture(palettesToUse.ToArray()));
    }
 
    public void setNewMaterial (Material oldMaterial) {

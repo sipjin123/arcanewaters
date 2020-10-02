@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
-  inheritedOffsetZ: 0
+  inheritedOffsetZ: -0.08
   isActive: 0
   sortPoint: {fileID: 5483645590049814622}
 --- !u!61 &5531579354187994634

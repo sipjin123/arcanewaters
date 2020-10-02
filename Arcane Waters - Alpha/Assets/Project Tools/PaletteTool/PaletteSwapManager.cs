@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using System;
+using System.Linq;
 
 public class PaletteSwapManager : MonoBehaviour {
    #region Public Variables
@@ -75,10 +76,10 @@ public class PaletteSwapManager : MonoBehaviour {
    }
 
    public static Texture2D generateTexture2D (string name) {
-      return generateTexture2D(new string[1] { name });
+      return getPaletteTexture(new string[1] { name });
    }
 
-   public static Texture2D generateTexture2D (string[] names) {
+   public static Texture2D getPaletteTexture (string[] names) {
       if (self == null) {
          D.debug("PaletteSwapManager has not been created yet");
          return null;
@@ -88,10 +89,14 @@ public class PaletteSwapManager : MonoBehaviour {
          return null;
       }
 
+      // We save the last palette we created to avoid unnecessarily creating the same palette multiple times in a single frame
+      if (_lastPaletteNames != null && names.All(x => _lastPaletteNames.Any(y => x == y))) {
+         return _lastTexture2d;
+      }
+
       List<Color> srcColors = new List<Color>();
       List<Color> dstColors = new List<Color>();
-      Texture2D tex = null;
-      
+            
       foreach (string name in names) {
          if (name == null || name.Trim() == "") {
             continue;
@@ -122,27 +127,27 @@ public class PaletteSwapManager : MonoBehaviour {
          }
       }
 
-      // Changing to RGBA32, mipChain = true (defualt), linear = false (default)
-      if (srcColors.Count <= 128) {
-         tex = Instantiate(PrefabsManager.self.texturePrefab128);
-      } else if (srcColors.Count <= 256) {
-         tex = Instantiate(PrefabsManager.self.texturePrefab256);
-      } else if (srcColors.Count <= 512) {
-         tex = Instantiate(PrefabsManager.self.texturePrefab512);
-      } else {
-         D.debug("Palette texture is too small to handle all colors downloaded from database");
-         return null;
-      }
-      tex.filterMode = FilterMode.Point;
-      tex.wrapMode = TextureWrapMode.Clamp;
+      Texture2D texture = Instantiate(PrefabsManager.self.textureSquare256);
+      texture.filterMode = FilterMode.Point;
+      texture.wrapMode = TextureWrapMode.Clamp;
 
-      for (int i = 0; i < srcColors.Count; i++) {
-         tex.SetPixel(0, i, srcColors[i]);
-         tex.SetPixel(1, i, dstColors[i]);
+      for (int i = 0; i < srcColors.Count; i++) {         
+         Color source = srcColors[i];
+         Color dest = dstColors[i];
+
+         int x = (int)(source.r * 255);
+         int y = (int)(source.r * source.g * source.b * 255);
+
+         texture.SetPixel(x, y, dest);
       }
 
-      tex.Apply();
-      return tex;
+      texture.Apply();
+
+      _lastPaletteNames = new string[names.Length];
+      Array.Copy(names, _lastPaletteNames, names.Length);
+      _lastTexture2d = texture;
+
+      return texture;
    }
 
    public static string getColorName (string paletteName) {
@@ -244,6 +249,10 @@ public class PaletteSwapManager : MonoBehaviour {
    // Cached data from database about created palettes
    [SerializeField]
    private protected List<PaletteToolData> _paletteDataList = new List<PaletteToolData>();
+
+   // Information about the last palette we created
+   private static string[] _lastPaletteNames;
+   private static Texture2D _lastTexture2d;
 
    #endregion
 }

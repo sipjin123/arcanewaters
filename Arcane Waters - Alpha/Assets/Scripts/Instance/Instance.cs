@@ -325,7 +325,6 @@ public class Instance : NetworkBehaviour
             TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab);
             site.instanceId = this.id;
             site.areaKey = area.areaKey;
-            site.setBiome(area.biome);
             site.difficulty = difficulty;
             site.transform.localPosition = targetLocalPos;
             site.setAreaParent(area, false);

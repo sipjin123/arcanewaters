@@ -7038,7 +7038,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Armor
+  m_text: Clothing
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1f2198a949e81974bbf9350145ff6fdc, type: 2}
   m_sharedMaterial: {fileID: -4988847199286339217, guid: 1f2198a949e81974bbf9350145ff6fdc,

@@ -154,7 +154,7 @@ public class NetEntity : NetworkBehaviour
    public bool isSpeedingUp;
 
    // The speed multiplied when speed boosting
-   public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
+   public static float SPEEDUP_MULTIPLIER_SHIP = 1.75f;
    public static float MAX_SHIP_SPEED = 150;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
@@ -669,7 +669,7 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public bool isMoving () {
+   public virtual bool isMoving () {
       // The velocity is handled differently for locally controlled and remotely controlled entities
       return getVelocity().magnitude > .01f;
    }
@@ -1260,29 +1260,10 @@ public class NetEntity : NetworkBehaviour
          TutorialManager3.self.onUserSpawns(this.userId);
 
          // Trigger the tutorial
-         if (AreaManager.self.isSeaArea(this.areaKey)) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInSeaArea);
-         }
-
          if (VoyageManager.self.isVoyageArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
          }
-
-         if (AreaManager.self.isHouseOfUser(this.areaKey, userId)) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInHouse);
-         }
-
-         if (AreaManager.self.isFarmOfUser(this.areaKey, userId)) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInFarm);
-         }
-
-         if (string.Equals(areaKey, TutorialData3.tutorialCemeteryAreaKey)) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInTutorialTownCemetery);
-         }
-
-         if (string.Equals(areaKey, TutorialData3.tutorialTownAreaKey)) {
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInTutorialTown);
-         }
+         TutorialManager3.self.tryCompletingStepByLocation();
 
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
