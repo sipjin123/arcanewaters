@@ -91,7 +91,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
 
       // Allow right clicking to bring up the context menu, only if no panel is opened
-      if (Input.GetMouseButtonUp(1) && _mouseOver && !PanelManager.self.hasPanelInStack() ) {
+      if (Input.GetMouseButtonUp(1) && _mouseOver && !PanelManager.self.hasPanelInLinkedList() ) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, entity.entityName);
       }
    }

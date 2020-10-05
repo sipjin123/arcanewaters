@@ -1,5 +1,6 @@
 ﻿using UnityEngine.Tilemaps;
 using MapCreationTool;
+using UnityEngine;
 
 [System.Serializable]
 public class TilemapLayer
@@ -19,6 +20,11 @@ public class TilemapLayer
    public LayerType type;
 
    #endregion
+
+   public bool coversAllObjects () {
+      // Return true, if this layer is placed above player and prefabs
+      return Mathf.FloorToInt(tilemap.transform.position.z) <= 0;
+   }
 
    #region Private Variables
 

@@ -155,7 +155,7 @@ public class ClientMessageManager : MonoBehaviour {
             panel.refreshPanel();
 
             // Because the character appearance changed, let's just close the panel for now
-            PanelManager.self.popPanel();
+            PanelManager.self.unlinkPanel();
 
             return;
          case ConfirmMessage.Type.General:
@@ -165,7 +165,7 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ConfirmMessage.Type.ShipBought:
             // Hide the ship panel
-            PanelManager.self.popPanel();
+            PanelManager.self.unlinkPanel();
 
             // Show a confirmation panel
             PanelManager.self.noticeScreen.show("You purchased a new ship!");

@@ -356,7 +356,7 @@ public class OptionsPanel : Panel
 
             // Close this panel
             if (isShowing()) {
-               PanelManager.self.popPanel();
+               PanelManager.self.unlinkPanel();
             }
          }
 
@@ -380,7 +380,7 @@ public class OptionsPanel : Panel
          PanelManager.self.countdownScreen.show();
 
          // Close this panel
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       } else {
          logOut();
       }
@@ -395,7 +395,7 @@ public class OptionsPanel : Panel
 
       // Close this panel
       if (isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
    }
 
@@ -404,7 +404,7 @@ public class OptionsPanel : Panel
    }
 
    public void onKeybindingsButtonPress () {
-      PanelManager.self.pushIfNotShowing(Type.Keybindings);
+      PanelManager.self.linkIfNotShowing(Type.Keybindings);
    }
 
    public void onExitButtonPress () {
@@ -430,7 +430,7 @@ public class OptionsPanel : Panel
 
       // Close this panel
       if (isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
    }
 

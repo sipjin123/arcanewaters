@@ -4,6 +4,7 @@ using MapCreationTool;
 using UnityEngine;
 using System.Linq;
 using System;
+using UnityEngine.Tilemaps;
 
 namespace MapCustomization
 {
@@ -34,7 +35,7 @@ namespace MapCustomization
       public static int areaOwnerId { get; private set; }
 
       // Remaining props for the user to place
-      public static ItemInstance[] remainingProps { get; private set; }
+      public static List<ItemInstance> remainingProps { get; private set; }
 
       [Space(5), Tooltip("Color for outline that is used when prefab isnt selected but is ready for input")]
       public Color prefabReadyColor;
@@ -161,6 +162,12 @@ namespace MapCustomization
          if (_selectedPrefab.anyUnappliedState()) {
             if (validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
+
+               // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
+               if (!_selectedPrefab.mapEditorState.created) {
+                  incrementPropCount(_selectedPrefab.propDefinitionId);
+               }
+
                _selectedPrefab.submitUnappliedChanges();
             } else {
                _selectedPrefab.revertUnappliedChanges();
@@ -355,7 +362,7 @@ namespace MapCustomization
       }
 
       public static void serverAllowedEnterCustomization (ItemInstance[] remainingProps) {
-         MapCustomizationManager.remainingProps = remainingProps;
+         MapCustomizationManager.remainingProps = remainingProps.ToList();
          _waitingServerResponse = false;
       }
 
@@ -365,13 +372,10 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (Area area, ItemInstance[] remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
+      public static bool validatePrefabChanges (Area area, List<ItemInstance> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
          if (changes.isLocalPositionSet()) {
-            int? prefabSerializationId = changes.created
-               ? changes.serializationId
-               : getPrefab(area, changes.id)?.customizedState.serializationId;
 
-            CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(prefabSerializationId ?? -1, area.biome)?.GetComponent<CustomizablePrefab>();
+            CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome)?.GetComponent<CustomizablePrefab>();
 
             // Check that the prefab area type matches area's type
             EditorType? type = AreaManager.self.getAreaEditorType(area.baseAreaKey);
@@ -404,13 +408,42 @@ namespace MapCustomization
                   return false;
                }
             }
+
+            if (!changes.deleted) {
+               // Get world position of prefab
+               Vector3 worldPos = area.prefabParent.transform.TransformPoint(changes.localPosition);
+
+               // Check if prefab is over illegal tiles (ex. ceiling)
+               // Note: in these calculations bellow, we have to factor in that a tile's width is 0.16 units
+               foreach (Tilemap tilemap in area.getTilemapLayers().Where(l => l.coversAllObjects()).Select(l => l.tilemap)) {
+                  // Check multiple points along theprefab width
+                  for (float offsetX = -prefab.size.x * 0.5f * 0.16f; offsetX <= prefab.size.x * 0.5f * 0.16f; offsetX += 0.16f * 0.5f) {
+                     // We care about top of the prefab not being covered up, bottom is fine in most cases
+                     Vector3 positionToCheck = worldPos + Vector3.right * offsetX + Vector3.up * (prefab.size.y - 0.25f) * 0.5f * 0.16f;
+
+                     if (tilemap.GetTile(tilemap.WorldToCell(positionToCheck)) != null) {
+                        errorMessage = "Object cannot be placed here.";
+                        return false;
+                     }
+                  }
+               }
+            }
+
+            // Check that prefab is within the bounds of the map
+            // We are only checking the center of it to allow some of it to be sticking out
+            Vector2 areaHalfSize = area.getAreaHalfSizeWorld();
+            if (changes.localPosition.x < -areaHalfSize.x || changes.localPosition.x > areaHalfSize.x ||
+                  changes.localPosition.y < -areaHalfSize.y || changes.localPosition.y > areaHalfSize.y) {
+               errorMessage = "Object is outside of the bounds of the map.";
+               return false;
+            }
          }
 
          errorMessage = null;
          return true;
       }
 
-      public static int amountOfPropLeft (ItemInstance[] items, int propDefinitionId) {
+      public static int amountOfPropLeft (List<ItemInstance> items, int propDefinitionId) {
          if (items == null) return 0;
 
          foreach (ItemInstance item in items) {
@@ -422,18 +455,26 @@ namespace MapCustomization
          return 0;
       }
 
-      public static int amountOfPropLeft (ItemInstance[] items, CustomizablePrefab propPrefab) {
+      public static int amountOfPropLeft (List<ItemInstance> items, CustomizablePrefab propPrefab) {
          return amountOfPropLeft(items, propPrefab.propDefinitionId);
       }
 
-      public static CustomizablePrefab getPrefab (Area area, int prefabId) {
-         if (area == currentArea) {
-            if (_customizablePrefabs.TryGetValue(prefabId, out CustomizablePrefab prefab)) {
-               return prefab;
+      private static void incrementPropCount (int itemDefinitionId) {
+         bool found = false;
+         foreach (ItemInstance item in remainingProps) {
+            if (item.itemDefinitionId == itemDefinitionId) {
+               item.count++;
+               CustomizationUI.updatePropCount(item);
+               found = true;
+               break;
             }
          }
 
-         return area.prefabParent.GetComponentsInChildren<CustomizablePrefab>().FirstOrDefault(cp => cp.customizedState.id == prefabId);
+         if (!found) {
+            ItemInstance item = new ItemInstance { count = 1, itemDefinitionId = itemDefinitionId, id = -1 };
+            remainingProps.Add(item);
+            CustomizationUI.updatePropCount(item);
+         }
       }
 
       public static void serverAddPrefabChangeSuccess (string areaKey, PrefabState changes) {

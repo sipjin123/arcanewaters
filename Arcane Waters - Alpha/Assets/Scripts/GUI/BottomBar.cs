@@ -43,7 +43,7 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.CharacterInfo);
+         PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
          panel.loadCharacterCache();
          Global.player.rpc.Cmd_RequestCharacterInfoFromServer(Global.player.userId);
       } else {

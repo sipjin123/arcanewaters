@@ -78,6 +78,8 @@ namespace MapCustomization
          PointerEventData pointerData = eventData as PointerEventData;
          if (pointerData.button == PointerEventData.InputButton.Left) {
             MapCustomizationManager.pointerDown(Camera.main.ScreenToWorldPoint(pointerData.position));
+         } else if (pointerData.button == PointerEventData.InputButton.Right) {
+            selectEntry(null);
          }
       }
 
@@ -94,6 +96,10 @@ namespace MapCustomization
                _selectedPrefabEntry.onPrevious();
             }
          }
+      }
+
+      public static void prefabEntryClick (PrefabSelectionEntry entry) {
+         selectEntry(_selectedPrefabEntry == entry ? null : entry);
       }
 
       public static void selectEntry (PrefabSelectionEntry entry) {

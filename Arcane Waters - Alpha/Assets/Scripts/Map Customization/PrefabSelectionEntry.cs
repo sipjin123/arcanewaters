@@ -67,7 +67,7 @@ namespace MapCustomization
       }
 
       public void onClick () {
-         CustomizationUI.selectEntry(this);
+         CustomizationUI.prefabEntryClick(this);
       }
 
       public void onPrevious () {

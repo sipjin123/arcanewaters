@@ -96,7 +96,7 @@ public class GuildPanel : Panel {
 
       // Exit all panels
       PanelManager.self.confirmScreen.hide();
-      PanelManager.self.popPanel();
+      PanelManager.self.unlinkPanel();
    }
 
    #region Private Variables

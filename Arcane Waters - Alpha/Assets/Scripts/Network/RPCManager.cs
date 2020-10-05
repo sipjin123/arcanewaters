@@ -183,7 +183,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveAuctionInfo (NetworkConnection connection, AuctionItemData auctionInfo) {
-      PanelManager.self.pushIfNotShowing(Panel.Type.Auction);
+      PanelManager.self.linkIfNotShowing(Panel.Type.Auction);
       ((AuctionPanel) PanelManager.self.get(Panel.Type.Auction)).auctionInfoPanel.receiveAuctionFromServer(auctionInfo);
    }
 
@@ -223,7 +223,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
    }
 
@@ -279,7 +279,7 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveProcessRewardToggle (NetworkConnection connection) {
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
       if (panel.isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
          panel.hide();
       }
    }
@@ -295,7 +295,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
    }
 
@@ -323,7 +323,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
    }
 
@@ -337,7 +337,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
    }
 
@@ -348,7 +348,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Close the panel
       if (panel.isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
    }
 
@@ -444,7 +444,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Close the panel if it is showing
       if (panel.isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
       RewardManager.self.showRecruitmentNotice(companionInfo.companionName, companionInfo.iconPath);
    }
@@ -470,7 +470,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Make sure the panel is showing
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
    }
 
@@ -506,7 +506,7 @@ public class RPCManager : NetworkBehaviour {
       // Make sure the panel is showing
       CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.CharacterInfo);
+         PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
          panel.loadCharacterCache();
       }
 
@@ -525,7 +525,7 @@ public class RPCManager : NetworkBehaviour {
       GuildPanel panel = (GuildPanel) PanelManager.self.get(Panel.Type.Guild);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.Guild);
+         PanelManager.self.linkPanel(Panel.Type.Guild);
       }
 
       // Update the Inventory Panel with the items we received from the server
@@ -538,7 +538,7 @@ public class RPCManager : NetworkBehaviour {
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(Panel.Type.Options);
+         PanelManager.self.linkPanel(Panel.Type.Options);
       }
 
       // Update the Inventory Panel with the items we received from the server
@@ -553,7 +553,7 @@ public class RPCManager : NetworkBehaviour {
       FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass them along to the Flagship panel
@@ -697,7 +697,7 @@ public class RPCManager : NetworkBehaviour {
       TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass them along to the Trade History panel
@@ -714,7 +714,7 @@ public class RPCManager : NetworkBehaviour {
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass them along to the Leader Boards panel
@@ -732,6 +732,9 @@ public class RPCManager : NetworkBehaviour {
 
       // Update the equipped items cache
       Global.setUserEquipment(equippedWeapon, equippedArmor, equippedHat);
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStepByWeaponEquipped();
    }
 
    [TargetRpc]
@@ -748,7 +751,7 @@ public class RPCManager : NetworkBehaviour {
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -761,7 +764,7 @@ public class RPCManager : NetworkBehaviour {
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Send the invitation with the received userId
@@ -776,7 +779,7 @@ public class RPCManager : NetworkBehaviour {
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -792,7 +795,7 @@ public class RPCManager : NetworkBehaviour {
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -817,7 +820,7 @@ public class RPCManager : NetworkBehaviour {
       VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
 
       if (!panel.isShowing()) {
-         PanelManager.self.pushPanel(panel.type);
+         PanelManager.self.linkPanel(panel.type);
       }
 
       // Pass the data to the panel
@@ -831,7 +834,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Close the panel if it is showing
       if (panel.isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
    }
 
@@ -4573,13 +4576,12 @@ public class RPCManager : NetworkBehaviour {
       Instance instance = _player.getInstance();
 
       // Get list of props of the user
-      ItemInstance[] remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToArray());
+      List<ItemInstance> remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToList());
 
       // Check if changes are valid
       if (!MapCustomizationManager.validatePrefabChanges(area, remainingProps, changes, true, out string errorMessage)) {
          Target_FailAddPrefabCustomization(changes, errorMessage);
          return;
-
       }
 
       // Figure out the base map of area
@@ -4592,6 +4594,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Set changes in the database
       PrefabState currentState = await DB_Main.execAsync((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
+      bool createdByUser = currentState.created;
       currentState = currentState.id == -1 ? changes : currentState.add(changes);
       await DB_Main.execAsync((cmd) => DB_Main.setMapCustomizationChanges(cmd, baseMapId, areaOwnerId, currentState));
 
@@ -4599,6 +4602,12 @@ public class RPCManager : NetworkBehaviour {
       if (changes.created) {
          int itemId = remainingProps.FirstOrDefault(i => i.itemDefinitionId == prefab.propDefinitionId)?.id ?? -1;
          await DB_Main.execAsync((cmd) => DB_Main.decreaseOrDeleteItemInstance(cmd, itemId, 1));
+      }
+
+      // If deleting a prefab and it's not placed in map editor, return to inventory
+      if (changes.deleted && createdByUser) {
+         await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd,
+                  new ItemInstance { count = 1, itemDefinitionId = prefab.propDefinitionId, ownerUserId = _player.userId, id = -1 }));
       }
 
       // Set changes in the server

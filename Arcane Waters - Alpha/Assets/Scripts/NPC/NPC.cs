@@ -183,7 +183,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
-         _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInStack());
+         _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInLinkedList());
       }
 
       if (isServer) {
@@ -292,7 +292,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                merchantPanel.headIconSprite = getHeadIconSprite();
                break;
          }
-         PanelManager.self.pushIfNotShowing(_shopTrigger.panelType);
+         PanelManager.self.linkIfNotShowing(_shopTrigger.panelType);
       } else {
          // Make sure the panel is showing
          NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
@@ -300,7 +300,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             NPCData npcData = NPCManager.self.getNPCData(npcId);
             panel.setNPC(npcId, npcData.name, -1);
             panel.initLoadBlockers(true);
-            PanelManager.self.pushPanel(panel.type);
+            PanelManager.self.linkPanel(panel.type);
          }
 
          // Send a request to the server to get the npc panel info

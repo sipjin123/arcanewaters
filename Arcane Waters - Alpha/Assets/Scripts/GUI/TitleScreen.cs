@@ -134,7 +134,7 @@ public class TitleScreen : MonoBehaviour {
    }
 
    public void openOptionsPanel () {
-      PanelManager.self.pushIfNotShowing(Panel.Type.Options);
+      PanelManager.self.linkIfNotShowing(Panel.Type.Options);
    }
 
    public bool isShowing () {

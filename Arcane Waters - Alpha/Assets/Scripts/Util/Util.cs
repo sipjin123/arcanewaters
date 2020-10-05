@@ -18,6 +18,7 @@ using System.Text;
 using System.Xml;
 using System.Globalization;
 using UnityEngine.Events;
+using MapCustomization;
 
 public class Util : MonoBehaviour {
    public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
@@ -824,11 +825,12 @@ public class Util : MonoBehaviour {
    }
 
    public static bool isGeneralInputAllowed () {
-      return !(PanelManager.self.hasPanelInStack() ||
+      return !(PanelManager.self.hasPanelInLinkedList() ||
          ChatPanel.self.inputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
-         !AreaManager.self.hasArea(Global.player.areaKey));
+         !AreaManager.self.hasArea(Global.player.areaKey) ||
+         MapCustomizationManager.isCustomizing);
    }
    
    // Loads an XML text asset and deserializes it into an object

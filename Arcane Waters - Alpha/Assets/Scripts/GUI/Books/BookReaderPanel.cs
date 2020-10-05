@@ -25,7 +25,7 @@ public class BookReaderPanel : Panel
    public Button rightArrow;
 
    // Our components
-   public Animator _animator;
+   public Animator animator;
 
    #endregion
 
@@ -65,12 +65,8 @@ public class BookReaderPanel : Panel
       _currentBook = book;
       _currentBookContent = _currentBook.content;
 
-      show();
-   }
-
-   public override void hide () {
-      base.hide();
-      _currentBook = null;
+      // Show the panel
+      PanelManager.self.linkIfNotShowing(Type.BookReader);
    }
 
    private void updatePageNumbers () {
@@ -105,13 +101,17 @@ public class BookReaderPanel : Panel
    }
 
    public void setNextPages () {
+      if (leftPage.gameObject.activeSelf == false) {
+         return;
+      }
+
       // Save current firstVisibleCharacter
       if (_pagesFirstVisibleCharacters.Count - 1 < _currentPageIndex) {
          _pagesFirstVisibleCharacters.Add(leftPage.contentText.firstVisibleCharacter);
       }
 
       turnPageAnimationGameObject.gameObject.SetActive(true);
-      _animator.SetTrigger("NextPages");
+      animator.SetTrigger("NextPages");
       SoundManager.play2DClip(SoundManager.Type.Turning_Pages_On_Books);
 
       leftPage.contentText.firstVisibleCharacter = rightPage.contentText.firstOverflowCharacterIndex;
@@ -120,10 +120,14 @@ public class BookReaderPanel : Panel
    }
 
    public void setPreviousPages () {
+      if (leftPage.gameObject.activeSelf == false) {
+         return;
+      }
+
       _currentPageIndex--;
 
       turnPageAnimationGameObject.gameObject.SetActive(true);
-      _animator.SetTrigger("PreviousPages");
+      animator.SetTrigger("PreviousPages");
       SoundManager.play2DClip(SoundManager.Type.Turning_Pages_On_Books);
 
       leftPage.contentText.firstVisibleCharacter = _pagesFirstVisibleCharacters[_currentPageIndex];
@@ -144,9 +148,6 @@ public class BookReaderPanel : Panel
       rightPage.gameObject.SetActive(false);
       leftPage.pageNumberText.SetText("");
       rightPage.pageNumberText.SetText("");
-
-      leftArrow.interactable = false;
-      rightArrow.interactable = false;
    }
 
    #region Private Variables

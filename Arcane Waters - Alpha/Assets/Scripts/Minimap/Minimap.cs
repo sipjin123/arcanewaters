@@ -13,9 +13,6 @@ using Random = UnityEngine.Random;
 public class Minimap : ClientMonoBehaviour {
    #region Public Variables
 
-   // Minimal size of minimap in tiles
-   public static int minTileSizeMinimap = 64;
-
    // The distance scale the minimap is using
    public static float SCALE = .10f;
 
@@ -258,10 +255,10 @@ public class Minimap : ClientMonoBehaviour {
       Vector2 relativePosition = target.transform.position - area.transform.position;
 
       // Move it to bottom-left corner (because area position is centered)
-      relativePosition += area.getAreaHalfSize(minTileSizeMinimap);
+      relativePosition += area.getAreaHalfSizeWorld();
 
       // Calculate relative position in [0, 1] range
-      relativePosition /= area.getAreaSize(minTileSizeMinimap);
+      relativePosition /= area.getAreaSizeWorld();
 
       // Map [0, 1] to minimap
       relativePosition *= minimapSize;

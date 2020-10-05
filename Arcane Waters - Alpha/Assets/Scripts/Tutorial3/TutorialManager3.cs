@@ -117,8 +117,9 @@ public class TutorialManager3 : MonoBehaviour {
       _triggerCount = 0;
       refreshUI();
 
-      // If the first step requires the player to be in a given location, check if he is already there
+      // Check if the completion conditions are already met - and skip the step if so
       tryCompletingStepByLocation();
+      tryCompletingStepByWeaponEquipped();
    }
 
    public void previousStep () {
@@ -142,8 +143,9 @@ public class TutorialManager3 : MonoBehaviour {
       _triggerCount = 0;
       refreshUI();
 
-      // If the new step requires the player to be in a given location, check if he is already there
+      // Check if the completion conditions are already met - and skip the step if so
       tryCompletingStepByLocation();
+      tryCompletingStepByWeaponEquipped();
    }
 
    public void tryCompletingStep (TutorialTrigger key) {
@@ -152,10 +154,15 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       if (key == _currentTutorial.steps[_currentStep].completionTrigger) {
-         // Some steps require multiple repetitions of the action
-         _triggerCount++;
-         if (_triggerCount >= _currentTutorial.steps[_currentStep].countRequirement) {
-            nextStep();
+         if (key == TutorialTrigger.EquipWeapon) {
+            // Check if the required weapon is equipped
+            tryCompletingStepByWeaponEquipped();
+         } else {
+            // Some steps require multiple repetitions of the action
+            _triggerCount++;
+            if (_triggerCount >= _currentTutorial.steps[_currentStep].countRequirement) {
+               nextStep();
+            }
          }
       }
    }
@@ -167,6 +174,23 @@ public class TutorialManager3 : MonoBehaviour {
 
       // Complete the step if the user reached the target location
       if (isUserAtTargetLocation()) {
+         nextStep();
+      }
+   }
+
+   public void tryCompletingStepByWeaponEquipped () {
+      if (!isActive()
+         || _currentTutorial.steps[_currentStep].completionTrigger != TutorialTrigger.EquipWeapon
+         || Global.getUserObjects().weapon == null) {
+         return;
+      }
+
+      // Temporary until new item system is implemented
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
+      Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+
+      // Check that the weapon action type is the one required
+      if (newWeapon.getActionType() == _currentTutorial.steps[_currentStep].weaponAction) {
          nextStep();
       }
    }

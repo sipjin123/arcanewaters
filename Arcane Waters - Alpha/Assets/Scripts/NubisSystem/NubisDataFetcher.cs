@@ -125,7 +125,7 @@ namespace NubisDataHandling {
          }
 
          // Update the panel with the results
-         PanelManager.self.pushIfNotShowing(Panel.Type.Auction);
+         PanelManager.self.linkIfNotShowing(Panel.Type.Auction);
          panel.receiveAuctionsFromServer(auctionList, categoryFilters, onlyHistory, onlyOwnAuctions, pageNumber, totalAuctionCount);
       }
 
@@ -143,7 +143,7 @@ namespace NubisDataHandling {
 
          // Show the crafting panel, except if the reward panel is showing
          if (!craftingPanel.isShowing()) {
-            PanelManager.self.pushPanel(craftingPanel.type);
+            PanelManager.self.linkPanel(craftingPanel.type);
          }
 
          int userId = Global.player == null ? 0 : Global.player.userId;
@@ -177,7 +177,7 @@ namespace NubisDataHandling {
 
          // Show the crafting panel, except if the reward panel is showing
          if (!craftingPanel.isShowing()) {
-            PanelManager.self.pushPanel(craftingPanel.type);
+            PanelManager.self.linkPanel(craftingPanel.type);
          }
 
          int userId = Global.player == null ? 0 : Global.player.userId;
@@ -236,7 +236,7 @@ namespace NubisDataHandling {
 
          // Make sure the inventory panel is showing
          if (!inventoryPanel.isShowing()) {
-            PanelManager.self.pushPanel(Panel.Type.Inventory);
+            PanelManager.self.linkPanel(Panel.Type.Inventory);
          }
          inventoryPanel.clearPanel();
 
@@ -398,7 +398,7 @@ namespace NubisDataHandling {
 
          // Make sure the panel is showing
          if (!panel.isShowing()) {
-            PanelManager.self.pushPanel(Panel.Type.Ability_Panel);
+            PanelManager.self.linkPanel(Panel.Type.Ability_Panel);
          }
 
          // Fetch content from Nubis

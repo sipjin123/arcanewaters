@@ -23,7 +23,7 @@ public class CustomMapsPanel : Panel
 
    public void displayFor (CustomMapManager manager, bool warpAfterSelecting = false) {
       // Show panel if it is not showing already
-      PanelManager.self.pushIfNotShowing(type);
+      PanelManager.self.linkIfNotShowing(type);
 
       _customMapManager = manager;
       _warpAfterSelecting = warpAfterSelecting;
@@ -68,7 +68,7 @@ public class CustomMapsPanel : Panel
       }
 
       if (_warpAfterSelecting) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       } else {
          foreach (BaseMapEntry entry in mapBaseContainer.GetComponentsInChildren<BaseMapEntry>()) {
             entry.setInteractable(true);

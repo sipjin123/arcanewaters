@@ -15,7 +15,7 @@ namespace MapCustomization
       public int mapId;
 
       // Deserialized prefab changes
-      [NonSerialized]
+      [SerializeField]
       public PrefabState[] prefabChanges = new PrefabState[0];
 
       #endregion
@@ -34,18 +34,6 @@ namespace MapCustomization
 
       public string serialize () {
          return JsonUtility.ToJson(this);
-      }
-
-      public void add (PrefabState newChanges) {
-         for (int i = 0; i < prefabChanges.Length; i++) {
-            if (prefabChanges[i].id == newChanges.id) {
-               prefabChanges[i] = prefabChanges[i].add(newChanges);
-               return;
-            }
-         }
-
-         Array.Resize(ref prefabChanges, prefabChanges.Length + 1);
-         prefabChanges[prefabChanges.Length - 1] = newChanges;
       }
 
       #region Private Variables

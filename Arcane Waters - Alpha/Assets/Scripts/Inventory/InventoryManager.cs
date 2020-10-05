@@ -49,18 +49,6 @@ public class InventoryManager : MonoBehaviour
          if (Global.getUserObjects().weapon != null && Global.getUserObjects().weapon.itemTypeId == HAMMER_ID) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.UnequipHammer);
          }
-
-         if (itemIdToSend != 0) {
-            if (((Weapon) castedItem).getActionType() == Weapon.ActionType.CustomizeMap) {
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipHammer);
-            }
-
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipWeapon);
-
-            if (((Weapon)castedItem).getActionType() == Weapon.ActionType.PlantCrop) {
-               TutorialManager3.self.tryCompletingStep(TutorialTrigger.EquipSeedBag);
-            }
-         }
       } else if (castedItem.category == Item.Category.Armor) {
          if (inventoryPanel.isShowing()) {
             inventoryPanel.enableLoadBlocker();

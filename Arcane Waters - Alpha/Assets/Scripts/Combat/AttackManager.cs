@@ -43,7 +43,7 @@ public class AttackManager : ClientMonoBehaviour {
       // Disable the sea combat UI when not relevant
       if (Global.player == null || Global.player.isDead() || !(Global.player is ShipEntity) ||
          SeaManager.combatMode != SeaManager.CombatMode.Circle || SeaManager.getAttackType() == Attack.Type.Air ||
-         PanelManager.self.hasPanelInStack()) {
+         PanelManager.self.hasPanelInLinkedList()) {
          freeCursor.enabled = false;
          maxRangeCircle.hide();
          clampedCursor.deactivate();

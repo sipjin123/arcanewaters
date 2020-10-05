@@ -63,12 +63,12 @@ public class PanelManager : MonoBehaviour {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
             noticeScreen.hide();
-         } else if (hasPanelInStack()) {
-            popPanel();
+         } else if (hasPanelInLinkedList()) {
+            unlinkPanel();
          } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {
-            pushPanel(Panel.Type.Options);
+            linkPanel(Panel.Type.Options);
          } else {
-            popPanel();
+            unlinkPanel();
          }
       }
 
@@ -104,7 +104,7 @@ public class PanelManager : MonoBehaviour {
    }
 
    public Panel currentPanel () {
-      Panel.Type panelType = _stack.Peek();
+      Panel.Type panelType = _linkedList.First.Value;
       return _panels[panelType];
    }
 
@@ -121,45 +121,67 @@ public class PanelManager : MonoBehaviour {
       return get(panelType) as T;
    }
 
-   public Panel pushPanel (Panel.Type panelType) {
+   public Panel linkPanel (Panel.Type panelType) {
       // Hide any currently showing panels
       hidePanels();
 
-      // Add the panel type to the top of our stack
-      _stack.Push(panelType);
-      return showPanel(panelType);
+      // Check if panel is already in the linkedList
+      if (!_linkedList.Contains(panelType)) {
+         // Not in linkedList so add the panel type to the front of the linkedList
+         _linkedList.AddFirst(panelType);
+         return showPanel(panelType);
+      }
+      else {
+         // Panel is already in linkedList.  Find it and move it to the front of the list.
+         LinkedListNode<Panel.Type> previous = null;
+         LinkedListNode<Panel.Type> current = _linkedList.First;
+         LinkedListNode<Panel.Type> temp = null;
+
+         while (current != null) {
+            if (panelType == current.Value) { // item has been found
+               previous = current.Next;
+               temp = current;
+               _linkedList.Remove(current);
+               _linkedList.AddFirst(temp);
+               return showPanel(_linkedList.First.Value);
+            }
+            previous = current;
+            current = current.Next;
+         }
+         return _panels[Panel.Type.Options];
+      }
    }
 
-   public void pushIfNotShowing (Panel.Type panelType) {
+   public void linkIfNotShowing (Panel.Type panelType) {
       // If it's already showing, we're done
       if (get(panelType).isShowing()) {
          return;
       }
 
-      pushPanel(panelType);
+      linkPanel(panelType);
    }
 
-   public void popPanel () {
+   public void unlinkPanel () {
       hidePanels();
 
-      // If the stack is already empty, we don't have to do anything
-      if (_stack.Count == 0) {
+      // If the linkedList is already empty, we don't have to do anything
+      if (_linkedList.Count == 0) {
          return;
       }
 
       // Remove the panel from top of the stack
-      _stack.Pop();
+      _linkedList.Remove(_linkedList.First);
 
-      // If the stack is empty now, we're done
-      if (_stack.Count == 0) {
+      // If the linkedList is empty now, we're done
+      if (_linkedList.Count == 0) {
          return;
       }
 
-      // Show whatever panel is now at the top of the stack
-      showPanel(_stack.Peek());
+      // Show whatever panel is now at the front of linkedList
+      showPanel(_linkedList.First.Value);
    }
 
-   public bool hasPanelInStack () {
+   public bool hasPanelInLinkedList () {
       foreach (Panel panel in panelStack) {
          if (panel.gameObject.activeSelf && panel.canvasGroup.alpha > 0f) {
             return true;
@@ -172,12 +194,12 @@ public class PanelManager : MonoBehaviour {
    public void togglePanel (Panel.Type panelType) {
       Panel panel = get(panelType);
 
-      // If it's already showing, pop it off the stack
+      // If it's already showing, remove it from the front of the linkedList
       if (panel.isShowing()) {
-         popPanel();
+         unlinkPanel();
       } else {
-         // Otherwise, just push it on the stack and show it now
-         pushPanel(panelType);
+         // Otherwise, just add it to the linkedList and show it now
+         linkPanel(panelType);
       }
    }
 
@@ -185,17 +207,17 @@ public class PanelManager : MonoBehaviour {
       Panel panel = get(panelType);
       bool wasShowing = panel.gameObject.activeSelf;
 
-      // Whenever a main panel is toggled either on or off, always clear out the display stack
-      clearStack();
+      // Whenever a main panel is toggled either on or off, always clear out the display list
+      clearLinkedList();
 
-      // Push the panel if it wasn't already showing
+      // Link the panel if it wasn't already showing
       if (!wasShowing) {
-         pushPanel(panelType);
+         linkPanel(panelType);
       }
    }
 
-   public void clearStack () {
-      _stack.Clear();
+   public void clearLinkedList () {
+      _linkedList.Clear();
 
       // Make sure nothing is showing now
       hidePanels();
@@ -228,8 +250,9 @@ public class PanelManager : MonoBehaviour {
    }
 
    public void clearAll () {
-      // Clear the stack of optional panels
-      clearStack();
+
+      // Clear the linkedList of optional panels
+      clearLinkedList();
 
       // Clear out all of our non-optional panels
       foreach (Panel panel in modalPanels) {
@@ -285,8 +308,8 @@ public class PanelManager : MonoBehaviour {
    // The Panel instances we know about
    protected Dictionary<Panel.Type, Panel> _panels = new Dictionary<Panel.Type, Panel>();
 
-   // The stack of panel types that are currently open
-   protected Stack<Panel.Type> _stack = new Stack<Panel.Type>();
+   // The linkedList of panel types that are currently open
+   protected LinkedList<Panel.Type> _linkedList = new LinkedList<Panel.Type>();
 
    #endregion
 }

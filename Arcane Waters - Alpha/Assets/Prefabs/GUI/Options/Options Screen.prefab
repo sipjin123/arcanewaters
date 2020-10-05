@@ -6156,6 +6156,8 @@ GameObject:
   - component: {fileID: 7480321199634953975}
   - component: {fileID: 6412618962946708565}
   - component: {fileID: 4219736962796038849}
+  - component: {fileID: 6490709985801141054}
+  - component: {fileID: 359734582750911500}
   m_Layer: 5
   m_Name: Effects Row
   m_TagString: Untagged
@@ -6231,6 +6233,32 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &6490709985801141054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5608785615745131024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &359734582750911500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5608785615745131024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Change sound effect volume.
 --- !u!1 &5629830914558826352
 GameObject:
   m_ObjectHideFlags: 0
@@ -7696,6 +7724,8 @@ GameObject:
   m_Component:
   - component: {fileID: 9004767406857356291}
   - component: {fileID: 2796865747073237247}
+  - component: {fileID: 1084486044501992909}
+  - component: {fileID: 7083505051507556792}
   m_Layer: 5
   m_Name: Keybindings row
   m_TagString: Untagged
@@ -7751,6 +7781,32 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &1084486044501992909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6433032221741622397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &7083505051507556792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6433032221741622397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Customize which keys are mapped to actions.
 --- !u!1 &6517056456558995280
 GameObject:
   m_ObjectHideFlags: 0
@@ -8163,6 +8219,8 @@ GameObject:
   - component: {fileID: 5110165975187320961}
   - component: {fileID: 3473937844496151966}
   - component: {fileID: 5306946377765366225}
+  - component: {fileID: 7847625785147122073}
+  - component: {fileID: 4974828752080705255}
   m_Layer: 5
   m_Name: MinimapScaleRow
   m_TagString: Untagged
@@ -8247,6 +8305,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7104942909500874080}
   m_CullTransparentMesh: 0
+--- !u!114 &7847625785147122073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7104942909500874080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &4974828752080705255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7104942909500874080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Increases the size of in-game art such as characters and scenery.
 --- !u!1 &7183356958176224746
 GameObject:
   m_ObjectHideFlags: 0
@@ -8258,6 +8342,8 @@ GameObject:
   - component: {fileID: 1636700359374458248}
   - component: {fileID: 4962008775621912117}
   - component: {fileID: 2888788522892634588}
+  - component: {fileID: 9028956304653047323}
+  - component: {fileID: 7986743385544854863}
   m_Layer: 5
   m_Name: Single Player Row
   m_TagString: Untagged
@@ -8333,6 +8419,33 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &9028956304653047323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7183356958176224746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &7986743385544854863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7183356958176224746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: When this box is checked, you will not encounter any other players during
+    your adventures in Arcane Waters.
 --- !u!1 &7221335648744778700
 GameObject:
   m_ObjectHideFlags: 0
@@ -8550,6 +8663,8 @@ GameObject:
   - component: {fileID: 7231955981561761484}
   - component: {fileID: 2723222205056368737}
   - component: {fileID: 7500084894402391024}
+  - component: {fileID: 836885473746146488}
+  - component: {fileID: 6947912397859604666}
   m_Layer: 5
   m_Name: Music Row
   m_TagString: Untagged
@@ -8633,6 +8748,32 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7231955981561761486}
   m_CullTransparentMesh: 0
+--- !u!114 &836885473746146488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231955981561761486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &6947912397859604666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7231955981561761486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Change music volume.
 --- !u!1 &7231955982065998592
 GameObject:
   m_ObjectHideFlags: 0
@@ -9213,6 +9354,8 @@ GameObject:
   - component: {fileID: 7748457054857941639}
   - component: {fileID: 5757411611840497266}
   - component: {fileID: 8516505271114889536}
+  - component: {fileID: 5785313112505730869}
+  - component: {fileID: 8817021842078091061}
   m_Layer: 5
   m_Name: VSync Row
   m_TagString: Untagged
@@ -9288,6 +9431,32 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5785313112505730869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7262182514693049063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &8817021842078091061
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7262182514693049063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Sync the game framerate with your monitor refreash rate.
 --- !u!1 &7310132543469346955
 GameObject:
   m_ObjectHideFlags: 0
@@ -10360,6 +10529,8 @@ GameObject:
   - component: {fileID: 6182012499503529395}
   - component: {fileID: 3493290712568018972}
   - component: {fileID: 1251209027392506694}
+  - component: {fileID: 7090766919753620636}
+  - component: {fileID: 1582244906972982498}
   m_Layer: 5
   m_Name: GUIScaleRow
   m_TagString: Untagged
@@ -10444,6 +10615,33 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7847606897529258223}
   m_CullTransparentMesh: 0
+--- !u!114 &7090766919753620636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7847606897529258223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
+--- !u!114 &1582244906972982498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7847606897529258223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Increases the size of the interface components such as buttons and text
+    fields.
 --- !u!1 &7865363394591210985
 GameObject:
   m_ObjectHideFlags: 0
@@ -12477,15 +12675,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c777366c94e974c40910e727ba8cf0ad, type: 3}
---- !u!224 &1266129339712641047 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3863831259543559500, guid: c777366c94e974c40910e727ba8cf0ad,
-    type: 3}
-  m_PrefabInstance: {fileID: 2597776412691744091}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1266129339712641045 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3863831259543559502, guid: c777366c94e974c40910e727ba8cf0ad,
+    type: 3}
+  m_PrefabInstance: {fileID: 2597776412691744091}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1266129339712641047 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3863831259543559500, guid: c777366c94e974c40910e727ba8cf0ad,
     type: 3}
   m_PrefabInstance: {fileID: 2597776412691744091}
   m_PrefabAsset: {fileID: 0}

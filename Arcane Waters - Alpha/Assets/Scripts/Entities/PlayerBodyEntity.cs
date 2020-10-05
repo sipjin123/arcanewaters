@@ -285,7 +285,7 @@ public class PlayerBodyEntity : BodyEntity {
    private void processActionLogic () {
       if (InputManager.isRightClickKeyPressed()) {
          PlayerBodyEntity body = getClickedBody();
-         if (body != null && !PanelManager.self.hasPanelInStack()) {
+         if (body != null && !PanelManager.self.hasPanelInLinkedList()) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          } else {
             bool isNearInteractables = false;

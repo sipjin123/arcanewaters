@@ -378,7 +378,7 @@ public class NPCPanel : Panel
    }
 
    public void dialogueEndClickedOn () {
-      PanelManager.self.popPanel();
+      PanelManager.self.unlinkPanel();
    }
 
    public void backToQuestSelectionRowClickedOn () {

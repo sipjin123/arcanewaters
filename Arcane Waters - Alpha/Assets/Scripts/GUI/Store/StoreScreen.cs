@@ -108,7 +108,7 @@ public class StoreScreen : Panel {
       this.nameText.text = userObjects.userInfo.username;
 
       if (!isShowing()) {
-         PanelManager.self.pushPanel(Type.Store);
+         PanelManager.self.linkPanel(Type.Store);
       }
 
       foreach (RecoloredSprite recoloredSprite in GetComponentsInChildren<RecoloredSprite>()) {

@@ -75,7 +75,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
 
    public void close () {
       if (isShowing()) {
-         PanelManager.self.popPanel();
+         PanelManager.self.unlinkPanel();
       }
    }
 

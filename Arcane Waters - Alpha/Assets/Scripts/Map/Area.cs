@@ -77,7 +77,7 @@ public class Area : MonoBehaviour
 
    // Parent of generic prefabs
    public Transform prefabParent;
-   
+
    // Networked entity parents
    public Transform npcParent, enemyParent, oreNodeParent, secretsParent, treasureSiteParent, seaMonsterParent, botShipParent, userParent;
 
@@ -96,7 +96,7 @@ public class Area : MonoBehaviour
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
-      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields, 
+      List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
       List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> secretsEntranceDataFields,
       List<ExportedPrefab001> seaMonsterDataFields) {
       this.npcDatafields = npcDatafields;
@@ -347,31 +347,21 @@ public class Area : MonoBehaviour
       }
    }
 
-   public Vector2 getAreaSize () {
-      return getAreaSize(new Vector2Int(0, 0));
-   }
+   public Vector2 getAreaSizeWorld () {
+      // If we don't have tilemaps assigned yet, we can assume that the map is at least 64x64
+      Vector2Int tileSize = new Vector2Int(64, 64);
 
-   public Vector2 getAreaSize (Vector2Int minTileCount) {
-      if (_firstTilemap == null) {
-         return new Vector2(0, 0);
+      if (_tilemapLayers == null) {
+         D.warning("Cannot calculate area size because tilemaps have not been assigned yet.");
+      } else {
+         tileSize = new Vector2Int(_tilemapLayers.Max(t => t.tilemap.size.x), _tilemapLayers.Max(t => t.tilemap.size.y));
       }
-      return new Vector2(Math.Max(_firstTilemap.size.x, minTileCount.x) * _grid.transform.localScale.x, Math.Max(_firstTilemap.size.y, minTileCount.y) * _grid.transform.localScale.y);
+
+      return new Vector2(tileSize.x * _grid.transform.localScale.x, tileSize.y * _grid.transform.localScale.y);
    }
 
-   public Vector2 getAreaSize (int minTileCount) {
-      return getAreaSize(new Vector2Int(minTileCount, minTileCount));
-   }
-
-   public Vector2 getAreaHalfSize (Vector2Int minTileCount) {
-      return getAreaSize(minTileCount) * 0.5f;
-   }
-
-   public Vector2 getAreaHalfSize () {
-      return getAreaSize() * 0.5f;
-   }
-
-   public Vector2 getAreaHalfSize (int minTileCount) {
-      return getAreaSize(minTileCount) * 0.5f;
+   public Vector2 getAreaHalfSizeWorld () {
+      return getAreaSizeWorld() * 0.5f;
    }
 
    private void configurePathfindingGraph () {
