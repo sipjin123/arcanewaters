@@ -94,7 +94,7 @@ public class SeaEntity : NetEntity
                spritesContainer.SetActive(false);
                return;
             }
-         } else if (!_playedDestroySound && this is ShipEntity) {
+         } else if (!_playedDestroySound && this is ShipEntity && isClient) {
             _playedDestroySound = true;
             SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
          }

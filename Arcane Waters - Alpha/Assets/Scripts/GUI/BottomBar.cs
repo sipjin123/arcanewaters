@@ -43,9 +43,11 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server
       if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
-         panel.loadCharacterCache();
-         Global.player.rpc.Cmd_RequestCharacterInfoFromServer(Global.player.userId);
+         if (Global.player != null) {
+            PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
+            panel.loadCharacterCache();
+            Global.player.rpc.Cmd_RequestCharacterInfoFromServer(Global.player.userId);
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.CharacterInfo);
       }
@@ -57,7 +59,9 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get our items
       if (!panel.isShowing()) {
-         panel.refreshPanel();
+         if (Global.player != null) {
+            panel.refreshPanel();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Inventory);
       }
@@ -79,7 +83,9 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get the info
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Guild);
       }
@@ -90,7 +96,9 @@ public class BottomBar : MonoBehaviour {
 
       // If the panel is not showing, send a request to the server to get our ships
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestShipsFromServer();
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestShipsFromServer();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Flagship);
       }
@@ -100,7 +108,9 @@ public class BottomBar : MonoBehaviour {
       OptionsPanel panel = (OptionsPanel) PanelManager.self.get(Panel.Type.Options);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestOptionsInfoFromServer();
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestOptionsInfoFromServer();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Options);
       }
@@ -120,7 +130,9 @@ public class BottomBar : MonoBehaviour {
       TradeHistoryPanel panel = (TradeHistoryPanel) PanelManager.self.get(Panel.Type.TradeHistory);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestTradeHistoryInfoFromServer(0, TradeHistoryPanel.ROWS_PER_PAGE);
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestTradeHistoryInfoFromServer(0, TradeHistoryPanel.ROWS_PER_PAGE);
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.TradeHistory);
       }
@@ -130,7 +142,9 @@ public class BottomBar : MonoBehaviour {
       LeaderBoardsPanel panel = (LeaderBoardsPanel) PanelManager.self.get(Panel.Type.LeaderBoards);
 
       if (!panel.isShowing()) {
-         Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsPanel.DEFAULT_PERIOD);
+         if (Global.player != null) {
+            Global.player.rpc.Cmd_RequestLeaderBoardsFromServer(LeaderBoardsPanel.DEFAULT_PERIOD);
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.LeaderBoards);
       }
@@ -140,7 +154,9 @@ public class BottomBar : MonoBehaviour {
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
 
       if (!panel.isShowing()) {
-         panel.refreshPanel();
+         if (Global.player != null) {
+            panel.refreshPanel();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.FriendList);
       }
@@ -150,7 +166,9 @@ public class BottomBar : MonoBehaviour {
       AbilityPanel panel = (AbilityPanel) PanelManager.self.get(Panel.Type.Ability_Panel);
 
       if (!panel.isShowing()) {
-         NubisDataFetcher.self.fetchUserAbilities();
+         if (Global.player != null) {
+            NubisDataFetcher.self.fetchUserAbilities();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Ability_Panel);
       }
@@ -160,7 +178,9 @@ public class BottomBar : MonoBehaviour {
       MailPanel panel = (MailPanel) PanelManager.self.get(Panel.Type.Mail);
 
       if (!panel.isShowing()) {
-         panel.refreshMailList();
+         if (Global.player != null) {
+            panel.refreshMailList();
+         }
       } else {
          PanelManager.self.togglePanel(Panel.Type.Mail);
       }

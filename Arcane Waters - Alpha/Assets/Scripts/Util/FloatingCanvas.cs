@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class FloatingCanvas : MonoBehaviour {
    #region Public Variables
@@ -14,7 +15,7 @@ public class FloatingCanvas : MonoBehaviour {
    public static float RISE_SPEED = .0025f;
 
    // Main text component of this canvas
-   public Text text;
+   public TextMeshProUGUI text;
 
    #endregion
 

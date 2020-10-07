@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 using Smooth;
+using TMPro;
 
 public class NetEntity : NetworkBehaviour
 {
@@ -638,8 +639,10 @@ public class NetEntity : NetworkBehaviour
       // Indicate that we are about to warp
       isAboutToWarpOnClient = true;
 
-      // Freeze rigidbody
-      getRigidbody().bodyType = RigidbodyType2D.Static;
+      // Freeze rigidbody on humam character players, leave ships to the server
+      if (this is PlayerBodyEntity) {
+         getRigidbody().bodyType = RigidbodyType2D.Static;
+      }
 
       // Disable all sprite animations in children
       foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
@@ -898,7 +901,7 @@ public class NetEntity : NetworkBehaviour
          // Show a message that they gained some XP
          GameObject xpCanvas = Instantiate(PrefabsManager.self.xpGainPrefab);
          xpCanvas.transform.position = pos;
-         xpCanvas.GetComponentInChildren<Text>().text = "+" + xpGained + " " + jobType + " XP";
+         xpCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+" + xpGained + " " + jobType + " XP";
       }
 
       // Show some types of gain in chat
@@ -974,9 +977,9 @@ public class NetEntity : NetworkBehaviour
       GameObject gainItemCanvas = Instantiate(PrefabsManager.self.itemReceivedPrefab);
       gainItemCanvas.transform.position = pos;
       if (jobType != Jobs.Type.None) {
-         gainItemCanvas.GetComponentInChildren<Text>().text = "+ " + itemCount + " " + itemName + "\n" + "+ " + jobExp + " " + jobType + " XP";
+         gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + itemCount + " " + itemName + "\n" + "+ " + jobExp + " " + jobType + " XP";
       } else {
-         gainItemCanvas.GetComponentInChildren<Text>().text = "+ " + itemCount + " " + itemName;
+         gainItemCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "+ " + itemCount + " " + itemName;
       }
       gainItemCanvas.GetComponentInChildren<Image>().sprite = ImageManager.getSprite(itemIconPath);
    }
@@ -986,7 +989,7 @@ public class NetEntity : NetworkBehaviour
       Vector3 pos = this.transform.position + new Vector3(0f, .32f);
       GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
       messageCanvas.transform.position = pos;
-      messageCanvas.GetComponentInChildren<Text>().text = message;
+      messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = message;
    }
 
    [Command]

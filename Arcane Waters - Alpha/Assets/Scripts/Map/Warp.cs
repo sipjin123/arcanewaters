@@ -78,6 +78,11 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    [ServerOnly]
    private IEnumerator CO_ExecWarpServer (NetEntity player, float delay) {
+      // If player is a ship, stop him from moving, if he is a human, client will handle it
+      if (player is PlayerShipEntity) {
+         player.getRigidbody().drag = 1000;
+      }
+
       yield return new WaitForSeconds(delay);
 
       player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class ConfirmScreen : MonoBehaviour {
    #region Public Variables
@@ -16,9 +17,12 @@ public class ConfirmScreen : MonoBehaviour {
    public Text confirmButtonText;
    public Text costText;
    public Text linkText;
+   public TMP_Text deleteText;
+   public TMP_InputField deleteInputField;
    public Button confirmButton;
    public Button cancelButton;
    public GameObject costRow;
+   public GameObject goInputField;
 
    #endregion
 
@@ -66,6 +70,10 @@ public class ConfirmScreen : MonoBehaviour {
       this.canvasGroup.interactable = false;
       this.linkText.text = "";
       this.gameObject.SetActive(false);
+
+      // These two lines undo the effects of the input field so it is not displayed the next time the confirm panel is used
+      this.goInputField.SetActive(false);
+      PanelManager.self.confirmScreen.confirmButton.interactable = true;
    }
 
    public void openURL () {

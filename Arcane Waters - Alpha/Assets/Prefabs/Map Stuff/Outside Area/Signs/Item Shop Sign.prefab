@@ -201,6 +201,71 @@ PrefabInstance:
       propertyPath: m_Name
       value: SignTooltipCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 37.165
+      objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -21.505001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 50.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 1416352287536051007, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 19.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 2736648942916349972, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 75
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -21.505001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 74.33
+      objectReference: {fileID: 0}
+    - target: {fileID: 4298488186574710832, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 43.010002
+      objectReference: {fileID: 0}
     - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -264,7 +329,7 @@ PrefabInstance:
     - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 2.44
+      value: 1.9
       objectReference: {fileID: 0}
     - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}
@@ -306,6 +371,21 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.03125
+      objectReference: {fileID: 0}
+    - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.03125
+      objectReference: {fileID: 0}
+    - target: {fileID: 5624949012334745569, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.03125
+      objectReference: {fileID: 0}
     - target: {fileID: 5850566302495196675, guid: 855227c06fce79540bc93dde802e88aa,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -325,6 +405,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: toggleToolTip
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506723018713500991, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 7506723018713500991, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 43.010002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7768335729120200642, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -62.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7768335729120200642, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0.000020832
+      objectReference: {fileID: 0}
+    - target: {fileID: 7768335729120200642, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 62.773666
+      objectReference: {fileID: 0}
+    - target: {fileID: 7768335729120200642, guid: 855227c06fce79540bc93dde802e88aa,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 71.06807
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 855227c06fce79540bc93dde802e88aa, type: 3}

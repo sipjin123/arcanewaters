@@ -155,14 +155,19 @@ namespace CloudBuildDataFetch {
          yield return www;
 
          // Data translation and extraction
-         JArray newArray = (JArray) JsonConvert.DeserializeObject(www.text);
-         for (int i = 0; i < newArray.Count; i++) {
-            Root contentRoot = JsonUtility.FromJson<Root>(newArray[i].ToString());
-            rootList.Add(contentRoot);
-         }
+         try {
+            JArray newArray = (JArray) JsonConvert.DeserializeObject(www.text);
+            for (int i = 0; i < newArray.Count; i++) {
+               Root contentRoot = JsonUtility.FromJson<Root>(newArray[i].ToString());
+               rootList.Add(contentRoot);
+            }
 
-         logData("CloudDataLogger: Done Fetching Unity Cloud Data");
-         processDatabaseBuild();
+            logData("CloudDataLogger: Done Fetching Unity Cloud Data");
+            processDatabaseBuild();
+         } catch (Exception ex) {
+            D.error($"There was an error extracting data when fetching build list: { ex.Message }. Data we tried to parse: { www.text }");
+            throw ex;
+         }
       }
 
       #region Private Variables

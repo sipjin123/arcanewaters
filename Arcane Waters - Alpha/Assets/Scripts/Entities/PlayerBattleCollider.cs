@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class PlayerBattleCollider : MonoBehaviour {
    #region Public Variables
@@ -29,7 +30,7 @@ public class PlayerBattleCollider : MonoBehaviour {
                   Vector3 pos = this.transform.position + new Vector3(0f, .32f);
                   GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
                   messageCanvas.transform.position = pos;
-                  messageCanvas.GetComponentInChildren<Text>().text = "Cannot join battle of different voyage group";
+                  messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different voyage group";
                }
             } 
          } 

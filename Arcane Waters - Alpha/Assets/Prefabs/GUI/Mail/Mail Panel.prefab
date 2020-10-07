@@ -553,7 +553,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 375.1
+  m_PreferredWidth: 376
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -1060,7 +1060,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding:
     m_Left: 10
-    m_Right: 5
+    m_Right: 6
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
@@ -1295,7 +1295,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 613.89
+  m_PreferredHeight: 614
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -2830,7 +2830,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 545.6
+  m_PreferredWidth: 546
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -2871,8 +2871,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -18.170013, y: 0.040008545}
-  m_SizeDelta: {x: -36.340027, y: -0.07998657}
+  m_AnchoredPosition: {x: -18, y: 0}
+  m_SizeDelta: {x: -36, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5407212269500721751
 CanvasRenderer:
@@ -3602,8 +3602,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 635bb9c8df804304ea595bb9e5b6d0b9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a42c717ec06f7314ea1e2414abe5bff6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 67a81c7b9748f9240b2ee4b97a08a753, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3666,7 +3666,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &7156229260613348937
@@ -9718,8 +9718,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Temp\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 635bb9c8df804304ea595bb9e5b6d0b9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a42c717ec06f7314ea1e2414abe5bff6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 677622725164c4e4182c3ededcd75587, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

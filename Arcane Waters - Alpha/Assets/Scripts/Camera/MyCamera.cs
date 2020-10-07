@@ -31,6 +31,12 @@ public class MyCamera : BaseCamera
       _initialSettings.ppuScale = getPPUScale();
    }
 
+   private void OnDestroy () {
+      if (CameraManager.self != null) {
+         CameraManager.self.unregisterCamera(this);
+      }
+   }
+
    public override void onResolutionChanged () {
       if (gameObject.activeInHierarchy) {
          setInternalOrthographicSize();

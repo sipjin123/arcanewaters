@@ -387,8 +387,8 @@ MonoBehaviour:
     you get started.  Just click on a row to learn more about it. Just click on a
     row to learn more about it.</line-height>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 5dad16ea6ffb36d469921b40daad4a17, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a42c717ec06f7314ea1e2414abe5bff6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 5125f57fda338bb4fbd8ea601e3e0894, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -412,19 +412,19 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
+  m_fontSize: 19
   m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10
-  m_fontSizeMax: 18
+  m_fontSizeMax: 19
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
+  m_characterSpacing: 1
+  m_wordSpacing: -7
+  m_lineSpacing: -15
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0

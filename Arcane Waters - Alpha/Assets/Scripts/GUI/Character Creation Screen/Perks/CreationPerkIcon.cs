@@ -141,7 +141,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
    private bool _hasAssignedPoints;
 
    // The original scale of the icon
-   private Vector2 _originalScale;
+   private Vector3 _originalScale;
 
    #endregion
 }

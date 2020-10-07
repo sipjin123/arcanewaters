@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using DG.Tweening;
+using TMPro;
 
 public class CharacterSpot : ClientMonoBehaviour {
    #region Public Variables
@@ -91,6 +92,19 @@ public class CharacterSpot : ClientMonoBehaviour {
 
       // Turn off buttons until we receive a response from the server
       CharacterScreen.self.canvasGroup.interactable = false;
+
+      // Deactive "Confirm" Button until player types in the word "Delete" into the inputfield
+      PanelManager.self.confirmScreen.confirmButton.interactable = false;
+
+      // Activate inputfield
+      PanelManager.self.confirmScreen.goInputField.SetActive(true);
+
+      // Wait for input
+      PanelManager.self.confirmScreen.deleteInputField.onValueChanged.AddListener((deleteText) => {
+         if (deleteText.ToUpper() == "DELETE") {
+            PanelManager.self.confirmScreen.confirmButton.interactable = true;
+         }
+      });
 
       // Ask the player for confirmation. Reenable the canvas group if cancelled deletion.
       PanelManager.self.showConfirmationPanel("Are you sure you want to delete " + character.nameText.text + "?", () => sendDeleteUserRequest(character.userId), () => CharacterScreen.self.canvasGroup.interactable = true);

@@ -27,7 +27,7 @@ public class CreationPerksGrid : MonoBehaviour {
       _assignedPerkPoints = new Dictionary<int, int>();
       _icons.ForEach(icon => icon.setAssignedPoints(0, false));
       _availablePoints = AVAILABLE_POINTS;
-      _availablePointsText.SetText(_availablePoints.ToString());
+      _availablePointsText.text = _availablePoints.ToString();
 
       initializeIcons();
    }
@@ -64,7 +64,7 @@ public class CreationPerksGrid : MonoBehaviour {
          }
 
          _availablePoints--;
-         _availablePointsText.SetText(_availablePoints.ToString());
+         _availablePointsText.text = _availablePoints.ToString();
          icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
 
          SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
@@ -79,7 +79,7 @@ public class CreationPerksGrid : MonoBehaviour {
       if (_assignedPerkPoints.ContainsKey(perkId) && _assignedPerkPoints[perkId] > 0) {
          _assignedPerkPoints[perkId]--;
          _availablePoints++;
-         _availablePointsText.SetText(_availablePoints.ToString());
+         _availablePointsText.text = _availablePoints.ToString();
          icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
 
          SoundManager.play2DClip(SoundManager.Type.Perk_Point_Unassigned);
@@ -119,7 +119,7 @@ public class CreationPerksGrid : MonoBehaviour {
 
    // The available points text
    [SerializeField]
-   private TextMeshProUGUI _availablePointsText;
+   private Text _availablePointsText;
 
    // The available points   
    private int _availablePoints = 3;

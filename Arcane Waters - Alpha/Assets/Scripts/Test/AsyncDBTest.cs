@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using UnityEngine.UI;
+using TMPro;
 
 public class AsyncDBTest : MonoBehaviour
 {
@@ -30,6 +31,6 @@ public class AsyncDBTest : MonoBehaviour
          return r;
       });
       events.Add("Database returned result - " + result + ":" + Time.time + "|" + Time.realtimeSinceStartup);
-      FloatingCanvas.instantiateAt(CharacterScreen.self.transform.position + Vector3.up * 2f).GetComponentInChildren<Text>().text = result;
+      FloatingCanvas.instantiateAt(CharacterScreen.self.transform.position + Vector3.up * 2f).GetComponentInChildren<TextMeshProUGUI>().text = result;
    }
 }

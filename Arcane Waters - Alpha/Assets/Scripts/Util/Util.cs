@@ -312,6 +312,15 @@ public class Util : MonoBehaviour {
       text.color = new Color(color.r, color.g, color.b, alpha);
    }
 
+   public static void setAlpha (TextMeshProUGUI text, float alpha) {
+      if (text == null) {
+         return;
+      }
+
+      Color color = text.color;
+      text.color = new Color(color.r, color.g, color.b, alpha);
+   }
+
    public static void setAlpha (Image image, float alpha) {
       Color color = image.color;
       image.color = new Color(color.r, color.g, color.b, alpha);

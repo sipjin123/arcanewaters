@@ -189,8 +189,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 100
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
-  m_sharedMaterial: {fileID: 21451269468267556, guid: f05e9c7d6fe58044a84b191658c875d5,
+  m_fontAsset: {fileID: 11400000, guid: a42c717ec06f7314ea1e2414abe5bff6, type: 2}
+  m_sharedMaterial: {fileID: -503409785921802817, guid: a42c717ec06f7314ea1e2414abe5bff6,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -220,10 +220,10 @@ MonoBehaviour:
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 10.5
-  m_fontSizeMax: 19
+  m_fontSizeMax: 42
   m_fontStyle: 0
   m_HorizontalAlignment: 4
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 1024
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -231,7 +231,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_enableWordWrapping: 0
+  m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -517,6 +517,13 @@ MonoBehaviour:
     itemName: 
     itemDescription: 
     iconPath: 
+  targetItem:
+    id: 0
+    itemDefinitionId: 0
+    ownerUserId: 0
+    count: 1
+    palettes: 
+    rarity: 0
   canvasGroup: {fileID: 7120289676179173135}
 --- !u!225 &7120289676179173135
 CanvasGroup:

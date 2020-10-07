@@ -141,9 +141,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f8c0dd2cdaec2dc4f9d1be5f3f9f08fe, type: 2}
-  m_sharedMaterial: {fileID: -4988847199286339217, guid: f8c0dd2cdaec2dc4f9d1be5f3f9f08fe,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: b994f06fe19f75e46b62c962a3dfde93, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e2e1b72be4e77e040b88d570a8aa3cc9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -167,11 +166,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_outlineColor:
-    serializedVersion: 2
-    rgba: 4278190080
-  m_fontSize: 17
-  m_fontSizeBase: 17
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 10.5
@@ -189,10 +185,8 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: -1
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
-  m_isTextTruncated: 0
   m_enableKerning: 1
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
@@ -200,30 +194,17 @@ MonoBehaviour:
   m_parseCtrlCharacters: 1
   m_isOrthographic: 1
   m_isCullingEnabled: 0
-  m_ignoreCulling: 1
   m_horizontalMapping: 0
   m_verticalMapping: 0
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
   m_IsTextObjectScaleStatic: 0
   m_VertexBufferAutoSizeReduction: 1
-  m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
   m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_textInfo:
-    textComponent: {fileID: 7126611726117895804}
-    characterCount: 1
-    spriteCount: 0
-    spaceCount: 0
-    wordCount: 1
-    linkCount: 0
-    lineCount: 1
-    pageCount: 1
-    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_spriteAnimator: {fileID: 0}
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
@@ -327,8 +308,7 @@ MonoBehaviour:
   _borderImage: {fileID: 7068563405020438755}
   _assignedPointsIndicator: {fileID: 123411471537812640}
   _assignedPointsText: {fileID: 7126611726117895804}
-  _infoOnHoverFadeTime: 0.15
-  _iconMoveUpOnHoverAmount: 0.15
+  _iconScaleOnHover: 1.25
   _unselectedTransparency: 0.6
 --- !u!1 &6263846497955684424
 GameObject:

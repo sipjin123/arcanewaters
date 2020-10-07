@@ -134,11 +134,9 @@ public class PaletteSwapManager : MonoBehaviour {
       for (int i = 0; i < srcColors.Count; i++) {         
          Color source = srcColors[i];
          Color dest = dstColors[i];
-
-         int x = (int)(source.r * 255);
-         int y = (int)(source.r * source.g * source.b * 255);
-
-         texture.SetPixel(x, y, dest);
+         Vector2Int point = getPointForColor(source);
+         
+         texture.SetPixel(point.x, point.y, dest);
       }
 
       texture.Apply();
@@ -148,6 +146,17 @@ public class PaletteSwapManager : MonoBehaviour {
       _lastTexture2d = texture;
 
       return texture;
+   }
+   
+   private static Vector2Int getPointForColor (Color color) {
+      Vector3 vec = new Vector3(color.r * 255, color.g * 255, color.b * 255);
+      Vector2 xVector = new Vector2(vec.x * vec.y, vec.z);
+      Vector2 yVector = new Vector2(vec.y * vec.z, vec.x);
+
+      int x = Mathf.RoundToInt(Mathf.Sqrt(xVector.magnitude));
+      int y = Mathf.RoundToInt(Mathf.Sqrt(yVector.magnitude));
+            
+      return new Vector2Int(x, y);
    }
 
    public static string getColorName (string paletteName) {

@@ -4963,8 +4963,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "A really broad sword that can slash enemies into pieces!\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 635bb9c8df804304ea595bb9e5b6d0b9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: a42c717ec06f7314ea1e2414abe5bff6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 6f79449f27983534396511bc14597fd7, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4988,8 +4988,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 21
+  m_fontSizeBase: 21
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 10.5
@@ -5010,7 +5010,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_enableExtraPadding: 1
+  m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
   m_parseCtrlCharacters: 1
@@ -7884,7 +7884,7 @@ MonoBehaviour:
   m_VerticalScrollbar: {fileID: 3691795122234314900}
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 10
   m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
@@ -7928,7 +7928,7 @@ MonoBehaviour:
   m_CaretWidth: 1
   m_ReadOnly: 1
   m_RichText: 1
-  m_GlobalFontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
+  m_GlobalFontAsset: {fileID: 0}
   m_OnFocusSelectAll: 0
   m_ResetOnDeActivation: 1
   m_RestoreOriginalTextOnEscape: 1

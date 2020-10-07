@@ -31,10 +31,10 @@ public class OfflineCharacter : ClientMonoBehaviour {
    public List<WeaponLayer> weaponLayers;
 
    // The name text
-   public TextMeshProUGUI nameText;
+   public TextMeshPro nameText;
 
    // The level text
-   public TextMeshProUGUI levelText;
+   public TextMeshPro levelText;
 
    // Whether or not this character is in creation mode
    public bool creationMode = false;

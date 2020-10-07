@@ -85,6 +85,10 @@ public class CameraManager : ClientMonoBehaviour {
       }
    }
 
+   public void unregisterCamera (MyCamera camera) {
+      _baseCameras.RemoveAll(c => c == camera);
+   }
+
    private IEnumerator CO_ResetObjects () {
       foreach (GameObject obj in resetObjectList) {
          obj.SetActive(false);
