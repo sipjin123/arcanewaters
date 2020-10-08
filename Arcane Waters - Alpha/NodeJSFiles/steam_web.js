@@ -64,14 +64,14 @@ const postUpdates = async () => {
 	})
 
 	// Extract fetched table array
-	var indexCategory = 5;
-  	var fetchedData = data1[indexCategory];
-  	var currentBranch = fetchedData[0];
-  	var buildId = fetchedData[1];
-  	var preString = 'select[id="betakey_';
-  	var postString = '"]';
-  	var dropDownKey = preString + buildId + postString;
-  	console.log(dropDownKey);
+	var indexCategory = 7;
+	var fetchedData = data1[indexCategory];
+	var currentBranch = fetchedData[0];
+	var buildId = fetchedData[1];
+	var preString = 'select[id="betakey_';
+	var postString = '"]';
+	var dropDownKey = preString + buildId + postString;
+	console.log(dropDownKey);
 
 	// Select dropdown key
     console.log('Click on Dropdown');
