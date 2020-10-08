@@ -10,9 +10,6 @@ public class MyCamera : BaseCamera
 {
    #region Public Variables
 
-   // The PPU scale when creating a character
-   public const float CHARACTER_CREATION_PPU_SCALE = 1200.0f;
-
    // The scale of the confiner at wide screen
    public static float CONFINER_DEFAULT_SCALE = 0.16f;
 
@@ -41,6 +38,10 @@ public class MyCamera : BaseCamera
       if (gameObject.activeInHierarchy) {
          setInternalOrthographicSize();
       }
+   }
+      
+   public static float getCharacterCreationPPUScale () {
+      return 800.0f;
    }
 
    public void setInternalOrthographicSize () {
@@ -96,13 +97,14 @@ public class MyCamera : BaseCamera
       return _positionTween;
    }
 
-   public void setDefaultSettings () {
-      setSettings(_initialSettings);
+   public void setDefaultSettings (float timeBefore = 0) {
+      setSettings(_initialSettings, timeBefore);
    }
 
-   public Sequence setSettings (VirtualCameraSettings settings) {
+   public Sequence setSettings (VirtualCameraSettings settings, float timeBefore = 0) {
       Sequence s = DOTween.Sequence();
-      s.Join(setOrthographicSize((Screen.height / 2) / settings.ppuScale));
+      s.AppendInterval(timeBefore);
+      s.Append(setOrthographicSize((Screen.height / 2) / settings.ppuScale));
       s.Join(setPosition(settings.position));
 
       // Save the current settings

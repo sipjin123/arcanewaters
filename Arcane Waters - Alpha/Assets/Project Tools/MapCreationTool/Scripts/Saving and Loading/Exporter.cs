@@ -370,6 +370,7 @@ namespace MapCreationTool.Serialization
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
                for (int z = 0; z < columns[i, j].tiles.Length; z++) {
+                  columns[i, j].waterIsTop = Layer.isWater(columns[i, j].tiles[z].layer);
 
                   if (Layer.isWater(columns[i, j].tiles[z].layer)) {
                      columns[i, j].hasWater = true;
@@ -565,7 +566,7 @@ namespace MapCreationTool.Serialization
          // Find all current and waterfall tiles and set them in the matrix
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
-               if (columnSelector(cellMatrix[i, j])) {
+               if (columnSelector(cellMatrix[i, j]) && cellMatrix[i, j].waterIsTop) {
                   currentIndexes.Add((i, j));
                }
             }
@@ -584,7 +585,7 @@ namespace MapCreationTool.Serialization
                      continue;
                   }
 
-                  if (cellMatrix[i, j].hasWater) {
+                  if (cellMatrix[i, j].hasWater && cellMatrix[i, j].waterIsTop) {
                      // Don't place effectors on waterfalls themselves, since it will be handled by waterfall ledges
                      if (editorType == EditorType.Area && cellMatrix[i, j].hasWater4) {
                         continue;
@@ -776,6 +777,7 @@ namespace MapCreationTool.Serialization
          public bool hasRug { get; set; }
          public bool hasWater4 { get; set; }
          public bool hasWater5 { get; set; }
+         public bool waterIsTop { get; set; }
          public Direction currentDirection { get; set; }
 
          public TileInLayer getTileFromTop (string layer) {

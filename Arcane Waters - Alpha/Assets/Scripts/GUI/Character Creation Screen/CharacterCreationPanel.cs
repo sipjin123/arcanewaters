@@ -117,12 +117,15 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       Util.disableCanvasGroup(this.canvasGroup);
    }
 
+   private void hideWithTransition () {
+      canvasGroup.DOFade(0, .15f)
+         .OnComplete(() => hide());
+   }
+
    public void setCharacterBeingCreated (OfflineCharacter offlineChar) {
       _char = offlineChar;
 
       this.genderSelected(Random.Range(1, 3));
-
-      CharacterCreationSpotFader.self.setColor(circleFaderBackgroundColor);
 
       show();
    }
@@ -169,6 +172,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    private IEnumerator showLoadingScreen() {
+      hideWithTransition();
+      CharacterCreationSpotFader.self.fadeOutColor();
+
       PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, SpotFader.self, SpotFader.self);
 
       while (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
@@ -208,10 +214,10 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public void cancelCreating () {
-      CharacterScreen.self.myCamera.setDefaultSettings();
       Destroy(_char.gameObject);
-      CharacterCreationSpotFader.self.openSpotToMaxSize();
-      hide();
+      CharacterCreationSpotFader.self.fadeOutColor();
+      hideWithTransition();
+      CharacterScreen.self.myCamera.setDefaultSettings(.1f);
    }
 
    #region Character Appearance Customization
@@ -316,6 +322,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       randomizeSelectedArmor();
 
       updateColorBoxes(info.gender);
+
       refreshHair();
       refreshEyes();
       refreshBody();
@@ -584,18 +591,23 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    protected void fillInColorBoxes (ToggleGroup toggleGroup, List<PaletteToolManager.PaletteRepresentation> paletteList) {
       int index = 0;
+      Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
+      int selected = Random.Range(0, toggles.Length);
 
-      foreach (Toggle toggle in toggleGroup.GetComponentsInChildren<Toggle>()) {
+      foreach (Toggle toggle in toggles) {
          if (paletteList.Count > index) {
             string paletteName = paletteList[index].name;
             toggle.image.color = paletteList[index].color;
             toggle.group = toggleGroup;
+            toggleGroup.RegisterToggle(toggle);
 
             // Ensure colors can only be clicked on non-transparent areas instead of using the whole rect
             toggle.image.alphaHitTestMinimumThreshold = 0.1f;
             Text text = toggle.GetComponent<Text>() ? toggle.GetComponent<Text>() : toggle.gameObject.AddComponent<Text>();
             text.enabled = false;
             text.text = paletteName;
+
+            toggle.SetIsOnWithoutNotify(index == selected);
 
             index++;
          }

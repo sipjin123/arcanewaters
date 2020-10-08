@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class BattleBars : MonoBehaviour {
    #region Public Variables
 
    // Our components
-   public Text nameText;
+   public TextMeshProUGUI nameText;
    public Image healthBar;
    public Image timerBar;
    public GameObject timerContainer;

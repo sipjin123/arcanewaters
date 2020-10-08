@@ -204,7 +204,7 @@ public class NetEntity : NetworkBehaviour
          // Create some name text that will follow us around
          SmoothFollow smoothFollow = Instantiate(PrefabsManager.self.nameTextPrefab);
          smoothFollow.followTarget = this.gameObject;
-         _nameText = smoothFollow.GetComponentInChildren<Text>();
+         _nameText = smoothFollow.GetComponentInChildren<TextMeshProUGUI>();
          _nameText.text = this.entityName;
 
          // We need the follow text to be lower for ships
@@ -234,7 +234,7 @@ public class NetEntity : NetworkBehaviour
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
-      } 
+      }
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
@@ -327,7 +327,7 @@ public class NetEntity : NetworkBehaviour
          handleArrowsMoveMode();
       } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.ServerAuthoritative) {
          handleServerAuthoritativeMode();
-      } else { 
+      } else {
          handleInstantMoveMode(updateEveryFrame);
       }
    }
@@ -442,7 +442,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
                SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_START_ID);
-               animator.SetBool("jump", true); 
+               animator.SetBool("jump", true);
                isJumping = true;
                if (!freezeAnim) {
                   StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
@@ -476,7 +476,7 @@ public class NetEntity : NetworkBehaviour
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
       float baseSpeed = (this is SeaEntity) ? 70f : 135f;
-  
+
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
       if (StatusManager.self.hasStatus(this.netId, Status.Type.Freeze)) {
@@ -639,10 +639,9 @@ public class NetEntity : NetworkBehaviour
       // Indicate that we are about to warp
       isAboutToWarpOnClient = true;
 
-      // Freeze rigidbody on humam character players, leave ships to the server
-      if (this is PlayerBodyEntity) {
-         getRigidbody().bodyType = RigidbodyType2D.Static;
-      }
+      // Freeze rigidbody
+      getRigidbody().bodyType = RigidbodyType2D.Static;
+      GetComponent<SmoothSyncMirror>().enabled = false;
 
       // Disable all sprite animations in children
       foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
@@ -914,13 +913,13 @@ public class NetEntity : NetworkBehaviour
       int newXP = jobs.getXP(jobType);
       int oldXP = newXP - xpGained;
       int levelsGained = LevelUtil.levelsGained(oldXP, newXP);
-      
+
       // If they gained a level, show a special message
       if (levelsGained > 0) {
          GameObject levelUpCanvas = Instantiate(PrefabsManager.self.levelGainPrefab);
          levelUpCanvas.transform.position = this.transform.position;
          string message = string.Format("+{0} {1} level{2}!", levelsGained, jobType, levelsGained > 1 ? "s" : "");
-         levelUpCanvas.GetComponentInChildren<Text>().text = message;
+         levelUpCanvas.GetComponentInChildren<TextMeshProUGUI>().text = message;
 
          // Show an effect
          GameObject sortPoint = GetComponent<ZSnap>().sortPoint;
@@ -1001,7 +1000,7 @@ public class NetEntity : NetworkBehaviour
          D.warning("Can't plant without seeds equipped!");
          return;
       }
-      
+
       this.cropManager.plantCrop(cropType, cropNumber, areaKey);
    }
 
@@ -1038,7 +1037,7 @@ public class NetEntity : NetworkBehaviour
          Target_ReceiveServerDateTime(this.connectionToClient, Time.time, System.DateTime.UtcNow.ToBinary());
       }
    }
-   
+
    [Command]
    public void Cmd_UpdateFacing (Direction newFacing) {
       this.facing = newFacing;
@@ -1090,7 +1089,7 @@ public class NetEntity : NetworkBehaviour
          _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
 
          Rpc_SetServerAuthoritativeMode();
-      }      
+      }
    }
 
    [Command]
@@ -1240,15 +1239,14 @@ public class NetEntity : NetworkBehaviour
       }
 
       Area area = AreaManager.self.getArea(this.areaKey);
-      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2)transform.position);
+      bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 
       if (isLocalPlayer) {
          // Toggles the weather layer in the camera render if the player is inside buildings
          if (AreaManager.self.getArea(areaKey).isInterior) {
             WeatherManager.self.muteWeather();
-         }
-         else {
+         } else {
             WeatherManager.self.activateWeather();
          }
 
@@ -1327,7 +1325,7 @@ public class NetEntity : NetworkBehaviour
    protected double _lastAimChangeTime;
 
    // The nameText that follows us around
-   protected Text _nameText;
+   protected TextMeshProUGUI _nameText;
 
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();

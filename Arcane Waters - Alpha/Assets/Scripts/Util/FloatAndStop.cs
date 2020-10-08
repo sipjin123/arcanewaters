@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class FloatAndStop : MonoBehaviour {
    #region Public Variables
@@ -14,7 +15,7 @@ public class FloatAndStop : MonoBehaviour {
    public float floatHeight;
 
    // The associated Text (if any)
-   public Text nameText;
+   public TextMeshProUGUI nameText;
 
    // How fast this should float up
    public static float RISE_SPEED = .005f;

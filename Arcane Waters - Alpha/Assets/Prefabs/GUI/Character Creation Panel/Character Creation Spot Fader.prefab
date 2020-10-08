@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 213.81, y: -72}
-  m_SizeDelta: {x: 427.62122, y: 342.94885}
+  m_SizeDelta: {x: 416, y: 416}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2093145323970907389
 CanvasRenderer:
@@ -214,7 +214,7 @@ MonoBehaviour:
   backgroundImage: {fileID: 2093145325312447506}
   spotMask: {fileID: 2093145323970907388}
   matchMaskWithBackgroundColor: 1
-  _highlightPlayerSpotSize: {x: 768, y: 768}
+  _highlightPlayerSpotSize: {x: 416, y: 416}
   _highlightPlayerOffset: {x: 6, y: 50, z: 0}
-  _defaultColor: {r: 0, g: 0, b: 0, a: 1}
-  _totalEffectTime: 0.75
+  _defaultColor: {r: 0, g: 0, b: 0, a: 0.7490196}
+  _totalEffectTime: 0.2

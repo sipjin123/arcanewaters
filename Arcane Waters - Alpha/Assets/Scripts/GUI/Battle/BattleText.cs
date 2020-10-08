@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using TMPro;
 
 public class BattleText : MonoBehaviour {
     #region Public Variables
@@ -16,7 +17,7 @@ public class BattleText : MonoBehaviour {
 
     void Awake() {
         _creationTime = Time.time;
-        _text = GetComponent<Text>();
+        _text = GetComponent<TextMeshProUGUI>();
     }
 
     void Update() {
@@ -40,7 +41,7 @@ public class BattleText : MonoBehaviour {
     }
 
     public void customizeTextForStance(Battler.Stance stance) {
-        _text = GetComponent<Text>();
+        _text = GetComponent<TextMeshProUGUI>();
 
         // Start out scaled completely down
         transform.localScale = Vector3.zero;
@@ -62,7 +63,7 @@ public class BattleText : MonoBehaviour {
     }
 
     public void customizeTextForBlock() {
-        _text = GetComponent<Text>();
+        _text = GetComponent<TextMeshProUGUI>();
 
         // Start out scaled completely down
         transform.localScale = Vector3.zero;
@@ -73,7 +74,7 @@ public class BattleText : MonoBehaviour {
     }
 
     public void customizeTextForCritical() {
-        _text = GetComponent<Text>();
+        _text = GetComponent<TextMeshProUGUI>();
 
         // Start out scaled completely down
         transform.localScale = Vector3.zero;
@@ -95,7 +96,7 @@ public class BattleText : MonoBehaviour {
     #region Private Variables
 
     // Our Text object
-    protected Text _text;
+    protected TextMeshProUGUI _text;
 
     // The time at which we were created
     protected float _creationTime;

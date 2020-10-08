@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.Events;
 using System.Linq;
+using TMPro;
 
 public class BattleUIManager : MonoBehaviour {
    #region Public Variables
@@ -53,7 +54,7 @@ public class BattleUIManager : MonoBehaviour {
    public Slider playerApBar;
 
    // UI element that shows the username in the battle UI
-   public Text usernameText;
+   public TextMeshProUGUI usernameText;
 
    [Header("Stance")]
    // All UI objects related to the player stance UI, starting with the main frame

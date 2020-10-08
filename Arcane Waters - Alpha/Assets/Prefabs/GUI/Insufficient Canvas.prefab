@@ -67,7 +67,7 @@ MonoBehaviour:
   m_text: Insufficient Ingredients!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b994f06fe19f75e46b62c962a3dfde93, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 7c6ed0dead7ef0b4a9de71db1a034636, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cef88f279459acc46856f9f1bb24008d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -229,7 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 1.75
-  text: {fileID: 0}
+  text: {fileID: 7963631068918173678}
 --- !u!225 &2301655070774885409
 CanvasGroup:
   m_ObjectHideFlags: 0

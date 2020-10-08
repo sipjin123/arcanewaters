@@ -36,7 +36,6 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
 
    private void Start () {
       MAX_SPOT_SIZE = new Vector2(Screen.width * MAX_SIZE_MULTIPLIER, Screen.width * MAX_SIZE_MULTIPLIER);
-      spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
 
       // Update the position of the spot mask if the resolution changes
       CameraManager.self.resolutionChanged += onResolutionChanged;
@@ -57,21 +56,16 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       }
    }
 
-   public void openSpotToMaxSize () {
-      if (self == null) {
-         return;
-      }
+   public void fadeOutColor () {
+      _currentBackgroundColorTween?.Kill();
+      _currentSpotColorTween?.Kill();
 
-      _currentSizeTween?.Kill();
-      setFadeInitialValues();
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(MAX_SPOT_SIZE, _totalEffectTime * 0.5f).OnComplete(() => {
-         Util.disableCanvasGroup(_canvasGroup);
-      });
-   }
-
-   public void openSpotToMaxSize (Vector3 worldPosition) {
-      spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition);
-      openSpotToMaxSize();
+      _currentBackgroundColorTween = backgroundImage.DOFade(0, _totalEffectTime)
+         .OnComplete(() => Util.disableCanvasGroup(_canvasGroup));
+      
+      if (matchMaskWithBackgroundColor) {
+         _currentSpotColorTween = spotMask.DOFade(0, _totalEffectTime);
+      }      
    }
 
    public void closeAndHide () {
@@ -91,32 +85,21 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       }
    }
 
-   public void closeTowardsOfflineChar (Vector3 worldPosition) {
+   public void fadeColorOnPosition (Vector3 worldPosition) {
       if (self == null) {
          return;
       }
-
-      _currentFocusPosition = worldPosition;
 
       _currentSizeTween?.Kill();
-      spotMask.rectTransform.sizeDelta = MAX_SPOT_SIZE;
+      spotMask.rectTransform.sizeDelta = _highlightPlayerSpotSize;
       spotMask.rectTransform.position = Camera.main.WorldToScreenPoint(worldPosition) + _highlightPlayerOffset;
-      setFadeInitialValues();
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(_highlightPlayerSpotSize, _totalEffectTime * 0.5f);
-   }
-
-   public void setColor (Color color) {
-      if (self == null) {
-         return;
-      }
 
       _currentBackgroundColorTween?.Kill();
-      backgroundImage.color = color;
+      _currentSpotColorTween?.Kill();
+      _currentBackgroundColorTween = backgroundImage.DOColor(_defaultColor, _totalEffectTime);
+      _currentSpotColorTween = spotMask.DOColor(_defaultColor, _totalEffectTime);
 
-      if (matchMaskWithBackgroundColor) {
-         _currentSpotColorTween?.Kill();
-         spotMask.color = color;
-      }
+      Util.enableCanvasGroup(_canvasGroup);
    }
 
    private void setFadeInitialValues () {

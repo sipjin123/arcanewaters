@@ -171,17 +171,15 @@ public class ChatPanel : MonoBehaviour {
 
    public void addGuildInvite (GuildInvite invite) {
       // Create a new Chat Line instance and assign the parent
-      GuildInviteChatLine chatLine = Instantiate(guildInviteChatLinePrefab);
+      GuildInviteChatLine chatLine = Instantiate(guildInviteChatLinePrefab, messagesContainer.transform);
       chatLine.name = "Guild Invite";
-      chatLine.transform.SetParent(messagesContainer.transform);
    }
 
    public void addChatInfo (ChatInfo chatInfo) {
       // Create a new Chat Line instance and assign the parent
-      SpeakChatLine chatLine = Instantiate(speakChatLinePrefab);
+      SpeakChatLine chatLine = Instantiate(speakChatLinePrefab, messagesContainer.transform);
       chatLine.name = "Chat Message";
       chatLine.chatInfo = chatInfo;
-      chatLine.transform.SetParent(messagesContainer.transform);
 
       // We'll set the message up differently based on whether a sender was defined
       if (Util.isEmpty(chatInfo.sender)) {
@@ -243,10 +241,9 @@ public class ChatPanel : MonoBehaviour {
 
    public void addGuildChatInfo (ChatInfo chatInfo) {
       // Create a new Chat Line instance and assign the parent
-      GuildChatLine chatLine = Instantiate(guildChatLinePrefab);
+      GuildChatLine chatLine = Instantiate(guildChatLinePrefab, messagesContainer.transform);
       chatLine.name = "Guild Chat Message";
       chatLine.chatInfo = chatInfo;
-      chatLine.transform.SetParent(messagesContainer.transform);
       chatLine.text.text = string.Format("<color=yellow>[GUILD] {0}:</color> <color=white>{1}</color>", chatInfo.sender, chatInfo.text);
    }
 

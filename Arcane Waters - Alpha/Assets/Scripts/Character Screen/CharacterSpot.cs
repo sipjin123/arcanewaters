@@ -38,10 +38,6 @@ public class CharacterSpot : ClientMonoBehaviour {
 
    protected override void Awake () {
       base.Awake();
-
-      _spotCameraSettings = new VirtualCameraSettings();
-      _spotCameraSettings.position = spotCamera.position;
-      _spotCameraSettings.ppuScale = MyCamera.CHARACTER_CREATION_PPU_SCALE;
    }
 
    void Update () {
@@ -140,8 +136,12 @@ public class CharacterSpot : ClientMonoBehaviour {
       
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteNames);
 
+      _spotCameraSettings = new VirtualCameraSettings();
+      _spotCameraSettings.position = spotCamera.position;
+      _spotCameraSettings.ppuScale = MyCamera.getCharacterCreationPPUScale();
+
       CharacterScreen.self.myCamera.setSettings(_spotCameraSettings).OnComplete(() => {
-         CharacterCreationSpotFader.self.closeTowardsOfflineChar(offlineChar.transform.position);
+         CharacterCreationSpotFader.self.fadeColorOnPosition(offlineChar.transform.position);
       });
 
       this.assignCharacter(offlineChar);

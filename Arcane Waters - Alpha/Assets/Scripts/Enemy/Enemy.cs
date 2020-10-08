@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using Pathfinding;
+using TMPro;
 
 public class Enemy : NetEntity, IMapEditorDataReceiver {
    #region Public Variables
@@ -61,7 +62,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    public Canvas highlightCanvas;
 
    // The text ui for the enemy name
-   public Text displayNameText;
+   public TextMeshProUGUI displayNameText;
 
    // The possible spawn positions for the loot bags
    public Transform[] lootSpawnPositions;
