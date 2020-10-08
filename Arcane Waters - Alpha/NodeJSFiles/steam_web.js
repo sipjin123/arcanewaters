@@ -64,7 +64,7 @@ const postUpdates = async () => {
 	})
 
 	// Extract fetched table array
-	var indexCategory = 7;
+	var indexCategory = 5;
 	var fetchedData = data1[indexCategory];
 	var currentBranch = fetchedData[0];
 	var buildId = fetchedData[1];

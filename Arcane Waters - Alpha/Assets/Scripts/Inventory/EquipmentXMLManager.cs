@@ -306,17 +306,17 @@ public class EquipmentXMLManager : MonoBehaviour {
             newName = CraftingIngredients.getName(ingredientType);
             break;
          case Item.Category.Blueprint:
-            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            CraftableItemRequirements craftingItem = getCraftingItem(item);
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
-               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentName + " Blueprint";
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentName + " Blueprint";
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {
-               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentName + " Blueprint";
             }
             break;
@@ -348,17 +348,17 @@ public class EquipmentXMLManager : MonoBehaviour {
             newDescription = newItem.getCastItem().getDescription();
             break;
          case Item.Category.Blueprint:
-            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            CraftableItemRequirements craftingItem = getCraftingItem(item);
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
-               WeaponStatData fetchedData = EquipmentXMLManager.self.getWeaponData(craftingItem.resultItem.itemTypeId);
+               WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {
-               HatStatData fetchedData = EquipmentXMLManager.self.getHatData(craftingItem.resultItem.itemTypeId);
+               HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
             }
             break;
@@ -388,8 +388,10 @@ public class EquipmentXMLManager : MonoBehaviour {
             iconPath = CraftingIngredients.getIconPath(ingredientType);
             break;
          case Item.Category.Blueprint:
-            CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+            CraftableItemRequirements craftingItem = getCraftingItem(item);
+
             if (craftingItem == null) {
+               D.debug("Null Icon for Blueprint: " + item.category + " : " + item.itemTypeId + " : " + item.data);
                return "";
             }
             if (craftingItem.resultItem.category == Item.Category.Weapon) {
@@ -408,6 +410,24 @@ public class EquipmentXMLManager : MonoBehaviour {
       }
 
       return iconPath;
+   }
+
+   private CraftableItemRequirements getCraftingItem (Item item) {
+      Item.Category blueprintCategory = Item.Category.None;
+      switch (item.data) {
+         case Blueprint.WEAPON_DATA_PREFIX:
+            blueprintCategory = Item.Category.Weapon;
+            break;
+         case Blueprint.ARMOR_DATA_PREFIX:
+            blueprintCategory = Item.Category.Armor;
+            break;
+         case Blueprint.HAT_DATA_PREFIX:
+            blueprintCategory = Item.Category.Hats;
+            break;
+      }
+
+      CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
+      return craftingItem;
    }
 
    #region Private Variables

@@ -340,21 +340,25 @@ public class MyNetworkManager : NetworkManager
             // If player was in battle, reconnect player to existing battle
             if (BattleManager.self.getActiveBattlersData().ContainsKey(player.userId)) {
                Battle activeBattle = BattleManager.self.getActiveBattlersData()[player.userId];
-               Battler activeBattlerObj = activeBattle.getBattler(player.userId);
+               if (activeBattle != null) {
+                  Battler activeBattlerObj = activeBattle.getBattler(player.userId);
 
-               // Reassign the updated info
-               activeBattlerObj.playerNetId = player.netId;
-               activeBattlerObj.player = player;
+                  // Reassign the updated info
+                  activeBattlerObj.playerNetId = player.netId;
+                  activeBattlerObj.player = player;
 
-               // Assign the Battle ID to the Sync Var
-               player.battleId = activeBattle.battleId;
+                  // Assign the Battle ID to the Sync Var
+                  player.battleId = activeBattle.battleId;
 
-               // Update the observers associated with the Battle and the associated players
-               BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
+                  // Update the observers associated with the Battle and the associated players
+                  BattleManager.self.rebuildObservers(activeBattlerObj, activeBattle);
 
-               // Send player the data of the background and their abilities
-               player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
-               player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity)player });
+                  // Send player the data of the background and their abilities
+                  player.rpc.Target_ReceiveBackgroundInfo(player.connectionToClient, activeBattle.battleBoard.xmlID);
+                  player.rpc.processPlayerAbilities((PlayerBodyEntity) player, new List<PlayerBodyEntity> { (PlayerBodyEntity) player });
+               } else {
+                  D.debug("The battle was nullified, cleaning up now");
+               }
             }
 
             // Tell the player information about the Area we're going to send them to

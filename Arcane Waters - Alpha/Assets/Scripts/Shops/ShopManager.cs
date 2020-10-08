@@ -40,10 +40,14 @@ public class ShopManager : MonoBehaviour {
       if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
          InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       }
-      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment && PaletteSwapManager.self.getPaletteList().Count > 0) {
+
+      // TODO: Confirm if palette swap manager is still needed for shop initialization
+      if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
          // Routinely change out the items
          InvokeRepeating("generateItemsFromXML", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
          InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
+      } else {
+         D.debug("Failed to generate Shop data: " + ShopXMLManager.self.hasInitialized + " : " + EquipmentXMLManager.self.loadedAllEquipment + " : " + PaletteSwapManager.self.getPaletteList().Count);
       }
    }
 
@@ -115,7 +119,7 @@ public class ShopManager : MonoBehaviour {
                   };
 
                   Rarity.Type rarity = Rarity.getRandom();
-                  int randomizedPrice = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
+                  int randomizedPrice = rawItemData.shopItemCostMax;
                   string data = "";
                   if ((Item.Category) rawItemData.shopItemCategoryIndex == Item.Category.Weapon) {
                      List<PaletteToolManager.PaletteRepresentation> primary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Weapon, PaletteDef.Weapon.primary.name);
@@ -220,7 +224,7 @@ public class ShopManager : MonoBehaviour {
                   int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
                   int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
                   int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
-                  int price = UnityEngine.Random.Range(shopItem.shopItemCostMin, shopItem.shopItemCostMax);
+                  int price = shopItem.shopItemCostMax;
 
                   ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
                        "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
@@ -306,7 +310,7 @@ public class ShopManager : MonoBehaviour {
                   Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
                   int stockCount = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
                   stockCount = Util.roundToPrettyNumber(stockCount);
-                  int pricePerUnit = UnityEngine.Random.Range(rawItemData.shopItemCostMin, rawItemData.shopItemCostMax);
+                  int pricePerUnit = rawItemData.shopItemCostMax;
                   pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
 
                   CropOffer offer = new CropOffer(_offerId++, "None", cropType, stockCount, pricePerUnit, rarity);
@@ -363,7 +367,7 @@ public class ShopManager : MonoBehaviour {
       List<Item> list = new List<Item>();
 
       if (!_itemsByShopName.ContainsKey(shopName)) {
-         D.debug("Shop name does not exist!: " + shopName);
+         D.debug("Shop name does not exist!: " + shopName + " : " + _itemsByShopName.Count);
       } else {
          foreach (int itemId in _itemsByShopName[shopName]) {
             if (_items.ContainsKey(itemId)) {

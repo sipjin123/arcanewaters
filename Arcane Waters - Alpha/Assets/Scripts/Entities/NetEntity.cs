@@ -641,7 +641,7 @@ public class NetEntity : NetworkBehaviour
 
       // Freeze rigidbody
       getRigidbody().bodyType = RigidbodyType2D.Static;
-      GetComponent<SmoothSyncMirror>().enabled = false;
+      StartCoroutine(CO_ExecWarpClient());
 
       // Disable all sprite animations in children
       foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
@@ -652,6 +652,13 @@ public class NetEntity : NetworkBehaviour
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
          anim.enabled = false;
       }
+   }
+
+   private IEnumerator CO_ExecWarpClient () {
+      yield return new WaitForSeconds(.5f);
+
+      // Delay disabling the mirror so server can sync the last player position first
+      GetComponent<SmoothSyncMirror>().enabled = false;
    }
 
    protected void requestServerTime () {

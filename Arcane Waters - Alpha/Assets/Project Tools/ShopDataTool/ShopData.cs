@@ -29,9 +29,6 @@ public class ShopItemData {
    // Item Type 
    public int shopItemTypeIndex;
 
-   // Cost of the item Min
-   public int shopItemCostMin;
-
    // Cost of the item Max
    public int shopItemCostMax;
 

@@ -110,6 +110,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             break;
          case Item.Category.Blueprint:
             icon.sprite = ImageManager.getSprite(EquipmentXMLManager.self.getItemIconPath(item));
+            if (icon.sprite == ImageManager.self.blankSprite) {
+               D.debug("Could not retrieve Blueprint: " + item.category + " : " + item.itemTypeId + " : " + item.data);
+            }
             break;
          default:
             D.editorLog("Failed to process Uncategorized item: " + item.itemTypeId, Color.red);
@@ -132,7 +135,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Set the tooltip
-      tooltip.text = item.getTooltip();
+      tooltip.text = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) + " Blueprint" : item.getTooltip();
 
       // Saves the item
       _item = item;

@@ -322,8 +322,12 @@ public class TreasureChest : NetworkBehaviour {
       isWaitingForServerResponse = false;
 
       // Show a confirmation in chat
-      string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
-      ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      if (itemName.Length < 1) {
+         D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId);
+      } else {
+         string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
+         ChatManager.self.addChat(msg, ChatInfo.Type.System);
+      }
    }
 
    private void OnTriggerStay2D (Collider2D other) {

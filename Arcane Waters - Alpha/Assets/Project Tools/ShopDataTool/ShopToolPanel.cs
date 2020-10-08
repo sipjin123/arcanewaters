@@ -86,7 +86,6 @@ public class ShopToolPanel : MonoBehaviour
    private void createTemplate (ShopCategory category, ShopItemData itemData = null) {
       ShopDataItemTemplate shopItemTemp = Instantiate(shopItemPrefab.gameObject, _itemParent).GetComponent<ShopDataItemTemplate>();
       if (itemData == null) {
-         shopItemTemp.itemCostMin.text = MIN_PRICE;
          shopItemTemp.itemCostMax.text = MAX_PRICE;
          shopItemTemp.itemName.text = "Undefined";
          shopItemTemp.itemIDType.text = "0";
@@ -96,7 +95,6 @@ public class ShopToolPanel : MonoBehaviour
          shopItemTemp.quantityMax.text = "2";
          shopItemTemp.setIcon(category);
       } else {
-         shopItemTemp.itemCostMin.text = itemData.shopItemCostMin.ToString();
          shopItemTemp.itemCostMax.text = itemData.shopItemCostMax.ToString();
          shopItemTemp.itemName.text = itemData.itemName.ToString();
          shopItemTemp.itemIDType.text = itemData.shopItemTypeIndex.ToString();
@@ -188,7 +186,6 @@ public class ShopToolPanel : MonoBehaviour
             shopItemTypeIndex = int.Parse(itemTemp.itemIDType.text),
             shopItemCategoryIndex = int.Parse(itemTemp.itemIDCategory.text),
             itemIconPath = itemTemp.iconPath.text,
-            shopItemCostMin = int.Parse(itemTemp.itemCostMin.text),
             shopItemCostMax = int.Parse(itemTemp.itemCostMax.text),
             dropChance = float.Parse(itemTemp.chanceToDrop.text),
             shopItemCountMin = int.Parse(itemTemp.quantityMin.text),

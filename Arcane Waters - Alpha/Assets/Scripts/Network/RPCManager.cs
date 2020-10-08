@@ -954,9 +954,11 @@ public class RPCManager : NetworkBehaviour {
          if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
-            D.debug("Map Log: Creating cached map data");
-            MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
-            return;
+            // Only enter this process for server builds, this function accesses the background thread DB_Main
+            if (NetworkServer.active) {
+               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
+               return;
+            } 
          }
       }
 
@@ -1531,27 +1533,37 @@ public class RPCManager : NetworkBehaviour {
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
          List<QuestStatusInfo> databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
 
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
-            foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
-               QuestStatusInfo databaseQuestStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questDataNodeId);
-               if (databaseQuestStatus == null) {
-                  // Remove the quest that requires a certain level requirement
-                  if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
-                     removeNodeList.Add(xmlQuestNode);
-                  } 
-               } else {
-                  // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
-                  if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
-                     removeNodeList.Add(xmlQuestNode);
-                  }
+         if (databaseQuestStatusList.Count < 1) {
+            for (int i = 0; i < questData.questDataNodes.Length; i++) {
+               DB_Main.updateQuestStatus(npcId, _player.userId, questId, i, 0);
+               D.editorLog("Non existing npc quest status, creating now: " + npcId + " : " + questId + " : " + i, Color.magenta);
+            }
+            databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
+         }
 
-                  // Remove the quest that requires a certain level requirement
-                  if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
-                     removeNodeList.Add(xmlQuestNode);
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (databaseQuestStatusList.Count > 0) {
+               QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
+               foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
+                  QuestStatusInfo databaseQuestStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questDataNodeId);
+                  if (databaseQuestStatus == null) {
+                     // Remove the quest that requires a certain level requirement
+                     if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
+                        removeNodeList.Add(xmlQuestNode);
+                     }
+                  } else {
+                     // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
+                     if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
+                        removeNodeList.Add(xmlQuestNode);
+                     }
+
+                     // Remove the quest that requires a certain level requirement
+                     if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
+                        removeNodeList.Add(xmlQuestNode);
+                     }
                   }
                }
-            }
+            } 
 
             // Clear the invalid quests
             for (int i = 0; i < removeNodeList.Count; i++) {

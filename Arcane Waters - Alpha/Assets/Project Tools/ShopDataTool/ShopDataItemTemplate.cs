@@ -11,7 +11,7 @@ public class ShopDataItemTemplate : MonoBehaviour {
    public Image itemImage;
 
    // Cost of the Item
-   public InputField itemCostMin, itemCostMax;
+   public InputField itemCostMax;
 
    // Item Name
    public Text itemName;

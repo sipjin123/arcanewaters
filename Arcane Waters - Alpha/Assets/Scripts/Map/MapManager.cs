@@ -38,11 +38,13 @@ public class MapManager : MonoBehaviour
    public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
+         D.debug("Cant create live map due to missing area key: " + areaKey);
          return;
       }
 
       // If the area is under creation, don't create it again
       if (isAreaUnderCreation(areaKey)) {
+         D.debug("Cant create live map due to area under creation: " + areaKey);
          return;
       }
 

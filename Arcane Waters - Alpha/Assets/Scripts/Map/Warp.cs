@@ -72,8 +72,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (PanelManager.self.loadingScreen != null) {
                PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
             }
-         }
-      }
+         } 
+      } 
    }
 
    [ServerOnly]
