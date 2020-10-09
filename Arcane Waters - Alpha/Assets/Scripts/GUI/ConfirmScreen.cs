@@ -71,9 +71,11 @@ public class ConfirmScreen : MonoBehaviour {
       this.linkText.text = "";
       this.gameObject.SetActive(false);
 
-      // These two lines undo the effects of the input field so it is not displayed the next time the confirm panel is used
-      this.goInputField.SetActive(false);
+      // Undo the effects of the input field so it is not displayed the next time the confirm panel is used
+      PanelManager.self.confirmScreen.deleteInputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Type Delete";
+      PanelManager.self.confirmScreen.deleteInputField.text = "";
       PanelManager.self.confirmScreen.confirmButton.interactable = true;
+      this.goInputField.SetActive(false);
    }
 
    public void openURL () {

@@ -123,6 +123,11 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       }
    }
 
+   private void OnEnable () {
+      // Don't display enemy name to start
+      displayNameText.enabled = false;
+   }
+
    protected override void Update () {
       base.Update();
 
@@ -130,8 +135,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       if (animGroupType != Anim.Group.None) {
          handleAnimations();
       }
-
-      displayNameText.enabled = isMouseOver();
 
       // Some enemies should stop blocking player movement after they die
       if (isDefeated) {

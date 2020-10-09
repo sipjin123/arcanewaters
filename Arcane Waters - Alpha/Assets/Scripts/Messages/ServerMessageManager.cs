@@ -320,6 +320,8 @@ public class ServerMessageManager : MonoBehaviour {
 
       // Do the deletion on the DB thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int userGuildId = DB_Main.getUserGuildId(msg.userId);
+
          DB_Main.deleteAllFromTable(accountId, msg.userId, "ships");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "items");
          DB_Main.deleteAllFromTable(accountId, msg.userId, "crops");
@@ -330,6 +332,9 @@ public class ServerMessageManager : MonoBehaviour {
 
          // Send confirmation to the client, so that they can request their user list again
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Delete the user's guild if it has no more members
+            GuildManager.self.deleteGuildIfEmpty(userGuildId);
+
             sendConfirmation(ConfirmMessage.Type.DeletedUser, conn.connectionId);
          });
       });

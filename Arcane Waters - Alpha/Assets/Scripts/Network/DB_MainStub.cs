@@ -924,6 +924,10 @@ public class DB_MainStub : MonoBehaviour
       return new List<UserInfo>();
    }
 
+   public static int getUserGuildId (int userId) {
+      return -1;
+   }
+
    public static int getMemberCountForGuild (int guildId) {
       return 0;
    }

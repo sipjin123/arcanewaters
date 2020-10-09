@@ -5,8 +5,9 @@ using UnityEngine.UI;
 using Mirror;
 using MapCreationTool.Serialization;
 using TMPro;
+using UnityEngine.EventSystems;
 
-public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
+public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver, IPointerEnterHandler, IPointerExitHandler {
    #region Public Variables
 
    // Type of sign this object is
@@ -30,6 +31,12 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
    // If this prefab is in map editor mode
    public bool isEditorMode = false;
 
+   // Distance limit to determine if player is close enough to display tooltip
+   public float distanceToPlayer = 0.3f;
+
+   // Is mouse pointer over the sign
+   public bool pointerIsHovering;
+
    #endregion
 
    protected override void Awake () {
@@ -42,23 +49,22 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
 
    private void Start () {
       _outline.Regenerate();
-      _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
+      _outline.setVisibility(false);
    }
 
-   public void Update () {
-      // Figure out whether our outline should be showing
-      handleSpriteOutline();
-   }
-
-   public void handleSpriteOutline () {
-      if (_outline == null || _clickableBox == null || isEditorMode) {
+   private void Update () {
+      if (Global.player == null) {
          return;
       }
 
-      // Only show our outline when the mouse is over us
-      bool isHovering = MouseManager.self.isHoveringOver(_clickableBox);
-      _outline.setVisibility(isHovering);
-      directionLabelUI.SetActive(isHovering);
+      if ((Vector2.Distance(this.transform.position, Global.player.transform.position) < distanceToPlayer) || pointerIsHovering) {
+         directionLabelUI.SetActive(true);
+         _outline.setVisibility(true);
+      } 
+      else {
+         directionLabelUI.SetActive(false);
+         _outline.setVisibility(false);
+      }
    }
 
    public void receiveData (DataField[] dataFields) {
@@ -87,6 +93,18 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver {
       Sprite[] iconSprites = ImageManager.getSprites(mapSignIcon.sprite.texture);
       int mapIconIndex = Mathf.Clamp(type, 0, iconSprites.Length - 1);
       mapSignIcon.sprite = iconSprites[mapIconIndex];
+   }
+
+   public void OnPointerEnter (PointerEventData eventData) {
+      directionLabelUI.SetActive(true);
+      _outline.setVisibility(true);
+      pointerIsHovering = true;
+   }
+
+   public void OnPointerExit (PointerEventData eventData) {
+      directionLabelUI.SetActive(false);
+      _outline.setVisibility(false);
+      pointerIsHovering = false;
    }
 
    #region Private Variables

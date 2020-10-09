@@ -2545,13 +2545,10 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.assignGuild(_player.userId, 0);
          _player.guildId = 0;
 
-         // Delete the guild if it has no more members
-         int memberCount = DB_Main.getMemberCountForGuild(guildId);
-         if (memberCount == 0) {
-            DB_Main.deleteGuild(guildId);
-         }
-
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Delete the guild if it has no more members
+            GuildManager.self.deleteGuildIfEmpty(guildId);
+
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You have left your guild!");
          });
       });

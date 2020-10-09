@@ -36,21 +36,6 @@ public class CropProjectile : MonoBehaviour {
 
    #endregion
 
-   private void FixedUpdate () {
-      Collider2D[] colliders = new Collider2D[8];
-      ContactFilter2D contactFilter = new ContactFilter2D();
-      int colliderCount = colliderComponent.OverlapCollider(contactFilter, colliders);
-      if (colliderCount > 0) {
-         foreach (var temp in colliders) {
-            if (temp != null) {
-               if (temp.GetComponent<CompositeCollider2D>() != null) {
-                  blockMovement = true;
-                  colliderComponent.enabled = false;
-               }
-            }
-         }
-      }
-   }
    private void Update () {
       double timeAlive = Time.time - _startTime;
       float lerpTime = (float) (timeAlive / _lifeTime);
@@ -72,6 +57,20 @@ public class CropProjectile : MonoBehaviour {
 
       if (timeAlive > _lifeTime) {
          processDestruction();
+      }
+
+      Collider2D[] colliders = new Collider2D[8];
+      ContactFilter2D contactFilter = new ContactFilter2D();
+      int colliderCount = colliderComponent.OverlapCollider(contactFilter, colliders);
+      if (colliderCount > 0) {
+         foreach (var temp in colliders) {
+            if (temp != null) {
+               if (temp.GetComponent<CompositeCollider2D>() != null) {
+                  blockMovement = true;
+                  colliderComponent.enabled = false;
+               }
+            }
+         }
       }
    }
 

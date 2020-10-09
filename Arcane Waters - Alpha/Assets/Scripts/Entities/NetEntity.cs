@@ -6,6 +6,7 @@ using Mirror;
 using Cinemachine;
 using Smooth;
 using TMPro;
+using System.Linq;
 
 public class NetEntity : NetworkBehaviour
 {
@@ -307,6 +308,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void FixedUpdate () {
+      // If a controller has taken over the control of entity, allow it to handle everything
+      if (_temporaryControllers.Count > 0) {
+         return;
+      }
+
       // We can only control movement for our own player, when chat isn't focused, we're not falling down or dead or warping and the area has been loaded
       if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInLinkedList() || !AreaManager.self.hasArea(areaKey) || isAboutToWarpOnClient) {
          return;
@@ -640,8 +646,7 @@ public class NetEntity : NetworkBehaviour
       isAboutToWarpOnClient = true;
 
       // Freeze rigidbody
-      getRigidbody().bodyType = RigidbodyType2D.Static;
-      StartCoroutine(CO_ExecWarpClient());
+      getRigidbody().constraints = RigidbodyConstraints2D.FreezeAll;
 
       // Disable all sprite animations in children
       foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
@@ -652,13 +657,6 @@ public class NetEntity : NetworkBehaviour
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
          anim.enabled = false;
       }
-   }
-
-   private IEnumerator CO_ExecWarpClient () {
-      yield return new WaitForSeconds(.5f);
-
-      // Delay disabling the mirror so server can sync the last player position first
-      GetComponent<SmoothSyncMirror>().enabled = false;
    }
 
    protected void requestServerTime () {
@@ -943,6 +941,36 @@ public class NetEntity : NetworkBehaviour
          // Show the level up in chat
          string levelsMsg = string.Format("You gained {0} {1} {2}!", levelsGained, jobType, levelsGained > 1 ? "levels" : "level");
          ChatManager.self.addChat(levelsMsg, ChatInfo.Type.System);
+      }
+   }
+
+   public void requestControl (TemporaryController controller) {
+      if (_temporaryControllers.Contains(controller)) {
+         D.error("Requesting control of entity twice by the same controller.");
+         return;
+      }
+
+      _temporaryControllers.Add(controller);
+
+      if (_temporaryControllers.Count > 1) {
+         D.warning("Requesting control of entity: already controlled. Scheduling control after current controller wraps up. " +
+            "Review if this is working correctly before removing the warning.");
+      } else {
+         controller.controlGranted(this);
+      }
+   }
+
+   public bool hasScheduledController (TemporaryController controller) {
+      return _temporaryControllers.Contains(controller);
+   }
+
+   public void giveBackControl (TemporaryController controller) {
+      bool willBeChanges = _temporaryControllers.Count > 0 && _temporaryControllers[0] == controller;
+
+      _temporaryControllers.RemoveAll(c => c == controller);
+
+      if (willBeChanges && _temporaryControllers.Count > 0) {
+         _temporaryControllers[0].controlGranted(this);
       }
    }
 
@@ -1357,6 +1385,9 @@ public class NetEntity : NetworkBehaviour
 
    // The alpha cutoff value when we want to hide the shadow
    private const float HIDDEN_SHADOW_ALPHACUTOFF = 0.5f;
+
+   // Controllers, that are controlling the entity or are scheduled to
+   private List<TemporaryController> _temporaryControllers = new List<TemporaryController>();
 
    #endregion
 }

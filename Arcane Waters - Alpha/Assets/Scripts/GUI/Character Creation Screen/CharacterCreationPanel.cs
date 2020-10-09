@@ -145,6 +145,15 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       setArmor(armor);
    }
 
+   private void randomizeSelectedColor (ToggleGroup toggleGroup) {
+      Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
+      int randomIndex = Random.Range(0, toggles.Length);
+
+      for (int i = 0; i < toggles.Length; i++) {
+         toggles[i].SetIsOnWithoutNotify(i == randomIndex);
+      }      
+   }
+
    public void submitCharacterCreation (bool ignorePerkQuestions = false) {
       Perk[] chosenPerks = perksGrid.getAssignedPoints().ToArray();
       int pointsSum = chosenPerks.Sum(perk => perk.points);
@@ -323,6 +332,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       updateColorBoxes(info.gender);
 
+      randomizeSelectedColor(eyeGroup1);
+      randomizeSelectedColor(hairGroup1);
+      randomizeSelectedColor(hairGroup2);
+      randomizeSelectedColor(armorGroup1);
+      randomizeSelectedColor(armorGroup2);
+
       refreshHair();
       refreshEyes();
       refreshBody();
@@ -482,7 +497,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       List<PaletteToolManager.PaletteRepresentation> armorPrimary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.primary.name, PaletteDef.Tags.STARTER);
       List<PaletteToolManager.PaletteRepresentation> armorSecondary = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Armor, PaletteDef.Armor.secondary.name, PaletteDef.Tags.STARTER);
 
-
       fillInColorBoxes(eyeGroup1, eyes);
       fillInColorBoxes(hairGroup1, primaryHair);
       fillInColorBoxes(hairGroup2, secondaryHair);
@@ -592,7 +606,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    protected void fillInColorBoxes (ToggleGroup toggleGroup, List<PaletteToolManager.PaletteRepresentation> paletteList) {
       int index = 0;
       Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
-      int selected = Random.Range(0, toggles.Length);
 
       foreach (Toggle toggle in toggles) {
          if (paletteList.Count > index) {
@@ -606,8 +619,6 @@ public class CharacterCreationPanel : ClientMonoBehaviour
             Text text = toggle.GetComponent<Text>() ? toggle.GetComponent<Text>() : toggle.gameObject.AddComponent<Text>();
             text.enabled = false;
             text.text = paletteName;
-
-            toggle.SetIsOnWithoutNotify(index == selected);
 
             index++;
          }

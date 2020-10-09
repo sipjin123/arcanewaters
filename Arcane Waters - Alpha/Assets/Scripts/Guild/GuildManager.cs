@@ -183,6 +183,15 @@ public class GuildManager : MonoBehaviour {
       return true;
    }
 
+   public void deleteGuildIfEmpty (int guildId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int memberCount = DB_Main.getMemberCountForGuild(guildId);
+         if (memberCount == 0) {
+            DB_Main.deleteGuild(guildId);
+         }
+      });
+   }
+
    #region Private Variables
 
    // Stores past invites that have been sent

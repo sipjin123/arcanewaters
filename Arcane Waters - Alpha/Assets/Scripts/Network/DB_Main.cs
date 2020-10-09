@@ -6512,6 +6512,30 @@ public class DB_Main : DB_MainStub
       return userList;
    }
 
+   public static new int getUserGuildId (int userId) {
+      int guildId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT gldId FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  guildId = dataReader.GetInt32("gldId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return guildId;
+   }
+
    public static new int getMemberCountForGuild (int guildId) {
       int memberCount = 0;
 
