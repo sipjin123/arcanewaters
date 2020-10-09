@@ -325,10 +325,6 @@ namespace ServerCommunicationHandlerv2 {
                #endif
                addNewServer(newServerData, false);
             }
-         } else {
-            #if UNITY_EDITOR
-            D.editorLog("The server was not active for: " + SERVER_ACTIVE_TIME + " Choosing to ignore this server as a remote");
-            #endif
          }
       }
 

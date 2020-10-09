@@ -307,17 +307,21 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
          case Item.Category.Blueprint:
             CraftableItemRequirements craftingItem = getCraftingItem(item);
-            if (craftingItem.resultItem.category == Item.Category.Weapon) {
-               WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Blueprint";
-            }
-            if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Blueprint";
-            }
-            if (craftingItem.resultItem.category == Item.Category.Hats) {
-               HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
-               return fetchedData.equipmentName + " Blueprint";
+            if (craftingItem != null) {
+               if (craftingItem.resultItem.category == Item.Category.Weapon) {
+                  WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
+                  return fetchedData.equipmentName + " Blueprint";
+               }
+               if (craftingItem.resultItem.category == Item.Category.Armor) {
+                  ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
+                  return fetchedData.equipmentName + " Blueprint";
+               }
+               if (craftingItem.resultItem.category == Item.Category.Hats) {
+                  HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
+                  return fetchedData.equipmentName + " Blueprint";
+               }
+            } else {
+               D.debug("The result is null for: " + item.category + " : " + item.itemTypeId + " : " + item.data);
             }
             break;
       }

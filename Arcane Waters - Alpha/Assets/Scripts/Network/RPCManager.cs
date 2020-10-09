@@ -3740,6 +3740,10 @@ public class RPCManager : NetworkBehaviour {
 
             // Cache the possible enemy roster
             List<Enemy> enemyRoster = new List<Enemy>();
+            if (battleInstance == null) {
+               D.debug("The battle instance does not exist anymore! Block process for Player: " + _player.userId + " Instance:" + _player.instanceId);
+               return;
+            }
             foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
                if (enemyInstance is Enemy) {
                   if (enemy.animGroupType == ((Enemy) enemyInstance).animGroupType) {
@@ -4381,7 +4385,11 @@ public class RPCManager : NetworkBehaviour {
                D.editorLog("Failed to cast!", Color.magenta);
             }
 
-            Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            if (_player != null) {
+               Target_OnEquipItem(_player.connectionToClient, userObjects.weapon, userObjects.armor, userObjects.hat);
+            } else {
+               D.debug("Cant change equipment while player is destroyed");
+            }
          });
       });
    }

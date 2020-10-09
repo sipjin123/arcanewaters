@@ -117,8 +117,16 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
       switch (abilityOrigin) {
          case AbilityOrigin.Enemy:
-            BasicAbilityData fetchedAbilityData = AbilityManager.getAbility(BattleManager.self.getPlayerBattler().basicAbilityIDList[abilityIndex], AbilityType.Undefined);
-            BattleUIManager.self.onAbilityHover.Invoke(fetchedAbilityData);
+            if (BattleManager.self.getPlayerBattler().basicAbilityIDList.Count < abilityIndex) {
+               D.debug("Ability Index mismatch!");
+            } else {
+               try {
+                  BasicAbilityData fetchedAbilityData = AbilityManager.getAbility(BattleManager.self.getPlayerBattler().basicAbilityIDList[abilityIndex], AbilityType.Undefined);
+                  BattleUIManager.self.onAbilityHover.Invoke(fetchedAbilityData);
+               } catch {
+                  D.debug("Ability mismatch!: " + abilityIndex + " / " + BattleManager.self.getPlayerBattler().basicAbilityIDList.Count);
+               }
+            }
             break;
 
          case AbilityOrigin.Player:

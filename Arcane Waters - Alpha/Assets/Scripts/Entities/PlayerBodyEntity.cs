@@ -325,27 +325,24 @@ public class PlayerBodyEntity : BodyEntity {
                }
             }
 
-            if (!isNearInteractables) {
-               if (isMoving()) {
-                  farmingTrigger.interactFarming();
-               } else {
-                  Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if (!isNearInteractables && !isMoving()) {
+               Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-                  if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-                     || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-                     requestAnimationPlay(Anim.Type.Interact_East);
-                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
-                  } else if (newDirection == Direction.North) {
-                     requestAnimationPlay(Anim.Type.Interact_North);
-                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
-                  } else if (newDirection == Direction.South) {
-                     requestAnimationPlay(Anim.Type.Interact_South);
-                     rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
-                  }
-
+               if (!interactingAnimation) {
                   farmingTrigger.interactFarming();
-                  miningTrigger.interactOres();
                }
+               if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+                  || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+                  requestAnimationPlay(Anim.Type.Interact_East);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
+               } else if (newDirection == Direction.North) {
+                  requestAnimationPlay(Anim.Type.Interact_North);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
+               } else if (newDirection == Direction.South) {
+                  requestAnimationPlay(Anim.Type.Interact_South);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+               }
+               miningTrigger.interactOres();
             }
          }
       }

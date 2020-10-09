@@ -300,11 +300,14 @@ public class TreasureChest : NetworkBehaviour {
             image.sprite = ImageManager.getSprite(item.getIconPath());
          }
       } else {
+         CraftableItemRequirements craftableData = CraftingManager.self.getCraftableData(item.itemTypeId);
          if (item.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
             image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
          } else if (item.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
             image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_ARMOR_ICON);
          }
+         item.itemTypeId = craftableData.resultItem.itemTypeId;
+         itemName = EquipmentXMLManager.self.getItemName(item);
       }
 
       // Create a new instance of the material we can use for recoloring
@@ -323,7 +326,7 @@ public class TreasureChest : NetworkBehaviour {
 
       // Show a confirmation in chat
       if (itemName.Length < 1) {
-         D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId);
+         D.debug("Invalid Item Name: The item found is: " + item.category + " : " + item.itemTypeId + " : " + item.data);
       } else {
          string msg = string.Format("You found one <color=red>{0}</color>!", itemName);
          ChatManager.self.addChat(msg, ChatInfo.Type.System);
