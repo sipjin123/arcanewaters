@@ -55,15 +55,15 @@ public class SeaManager : MonoBehaviour {
       }
 
       // Allow pressing F1 through F3 to change the combat mode
-      if (Input.GetKeyUp(KeyCode.Alpha1)) {
+      if (Input.GetKeyDown(KeyCode.Alpha1)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(0);
       }
 
-      if (Input.GetKeyUp(KeyCode.Alpha2)) {
+      if (Input.GetKeyDown(KeyCode.Alpha2)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(1);
       }
 
-      if (Input.GetKeyUp(KeyCode.Alpha3)) {
+      if (Input.GetKeyDown(KeyCode.Alpha3)) {
          selectedAbilityId = CannonPanel.self.getAbilityId(2);
       }
 

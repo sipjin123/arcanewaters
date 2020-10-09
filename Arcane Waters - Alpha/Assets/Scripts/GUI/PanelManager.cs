@@ -78,27 +78,27 @@ public class PanelManager : MonoBehaviour {
       }
 
       // Bottom button panels
-      if (Input.GetKeyUp(KeyCode.C)) {
+      if (Input.GetKeyDown(KeyCode.C)) {
          BottomBar.self.toggleCharacterInfoPanel();
-      } else if (Input.GetKeyUp(KeyCode.I)) {
+      } else if (Input.GetKeyDown(KeyCode.I)) {
          BottomBar.self.toggleInventoryPanel();
-      } else if (Input.GetKeyUp(KeyCode.G)) {
+      } else if (Input.GetKeyDown(KeyCode.G)) {
          BottomBar.self.toggleGuildPanel();
-      } else if (Input.GetKeyUp(KeyCode.L)) {
+      } else if (Input.GetKeyDown(KeyCode.L)) {
          BottomBar.self.toggleShipsPanel();
-      } else if (Input.GetKeyUp(KeyCode.O)) {
+      } else if (Input.GetKeyDown(KeyCode.O)) {
          BottomBar.self.toggleOptionsPanel();
-      } else if (Input.GetKeyUp(KeyCode.M)) {
+      } else if (Input.GetKeyDown(KeyCode.M)) {
          BottomBar.self.toggleMapPanel();
-      } else if (Input.GetKeyUp(KeyCode.T)) {
+      } else if (Input.GetKeyDown(KeyCode.T)) {
          BottomBar.self.toggleTradeHistoryPanel();
-      } else if (Input.GetKeyUp(KeyCode.B)) {
+      } else if (Input.GetKeyDown(KeyCode.B)) {
          BottomBar.self.toggleLeaderBoardsPanel();
-      } else if (Input.GetKeyUp(KeyCode.F)) {
+      } else if (Input.GetKeyDown(KeyCode.F)) {
          BottomBar.self.toggleFriendListPanel();
-      } else if (Input.GetKeyUp(KeyCode.U)) {
+      } else if (Input.GetKeyDown(KeyCode.U)) {
          BottomBar.self.toggleAbilityPanel();
-      } else if (Input.GetKeyUp(KeyCode.K)) {
+      } else if (Input.GetKeyDown(KeyCode.K)) {
          BottomBar.self.toggleMailPanel();
       }
    }

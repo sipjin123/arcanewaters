@@ -131,15 +131,15 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (!isInBattle()) {
-         if (Input.GetKeyUp(KeyCode.Alpha1)) {
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(1);
-         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(2);
-         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(3);
-         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(4);
-         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
             PanelManager.self.itemShortcutPanel.activateShortcut(5);
          }
       }

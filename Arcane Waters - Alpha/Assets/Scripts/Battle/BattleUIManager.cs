@@ -284,17 +284,17 @@ public class BattleUIManager : MonoBehaviour {
       // Normally I would only update these values when needed (updating when action timer var is not full, or when the player received damage)
       // But for now I will just update them every frame
       if (_playerLocalBattler != null) {
-         if (Input.GetKeyUp(KeyCode.Alpha1)) {
+         if (Input.GetKeyDown(KeyCode.Alpha1)) {
             triggerAbilityByKey(0);
-         } else if (Input.GetKeyUp(KeyCode.Alpha2)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
             triggerAbilityByKey(1);
-         } else if (Input.GetKeyUp(KeyCode.Alpha3)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
             triggerAbilityByKey(2);
-         } else if (Input.GetKeyUp(KeyCode.Alpha4)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
             triggerAbilityByKey(3);
-         } else if (Input.GetKeyUp(KeyCode.Alpha5)) {
+         } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
             triggerAbilityByKey(4);
-         } else if (Input.GetKeyUp(KeyCode.Tab)) {
+         } else if (Input.GetKeyDown(KeyCode.Tab)) {
             // Select the list of opponents
             List<Battler> battlerList = BattleManager.self.getPlayerBattler().isAttacker() 
                ? BattleManager.self.getBattle(BattleManager.self.getPlayerBattler().battleId).getDefenders() 

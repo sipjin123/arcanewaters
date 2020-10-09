@@ -94,7 +94,7 @@ public class NetEntity : NetworkBehaviour
    public WaterChecker waterChecker;
 
    // The Text component that has our name
-   public Text nameText;
+   public TextMeshProUGUI nameText;
 
    // The object we use for sorting our sprites
    public GameObject sortPoint;
