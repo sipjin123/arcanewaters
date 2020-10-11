@@ -339,6 +339,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void OnDestroy () {
+      // If we are controlled by a temporary controller, allow it to finalize any data that's needed before we are destroyed
+      while (_temporaryControllers.Count > 0) {
+         _temporaryControllers[0].forceFastForward(this);
+      }
+
       // Remove the entity from the manager
       if (this is PlayerBodyEntity || this is PlayerShipEntity) {
          EntityManager.self.removeEntity(userId);
@@ -952,10 +957,7 @@ public class NetEntity : NetworkBehaviour
 
       _temporaryControllers.Add(controller);
 
-      if (_temporaryControllers.Count > 1) {
-         D.warning("Requesting control of entity: already controlled. Scheduling control after current controller wraps up. " +
-            "Review if this is working correctly before removing the warning.");
-      } else {
+      if (_temporaryControllers.Count == 1) {
          controller.controlGranted(this);
       }
    }

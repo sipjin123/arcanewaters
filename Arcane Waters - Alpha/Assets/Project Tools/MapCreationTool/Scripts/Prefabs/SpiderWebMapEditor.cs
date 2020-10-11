@@ -10,33 +10,35 @@ namespace MapCreationTool
       // height of the effector, used for the launch
       public float height;
 
-      private RectTransform rect;
-
-      private void Awake () {
-         rect = GetComponentInChildren<Canvas>(true).GetComponent<RectTransform>();
-      }
+      // Visual elements for indicating current launch height
+      public SpriteRenderer heightLine;
+      public SpriteRenderer heightBox;
 
       public void dataFieldChanged (DataField field) {
          if (field.k.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
             if (field.tryGetFloatValue(out float h)) {
-               height = h;
+               height = h + SpiderWeb.CONSTANT_HEIGHT;
             }
          }
 
-         rect.sizeDelta = new Vector2(rect.sizeDelta.x, height * 100f);
+         heightBox.transform.localPosition = new Vector3(heightBox.transform.localPosition.x, height * 0.16f, 0);
+         heightLine.transform.localPosition = new Vector3(heightLine.transform.localPosition.x, (height - 0.5f) * 0.08f, 0);
+         heightLine.transform.localScale = new Vector3(heightLine.transform.localScale.x, (height - 0.5f) * 0.16f, heightLine.transform.localScale.z);
       }
 
       public override void createdInPalette () {
-         GetComponentInChildren<Canvas>(true).enabled = false;
+         heightBox.enabled = false;
+         heightLine.enabled = false;
       }
 
       public override void createdForPreview () {
-         GetComponentInChildren<Canvas>(true).enabled = false;
+         heightBox.enabled = false;
+         heightLine.enabled = false;
       }
 
       public override void placedInEditor () {
-         GetComponentInChildren<Canvas>(true).enabled = true;
+         heightBox.enabled = true;
+         heightLine.enabled = true;
       }
    }
-
 }

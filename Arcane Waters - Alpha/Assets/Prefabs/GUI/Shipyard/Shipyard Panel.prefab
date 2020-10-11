@@ -266,11 +266,11 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 21300000, guid: 957a4586585dbc84fa23fff96d4146a4,
+    m_HighlightedSprite: {fileID: 21300000, guid: 5e042bdf611825c46af4b7e6ac861050,
       type: 3}
-    m_PressedSprite: {fileID: 21300000, guid: 5483f93fe1b77554890626703fc5cd13, type: 3}
-    m_SelectedSprite: {fileID: 21300000, guid: 957a4586585dbc84fa23fff96d4146a4, type: 3}
-    m_DisabledSprite: {fileID: 21300000, guid: 49b805795546ec84b9d5ca4b7feb779c, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: 0e589e24ac7f85b4ea8d5b65b5b3f2ca, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: 5e042bdf611825c46af4b7e6ac861050, type: 3}
+    m_DisabledSprite: {fileID: 21300000, guid: c42c9582ee545804180efb6f732c6d47, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
@@ -283,7 +283,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
-        m_MethodName: popPanel
+        m_MethodName: unlinkPanel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

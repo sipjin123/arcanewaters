@@ -48,17 +48,27 @@ public abstract class TemporaryController : MonoBehaviour
       puppet.entity.giveBackControl(this);
    }
 
+   public void forceFastForward (NetEntity entity) {
+      ControlData puppet = _puppets.FirstOrDefault(p => p.entity == entity);
+      if (puppet == null) {
+         D.error("Cannot fast forward control of entity because we are not controlling it.");
+         return;
+      }
+
+      onForceFastForward(puppet);
+      endControl(puppet);
+   }
+
+   protected abstract void onForceFastForward (ControlData puppet);
    protected virtual void controlUpdate (ControlData puppet) { }
    protected virtual void startControl (ControlData puppet) { }
 
    private void OnDestroy () {
-      // Give back all control that we might have
-      foreach (ControlData puppet in _puppets) {
-         if (puppet.entity != null) {
-            puppet.entity.giveBackControl(this);
+      for (int i = _puppets.Count - 1; i >= 0; i--) {
+         if (_puppets[i].entity != null) {
+            forceFastForward(_puppets[i].entity);
          }
       }
-      _puppets.Clear();
    }
 
    #region Private Variables

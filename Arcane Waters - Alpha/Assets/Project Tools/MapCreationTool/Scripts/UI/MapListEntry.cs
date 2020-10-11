@@ -8,6 +8,8 @@ namespace MapCreationTool
    public class MapListEntry : MonoBehaviour
    {
       [SerializeField]
+      private Image icon = null;
+      [SerializeField]
       private Text nameText = null;
       [SerializeField]
       private Text markerText = null;
@@ -48,6 +50,22 @@ namespace MapCreationTool
 
          latestVersionButton.onClick.RemoveAllListeners();
          latestVersionButton.onClick.AddListener(() => UI.mapList.openLatestVersion(map));
+
+         setIconFor(map);
+      }
+
+      public void setIconFor (Map map) {
+         switch (map.editorType) {
+            case EditorType.Area:
+               icon.sprite = ImageManager.getSprite(@"Assets/Resources/Sprites/Icons/Perks/faction_naturalists.png");
+               break;
+            case EditorType.Interior:
+               icon.sprite = ImageManager.getSprite(@"Assets/Resources/Sprites/Icons/Perks/specialty_merchant.png");
+               break;
+            case EditorType.Sea:
+               icon.sprite = ImageManager.getSprite(@"Assets/Resources/Sprites/Icons/Perks/specialty_sailor.png");
+               break;
+         }
       }
 
       public void setMarkerColor (Color color) {

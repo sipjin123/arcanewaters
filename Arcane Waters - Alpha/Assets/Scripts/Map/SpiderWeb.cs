@@ -6,6 +6,9 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 {
    #region Public Variables
 
+   // The constant part of the height that doesn't change and is added to the variable height
+   public const float CONSTANT_HEIGHT = 0.5f;
+
    // The height of the jump, set in map editor
    public float jumpHeight;
 
@@ -21,7 +24,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.SPIDER_WEB_HEIGHT_KEY) == 0) {
             if (field.tryGetFloatValue(out float h)) {
-               jumpHeight = h;
+               jumpHeight = h + CONSTANT_HEIGHT;
             }
          }
       }
@@ -29,7 +32,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
    protected override void startControl (ControlData puppet) {
       // Instantiate the bounce effect
-      Instantiate(webBouncePrefab, this.transform.position, Quaternion.identity);
+      Instantiate(webBouncePrefab, transform.position, Quaternion.identity);
 
       // Registers the bounce pad action status to the achievement data for recording
       if (puppet.entity.isServer) {
@@ -45,7 +48,9 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       }
 
       // Calculate global target spot
-      puppet.endPos = new Vector2(puppet.entity.getRigidbody().position.x, transform.position.y + (jumpHeight + 2f) * 0.16f);
+      puppet.endPos = new Vector2(
+         puppet.entity.getRigidbody().position.x,
+         transform.position.y + jumpHeight * 0.16f - puppet.mainEntityCollider.offset.y);
    }
 
    protected override void controlUpdate (ControlData puppet) {
@@ -61,6 +66,14 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
             puppet.mainEntityCollider.isTrigger = false;
          }
          endControl(puppet);
+      }
+   }
+
+   protected override void onForceFastForward (ControlData puppet) {
+      puppet.entity.fallDirection = 0;
+      puppet.entity.transform.position = puppet.endPos;
+      if (puppet.mainEntityCollider != null) {
+         puppet.mainEntityCollider.isTrigger = false;
       }
    }
 

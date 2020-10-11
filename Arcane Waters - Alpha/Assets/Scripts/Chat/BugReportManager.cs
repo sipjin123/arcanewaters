@@ -81,9 +81,20 @@ public class BugReportManager : MonoBehaviour {
       }
 
       // Make sure the bug report file hasn't grown too large
+      if (bugReport.Length > MAX_LOG_LENGTH) {
+         int diff = (bugReport.Length - MAX_LOG_LENGTH) + 1;
+         bugReport = bugReport.Remove(0, diff);
+      }
+
+      // Make sure the bug report file hasn't grown too large
       if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-         ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
-         yield break;
+         int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
+         bugReport = bugReport.Remove(0, diff);
+
+         if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
+            ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
+            yield break;
+         }
       }
 
       int userId = player.userId;
@@ -218,7 +229,10 @@ public class BugReportManager : MonoBehaviour {
    protected static int ONE_MEGABYTE_IN_BYTES = 1000000;
 
    // The maximum number of bytes we'll allow a submitted bug report to have
-   protected static int MAX_BYTES = ONE_MEGABYTE_IN_BYTES * 5;
+   protected static int MAX_BYTES = 12288;
+
+   // The maximum number of string length we'll allow a submitted bug report to have
+   protected static int MAX_LOG_LENGTH = 1024 * 6;
 
    // The time interval used to calculate the average fps
    protected static float FPS_CALCULATION_INTERVAL = 1f;

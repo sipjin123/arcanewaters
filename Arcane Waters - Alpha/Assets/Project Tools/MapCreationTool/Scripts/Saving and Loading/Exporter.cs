@@ -348,20 +348,8 @@ namespace MapCreationTool.Serialization
       private HashSet<Vector2Int> getCancelledTileCollisions (List<PlacedPrefab> prefabs) {
          HashSet<Vector2Int> result = new HashSet<Vector2Int>();
 
-         foreach (PlacedPrefab placedPrefab in prefabs) {
-            SpiderWebMapEditor web = placedPrefab.placedInstance.GetComponent<SpiderWebMapEditor>();
-            LedgeMapEditor ledge = placedPrefab.placedInstance.GetComponent<LedgeMapEditor>();
-
-            if (web != null) {
-               Vector3 from = web.transform.position + Vector3.up + Vector3.left * SpiderWebMapEditor.width * 0.5f;
-               Vector3 to = from + new Vector3(SpiderWebMapEditor.width, web.height);
-               addFromToTiles(result, from, to);
-            } else if (ledge != null) {
-               Vector3 from = ledge.transform.position + new Vector3(-ledge.width * 0.5f, -ledge.height + 0.5f);
-               Vector3 to = from + new Vector3(ledge.width, ledge.height);
-               addFromToTiles(result, from, to);
-            }
-         }
+         // If any placed prefabs have to cancel collisions under them,
+         // Check and add those tiles to the 'result' set
 
          return result;
       }
