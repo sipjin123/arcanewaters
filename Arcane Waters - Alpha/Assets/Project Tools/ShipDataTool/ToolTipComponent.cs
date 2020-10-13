@@ -18,7 +18,7 @@ public class ToolTipComponent : MonoBehaviour {
       EventTrigger eventTrigger = GetComponent<EventTrigger>();
       EventTrigger.Entry eventEntry = new EventTrigger.Entry();
       eventEntry.eventID = EventTriggerType.PointerEnter;
-      eventEntry.callback.AddListener((data) => { onHoverEnter(); });
+      eventEntry.callback.AddListener((data) => { onHoverEnter((PointerEventData)data); });
       eventTrigger.triggers.Add(eventEntry);
       
       EventTrigger.Entry eventEntryExit = new EventTrigger.Entry();
@@ -31,8 +31,8 @@ public class ToolTipComponent : MonoBehaviour {
       TooltipHandler.self.cancelToolTip();
    }
 
-   public void onHoverEnter () {
-      TooltipHandler.self.callToolTip(message, transform.position);
+   public void onHoverEnter (PointerEventData eventData) {
+      TooltipHandler.self.callToolTip(message, eventData.position);
    }
 
    #region Private Variables

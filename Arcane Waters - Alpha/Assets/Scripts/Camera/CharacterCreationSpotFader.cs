@@ -68,23 +68,6 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       }      
    }
 
-   public void closeAndHide () {
-      closeSpotInternal(spotMask.rectTransform.position, true);
-   }
-
-   private void closeSpotInternal (Vector3 screenPosition, bool hideOnComplete = false) {
-      setFadeInitialValues();
-      _currentSizeTween?.Kill();
-
-      spotMask.rectTransform.position = screenPosition;
-
-      _currentSizeTween = spotMask.rectTransform.DOSizeDelta(Vector2.zero, _totalEffectTime * 0.1f);
-
-      if (hideOnComplete) {
-         _currentSizeTween.OnComplete(() => Util.disableCanvasGroup(_canvasGroup));
-      }
-   }
-
    public void fadeColorOnPosition (Vector3 worldPosition) {
       if (self == null) {
          return;
@@ -98,12 +81,6 @@ public class CharacterCreationSpotFader : ClientMonoBehaviour
       _currentSpotColorTween?.Kill();
       _currentBackgroundColorTween = backgroundImage.DOColor(_defaultColor, _totalEffectTime);
       _currentSpotColorTween = spotMask.DOColor(_defaultColor, _totalEffectTime);
-
-      Util.enableCanvasGroup(_canvasGroup);
-   }
-
-   private void setFadeInitialValues () {
-      MAX_SPOT_SIZE = new Vector2(Screen.width * MAX_SIZE_MULTIPLIER, Screen.width * MAX_SIZE_MULTIPLIER);
 
       Util.enableCanvasGroup(_canvasGroup);
    }

@@ -12,6 +12,21 @@ using System.IO;
 
 public static class ExtensionsUtil {
 
+   public static void setSelected (this ToggleGroup toggleGroup, int selected, bool notify = false) {
+      Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
+
+      for (int i = 0; i < toggles.Length; i++) {
+         Toggle t = toggles[i];
+         toggleGroup.RegisterToggle(t);
+
+         if (notify) {            
+            t.isOn = selected == i;
+         } else {
+            t.SetIsOnWithoutNotify(i == selected);
+         }
+      }
+   }
+
    public static Transform Search (this Transform target, string name) {
       if (target.name == name) return target;
 

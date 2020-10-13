@@ -145,6 +145,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       setArmor(armor);
    }
 
+   private void randomizeSelectedSkin () {
+      int body = Random.Range(0, 5);
+      skinGroup.setSelected(body, true);
+   }
+
+
    private void randomizeSelectedColor (ToggleGroup toggleGroup) {
       Toggle[] toggles = toggleGroup.GetComponentsInChildren<Toggle>();
       int randomIndex = Random.Range(0, toggles.Length);
@@ -197,7 +203,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    public void onCharacterCreationValid () {      
       hide();
 
-      CharacterCreationSpotFader.self.closeAndHide();
+      CharacterCreationSpotFader.self.fadeOutColor();
       
       SpotFader.self.fadeBackgroundColor(Color.black, 0.1f);
       SpotFader.self.closeSpot();
@@ -211,6 +217,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    public void onCharacterCreationFailed () {
       Util.enableCanvasGroup(canvasGroup);
+      CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
    }
 
    public void onCancelButtonClicked () {
@@ -353,6 +360,8 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       // Show the right toggle as enabled (without triggering the OnValueChanged event)
       maleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Male);      
       femaleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Female);
+
+      randomizeSelectedSkin();
    }
 
    private void updateStyleIcons () {
@@ -370,10 +379,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       bodyType = (BodyLayer.Type) (genderId + bodyId);
       setBodyType(bodyType);
 
-      // Update toggles based on current body type
-      skinGroup.SetAllTogglesOff(false);
+      int selected = bodyId - 1;
       Toggle[] toggles = skinGroup.GetComponentsInChildren<Toggle>();
-      toggles[bodyId - 1].SetIsOnWithoutNotify(true);
+
+      for (int i = 0; i < toggles.Length; i++) {
+         toggles[bodyId - 1].SetIsOnWithoutNotify(i == selected);
+      }      
    }
 
    public void refreshHair () {

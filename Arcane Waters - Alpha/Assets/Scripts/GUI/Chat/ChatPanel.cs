@@ -8,6 +8,27 @@ using UnityEngine.EventSystems;
 public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
+   // The height of 1 chat line
+   public static int chatLineHeight = 25;
+
+   // The visible number of lines in each mode, which defines the panel height
+   public static int CHAT_LINES_MINIMIZED = 3;
+   public static int CHAT_LINES_NORMAL = 4;
+   public static int CHAT_LINES_EXPANDED = 18;
+
+   // The speed at which the panel fades in and out
+   public static float FADE_SPEED = 8f;
+
+   // The parameter for smooth movement (smaller is faster)
+   public static float SMOOTH_TIME = 0.05f;
+
+   // The panel modes
+   public enum Mode {
+      Minimized = 0,
+      Normal = 1,
+      Expanded = 2
+   }
+
    // The container of all of our children components
    public GameObject mainContainer;
 
@@ -21,9 +42,11 @@ public class ChatPanel : MonoBehaviour {
    public ScrollRect scrollRect;
    public RectTransform contentRect;
    public RectTransform messageBackgroundRect;
+   public Image messageBackgroundImage;
+   public RectTransform toolbarRect;
+   public CanvasGroup toolbarCanvas;
    public InputField inputField;
    public GameObject scrollBarContainer;
-   public Image arrowImage;
    public Text chatModeText;
 
    // The placeholder message
@@ -38,8 +61,14 @@ public class ChatPanel : MonoBehaviour {
    // Our currently selected chatType
    public ChatInfo.Type currentChatType = ChatInfo.Type.Global;
 
-   // The predefined max height of our chat background image
-   public static int BACKGROUND_MAX_HEIGHT = 106;
+   // When the mouse is over this defined zone, we consider that it hovers the message panel
+   public RectTransform messagePanelHoveringZone;
+
+   // The expand button
+   public GameObject expandButton;
+
+   // The collapse button
+   public GameObject collapseButton;
 
    // Self
    public static ChatPanel self;
@@ -67,17 +96,22 @@ public class ChatPanel : MonoBehaviour {
       messagesContainer.DestroyChildren();
 
       // Rebuild our message list once a second to hide any old messages
-      InvokeRepeating("rebuildMessageList", 1f, 1f);
+      InvokeRepeating(nameof(rebuildMessageList), 1f, 1f);
 
       // Call the autocomplete function when the user writes in chat
       inputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onChatInputValuechanged(inputString));
    }
 
    void Update () {
-      mainContainer.SetActive(shouldShowChat());
+      if (!shouldShowChat()) {
+         mainContainer.SetActive(false);
+         return;
+      }
 
-      // Focus the chat window if the forward slash key is released and the chat is allowed
-      if ((Input.GetKeyUp(KeyCode.Slash)) && shouldShowChat()) {
+      mainContainer.SetActive(true);
+
+      // Focus the chat window if the forward slash key is released
+      if ((Input.GetKeyUp(KeyCode.Slash))) {
 
          if (!wasJustFocused()) {
             inputField.text = "/";
@@ -86,12 +120,6 @@ public class ChatPanel : MonoBehaviour {
             StartCoroutine(activateAfterDelay());
          }
       }
-
-      // Only show the scroll bars if we're in that mode
-      scrollBarContainer.SetActive(_showScrollBars);
-
-      // Adjust the height of the background image based on the size of the chat message content area
-      messageBackgroundRect.sizeDelta = new Vector2(messageBackgroundRect.sizeDelta.x, getNewBackgroundSize());
 
       // Modify the chat mode button based on our current selection
       chatModeText.text = getChatModeString();
@@ -105,6 +133,93 @@ public class ChatPanel : MonoBehaviour {
       if (inputField.isFocused) {
          _lastFocusTime = Time.time;
       }
+
+      // In minimized mode, switch to normal mode when clicking the input field
+      if (_mode == Mode.Minimized && wasJustFocused()) {
+         setMode(Mode.Normal);
+      }
+
+      // Handle panel animations depending on the mode
+      switch (_mode) {
+         case Mode.Minimized:
+            if (_isMouseOverInputField) {
+               // While the mouse is over the input box, switch to normal mode without toolbar
+               animateToolbarAlpha(0f);
+               animatePanelBackgroundAlpha(1f);
+               animatePanelHeight(CHAT_LINES_NORMAL);
+            } else {
+               animateToolbarAlpha(0f);
+               animatePanelBackgroundAlpha(0f);
+               animatePanelHeight(CHAT_LINES_MINIMIZED);
+            }
+            break;
+         case Mode.Normal:
+            // Display the toolbar if the mouse is over the panel
+            if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, Input.mousePosition)) {
+               animateToolbarAlpha(1f);
+            } else {
+               animateToolbarAlpha(0f);
+            }
+            animatePanelBackgroundAlpha(1f);
+            animatePanelHeight(CHAT_LINES_NORMAL);
+            break;
+         case Mode.Expanded:
+            animatePanelBackgroundAlpha(1f);
+            animateToolbarAlpha(1f);
+            animatePanelHeight(CHAT_LINES_EXPANDED);
+            break;
+         default:
+            break;
+      }
+   }
+
+   private void animateToolbarAlpha (float targetAlpha) {
+      if (toolbarCanvas.alpha == targetAlpha) {
+         return;
+      }
+
+      float direction = toolbarCanvas.alpha < targetAlpha ? 1 : -1;
+      float alpha = toolbarCanvas.alpha + direction * FADE_SPEED * Time.deltaTime;
+      alpha = Mathf.Clamp(alpha, 0, 1);
+
+      toolbarCanvas.alpha = alpha;
+   }
+
+   private void animatePanelBackgroundAlpha (float targetAlpha) {
+      if (messageBackgroundImage.color.a == targetAlpha) {
+         return;
+      }
+
+      float direction = messageBackgroundImage.color.a < targetAlpha ? 1 : -1;
+      float alpha = messageBackgroundImage.color.a + direction * FADE_SPEED * Time.deltaTime;
+      alpha = Mathf.Clamp(alpha, 0, 1);
+
+      Util.setAlpha(messageBackgroundImage, alpha);
+   }
+
+   private void animatePanelHeight (int visibleLinesCount) {
+      float targetHeight = toolbarRect.sizeDelta.y + 12 + visibleLinesCount * chatLineHeight;
+
+      if (Mathf.Approximately(messageBackgroundRect.sizeDelta.y, targetHeight)) {
+         return;
+      }
+
+      // Disable the elastic scroll movement while animating the height
+      if (Mathf.Abs(targetHeight - messageBackgroundRect.sizeDelta.y) > 0.1f) {
+         scrollRect.movementType = ScrollRect.MovementType.Clamped;
+      } else {
+         scrollRect.movementType = ScrollRect.MovementType.Elastic;         
+      }
+
+      // In minimized mode, move the scrollbar to the bottom
+      if (_mode == Mode.Minimized) {
+         scrollRect.verticalNormalizedPosition = 0f;
+      }
+
+      messageBackgroundRect.sizeDelta = new Vector2(
+         messageBackgroundRect.sizeDelta.x,
+         Mathf.SmoothDamp(messageBackgroundRect.sizeDelta.y, targetHeight, ref _messagePanelVelocity,
+            SMOOTH_TIME, float.MaxValue, Time.deltaTime));
    }
 
    void OnGUI () {
@@ -141,23 +256,39 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   public void setScrollBarVisible (bool isVisible) {
-      _showScrollBars = isVisible;
+   public void onExpandButtonPressed () {      
+      if (_mode == Mode.Normal) {
+         setMode(Mode.Expanded);
+      }
    }
 
-   public void toggleScrollBarVisibility () {
-      setScrollBarVisible(!_showScrollBars);
-
-      // If we just turned off the scroll bars, make sure we're at the bottom
-      if (!_showScrollBars) {
-         scrollRect.verticalNormalizedPosition = 0f;
+   public void onCollapseButtonPressed () {
+      switch (_mode) {
+         case Mode.Normal:
+            setMode(Mode.Minimized);
+            break;
+         case Mode.Expanded:
+            setMode(Mode.Normal);
+            break;
+         default:
+            break;
       }
+   }
 
-      // Flip the arrow image on the button
-      arrowImage.transform.localScale = _showScrollBars ? new Vector3(1, -1, 1) : Vector3.one;
+   public void onMouseEnterInputBox () {
+      _isMouseOverInputField = true;
+      if (_mode == Mode.Minimized) {
+         // Toggle messages visibility
+         rebuildMessageList();
+      }
+   }
 
-      // Need to rebuild the message list since some messages may toggle their visibility
-      rebuildMessageList();
+   public void onMouseExitInputBox () {
+      _isMouseOverInputField = false;
+      if (_mode == Mode.Minimized) {
+         // Toggle messages visibility
+         rebuildMessageList();
+      }
    }
 
    public bool wasJustFocused () {
@@ -193,6 +324,18 @@ public class ChatPanel : MonoBehaviour {
          } 
 
          chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
+      }
+
+      // In minimized mode, keep the scrollbar at the bottom
+      if (_mode == Mode.Minimized) {
+         scrollRect.verticalNormalizedPosition = 0f;
+      }
+
+      // Set the correct text appearance depending on the mode
+      if (_mode == Mode.Minimized && !_isMouseOverInputField) {
+         chatLine.setAppearanceWithoutBackground();
+      } else {
+         chatLine.setAppearanceWithBackground();
       }
 
       // If we're just starting up, some Managers may not exist yet
@@ -284,11 +427,20 @@ public class ChatPanel : MonoBehaviour {
             deleteList.Add(chatLine);
          }
 
-         // If the message was recently created, or we're in scroll bar mode, show the message
-         if (Time.time - chatLine.creationTime < CHAT_MESSAGE_DISPLAY_DURATION || _showScrollBars) {
-            chatLine.gameObject.SetActive(true);
+         // In minimized mode, only show recent messages, unless the mouse is over the input field
+         if (_mode == Mode.Minimized) {
+            if (_isMouseOverInputField) {
+               chatLine.setAppearanceWithBackground();
+            } else {
+               if (Time.time - chatLine.creationTime > CHAT_MESSAGE_DISPLAY_DURATION) {
+                  chatLine.gameObject.SetActive(false);
+               } else {
+                  chatLine.setAppearanceWithoutBackground();
+               }
+            }
          } else {
-            chatLine.gameObject.SetActive(false);
+            chatLine.setAppearanceWithBackground();
+            chatLine.gameObject.SetActive(true);
          }
 
          num++;
@@ -298,22 +450,6 @@ public class ChatPanel : MonoBehaviour {
       foreach (ChatLine chatLine in deleteList) {
          Destroy(chatLine.gameObject);
       }
-   }
-
-   protected int getNewBackgroundSize () {
-      float contentSize = contentRect.sizeDelta.y;
-
-      if (contentSize >= BACKGROUND_MAX_HEIGHT || _showScrollBars) {
-         return BACKGROUND_MAX_HEIGHT;
-      } else if (contentSize >= 70) {
-         return 84;
-      } else if (contentSize >= 50) {
-         return 56;
-      } else if (contentSize >= 30) {
-         return 34;
-      }
-
-      return 0;
    }
 
    protected string getChatModeString () {
@@ -371,6 +507,47 @@ public class ChatPanel : MonoBehaviour {
       inputField.MoveTextEnd(false);
    }
 
+   private void setMode(Mode mode) {
+      if (_mode == mode) {
+         return;
+      }
+
+      _mode = mode;
+
+      // Panel show, hide and resize is handled in the update
+      switch (_mode) {
+         case Mode.Minimized:
+            toolbarCanvas.gameObject.SetActive(false);
+            scrollBarContainer.SetActive(false);
+            messageBackgroundImage.raycastTarget = false;
+
+            // Need to rebuild the message list since some messages may toggle their visibility
+            rebuildMessageList();
+            break;
+         case Mode.Normal:
+            toolbarCanvas.gameObject.SetActive(true);
+            scrollBarContainer.SetActive(true);
+            expandButton.SetActive(true);
+            collapseButton.SetActive(true);
+            messageBackgroundImage.raycastTarget = true;
+            scrollRect.vertical = true;
+
+            // Need to rebuild the message list since some messages may toggle their visibility
+            rebuildMessageList();
+            break;
+         case Mode.Expanded:
+            toolbarCanvas.gameObject.SetActive(true);
+            scrollBarContainer.SetActive(true);
+            expandButton.SetActive(false);
+            collapseButton.SetActive(true);
+            messageBackgroundImage.raycastTarget = true;
+            scrollRect.vertical = true;
+            break;
+         default:
+            break;
+      }
+   }
+
    #region Private Variables
 
    // How long we show messages for before they disappear
@@ -382,11 +559,17 @@ public class ChatPanel : MonoBehaviour {
    // The time at which the chat input was last focused
    protected float _lastFocusTime;
 
-   // Whether the chat panel should show the scroll bars
-   protected bool _showScrollBars = true;
-
    // Whether we're currently clicking on the scroll bar
    protected bool _isScrolling = false;
+
+   // Gets set to true when the mouse is over the bottom input field area
+   protected bool _isMouseOverInputField = false;
+
+   // Velocity parameters used for animations
+   protected float _messagePanelVelocity;
+
+   // The panel mode
+   protected Mode _mode = Mode.Normal;
 
    #endregion
 }

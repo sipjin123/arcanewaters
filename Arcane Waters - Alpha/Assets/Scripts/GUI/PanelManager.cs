@@ -56,6 +56,9 @@ public class PanelManager : MonoBehaviour {
    private void Update () {
       // Let us easily close panels with the Escape key
       if (Input.GetKeyUp(KeyCode.Escape)) {
+         // Hide tooltips before closing the panel
+         hideToolTips();
+
          // The chat input field might remain selected
          if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject) {
             EventSystem.current.SetSelectedGameObject(null);
@@ -287,6 +290,14 @@ public class PanelManager : MonoBehaviour {
       confirmScreen.cancelButton.onClick.AddListener(() => confirmScreen.hide());
 
       confirmScreen.show(message);
+   }
+
+   public void hideToolTips () {
+      // Check for any tooltips and close them
+      TooltipHandler[] toolTips = FindObjectsOfType<TooltipHandler>();
+      foreach (TooltipHandler toolTip in toolTips) {
+         toolTip.transform.GetChild(0).gameObject.SetActive(false);
+      }
    }
 
    protected Panel showPanel (Panel.Type panelType) {

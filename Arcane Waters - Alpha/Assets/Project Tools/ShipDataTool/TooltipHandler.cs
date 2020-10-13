@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class TooltipHandler : MonoBehaviour {
    #region Public Variables
@@ -12,8 +13,9 @@ public class TooltipHandler : MonoBehaviour {
 
    // Tool tip UI components
    public GameObject toolTipPanel;
-   public GameObject toolTipPivot;
-   public Text toolTipText;
+   public TextMeshProUGUI toolTipTMPText;
+   public RectTransform backgroundRect;
+   public float offSetY = 50;
 
    #endregion
 
@@ -22,14 +24,18 @@ public class TooltipHandler : MonoBehaviour {
    }
 
    public void callToolTip (string msg, Vector2 coordinates) {
-      toolTipPivot.transform.position = coordinates;
+      toolTipTMPText.transform.gameObject.SetActive(true);
+      backgroundRect.transform.gameObject.SetActive(true);
+      toolTipTMPText.SetText(msg);
+      toolTipTMPText.ForceMeshUpdate();
 
-      toolTipText.text = msg;
-      toolTipPanel.SetActive(true);
+      // Set position of tooltip
+      backgroundRect.transform.position = new Vector2(coordinates.x, coordinates.y + offSetY);
    }
 
    public void cancelToolTip() {
-      toolTipPanel.SetActive(false);
+      toolTipTMPText.transform.gameObject.SetActive(false);
+      backgroundRect.transform.gameObject.SetActive(false);
    }
 
    #region Private Variables

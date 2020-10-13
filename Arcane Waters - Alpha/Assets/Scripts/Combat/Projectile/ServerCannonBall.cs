@@ -126,6 +126,9 @@ public class ServerCannonBall : NetworkBehaviour {
       TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
       trail.autodestruct = true;
       trail.transform.SetParent(null);
+
+      // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
+      Destroy(trail.gameObject, 3.0f);
    }
 
    #region Private Variables
