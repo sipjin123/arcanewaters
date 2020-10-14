@@ -1,4 +1,7 @@
-﻿public class ShipXMLContent
+﻿using System;
+
+[Serializable]
+public class ShipXMLContent
 {
    // Id of the xml entry
    public int xmlId;

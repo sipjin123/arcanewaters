@@ -29,6 +29,10 @@ public class ShortcutPanel : ClientMonoBehaviour {
    }
 
    private void Update () {
+      if (Util.isBatch()) {
+         return;
+      }
+
       // Hide this panel when we don't have a body
       if (Global.player == null || !(Global.player is PlayerBodyEntity) || Global.isInBattle()) {
          _canvasGroup.Hide();

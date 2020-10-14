@@ -253,6 +253,8 @@ public class MapManager : MonoBehaviour
                   WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
                }
             }
+         } else {
+            WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
 
          // Set up cell types container

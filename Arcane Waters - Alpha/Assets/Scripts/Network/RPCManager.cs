@@ -939,6 +939,9 @@ public class RPCManager : NetworkBehaviour {
       Area area = AreaManager.self.getArea(areaKey);
 
       if (area != null && area.version == latestVersion) {
+         if (area.isInterior) {
+            WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
+         }
          return;
       }
 
@@ -961,7 +964,7 @@ public class RPCManager : NetworkBehaviour {
             } 
          }
       }
-
+      
       // If we don't have the latest version of the map, download it
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations);
    }
@@ -1526,6 +1529,10 @@ public class RPCManager : NetworkBehaviour {
       NPCData npcData = NPCManager.self.getNPCData(npcId);
       int questId = npcData.questId;
       QuestData questData = NPCQuestManager.self.getQuestData(questId);
+      if (questData == null) {
+         questData = NPCQuestManager.self.getQuestData(NPCQuestManager.BLANK_QUEST_ID);
+         D.debug("Using a blank quest template due to npc data (" + npcId + ") having no assigned quest id");
+      }
       List<QuestDataNode> xmlQuestNodeList = new List<QuestDataNode>(questData.questDataNodes);
       List<QuestDataNode> removeNodeList = new List<QuestDataNode>();
 

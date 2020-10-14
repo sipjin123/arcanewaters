@@ -15,6 +15,12 @@ public class ShopDataToolManager : XmlDataToolManager {
    // Holds the main scene for the shop data
    public ShopToolScene shopScene;
 
+   // Cached ship list
+   public List<ShipXMLContent> shipDataList = new List<ShipXMLContent>();
+
+   // Self
+   public static ShopDataToolManager instance;
+
    public class ShopDataGroup {
       // Id of the entry
       public int xmlId;
@@ -34,6 +40,7 @@ public class ShopDataToolManager : XmlDataToolManager {
    protected override void Awake () {
       base.Awake();
       self = this;
+      instance = this;
    }
 
    private void Start () {
@@ -103,8 +110,26 @@ public class ShopDataToolManager : XmlDataToolManager {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<XMLPair> rawXMLData = DB_Main.getShopXML();
          userNameData = DB_Main.getSQLDataByName(editorToolType);
+         List<XMLPair> rawShipXMLData = DB_Main.getShipXML();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            foreach (XMLPair xmlPair in rawShipXMLData) {
+               TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
+               ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
+
+               // Save the Ship data in the memory cache
+               if (!shipDataList.Exists(_ => _.xmlId == xmlPair.xmlId)) {
+                  shipData.shipID = xmlPair.xmlId;
+                  ShipXMLContent shipContent = new ShipXMLContent {
+                     xmlId = xmlPair.xmlId,
+                     isEnabled = xmlPair.isEnabled,
+                     shipData = shipData
+                  };
+                  shipDataList.Add(shipContent);
+               }
+            }
+
             foreach (XMLPair xmlPair in rawXMLData) {
                TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                ShopData shopData = Util.xmlLoad<ShopData>(newTextAsset);

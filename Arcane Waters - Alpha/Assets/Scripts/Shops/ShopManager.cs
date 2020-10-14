@@ -46,8 +46,6 @@ public class ShopManager : MonoBehaviour {
          // Routinely change out the items
          InvokeRepeating("generateItemsFromXML", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
          InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
-      } else {
-         D.debug("Failed to generate Shop data: " + ShopXMLManager.self.hasInitialized + " : " + EquipmentXMLManager.self.loadedAllEquipment + " : " + PaletteSwapManager.self.getPaletteList().Count);
       }
    }
 
@@ -214,7 +212,9 @@ public class ShopManager : MonoBehaviour {
             if (shopItem.shopItemCategory == ShopToolPanel.ShopCategory.Ship) {
                float randomizedChance = UnityEngine.Random.Range(0, 100);
                if (randomizedChance < shopItem.dropChance) {
-                  Ship.Type shipType = (Ship.Type) shopItem.shopItemTypeIndex;
+                  int shipXmlId = shopItem.shopItemTypeIndex;
+                  ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
+                  Ship.Type shipType = shipData.shipType;
                   Rarity.Type rarity = Rarity.getRandom();
                   int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
                   speed = Mathf.Clamp(speed, 70, 130);

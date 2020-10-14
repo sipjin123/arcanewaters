@@ -141,7 +141,8 @@ public class ShopToolPanel : MonoBehaviour
 
                updateShipTypeEvent.RemoveAllListeners();
                updateShipTypeEvent.AddListener(() => {
-                  shopItemTemp.itemIDType.text = ((int) Enum.Parse(typeof(Ship.Type), shopItemTemp.itemName.text)).ToString();
+                  Ship.Type shipType = (Ship.Type) Enum.Parse(typeof(Ship.Type), shopItemTemp.itemName.text);
+                  shopItemTemp.itemIDType.text = ShopDataToolManager.instance.shipDataList.Find(_ => _.shipData.shipType == shipType).xmlId.ToString();
                });
             });
             break;

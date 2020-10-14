@@ -66,9 +66,6 @@ public class SecretEntrance : MonoBehaviour {
          return;
       }
 
-      // Switch offset
-      _clickableBox.transform.position = spriteRenderer.transform.position;
-
       // Sprite and collision enabled/disabled
       blockerSprite.enabled = false;
       postBlockerSprite.enabled = false;

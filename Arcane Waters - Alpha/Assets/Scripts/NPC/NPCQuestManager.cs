@@ -13,6 +13,9 @@ public class NPCQuestManager : MonoBehaviour {
    // Self
    public static NPCQuestManager self;
 
+   // Id of the blank quest for referencing
+   public const int BLANK_QUEST_ID = 75;
+
    #endregion
 
    private void Awake () {

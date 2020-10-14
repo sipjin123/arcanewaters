@@ -28,6 +28,15 @@ public class ShipDataManager : MonoBehaviour {
       self = this;
    }
 
+   public ShipData getShipData (int shipXmlId) {
+      if (!_shipData.Values.ToList().Exists(_=>_.shipID == shipXmlId)) {
+         D.editorLog("Failed to fetch ship data using Xml Id: " + shipXmlId, Color.red);
+         return _shipData.Values.ToList()[0];
+      }
+      ShipData returnData = _shipData.Values.ToList().Find(_=>_.shipID == shipXmlId);
+      return returnData;
+   }
+
    public ShipData getShipData (Ship.Type shipType) {
       if (!_shipData.ContainsKey(shipType)) {
          D.debug("Failed to fetch ship data: " + shipType);
@@ -48,7 +57,7 @@ public class ShipDataManager : MonoBehaviour {
                      TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                      ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
                      Ship.Type uniqueID = shipData.shipType;
-
+                     shipData.shipID = xmlPair.xmlId;
                      // Save the ship data in the memory cache
                      if (!_shipData.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                         _shipData.Add(uniqueID, shipData);
