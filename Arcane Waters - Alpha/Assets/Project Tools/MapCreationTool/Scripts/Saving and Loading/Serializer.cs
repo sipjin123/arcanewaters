@@ -107,7 +107,7 @@ namespace MapCreationTool.Serialization
          Vector2Int editorOrigin,
          Vector2Int editorSize) {
 
-         Exporter exporter = new Exporter(layers, prefabs, biome, editorType, editorOrigin, editorSize);
+         Exporter exporter = new Exporter(layers, prefabs, biome, editorType, editorOrigin, editorSize, config);
          exporter.transformData(collisionDictionary);
          return JsonUtility.ToJson(exporter.toExportedProject001(config));
       }

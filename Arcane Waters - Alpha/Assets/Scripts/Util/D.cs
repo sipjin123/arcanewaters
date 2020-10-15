@@ -69,6 +69,18 @@ public class D : MonoBehaviour {
       }
    }
 
+   public static void openLogFile () {
+      try {
+         System.Diagnostics.Process.Start(_logFilePath);
+      } catch (Exception e) {
+         log($"Error opening log file. Message: {e.Message}");
+      }
+   }
+
+   internal static void copyLogToClipboard () {
+      GUIUtility.systemCopyBuffer = _logString;
+   }
+
    private static void log (string msg, string callingClass, string callingFunction, ChatInfo.Type type) {
       // We always show all messages in the internal Unity Debug output
       UnityEngine.Debug.Log(msg);

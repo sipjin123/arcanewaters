@@ -14,7 +14,7 @@ public class AuctionSignboard : Signboard
 
    protected override void onClick () {
       AuctionPanel panel = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
-      panel.show();
+      PanelManager.self.linkIfNotShowing(Panel.Type.Auction);
       panel.refreshPanel();
    }
 

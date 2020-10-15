@@ -15,6 +15,9 @@ public class ToolTipSign : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
    // The tooltip panel
    public GameObject toolTipPanel;
 
+   // The tooltip rect transform
+   public RectTransform toolTipRect;
+
    // The text of the tooltip
    public TextMeshProUGUI toolTipText;
 
@@ -48,10 +51,16 @@ public class ToolTipSign : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
    public void OnPointerEnter (PointerEventData eventData) {
       pointerIsHovering = true;
+
+      // Check if tooltip repositioning is needed
+      TooltipManager.self.keepToolTipOnScreen(toolTipRect);
    }
 
    public void OnPointerExit (PointerEventData eventData) {
       pointerIsHovering = false;
+
+      // Reset position of tooltip to default
+      toolTipRect.anchoredPosition = Vector2.zero;
    }
 
    #region Private Variables

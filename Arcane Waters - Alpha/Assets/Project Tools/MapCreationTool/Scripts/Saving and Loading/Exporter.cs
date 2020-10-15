@@ -75,19 +75,21 @@ namespace MapCreationTool.Serialization
       public EditorType editorType { get; private set; }
       public Vector2Int editorOrigin { get; private set; }
       public Vector2Int editorSize { get; private set; }
+      public EditorConfig editorConfig { get; private set; }
 
       private BoardCell[,] cellMatrix;
       private List<(TileBase, Vector2Int)> additionalTileColliders;
       private List<SpecialTileChunk> vineChunks;
 
 
-      public Exporter (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Biome.Type biome, EditorType eType, Vector2Int eOrigin, Vector2Int eSize) {
+      public Exporter (Dictionary<string, Layer> layers, List<PlacedPrefab> prefabs, Biome.Type biome, EditorType eType, Vector2Int eOrigin, Vector2Int eSize, EditorConfig editorConfig) {
          layerDictionary = layers;
          placedPrefabs = prefabs;
          this.biome = biome;
          editorType = eType;
          editorOrigin = eOrigin;
          editorSize = eSize;
+         this.editorConfig = editorConfig;
       }
 
       public ExportedProject001 toExportedProject001 (EditorConfig config) {
@@ -233,6 +235,11 @@ namespace MapCreationTool.Serialization
                   if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
                      continue;
                   }
+               }
+
+               // Check if we need to add additional tile colliders
+               if (cellMatrix[i, j].getAdditionalTileCollider(editorConfig) != null) {
+                  additionalTileColliders.Add((cellMatrix[i, j].getAdditionalTileCollider(editorConfig), new Vector2Int(i, j)));
                }
 
                BoardCell column = cellMatrix[i, j];
@@ -801,6 +808,34 @@ namespace MapCreationTool.Serialization
             for (int i = 0; i < tiles.Length; i++) {
                tiles[i].shouldHaveCollider = false;
             }
+         }
+
+         public TileBase getAdditionalTileCollider (EditorConfig editorConfig) {
+            foreach (EditorConfig.AdditionalColliderConfig colConfig in editorConfig.additionalColliderConfigs) {
+               bool found = true;
+
+               foreach (EditorConfig.TileArray tileArray in colConfig.requiredTiles) {
+                  bool foundTile = false;
+                  foreach (TileBase tile in tileArray.tiles) {
+                     foreach (TileInLayer til in tiles) {
+                        if (tile == til.tileBase) {
+                           foundTile = true;
+                           break;
+                        }
+                     }
+                  }
+                  if (!foundTile) {
+                     found = false;
+                     break;
+                  }
+               }
+
+               if (found) {
+                  return colConfig.addCollider;
+               }
+            }
+
+            return null;
          }
 
          public CellTypesContainer.MapCellType getCellType () {

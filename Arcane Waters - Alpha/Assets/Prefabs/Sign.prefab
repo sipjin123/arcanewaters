@@ -694,6 +694,9 @@ MonoBehaviour:
   directionLabelUI: {fileID: 8807663530018389721}
   signLabel: {fileID: 2130088790159291227}
   isEditorMode: 0
+  distanceToPlayer: 0.3
+  pointerIsHovering: 0
+  toolTipRectTransform: {fileID: 8313633960108970675}
 --- !u!1 &7099649131010224874
 GameObject:
   m_ObjectHideFlags: 0

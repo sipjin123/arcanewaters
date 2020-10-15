@@ -105,7 +105,7 @@ public class AbilityManager : MonoBehaviour
          });
       });
    }
-
+   
    public void addNewAbility (BasicAbilityData ability) {
       if (!_allGameAbilities.Exists(_ => _.itemName == ability.itemName)) {
          if (ability.abilityType == AbilityType.Standard) {

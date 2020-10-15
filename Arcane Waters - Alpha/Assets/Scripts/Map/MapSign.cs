@@ -28,6 +28,9 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver, IPointerEnte
    // The content of the sign
    public TextMeshProUGUI signLabel;
 
+   // The rect transform of the tooltip canvas
+   public RectTransform toolTipRectTransform;
+
    // If this prefab is in map editor mode
    public bool isEditorMode = false;
 
@@ -99,12 +102,18 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver, IPointerEnte
       directionLabelUI.SetActive(true);
       _outline.setVisibility(true);
       pointerIsHovering = true;
+
+      // Check if tooltip repositioning is needed
+      TooltipManager.self.keepToolTipOnScreen(toolTipRectTransform);
    }
 
    public void OnPointerExit (PointerEventData eventData) {
       directionLabelUI.SetActive(false);
       _outline.setVisibility(false);
       pointerIsHovering = false;
+
+      // Reset position of tooltip to default
+      toolTipRectTransform.anchoredPosition = Vector2.zero;
    }
 
    #region Private Variables

@@ -12463,15 +12463,15 @@ MonoBehaviour:
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 1
@@ -12723,15 +12723,15 @@ MonoBehaviour:
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 2
@@ -12983,15 +12983,15 @@ MonoBehaviour:
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: path
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 2
@@ -13243,15 +13243,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 2
@@ -13503,15 +13503,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 2
@@ -13763,15 +13763,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 4
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 1
@@ -14023,15 +14023,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 1
@@ -14283,15 +14283,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 1
@@ -14543,15 +14543,15 @@ MonoBehaviour:
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: grass
       sublayer: 0
       cluster: 3
-      collisionType: 0
+      collisionType: 1
     - layer: 
       sublayer: 0
       cluster: 1
@@ -20451,7 +20451,7 @@ Tilemap:
       - {fileID: 21300466, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300472, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300478, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5.0000005
+      m_AnimationSpeed: 5
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 20, y: 10, z: 0}

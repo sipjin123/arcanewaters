@@ -19,6 +19,9 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
    // The text of the tooltip
    public TextMeshProUGUI toolTipText;
 
+   // The rect transform of the tooltip canvas
+   public RectTransform toolTipRectTransform;
+
    // The message
    public static string MESSAGE = "Here lies ";
 
@@ -30,6 +33,12 @@ public class GraveToolTip : MonoBehaviour, IMapEditorDataReceiver
 
    public virtual void toggleToolTip (bool isActive) {
       toolTipPanel.SetActive(isActive);
+
+      // Reset position of tooltip to default
+      toolTipRectTransform.anchoredPosition = Vector2.zero;
+
+      // Check if tooltip repositioning is needed
+      TooltipManager.self.keepToolTipOnScreen(toolTipRectTransform);
    }
 
    public void receiveData (DataField[] dataFields) {

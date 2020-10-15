@@ -347,6 +347,14 @@ public class OptionsPanel : Panel
       PlayerPrefs.SetFloat(PREF_MINIMAP_SCALE, minimapScaleSlider.value * 100);
    }
 
+   public void onOpenLogFilePressed () {
+      D.openLogFile();
+   }
+
+   public void onCopyLogPressed () {
+      D.copyLogToClipboard();
+   }
+
    public void onLogOutButtonPress () {
       if (Global.player == null) {
          // If we are at the character screen, lets go back to title
@@ -365,6 +373,9 @@ public class OptionsPanel : Panel
 
       // Hide the voyage group invite panel, if opened
       VoyageManager.self.refuseVoyageInvitation();
+
+      // Stop weather simulation
+      WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
 
       // Check if the user is at sea
       if (Global.player is ShipEntity) {

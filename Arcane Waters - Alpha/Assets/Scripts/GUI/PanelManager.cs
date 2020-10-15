@@ -107,8 +107,12 @@ public class PanelManager : MonoBehaviour {
    }
 
    public Panel currentPanel () {
-      Panel.Type panelType = _linkedList.First.Value;
-      return _panels[panelType];
+      foreach (Panel panel in panelStack) {
+         if (panel.gameObject.activeSelf && panel.canvasGroup.alpha > 0f) {
+            return panel;
+         }
+      }
+      return null;
    }
 
    public Panel get (Panel.Type panelType) {
@@ -192,6 +196,14 @@ public class PanelManager : MonoBehaviour {
       }
 
       return false;
+   }
+
+   public bool isFirstPanelInLinkedList (Panel.Type panelType) {
+      if (_linkedList.Count > 0 && _linkedList.First.Value == panelType) {
+         return true;
+      } else {
+         return false;
+      }
    }
 
    public void togglePanel (Panel.Type panelType) {

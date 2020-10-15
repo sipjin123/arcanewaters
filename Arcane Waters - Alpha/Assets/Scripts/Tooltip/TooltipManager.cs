@@ -11,6 +11,9 @@ public class TooltipManager : ClientMonoBehaviour {
    // The tooltip object we manage
    public Tooltip tooltip;
 
+   // Padding from edge of screen
+   public float toolTipPadding = 0.01f;
+
    // Whether or not to show tooltips automatically
    public bool isAutomaticTooltipEnabled = true;
 
@@ -65,6 +68,38 @@ public class TooltipManager : ClientMonoBehaviour {
 
       if (enableAutomaticTooltip) {
          isAutomaticTooltipEnabled = true;
+      }
+   }
+
+   public void keepToolTipOnScreen (RectTransform toolTipRect) {
+      // Find the real world location of the tooltip
+      Vector3 toolTipPos = toolTipRect.transform.position;
+
+      // Find the real world corners of the tooltip
+      Vector3[] worldCorners = new Vector3[4];
+      toolTipRect.GetWorldCorners(worldCorners);
+      float toolTipWidth = worldCorners[3].x - worldCorners[0].x;
+      float toolTipHeight = worldCorners[1].y - worldCorners[0].y;
+
+      // Find the camera bounds
+      Vector2 screenUpperBounds = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+      Vector2 screenLowerBounds = Camera.main.ScreenToWorldPoint(Vector2.zero);
+
+      // Check if tooltip is out of bounds and move if needed
+      if (toolTipPos.x + toolTipWidth / 2 > screenUpperBounds.x) {
+         toolTipRect.transform.position = new Vector3(screenUpperBounds.x - toolTipWidth / 2 - toolTipPadding, toolTipPos.y, toolTipPos.z);
+      }
+
+      if (toolTipPos.x - toolTipWidth / 2 < screenLowerBounds.x) {
+         toolTipRect.transform.position = new Vector3(screenLowerBounds.x + toolTipWidth / 2 + toolTipPadding, toolTipPos.y, toolTipPos.z);
+      }
+
+      if (toolTipPos.y + toolTipHeight / 2 > screenUpperBounds.y) {
+         toolTipRect.transform.position = new Vector3(toolTipPos.x, screenUpperBounds.y - toolTipHeight / 2 - toolTipPadding, toolTipPos.z);
+      }
+
+      if (toolTipPos.y - toolTipHeight / 2 < screenLowerBounds.y) {
+         toolTipRect.transform.position = new Vector3(toolTipPos.x, screenLowerBounds.y + toolTipHeight / 2 + toolTipPadding, toolTipPos.z);
       }
    }
 

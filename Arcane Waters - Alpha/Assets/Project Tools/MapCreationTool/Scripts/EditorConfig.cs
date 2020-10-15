@@ -30,6 +30,9 @@ namespace MapCreationTool
       public Color[] rugLookupPine;
       public Color[] rugLookupSnow;
 
+      // Configs for adding additional colliders for special cases
+      public AdditionalColliderConfig[] additionalColliderConfigs;
+
       public string[] areaLayerNames
       {
          get { return areaLayerIndexes.OrderBy(l => l.index).Select(l => l.layer).ToArray(); }
@@ -83,13 +86,29 @@ namespace MapCreationTool
          return getLayers(editorType).First(l => l.layer.CompareTo(layerName) == 0);
       }
 
-      [System.Serializable]
+      [Serializable]
       public class LayerConfig
       {
          public string layer;
          public int index;
          public float zOffset;
          public LayerType layerType = LayerType.Regular;
+      }
+
+      [Serializable]
+      public class AdditionalColliderConfig
+      {
+         // For each required tile, an array of alternatives is provided
+         public TileArray[] requiredTiles;
+
+         // Tile from which to add the additional collider
+         public TileBase addCollider;
+      }
+
+      [Serializable]
+      public class TileArray
+      {
+         public TileBase[] tiles;
       }
 
       public void testConfigCorrectness () {

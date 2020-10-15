@@ -60,6 +60,11 @@ public class Panel : MonoBehaviour, IPointerClickHandler
 
       // Make us visible after 1 frame, once everything is set up
       StartCoroutine(CO_Show());
+
+      // Throw a warning if the panel is displayed without adding it to the panel list
+      if (!PanelManager.self.isFirstPanelInLinkedList(type)) {
+         D.warning("The panel " + type + " has not been added to the panel list. Use PanelManager.linkIfNotShowing() to show panels.");
+      }
    }
 
    public virtual void hide () {

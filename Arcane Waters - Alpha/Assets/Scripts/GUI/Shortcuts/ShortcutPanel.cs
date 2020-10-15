@@ -41,8 +41,8 @@ public class ShortcutPanel : ClientMonoBehaviour {
          _canvasGroup.Show();
 
          // Disable shortcuts when a panel is opened
-         if (PanelManager.self.hasPanelInLinkedList()
-            && !(PanelManager.self.currentPanel().type == Panel.Type.Inventory)) {
+         Panel currentPanel = PanelManager.self.currentPanel();
+         if (currentPanel != null && currentPanel.type != Panel.Type.Inventory) {
             disableShortcuts();
          } else {
             enableShortcuts();

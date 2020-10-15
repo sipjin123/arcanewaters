@@ -204,7 +204,7 @@ public class ShopManager : MonoBehaviour {
       }
       generateShopShips();
    }
-
+   
    private void generateShopShips () {
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
          _shipsByShopName[shopData.shopName] = new List<int>();

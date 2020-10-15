@@ -206,7 +206,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toolTipMessage: Auctions
   toolTipPanel: {fileID: 3653827092330869024}
+  toolTipRect: {fileID: 9179104630578400267}
   toolTipText: {fileID: 4544298159129342917}
+  maxDistanceForTooltip: 0.4
+  pointerIsHovering: 0
   sortPoint: {fileID: 6250538638274586701}
   signboardRen: {fileID: 102992052273854811}
   signboardSprites:
@@ -613,6 +616,12 @@ RectTransform:
 --- !u!1 &3653827092330869024 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2736648942916349972, guid: 855227c06fce79540bc93dde802e88aa,
+    type: 3}
+  m_PrefabInstance: {fileID: 1679710545138041140}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &9179104630578400267 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7506723018713500991, guid: 855227c06fce79540bc93dde802e88aa,
     type: 3}
   m_PrefabInstance: {fileID: 1679710545138041140}
   m_PrefabAsset: {fileID: 0}
