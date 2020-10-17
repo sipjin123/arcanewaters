@@ -310,15 +310,15 @@ public class EquipmentXMLManager : MonoBehaviour {
             if (craftingItem != null) {
                if (craftingItem.resultItem.category == Item.Category.Weapon) {
                   WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Blueprint";
+                  return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Armor) {
                   ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Blueprint";
+                  return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Hats) {
                   HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Blueprint";
+                  return fetchedData.equipmentName + " Design";
                }
             } else {
                D.debug("The result is null for: " + item.category + " : " + item.itemTypeId + " : " + item.data);

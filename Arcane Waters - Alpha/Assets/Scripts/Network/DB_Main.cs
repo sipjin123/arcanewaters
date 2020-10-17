@@ -265,11 +265,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_hat_xml_v1.xmlContent AS equipmentXML " +
+               "SELECT itmId, itmCategory, itmType " +
                "FROM arcane.items " +
-               "RIGHT JOIN arcane.crafting_xml_v2 ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=hat%' AND crafting_xml_v2.equipmentCategory = 3) " +
-               "RIGHT JOIN arcane.equipment_hat_xml_v1 ON(itmType = equipment_hat_xml_v1.xml_id AND itmData LIKE '%blueprintType=hat%') " +
-               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=hat%') AND items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
 
@@ -279,9 +277,7 @@ public class DB_Main : DB_MainStub
                      int itmId = reader.GetInt32("itmId");
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
-                     string craftingXML = reader.GetString("craftingXML");
-                     string equipmentXML = reader.GetString("equipmentXML");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -301,13 +297,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_armor_xml_v3.xmlContent AS equipmentXML " +
+               "SELECT itmId, itmCategory, itmType " +
                "FROM items " +
-               "RIGHT JOIN crafting_xml_v2 " +
-               "ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=armor%' AND crafting_xml_v2.equipmentCategory = 2) " +
-               "RIGHT JOIN equipment_armor_xml_v3 " +
-               "ON(itmType = equipment_armor_xml_v3.xml_id AND itmData LIKE '%blueprintType=armor%') " +
-               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=armor%') AND items.usrId = @usrId",
                connection)) {
 
                command.Parameters.AddWithValue("@usrId", usrId);
@@ -318,9 +310,7 @@ public class DB_Main : DB_MainStub
                      int itmId = reader.GetInt32("itmId");
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
-                     string craftingXML = reader.GetString("craftingXML");
-                     string equipmentXML = reader.GetString("equipmentXML");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -340,11 +330,9 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, crafting_xml_v2.xmlContent AS craftingXML, equipment_weapon_xml_v3.xmlContent AS equipmentXML " +
+               "SELECT itmId, itmCategory, itmType " +
                "FROM items " +
-               "RIGHT JOIN crafting_xml_v2 ON(itmType = crafting_xml_v2.equipmentTypeID AND itmData LIKE '%blueprintType=weapon%' AND crafting_xml_v2.equipmentCategory = 1) " +
-               "RIGHT JOIN equipment_weapon_xml_v3 ON(itmType = equipment_weapon_xml_v3.xml_id AND itmData LIKE '%blueprintType=weapon%') " +
-               "WHERE(itmCategory = 7) AND items.usrId = @usrId",
+               "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=weapon%') AND items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
 
@@ -354,9 +342,7 @@ public class DB_Main : DB_MainStub
                      int itmId = reader.GetInt32("itmId");
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
-                     string craftingXML = reader.GetString("craftingXML");
-                     string equipmentXML = reader.GetString("equipmentXML");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{craftingXML}[space]{equipmentXML}[space]";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }

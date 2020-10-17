@@ -334,6 +334,7 @@ public class Battle : NetworkBehaviour {
                      actionToSend.battleActionType = BattleActionType.Cancel;
                   } else {
                      actionToSend = AttackAction.deseralize(actionString);
+                     D.debug("TrackLog:: Add Attack to Action Queue: AbilityID:{" + actionToSend.abilityGlobalID + "} : SourceID: {" + actionToSend.sourceId + "} : TargetID:{" + actionToSend.targetId + "}");
                   }
                   actionList.Add(actionToSend);
                   break;

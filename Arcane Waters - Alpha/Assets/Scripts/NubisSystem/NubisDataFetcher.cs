@@ -156,7 +156,7 @@ namespace NubisDataHandling {
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientData);
-         craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients);
+         craftableItems = CraftableItem.processCraftableGroups(rawBlueprintData, craftingIngredients, Item.Category.None);
          equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
 
          List<Item> equippedItems = new List<Item>();
@@ -191,9 +191,9 @@ namespace NubisDataHandling {
          string hatFetch = await NubisClient.call(nameof(DB_Main.fetchCraftableHats), userId);
 
          craftingIngredients = CraftingIngredients.processCraftingIngredients(craftingIngredientXml);
-         List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients);
-         List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients);
-         List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients);
+         List<CraftableItemData> weaponCraftables = CraftableItem.processCraftableGroups(weaponFetch, craftingIngredients, Item.Category.Weapon);
+         List<CraftableItemData> armorCraftables = CraftableItem.processCraftableGroups(armorFetch, craftingIngredients, Item.Category.Armor);
+         List<CraftableItemData> hatCraftables = CraftableItem.processCraftableGroups(hatFetch, craftingIngredients, Item.Category.Hats);
 
          foreach (CraftableItemData weaponData in weaponCraftables) {
             craftableItems.Add(weaponData.craftableItem);

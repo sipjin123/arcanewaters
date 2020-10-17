@@ -22,14 +22,13 @@ namespace NubisDataHandling {
 
    public static class CraftableItem {
       // This Function translates the raw text data into a craftable item group (In order to get crafting info, this class requires an initial fetch for the crafting ingredients the user currently has)
-      public static List<CraftableItemData> processCraftableGroups (string contentData, List<Item> craftableIngredients) {
+      public static List<CraftableItemData> processCraftableGroups (string contentData, List<Item> craftableIngredients, Item.Category category) {
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
 
          // Grab the crafting data from the request
          string rawData = contentData;
          string splitter = "[next]";
          string[] rawItemGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
-
          for (int i = 0; i < rawItemGroup.Length; i++) {
             string itemGroup = rawItemGroup[i];
 
@@ -37,12 +36,18 @@ namespace NubisDataHandling {
             string[] dataGroup = itemGroup.Split(new string[] { subSplitter }, StringSplitOptions.None);
             if (dataGroup.Length > 0) {
                // Crafting ingredients have no crafting data
-               if (dataGroup.Length == 6) {
+               if (dataGroup.Length >= 4) {
                   int itemID = int.Parse(dataGroup[0]);
-                  Item.Category itemCategory = (Item.Category) int.Parse(dataGroup[1]);
+                  Item.Category itemCategory = Item.Category.None;
+                  if (category == Item.Category.None) {
+                     itemCategory = (Item.Category) int.Parse(dataGroup[1]);
+                  } else {
+                     itemCategory = category;
+                  }
                   int itemTypeID = int.Parse(dataGroup[2]);
+                  string itemData = "";
 
-                  CraftableItemRequirements craftableRequirements = dataGroup[3] == "" ? null : Util.xmlLoad<CraftableItemRequirements>(dataGroup[3]);
+                  CraftableItemRequirements craftableRequirements = CraftingManager.self.getCraftableData(itemCategory, itemTypeID);
                   if (craftableRequirements != null) {
                      string itemName = "";
                      string itemDesc = "";
@@ -50,32 +55,33 @@ namespace NubisDataHandling {
 
                      // Process the item as a weapon and extract the weapon data
                      if (craftableRequirements.resultItem.category == Item.Category.Weapon) {
-                        WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(dataGroup[4]);
-                        itemName = weaponData.equipmentName;
+                        WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(craftableRequirements.resultItem.itemTypeId);
                         itemDesc = weaponData.equipmentDescription;
                         itemIconPath = weaponData.equipmentIconPath;
+                        itemData = WeaponStatData.serializeWeaponStatData(weaponData);
                      }
 
                      // Process the item as a armor and extract the armor data
                      if (craftableRequirements.resultItem.category == Item.Category.Armor) {
-                        ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(dataGroup[4]);
-                        itemName = armorData.equipmentName;
+                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(craftableRequirements.resultItem.itemTypeId);
                         itemDesc = armorData.equipmentDescription;
                         itemIconPath = armorData.equipmentIconPath;
+                        itemData = ArmorStatData.serializeArmorStatData(armorData);
                      }
 
                      // Process the item as a hat and extract the hat data
                      if (craftableRequirements.resultItem.category == Item.Category.Hats) {
-                        HatStatData hatData = Util.xmlLoad<HatStatData>(dataGroup[4]);
+                        HatStatData hatData = EquipmentXMLManager.self.getHatData(craftableRequirements.resultItem.itemTypeId);
                         itemName = hatData.equipmentName;
                         itemDesc = hatData.equipmentDescription;
                         itemIconPath = hatData.equipmentIconPath;
+                        itemData = HatStatData.serializeHatStatData(hatData);
                      }
 
                      // Create the item
                      Item item = craftableRequirements.resultItem;
                      item.id = itemID;
-                     item.data = dataGroup[4];
+                     item.data = itemData;
                      item.itemName = itemName;
                      item.itemDescription = itemDesc;
                      item.iconPath = itemIconPath;

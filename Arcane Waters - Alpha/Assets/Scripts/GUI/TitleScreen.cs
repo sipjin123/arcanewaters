@@ -44,6 +44,9 @@ public class TitleScreen : MonoBehaviour {
    // The gameobject referencing the title screen map
    public GameObject titleScreenReference;
 
+   // Reference to the battleboard script of the title screen
+   public BattleBoard battleBoardReference;
+
    #endregion
 
    private void Awake () {
@@ -64,6 +67,7 @@ public class TitleScreen : MonoBehaviour {
       });
 
       CameraManager.self.resolutionChanged += onResolutionChanged;
+      battleBoardReference.setWeather(WeatherEffectType.Cloud, battleBoardReference.biomeType);
    }
 
    private void OnDestroy () {

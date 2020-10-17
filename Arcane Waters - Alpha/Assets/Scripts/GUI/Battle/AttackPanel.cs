@@ -72,6 +72,8 @@ public class AttackPanel : MonoBehaviour {
 
       if (BattleManager.self.getPlayerBattler().canCastAbility()) {
          BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(false);
+
+         D.debug("TrackLog:: Player Request Ability:{" + abilityIndex + "} to Target:{" + target.netId + "}");
          Global.player.rpc.Cmd_RequestAbility((int) AbilityType.Standard, target.netId, abilityIndex, false);
 
          // Trigger the tutorial
