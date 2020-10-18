@@ -118,11 +118,14 @@ namespace MapCreationTool
                   vines.GetComponent<BoxCollider2D>().size = chunk.size - new Vector2(0.6f, 0.9f);
                   break;
                case SpecialTileChunk.Type.Waterfall:
+                  // Lets not place narrow waterfalls to avoid edge cases in tight places
+                  if (chunk.size.x <= 1) continue;
+
                   Ledge waterfall = UnityEngine.Object.Instantiate(AssetSerializationMaps.ledgePrefab, map.prefabParent);
                   waterfall.name = "Waterfall Ledge";
-                  waterfall.transform.localPosition = chunk.position * 0.16f + Vector2.up * (chunk.size.y - 1) * 0.5f * 0.16f;
+                  waterfall.transform.localPosition = chunk.position * 0.16f + Vector2.down * 0.16f * 0.6f;
                   waterfall.transform.localScale = Vector3.one;
-                  waterfall.setSize(chunk.size);
+                  waterfall.setSize(chunk.size + Vector2.up * 0.2f + Vector2.left * 1.6f);
                   break;
                case SpecialTileChunk.Type.Current:
                   GameObject current = UnityEngine.Object.Instantiate(AssetSerializationMaps.currentEffector, map.effectorContainer);
@@ -253,7 +256,7 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   secretsData.Add(prefab);
                }
-            } else { 
+            } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
 
                // Register treasure spot prefab id 

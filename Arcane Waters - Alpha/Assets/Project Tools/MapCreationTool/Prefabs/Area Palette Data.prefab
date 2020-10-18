@@ -13107,7 +13107,7 @@ MonoBehaviour:
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: detail
       sublayer: 0
       cluster: 3
@@ -13367,7 +13367,7 @@ MonoBehaviour:
     - layer: detail
       sublayer: 0
       cluster: 0
-      collisionType: 0
+      collisionType: 1
     - layer: detail
       sublayer: 0
       cluster: 3
@@ -13647,15 +13647,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 0
       cluster: 0
@@ -13907,15 +13907,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 0
       cluster: 0
@@ -14167,15 +14167,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 0
       cluster: 0
@@ -14427,15 +14427,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 0
       cluster: 0
@@ -14947,15 +14947,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 1
       cluster: 0
@@ -15207,15 +15207,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 1
       cluster: 0
@@ -15467,15 +15467,15 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 1
       cluster: 0
@@ -15727,18 +15727,14 @@ MonoBehaviour:
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 1
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
+      collisionType: 0
     - layer: water
       sublayer: 4
       cluster: 0
-      collisionType: 3
-    - layer: water
-      sublayer: 1
-      cluster: 0
       collisionType: 0
     - layer: water
       sublayer: 1
@@ -15748,6 +15744,10 @@ MonoBehaviour:
       sublayer: 1
       cluster: 0
       collisionType: 0
+    - layer: water
+      sublayer: 1
+      cluster: 0
+      collisionType: 1
     - layer: water
       sublayer: 1
       cluster: 0
@@ -20321,7 +20321,7 @@ Tilemap:
       - {fileID: 21300154, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300160, guid: 9f8480c050207984e966150b40d27fae, type: 3}
       - {fileID: 21300166, guid: 9f8480c050207984e966150b40d27fae, type: 3}
-      m_AnimationSpeed: 5
+      m_AnimationSpeed: 5.0000005
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
   - first: {x: 15, y: 9, z: 0}

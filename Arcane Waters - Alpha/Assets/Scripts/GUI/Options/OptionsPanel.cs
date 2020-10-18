@@ -207,8 +207,6 @@ public class OptionsPanel : Panel
 
    private void endInitialSetup () {
       hasInitialized = true;
-      canvasGroup.Show();
-      gameObject.SetActive(false);
    }
 
    private void processCursorState () {

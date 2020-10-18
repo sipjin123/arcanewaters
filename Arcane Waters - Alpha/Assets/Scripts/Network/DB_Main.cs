@@ -17,6 +17,23 @@ using System.Threading.Tasks;
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
 
+public class DatabaseCredentials
+{
+
+   [JsonProperty("AW_DB_SERVER")]
+   public string server;
+
+   [JsonProperty("AW_DB_NAME")]
+   public string database;
+
+   [JsonProperty("AW_DB_USER")]
+   public string user;
+
+   [JsonProperty("AW_DB_PASS")]
+   public string password;
+
+}
+
 public class DB_Main : DB_MainStub
 {
    #region NubisFeatures
@@ -1370,7 +1387,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
-            
+
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -8328,7 +8345,38 @@ public class DB_Main : DB_MainStub
       return new MySqlConnection(_connectionString);
    }
 
+   private static bool overrideDatabaseCredentials () {
+      try {
+         string dir = "C:/ArcaneWaters/Secure/Databases";
+#if FORCE_AMAZON_SERVER_PROD
+         string subDir = "Prod";
+#else
+         string subDir = "Dev";
+#endif
+         string file = "dbConfig.json";
+         string path = System.IO.Path.Combine(dir, subDir, file);
+
+         bool configExists = System.IO.File.Exists(path);
+         if (configExists) {
+            var configData = System.IO.File.ReadAllText(path);
+            var creds = JsonConvert.DeserializeObject<DatabaseCredentials>(configData);
+            if (creds != null) {
+               _uid = creds.user;
+               _database = creds.database;
+               _password = creds.password;
+               _remoteServer = creds.server;
+               return true;
+            }
+         }
+      } catch {
+      }
+      return false;
+   }
+
    public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
+
+      overrideDatabaseCredentials();
+
       return "SERVER=" + server + ";" +
           "DATABASE=" + (database == "" ? _database : database) + ";" +
           "UID=" + (uid == "" ? _uid : uid) + ";" +
@@ -9525,17 +9573,9 @@ public class DB_Main : DB_MainStub
    #region Private Variables
 
    private static string _database = "arcane";
-#if FORCE_AMAZON_SERVER_PROD
-    // Database connection settings
-   private static string _remoteServer = "proddb.c1whxibm6zeb.us-east-2.rds.amazonaws.com";
-   private static string _uid = "r00Tus__r";
-   private static string _password = "e1f3D03d7B59917A5374a37e92e66D83";
-#else
-   // Database connection settings
-   private static string _remoteServer = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com"; // 52.72.202.104 // "127.0.0.1";//
+   private static string _remoteServer = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com";
    private static string _uid = "userAdKmE";
    private static string _password = "HEqbVDsvvCza5n4N";
-#endif
    private static string _connectionString = buildConnectionString(_remoteServer);
 
    #endregion

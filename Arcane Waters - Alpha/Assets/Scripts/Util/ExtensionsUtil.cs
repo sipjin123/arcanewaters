@@ -160,6 +160,14 @@ public static class ExtensionsUtil {
       transform.localPosition = pos;
    }
 
+   public static float squareDistanceTo (this Transform t1, Transform t2) {
+      return ((Vector2)t1.position - (Vector2) t2.position).sqrMagnitude;
+   }
+
+   public static float squareDistanceTo (this GameObject t1, GameObject t2) {
+      return ((Vector2) t1.transform.position - (Vector2) t2.transform.position).sqrMagnitude;
+   }
+
    public static void PixelSnap (this Transform transform) {
       Vector3 pos = transform.localPosition;
 

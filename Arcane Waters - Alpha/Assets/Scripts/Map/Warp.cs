@@ -72,8 +72,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (PanelManager.self.loadingScreen != null) {
                PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
             }
-         } 
-      } 
+         }
+      }
    }
 
    [ServerOnly]
@@ -85,14 +85,12 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    }
 
    public void receiveData (DataField[] dataFields) {
+      DataField targetMapField = null;
+
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.WARP_TARGET_MAP_KEY:
-               if (field.tryGetIntValue(out int id)) {
-                  areaTarget = AreaManager.self.getAreaName(id);
-               } else {
-                  areaTarget = field.v;
-               }
+               targetMapField = field;
                break;
             case DataField.WARP_TARGET_SPAWN_KEY:
                spawnTarget = field.v.Trim(' ');
@@ -108,7 +106,23 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          }
       }
 
+      if (targetMapField != null) {
+         setAreaTarget(targetMapField);
+      }
+
       updateArrow();
+   }
+
+   public void setAreaTarget (DataField targetField) {
+      if (targetField.tryGetIntValue(out int id)) {
+         if (targetInfo != null && targetInfo.id == id) {
+            areaTarget = targetInfo.name;
+         } else {
+            areaTarget = AreaManager.self.getAreaName(id);
+         }
+      } else {
+         areaTarget = targetField.v;
+      }
    }
 
    /// <summary>

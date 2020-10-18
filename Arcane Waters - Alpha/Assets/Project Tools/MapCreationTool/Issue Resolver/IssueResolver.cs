@@ -25,24 +25,21 @@ namespace MapCreationTool.IssueResolving
       private static int resolvedMaps;
       private static string rootReportFolder;
       private static List<MapSummary> mapSummaries;
-      private static bool alterData;
-      private static bool saveMaps;
-      private static bool createNewVersion;
+      private static Config config;
       private static IssueContainer issueContainer;
+      private static string logs = "";
 
       private void Awake () {
          instance = this;
       }
 
-      public static async void run (bool alterData, bool saveMaps, bool createNewVersion) {
+      public static async void run (Config config) {
          if (running) {
             UI.messagePanel.displayError("Issue resolver is already running.");
             return;
          }
 
-         IssueResolver.alterData = alterData;
-         IssueResolver.saveMaps = saveMaps;
-         IssueResolver.createNewVersion = createNewVersion;
+         IssueResolver.config = config;
          running = true;
          scheduledForResolve = new ConcurrentQueue<MapVersion>();
          scheduledUpload = new ConcurrentQueue<(Action, string)>();
@@ -51,6 +48,7 @@ namespace MapCreationTool.IssueResolving
          uploadTasks = new List<Task>();
          rootReportFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\Issue Resolver " + DateTime.Now.ToString("MMMM dd H.mm.ss");
          mapSummaries = new List<MapSummary>();
+         logs = "";
 
          try {
             issueContainer = Resources.Load<IssueContainer>("Issue Container");
@@ -70,7 +68,9 @@ namespace MapCreationTool.IssueResolving
          UI.loadingPanel.display("Resolving Issues");
 
          try {
-            maps = (await DB_Main.execAsync(DB_Main.getMaps)).Where(m => m.editorType == EditorType.Area).ToList();
+            maps = (await DB_Main.execAsync(DB_Main.getMaps))
+               .Where(m => m.editorType == EditorType.Area)
+               .ToList();
             receivedMaps();
          } catch (Exception ex) {
             encounteredError(ex);
@@ -112,7 +112,7 @@ namespace MapCreationTool.IssueResolving
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "before misused tiles.txt", getMisusedTilesReport(tileDataDictionary, out misusedBeforeCount)));
 
                // Resolve issues
-               IssueResolvingResult? resolvingResult = alterData ? resolveMap() : (IssueResolvingResult?) null;
+               IssueResolvingResult? resolvingResult = config.alterData ? resolveMap() : (IssueResolvingResult?) null;
                if (resolvingResult != null) {
                   doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "resolver report.txt", resolvingResult.Value.formReport()));
                }
@@ -125,10 +125,24 @@ namespace MapCreationTool.IssueResolving
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "after misused tiles.txt", getMisusedTilesReport(tileDataDictionary, out misusedAfterCount)));
                doIOAction(() => File.WriteAllText(mapDirectory + @"\" + "removed data fields.txt", getRemovedDataFieldsReport(resolvingResult)));
 
-               if (saveMaps && resolvingResult?.exception == null) {
+               if (config.saveMaps && resolvingResult?.exception == null) {
                   MapVersion newVersion = serializeVersion();
-                  if (createNewVersion) {
-                     scheduledUpload.Enqueue((() => DB_Main.createNewMapVersion(newVersion), newVersion.map.name));
+                  if (config.createNewVersion) {
+                     bool wasLatestVersion = DrawBoard.loadedVersion.map.publishedVersion == DrawBoard.loadedVersion.version;
+                     Action uploadAction = () => {
+                        MapVersion uploadedVersion = DB_Main.createNewMapVersion(newVersion);
+
+                        // Publish the uploaded version if configured and the previous version was the latest one before
+                        if (config.publishMapIfLatest) {
+                           if (wasLatestVersion) {
+                              DB_Main.setLiveMapVersion(uploadedVersion);
+                           } else {
+                              logUnhandled("Not publishing live version of map: " + uploadedVersion.map.name + " " + uploadedVersion.version);
+                           }
+                        }
+                     };
+
+                     scheduledUpload.Enqueue((uploadAction, newVersion.map.name));
                   } else {
                      newVersion.version = DrawBoard.loadedVersion.version;
                      newVersion.createdAt = DrawBoard.loadedVersion.createdAt;
@@ -338,17 +352,17 @@ namespace MapCreationTool.IssueResolving
 
       private static string formLongSummary (IEnumerable<MapSummary> summaries) {
          return
-            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
-            + $" (New version = {createNewVersion})" + Environment.NewLine +
-            (alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
+            (config.saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
+            + $" (New version = {config.createNewVersion}, Publish version = {config.publishMapIfLatest})" + Environment.NewLine +
+            (config.alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
             string.Join(Environment.NewLine, summaries.Select(ms => ms.toLongSummary())) + Environment.NewLine;
       }
 
       private static string formShortSummary (IEnumerable<MapSummary> summaries) {
          return
-            (saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
-            + $" (New version = {createNewVersion})" + Environment.NewLine +
-            (alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
+            (config.saveMaps ? "Maps saved after resolving issues" : "Maps NOT saved after resolving issues")
+            + $" (New version = {config.createNewVersion}, Publish version = {config.publishMapIfLatest})" + Environment.NewLine +
+            (config.alterData ? "Issue resolving excecuted" : "Issue Resolver NOT excecuted") + Environment.NewLine + Environment.NewLine +
             toStringLines(summaries.Select(ms => ms.toShortSummary()));
       }
 
@@ -402,6 +416,8 @@ namespace MapCreationTool.IssueResolving
             UI.messagePanel.displayInfo("Resolving Issues Ended", "Resolving Issue process has successfully ended.\nSummary is saved in:\n" + rootReportFolder);
             running = false;
          }
+
+         File.WriteAllText(rootReportFolder + @"\logs.txt", logs);
       }
 
       private static MapVersion serializeVersion () {
@@ -433,6 +449,10 @@ namespace MapCreationTool.IssueResolving
          };
       }
 
+      private static void logUnhandled (string message) {
+         logs += message + Environment.NewLine;
+      }
+
       private static Action<Exception> encounteredError
       {
          get
@@ -447,6 +467,8 @@ namespace MapCreationTool.IssueResolving
                }
                instance.StopAllCoroutines();
                running = false;
+
+               File.WriteAllText(rootReportFolder + @"\logs.txt", logs);
             };
          }
       }
@@ -596,6 +618,15 @@ namespace MapCreationTool.IssueResolving
                }
             }
          }
+      }
+
+      [Serializable]
+      public struct Config
+      {
+         public bool alterData;
+         public bool saveMaps;
+         public bool createNewVersion;
+         public bool publishMapIfLatest;
       }
    }
 }

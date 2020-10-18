@@ -54,6 +54,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       // Start invisible initially
       canvasGroup.alpha = 0f;
       canvasGroup.interactable = true;
+      canvasGroup.blocksRaycasts = true;
 
       // Then turn on the game object so that everything gets positioned
       this.gameObject.SetActive(true);
@@ -71,6 +72,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       // Make sure we're fully hidden
       canvasGroup.alpha = 0f;
       canvasGroup.interactable = false;
+      canvasGroup.blocksRaycasts = false;
       this.gameObject.SetActive(false);
    }
 

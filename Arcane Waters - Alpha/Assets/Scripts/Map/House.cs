@@ -13,14 +13,12 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
    }
 
    public void receiveData (DataField[] dataFields) {
+      DataField targetMapField = null;
+
       foreach (DataField field in dataFields) {
          switch (field.k.ToLower()) {
             case DataField.HOUSE_TARGET_MAP_KEY:
-               if (field.tryGetIntValue(out int id)) {
-                  warp.areaTarget = AreaManager.self.getAreaName(id);
-               } else {
-                  warp.areaTarget = field.v;
-               }
+               targetMapField = field;
                warp.gameObject.SetActive(true);
                break;
             case DataField.HOUSE_TARGET_SPAWN_KEY:
@@ -34,6 +32,10 @@ public class House : MonoBehaviour, IMapEditorDataReceiver
                warp.targetInfo = field.objectValue<Map>();
                break;
          }
+      }
+
+      if (targetMapField != null) {
+         warp.setAreaTarget(targetMapField);
       }
 
       warp.updateArrow();

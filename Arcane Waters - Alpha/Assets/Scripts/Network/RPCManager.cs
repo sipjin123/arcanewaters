@@ -4583,7 +4583,7 @@ public class RPCManager : NetworkBehaviour {
       Target_BaseMapUpdated(customMapKey, baseMapId);
 
       if (warpIntoAfterSetting) {
-         _player.spawnInNewMap(customMapKey);
+         _player.spawnInNewMap(customMapKey, null, _player.facing);
       }
 
       await giveItemRewardsToPlayer(_player.userId, rewards, false);
