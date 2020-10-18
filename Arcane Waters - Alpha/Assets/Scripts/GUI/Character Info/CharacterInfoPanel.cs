@@ -117,7 +117,7 @@ public class CharacterInfoPanel : Panel {
          userObjects.weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
       }
       if (userObjects.armor.itemTypeId != 0) {
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(userObjects.armor.itemTypeId);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(userObjects.armor.itemTypeId);
          userObjects.armor.data = ArmorStatData.serializeArmorStatData(armorData);
       }
       if (userObjects.hat.itemTypeId != 0) {

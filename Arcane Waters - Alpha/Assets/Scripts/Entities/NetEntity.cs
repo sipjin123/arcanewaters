@@ -397,7 +397,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (armor.itemTypeId > 0) {
-         ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(armor.itemTypeId);
+         ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorDataBySqlId(armor.itemTypeId);
          if (armorStatData != null) {
             armor.data = ArmorStatData.serializeArmorStatData(armorStatData);
          } else {

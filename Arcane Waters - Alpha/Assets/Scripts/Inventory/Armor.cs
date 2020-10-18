@@ -124,7 +124,7 @@ public class Armor : EquippableItem {
    }
 
    public static int getBaseArmor (int armorType) {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armorType);
       if (armorData == null) {
          D.debug("Cannot get Base Armor, Armor data does not exist! Go to Equipment Editor and make new data: (" + armorType + ")");
          return 5;
@@ -165,7 +165,7 @@ public class Armor : EquippableItem {
          return "None";
       }
 
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armorType);
       if (armorData == null) {
          D.debug("Cannot get Name, Armor data does not exist! Go to Equipment Editor and make new data :: (" + armorType + ")");
          return "Undefined";

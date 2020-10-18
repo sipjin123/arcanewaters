@@ -2606,7 +2606,7 @@ public class RPCManager : NetworkBehaviour {
             resultItem = WeaponStatData.translateDataToWeapon(weaponData);
             resultItem.data = "";
          } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(blueprint.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(blueprint.itemTypeId);
             resultItem = ArmorStatData.translateDataToArmor(armorData);
             resultItem.data = "";
          }
@@ -2696,7 +2696,7 @@ public class RPCManager : NetworkBehaviour {
                   }
                   break;
                case Item.Category.Armor:
-                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(craftedItem.itemTypeId);
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(craftedItem.itemTypeId);
                   if (armorData != null) {
                      craftedItem.data = ArmorStatData.serializeArmorStatData(armorData);
                   }
@@ -4281,7 +4281,7 @@ public class RPCManager : NetworkBehaviour {
                }
                break;
             case Item.Category.Armor:
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
                if (armorData != null) {
                   item.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription, armorData.equipmentIconPath, item.paletteNames);
                }
@@ -4327,7 +4327,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Armor armor = Armor.castItemToArmor(userObjects.armor);
             if (armor.data.Length < 1 && armor.itemTypeId > 0 && armor.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
-               armor.data = ArmorStatData.serializeArmorStatData( EquipmentXMLManager.self.getArmorData(armor.itemTypeId));
+               armor.data = ArmorStatData.serializeArmorStatData(EquipmentXMLManager.self.getArmorDataByType(armor.itemTypeId));
                userObjects.armor.data = armor.data;
             }
             if (body != null) {

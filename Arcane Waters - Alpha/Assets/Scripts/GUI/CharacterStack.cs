@@ -58,7 +58,7 @@ public class CharacterStack : MonoBehaviour {
          }
       } else {
          if (userObjects.armor.itemTypeId > 0) {
-            armorData = EquipmentXMLManager.self.getArmorData(userObjects.armor.itemTypeId);
+            armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
          }
       }
       updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
@@ -155,7 +155,7 @@ public class CharacterStack : MonoBehaviour {
       // Only process this when the user is in avatar mode and not in ship mode
       // This syncs the users color scheme to the GUI material of the character stack(Inventory Char Preview)
       if (Global.player is PlayerBodyEntity) {
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armorType);
          PlayerBodyEntity playerEntity = Global.player as PlayerBodyEntity;
 
          armorLayer.recolor(playerEntity.armorManager.palettes);

@@ -84,7 +84,7 @@ public class ArmorManager : EquipmentManager {
 
    [Server]
    public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes) {
-      ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorTypeId);
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorTypeId);
 
       if (armorData == null) {
          armorData = ArmorStatData.getDefaultData();

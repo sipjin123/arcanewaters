@@ -208,7 +208,7 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
             itemTemplate.itemIcon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
             itemTemplate.itemName.text = armorData.equipmentName;
             itemTemplate.itemIcon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
@@ -228,7 +228,7 @@ public class QuestToolDialogueTemplate : MonoBehaviour {
                itemName = fetchedData.equipmentName;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorData(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorDataByType(craftingItem.resultItem.itemTypeId);
                iconPath = fetchedData.equipmentIconPath;
                itemName = fetchedData.equipmentName;
             }

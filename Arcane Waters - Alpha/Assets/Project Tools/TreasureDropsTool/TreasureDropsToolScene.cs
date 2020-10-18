@@ -107,7 +107,7 @@ public class TreasureDropsToolScene : MonoBehaviour {
          changeItemTypeEvent.AddListener(() => {
             TreasureDropsItemTemplate template = Instantiate(treasureItemTemplate.gameObject, itemTemplateHolder).GetComponent<TreasureDropsItemTemplate>();
             int armorType = int.Parse(cachedItemIndex.text);
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armorType);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armorType);
             processItemTemplate(template, category, armorType, ArmorStatData.serializeArmorStatData(armorData), armorData.equipmentIconPath);
          });
          genericSelectionPopup.callItemTypeSelectionPopup(category, cachedItemName, cachedItemIndex, cachedItemIcon, changeItemTypeEvent);

@@ -229,7 +229,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
       armor.count = 1;
       armor.data = _armorData;
       if (_armorData.Length < 1 && armor.itemTypeId != 0) {
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(armor.itemTypeId);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armor.itemTypeId);
          armor.data = ArmorStatData.serializeArmorStatData(armorData);
       }
 

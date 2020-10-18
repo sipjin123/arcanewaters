@@ -130,14 +130,18 @@ public class ServerMessageManager : MonoBehaviour {
                // Assign the appropriate data for the armors using the armor type id
                for (int i = 0; i < armorList.Count; i++) {
                   if (armorList[i].itemTypeId != 0) {
-                     ArmorStatData armorStat = EquipmentXMLManager.self.getArmorData(armorList[i].itemTypeId);
-                     if (armorList[i].data != null) {
-                        armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
-                        armorPalettes[i] = armorStat.palettes;
+                     ArmorStatData armorStat = EquipmentXMLManager.self.getArmorDataBySqlId(armorList[i].itemTypeId);
+                     if (armorStat != null) {
+                        if (armorList[i].data != null) {
+                           armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+                           armorPalettes[i] = armorStat.palettes;
+                        } else {
+                           D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
+                        }
+                        amorItemList.Add(armorList[i]);
                      } else {
-                        D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
+                        D.debug("Cannot process loaded armor data for armorType: " + armorList[i].itemTypeId);
                      }
-                     amorItemList.Add(armorList[i]);
                   }
                }
 
@@ -174,15 +178,18 @@ public class ServerMessageManager : MonoBehaviour {
                if (armorList.Count < 1) {
                   for (int i = 1; i < 4; i++) {
                      int currentArmorId = 1;
-                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorData(currentArmorId);
-
-                     //Only output visually unique armors
-                     while (startingSpriteIds.Any(spriteId => startArmorData.armorType == spriteId)) {
-                        currentArmorId++;
-                        startArmorData = EquipmentXMLManager.self.getArmorData(currentArmorId);
+                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
+                     if (startArmorData != null) {
+                        //Only output visually unique armors
+                        while (startingSpriteIds.Any(spriteId => startArmorData.armorType == spriteId)) {
+                           currentArmorId++;
+                           startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
+                        }
+                        startingEquipmentIds.Add(startArmorData.sqlId);
+                        startingSpriteIds.Add(startArmorData.armorType);
+                     } else {
+                        D.debug("Cannot process starting armor equipment: ArmorType:" + currentArmorId);
                      }
-                     startingEquipmentIds.Add(startArmorData.sqlId);
-                     startingSpriteIds.Add(startArmorData.armorType);
                   }
                }
 

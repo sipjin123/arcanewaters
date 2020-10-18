@@ -157,7 +157,7 @@ public class InventoryPanel : Panel {
                newArmor = ArmorStatData.translateDataToArmor(armorData);
                newArmor.itemTypeId = armorData.sqlId;
             } else {
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
                newArmor.itemTypeId = armorData.sqlId;
                newArmor.data = ArmorStatData.serializeArmorStatData(armorData);
             }

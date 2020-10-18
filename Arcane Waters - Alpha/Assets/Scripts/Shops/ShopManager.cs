@@ -86,7 +86,7 @@ public class ShopManager : MonoBehaviour {
                int weaponType = getPossibleWeapons(biomeType).ChooseByRandom();
                item = Weapon.generateRandom(_itemId++, weaponType);
             } else {
-               int armorType = getPossibleArmor(biomeType).ChooseByRandom();
+               int armorType = EquipmentXMLManager.self.armorStatList.ChooseRandom().armorType;
                item = Armor.generateRandom(_itemId++, armorType);
             }
 

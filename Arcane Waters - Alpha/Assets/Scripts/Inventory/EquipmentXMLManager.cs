@@ -53,22 +53,24 @@ public class EquipmentXMLManager : MonoBehaviour {
       return null;
    }
 
-   public ArmorStatData getArmorData (int armorType) {
-      if (_armorStatList == null) {
-         D.warning("List is null!: " + armorType);
-         return null;
+   public ArmorStatData getArmorDataByType (int armorType) {
+      ArmorStatData armorStatData = _armorStatList.Values.ToList().Find(_ => _.armorType == armorType);
+      if (armorStatData != null) {
+         return armorStatData;
       }
-      if (_armorStatList.ContainsKey(armorType)) {
-         return _armorStatList[armorType];
+      D.warning("Armor Does not exist: ArmorType: " + armorType);
+      return null;
+   }
+
+   public ArmorStatData getArmorDataBySqlId (int sqlId) {
+      if (_armorStatList.ContainsKey(sqlId)) {
+         return _armorStatList[sqlId];
       }
-      D.warning("Armor Does not exist: " + armorType);
+      D.warning("Armor Does not exist: " + sqlId);
       return null;
    }
 
    public HatStatData getHatData (int hatType) {
-      if (_hatStatList == null) {
-         return null;
-      }
       HatStatData hatDataFetched = _hatStatList.Values.ToList().Find(_ => _.sqlId == hatType);
       if (hatDataFetched != null) {
          return hatDataFetched;
@@ -147,6 +149,7 @@ public class EquipmentXMLManager : MonoBehaviour {
    public void receiveWeaponDataFromZipData (List<WeaponStatData> statData) {
       foreach (WeaponStatData rawData in statData) {
          int uniqueID = rawData.sqlId;
+
          // Save the data in the memory cache
          if (!_weaponStatList.ContainsKey(uniqueID)) {
             _weaponStatList.Add(uniqueID, rawData);
@@ -158,7 +161,8 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    public void receiveArmorDataFromZipData (List<ArmorStatData> statData) {
       foreach (ArmorStatData rawData in statData) {
-         int uniqueID = rawData.armorType;
+         int uniqueID = rawData.sqlId;
+
          // Save the data in the memory cache
          if (!_armorStatList.ContainsKey(uniqueID)) {
             _armorStatList.Add(uniqueID, rawData);
@@ -169,8 +173,6 @@ public class EquipmentXMLManager : MonoBehaviour {
    }
 
    public void receiveHatFromZipData (List<HatStatData> statData) {
-      _hatStatList = new Dictionary<int, HatStatData>();
-      hatStatData = new List<HatStatData>(); 
       foreach (HatStatData rawData in statData) {
          int uniqueID = rawData.sqlId;
 
@@ -238,7 +240,7 @@ public class EquipmentXMLManager : MonoBehaviour {
          switch (dataItem.category) {
             case Item.Category.Armor:
                // Basic Info Setup
-               ArmorStatData armorStatData = self.getArmorData(dataItem.itemTypeId);
+               ArmorStatData armorStatData = self.getArmorDataByType(dataItem.itemTypeId);
                itemName = armorStatData.equipmentName;
                itemDesc = armorStatData.equipmentDescription;
                itemPath = armorStatData.equipmentIconPath;
@@ -294,7 +296,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             newName = hatData.equipmentName;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorData(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
             newName = armorData.equipmentName;
             break;
          case Item.Category.Weapon:
@@ -313,7 +315,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                   return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Armor) {
-                  ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
+                  ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
                   return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Hats) {
@@ -338,7 +340,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             newDescription = hatData.equipmentDescription;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorData(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
             newDescription = armorData.equipmentDescription;
             break;
          case Item.Category.Weapon:
@@ -358,7 +360,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentDescription;
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {
@@ -380,7 +382,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             iconPath = hatData.equipmentIconPath;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorData(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
             iconPath = armorData.equipmentIconPath;
             break;
          case Item.Category.Weapon:
@@ -403,7 +405,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                return fetchedData.equipmentIconPath;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = getArmorData(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentIconPath;
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {

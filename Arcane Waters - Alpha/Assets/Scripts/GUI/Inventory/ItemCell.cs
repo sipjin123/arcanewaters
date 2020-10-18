@@ -64,36 +64,48 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       switch (item.category) {
          case Item.Category.Weapon:
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
-            Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
-            newWeapon.id = item.id;
-            newWeapon.paletteNames = item.paletteNames;
-            item = newWeapon;
+            if (weaponData == null) {
+               D.debug("Failed to process weapon data of item type: " + item.itemTypeId);
+            } else {
+               Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+               newWeapon.id = item.id;
+               newWeapon.paletteNames = item.paletteNames;
+               item = newWeapon;
 
-            icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
-            itemSpriteId = weaponData.weaponType;
-            itemTypeId = item.itemTypeId;
+               icon.sprite = ImageManager.getSprite(weaponData.equipmentIconPath);
+               itemSpriteId = weaponData.weaponType;
+               itemTypeId = item.itemTypeId;
+            }
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
-            Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
-            newArmor.id = item.id;
-            newArmor.paletteNames = item.paletteNames;
-            item = newArmor;
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
+            if (armorData == null) {
+               D.debug("Failed to process armor data of item type: " + item.itemTypeId);
+            } else {
+               Armor newArmor = ArmorStatData.translateDataToArmor(armorData);
+               newArmor.id = item.id;
+               newArmor.paletteNames = item.paletteNames;
+               item = newArmor;
 
-            icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
-            itemSpriteId = armorData.armorType;
-            itemTypeId = item.itemTypeId;
+               icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
+               itemSpriteId = armorData.armorType;
+               itemTypeId = item.itemTypeId;
+            }
             break;
          case Item.Category.Hats:
             HatStatData hatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
-            Hat newHat = HatStatData.translateDataToHat(hatData);
-            newHat.id = item.id;
-            newHat.paletteNames = item.paletteNames;
-            item = newHat;
+            if (hatData == null) {
+               D.debug("Failed to process hat data of item type: " + item.itemTypeId);
+            } else {
+               Hat newHat = HatStatData.translateDataToHat(hatData);
+               newHat.id = item.id;
+               newHat.paletteNames = item.paletteNames;
+               item = newHat;
 
-            icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
-            itemSpriteId = hatData.hatType;
-            itemTypeId = item.itemTypeId;
+               icon.sprite = ImageManager.getSprite(hatData.equipmentIconPath);
+               itemSpriteId = hatData.hatType;
+               itemTypeId = item.itemTypeId;
+            }
             break;
          case Item.Category.Potion:
             item = item.getCastItem();

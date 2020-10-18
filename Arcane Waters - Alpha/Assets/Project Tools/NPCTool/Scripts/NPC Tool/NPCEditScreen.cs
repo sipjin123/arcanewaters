@@ -517,7 +517,7 @@ public class NPCEditScreen : MonoBehaviour
          string spritePath = EquipmentXMLManager.self.getWeaponData(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Armor) {
-         string spritePath = EquipmentXMLManager.self.getArmorData(itemID).equipmentIconPath;
+         string spritePath = EquipmentXMLManager.self.getArmorDataByType(itemID).equipmentIconPath;
          imageSprite.sprite = ImageManager.getSprite(spritePath);
       } else if (category == Item.Category.Blueprint) {
          if (data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
@@ -530,7 +530,7 @@ public class NPCEditScreen : MonoBehaviour
             }
          } else if (data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
             int modifiedID = Blueprint.modifyID(Item.Category.Blueprint, itemID);
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(modifiedID);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
             if (armorData != null) {
                imageSprite.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             } else {

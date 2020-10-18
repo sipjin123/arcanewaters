@@ -57,7 +57,7 @@ public class GenericItemRow : MonoBehaviour {
                if (itemTypeID.ToString().StartsWith(Blueprint.ARMOR_ID_PREFIX)) {
                   modifiedID = int.Parse(itemTypeID.ToString().Replace(Blueprint.ARMOR_ID_PREFIX, ""));
                }
-               ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(modifiedID);
+               ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(modifiedID);
 
                itemTypeName.text = armorData.equipmentName;
                string spritePath = armorData.equipmentIconPath;
@@ -73,7 +73,7 @@ public class GenericItemRow : MonoBehaviour {
       } else if (category == Item.Category.Armor) {
          itemCategoryName.text = category.ToString();
 
-         ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itemTypeID);
+         ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(itemTypeID);
          if (armorData != null) {
             itemTypeName.text = armorData.equipmentName;
             string spritePath = armorData.equipmentIconPath;

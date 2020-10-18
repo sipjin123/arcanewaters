@@ -28,7 +28,7 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
    public void updateCellContent (Item item, int requirement, int current) {
       switch (item.category) {
          case Item.Category.Armor:
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
          case Item.Category.Weapon:

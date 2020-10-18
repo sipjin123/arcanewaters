@@ -206,7 +206,7 @@ public class CraftingIngredientPanel : MonoBehaviour {
                string imagePath = EquipmentXMLManager.self.getHatData(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else if (selectedCategory == Item.Category.Armor) {
-               string imagePath = EquipmentXMLManager.self.getArmorData(item.Key).equipmentIconPath;
+               string imagePath = EquipmentXMLManager.self.getArmorDataByType(item.Key).equipmentIconPath;
                itemTemp.spriteIcon.sprite = ImageManager.getSprite(imagePath);
             } else if (selectedCategory == Item.Category.Weapon) {
                string imagePath = EquipmentXMLManager.self.getWeaponData(item.Key).equipmentIconPath;

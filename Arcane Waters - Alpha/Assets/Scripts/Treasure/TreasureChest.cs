@@ -293,7 +293,7 @@ public class TreasureChest : NetworkBehaviour {
             image.sprite = ImageManager.getSprite(weaponStatData.equipmentIconPath);
             itemName = weaponStatData.equipmentName;
          } else if (item.category == Item.Category.Armor) {
-            ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorData(item.itemTypeId);
+            ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
             image.sprite = ImageManager.getSprite(armorStatData.equipmentIconPath);
             itemName = armorStatData.equipmentName;
          } else {

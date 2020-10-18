@@ -41,7 +41,7 @@ namespace NubisDataHandling {
                //string itmPalette1 = dataGroup[5];
                //string itmPalette2 = dataGroup[6];
                //string itmPalettes = Item.parseItmPalette(new string[2] { itmPalette1, itmPalette2 });
-
+               
                Item.Category categoryType = (Item.Category) itmCategory;
 
                Item otherItem = new Item {
@@ -66,7 +66,7 @@ namespace NubisDataHandling {
                      }
                      break;
                   case Item.Category.Armor:
-                     ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(itmType);
+                     ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(itmType);
                      if (armorData != null) {
                         otherItem.setBasicInfo(armorData.equipmentName, armorData.equipmentDescription,
                            armorData.equipmentIconPath);

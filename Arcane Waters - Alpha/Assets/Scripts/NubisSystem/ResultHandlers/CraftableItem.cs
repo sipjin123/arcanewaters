@@ -29,6 +29,7 @@ namespace NubisDataHandling {
          string rawData = contentData;
          string splitter = "[next]";
          string[] rawItemGroup = rawData.Split(new string[] { splitter }, StringSplitOptions.None);
+
          for (int i = 0; i < rawItemGroup.Length; i++) {
             string itemGroup = rawItemGroup[i];
 
@@ -63,7 +64,7 @@ namespace NubisDataHandling {
 
                      // Process the item as a armor and extract the armor data
                      if (craftableRequirements.resultItem.category == Item.Category.Armor) {
-                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorData(craftableRequirements.resultItem.itemTypeId);
+                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(craftableRequirements.resultItem.itemTypeId);
                         itemDesc = armorData.equipmentDescription;
                         itemIconPath = armorData.equipmentIconPath;
                         itemData = ArmorStatData.serializeArmorStatData(armorData);
