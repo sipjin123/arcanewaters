@@ -150,7 +150,7 @@ namespace NubisDataHandling {
          EquippedItemData equippedItemData = new EquippedItemData();
          List<Item> craftingIngredients = new List<Item>();
          List<CraftableItemData> craftableItems = new List<CraftableItemData>();
-
+         
          string rawBlueprintData = await NubisClient.call(nameof(DB_Main.fetchSingleBlueprint), bluePrintId, userId);
          string craftingIngredientData = await NubisClient.call(nameof(DB_Main.fetchCraftingIngredients), userId);
          string equippedItemContent = await NubisClient.call(nameof(DB_Main.fetchEquippedItems), userId);

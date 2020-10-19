@@ -41,7 +41,16 @@ namespace NubisDataHandling {
                   int itemID = int.Parse(dataGroup[0]);
                   Item.Category itemCategory = Item.Category.None;
                   if (category == Item.Category.None) {
-                     itemCategory = (Item.Category) int.Parse(dataGroup[1]);
+                     // Overwrite item sql data here for handling values like {%blueprintType=weapon}
+                     if (dataGroup[3].StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Weapon;
+                     } else if (dataGroup[3].StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Armor;
+                     } else if (dataGroup[3].StartsWith(Blueprint.HAT_DATA_PREFIX)) {
+                        itemCategory = Item.Category.Hats;
+                     } else {
+                        itemCategory = (Item.Category) int.Parse(dataGroup[1]);
+                     }
                   } else {
                      itemCategory = category;
                   }
@@ -64,7 +73,7 @@ namespace NubisDataHandling {
 
                      // Process the item as a armor and extract the armor data
                      if (craftableRequirements.resultItem.category == Item.Category.Armor) {
-                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(craftableRequirements.resultItem.itemTypeId);
+                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftableRequirements.resultItem.itemTypeId);
                         itemDesc = armorData.equipmentDescription;
                         itemIconPath = armorData.equipmentIconPath;
                         itemData = ArmorStatData.serializeArmorStatData(armorData);

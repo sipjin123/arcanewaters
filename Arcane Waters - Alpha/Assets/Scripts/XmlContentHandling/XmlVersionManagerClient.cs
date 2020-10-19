@@ -138,6 +138,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
    private void confirmStreamingAssets () {
       checkStreamingAssetFile(XmlVersionManagerServer.CROPS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.ABILITIES_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.CRAFTING_FILE);
 
       checkStreamingAssetFile(XmlVersionManagerServer.ARMOR_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.WEAPON_FILE);
@@ -224,6 +225,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Equipment_Armor);
       extractXmlType(EditorToolType.Equipment_Weapon);
       extractXmlType(EditorToolType.Equipment_Hat);
+      extractXmlType(EditorToolType.Crafting);
 
       extractXmlType(EditorToolType.LandMonster);
       extractXmlType(EditorToolType.SeaMonster);
@@ -310,6 +312,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.ItemDefinitions:
             path = TEXT_PATH + XmlVersionManagerServer.ITEM_DEFINITIONS_FILE + ".txt";
+            break;
+         case EditorToolType.Crafting:
+            path = TEXT_PATH + XmlVersionManagerServer.CRAFTING_FILE + ".txt";
             break;
       }
 
@@ -647,6 +652,28 @@ public class XmlVersionManagerClient : MonoBehaviour {
             if (!string.IsNullOrEmpty(errors)) {
                D.error("There were errors when storing item definitions:" + Environment.NewLine + errors);
             }
+            break;
+
+         case EditorToolType.Crafting:
+            Dictionary<string, CraftableItemRequirements> _craftingData = new Dictionary<string, CraftableItemRequirements>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int uniqueId = int.Parse(xmlSubGroup[0]);
+                  CraftableItemRequirements craftData = Util.xmlLoad<CraftableItemRequirements>(xmlSubGroup[1]);
+                  string keyName = CraftingManager.getKey(craftData.resultItem.category, craftData.resultItem.itemTypeId);
+                  if (_craftingData.ContainsKey(keyName)) {
+                     D.debug("Duplicate Crafting Key: " + keyName);
+                  } else {
+                     _craftingData.Add(keyName, craftData);
+                  }
+
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            CraftingManager.self.receiveZipData(_craftingData);
             break;
       }
 

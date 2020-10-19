@@ -121,7 +121,7 @@ public class CraftingToolScene : MonoBehaviour {
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          case Item.Category.Armor:
-            imagePath = EquipmentXMLManager.self.getArmorDataByType(resultType).equipmentIconPath;
+            imagePath = EquipmentXMLManager.self.getArmorDataBySqlId(resultType).equipmentIconPath;
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          case Item.Category.Hats:

@@ -59,7 +59,7 @@ public class Util : MonoBehaviour {
             itemTypeName = ((CraftingIngredients.Type) typeID).ToString();
             break;
          case Item.Category.Armor:
-            itemTypeName = EquipmentXMLManager.self.getArmorDataByType(typeID).equipmentName;
+            itemTypeName = EquipmentXMLManager.self.getArmorDataBySqlId(typeID).equipmentName;
             break;
          case Item.Category.Blueprint:
             // TODO: Ensure this is never called

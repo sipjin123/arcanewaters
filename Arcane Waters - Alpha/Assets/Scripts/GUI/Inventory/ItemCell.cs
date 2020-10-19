@@ -147,7 +147,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Set the tooltip
-      tooltip.text = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) + " Blueprint" : item.getTooltip();
+      tooltip.text = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
 
       // Saves the item
       _item = item;

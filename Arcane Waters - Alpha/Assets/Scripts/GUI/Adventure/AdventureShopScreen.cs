@@ -83,7 +83,7 @@ public class AdventureShopScreen : Panel {
             }
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             if (armorData != null) {
                itemName = armorData.equipmentName;
             } else {

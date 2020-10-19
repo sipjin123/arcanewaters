@@ -296,7 +296,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             newName = hatData.equipmentName;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
             newName = armorData.equipmentName;
             break;
          case Item.Category.Weapon:
@@ -315,7 +315,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                   return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Armor) {
-                  ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
+                  ArmorStatData fetchedData = getArmorDataBySqlId(craftingItem.resultItem.itemTypeId);
                   return fetchedData.equipmentName + " Design";
                }
                if (craftingItem.resultItem.category == Item.Category.Hats) {
@@ -405,7 +405,7 @@ public class EquipmentXMLManager : MonoBehaviour {
                return fetchedData.equipmentIconPath;
             }
             if (craftingItem.resultItem.category == Item.Category.Armor) {
-               ArmorStatData fetchedData = getArmorDataByType(craftingItem.resultItem.itemTypeId);
+               ArmorStatData fetchedData = getArmorDataBySqlId(craftingItem.resultItem.itemTypeId);
                return fetchedData.equipmentIconPath;
             }
             if (craftingItem.resultItem.category == Item.Category.Hats) {

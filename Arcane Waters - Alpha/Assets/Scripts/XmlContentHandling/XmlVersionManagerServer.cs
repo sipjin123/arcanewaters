@@ -37,6 +37,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string NPC_TABLE = "npc_xml";
 
    public static string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
+   public static string CRAFTING_TABLE = "crafting_xml_v2";
 
    public static string SHIP_TABLE = "ship_xml_v2";
    public static string SHOP_TABLE = "shop_xml_v2";
@@ -52,6 +53,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
    public static string ABILITIES_FILE = "abilities";
+   public static string CRAFTING_FILE = "crafting";
 
    public static string ARMOR_FILE = "equipment_armor";
    public static string WEAPON_FILE = "equipment_weapon";
@@ -106,6 +108,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public void confirmTextFiles () {
       confirmTextFile(CROPS_FILE);
       confirmTextFile(ABILITIES_FILE);
+      confirmTextFile(CRAFTING_FILE);
 
       confirmTextFile(ARMOR_FILE);
       confirmTextFile(WEAPON_FILE);
@@ -150,7 +153,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.LandMonster);
          compiledData += DB_Main.getLastUpdate(EditorToolType.SeaMonster);
          compiledData += DB_Main.getLastUpdate(EditorToolType.NPC);
-         
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Crafting);
+
          compiledData += DB_Main.getLastUpdate(EditorToolType.Ship);
          compiledData += DB_Main.getLastUpdate(EditorToolType.ShipAbility);
 
@@ -249,6 +253,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          // Get contents from DB_Main
          string landMonsterData = DB_Main.getXmlContent(LAND_MONSTER_TABLE);
          string seaMonsterData = DB_Main.getXmlContent(SEA_MONSTER_TABLE);
+         string craftingData = DB_Main.getXmlContent(CRAFTING_TABLE);
 
          string npcData = DB_Main.getXmlContent(NPC_TABLE);
          string cropsData = DB_Main.getXmlContent(CROPS_TABLE);
@@ -274,6 +279,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + SEA_MONSTER_FILE + ".txt", seaMonsterData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + CRAFTING_FILE + ".txt", craftingData);
 
          writeAndCache(XML_TEXT_DIRECTORY + "/" + NPC_FILE + ".txt", npcData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + CROPS_FILE + ".txt", cropsData);

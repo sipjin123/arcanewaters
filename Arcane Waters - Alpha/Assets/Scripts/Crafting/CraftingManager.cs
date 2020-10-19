@@ -65,7 +65,14 @@ public class CraftingManager : MonoBehaviour {
       });
    }
 
-   private string getKey (Item.Category category, int itemTypeId) {
+   public void receiveZipData (Dictionary<string, CraftableItemRequirements> zipData) {
+      _craftingData = zipData;
+      foreach (KeyValuePair<string, CraftableItemRequirements> data in zipData) {
+         craftingDataList.Add(data.Value);
+      }
+   }
+
+   public static string getKey (Item.Category category, int itemTypeId) {
       return category == Item.Category.None ? "Undefined" : category + "_" + itemTypeId;
    }
 

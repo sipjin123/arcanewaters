@@ -522,7 +522,7 @@ public class GenericSelectionPopup : MonoBehaviour
                      itemName = fetchedData.equipmentName;
                   }
                   if (craftingItem.resultItem.category == Item.Category.Armor) {
-                     ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorDataByType(craftingItem.resultItem.itemTypeId);
+                     ArmorStatData fetchedData = EquipmentXMLManager.self.getArmorDataBySqlId(craftingItem.resultItem.itemTypeId);
                      iconPath = fetchedData.equipmentIconPath;
                      itemName = fetchedData.equipmentName;
                   }
