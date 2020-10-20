@@ -354,7 +354,7 @@ public class NetEntity : NetworkBehaviour
       if (isLocalPlayer && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
          // Show the loading screen
          if (PanelManager.self.loadingScreen != null) {
-            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
          }
 
          if (LocationBanner.self != null) {

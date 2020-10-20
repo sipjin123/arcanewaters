@@ -70,7 +70,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             player.setupForWarpClient();
 
             if (PanelManager.self.loadingScreen != null) {
-               PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, SpotFader.self, SpotFader.self);
+               PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
             }
          }
       }

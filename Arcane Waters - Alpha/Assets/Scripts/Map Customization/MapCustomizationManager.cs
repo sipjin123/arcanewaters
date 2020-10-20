@@ -471,7 +471,7 @@ namespace MapCustomization
          }
 
          if (!found) {
-            ItemInstance item = new ItemInstance { count = 1, itemDefinitionId = itemDefinitionId, id = -1 };
+            ItemInstance item = new ItemInstance (itemDefinitionId, -1, 1);
             remainingProps.Add(item);
             CustomizationUI.updatePropCount(item);
          }

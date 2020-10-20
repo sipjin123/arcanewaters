@@ -1019,7 +1019,7 @@ public class AdminManager : NetworkBehaviour
 
          // Create all item definitions
          foreach (ItemDefinition itemDefinition in ItemDefinitionManager.self.getDefinitions()) {
-            ItemInstance itemInstance = new ItemInstance { itemDefinitionId = itemDefinition.id, ownerUserId = _player.userId, count = count };
+            ItemInstance itemInstance = new ItemInstance(itemDefinition.id, _player.userId, count);
             if (createItemIfNotExistOrReplenishStack(itemInstance)) {
                itemDefinitionCount++;
             }

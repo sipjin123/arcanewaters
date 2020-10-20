@@ -61,18 +61,17 @@ public class MyCamera : BaseCamera
                }
             }
 
-            // If the current resolution is included in the list of wide screen rsolutions, modify the confiner scales
-            // Confiner scales needs to be scaled up so that the cinemachine camera will behave properly, 
-            // If the camera ortho is bigger than the confiner collider then it will not properly function
-            foreach (ResolutionOrthoClamp resolutionData in CameraManager.self.resolutionList) {
-               if (Screen.width >= resolutionData.resolutionWidth && _orthographicSize >= resolutionData.orthoCap) {
-                  if (confiner != null) {
-                     if (confiner.m_BoundingShape2D != null) {
-                        confiner.m_BoundingShape2D.transform.localScale = new Vector3(resolutionData.widthScaleMax, resolutionData.heightScaleMax, 1);
-                        D.debug(gameObject.name + ": CAMERA CONFINER Scaled into wide: " + resolutionData.widthScaleMax + " : " + resolutionData.heightScaleMax);
-                     }
-                  }
-                  break;
+            // If the current resolution requires a bigger camera size than the current confiner bounds, modify the confiner scales            
+            if (confiner != null && confiner.m_BoundingShape2D != null) {
+               Bounds confinerBounds = confiner.m_BoundingShape2D.bounds;
+               float camWidth = _orthographicSize * 2 * Screen.width / Screen.height;
+               float confinerWidth = confinerBounds.size.x / confiner.m_BoundingShape2D.transform.localScale.x;
+               float newScaleX = camWidth / confinerWidth;
+                              
+               if (newScaleX > confiner.m_BoundingShape2D.transform.localScale.x) {
+                  Vector3 scale = confiner.m_BoundingShape2D.transform.localScale;
+                  scale.x = newScaleX;
+                  confiner.m_BoundingShape2D.transform.localScale = scale;
                }
             }
          } 

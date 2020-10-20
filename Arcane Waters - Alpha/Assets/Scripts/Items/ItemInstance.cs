@@ -29,8 +29,12 @@ public class ItemInstance
 
    #endregion
 
-   public ItemInstance () {
+   public ItemInstance () { }
 
+   public ItemInstance (int itemDefinitionId, int ownerUserId, int count) {
+      this.itemDefinitionId = itemDefinitionId;
+      this.ownerUserId = ownerUserId;
+      this.count = count;
    }
 
 #if IS_SERVER_BUILD
@@ -70,16 +74,16 @@ public class ItemInstance
    // 2 Tables, 6 Chairs, 5 Trees, 1 Stumps, 2 Bushes
    public static List<ItemInstance> getFirstFarmRewards (int receiverUserId) {
       return new List<ItemInstance> {
-         new ItemInstance { id = -1, itemDefinitionId = 7, ownerUserId = receiverUserId, count = 5 },
-         new ItemInstance { id = -1, itemDefinitionId = 8, ownerUserId = receiverUserId, count = 1 },
-         new ItemInstance { id = -1, itemDefinitionId = 9, ownerUserId = receiverUserId, count = 2 }
+         new ItemInstance(7, receiverUserId, 5),
+         new ItemInstance(8, receiverUserId, 1),
+         new ItemInstance(9, receiverUserId, 2)
       };
    }
 
    public static List<ItemInstance> getFirstHouseRewards (int receiverUserId) {
       return new List<ItemInstance> {
-         new ItemInstance { id = -1, itemDefinitionId = 11, ownerUserId = receiverUserId, count = 2 },
-         new ItemInstance { id = -1, itemDefinitionId = 10, ownerUserId = receiverUserId, count = 6 }
+         new ItemInstance(11, receiverUserId, 2),
+         new ItemInstance(10, receiverUserId, 6)
       };
    }
 

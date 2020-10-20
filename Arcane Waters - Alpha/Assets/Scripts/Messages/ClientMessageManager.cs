@@ -5,11 +5,20 @@ using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
 using System;
+using System.Globalization;
+using System.Threading;
 
 public class ClientMessageManager : MonoBehaviour {
    #region Public Variables
 
    #endregion
+
+   public void Start () {
+      // Set a default culture so we avoid potential deserialization bugs
+      CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+      Thread.CurrentThread.CurrentCulture = culture;
+      Thread.CurrentThread.CurrentUICulture = culture;
+   }
 
    public static void On_Redirect (NetworkConnection conn, RedirectMessage msg) {
       // If the address and port are the same, we just send another login request
@@ -68,12 +77,10 @@ public class ClientMessageManager : MonoBehaviour {
             TitleScreen.self.displayError(msg.errorType);
             return;
          case ErrorMessage.Type.NameTaken:
-            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreation);
             PanelManager.self.noticeScreen.show("The selected username is already taken.");
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;
          case ErrorMessage.Type.InvalidUsername:
-            PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
             PanelManager.self.noticeScreen.show("That is not a valid username.");
             CharacterCreationPanel.self.onCharacterCreationFailed();
             return;

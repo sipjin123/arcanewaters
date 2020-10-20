@@ -118,7 +118,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    private void hideWithTransition () {
-      canvasGroup.DOFade(0, .15f)
+      _fadeCanvasTween?.Kill();
+
+      _fadeCanvasTween = canvasGroup.DOFade(0, .15f)
          .OnComplete(() => hide());
    }
 
@@ -177,6 +179,9 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       PanelManager.self.showConfirmationPanel("Finish creating your character?", () => {
          canvasGroup.interactable = false;
          canvasGroup.blocksRaycasts = false;
+
+         _isCharacterCreationRejected = false;
+
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
             _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, System.Environment.MachineName));
@@ -190,10 +195,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       hideWithTransition();
       CharacterCreationSpotFader.self.fadeOutColor();
 
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, SpotFader.self, SpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.CharacterCreation, PostSpotFader.self, PostSpotFader.self);
 
       while (Global.player == null || AreaManager.self.getArea(Area.STARTING_TOWN) == null || Global.player.transform.parent != AreaManager.self.getArea(Area.STARTING_TOWN).userParent) {
-         yield return new WaitForEndOfFrame();
+         if (_isCharacterCreationRejected) {
+            yield break;
+         }
+
+         yield return null;
       }
 
       PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.CharacterCreation, 1);
@@ -205,17 +214,24 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       CharacterCreationSpotFader.self.fadeOutColor();
       
-      SpotFader.self.fadeBackgroundColor(Color.black, 0.1f);
-      SpotFader.self.closeSpot();
+      PostSpotFader.self.fadeOut();
 
       // Show loading screen while starting map is being created
-      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, CameraManager.defaultCamera.getPixelFadeEffect(), SpotFader.self);
+      PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, CameraManager.defaultCamera.getPixelFadeEffect(), PostSpotFader.self);
 
       // Return camera to its original position
       CharacterScreen.self.myCamera.setDefaultSettings();
    }
 
    public void onCharacterCreationFailed () {
+      _fadeCanvasTween?.Kill();
+
+      // Notify the coroutine that's waiting for the map to be loaded so it stops
+      _isCharacterCreationRejected = true;
+
+      // Hide the loading screen
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
+            
       Util.enableCanvasGroup(canvasGroup);
       CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
    }
@@ -648,6 +664,12 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    // The transform as a rect transform
    private RectTransform _rectTransform;
+
+   // Whether the creation was rejected by the server (e.g. due to duplicated character name)
+   private bool _isCharacterCreationRejected = false;
+
+   // The tween fading in/out the canvas group
+   private Tween _fadeCanvasTween;
 
    #endregion
 }

@@ -80,23 +80,6 @@ public class BugReportManager : MonoBehaviour {
          yield break;
       }
 
-      // Make sure the bug report file hasn't grown too large
-      if (bugReport.Length > MAX_LOG_LENGTH) {
-         int diff = (bugReport.Length - MAX_LOG_LENGTH) + 1;
-         bugReport = bugReport.Remove(0, diff);
-      }
-
-      // Make sure the bug report file hasn't grown too large
-      if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-         int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
-         bugReport = bugReport.Remove(0, diff);
-
-         if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
-            ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
-            yield break;
-         }
-      }
-
       int userId = player.userId;
 
       // Make sure we're not spamming the server
@@ -129,21 +112,28 @@ public class BugReportManager : MonoBehaviour {
       byte[] screenshotBytes = standardTex.EncodeToPNG();
       if (screenshotBytes.Length < maxPacketSize) {
          // Full quality image
+         bugReport += "\nScreenshot resolution: " + standardTex.width + "x" + standardTex.height;
+         addMetaDataToBugReport(ref bugReport, screenshotBytes);
          Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
       } else {
          // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
-         screenshotBytes = removeEvenRowsAndColumns(standardTex).EncodeToPNG();
+         Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
+         screenshotBytes = skippedRowsTex.EncodeToPNG();
          if (screenshotBytes.Length < maxPacketSize) {
+            bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
+            addMetaDataToBugReport(ref bugReport, screenshotBytes);
             Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
          } else {
             // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
             int quality = 100;
             while (quality > 0) {
-               Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
+               skippedRowsTex = removeEvenRowsAndColumns(standardTex);
                screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
                if (screenshotBytes.Length < maxPacketSize) {
+                  bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
+                  addMetaDataToBugReport(ref bugReport, screenshotBytes);
                   Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
-                  yield break;
+                  break;
                }
                quality -= 5;
             }
@@ -151,6 +141,38 @@ public class BugReportManager : MonoBehaviour {
       }
 
       _lastBugReportTime[Global.player.userId] = Time.time;
+   }
+
+   private bool addMetaDataToBugReport(ref string bugReport, byte[] screenshotBytes) {
+      // Add information about screenshot size
+      bugReport += "\nScreenshot size in bytes: " + screenshotBytes.Length;
+
+      string bugReportLenthString = "\nBug report length: ";
+      string bugReportSizeString = "\nBug report size in bytes: ";
+      int reservedCharsForNumbers = 20;
+
+      // Make sure the bug report file hasn't grown too large
+      if (bugReport.Length + bugReportLenthString.Length + bugReportSizeString.Length + reservedCharsForNumbers > MAX_LOG_LENGTH) {
+         int diff = (bugReport.Length + bugReportLenthString.Length + bugReportSizeString.Length + reservedCharsForNumbers - MAX_LOG_LENGTH) + 1;
+         bugReport = bugReport.Remove(0, diff);
+      }
+
+      // Add information about bug report length
+      bugReport += bugReportLenthString + bugReport.Length;
+      bugReport += bugReportSizeString + System.Text.Encoding.Unicode.GetByteCount(bugReport);
+
+      // Make sure the bug report file hasn't grown too large
+      if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
+         int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
+         bugReport = bugReport.Remove(0, diff);
+
+         if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
+            ChatManager.self.addChat("The bug report file is currently too large to submit.", ChatInfo.Type.System);
+            return false;
+         }
+      }
+
+      return true;
    }
 
    private Texture2D removeEvenRowsAndColumns(Texture2D tex) {

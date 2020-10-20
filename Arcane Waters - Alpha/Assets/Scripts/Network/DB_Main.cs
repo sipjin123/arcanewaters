@@ -78,10 +78,10 @@ public class DB_Main : DB_MainStub
       byte[] rawData;
 
       try {
-         using (MySqlConnection connection = getConnection()) {
+         using (MySqlConnection connection = getConnectionToDevGlobal()) {
             connection.Open();
 
-            string query = "SELECT * FROM xml_status where id = " + slot;
+            string query = "SELECT * FROM global.xml_status where id = " + slot;
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
                using (MySqlDataReader dataReader = command.ExecuteReader()) {
                   while (dataReader.Read()) {
@@ -241,10 +241,10 @@ public class DB_Main : DB_MainStub
    public static new string fetchXmlVersion (string slotstr) {
       int slot = int.Parse(slotstr);
       try {
-         using (MySqlConnection connection = getConnection()) {
+         using (MySqlConnection connection = getConnectionToDevGlobal()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT version FROM arcane.xml_status where id = " + slot,
+               "SELECT version FROM global.xml_status where id = " + slot,
                connection)) {
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -510,9 +510,9 @@ public class DB_Main : DB_MainStub
 
    public static new void addNewCloudData (CloudBuildData cloudData) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO cloud_changesets (buildId, message, lastUserUpdate) " +
+            "INSERT INTO global.cloud_changesets (buildId, message, lastUserUpdate) " +
             "VALUES(@buildId, @message, @lastUserUpdate) ", conn)) {
 
             conn.Open();
@@ -531,8 +531,8 @@ public class DB_Main : DB_MainStub
 
    public static new CloudBuildData getCloudData () {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.cloud_changesets order by buildId DESC limit 1", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.cloud_changesets order by buildId DESC limit 1", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -569,10 +569,10 @@ public class DB_Main : DB_MainStub
 
    public static new void writeZipData (byte[] bytes, int slot) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "UPDATE xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + slot, conn)) {
+            "UPDATE global.xml_status SET xmlZipData = @xmlZipData, version = version + 1, dataSize = @dataSize WHERE id = " + slot, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -604,9 +604,9 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT " + contentToFetch + addedFields + " FROM arcane." + tableName, conn)) {
+            "SELECT " + contentToFetch + addedFields + " FROM global." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -650,9 +650,9 @@ public class DB_Main : DB_MainStub
       List<RawPaletteToolData> newPaletteDataList = new List<RawPaletteToolData>();
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + tableName, conn)) {
+            "SELECT * FROM global." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -685,9 +685,9 @@ public class DB_Main : DB_MainStub
       int latestVersion = 0;
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT version FROM xml_status where id = 1", conn)) {
+            "SELECT version FROM global.xml_status where id = 1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -712,9 +712,9 @@ public class DB_Main : DB_MainStub
       string lastUserUpdateKey = editorType == EditorSQLManager.EditorToolType.Palette ? "lastUpdate" : "lastUserUpdate";
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT " + lastUserUpdateKey + " FROM arcane." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1", conn)) {
+            "SELECT " + lastUserUpdateKey + " FROM global." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -945,10 +945,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID, default_ability, lastUserUpdate) " +
+            "INSERT INTO global.ability_xml_v2 (" + skillIdKey + "xml_name, xmlContent, ability_type, creator_userID, default_ability, lastUserUpdate) " +
             "VALUES(" + skillIdValue + "@xml_name, @xmlContent, @ability_type, @creator_userID, @default_ability, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ability_type = @ability_type, xmlContent = @xmlContent, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
@@ -972,8 +972,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBattleAbilityXML (int skillId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", skillId);
@@ -989,9 +989,9 @@ public class DB_Main : DB_MainStub
    public static new List<AbilityXMLContent> getBattleAbilityXML () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ability_xml_v2", conn)) {
+            "SELECT * FROM global.ability_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1018,9 +1018,9 @@ public class DB_Main : DB_MainStub
    public static new List<AbilityXMLContent> getDefaultAbilities () {
       List<AbilityXMLContent> xmlContent = new List<AbilityXMLContent>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM ability_xml_v2 WHERE (default_ability=@default_ability)", conn)) {
+            "SELECT * FROM global.ability_xml_v2 WHERE (default_ability=@default_ability)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1057,10 +1057,10 @@ public class DB_Main : DB_MainStub
          xmlIdValue = "";
       }
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO treasure_drops_xml_v2 (" + xmlIdKey + "biomeType, xmlContent, lastUserUpdate) " +
+            "INSERT INTO global.treasure_drops_xml_v2 (" + xmlIdKey + "biomeType, xmlContent, lastUserUpdate) " +
             "VALUES(" + xmlIdValue + "@biomeType, @xmlContent, NOW()) " +
             "ON DUPLICATE KEY UPDATE biomeType = @biomeType, xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -1082,8 +1082,8 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getBiomeTreasureDrops () {
       List<XMLPair> xmlContent = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM arcane.treasure_drops_xml_v2", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.treasure_drops_xml_v2", conn)) {
             conn.Open();
             cmd.Prepare();
 
@@ -1112,9 +1112,9 @@ public class DB_Main : DB_MainStub
       List<SoundEffect> effects = new List<SoundEffect>();
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.soundeffects_v2", conn)) {
+            "SELECT * FROM global.soundeffects_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1144,10 +1144,10 @@ public class DB_Main : DB_MainStub
 
    public static new void updateSoundEffect (SoundEffect effect) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO arcane.soundeffects_v2 (id, name, clipName, minVolume, maxVolume, minPitch, maxPitch, offset, lastUserUpdate) " +
+            "INSERT INTO global.soundeffects_v2 (id, name, clipName, minVolume, maxVolume, minPitch, maxPitch, offset, lastUserUpdate) " +
             "VALUES(@id, @name, @clipName, @minVolume, @maxVolume, @minPitch, @maxPitch, @offset, NOW()) " +
             "ON DUPLICATE KEY UPDATE id = @id, name = @name, clipName = @clipName, minVolume = @minVolume, maxVolume = @maxVolume, minPitch = @minPitch, maxPitch = @maxPitch, offset = @offset, lastUserUpdate = NOW()", conn)) {
 
@@ -1174,8 +1174,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteSoundEffect (SoundEffect effect) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM arcane.soundeffects_v2 WHERE id=@id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.soundeffects_v2 WHERE id=@id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@id", effect.id);
@@ -1423,9 +1423,9 @@ public class DB_Main : DB_MainStub
       List<SQLEntryNameClass> rawDataList = new List<SQLEntryNameClass>();
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByName(editorType), conn)) {
+            "SELECT * FROM global." + EditorSQLManager.getSQLTableByName(editorType), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1448,9 +1448,9 @@ public class DB_Main : DB_MainStub
       List<SQLEntryIDClass> rawDataList = new List<SQLEntryIDClass>();
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + EditorSQLManager.getSQLTableByID(editorType, equipmentType), conn)) {
+            "SELECT * FROM global." + EditorSQLManager.getSQLTableByID(editorType, equipmentType), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1487,10 +1487,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crops_xml_v1 (" + xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type, lastUserUpdate) " +
+            "INSERT INTO global.crops_xml_v1 (" + xmlIdKey + "xml_name, xmlContent, creator_userID, is_enabled, crops_type, lastUserUpdate) " +
             "VALUES(" + xmlIdValue + "@xml_name, @xmlContent, @creator_userID, @is_enabled, @crops_type, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, crops_type = @crops_type, is_enabled = @is_enabled, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
@@ -1515,9 +1515,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getCropsXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.crops_xml_v1", conn)) {
+            "SELECT * FROM global.crops_xml_v1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1543,8 +1543,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteCropsXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crops_xml_v1 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.crops_xml_v1 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -1571,10 +1571,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_ability_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.ship_ability_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xml_name = @xml_name, xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -1597,9 +1597,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShipAbilityXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ship_ability_xml_v2", conn)) {
+            "SELECT * FROM global.ship_ability_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1625,8 +1625,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShipAbilityXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ship_ability_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -1654,10 +1654,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO land_monster_xml_v3 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
+            "INSERT INTO global.land_monster_xml_v3 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, monster_type = @monster_type, monster_name = @monster_name, isActive = @isActive, lastUserUpdate = NOW()", conn)) {
 
@@ -1682,9 +1682,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getLandMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.land_monster_xml_v3", conn)) {
+            "SELECT * FROM global.land_monster_xml_v3", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1710,8 +1710,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteLandmonsterXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM land_monster_xml_v3 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.land_monster_xml_v3 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -1739,10 +1739,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO sea_monster_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
+            "INSERT INTO global.sea_monster_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, monster_type, monster_name, isActive, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @monster_type, @monster_name, @isActive, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, monster_type = @monster_type, monster_name = @monster_name, isActive = @isActive, lastUserUpdate = NOW()", conn)) {
 
@@ -1767,9 +1767,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getSeaMonsterXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.sea_monster_xml_v2", conn)) {
+            "SELECT * FROM global.sea_monster_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1795,8 +1795,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteSeamonsterXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM sea_monster_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.sea_monster_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -1824,10 +1824,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO quest_data_xml_v1 (" + xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
+            "INSERT INTO global.quest_data_xml_v1 (" + xmlIdKey + "xmlContent, creatorUserID, lastUserUpdate, xmlName, isActive) " +
             "VALUES(" + xmlIdValue + "@xmlContent, @creatorUserID, lastUserUpdate = NOW(), @xmlName, @isActive) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW(), xmlName = @xmlName, isActive = @isActive", conn)) {
 
@@ -1855,9 +1855,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getNPCQuestXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.quest_data_xml_v1", conn)) {
+            "SELECT * FROM global.quest_data_xml_v1", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1883,8 +1883,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteNPCQuestXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM quest_data_xml_v1 WHERE xmlId=@xmlId", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.quest_data_xml_v1 WHERE xmlId=@xmlId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xmlId", typeID);
@@ -1903,10 +1903,10 @@ public class DB_Main : DB_MainStub
 
    public static new void updateNPCXML (string rawData, int typeIndex) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO npc_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.npc_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -1928,9 +1928,9 @@ public class DB_Main : DB_MainStub
    public static new List<string> getNPCXML () {
       List<string> rawDataList = new List<string>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.npc_xml", conn)) {
+            "SELECT * FROM global.npc_xml", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -1950,8 +1950,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteNPCXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM npc_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.npc_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -2065,7 +2065,7 @@ public class DB_Main : DB_MainStub
             "SELECT id, name, displayName, createdAt, creatorUserId, publishedVersion, sourceMapId, notes, " +
                "editorType, biome, specialType, accName, weatherEffectType " +
             "FROM maps_v2 " +
-               "LEFT JOIN accounts ON maps_v2.creatorUserId = accId " +
+               "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
 
       List<Map> result = new List<Map>();
@@ -2700,10 +2700,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO shop_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.shop_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
@@ -2726,9 +2726,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShopXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.shop_xml_v2", conn)) {
+            "SELECT * FROM global.shop_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2754,8 +2754,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShopXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM shop_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.shop_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -2783,10 +2783,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO ship_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, ship_type, ship_name, isActive, lastUserUpdate) " +
+            "INSERT INTO global.ship_xml_v2 (" + xml_id_key + "xmlContent, creator_userID, ship_type, ship_name, isActive, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xmlContent, @creator_userID, @ship_type, @ship_name, @isActive, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, ship_type = @ship_type, ship_name = @ship_name, isActive = @isActive, lastUserUpdate = NOW()", conn)) {
 
@@ -2811,9 +2811,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getShipXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.ship_xml_v2", conn)) {
+            "SELECT * FROM global.ship_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2838,8 +2838,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteShipXML (int typeID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM ship_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.ship_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
@@ -2867,10 +2867,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO achievement_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.achievement_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -2892,8 +2892,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteAchievementXML (string name) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM achievement_xml_v2 WHERE xml_name=@xml_name", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.achievement_xml_v2 WHERE xml_name=@xml_name", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_name", name);
@@ -2909,9 +2909,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getAchievementXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.achievement_xml_v2", conn)) {
+            "SELECT * FROM global.achievement_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3073,10 +3073,10 @@ public class DB_Main : DB_MainStub
 
    public static new void updatePerksXML (string rawData, int perkId) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.perks_config_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -3098,9 +3098,9 @@ public class DB_Main : DB_MainStub
    public static new List<PerkData> getPerksXML () {
       List<PerkData> perkDataList = new List<PerkData>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.perks_config_xml", conn)) {
+            "SELECT * FROM global.perks_config_xml", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3120,8 +3120,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deletePerkXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM perks_config_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.perks_config_xml WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -3140,10 +3140,10 @@ public class DB_Main : DB_MainStub
 
    public static new void upsertBook (string bookContent, string name, int bookId) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO books (bookId, bookTitle, bookContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.books (bookId, bookTitle, bookContent, creator_userID, lastUserUpdate) " +
             "VALUES(NULLIF(@bookId, 0), @bookTitle, @bookContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE bookTitle = @bookTitle, bookContent = @bookContent, lastUserUpdate = NOW()", conn)) {
 
@@ -3166,9 +3166,9 @@ public class DB_Main : DB_MainStub
    public static new List<BookData> getBooksList () {
       List<BookData> rawDataList = new List<BookData>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.books", conn)) {
+            "SELECT * FROM global.books", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3189,9 +3189,9 @@ public class DB_Main : DB_MainStub
    public static new BookData getBookById (int bookId) {
       BookData book = null;
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.books WHERE bookId = @bookId", conn)) {
+            "SELECT * FROM global.books WHERE bookId = @bookId", conn)) {
 
             conn.Open();
             cmd.Parameters.AddWithValue("@bookId", bookId);
@@ -3213,8 +3213,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBookByID (int bookId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM books WHERE bookId=@bookId", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.books WHERE bookId=@bookId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@bookId", bookId);
@@ -3233,10 +3233,10 @@ public class DB_Main : DB_MainStub
 
    public static new void duplicateDiscovery (DiscoveryData data) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
+            "INSERT INTO global.discoveries_v2 (discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
             "VALUES(@discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) ", conn)) {
 
             conn.Open();
@@ -3258,10 +3258,10 @@ public class DB_Main : DB_MainStub
 
    public static new void upsertDiscovery (DiscoveryData data) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO arcane.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
+            "INSERT INTO global.discoveries_v2 (discoveryId, discoveryName, discoveryDescription, sourceImageUrl, rarity, creator_userID) " +
             "VALUES(NULLIF(@discoveryId, 0), @discoveryName, @discoveryDescription, @sourceImageUrl, @rarity, @creator_userID) " +
             "ON DUPLICATE KEY UPDATE discoveryName = @discoveryName, discoveryDescription = @discoveryDescription, sourceImageUrl = @sourceImageUrl, rarity = @rarity", conn)) {
 
@@ -3286,9 +3286,9 @@ public class DB_Main : DB_MainStub
    public static new List<DiscoveryData> getDiscoveriesList () {
       List<DiscoveryData> rawDataList = new List<DiscoveryData>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.discoveries_v2", conn)) {
+            "SELECT * FROM global.discoveries_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3309,9 +3309,9 @@ public class DB_Main : DB_MainStub
    public static new DiscoveryData getDiscoveryById (int discoveryId) {
       DiscoveryData discovery = null;
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
+            "SELECT * FROM global.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
 
             conn.Open();
             cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
@@ -3333,8 +3333,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteDiscoveryById (int discoveryId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.discoveries_v2 WHERE discoveryId = @discoveryId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
@@ -3422,9 +3422,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (bool onlyEnabledPalettes) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_recolors" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
+            "SELECT * FROM global.palette_recolors" + (onlyEnabledPalettes ? " WHERE isEnabled = 1" : ""), conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3454,9 +3454,9 @@ public class DB_Main : DB_MainStub
    public static new int getPaletteTagID (string tag) {
       int id = -1;
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_tags WHERE name = @name", conn)) {
+            "SELECT * FROM global.palette_tags WHERE name = @name", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3478,9 +3478,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (int tagId) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_recolors WHERE tagId = @tagId", conn)) {
+            "SELECT * FROM global.palette_recolors WHERE tagId = @tagId", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3508,9 +3508,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getPaletteXML (int tagId, string subcategory) {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.palette_recolors WHERE tagId = @tagId AND subcategory = @subcategory", conn)) {
+            "SELECT * FROM global.palette_recolors WHERE tagId = @tagId AND subcategory = @subcategory", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3551,10 +3551,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO crafting_xml_v2 (" + xml_id_key + "xmlName, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.crafting_xml_v2 (" + xml_id_key + "xmlName, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xmlName, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xmlName = @xmlName, equipmentTypeID = @equipmentTypeID, equipmentCategory = @equipmentCategory, lastUserUpdate = NOW()", conn)) {
 
@@ -3579,9 +3579,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getCraftingXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.crafting_xml_v2", conn)) {
+            "SELECT * FROM global.crafting_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3607,8 +3607,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteCraftingXML (int xmlID) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM crafting_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.crafting_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlID);
@@ -3637,10 +3637,10 @@ public class DB_Main : DB_MainStub
             xml_id_value = "";
          }
 
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO background_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.background_xml_v2 (" + xml_id_key + "xml_name, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(" + xml_id_value + "@xml_name, @xmlContent, @creator_userID, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, xml_name = @xml_name, lastUserUpdate = NOW()", conn)) {
 
@@ -3666,9 +3666,9 @@ public class DB_Main : DB_MainStub
    public static new List<XMLPair> getBackgroundXML () {
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane.background_xml_v2", conn)) {
+            "SELECT * FROM global.background_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3694,8 +3694,8 @@ public class DB_Main : DB_MainStub
 
    public static new void deleteBackgroundXML (int xmlId) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM background_xml_v2 WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.background_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
@@ -3734,10 +3734,10 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO " + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, lastUserUpdate) " +
+            "INSERT INTO global." + tableName + " (" + xmlKey + "xmlContent, creator_userID, equipment_type, equipment_name, is_enabled, lastUserUpdate) " +
             "VALUES(" + xmlValue + "@xmlContent, @creator_userID, @equipment_type, @equipment_name, @is_enabled, NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, equipment_type = @equipment_type, equipment_name = @equipment_name, is_enabled = @is_enabled, lastUserUpdate = NOW()", conn)) {
 
@@ -3774,8 +3774,8 @@ public class DB_Main : DB_MainStub
       }
 
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM " + tableName + " WHERE xml_id=@xml_id", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global." + tableName + " WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xml_id);
@@ -3804,9 +3804,9 @@ public class DB_Main : DB_MainStub
 
       List<XMLPair> rawDataList = new List<XMLPair>();
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM arcane." + tableName, conn)) {
+            "SELECT * FROM global." + tableName, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -3840,9 +3840,9 @@ public class DB_Main : DB_MainStub
    public static new List<ItemDefinition> getItemDefinitions () {
       List<ItemDefinition> result = new List<ItemDefinition>();
 
-      string cmdText = "SELECT id, category, serializedData FROM item_definitions;";
+      string cmdText = "SELECT id, category, serializedData FROM global.item_definitions;";
 
-      using (MySqlConnection conn = getConnection())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -3860,7 +3860,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createNewItemDefinition (ItemDefinition definition) {
-      using (MySqlConnection conn = getConnection())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -3869,7 +3869,7 @@ public class DB_Main : DB_MainStub
 
          try {
             // Insert a new empty entry to item definitions
-            cmd.CommandText = "INSERT INTO item_definitions(category, serializedData) VALUES(@category, @serializedData);";
+            cmd.CommandText = "INSERT INTO global.item_definitions(category, serializedData) VALUES(@category, @serializedData);";
             cmd.Parameters.AddWithValue("@category", -1);
             cmd.Parameters.AddWithValue("@serializedData", "undefined");
             cmd.ExecuteNonQuery();
@@ -3881,7 +3881,7 @@ public class DB_Main : DB_MainStub
             definition.id = (int) id;
 
             // Populate the database entry with our definition
-            cmd.CommandText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData, creator_userID = @creatorUserId WHERE id = @id;";
+            cmd.CommandText = "UPDATE global.item_definitions SET category = @category, serializedData = @serializedData, creator_userID = @creatorUserId WHERE id = @id;";
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@id", definition.id);
             cmd.Parameters.AddWithValue("@category", (int) definition.category);
@@ -3900,8 +3900,8 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void updateItemDefinition (ItemDefinition definition) {
-      string cmdText = "UPDATE item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
-      using (MySqlConnection conn = getConnection())
+      string cmdText = "UPDATE global.item_definitions SET category = @category, serializedData = @serializedData WHERE id = @id;";
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -3915,8 +3915,8 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteItemDefinition (int id) {
-      using (MySqlConnection conn = getConnection())
-      using (MySqlCommand cmd = new MySqlCommand("DELETE FROM item_definitions WHERE id = @id;", conn)) {
+      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.item_definitions WHERE id = @id;", conn)) {
          conn.Open();
          cmd.Prepare();
 
@@ -3932,9 +3932,7 @@ public class DB_Main : DB_MainStub
 
    public static new List<ItemInstance> getItemInstances (object command, int ownerUserId, ItemDefinition.Category category) {
       MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "SELECT item_instances.* " +
-         "FROM item_instances JOIN item_definitions ON item_instances.itemDefinitionId = item_definitions.id " +
-         "WHERE item_instances.userId = @ownerUserId AND category = @category;";
+      cmd.CommandText = "SELECT * FROM item_instances WHERE item_instances.userId = @ownerUserId AND category = @category;";
       cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
       cmd.Parameters.AddWithValue("@category", (int) category);
 
@@ -3994,13 +3992,14 @@ public class DB_Main : DB_MainStub
 
    public static new void createNewItemInstance (object command, ItemInstance itemInstance) {
       MySqlCommand cmd = command as MySqlCommand;
-      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, rarity, palettes) " +
-         "VALUES(@itemDefinitionId, @userId, @count, @rarity, @palettes);";
+      cmd.CommandText = "INSERT INTO item_instances (itemDefinitionId, userId, count, rarity, palettes, category) " +
+         "VALUES(@itemDefinitionId, @userId, @count, @rarity, @palettes, @category);";
       cmd.Parameters.AddWithValue("@itemDefinitionId", itemInstance.itemDefinitionId);
       cmd.Parameters.AddWithValue("@userId", (int) itemInstance.ownerUserId);
       cmd.Parameters.AddWithValue("@count", (int) itemInstance.count);
       cmd.Parameters.AddWithValue("@palettes", itemInstance.palettes);
       cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
+      cmd.Parameters.AddWithValue("@category", (int) itemInstance.getDefinition().category);
       cmd.ExecuteNonQuery();
 
       // Set the ID that was created for the instance
@@ -4827,7 +4826,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accGems FROM accounts WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accGems FROM global.accounts WHERE accId=@accId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -4849,7 +4848,7 @@ public class DB_Main : DB_MainStub
    public static new void addGems (int accountId, int amount) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET accGems = accGems + @amount WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.accounts SET accGems = accGems + @amount WHERE accId=@accId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -4869,8 +4868,8 @@ public class DB_Main : DB_MainStub
 
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -4891,7 +4890,7 @@ public class DB_Main : DB_MainStub
             long bugId = cmd.LastInsertedId;
 
             // Saving the initial "Create" action for history purposes
-            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO bug_reports_actions (taskId, actionType, performerAccId) VALUES(@taskId, @actionType, @performerAccId)", conn);
+            MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_actions (taskId, actionType, performerAccId) VALUES(@taskId, @actionType, @performerAccId)", conn);
             actionCmd.Prepare();
             actionCmd.Parameters.AddWithValue("@taskId", bugId);
             actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
@@ -4899,7 +4898,7 @@ public class DB_Main : DB_MainStub
             actionCmd.ExecuteNonQuery();
 
             // Saving screenshot in bug_reports_screenshots
-            MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
+            MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
             screenshotCmd.Prepare();
             screenshotCmd.Parameters.AddWithValue("@taskId", bugId);
             screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
@@ -5008,7 +5007,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM accounts WHERE accName=@accName AND accPassword=@accPassword", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.accounts WHERE accName=@accName AND accPassword=@accPassword", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accName", accountName);
@@ -5034,7 +5033,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);
@@ -5060,7 +5059,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accStatus FROM accounts WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accStatus FROM global.accounts WHERE accId=@accId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -5084,7 +5083,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM accounts WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM global.accounts WHERE accId=@accId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
@@ -5161,7 +5160,7 @@ public class DB_Main : DB_MainStub
             "armor.itmId AS armorId, armor.itmType AS armorType, armor.itmPalettes AS armorPalettes, armor.itmData AS armorData, " +
             "weapon.itmId AS weaponId, weapon.itmType AS weaponType, weapon.itmPalettes AS weaponPalettes, weapon.itmData AS weaponData, " +
             "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
-            "FROM users JOIN accounts USING(accId) LEFT JOIN ships USING(shpId) " +
+            "FROM users JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
             "LEFT JOIN items AS armor ON(users.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
@@ -5210,7 +5209,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrId=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", int.Parse(userId));
@@ -5234,7 +5233,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE usrName=@usrName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE usrName=@usrName", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrName", userName);
@@ -6482,7 +6481,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN accounts USING (accId) WHERE gldId=@gldId ", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE gldId=@gldId ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
@@ -8167,7 +8166,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static void setServer (string server, string database = "", string uid = "", string password = "") {
-      _connectionString = buildConnectionString(server, database, uid, password);
+      _connectionString = getDefaultConnectionString(server, database, uid, password);
    }
 
    public static new void setServerFromConfig () {
@@ -8255,7 +8254,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM accounts WHERE accId = @accountId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrAdminFlag FROM global.accounts WHERE accId = @accountId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accountId", accountId);
@@ -8323,51 +8322,88 @@ public class DB_Main : DB_MainStub
    #endregion
 
    public static MySqlConnection getConnection () {
+      return getConnection(_connectionString);
+   }
+
+   public static MySqlConnection getConnectionToDevGlobal () {
+      return getConnection(_connectionToDevGlobalString);
+   }
+
+   public static MySqlConnection getConnection (string connectionString) {
       // Throws a warning if used in the main thread
       if (UnityThreadHelper.IsMainThread && !ClientManager.isApplicationQuitting && MyNetworkManager.wasServerStarted) {
          D.debug("A database query is being run in the main thread - use the background thread instead");
       }
 
       // In order to support threaded DB calls, each function needs its own Connection
-      return new MySqlConnection(_connectionString);
+      return new MySqlConnection(connectionString);
    }
 
-   private static bool overrideDatabaseCredentials () {
-      try {
-         string dir = "C:/ArcaneWaters/Secure/Databases";
-#if FORCE_AMAZON_SERVER_PROD
-         string subDir = "Prod";
-#else
-         string subDir = "Dev";
-#endif
-         string file = "dbConfig.json";
-         string path = System.IO.Path.Combine(dir, subDir, file);
+   private static DatabaseCredentials loadDatabaseCredentials (string subDir) {
 
-         bool configExists = System.IO.File.Exists(path);
-         if (configExists) {
-            var configData = System.IO.File.ReadAllText(path);
-            var creds = JsonConvert.DeserializeObject<DatabaseCredentials>(configData);
-            if (creds != null) {
-               _uid = creds.user;
-               _database = creds.database;
-               _password = creds.password;
-               _remoteServer = creds.server;
-               return true;
-            }
-         }
+      string dir = "C:/ArcaneWaters/Secure/Databases";
+      string file = "dbConfig.json";
+      string path = Path.Combine(dir, subDir, file);
+      DatabaseCredentials creds = null;
+      bool configExists = File.Exists(path);
+
+      if (!configExists) {
+         D.debug($"Couldn't find the database credentials at '{path}'");
+         return null;
+      }
+
+      try {
+         creds = JsonConvert.DeserializeObject<DatabaseCredentials>(File.ReadAllText(path));
       } catch {
       }
-      return false;
+
+      if (creds == null) {
+         D.warning($"Couldn't load the database credentials at '{path}'. Invalid format?");
+      }
+
+      return creds;
    }
 
-   public static string buildConnectionString (string server, string database = "", string uid = "", string password = "") {
+   public static string getDefaultConnectionString (string server = "", string database = "", string uid = "", string password = "") {
 
-      overrideDatabaseCredentials();
+#if FORCE_AMAZON_SERVER_PROD
+      string subDir = "Prod";
+#else
+      string subDir = "Dev";
+#endif
 
+      DatabaseCredentials creds = loadDatabaseCredentials(subDir);
+      if (creds != null) {
+         server = string.IsNullOrEmpty(creds.server) ? server : creds.server;
+         database = string.IsNullOrEmpty(creds.database) ? database : creds.database;
+         uid = string.IsNullOrEmpty(creds.user) ? uid : creds.user;
+         password = string.IsNullOrEmpty(creds.password) ? password : creds.password;
+      }
+
+      return buildConnectionString(
+         server == "" ? _remoteServer : server,
+         database == "" ? _database : database,
+         uid == "" ? _uid : uid,
+         password == "" ? _password : password);
+   }
+
+   public static string getConnectionToDevGlobalString () {
+
+      DatabaseCredentials creds = loadDatabaseCredentials("Dev");
+      if (creds != null) {
+         _remoteServerDev = string.IsNullOrEmpty(creds.server) ? _remoteServerDev : creds.server;
+         _uidDev = string.IsNullOrEmpty(creds.user) ? _uidDev : creds.user;
+         _passwordDev = string.IsNullOrEmpty(creds.password) ? _passwordDev : creds.password;
+      }
+
+      return buildConnectionString(_remoteServerDev, _globalDatabase, _uidDev, _passwordDev);
+   }
+
+   public static string buildConnectionString (string server, string database, string uid, string password) {
       return "SERVER=" + server + ";" +
-          "DATABASE=" + (database == "" ? _database : database) + ";" +
-          "UID=" + (uid == "" ? _uid : uid) + ";" +
-          "PASSWORD=" + (password == "" ? _password : password) + ";";
+          "DATABASE=" + database + ";" +
+          "UID=" + uid + ";" +
+          "PASSWORD=" + password + ";";
    }
 
    /*
@@ -8397,7 +8433,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO accounts (accName, accPassword, accEmail, accValidated) VALUES (@accName, @accPassword, @accEmail, @accValidated);", conn)) {
+            "INSERT INTO global.accounts (accName, accPassword, accEmail, accValidated) VALUES (@accName, @accPassword, @accEmail, @accValidated);", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -8420,7 +8456,7 @@ public class DB_Main : DB_MainStub
    public static new void updateAccountMode (int accoundId, bool isSinglePlayer) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE accounts SET isSinglePlayer=@isSinglePlayer WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.accounts SET isSinglePlayer=@isSinglePlayer WHERE accId=@accId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accoundId);
@@ -9559,11 +9595,20 @@ public class DB_Main : DB_MainStub
 
    #region Private Variables
 
+   // Some development tables must be accessible from any build
+   private static string _globalDatabase = "global";
+   private static string _remoteServerDev = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com";
+   private static string _uidDev = "userAdKmE";
+   private static string _passwordDev = "HEqbVDsvvCza5n4N";
+
+   // Default credentials
    private static string _database = "arcane";
-   private static string _remoteServer = "devdb.c1whxibm6zeb.us-east-2.rds.amazonaws.com";
-   private static string _uid = "userAdKmE";
-   private static string _password = "HEqbVDsvvCza5n4N";
-   private static string _connectionString = buildConnectionString(_remoteServer);
+   private static string _remoteServer = _remoteServerDev;
+   private static string _uid = _uidDev;
+   private static string _password = _passwordDev;
+
+   private static string _connectionString = getDefaultConnectionString(_remoteServer);
+   private static string _connectionToDevGlobalString = getConnectionToDevGlobalString();
 
    #endregion
 }
