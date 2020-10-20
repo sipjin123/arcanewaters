@@ -43,6 +43,9 @@ public class EquipmentXMLManager : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      _weaponStatList = new Dictionary<int, WeaponStatData>();
+      _armorStatList = new Dictionary<int, ArmorStatData>();
+      _hatStatList = new Dictionary<int, HatStatData>();
       self = this;
    }
 
@@ -58,7 +61,9 @@ public class EquipmentXMLManager : MonoBehaviour {
       if (armorStatData != null) {
          return armorStatData;
       }
-      D.warning("Armor Does not exist: ArmorType: " + armorType);
+      if (armorType > 0) {
+         D.debug("Armor Does not exist: ArmorType: " + armorType);
+      }
       return null;
    }
 
@@ -66,7 +71,9 @@ public class EquipmentXMLManager : MonoBehaviour {
       if (_armorStatList.ContainsKey(sqlId)) {
          return _armorStatList[sqlId];
       }
-      D.warning("Armor Does not exist: " + sqlId);
+      if (sqlId > 0) {
+         D.debug("Armor Does not exist: " + sqlId);
+      }
       return null;
    }
 
@@ -382,7 +389,7 @@ public class EquipmentXMLManager : MonoBehaviour {
             iconPath = hatData.equipmentIconPath;
             break;
          case Item.Category.Armor:
-            ArmorStatData armorData = getArmorDataByType(item.itemTypeId);
+            ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
             iconPath = armorData.equipmentIconPath;
             break;
          case Item.Category.Weapon:
@@ -432,8 +439,13 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
       }
 
-      CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
-      return craftingItem;
+      if (blueprintCategory == Item.Category.Armor) {
+         CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
+         return craftingItem;
+      } else {
+         CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
+         return craftingItem;
+      }
    }
 
    #region Private Variables

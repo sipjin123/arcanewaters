@@ -1728,8 +1728,22 @@ public class RPCManager : NetworkBehaviour {
             // Deduct the items from the user id from the database
             if (itemsToDeduct.Count > 0) {
                List<Item> deductableItems = DB_Main.getRequiredItems(itemsToDeduct, _player.userId);
+
+               // Override crafting sql id into the equipment id it will result into
+               foreach (Item item in itemsToDeduct) {
+                  if (item.category == Item.Category.Blueprint) {
+                     CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+                     item.itemTypeId = craftingData.resultItem.itemTypeId;
+                  }
+               }
+
                foreach (Item item in deductableItems) {
-                  int deductCount = itemsToDeduct.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId).count;
+                  Item targetItem = itemsToDeduct.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId);
+                  if (targetItem == null) {
+                     D.debug("Missing item!: " + item.category + " : " + item.itemTypeId);
+                     return;
+                  }
+                  int deductCount = targetItem.count;
                   DB_Main.decreaseQuantityOrDeleteItem(_player.userId, item.id, deductCount);
                }
             }
@@ -1775,6 +1789,11 @@ public class RPCManager : NetworkBehaviour {
       List<int> newItemStockList = new List<int>();
       foreach (Item item in itemRequirements) {
          Item currentItem = currentItems.Find(_ => _.category == item.category && _.itemTypeId == item.itemTypeId);
+
+         if (item.category == Item.Category.Blueprint) {
+            CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+            currentItem = currentItems.Find(_ => _.category == craftingData.resultItem.category && _.itemTypeId == craftingData.resultItem.itemTypeId);
+         } 
          if (currentItem == null) {
             newItemStockList.Add(0);
          } else {
@@ -2606,7 +2625,7 @@ public class RPCManager : NetworkBehaviour {
             resultItem = WeaponStatData.translateDataToWeapon(weaponData);
             resultItem.data = "";
          } else if (blueprint.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(blueprint.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(blueprint.itemTypeId);
             resultItem = ArmorStatData.translateDataToArmor(armorData);
             resultItem.data = "";
          }
@@ -2696,7 +2715,7 @@ public class RPCManager : NetworkBehaviour {
                   }
                   break;
                case Item.Category.Armor:
-                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(craftedItem.itemTypeId);
+                  ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(craftedItem.itemTypeId);
                   if (armorData != null) {
                      craftedItem.data = ArmorStatData.serializeArmorStatData(armorData);
                   }
@@ -3434,6 +3453,11 @@ public class RPCManager : NetworkBehaviour {
             Item newDatabaseItem = new Item { category = Item.Category.Blueprint, count = 1, data = "" };
             if (item.category == Item.Category.Blueprint) {
                CraftableItemRequirements itemCache = CraftingManager.self.getCraftableData(item.itemTypeId);
+               if (itemCache == null) {
+                  D.debug("Failed to get crafting data of itemType: " + item.itemTypeId);
+                  return;
+               } 
+               
                switch (itemCache.resultItem.category) {
                   case Item.Category.Weapon:
                      newDatabaseItem.data = Blueprint.WEAPON_DATA_PREFIX;

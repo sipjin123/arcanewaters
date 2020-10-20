@@ -397,16 +397,8 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection connection = getConnection()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
-               "SELECT itmId, itmCategory, itmType, itmPalettes, " +
-               "CASE " +
-               "WHEN itmCategory = 1 THEN arcane.equipment_weapon_xml_v3.xmlContent " +
-               "WHEN itmCategory = 2 THEN arcane.equipment_armor_xml_v3.xmlContent " +
-               "WHEN itmCategory = 3 THEN arcane.equipment_hat_xml_v1.xmlContent " +
-               "END AS equipmentXML " +
+               "SELECT itmId, itmCategory, itmType, itmPalettes " +
                "FROM arcane.items " +
-               "left join arcane.equipment_weapon_xml_v3 on(itmCategory = 1 and itmType = arcane.equipment_weapon_xml_v3.xml_id) " +
-               "left join arcane.equipment_armor_xml_v3 on(itmCategory = 2 and itmType = arcane.equipment_armor_xml_v3.xml_id) " +
-               "left join arcane.equipment_hat_xml_v1 on(itmCategory = 3 and itmType = arcane.equipment_hat_xml_v1.xml_id) " +
                "left join arcane.users on armId = itmId or wpnId = itmId or hatId = itmId " +
                "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
                connection)) {
@@ -418,9 +410,8 @@ public class DB_Main : DB_MainStub
                      int itmId = reader.GetInt32("itmId");
                      int itmCategory = reader.GetInt32("itmCategory");
                      int itmType = reader.GetInt32("itmType");
-                     string equipmentXML = reader.GetString("equipmentXML");
                      string itemPalette = reader.GetString("itmPalettes");
-                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{equipmentXML}[space]{itemPalette}[space]";
+                     string result = $"[next]{itmId}[space]{itmCategory}[space]{itmType}[space]{itemPalette}[space]";
                      stringBuilder.AppendLine(result);
                   }
                }
@@ -1292,8 +1283,14 @@ public class DB_Main : DB_MainStub
       string itemGroup = "";
       int index = 0;
       foreach (Item itemData in itemList) {
-         categoryList.Add(((int) itemData.category).ToString());
-         typeList.Add((itemData.itemTypeId).ToString());
+         if (itemData.category == Item.Category.Blueprint) {
+            CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(itemData.itemTypeId);
+            categoryList.Add(((int) itemData.category).ToString());
+            typeList.Add((craftingData.resultItem.itemTypeId).ToString());
+         } else {
+            categoryList.Add(((int) itemData.category).ToString());
+            typeList.Add((itemData.itemTypeId).ToString());
+         }
          if (index > 0) {
             itemGroup += " or ";
          }

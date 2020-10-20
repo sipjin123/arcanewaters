@@ -40,44 +40,83 @@ namespace NubisDataHandling {
 
             if (dataGroup.Length > 0) {
                // Crafting ingredients have no crafting data
-               if (dataGroup.Length >= 5) {
+               if (dataGroup.Length >= 4) {
                   int itemID = int.Parse(dataGroup[0]);
                   Item.Category itemCategory = (Item.Category) int.Parse(dataGroup[1]);
                   int itemTypeID = int.Parse(dataGroup[2]);
                   string paletteNames = "";
                   try {
-                     paletteNames = dataGroup[4];
+                     paletteNames = dataGroup[3];
                   } catch {
                      paletteNames = "armor_one_white, armor_two_white, , ";
                   }
 
                   switch (itemCategory) {
                      case Item.Category.Weapon:
-                        weaponItem = new Item {
-                           id = itemID,
-                           category = Item.Category.Weapon,
-                           itemTypeId = itemTypeID,
-                           data = dataGroup[3],
-                           paletteNames = paletteNames
-                        };
+                        WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemTypeID);
+                        if (weaponData != null) {
+                           weaponItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Weapon,
+                              itemTypeId = itemTypeID,
+                              data = WeaponStatData.serializeWeaponStatData(weaponData),
+                              paletteNames = paletteNames
+                           };
+                           // TODO: Remove after nubis bugfix
+                           D.debug("New weapon is: " + weaponItem.category + " : " + weaponItem.itemTypeId + " : " + weaponItem.data);
+                        } else {
+                           weaponItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Weapon,
+                              itemTypeId = 0,
+                              data = "",
+                              paletteNames = ""
+                           };
+                        }
                         break;
                      case Item.Category.Armor:
-                        armorItem = new Item {
-                           id = itemID,
-                           category = Item.Category.Armor,
-                           itemTypeId = itemTypeID,
-                           data = dataGroup[3],
-                           paletteNames = paletteNames
-                        };
+                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeID);
+                        if (armorData != null) {
+                           armorItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Armor,
+                              itemTypeId = itemTypeID,
+                              data = ArmorStatData.serializeArmorStatData(armorData),
+                              paletteNames = paletteNames
+                           };
+                           // TODO: Remove after nubis bugfix
+                           D.debug("New armor is: " + armorItem.category + " : " + armorItem.itemTypeId + " : " + armorItem.data);
+                        } else {
+                           armorItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Armor,
+                              itemTypeId = 0,
+                              data = "",
+                              paletteNames = ""
+                           };
+                        }
                         break;
                      case Item.Category.Hats:
-                        hatItem = new Item {
-                           id = itemID,
-                           category = Item.Category.Hats,
-                           itemTypeId = itemTypeID,
-                           data = dataGroup[3],
-                           paletteNames = paletteNames
-                        };
+                        HatStatData hatData = EquipmentXMLManager.self.getHatData(itemTypeID);
+                        if (hatData != null) {
+                           hatItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Hats,
+                              itemTypeId = itemTypeID,
+                              data = HatStatData.serializeHatStatData(hatData),
+                              paletteNames = paletteNames
+                           };
+                           // TODO: Remove after nubis bugfix
+                           D.debug("New hat is: " + hatItem.category + " : " + hatItem.itemTypeId + " : " + hatItem.data);
+                        } else {
+                           hatItem = new Item {
+                              id = itemID,
+                              category = Item.Category.Hats,
+                              itemTypeId = 0,
+                              data = "",
+                              paletteNames = ""
+                           };
+                        }
                         break;
                   }
                }

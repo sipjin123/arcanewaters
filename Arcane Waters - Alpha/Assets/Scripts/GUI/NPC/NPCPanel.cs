@@ -319,7 +319,7 @@ public class NPCPanel : Panel
             // Add logic here if item reaches requirement
          } else {
             hasCompleteIngredients = false;
-            D.editorLog("Not enough ingredients! " + itemStock[itemIndexCount] + " / " + itemRequirement.count, Color.red);
+            D.editorLog("Not enough ingredients! {" + itemRequirement.category + " : " + itemRequirement.itemTypeId + "} : " + itemStock[itemIndexCount] + " / " + itemRequirement.count, Color.red);
          }
          itemIndexCount++;
       }

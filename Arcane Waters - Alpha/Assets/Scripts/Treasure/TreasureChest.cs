@@ -301,13 +301,18 @@ public class TreasureChest : NetworkBehaviour {
          }
       } else {
          CraftableItemRequirements craftableData = CraftingManager.self.getCraftableData(item.itemTypeId);
-         if (item.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
-            image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
-         } else if (item.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
-            image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_ARMOR_ICON);
+         if (craftableData == null) {
+            D.debug("Failed to load Crafting Data of: " + item.itemTypeId);
+            yield return null;
+         } else {
+            if (item.data.StartsWith(Blueprint.WEAPON_DATA_PREFIX)) {
+               image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_WEAPON_ICON);
+            } else if (item.data.StartsWith(Blueprint.ARMOR_DATA_PREFIX)) {
+               image.sprite = ImageManager.getSprite(Blueprint.BLUEPRINT_ARMOR_ICON);
+            }
+            item.itemTypeId = craftableData.resultItem.itemTypeId;
+            itemName = EquipmentXMLManager.self.getItemName(item);
          }
-         item.itemTypeId = craftableData.resultItem.itemTypeId;
-         itemName = EquipmentXMLManager.self.getItemName(item);
       }
 
       // Create a new instance of the material we can use for recoloring

@@ -28,7 +28,7 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
    public void updateCellContent (Item item, int requirement, int current) {
       switch (item.category) {
          case Item.Category.Armor:
-            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(item.itemTypeId);
+            ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             icon.sprite = ImageManager.getSprite(armorData.equipmentIconPath);
             break;
          case Item.Category.Weapon:
@@ -43,6 +43,19 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
             CraftingIngredients.Type categoryType = (CraftingIngredients.Type) item.itemTypeId;
             Sprite newSprite = ImageManager.getSprite(CraftingIngredients.getIconPath(categoryType));
             icon.sprite = newSprite;
+            break;
+         case Item.Category.Blueprint:
+            CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingData == null) {
+               D.debug("Failed to fetch Crafting Data: " + item.itemTypeId);
+            } else {
+               Sprite blueprintSprite = ImageManager.getSprite(EquipmentXMLManager.self.getItemIconPath(craftingData.resultItem));
+               icon.sprite = blueprintSprite;
+            }
+            break;
+         default:
+            D.debug("Invalid Item Category: "+item.category);
+            icon.sprite = null;
             break;
       }
       progressText.text = current + " / " + requirement;

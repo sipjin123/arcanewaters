@@ -667,6 +667,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   if (_craftingData.ContainsKey(keyName)) {
                      D.debug("Duplicate Crafting Key: " + keyName);
                   } else {
+                     craftData.xmlId = uniqueId;
                      _craftingData.Add(keyName, craftData);
                   }
 

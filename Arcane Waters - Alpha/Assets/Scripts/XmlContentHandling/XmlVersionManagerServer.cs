@@ -201,7 +201,12 @@ public class XmlVersionManagerServer : MonoBehaviour {
 
                      PlayerPrefs.SetString(xmlTableName, newGroup[1]);
                   } else {
-                     DateTime savedDate = Convert.ToDateTime(PlayerPrefs.GetString(xmlTableName));
+                     DateTime savedDate = DateTime.UtcNow;
+                     try {
+                        savedDate = Convert.ToDateTime(PlayerPrefs.GetString(xmlTableName));
+                     } catch {
+                        D.debug("Failed to convert cached date time for xmlTable: " + xmlTableName);
+                     }
                      DateTime serverDate = DateTime.UtcNow;
 
                      try {

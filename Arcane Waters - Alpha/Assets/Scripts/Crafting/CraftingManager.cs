@@ -26,6 +26,7 @@ public class CraftingManager : MonoBehaviour {
       if (_craftingData.ContainsKey(key)) {
          return _craftingData[key];
       } else {
+         D.debug("No existing Crafting key found: " + key + " : RawData is: " + itemCategory + " : " + itemTypeId);
          return null;
       }
    }
