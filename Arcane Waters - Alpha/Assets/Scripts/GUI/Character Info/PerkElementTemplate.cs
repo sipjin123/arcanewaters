@@ -24,6 +24,11 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
    private void Awake () {
       _rectTransform = transform as RectTransform;
       _originalPivotY = _rectTransform.pivot.y;
+            
+      _iconMaterial = new Material(Shader.Find("UI/Grayscale"));
+      _grayscaleIntensityPropertyId = Shader.PropertyToID("_Intensity");
+      _icon.material = _iconMaterial;
+      _perkBorder.material = _iconMaterial;
    }
 
    public void initializeData (PerkData data) {
@@ -44,11 +49,14 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       this.isLocalPlayer = isLocalPlayer;
 
       _tooltipAssignedPointsText = $"Assigned Points: {assignedPoints}";
-            
+
       if (assignedPoints > 0) {
          int borderIndex = Mathf.Clamp(assignedPoints - 1, 0, CharacterInfoPanel.self.perkIconBorders.Count - 1);
          _perkBorder.sprite = CharacterInfoPanel.self.perkIconBorders[borderIndex];
 
+         _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
+         _perkBorder.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
+         
          _icon.color = Color.white;
          _perkBorder.color = Color.white;
 
@@ -56,9 +64,8 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
             _tooltipAssignedPointsText += " <color=green>(Maximum level!)</color>";
          }
       } else {
-         // Make the icons slightly transparent
-         _icon.color = _noAssignedPointsColor;
-         _perkBorder.color = _noAssignedPointsColor;
+         // Make the icons grayscale
+         _iconMaterial.SetFloat(_grayscaleIntensityPropertyId, 1);
       }
    }
 
@@ -75,6 +82,16 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       CharacterInfoPanel.self.perksGridLayoutGroup.enabled = false;
 
       _fadeInfoSequence.Join(_rectTransform.DOPivotY(_originalPivotY - _iconMoveUpOnHoverAmount, _infoOnHoverFadeTime));
+
+      // Disable the grayscale effect
+      if (assignedPoints < 1) {
+         float grayscaleIntensity = _iconMaterial.GetFloat(_grayscaleIntensityPropertyId);
+         _fadeInfoSequence.Join(DOTween.To(() => grayscaleIntensity, (x) => grayscaleIntensity = x, 0, _infoOnHoverFadeTime)
+            .OnUpdate(() => {
+               _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, grayscaleIntensity);
+            }));
+      }
+
       _fadeInfoSequence.AppendCallback(showTooltip);
 
       _fadeInfoSequence.Play();
@@ -90,8 +107,16 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       _fadeInfoSequence?.Kill();
       _fadeInfoSequence = DOTween.Sequence();
 
-
       _fadeInfoSequence.Join(_rectTransform.DOPivotY(_originalPivotY, _infoOnHoverFadeTime));
+
+      // Enable the grayscale effect if there are no points assigned
+      if (assignedPoints < 1) {
+         float grayscaleIntensity = _iconMaterial.GetFloat(_grayscaleIntensityPropertyId);
+         _fadeInfoSequence.Join(DOTween.To(() => grayscaleIntensity, (x) => grayscaleIntensity = x, 1, _infoOnHoverFadeTime)
+            .OnUpdate(() => {
+               _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, grayscaleIntensity);
+            }));
+      }
 
       _fadeInfoSequence.Play();
    }
@@ -122,6 +147,9 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       // Show the increment locally so the UI doesn't look laggy
       assignedPoints++;
 
+      // Disable the grayscale
+      _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
+
       SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
 
       Global.player.rpc.Cmd_AssignPerkPoint(_perkData.perkId);
@@ -141,11 +169,6 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
    // The perk border image
    [SerializeField]
    private Image _perkBorder;
-
-   [Header("Colors")]
-   // The color to use when no points have been assigned to the perk
-   [SerializeField]
-   private Color _noAssignedPointsColor = new Color(1, 1, 1, 0.9f);
 
    // The duration of the fade in of the info when hovering over the icon
    [Header("Animation")]
@@ -174,6 +197,12 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
 
    // The assigned points tooltip text
    private string _tooltipAssignedPointsText;
+
+   // The material of the border and icon
+   private Material _iconMaterial;
+
+   // The ID for the grayscale property in the shader
+   private int _grayscaleIntensityPropertyId;
 
    #endregion
 }

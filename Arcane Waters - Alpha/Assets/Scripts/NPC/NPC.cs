@@ -64,9 +64,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Determines if this npc is staying still or moving around
    public bool isStationary;
 
-   // Reference to the shadow
-   public Transform shadowTransform;
-
    #endregion
 
    protected override void Awake () {
@@ -137,11 +134,11 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          setupClientSideValues();
       }
 
-      shadowTransform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
-      shadowTransform.localPosition = new Vector3(0, npcData.shadowOffsetY, 0);
+      shadow.transform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
+      shadow.transform.localPosition = new Vector3(0, npcData.shadowOffsetY, 0);
 
       // Use shadow as our sort point
-      sortPoint.transform.localPosition = shadowTransform.localPosition;
+      sortPoint.transform.localPosition = shadow.transform.localPosition;
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);

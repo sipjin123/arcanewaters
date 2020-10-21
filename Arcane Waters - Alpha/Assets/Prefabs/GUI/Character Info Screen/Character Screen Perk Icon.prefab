@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -309,7 +309,6 @@ MonoBehaviour:
   _assignedPointsIndicator: {fileID: 123411471537812640}
   _assignedPointsText: {fileID: 7126611726117895804}
   _iconScaleOnHover: 1.25
-  _unselectedTransparency: 0.6
 --- !u!1 &6263846497955684424
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,7 +368,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.6}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:

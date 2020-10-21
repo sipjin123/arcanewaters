@@ -69,7 +69,7 @@ namespace MapCreationTool.IssueResolving
 
          try {
             maps = (await DB_Main.execAsync(DB_Main.getMaps))
-               .Where(m => m.editorType == EditorType.Area)
+               .Where(m => m.editorType == EditorType.Interior)
                .ToList();
             receivedMaps();
          } catch (Exception ex) {

@@ -159,6 +159,9 @@ public class NetEntity : NetworkBehaviour
    // Determines if this unit is speeding
    public bool isSpeedingUp;
 
+   // Reference to the shadow
+   public SpriteRenderer shadow;
+
    // The speed multiplied when speed boosting
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.75f;
    public static float MAX_SHIP_SPEED = 150;
@@ -692,7 +695,7 @@ public class NetEntity : NetworkBehaviour
 
    public void setClimbing (bool isClimbing) {
       _isClimbing = isClimbing;
-      getBodyRenderer().material.SetFloat("_Cutoff", _isClimbing ? HIDDEN_SHADOW_ALPHACUTOFF : VISIBLE_SHADOW_ALPHACUTOFF);
+      shadow.enabled = !isClimbing;
    }
 
    public bool isMouseOver () {
@@ -1381,12 +1384,6 @@ public class NetEntity : NetworkBehaviour
 
    // Keep a reference to the last instance accessed with getInstance
    private Instance _lastInstance = null;
-
-   // The alpha cutoff value when we want to show the shadow
-   private const float VISIBLE_SHADOW_ALPHACUTOFF = 0;
-
-   // The alpha cutoff value when we want to hide the shadow
-   private const float HIDDEN_SHADOW_ALPHACUTOFF = 0.5f;
 
    // Controllers, that are controlling the entity or are scheduled to
    private List<TemporaryController> _temporaryControllers = new List<TemporaryController>();

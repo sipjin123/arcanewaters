@@ -45,6 +45,10 @@ public class ItemDefinition
       return true;
    }
 
+   public Sprite getIcon () {
+      return ImageManager.getSprite(iconPath);
+   }
+
    public string serialize () {
       XmlSerializer serializer = new XmlSerializer(GetType());
       var sb = new System.Text.StringBuilder();

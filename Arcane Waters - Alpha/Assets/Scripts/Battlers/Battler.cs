@@ -1,12 +1,10 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
-using UnityEngine.Events;
-using System;
-using Random = UnityEngine.Random;
 using System.Linq;
+using Mirror;
+using UnityEngine;
+using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 // Will load Battler Data and use that accordingly in all actions.
 public class Battler : NetworkBehaviour, IAttackBehaviour
@@ -254,7 +252,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (currentActionCoroutine != null) {
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
-      } 
+      }
    }
 
    public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
@@ -644,7 +642,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Color color = battlerType.Equals(BattlerType.AIEnemyControlled) ? Color.red : Color.green;
       _outline.setNewColor(color);
       _outline.setVisibility(isMouseHovering() && !isDead());
-      
+
       // Hide or show battler Name
       if (battlerType.Equals(BattlerType.PlayerControlled) && Global.player != null) {
          bool hoverPlayerNames = false;
@@ -1091,7 +1089,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
-            
+
             // Plays the melee cast ability
             EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
@@ -1650,10 +1648,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public float getActionTimerPercent () {
       // Figure out how full our timer bar should be
       float fillPercent = 1f;
-      float cooldownLength = (float)(this.cooldownEndTime - this.lastAbilityEndTime);
+      float cooldownLength = (float) (this.cooldownEndTime - this.lastAbilityEndTime);
 
       if (cooldownLength > 0f) {
-         fillPercent = (float)(NetworkTime.time - this.lastAbilityEndTime) / cooldownLength;
+         fillPercent = (float) (NetworkTime.time - this.lastAbilityEndTime) / cooldownLength;
       }
 
       return Util.clamp<float>(fillPercent, 0f, 1f);

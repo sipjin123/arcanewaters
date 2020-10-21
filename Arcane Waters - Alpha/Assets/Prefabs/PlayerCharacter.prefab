@@ -1692,6 +1692,7 @@ MonoBehaviour:
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
+  shadow: {fileID: 6461678907988035178}
   _ignoredAnimators:
   - {fileID: 8639899505746120541}
   _animators: []

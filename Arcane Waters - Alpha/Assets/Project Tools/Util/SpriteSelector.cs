@@ -17,6 +17,9 @@ public class SpriteSelector : MonoBehaviour
    [Header("Set if selection must start at specified folder")]
    public string startInPath;
 
+   [Header("Start selection in this path if value hasn't been set yet")]
+   public string defaultPath;
+
    [Header("Can you select in subfolders")]
    public bool allowSubfolders = true;
 
@@ -76,7 +79,8 @@ public class SpriteSelector : MonoBehaviour
 
       selectionTemplate.SetActive(true);
 
-      setSelectionFolder(applyConstraints(getFolder(value, true)));
+      bool validPath = getSpriteOrDefault(value) != defaultSprite;
+      setSelectionFolder(applyConstraints(getFolder(validPath ? value : defaultPath, validPath)));
 
       // At the beginning, set current value as selected item
       if (_currentFolder.texturePaths.Contains(value)) {

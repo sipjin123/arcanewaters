@@ -65,6 +65,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 #endif
 
    private void OnRenderImage (RenderTexture source, RenderTexture destination) {
+      _material.SetFloat(_effectProgressPropertyID, _effectProgress);
       Graphics.Blit(source, destination, _material);
    }
 

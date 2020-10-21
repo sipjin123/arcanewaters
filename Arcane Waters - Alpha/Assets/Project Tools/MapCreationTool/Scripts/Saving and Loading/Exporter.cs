@@ -59,6 +59,9 @@ namespace MapCreationTool.Serialization
          "snow_tiles_152", "snow_tiles_153", "snow_tiles_154", "snow_tiles_173", "snow_tiles_174", "snow_tiles_175", "snow_tiles_233", "snow_tiles_234", "snow_tiles_251", "snow_tiles_252", "snow_tiles_265", "snow_tiles_266"
       };
 
+      // Serialization index of bottom wall tile
+      public static Vector2Int bottomWallIndex = new Vector2Int(7, 62);
+
       // The tile numbers for grass
       public static HashSet<int> grassTiles = new HashSet<int>() { 0, 1 };
 
@@ -183,8 +186,8 @@ namespace MapCreationTool.Serialization
          // Force some wall tiles to be rendered on top of player
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 0; j < editorSize.y; j++) {
-               // Dont force it if they have a doorframe on top though
-               if (cellMatrix[i, j].hasDoorframe) continue;
+               // Dont force it if they have a doorframe or ceiling on top though
+               if (cellMatrix[i, j].hasDoorframe || cellMatrix[i, j].hasCeiling) continue;
 
                for (int k = 0; k < cellMatrix[i, j].tiles.Length; k++) {
                   if (Layer.isWall(cellMatrix[i, j].tiles[k].layer) && wallForceTopTiles.Contains(cellMatrix[i, j].tiles[k].tileBase.name)) {
@@ -222,9 +225,16 @@ namespace MapCreationTool.Serialization
                      continue;
                   }
 
-                  // Check 1 above, left and right (horizontal path doorframe)
+                  // Check 1 and 0 above, left and right (horizontal path doorframe)
                   if (tryGetLeftRightDoorframes(i, j + 1, 4, cellMatrix, out TileInLayer left, out TileInLayer right)) {
-                     if (left.collisionType == TileCollisionType.CancelEnabled && right.collisionType == TileCollisionType.CancelEnabled) {
+                     if (left.collisionType == TileCollisionType.CancelDisabled && right.collisionType == TileCollisionType.CancelDisabled) {
+                        additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex, biome), new Vector2Int(i, j)));
+                        continue;
+                     }
+                  }
+
+                  if (tryGetLeftRightDoorframes(i, j, 4, cellMatrix, out TileInLayer left2, out TileInLayer right2)) {
+                     if (left2.collisionType == TileCollisionType.CancelDisabled && right2.collisionType == TileCollisionType.CancelDisabled) {
                         continue;
                      }
                   }
@@ -232,7 +242,8 @@ namespace MapCreationTool.Serialization
 
                // If this is a wall tile, check if it has a horizontal doorframe on top
                if (cellMatrix[i, j].hasWall && j < editorSize.y - 1) {
-                  if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelEnabled) {
+                  if (cellMatrix[i, j + 1].hasDoorframe && cellMatrix[i, j + 1].getTileFromTop(Layer.DOORFRAME_KEY).collisionType == TileCollisionType.CancelDisabled) {
+                     additionalTileColliders.Add((AssetSerializationMaps.getTile(bottomWallIndex, biome), new Vector2Int(i, j)));
                      continue;
                   }
                }

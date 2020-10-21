@@ -24,6 +24,16 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    private void Awake () {
       _originalScale = transform.localScale;
+
+      if (_grayscaleIntensityID < 0) {
+         _grayscaleIntensityID = Shader.PropertyToID("_Intensity");
+      }
+
+      Material material = new Material(Shader.Find("UI/Grayscale"));
+      _iconImage.material = material;
+      _borderImage.material = material;
+
+      _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
    }
 
    public void initialize (PerkData data) {
@@ -51,12 +61,10 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       _hasAssignedPoints = points > 0;
 
       if (_hasAssignedPoints) {
-         _iconImage.color = Color.white;
-         _borderImage.color = Color.white;
+         _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 0);
       } else {
-         // Make the icons slightly transparent
-         _iconImage.color = new Color(1, 1, 1, _unselectedTransparency);
-         _borderImage.color = new Color(1, 1, 1, _unselectedTransparency);
+         // Make the icons grayscale
+         _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
       }
 
       _tooltipAssignedPointsText = $"\nAssigned Points: {points}";
@@ -75,8 +83,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
       transform.localScale = _originalScale * _iconScaleOnHover;
 
-      _borderImage.color = Color.white;
-      _iconImage.color = Color.white;
+      _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 0);
 
       SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
 
@@ -89,10 +96,8 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       transform.localScale = _originalScale;
 
       if (!_hasAssignedPoints) {
-         _borderImage.color = new Color(1, 1, 1, _unselectedTransparency);
-         _iconImage.color = new Color(1, 1, 1, _unselectedTransparency);
+         _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
       }
-      
    }
 
    public void OnPointerClick (PointerEventData eventData) {
@@ -127,10 +132,6 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
    [SerializeField]
    private float _iconScaleOnHover = 1.25f;
 
-   // The transparency when the icon is not selected
-   [SerializeField]
-   private float _unselectedTransparency = 0.6f;
-
    // The tooltip text
    private string _tooltipText;
 
@@ -142,6 +143,9 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
    // The original scale of the icon
    private Vector3 _originalScale;
+
+   // The ID of the grayscale intensity property
+   private static int _grayscaleIntensityID = -1;
 
    #endregion
 }
