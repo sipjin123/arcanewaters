@@ -69,6 +69,12 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
    // Holds the spawnable secret obj
    public Transform secretObjHolder;
 
+   // If the coroutine animation is running
+   public bool isRunningCoroutineAnimation;
+
+   // Closes the entrance after 30 seconds has passed
+   public const int CLOSE_ENTRANCE_TIMER = 30;
+
    #endregion
 
    private void Start () {
@@ -100,13 +106,31 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
       if (!isInteracted) {
          isInteracted = true;
          cachedSecretEntrance.processInteraction();
+         StartCoroutine(CO_CloseEntrance());
       } 
+   }
+
+   private IEnumerator CO_CloseEntrance () {
+      yield return new WaitForSeconds(CLOSE_ENTRANCE_TIMER);
+      isInteracted = false;
+      isFinishedAnimating = false;
+      cachedSecretEntrance.warp.gameObject.SetActive(false);
+      cachedSecretEntrance.closeEntrance();
+      Rpc_CloseAnimation();
    }
 
    [ClientRpc]
    public void Rpc_InteractAnimation () {
       // Sends animation commands to all clients
       cachedSecretEntrance.interactAnimation();
+   }
+
+   [ClientRpc]
+   public void Rpc_CloseAnimation () {
+      // Sends animation commands to all clients
+      if (!isRunningCoroutineAnimation) {
+         cachedSecretEntrance.closeEntrance();
+      }
    }
 
    public void receiveData (DataField[] dataFields) {

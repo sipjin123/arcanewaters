@@ -147,7 +147,7 @@ public class NetEntity : NetworkBehaviour
 
    // Values that determines if the magnitude indicates moving
    public const float MOVING_MAGNITUDE = .2f;
-   public const float SHIP_MOVING_MAGNITUDE = .1f;
+   public const float SHIP_MOVING_MAGNITUDE = .005f;
 
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
@@ -158,7 +158,7 @@ public class NetEntity : NetworkBehaviour
 
    // Determines if this unit is speeding
    public bool isSpeedingUp;
-
+   
    // Reference to the shadow
    public SpriteRenderer shadow;
 
@@ -238,10 +238,27 @@ public class NetEntity : NetworkBehaviour
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
+
+         if (this is PlayerBodyEntity || this is PlayerShipEntity) {
+            StartCoroutine(CO_LoadWeather());
+         }
       }
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
+   }
+
+   private IEnumerator CO_LoadWeather () {
+      WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
+
+      // Wait until our server port is initialized
+      while (AreaManager.self.getArea(areaKey) == null) {
+         yield return null;
+      }
+
+      // Process weather simulation for voyage area
+      Area area = AreaManager.self.getArea(areaKey);
+      WeatherManager.self.loadWeatherForArea(area);
    }
 
    protected virtual void Update () {

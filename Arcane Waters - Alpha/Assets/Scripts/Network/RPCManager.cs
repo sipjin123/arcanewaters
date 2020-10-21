@@ -241,7 +241,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractAnimation (Anim.Type animType) {
+   public void Cmd_InteractAnimation (Anim.Type animType, Direction direction) {
+      _player.Rpc_ForceLookat(direction);
       Rpc_InteractAnimation(animType);
    }
 

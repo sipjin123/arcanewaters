@@ -230,33 +230,6 @@ public class MapManager : MonoBehaviour
             setCustomizations(area, customizationData);
          }
 
-         WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
-         if (!area.isInterior) {
-            if (exportedProject.editorType == EditorType.Sea) {
-               if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
-                  WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
-                  area.cloudManager.weatherEffectType = weatherType;
-                  area.cloudManager.enabled = true;
-               } else if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
-                  WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
-               }
-            } else if (exportedProject.editorType == EditorType.Area) {
-               Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(areaKey);
-               if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
-                  if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
-                     WeatherManager.self.setWeatherSimulation(weatherType, null);
-                  } else {
-                     area.cloudShadowManager.enabled = true;
-                     WeatherManager.self.setWeatherSimulation(WeatherEffectType.None, null);
-                  }
-               } else {
-                  WeatherManager.self.setWeatherSimulation(weatherType, area.transform);
-               }
-            }
-         } else {
-            WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
-         }
-
          // Set up cell types container
          result.area.cellTypes = new CellTypesContainer(exportedProject.mapCellTypes, exportedProject.size, result.area);
 

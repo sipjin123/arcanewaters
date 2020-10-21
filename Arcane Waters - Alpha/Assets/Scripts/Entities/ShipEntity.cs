@@ -62,10 +62,12 @@ public class ShipEntity : SeaEntity
       currentHealth = data.baseHealth;
       maxHealth = data.baseHealth;
       attackRangeModifier = data.baseRange;
+
       speed = data.baseSpeed;
       sailors = data.baseSailors;
       rarity = Rarity.Type.None;
       damage = data.baseDamage;
+
       shipSize = data.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }
@@ -76,6 +78,7 @@ public class ShipEntity : SeaEntity
       currentHealth = info.health;
       maxHealth = info.maxHealth;
       attackRangeModifier = info.attackRange;
+
       speed = info.speed;
       sailors = info.sailors;
       rarity = info.rarity;
@@ -349,13 +352,17 @@ public class ShipEntity : SeaEntity
    protected override void onStartMoving () {
       base.onStartMoving();
 
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesMovingSprites;
+      if (!isSpeedingUp) {
+         ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesMovingSprites;
+      }
    }
 
    protected override void onEndMoving () {
       base.onEndMoving();
 
-      ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+      if (!isSpeedingUp) {
+         ripplesContainer.GetComponent<SpriteSwap>().newTexture = _ripplesStillSprites;
+      }
    }
 
    #region Private Variables

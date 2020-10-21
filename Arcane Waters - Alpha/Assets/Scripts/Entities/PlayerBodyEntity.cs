@@ -333,11 +333,11 @@ public class PlayerBodyEntity : BodyEntity {
                }
                if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
                   || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
                } else if (newDirection == Direction.North) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
                } else if (newDirection == Direction.South) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South);
+                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
                }
                miningTrigger.interactOres();
             }
@@ -371,7 +371,6 @@ public class PlayerBodyEntity : BodyEntity {
          }
       }
 
-      Cmd_ForceFaceDirection(newDirection);
       return newDirection;
    }
 

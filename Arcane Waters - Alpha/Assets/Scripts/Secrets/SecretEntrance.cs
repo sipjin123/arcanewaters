@@ -110,15 +110,24 @@ public class SecretEntrance : MonoBehaviour {
          warp.gameObject.SetActive(false);
       }
 
-      if (secretEntranceHolder.isFinishedAnimating && !Util.isBatch()) {
-         setSprites();
+      if (!Util.isBatch()) { 
          if (subSprite.name == "none") {
             subSpriteRenderer.gameObject.SetActive(false);
          }
 
-         _outline.setVisibility(false);
-         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
-         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+         setSprites();
+         if (secretEntranceHolder.isInteracted) {
+            _outline.setVisibility(false);
+            spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
+            subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+         } else {
+            _outline.setVisibility(true);
+            spriteRenderer.sprite = mainSpriteComponent.sprites[0];
+            subSpriteRenderer.sprite = subSpriteComponent.sprites[0];
+
+            mainSpriteComponent.currentIndex = mainSpriteComponent.maxIndex / 2;
+            subSpriteComponent.currentIndex = subSpriteComponent.maxIndex / 2;
+         }
       }
 
       SecretsManager.self.registerSecretEntrance(new SecretEntranceSpawnData {
@@ -210,14 +219,59 @@ public class SecretEntrance : MonoBehaviour {
    public void interactAnimation () {
       if (!Util.isBatch()) {
          setSprites();
+         if (_outline == null) {
+            _outline = GetComponentInChildren<SpriteOutline>();
+         }
          _outline.setVisibility(false);
          _outline.enabled = false;
          _outline = null;
+
          InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
          InvokeRepeating("playSubSpriteAnimation", 1, animationSpeed);
+
          blockerSprite.gameObject.SetActive(false);
          postBlockerSprite.gameObject.SetActive(true);
          checkBlending(true);
+      }
+   }
+
+   public void closeEntrance () {
+      if (!Util.isBatch()) {
+         _outline = GetComponentInChildren<SpriteOutline>();
+         _outline.setVisibility(true);
+         _outline.enabled = true;
+
+         secretEntranceHolder.isRunningCoroutineAnimation = true;
+         InvokeRepeating("playMainSpriteAnimationClose", 0, animationSpeed);
+         InvokeRepeating("playSubSpriteAnimationClose", 0, animationSpeed);
+
+         blockerSprite.gameObject.SetActive(true);
+         postBlockerSprite.gameObject.SetActive(false);
+         //
+         checkBlending(true);
+      }
+   }
+
+   private void playMainSpriteAnimationClose () {
+      if (mainSpriteComponent.currentIndex < mainSpriteComponent.maxIndex -1) {
+         mainSpriteComponent.currentIndex++;
+         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.currentIndex];
+      }
+   }
+
+   private void playSubSpriteAnimationClose () {
+      if (subSpriteComponent.currentIndex < subSpriteComponent.maxIndex -1) {
+         subSpriteComponent.currentIndex++;
+         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.currentIndex];
+      } else {
+         if (!Util.isBatch()) {
+            spriteRenderer.sprite = mainSpriteComponent.sprites[0];
+            subSpriteRenderer.sprite = subSpriteComponent.sprites[0];
+            subSpriteComponent.currentIndex = 0;
+         }
+         secretEntranceHolder.isRunningCoroutineAnimation = false;
+         secretEntranceHolder.isFinishedAnimating = true;
+         CancelInvoke();
       }
    }
 
@@ -233,17 +287,12 @@ public class SecretEntrance : MonoBehaviour {
          subSpriteComponent.currentIndex++;
          subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.currentIndex];
       } else {
-         endSpriteAnimation();
+         if (!Util.isBatch()) {
+            spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
+            subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
+         }
+         CancelInvoke();
       }
-   }
-
-   private void endSpriteAnimation () {
-      if (!Util.isBatch()) {
-         spriteRenderer.sprite = mainSpriteComponent.sprites[mainSpriteComponent.maxIndex / 2];
-         subSpriteRenderer.sprite = subSpriteComponent.sprites[subSpriteComponent.maxIndex / 2];
-
-      }
-      CancelInvoke();
    }
 
    public void processInteraction () {

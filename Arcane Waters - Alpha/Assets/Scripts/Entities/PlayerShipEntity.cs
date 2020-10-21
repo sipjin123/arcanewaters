@@ -104,8 +104,6 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (isLocalPlayer) {
-         StartCoroutine(CO_LoadWeather());
-
          // Create a ship movement sound for our own ship
          _movementAudioSource = SoundManager.createLoopedAudio(SoundManager.Type.Ship_Movement, this.transform);
          _movementAudioSource.gameObject.AddComponent<MatchCameraZ>();
@@ -124,20 +122,6 @@ public class PlayerShipEntity : ShipEntity
       if (Util.isServer()) {
          _serverSideMoveAngle = desiredAngle;
          _serverSideAimAngle = desiredAngle;
-      }
-   }
-
-   private IEnumerator CO_LoadWeather () {
-      // Wait until our server port is initialized
-      while (AreaManager.self.getArea(areaKey) == null) {
-         yield return null;
-      }
-
-      // Process weather simulation for voyage area
-      if (VoyageManager.self.isVoyageArea(areaKey)) {
-         Area areaTest = AreaManager.self.getArea(areaKey);
-         WeatherEffectType weatherEffectType = AreaManager.self.getAreaWeatherEffectType(areaTest.areaKey);
-         WeatherManager.self.setWeatherSimulation(weatherEffectType);
       }
    }
 
@@ -199,8 +183,7 @@ public class PlayerShipEntity : ShipEntity
 
          if (speedMeter < SPEEDUP_METER_MAX) {
             speedMeter += Time.deltaTime * boostRecoverValue;
-            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
-            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
+
             shipBoostCooldownObj.SetActive(true);
             shipBoostCooldownIcon.sprite = cooldownIconSprites[(int) speedMeter];
 
@@ -221,6 +204,9 @@ public class PlayerShipEntity : ShipEntity
          }
 
          if (speedMeter > 0) {
+            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
+            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
+
             speedMeter -= Time.deltaTime * boostDepleteValue;
             shipBoostCooldownObj.SetActive(false);
          } else {
@@ -245,7 +231,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    public override bool isMoving () {
-      return getVelocity().magnitude > 0.1f;
+      return getVelocity().magnitude > SHIP_MOVING_MAGNITUDE;
    }
 
    private void handleDirectionChange () {

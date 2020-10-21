@@ -240,6 +240,35 @@ public class WeatherManager : MonoBehaviour {
       }
    }
 
+   public void loadWeatherForArea (Area area) {
+      WeatherEffectType weatherType = AreaManager.self.getAreaWeatherEffectType(area.areaKey);
+      if (!area.isInterior) {
+         if (area.isSea) {
+            if (weatherType == WeatherEffectType.Cloud || weatherType == WeatherEffectType.DarkCloud) {
+               setWeatherSimulation(WeatherEffectType.None, null);
+               area.cloudManager.weatherEffectType = weatherType;
+               area.cloudManager.enabled = true;
+            } else if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+               setWeatherSimulation(weatherType, area.transform);
+            }
+         } else {
+            Area.SpecialType specialType = AreaManager.self.getAreaSpecialType(area.areaKey);
+            if (specialType == Area.SpecialType.TreasureSite || specialType == Area.SpecialType.Town) {
+               if (weatherType == WeatherEffectType.Rain || weatherType == WeatherEffectType.Snow) {
+                  setWeatherSimulation(weatherType, null);
+               } else {
+                  area.cloudShadowManager.enabled = true;
+                  setWeatherSimulation(WeatherEffectType.None, null);
+               }
+            } else {
+               setWeatherSimulation(weatherType, area.transform);
+            }
+         }
+      } else {
+         setWeatherSimulation(WeatherEffectType.None);
+      }
+   }
+
    private void Update () {
       if (startWeatherSimulation) {
          switch (weatherEffectType) {
@@ -250,41 +279,6 @@ public class WeatherManager : MonoBehaviour {
                   cloudObj.move();
                }
                break;
-         }
-      }
-
-      // TODO: Remove this after weather feature has been approved and simulation is now longer necessary
-      debugFunctionality();
-   }
-
-   private void debugFunctionality () {
-      if (SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME1 || SystemInfo.deviceName == NubisDataFetchTest.DEVICE_NAME2) {
-         if (Input.GetKey(KeyCode.F11)) {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.DarkCloud, Color.green);
-               setWeatherSimulation(WeatherEffectType.DarkCloud, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha2)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.Mist, Color.green);
-               setWeatherSimulation(WeatherEffectType.Mist, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha3)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.Cloud, Color.green);
-               setWeatherSimulation(WeatherEffectType.Cloud, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha4)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.Rain, Color.green);
-               setWeatherSimulation(WeatherEffectType.Rain, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha5)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.Snow, Color.green);
-               setWeatherSimulation(WeatherEffectType.Snow, AreaManager.self.getArea(Global.player.areaKey).transform);
-               generateSnowCells();
-            }
-            if (Input.GetKeyDown(KeyCode.Alpha6)) {
-               D.editorLog("Setting weather: " + WeatherEffectType.Sunny, Color.green);
-               setWeatherSimulation(WeatherEffectType.Sunny, AreaManager.self.getArea(Global.player.areaKey).transform);
-            }
          }
       }
    }
