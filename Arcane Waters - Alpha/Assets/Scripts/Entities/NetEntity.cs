@@ -604,6 +604,14 @@ public class NetEntity : NetworkBehaviour
       return _body;
    }
 
+   public CircleCollider2D getMainCollider () {
+      if (_mainCollider == null) {
+         _mainCollider = GetComponents<CircleCollider2D>().FirstOrDefault(c => !c.isTrigger && c.enabled);
+      }
+
+      return _mainCollider;
+   }
+
    public List<SpriteRenderer> getRenderers () {
       return _renderers;
    }
@@ -1404,6 +1412,9 @@ public class NetEntity : NetworkBehaviour
 
    // Controllers, that are controlling the entity or are scheduled to
    private List<TemporaryController> _temporaryControllers = new List<TemporaryController>();
+
+   // Main collider of the entity, used for collisions
+   private CircleCollider2D _mainCollider;
 
    #endregion
 }

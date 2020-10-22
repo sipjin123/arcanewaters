@@ -21,8 +21,7 @@ public abstract class TemporaryController : MonoBehaviour
       ControlData puppet = new ControlData {
          entity = entity,
          startTime = Time.time,
-         startPos = entity.getRigidbody().position,
-         mainEntityCollider = entity.GetComponents<CircleCollider2D>().FirstOrDefault(c => !c.isTrigger && c.enabled)
+         startPos = entity.getRigidbody().position
       };
       _puppets.Add(puppet);
 
@@ -76,6 +75,9 @@ public abstract class TemporaryController : MonoBehaviour
    // The entities we are currently controlling and information about it
    protected List<ControlData> _puppets = new List<ControlData>();
 
+   // Buffer we use for storing physics collision test results
+   protected Collider2D[] _colliderBuffer = new Collider2D[1];
+
    #endregion
 
    // Class we use to track various data used for controlling entities
@@ -95,8 +97,5 @@ public abstract class TemporaryController : MonoBehaviour
 
       // For how long are we controlling the entity
       public float time = 0;
-
-      // Main collider of the enitity, used for collisions
-      public Collider2D mainEntityCollider;
    }
 }

@@ -145,12 +145,17 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
       Sprite arrowSprite = ImageManager.getSprite("Map/Warp Arrows/" + spriteName);
       if (arrowSprite != null) {
-         SpriteRenderer ren = GetComponentInChildren<SpriteRenderer>();
+         SpriteRenderer ren = arrow.GetComponent<SpriteRenderer>();
          if (ren != null) {
             ren.sprite = arrowSprite;
          }
       } else {
          D.warning("Could not find sprite for warp arrow. Target sprite name: " + spriteName);
+      }
+
+      // Adjust the position to point the warp visual, if we are not a house warp
+      if (transform.parent.GetComponent<House>() == null) {
+         arrow.transform.localPosition = -DirectionUtil.getVectorForDirection(newFacingDirection);
       }
    }
 

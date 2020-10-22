@@ -4866,10 +4866,11 @@ public class DB_Main : DB_MainStub
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
+            cmd.Parameters.AddWithValue("@usrName", player.entityName);
             cmd.Parameters.AddWithValue("@accId", player.accountId);
             cmd.Parameters.AddWithValue("@bugSubject", subject);
             cmd.Parameters.AddWithValue("@bugLog", bugReport);
@@ -8340,7 +8341,7 @@ public class DB_Main : DB_MainStub
 
       string dir = "C:/ArcaneWaters/Secure/Databases";
       string file = "dbConfig.json";
-      string path = Path.Combine(dir, subDir, file);
+      string path = Path.GetFullPath(Path.Combine(dir, subDir, file));
       DatabaseCredentials creds = null;
       bool configExists = File.Exists(path);
 
@@ -8362,14 +8363,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static string getDefaultConnectionString (string server = "", string database = "", string uid = "", string password = "") {
-
-#if FORCE_AMAZON_SERVER_PROD
-      string subDir = "Prod";
-#else
-      string subDir = "Dev";
-#endif
-
-      DatabaseCredentials creds = loadDatabaseCredentials(subDir);
+      DatabaseCredentials creds = loadDatabaseCredentials("local");
       if (creds != null) {
          server = string.IsNullOrEmpty(creds.server) ? server : creds.server;
          database = string.IsNullOrEmpty(creds.database) ? database : creds.database;
@@ -8467,25 +8461,31 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent, string loginSource) {
-      try {
-         using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO logins (usrId, accId, ipAddress, machineIdent, loginSource) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource);", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@usrId", usrId);
-            cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@ipAddress", ipAddress);
-            cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
-            cmd.Parameters.AddWithValue("@loginSource", loginSource);
+   public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
+      // Storing Login info, excluding both localhost (IPv4) and ::1 (IPv6), and only when usrId > 0
+      if (ipAddress != "localhost" && ipAddress != "::1" && ipAddress.Contains("::ffff:") && usrId > 0) {
+         // We need to split the IP Address because its format, ::ffff:0.0.0.0, for example
+         string[] finalAddressArray = ipAddress.Split(':');
+         string finalAddress = finalAddressArray[finalAddressArray.Length - 1];
 
-            // Execute the command
-            cmd.ExecuteNonQuery();
+         try {
+            using (MySqlConnection conn = getConnection())
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, accId, ipAddress, machineIdent, loginSource) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource);", conn)) {
+               conn.Open();
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@usrId", usrId);
+               cmd.Parameters.AddWithValue("@accId", accId);
+               cmd.Parameters.AddWithValue("@ipAddress", ipAddress);
+               cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
+               cmd.Parameters.AddWithValue("@loginSource", "game");
+
+               // Execute the command
+               cmd.ExecuteNonQuery();
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
          }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
       }
-
    }
 
    #endregion

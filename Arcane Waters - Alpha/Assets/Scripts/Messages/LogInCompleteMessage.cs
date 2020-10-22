@@ -20,18 +20,14 @@ public class LogInCompleteMessage : MessageBase {
    // The account creation date for this login, needed for Paymentwall
    public long accountCreationTime;
 
-   // The client's machine identifier
-   public string machineIdentifier;
-
    #endregion
 
    public LogInCompleteMessage () { }
 
-   public LogInCompleteMessage (uint netId, Direction initialFacingDirection, string accountEmail, long accountCreationTime, string machineIdentifier) {
+   public LogInCompleteMessage (uint netId, Direction initialFacingDirection, string accountEmail, long accountCreationTime) {
       this.netId = netId;
       this.initialFacingDirection = initialFacingDirection;
       this.accountEmail = accountEmail;
       this.accountCreationTime = accountCreationTime;
-      this.machineIdentifier = machineIdentifier;
    }
 }

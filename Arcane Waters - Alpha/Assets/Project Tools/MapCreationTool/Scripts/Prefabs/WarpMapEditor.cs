@@ -51,6 +51,8 @@ namespace MapCreationTool
          if (sprite != null) {
             arrowRen.sprite = sprite;
          }
+
+         arrowRen.transform.localPosition = -DirectionUtil.getVectorForDirection(arriveFacing) * 0.16f;
       }
 
       public static Sprite getArrowSprite (EditorType editorType, Direction arriveFacing) {

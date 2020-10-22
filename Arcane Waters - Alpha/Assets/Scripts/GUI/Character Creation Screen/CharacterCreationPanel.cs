@@ -15,7 +15,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    [Header("Settings")]
    // The color for the background of the spot
    public Color circleFaderBackgroundColor = new Color(0, 0, 0, .75f);
-      
+
    [Header("References")]
    // The button to go to the next screen
    public Button nextButton;
@@ -56,14 +56,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
    // The hair styles to choose randomly from when the character starts being created
    public List<HairLayer.Type> initialFemaleHair;
-         
+
    [Header("Male")]
    // The eye types to choose randomly from when the character starts being created
    public List<EyesLayer.Type> initialMaleEyes;
 
    // The hair styles to choose randomly from when the character starts being created
    public List<HairLayer.Type> initialMaleHair;
-      
+
    // Self
    public static CharacterCreationPanel self;
 
@@ -159,7 +159,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       for (int i = 0; i < toggles.Length; i++) {
          toggles[i].SetIsOnWithoutNotify(i == randomIndex);
-      }      
+      }
    }
 
    public void submitCharacterCreation (bool ignorePerkQuestions = false) {
@@ -184,14 +184,14 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, System.Environment.MachineName));
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName));
 
          // Show loading screen until player warps to map
          StartCoroutine(showLoadingScreen());
       });
    }
 
-   private IEnumerator showLoadingScreen() {
+   private IEnumerator showLoadingScreen () {
       hideWithTransition();
       CharacterCreationSpotFader.self.fadeOutColor();
 
@@ -209,11 +209,11 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.CharacterCreation);
    }
 
-   public void onCharacterCreationValid () {      
+   public void onCharacterCreationValid () {
       hide();
 
       CharacterCreationSpotFader.self.fadeOutColor();
-      
+
       PostSpotFader.self.fadeOut();
 
       // Show loading screen while starting map is being created
@@ -231,7 +231,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       // Hide the loading screen
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
-            
+
       Util.enableCanvasGroup(canvasGroup);
       CharacterCreationSpotFader.self.fadeColorOnPosition(_char.transform.position);
    }
@@ -281,7 +281,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       updateStyleIcons();
    }
 
-   public void setBodyType (int type) {      
+   public void setBodyType (int type) {
       if (_char == null) {
          return;
       }
@@ -291,7 +291,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       int finalType = gender == Gender.Type.Female ? 200 : 100;
       finalType += type;
 
-      info.bodyType = (BodyLayer.Type)finalType;
+      info.bodyType = (BodyLayer.Type) finalType;
       _char.setBodyLayers(info);
 
       updateStyleIcons();
@@ -330,7 +330,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       return _char.armor.getType();
    }
 
-   public Gender.Type getGender () {      
+   public Gender.Type getGender () {
       return _char != null ? _char.getUserInfo().gender : Gender.Type.Female;
    }
 
@@ -374,7 +374,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       updateStyleIcons();
 
       // Show the right toggle as enabled (without triggering the OnValueChanged event)
-      maleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Male);      
+      maleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Male);
       femaleToggle.SetIsOnWithoutNotify(gender == Gender.Type.Female);
 
       randomizeSelectedSkin();
@@ -400,7 +400,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       for (int i = 0; i < toggles.Length; i++) {
          toggles[bodyId - 1].SetIsOnWithoutNotify(i == selected);
-      }      
+      }
    }
 
    public void refreshHair () {
@@ -445,7 +445,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       if (currentIndex == -1) {
          currentIndex = 0;
       }
-            
+
       currentIndex = (currentIndex + list.Count) % list.Count;
 
       // Update the Info and apply it to the character
@@ -564,7 +564,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       }
    }
 
-   private int getRandomArmor () {      
+   private int getRandomArmor () {
       List<int> armors = getArmorList();
       return armors[Random.Range(0, armors.Count)];
    }
@@ -617,7 +617,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    }
 
    public List<int> getArmorList () {
-      if (CharacterScreen.self.startingArmorData.Count > 0) {         
+      if (CharacterScreen.self.startingArmorData.Count > 0) {
          List<int> list = new List<int>();
 
          foreach (CharacterScreen.StartingArmorData armorData in CharacterScreen.self.startingArmorData) {

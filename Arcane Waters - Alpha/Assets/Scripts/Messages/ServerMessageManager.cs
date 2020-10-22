@@ -7,7 +7,8 @@ using SteamLoginSystem;
 using System;
 using System.Linq;
 
-public class ServerMessageManager : MonoBehaviour {
+public class ServerMessageManager : MonoBehaviour
+{
    #region Public Variables
 
    #endregion
@@ -93,6 +94,11 @@ public class ServerMessageManager : MonoBehaviour {
             }
          }
 
+         // Storing login info
+         if (conn != null) {
+            DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
+         }
+
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (isUnauthenticatedSteamUser && !hasFailedToCreateAccount) {
@@ -115,7 +121,7 @@ public class ServerMessageManager : MonoBehaviour {
 
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
-                  userObjects.accountEmail, userObjects.accountCreationTime, logInUserMessage.machineIdentifier);
+                  userObjects.accountEmail, userObjects.accountCreationTime);
                conn.Send(msg);
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
@@ -245,7 +251,7 @@ public class ServerMessageManager : MonoBehaviour {
       // Get ownership info using the fetched steamId
       SteamLoginManagerServer.self.getOwnershipInfo(steamId, newAppOwnershipEvent);
    }
-   
+
 
    public static void sendConfirmation (ConfirmMessage.Type confirmType, NetEntity player, string customMessage = "") {
       ConfirmMessage confirmMessage = new ConfirmMessage(Global.netId, confirmType, System.DateTime.UtcNow.ToBinary(), customMessage);
@@ -397,7 +403,7 @@ public class ServerMessageManager : MonoBehaviour {
       List<Perk> perks = msg.perks.ToList();
 
       // Make sure the player doesn't send an invalid number of points
-      if (assignedPoints != CreationPerksGrid.AVAILABLE_POINTS) {         
+      if (assignedPoints != CreationPerksGrid.AVAILABLE_POINTS) {
          perks = new List<Perk> { new Perk(0, CreationPerksGrid.AVAILABLE_POINTS) };
       }
 
@@ -410,6 +416,11 @@ public class ServerMessageManager : MonoBehaviour {
          int itemId = DB_Main.insertNewWeapon(userId, itemTypeId, "");
          DB_Main.updateItemShortcut(userId, slotNumber, itemId);
          slotNumber++;
+      }
+
+      // Storing login info
+      if (conn != null) {
+         DB_Main.storeLoginInfo(userId, accountId, conn.address, msg.machineIdentifier ?? "");
       }
 
       // Give some additional armor and weapons to test users
@@ -454,7 +465,7 @@ public class ServerMessageManager : MonoBehaviour {
 
             // Now tell the client to move forward with the login process
             LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,
-               userObjects.accountEmail, userObjects.accountCreationTime, msg.machineIdentifier);
+               userObjects.accountEmail, userObjects.accountCreationTime);
             conn.Send(loginCompleteMsg);
          } else {
             sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);

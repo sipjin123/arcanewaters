@@ -43,14 +43,12 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       puppet.entity.facing = Direction.North;
 
       // Disable the collider for the entity
-      if (puppet.mainEntityCollider != null) {
-         puppet.mainEntityCollider.isTrigger = true;
+      if (puppet.entity.getMainCollider() != null) {
+         puppet.entity.getMainCollider().isTrigger = true;
       }
 
       // Calculate global target spot
-      puppet.endPos = new Vector2(
-         puppet.entity.getRigidbody().position.x,
-         transform.position.y + jumpHeight * 0.16f - puppet.mainEntityCollider.offset.y);
+      puppet.endPos = calculateEndPos(puppet.entity.getRigidbody(), puppet.entity.getMainCollider());
    }
 
    protected override void controlUpdate (ControlData puppet) {
@@ -62,8 +60,8 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       if (puppet.time >= movementCurve.keys.Last().time) {
          puppet.entity.fallDirection = 0;
          puppet.entity.getRigidbody().MovePosition(puppet.endPos);
-         if (puppet.mainEntityCollider != null) {
-            puppet.mainEntityCollider.isTrigger = false;
+         if (puppet.entity.getMainCollider() != null) {
+            puppet.entity.getMainCollider().isTrigger = false;
          }
          endControl(puppet);
       }
@@ -72,21 +70,35 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
    protected override void onForceFastForward (ControlData puppet) {
       puppet.entity.fallDirection = 0;
       puppet.entity.transform.position = puppet.endPos;
-      if (puppet.mainEntityCollider != null) {
-         puppet.mainEntityCollider.isTrigger = false;
+      if (puppet.entity.getMainCollider() != null) {
+         puppet.entity.getMainCollider().isTrigger = false;
       }
    }
 
-   private void OnTriggerEnter2D (Collider2D collision) {
+   private void OnTriggerStay2D (Collider2D collision) {
       BodyEntity player = collision.transform.GetComponent<BodyEntity>();
 
       if (player == null) {
          return;
       }
 
+      // Check that there's no colliders at the arriving position
+      int colCount = Physics2D.OverlapCircle(
+         calculateEndPos(player.getRigidbody(), player.getMainCollider()) + player.getMainCollider().offset,
+         player.getMainCollider().radius,
+         new ContactFilter2D { useTriggers = false },
+         _colliderBuffer);
+      if (colCount > 0) {
+         return;
+      }
+
       if (!player.hasScheduledController(this)) {
          player.requestControl(this);
       }
+   }
+
+   private Vector2 calculateEndPos (Rigidbody2D puppetBody, Collider2D puppetCollider) {
+      return new Vector2(puppetBody.position.x, transform.position.y + jumpHeight * 0.16f - puppetCollider.offset.y);
    }
 
    #region Private Variables

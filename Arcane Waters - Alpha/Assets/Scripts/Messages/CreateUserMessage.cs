@@ -24,7 +24,7 @@ public class CreateUserMessage : MessageBase {
    // The perks for this user
    public Perk[] perks;
 
-   // The user's machine identifier
+   // Client's machine identifier
    public string machineIdentifier;
 
    #endregion
