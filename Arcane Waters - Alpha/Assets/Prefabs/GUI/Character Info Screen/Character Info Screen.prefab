@@ -6198,7 +6198,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Michael
+  m_Text: ...
 --- !u!114 &8488960047378826685
 MonoBehaviour:
   m_ObjectHideFlags: 0

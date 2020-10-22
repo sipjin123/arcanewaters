@@ -439,13 +439,8 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
       }
 
-      if (blueprintCategory == Item.Category.Armor) {
-         CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(item.itemTypeId);
-         return craftingItem;
-      } else {
-         CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
-         return craftingItem;
-      }
+      CraftableItemRequirements craftingItem = CraftingManager.self.getCraftableData(blueprintCategory, item.itemTypeId);
+      return craftingItem;
    }
 
    #region Private Variables

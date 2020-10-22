@@ -94,9 +94,9 @@ public class ShipAbilityManager : MonoBehaviour {
 
    public static List<int> getRandomAbilities (int abilityCount) {
       List<ShipAbilityPair> totalAbilityList = new List<ShipAbilityPair>();
-      
+
       // Select only the ship type abilities to be randomized by the ship entries in the shop
-      foreach (ShipAbilityPair ability in self.shipAbilityDataList.FindAll(_ => _.shipAbilityData.seaEntityAbilityType == SeaEntityAbilityType.Ships).Where(_=>_.abilityId != ShipAbilityInfo.DEFAULT_ABILITY)) {
+      foreach (ShipAbilityPair ability in self.shipAbilityDataList.FindAll(_ => _.shipAbilityData.seaEntityAbilityType != SeaEntityAbilityType.SeaMonsters).Where(_=>_.abilityId != ShipAbilityInfo.DEFAULT_ABILITY)) {
          totalAbilityList.Add(ability);
       }
 

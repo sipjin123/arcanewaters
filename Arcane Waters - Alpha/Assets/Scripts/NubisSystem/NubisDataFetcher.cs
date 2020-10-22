@@ -232,21 +232,15 @@ namespace NubisDataHandling {
          // Update sql id of each equipment cache loaded
          if (inventoryBundle.equippedWeapon.itemTypeId != 0) {
             WeaponStatData xmlWeaponData = EquipmentXMLManager.self.getWeaponData(inventoryBundle.equippedWeapon.itemTypeId);
-            WeaponStatData translatedWeaponData = WeaponStatData.getStatData(inventoryBundle.equippedWeapon.data, inventoryBundle.equippedWeapon.itemTypeId);
-            translatedWeaponData.sqlId = xmlWeaponData.sqlId;
-            inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(translatedWeaponData);
+            inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(xmlWeaponData);
          }
          if (inventoryBundle.equippedArmor.itemTypeId != 0) {
             ArmorStatData xmlArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(inventoryBundle.equippedArmor.itemTypeId);
-            ArmorStatData translatedArmorData = ArmorStatData.getStatData(inventoryBundle.equippedArmor.data, inventoryBundle.equippedArmor.itemTypeId);
-            translatedArmorData.sqlId = xmlArmorData.sqlId;
-            inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(translatedArmorData);
+            inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(xmlArmorData);
          }
          if (inventoryBundle.equippedHat.itemTypeId != 0) {
             HatStatData xmlHatData = EquipmentXMLManager.self.getHatData(inventoryBundle.equippedHat.itemTypeId);
-            HatStatData translatedHatData = HatStatData.getStatData(inventoryBundle.equippedHat.data, inventoryBundle.equippedHat.itemTypeId);
-            translatedHatData.sqlId = xmlHatData.sqlId;
-            inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(translatedHatData);
+            inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(xmlHatData);
          }
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);

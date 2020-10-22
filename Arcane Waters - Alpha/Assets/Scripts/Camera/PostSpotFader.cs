@@ -86,17 +86,13 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    public float fadeIn () {
       _fadeTween?.Kill();
 
-      // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
-      if (Global.player != null) {
-         setSpotWorldPosition(Global.player.sortPoint.transform.position);
-      } else if (CharacterScreen.self.isShowing() && CharacterSpot.lastInteractedSpot != null && CharacterSpot.lastInteractedSpot.character != null) {
-         setSpotWorldPosition(CharacterSpot.lastInteractedSpot.character.transform.position);
-      } else {
-         setSpotPositionToCenter();
-      }
+      recalibrateSpotPosition();
 
       _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 1, _fadeInDuration);
       _fadeTween.OnUpdate(() => {
+         if (_effectProgress >= _fadeInDuration) {
+            recalibrateSpotPosition();
+         }
          _material.SetFloat(_effectProgressPropertyID, _effectProgress);
       });
 
@@ -106,6 +102,17 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    public float fadeOut () {
       _fadeTween?.Kill();
 
+      recalibrateSpotPosition();
+
+      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration);
+      _fadeTween.OnUpdate(() => {
+         _material.SetFloat(_effectProgressPropertyID, _effectProgress);
+      });
+
+      return _fadeOutDuration;
+   }
+
+   public void recalibrateSpotPosition () {
       // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
       if (Global.player != null) {
          setSpotWorldPosition(Global.player.sortPoint.transform.position);
@@ -114,13 +121,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       } else {
          setSpotPositionToCenter();
       }
-
-      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration);
-      _fadeTween.OnUpdate(() => {
-         _material.SetFloat(_effectProgressPropertyID, _effectProgress);
-      });
-
-      return _fadeOutDuration;
    }
 
    private void setSpotWorldPosition (Vector3 worldPosition) {

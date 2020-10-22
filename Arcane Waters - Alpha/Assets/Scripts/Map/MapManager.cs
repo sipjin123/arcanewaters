@@ -244,6 +244,8 @@ public class MapManager : MonoBehaviour
    }
 
    public void onAreaCreationIsFinished (Area area) {
+      D.debug("Area creation is Finished: " + area.areaKey);
+
       // Remove the area from being under creation
       _areasUnderCreation.Remove(area.areaKey);
 
@@ -264,6 +266,7 @@ public class MapManager : MonoBehaviour
       // Send signal to player to update virtual camera after area is created
       if (Global.player != null) {
          Global.player.updatePlayerCamera();
+         PostSpotFader.self.recalibrateSpotPosition();
       }
 
       // On clients, if an area is scheduled to be created next, start the process now

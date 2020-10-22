@@ -53,70 +53,31 @@ namespace NubisDataHandling {
 
                   switch (itemCategory) {
                      case Item.Category.Weapon:
-                        WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(itemTypeID);
-                        if (weaponData != null) {
-                           weaponItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Weapon,
-                              itemTypeId = itemTypeID,
-                              data = WeaponStatData.serializeWeaponStatData(weaponData),
-                              paletteNames = paletteNames
-                           };
-                           // TODO: Remove after nubis bugfix
-                           D.debug("New weapon is: " + weaponItem.category + " : " + weaponItem.itemTypeId + " : " + weaponItem.data);
-                        } else {
-                           weaponItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Weapon,
-                              itemTypeId = 0,
-                              data = "",
-                              paletteNames = ""
-                           };
-                        }
+                        weaponItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Weapon,
+                           itemTypeId = itemTypeID,
+                           data = "",
+                           paletteNames = paletteNames
+                        };
                         break;
                      case Item.Category.Armor:
-                        ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(itemTypeID);
-                        if (armorData != null) {
-                           armorItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Armor,
-                              itemTypeId = itemTypeID,
-                              data = ArmorStatData.serializeArmorStatData(armorData),
-                              paletteNames = paletteNames
-                           };
-                           // TODO: Remove after nubis bugfix
-                           D.debug("New armor is: " + armorItem.category + " : " + armorItem.itemTypeId + " : " + armorItem.data);
-                        } else {
-                           armorItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Armor,
-                              itemTypeId = 0,
-                              data = "",
-                              paletteNames = ""
-                           };
-                        }
+                        armorItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Armor,
+                           itemTypeId = itemTypeID,
+                           data = "",
+                           paletteNames = paletteNames
+                        };
                         break;
                      case Item.Category.Hats:
-                        HatStatData hatData = EquipmentXMLManager.self.getHatData(itemTypeID);
-                        if (hatData != null) {
-                           hatItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Hats,
-                              itemTypeId = itemTypeID,
-                              data = HatStatData.serializeHatStatData(hatData),
-                              paletteNames = paletteNames
-                           };
-                           // TODO: Remove after nubis bugfix
-                           D.debug("New hat is: " + hatItem.category + " : " + hatItem.itemTypeId + " : " + hatItem.data);
-                        } else {
-                           hatItem = new Item {
-                              id = itemID,
-                              category = Item.Category.Hats,
-                              itemTypeId = 0,
-                              data = "",
-                              paletteNames = ""
-                           };
-                        }
+                        hatItem = new Item {
+                           id = itemID,
+                           category = Item.Category.Hats,
+                           itemTypeId = itemTypeID,
+                           data = "",
+                           paletteNames = paletteNames
+                        };
                         break;
                   }
                }

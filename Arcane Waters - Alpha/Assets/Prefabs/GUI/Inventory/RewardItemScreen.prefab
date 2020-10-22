@@ -2934,6 +2934,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4763258258257827645, guid: 18a5a2491dd577b4f916cfdbb886be9f,
+        type: 3}
+      propertyPath: m_Text
+      value: TESTARMOR1 DESIGN
+      objectReference: {fileID: 0}
     - target: {fileID: 6018465391018563198, guid: 18a5a2491dd577b4f916cfdbb886be9f,
         type: 3}
       propertyPath: m_AnchorMin.y

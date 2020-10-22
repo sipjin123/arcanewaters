@@ -3238,6 +3238,16 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    public void Target_ReceiveItemList (NetworkConnection connection, Item[] itemList) {
+      foreach (Item item in itemList) {
+         if (item.category == Item.Category.Blueprint) {
+            CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
+            if (craftingData != null) {
+               item.itemTypeId = craftingData.resultItem.itemTypeId;
+            } else {
+               D.debug("Failed to override crafting item type id: " + item.itemTypeId);
+            }
+         }
+      }
       RewardManager.self.showItemsInRewardPanel(itemList.ToList());
    }
 

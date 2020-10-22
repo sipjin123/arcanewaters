@@ -23,6 +23,9 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
    // The color for incompleted objectives
    public Color incompletedObjectivesColor;
 
+   // Icon that determines if this item is a blueprint
+   public GameObject blueprintIcon;
+
    #endregion
 
    public void updateCellContent (Item item, int requirement, int current) {
@@ -45,6 +48,7 @@ public class NPCPanelQuestObjectiveCell : MonoBehaviour
             icon.sprite = newSprite;
             break;
          case Item.Category.Blueprint:
+            blueprintIcon.SetActive(true);
             CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
             if (craftingData == null) {
                D.debug("Failed to fetch Crafting Data: " + item.itemTypeId);

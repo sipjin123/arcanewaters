@@ -52,6 +52,9 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    // The item instance that is being displayed
    public ItemInstance targetItem;
 
+   // The icon indicating this item is a blueprint
+   public GameObject blueprintIcon;
+
    #endregion
 
    public void setCellForItem (Item item) {
@@ -121,7 +124,30 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
             icon.sprite =  ImageManager.getSprite(CraftingIngredients.getBorderlessIconPath(ingredientType));
             break;
          case Item.Category.Blueprint:
-            icon.sprite = ImageManager.getSprite(EquipmentXMLManager.self.getItemIconPath(item));
+            blueprintIcon.SetActive(true);
+            if (item.data.Contains(Blueprint.ARMOR_DATA_PREFIX)) {
+               ArmorStatData fetchedArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
+               if (fetchedArmorData == null) {
+                  D.debug("Failed to fetch Armor Data for: " + item.itemTypeId);
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedArmorData.equipmentIconPath);
+               }
+            } else if (item.data.Contains(Blueprint.WEAPON_DATA_PREFIX)) {
+               WeaponStatData fetchedWeaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
+               if (fetchedWeaponData == null) {
+                  D.debug("Failed to fetch Weapon Data for: " + item.itemTypeId);
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedWeaponData.equipmentIconPath);
+               }
+            } else if (item.data.Contains(Blueprint.HAT_DATA_PREFIX)) {
+               HatStatData fetchedHatData = EquipmentXMLManager.self.getHatData(item.itemTypeId);
+               if (fetchedHatData == null) {
+                  D.debug("Failed to fetch Hat Data for: " + item.itemTypeId);
+               } else {
+                  icon.sprite = ImageManager.getSprite(fetchedHatData.equipmentIconPath);
+               }
+            }
+
             if (icon.sprite == ImageManager.self.blankSprite) {
                D.debug("Could not retrieve Blueprint: " + item.category + " : " + item.itemTypeId + " : " + item.data);
             }
