@@ -229,11 +229,11 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_InteractSecretEntrance (int instanceId, int spawnId) {
-      SecretEntranceSpawnData secretEntranceSpawnData = SecretsManager.self.secretInstanceIdList.Find(_ => _.instanceId == instanceId && _.spawnId == spawnId);
-      if (secretEntranceSpawnData != null) {
-         if (!secretEntranceSpawnData.secretEntrance.secretEntranceHolder.isInteracted) {
-            secretEntranceSpawnData.secretEntrance.secretEntranceHolder.completeInteraction();
-            secretEntranceSpawnData.secretEntrance.secretEntranceHolder.Rpc_InteractAnimation();
+      SecretEntranceHolder secretEntranceHolder = InstanceManager.self.getSecretEntranceInstance(instanceId, spawnId);
+      if (secretEntranceHolder != null) {
+         if (!secretEntranceHolder.isInteracted) {
+            secretEntranceHolder.completeInteraction();
+            secretEntranceHolder.Rpc_InteractAnimation();
          }
       } else {
          D.editorLog("Failed to find interactable", Color.blue);
@@ -879,7 +879,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Store this message in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         chatInfo.chatId = DB_Main.storeChatLog(_player.userId, message, chatInfo.chatTime, chatType);
+         chatInfo.chatId = DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, ServerCommunicationHandler.self.ourIp);
       });
 
       // Replace bad words

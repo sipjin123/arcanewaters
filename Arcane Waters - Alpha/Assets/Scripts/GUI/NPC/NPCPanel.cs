@@ -364,8 +364,6 @@ public class NPCPanel : Panel
 
    public void questSelectionRowClickedOn (int questId, int questNodeId, int dialogueId) {
       Global.player.rpc.Cmd_SelectNextNPCDialogue(_npc.npcId, questId, questNodeId, dialogueId);
-
-      initLoadBlockers(true);
    }
    
    public void questSelectionTitleSelected (int questId, int questNodeId, QuestDataNode questData) {

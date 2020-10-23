@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using ServerCommunicationHandlerv2;
 
 public class Server : MonoBehaviour {
    #region Public Variables
@@ -61,9 +62,9 @@ public class Server : MonoBehaviour {
       return port == 7777;
    }
 
-   public void SendGlobalChat (string message, int senderUserId) {
+   public void SendGlobalChat (string message, int senderUserId, string userName) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.storeChatLog(senderUserId, message, System.DateTime.UtcNow, ChatInfo.Type.Global);
+         DB_Main.storeChatLog(senderUserId, userName, message, System.DateTime.UtcNow, ChatInfo.Type.Global, ServerCommunicationHandler.self.ourIp);
       });
    }
 

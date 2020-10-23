@@ -94,7 +94,7 @@ public class ServerNetwork : MonoBehaviour {
    }
 
    public void sendGlobalMessage (ChatInfo chatInfo) {
-      server.SendGlobalChat(chatInfo.text, chatInfo.senderId);
+      server.SendGlobalChat(chatInfo.text, chatInfo.senderId, chatInfo.sender);
    }
 
    public Server getServer (string ipAddress, int port) {

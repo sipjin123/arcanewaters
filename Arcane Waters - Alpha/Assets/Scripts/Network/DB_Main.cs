@@ -4907,16 +4907,18 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new int storeChatLog (int userId, string message, DateTime dateTime, ChatInfo.Type chatType) {
+   public static new int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string serverIpAddress) {
       int chatId = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO chat_log (usrId, message, time, chatType) VALUES(@userId, @message, @time, @chatType) ", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO chat_log (usrId, userName, message, time, chatType, serverIpAddress) VALUES(@userId, @userName, @message, @time, @chatType, @serverIpAddress) ", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@message", message);
+            cmd.Parameters.AddWithValue("@userName", userName);
+            cmd.Parameters.AddWithValue("@serverIpAddress", serverIpAddress);
             cmd.Parameters.AddWithValue("@time", dateTime);
             cmd.Parameters.AddWithValue("@chatType", (int) chatType);
 
@@ -4931,7 +4933,7 @@ public class DB_Main : DB_MainStub
       return chatId;
    }
 
-   public static new List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, bool hasInterval = true, int limit = 0) {
+   public static new List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, string serverIpAddress, bool hasInterval = true, int limit = 0) {
       string secondsInterval = "AND time > NOW() - INTERVAL " + seconds + " SECOND";
       if (!hasInterval) {
          secondsInterval = "";
@@ -4952,10 +4954,11 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM chat_log " + joinUserTable + " WHERE chatType=@chatType " + secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
+            "SELECT * FROM chat_log " + joinUserTable + " WHERE (chatType=@chatType and serverIpAddress=@serverIpAddress) " + secondsInterval + " ORDER BY chtId DESC" + limitValue, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", chatType);
+            cmd.Parameters.AddWithValue("@serverIpAddress", serverIpAddress);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4966,7 +4969,7 @@ public class DB_Main : DB_MainStub
 
                   if (chatType != ChatInfo.Type.Global) {
                      int userId = dataReader.GetInt32("usrId");
-                     string senderName = dataReader.GetString("usrName");
+                     string senderName = dataReader.GetString("userName");
                      int senderGuild = dataReader.GetInt32("gldId");
                      ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
                      info.guildId = senderGuild;
@@ -4976,8 +4979,9 @@ public class DB_Main : DB_MainStub
                      string senderName = userId == 0 ? "Server" : "User";
                      if (userId != 0) {
                         try {
-                           senderName = dataReader.GetString("usrName");
+                           senderName = dataReader.GetString("userName");
                         } catch {
+                           senderName = "Deleted User";
                            //D.editorLog("No data for usrName", Color.red);
                         }
                      }

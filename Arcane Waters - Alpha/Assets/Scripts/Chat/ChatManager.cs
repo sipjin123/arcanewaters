@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
+using ServerCommunicationHandlerv2;
 
 public class ChatManager : MonoBehaviour {
    #region Public Variables
@@ -104,7 +105,7 @@ public class ChatManager : MonoBehaviour {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Get all of the recent guild chat
-         List<ChatInfo> list = DB_Main.getChat(ChatInfo.Type.Guild, 5);
+         List<ChatInfo> list = DB_Main.getChat(ChatInfo.Type.Guild, 5, ServerCommunicationHandler.self.ourIp);
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

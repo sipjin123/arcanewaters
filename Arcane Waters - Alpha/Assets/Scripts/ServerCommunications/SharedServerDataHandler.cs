@@ -62,9 +62,13 @@ namespace ServerCommunicationHandlerv2 {
       private void processChatList () {
          bool isFirstChatLog = false;
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            List<ChatInfo> serverChatList = DB_Main.getChat(ChatInfo.Type.Global, 0, false, 20);
+            List<ChatInfo> serverChatList = DB_Main.getChat(ChatInfo.Type.Global, 0, ServerCommunicationHandler.self.ourIp, false, 20);
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                List<ChatInfo> sortedChatList = serverChatList.OrderByDescending(_ => _.chatTime).ToList();
+               if (serverChatList.Count == 0) {
+                  return;
+               }
+
                if (latestChatinfo == null) {
                   latestChatinfo = sortedChatList[0];
                   isFirstChatLog = true;

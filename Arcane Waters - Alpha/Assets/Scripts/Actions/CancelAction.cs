@@ -54,8 +54,8 @@ public class CancelAction : BattleAction {
       action.battleId = Convert.ToInt32(stringArray[1]);
       action.sourceId = Convert.ToInt32(stringArray[2]);
       action.targetId = Convert.ToInt32(stringArray[3]);
-      action.actionEndTime = Convert.ToInt32(stringArray[4]);
-      action.timeToSubtract = Convert.ToInt32(stringArray[5]);
+      action.actionEndTime = double.Parse(stringArray[4]);
+      action.timeToSubtract = float.Parse(stringArray[5]);
       action.battleActionType = (BattleActionType) Convert.ToInt32(stringArray[6]);
 
       return action;

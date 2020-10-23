@@ -30,7 +30,7 @@ public class RestartManager : MonoBehaviour
                DateTime timePoint = new DateTime(info.DateAsTicks);
 
                // Send a message to all players about the pending Restart
-               ServerNetwork.self.server.SendGlobalChat($"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}", 0);
+               ServerNetwork.self.server.SendGlobalChat($"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}", 0, "Server");
             });
          });
       } catch (Exception ex) {

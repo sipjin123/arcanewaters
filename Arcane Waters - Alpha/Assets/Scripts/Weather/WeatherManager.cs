@@ -39,7 +39,7 @@ public class WeatherManager : MonoBehaviour {
    public const float maxRightPos = 7f, maxLeftPos = -7f;
 
    // The max vetical position
-   public const float maxUpPos = 7f, maxDownPos = -7f;
+   public const float maxUpPos = 5f, maxDownPos = -5f;
 
    // List of cloud sprite combinations
    public List<CloudSpritePair> cloudSpriteList;

@@ -11,17 +11,10 @@ public class NubisDataFetchTest : MonoBehaviour
    // Only run this script for this device
    public static string DEVICE_NAME1 = "DESKTOP-7UVTQ74";
    public static string DEVICE_NAME2 = "DESKTOP-N7K3SH1";
-
+   
    public int testUserId = 745;
 
    #endregion
-
-   public static bool isUsingDevTestDevice () {
-      if (SystemInfo.deviceName == DEVICE_NAME1 || SystemInfo.deviceName == DEVICE_NAME2) {
-         return true;
-      }
-      return false;
-   }
 
    private void Awake () {
    }
@@ -29,9 +22,7 @@ public class NubisDataFetchTest : MonoBehaviour
    private void OnGUI () {
       if (SystemInfo.deviceName == DEVICE_NAME1) {
          if (GUILayout.Button("Get XML Version Directly from Nubis")) {
-            nubisXmlVer();
-         }
-         if (GUILayout.Button("Get XML Version Directly from DB_Main")) {
+
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                string result = DB_Main.fetchXmlVersion("3");
 

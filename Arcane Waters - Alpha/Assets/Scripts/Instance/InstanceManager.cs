@@ -98,6 +98,14 @@ public class InstanceManager : MonoBehaviour {
       botShip.instanceId = instance.id;
    }
 
+   public SecretEntranceHolder getSecretEntranceInstance (int instanceId, int spawnId) {
+      NetworkBehaviour secretEntrance = getInstance(instanceId).entities.Find(_ => _ is SecretEntranceHolder && ((SecretEntranceHolder)_).spawnId == spawnId);
+      if (secretEntrance == null) {
+         D.debug("Cant find secret entrance with spawn id: {" + spawnId + "} in instance {" + instanceId + "}");
+      }
+      return (SecretEntranceHolder) secretEntrance;
+   }
+
    public void addSeaMonsterToInstance (SeaEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;

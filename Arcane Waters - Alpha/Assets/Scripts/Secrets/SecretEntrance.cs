@@ -101,12 +101,6 @@ public class SecretEntrance : MonoBehaviour {
          warp.areaTarget = secretEntranceHolder.areaTarget;
          warp.spawnTarget = secretEntranceHolder.spawnTarget;
          warp.newFacingDirection = secretEntranceHolder.newFacingDirection;
-         warp.warpEvent.AddListener(player => {
-            secretEntranceHolder.userIds.Add(player.userId);
-
-            // Keep track of the user's location while in the secrets room
-            SecretsManager.self.enterUserToSecret(player.userId, secretEntranceHolder.areaTarget, player.instanceId, this);
-         });
          warp.gameObject.SetActive(false);
       }
 
@@ -129,12 +123,6 @@ public class SecretEntrance : MonoBehaviour {
             subSpriteComponent.currentIndex = subSpriteComponent.maxIndex / 2;
          }
       }
-
-      SecretsManager.self.registerSecretEntrance(new SecretEntranceSpawnData {
-         instanceId = secretEntranceHolder.instanceId,
-         spawnId = secretEntranceHolder.spawnId,
-         secretEntrance = this
-      });
    }
 
    private void checkBlending (bool isInteractOverride = false) {
@@ -247,7 +235,6 @@ public class SecretEntrance : MonoBehaviour {
 
          blockerSprite.gameObject.SetActive(true);
          postBlockerSprite.gameObject.SetActive(false);
-         //
          checkBlending(true);
       }
    }

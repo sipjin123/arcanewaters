@@ -57,9 +57,6 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
    [SyncVar]
    public bool isFinishedAnimating;
 
-   // The number of user's inside the secret area
-   public SyncListInt userIds = new SyncListInt();
-
    // List of secret entrance data for spawning
    public List<SecretsPrefabCollection> secretEntranceDataList;
 

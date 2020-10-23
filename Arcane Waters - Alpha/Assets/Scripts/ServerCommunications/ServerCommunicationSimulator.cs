@@ -93,7 +93,7 @@ namespace ServerCommunicationHandlerv1 {
          GUI.Box(new Rect(Screen.width - 200, 30, 200, 30), "Port is: " + communicationHandler.getPort());
          GUI.Box(new Rect(Screen.width - 200, 60, 200, 30), "Name is: " + communicationHandler.ourDeviceName);
          if (GUI.Button(new Rect(Screen.width - 400, 0, 200, 30), "Send Glboal Msg")) {
-            ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0);
+            ServerNetwork.self.server.SendGlobalChat(_globalMessage, 0, "Server");
          }
          _globalMessage = GUI.TextField(new Rect(Screen.width - 400, 30, 200, 60), _globalMessage);
       }

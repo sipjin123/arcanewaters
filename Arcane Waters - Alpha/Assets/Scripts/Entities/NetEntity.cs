@@ -149,6 +149,10 @@ public class NetEntity : NetworkBehaviour
    public const float MOVING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;
 
+   // The magnitude which determines that the ship has enough speed buildup
+   public const float SHIP_SPEEDUP_MAGNITUDE = .01f;
+   public const float SHIP_SLOWDOWN_MAGNITUDE = .006f;
+
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
    public bool isAboutToWarpOnClient = false;
@@ -163,7 +167,7 @@ public class NetEntity : NetworkBehaviour
    public SpriteRenderer shadow;
 
    // The speed multiplied when speed boosting
-   public static float SPEEDUP_MULTIPLIER_SHIP = 1.75f;
+   public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
    public static float MAX_SHIP_SPEED = 150;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
@@ -251,7 +255,7 @@ public class NetEntity : NetworkBehaviour
    private IEnumerator CO_LoadWeather () {
       WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
 
-      // Wait until our server port is initialized
+      // Wait until our area finished loading
       while (AreaManager.self.getArea(areaKey) == null) {
          yield return null;
       }
@@ -1217,6 +1221,7 @@ public class NetEntity : NetworkBehaviour
          if (!customMapManager.canUserWarpInto(this, newArea, out System.Action<NetEntity> denyWarphandler)) {
             // Deny access to owned area
             denyWarphandler?.Invoke(this);
+            D.debug("Investigation Log :: Cannot warp {" + userId + "} to area: " + newArea);
             return;
          }
 
@@ -1249,10 +1254,10 @@ public class NetEntity : NetworkBehaviour
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
+      D.debug("Investigation Log :: Spawning player in new map:: " + this.userId + " : " + newArea);
+
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
-
-      SecretsManager.self.checkIfUserIsInSecret(this.userId);
    }
 
    [Server]

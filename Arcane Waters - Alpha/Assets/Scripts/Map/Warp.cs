@@ -27,9 +27,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
    public const int ENTER_TREASURE_SITE_QUEST_INDEX = 14;
 
-   // The warp event that can be observed by external classes
-   public WarpEvent warpEvent = new WarpEvent();
-
    #endregion
 
    void Awake () {
@@ -78,10 +75,10 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    [ServerOnly]
    private IEnumerator CO_ExecWarpServer (NetEntity player, float delay) {
+      D.debug("Warping player: " + player.userId + " : To area: " + areaTarget + " : Spawn Target: " + spawnTarget);
       yield return new WaitForSeconds(delay);
 
       player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
-      warpEvent.Invoke(player);
    }
 
    public void receiveData (DataField[] dataFields) {
