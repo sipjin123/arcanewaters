@@ -54,45 +54,24 @@ public class OptionsPanel : Panel
    // Buttons only admins can access
    public GameObject[] adminOnlyButtons;
 
-   // The reference to the UI Parent Canvas
-   public Canvas mainGameCanvas;
-
-   // The reference to the UI Minimap Transform
-   public RectTransform minimapTransform;
-
-   // Player pref key for gui scale
-   public static string PREF_GUI_SCALE = "pref_gui_scale";
-
-   // Player pref key for minimap scale
-   public static string PREF_MINIMAP_SCALE = "pref_minimap_scale";
-
-   // Player pref key for screen mode
-   public static string PREF_SCREEN_MODE = "pref_screen_mode";
-
-   // Player Pref key for vsync
-   public static string VSYNC_COUNT_KEY = "vsync_count";
-
-   // Size of the windows title bar
-   public Vector2Int borderSize;
-
    // If the initial option settings have been loaded
    public bool hasInitialized = false;
-
-   // The current full screen mode
-   public FullScreenMode selectedMode;
 
    // The single player toggle
    public Toggle singlePlayerToggle;
 
-   // The delay for the screen resizing transition
-   public const float SCREEN_TRANSITION = .25f;
+   // A list of accepted fullscreen modes (windowed, borderless windowed, fullscreen)
+   public List<FullScreenMode> fullScreenModes = new List<FullScreenMode>();
 
    #endregion
 
    public override void Awake () {
       base.Awake();
+      
       self = this;
+   }
 
+   public override void Start () {
       initializeResolutionsDropdown();
       initializeFullScreenSettings();
 
@@ -100,23 +79,20 @@ public class OptionsPanel : Panel
       effectsSlider.value = SoundManager.effectsVolume;
 
       // Loads the saved gui scale
-      float guiScaleValue = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100);
+      float guiScaleValue = OptionsManager.GUIScale;
       guiScaleLabel.text = (guiScaleValue).ToString("f1") + " %";
-      guiScaleSlider.value = guiScaleValue / 100;
+      guiScaleSlider.SetValueWithoutNotify(guiScaleValue / 100.0f);
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
-      updateGUIScaling();
-      CameraManager.self.resolutionChanged += updateGUIScaling;
-
+      
       // Loads the saved minimap scale
-      float minimapScaleValue = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 100);
-      minimapScaleLabel.text = (minimapScaleValue).ToString("f1") + " %";
-      minimapTransform.localScale = new Vector3(minimapScaleValue / 100, minimapScaleValue / 100, minimapScaleValue / 100);
-      minimapScaleSlider.value = minimapScaleValue / 100;
+      float minimapScaleValue = OptionsManager.minimapScale;
+      minimapScaleLabel.text = (minimapScaleValue).ToString("f1") + " %";      
+      minimapScaleSlider.SetValueWithoutNotify(minimapScaleValue / 100.0f);
       minimapScaleSlider.onValueChanged.AddListener(_ => minimapScaleSliderChanged());
 
       // Loads vsync
       vsyncToggle.onValueChanged.AddListener(setVSync);
-      int vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
+      int vsyncCount = OptionsManager.vsyncCount;
       vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
       QualitySettings.vSyncCount = vsyncCount;
 
@@ -127,9 +103,7 @@ public class OptionsPanel : Panel
    }
 
    public void setVSync (bool vsync) {
-      int vsyncCount = vsync ? 1 : 0;
-      PlayerPrefs.SetInt(VSYNC_COUNT_KEY, vsyncCount);
-      QualitySettings.vSyncCount = vsyncCount;
+      OptionsManager.setVsync(vsync);
 
       if (vsyncToggle.isOn != vsync) {
          vsyncToggle.SetIsOnWithoutNotify(vsync);
@@ -137,14 +111,10 @@ public class OptionsPanel : Panel
    }
 
    private void initializeFullScreenSettings () {
-      processCursorState();
       List<OptionData> screenModeOptions = new List<OptionData>();
 
       // Initialize override options
-      List<FullScreenMode> customScreenMode = new List<FullScreenMode>();
-      customScreenMode.Add(FullScreenMode.ExclusiveFullScreen);
-      customScreenMode.Add(FullScreenMode.FullScreenWindow);
-      customScreenMode.Add(FullScreenMode.Windowed);
+      initializeFullScreenModesList();
 
       // Initialize display options
       screenModeOptions.Add(new OptionData { text = "Fullscreen" });
@@ -152,84 +122,31 @@ public class OptionsPanel : Panel
       screenModeOptions.Add(new OptionData { text = "Windowed" });
 
       screenModeDropdown.options = screenModeOptions;
-      screenModeDropdown.onValueChanged.AddListener(_ => {
-         switch (customScreenMode[_]) {
-            case FullScreenMode.ExclusiveFullScreen:
-               StartCoroutine(CO_ProcessScreenAdjustments(true, FullScreenMode.ExclusiveFullScreen));
-               break;
-            case FullScreenMode.FullScreenWindow:
-               StartCoroutine(CO_ProcessScreenAdjustments(false, FullScreenMode.FullScreenWindow));
-               break;
-            case FullScreenMode.Windowed:
-               StartCoroutine(CO_ProcessScreenAdjustments(false, FullScreenMode.Windowed));
-               break;
-         }
-         selectedMode = customScreenMode[_];
-         PlayerPrefs.SetInt(PREF_SCREEN_MODE, _);
-         processCursorState();
+      screenModeDropdown.onValueChanged.AddListener(index => {
+         ScreenSettingsManager.setFullscreenMode(fullScreenModes[index]);
       });
-      int loadedScreenModeValue = PlayerPrefs.GetInt(PREF_SCREEN_MODE, customScreenMode.FindIndex(_=>_ == FullScreenMode.Windowed));
-      screenModeDropdown.value = loadedScreenModeValue;
-      screenModeDropdown.onValueChanged.Invoke(loadedScreenModeValue);
+
+      int loadedScreenModeValue = getScreenModeIndex(ScreenSettingsManager.fullScreenMode);
+      screenModeDropdown.SetValueWithoutNotify(loadedScreenModeValue);
    }
 
-   private IEnumerator CO_ProcessScreenAdjustments (bool isFullScreen, FullScreenMode mode) {
-      // Make sure the full screen flag is set to false
-      if (mode != FullScreenMode.ExclusiveFullScreen) {
-         ScreenSettingsManager.setFullscreen(false);
+   public int getScreenModeIndex (FullScreenMode mode) {
+      if (fullScreenModes == null || fullScreenModes.Count < 1) {
+         initializeFullScreenModesList();
       }
-      yield return new WaitForSeconds(SCREEN_TRANSITION);
 
-#if !UNITY_EDITOR
-      switch (mode) {
-         case FullScreenMode.Windowed:
-            setBorderedWindow();
-            break;
-         case FullScreenMode.FullScreenWindow:
-            setBorderlessWindow();
-            break;
-         case FullScreenMode.ExclusiveFullScreen:
-            setBorderedWindow();
-            break;
-      }
-#endif
-
-      // Only setup full screen after resizing the window
-      if (mode == FullScreenMode.ExclusiveFullScreen) {
-         yield return new WaitForSeconds(SCREEN_TRANSITION);
-         ScreenSettingsManager.setFullscreen(true);
-      } 
-
-      if (!hasInitialized) {
-         endInitialSetup();
-      }
+      return fullScreenModes.IndexOf(mode);
    }
 
-   private void endInitialSetup () {
-      hasInitialized = true;
-   }
-
-   private void processCursorState () {
-      if (ScreenSettingsManager.IsFullScreen) {
-         Cursor.lockState = CursorLockMode.Confined;
-      } else {
-         Cursor.lockState = CursorLockMode.None;
-      }
+   private void initializeFullScreenModesList () {
+      fullScreenModes = new List<FullScreenMode>();
+      fullScreenModes.Add(FullScreenMode.ExclusiveFullScreen);
+      fullScreenModes.Add(FullScreenMode.FullScreenWindow);
+      fullScreenModes.Add(FullScreenMode.Windowed);
    }
 
    private void setResolution (int resolutionIndex) {
-      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height);
-      StartCoroutine(CO_RefreshBorders());
-   }
-
-   private IEnumerator CO_RefreshBorders () {
-      if (selectedMode == FullScreenMode.FullScreenWindow) {
-         setBorderedWindow();
-      } 
-      yield return new WaitForSeconds(.15f);
-      if (selectedMode == FullScreenMode.FullScreenWindow) {
-         setBorderlessWindow();
-      }
+      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height);      
    }
 
    public override void show () {
@@ -275,7 +192,7 @@ public class OptionsPanel : Panel
          OptionData o = new OptionData($"{res.width} x {res.height}");
          options.Add(o);
 
-         if (res.width == ScreenSettingsManager.Width && res.height == ScreenSettingsManager.Height) {
+         if (res.width == ScreenSettingsManager.width && res.height == ScreenSettingsManager.height) {
             currentResolution = i;
          }
       }
@@ -319,30 +236,14 @@ public class OptionsPanel : Panel
       SoundManager.effectsVolume = effectsSlider.value;
    }
 
-   public void updateGUIScaling () {
-      float userSettingsFactor = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100) / 100f;
-      float screenSizeFactor = getConstantUIScalingFactor();
-      mainGameCanvas.scaleFactor = userSettingsFactor * screenSizeFactor;
-   }
-
    public void guiScaleSliderChanged () {
-      guiScaleLabel.text = (guiScaleSlider.value * 100).ToString("f1") + " %";
-      PlayerPrefs.SetFloat(PREF_GUI_SCALE, guiScaleSlider.value * 100);
-      updateGUIScaling();
+      guiScaleLabel.text = (guiScaleSlider.value * 100.0f).ToString("f1") + " %";
+      OptionsManager.setGUIScale(guiScaleSlider.value * 100.0f);
    }
 
-   public static float getConstantUIScalingFactor () {
-      if (Screen.width >= ScreenSettingsManager.largeScreenWidth && Screen.height >= ScreenSettingsManager.largeScreenHeight) {
-         return 2f;
-      }
-
-      return 1f;
-   }
-
-   public void minimapScaleSliderChanged () {
-      minimapTransform.localScale = new Vector3(minimapScaleSlider.value, minimapScaleSlider.value, minimapScaleSlider.value);
-      minimapScaleLabel.text = (minimapScaleSlider.value * 100).ToString("f1") + " %";
-      PlayerPrefs.SetFloat(PREF_MINIMAP_SCALE, minimapScaleSlider.value * 100);
+   public void minimapScaleSliderChanged () {      
+      minimapScaleLabel.text = (minimapScaleSlider.value * 100.0f).ToString("f1") + " %";
+      OptionsManager.setMinimapScale(minimapScaleSlider.value * 100.0f);
    }
 
    public void onOpenLogFilePressed () {
@@ -447,27 +348,6 @@ public class OptionsPanel : Panel
       foreach (GameObject row in adminOnlyButtons) {
          row.SetActive(isEnabled);
       }
-   }
-
-   public void setBorderedWindow () {
-      if (BorderlessWindow.framed)
-         return;
-
-      BorderlessWindow.setBorder();
-      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width + borderSize.x, Screen.height + borderSize.y); // Compensating the border offset.
-   }
-
-   public void setBorderlessWindow () {
-      if (!BorderlessWindow.framed)
-         return;
-
-#if UNITY_EDITOR
-      BorderlessWindow.setBorder();
-#elif !UNITY_EDITOR
-      BorderlessWindow.setBorderless();
-#endif
-
-      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - borderSize.x, Screen.height - borderSize.y);
    }
 
    #region Private Variables

@@ -107,6 +107,22 @@ public class InputManager : MonoBehaviour
       return axis;
    }
 
+   public static int getVerticalAxis () {
+      int axis = 0;
+
+      if (getKeyAction(KeyAction.MoveUp)) {
+         axis = 1;
+      } else if (getKeyAction(KeyAction.MoveDown)) {
+         axis = -1;
+      }
+
+      return axis;
+   }
+
+   public static Vector2 getMovementInput () {
+      return new Vector2(getHorizontalAxis(), getVerticalAxis());
+   }
+
    public static bool isRightClickKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys
@@ -137,6 +153,14 @@ public class InputManager : MonoBehaviour
    public static bool isFireCannonKeyDown () {
       if (isActionInputEnabled()) {
          return getKeyActionDown(KeyAction.FireMainCannon);
+      }
+
+      return false;
+   }
+
+   public static bool isFireCannonMouseDown () {
+      if (isActionInputEnabled()) {
+         return Input.GetMouseButtonDown((int)MouseButton.Right);
       }
 
       return false;

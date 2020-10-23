@@ -36,6 +36,9 @@ public class Voyage
    // The key of the area the voyage is set in
    public string areaKey;
 
+   // The name of the area the voyage is set in
+   public string areaName;
+
    // The voyage difficulty
    public Difficulty difficulty = Difficulty.None;
 
@@ -66,10 +69,11 @@ public class Voyage
 
    }
 
-   public Voyage (int voyageId, string areaKey, Difficulty difficulty, bool isPvP,
+   public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, bool isPvP,
       long creationDate, int treasureSiteCount, int capturedTreasureSiteCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
+      this.areaName = areaName;
       this.difficulty = difficulty;
       this.isPvP = isPvP;
       this.creationDate = creationDate;

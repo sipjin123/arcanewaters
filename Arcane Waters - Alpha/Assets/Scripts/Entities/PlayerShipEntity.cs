@@ -167,7 +167,12 @@ public class PlayerShipEntity : ShipEntity
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
          SeaEntity target = _targetSelector.getTarget();
          if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
-            Cmd_FireMainCannonAtTarget(target.gameObject);
+            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+         }
+
+         if (hasReloaded() && InputManager.isFireCannonMouseDown()) {
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos());
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
          }
       }
@@ -219,39 +224,12 @@ public class PlayerShipEntity : ShipEntity
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
          }
       }
+   }
 
-      // Space to fire at the selected ship
-      /*if (Input.GetKeyUp(KeyCode.Space) && !ChatManager.isTyping() && SelectionManager.self.selectedEntity != null && SeaManager.combatMode == SeaManager.CombatMode.Select) {
-         Cmd_FireAtTarget(SelectionManager.self.selectedEntity.gameObject);
-      }*/
-
-      if (!isDead()) {
-         handleDirectionChange();
-      }
    }
 
    public override bool isMoving () {
       return getVelocity().magnitude > SHIP_MOVING_MAGNITUDE;
-   }
-
-   private void handleDirectionChange () {
-      int moveDirection = InputManager.getHorizontalAxis() * -1;
-
-      if (moveDirection < 0) {
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
-      } else if (moveDirection > 0) {         
-         TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
-      }
-
-      bool canRequestAngleChange = NetworkTime.time - _lastAngleChangeTime > getAngleDelay();
-
-      if (moveDirection != 0) {
-         // Check if enough time has passed for us to change our facing direction
-         if (canRequestAngleChange) {
-            Cmd_ModifyMoveAngle(moveDirection);
-            _lastAngleChangeTime = NetworkTime.time;
-         }
-      }
    }
 
    public Vector2 getAimPosition () {
@@ -277,7 +255,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireMainCannonAtTarget (GameObject target) {
+   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint) {
       if (isDead() || !hasReloaded()) {
          return;
       }
@@ -287,7 +265,7 @@ public class PlayerShipEntity : ShipEntity
       _lastAttackTime = NetworkTime.time;
       
       Vector2 startPosition = transform.position;
-      Vector2 targetPosition = target.transform.position;
+      Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
 
       fireCannonBallAtTarget(startPosition, targetPosition);
    }
@@ -359,11 +337,6 @@ public class PlayerShipEntity : ShipEntity
       if (MyNetworkManager.wasServerStarted) {
          Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, this.currentHealth));
       }
-   }
-
-   [ClientRpc]
-   public void Rpc_FireTimedCannonBall (double startTime, Vector2 velocity, float damageMultiplier) {
-      StartCoroutine(CO_FireTimedCannonBall(startTime, velocity, damageMultiplier));
    }
 
    [Server]
@@ -501,9 +474,10 @@ public class PlayerShipEntity : ShipEntity
 
       if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
          _lastInputChangeTime = NetworkTime.time;
+         Vector2 inputVector = InputManager.getMovementInput();
 
-         if (InputManager.getKeyAction(KeyAction.MoveUp)) {
-            Cmd_RequestServerAddForce(isSpeedingUp);
+         if (inputVector.x != 0 || inputVector.y != 0) {
+            Cmd_RequestServerAddForce(inputVector, isSpeedingUp);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShipForward);
          }
       }
@@ -600,35 +574,6 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   protected IEnumerator CO_FireTimedCannonBall (double startTime, Vector2 velocity, float damageMultiplier) {
-      _lastAttackTime = NetworkTime.time;
-
-      // Wait until it's time to fire
-      while (NetworkTime.time < startTime) {
-         yield return null;
-      }
-
-      // Create the cannon ball object from the prefab
-      GameObject ballObject = Instantiate(PrefabsManager.self.networkedCannonBallPrefab, this.transform.position, Quaternion.identity);
-      NetworkedCannonBall netBall = ballObject.GetComponent<NetworkedCannonBall>();
-      
-      int abilityId = -1;
-      float speedMultiplier = 1;
-
-      if (shipAbilities.Count > 0) {
-         ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(shipAbilities[0]);
-         if (shipAbilityData != null) {
-            abilityId = shipAbilityData.abilityId;
-            speedMultiplier = shipAbilityData.projectileSpeed;
-         }
-      }
-            
-      netBall.init(this.netId, this.instanceId, currentImpactMagnitude, abilityId, this.transform.position, NetworkedCannonBall.LIFETIME, false, damageMultiplier);
-
-      // Add velocity to the ball
-      netBall.body.velocity = velocity * speedMultiplier;
-   }
-
    protected IEnumerator CO_TemporarilyDisableShip () {
       if (!isDisabled) {
          yield break;
@@ -676,52 +621,25 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_RequestServerAddForce (bool isSpeedingUp) {
-      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
-         this.isSpeedingUp = isSpeedingUp;
-         Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed();
+   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {
+      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {         
+         Vector2 forceToApply = direction * getMoveSpeed();
+
+         if (direction != Vector2.zero) {
+            float newAngle = Util.AngleBetween(Vector2.up, direction);
+            desiredAngle = newAngle;
+            facing = DirectionUtil.getDirectionForAngle(desiredAngle);
+         }
+
          _body.AddForce(forceToApply);
          _lastInputChangeTime = NetworkTime.time;
+         this.isSpeedingUp = isSpeedingUp;
       }
    }
 
    [ClientRpc]
    protected void Rpc_AddForce (double timestamp, Vector2 force) {
       StartCoroutine(CO_AddForce(timestamp, force));
-   }
-
-   [Command]
-   private void Cmd_FireTimedCannonBall (Vector2 mousePos) {
-      if (isDead() || !hasReloaded()) {
-         return;
-      }
-
-      // We either fire out the left or right side depending on which was clicked
-      for (int i = 0; i < 5; i++) {
-         Vector2 direction = mousePos - (Vector2) this.transform.position;
-         direction = direction.normalized;
-         direction = direction.Rotate(i * 3f);
-
-         // Figure out the desired velocity
-         Vector2 velocity = direction.normalized * NetworkedCannonBall.MOVE_SPEED;
-
-         // Delay the firing a little bit to compensate for lag
-         double timeToStartFiring = NetworkTime.time + 0.3;
-
-         // Note the time at which we last successfully attacked
-         _lastAttackTime = NetworkTime.time;
-
-         // Make note on the clients that the ship just attacked
-         Rpc_NoteAttack();
-
-         // Tell all clients to fire the cannon ball at the same time
-         Rpc_FireTimedCannonBall(timeToStartFiring, velocity, 1);
-
-         // Standalone Server needs to call this as well
-         if (!MyNetworkManager.isHost) {
-            StartCoroutine(CO_FireTimedCannonBall(timeToStartFiring, velocity, 1));
-         }
-      }
    }
 
    [Command]
@@ -732,34 +650,6 @@ public class PlayerShipEntity : ShipEntity
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.storeShipHealth(this.shipId, this.maxHealth);
       });
-   }
-
-   [Command]
-   private void Cmd_FireHomingCannonBall (GameObject target) {
-      if (isDead() || !hasReloaded() || target == null) {
-         return;
-      }
-
-      Vector2 spot = target.transform.position;
-
-      // The target point is clamped to the attack range
-      spot = clampToRange(spot);
-
-      // Note the time at which we last successfully attacked
-      _lastAttackTime = NetworkTime.time;
-
-      // Check how long we should take to get there
-      float distance = Vector2.Distance(this.transform.position, spot);
-      float delay = Mathf.Clamp(distance, .5f, 1.5f);
-
-      // Start moving a cannon ball from the source to the target
-      Rpc_FireHomingCannonBall(this.gameObject, target, NetworkTime.time, NetworkTime.time + delay);
-
-      // Apply damage after the delay
-      StartCoroutine(CO_ApplyDamageAfterDelay(delay, this.damage, this, target.GetComponent<SeaEntity>(), Attack.Type.Cannon));
-
-      // Make note on the clients that the ship just attacked
-      Rpc_NoteAttack();
    }
 
    #region Private Variables

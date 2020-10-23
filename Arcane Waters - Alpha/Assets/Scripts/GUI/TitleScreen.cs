@@ -60,7 +60,7 @@ public class TitleScreen : MonoBehaviour {
       steamLoginPanel.SetActive(SteamManager.Initialized);
 
       setToMaxScreenWindows.onClick.AddListener(() => {
-         ScreenSettingsManager.setToResolutionFullscreenWindows();
+         ScreenSettingsManager.setToResolutionFullscreenWindowed();
       });
       setToMaxScreenExclusive.onClick.AddListener(() => {
          ScreenSettingsManager.setToResolutionFullscreenExclusive();

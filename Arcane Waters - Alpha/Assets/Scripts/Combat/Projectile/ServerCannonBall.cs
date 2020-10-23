@@ -165,7 +165,7 @@ public class ServerCannonBall : NetworkBehaviour {
    protected float _lifetime;
 
    // The default lifetime if none is provided
-   protected const float DEFAULT_LIFETIME = 0.75f;
+   protected const float DEFAULT_LIFETIME = 1.25f;
 
    #endregion
 

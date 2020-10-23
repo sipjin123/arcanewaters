@@ -159,7 +159,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ce5b14408c646d743a54e749b2ca9f55, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 3d3e88b2c4a1a394a88cfce8ca1ee49b, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -240,7 +240,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: -481.07, y: -399.49}
-  m_SizeDelta: {x: 114, y: 106}
+  m_SizeDelta: {x: 120, y: 106}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &289160367598726219
 CanvasGroup:
@@ -285,8 +285,8 @@ MonoBehaviour:
   bronzeOutlineColor: {r: 0.58431375, g: 0.23921569, b: 0.16078432, a: 0.5019608}
   silverOutlineColor: {r: 0.3254902, g: 0.40784314, b: 0.5137255, a: 0.5}
   goldOutlineColor: {r: 0.74509805, g: 0.3882353, b: 0, a: 0.5019608}
-  pvpIcon: {fileID: 21300000, guid: 7a649a9f3af117545904297b16e1ce82, type: 3}
-  pveIcon: {fileID: 21300000, guid: 8d6e468d65762d74288105295830c3ba, type: 3}
+  pvpIcon: {fileID: 21300000, guid: dc1b7bb2e54662a42a839d6164e56c0a, type: 3}
+  pveIcon: {fileID: 21300000, guid: b08643c8c9748d947816f20d9ae6ed06, type: 3}
 --- !u!114 &7889195948282994721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -378,7 +378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7a649a9f3af117545904297b16e1ce82, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b08643c8c9748d947816f20d9ae6ed06, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -543,7 +543,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 1ec5e23a10db6ec4f9dfa6b3f9a89d5b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 24c89687018a1434ea27beab938791c2, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: 18
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -860,7 +860,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 883c693b4384fbd4f96bb4a2643b4a81, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a54d19c34c300ac43a512de140919ede, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -886,7 +886,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: 18
-  m_PreferredHeight: -1
+  m_PreferredHeight: 16
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -1744,7 +1744,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: PvP
+  m_Text: 'PvP
+
+'
 --- !u!114 &8767701517139427581
 MonoBehaviour:
   m_ObjectHideFlags: 0

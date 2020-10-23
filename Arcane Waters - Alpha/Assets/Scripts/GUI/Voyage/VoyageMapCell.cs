@@ -68,7 +68,7 @@ public class VoyageMapCell : MonoBehaviour {
       onPointerExitButton();
 
       // Set the map name
-      mapNameText.text = Area.getName(voyage.areaKey);
+      mapNameText.text = voyage.areaName;
 
       // Set the plaque images
       statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName(_voyage.difficulty));

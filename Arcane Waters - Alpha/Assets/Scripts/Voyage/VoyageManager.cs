@@ -364,7 +364,7 @@ public class VoyageManager : MonoBehaviour {
       List<Voyage> allVoyages = new List<Voyage>();
 
       foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
-         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, instance.difficulty, instance.isPvP,
+         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.isPvP,
             instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount);
          allVoyages.Add(voyage);
       }

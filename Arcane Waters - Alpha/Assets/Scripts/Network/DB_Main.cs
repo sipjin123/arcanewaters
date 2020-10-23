@@ -8463,7 +8463,7 @@ public class DB_Main : DB_MainStub
 
    public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
       // Storing Login info, excluding both localhost (IPv4) and ::1 (IPv6), and only when usrId > 0
-      if (ipAddress != "localhost" && ipAddress != "::1" && ipAddress.Contains("::ffff:") && usrId > 0) {
+      if (ipAddress != "localhost" && ipAddress != "::1" && ipAddress.Contains("::ffff:") && usrId > 0 && accId > 0) {
          // We need to split the IP Address because its format, ::ffff:0.0.0.0, for example
          string[] finalAddressArray = ipAddress.Split(':');
          string finalAddress = finalAddressArray[finalAddressArray.Length - 1];
@@ -8475,7 +8475,7 @@ public class DB_Main : DB_MainStub
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", usrId);
                cmd.Parameters.AddWithValue("@accId", accId);
-               cmd.Parameters.AddWithValue("@ipAddress", ipAddress);
+               cmd.Parameters.AddWithValue("@ipAddress", finalAddress);
                cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
                cmd.Parameters.AddWithValue("@loginSource", "game");
 
