@@ -920,6 +920,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static string getGuildInfoJSON (int guildId) {
+      return null;
+   }
+
    public static List<UserInfo> getUsersForGuild (int guildId) {
       return new List<UserInfo>();
    }

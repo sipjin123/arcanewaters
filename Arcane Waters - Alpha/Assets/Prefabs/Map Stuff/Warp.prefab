@@ -300,7 +300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialDelay: 0
-  frameLengthOverride: -1
+  frameLengthOverride: 0.1
   delayStart: 0
   destroyAtEnd: 0
   stayAtLastFrame: 0

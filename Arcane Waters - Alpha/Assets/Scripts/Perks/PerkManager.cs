@@ -39,8 +39,8 @@ public class PerkManager : MonoBehaviour {
 
       _localPlayerPerkPoints = perks.ToList();
 
-      // Initialize the Character Info Panel
-      CharacterInfoPanel.self.receivePerkPoints(true, perks);
+      // Initialize the Perks Panel
+      PerksPanel.self.receivePerkPoints(true, perks);
 
       initializeBoostFactors();
    }
@@ -52,8 +52,8 @@ public class PerkManager : MonoBehaviour {
          _perkData.Add(data);
       }
 
-      // Initialize the Character Info Panel
-      CharacterInfoPanel.self.receivePerkData(_perkData);
+      // Initialize the Perks Panel
+      PerksPanel.self.receivePerkData(_perkData);
    }
 
    public float getPerkMultiplier (Perk.Category category) {

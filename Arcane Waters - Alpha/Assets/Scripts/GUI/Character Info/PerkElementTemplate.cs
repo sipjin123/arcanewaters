@@ -51,8 +51,8 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       _tooltipAssignedPointsText = $"Assigned Points: {assignedPoints}";
 
       if (assignedPoints > 0) {
-         int borderIndex = Mathf.Clamp(assignedPoints - 1, 0, CharacterInfoPanel.self.perkIconBorders.Count - 1);
-         _perkBorder.sprite = CharacterInfoPanel.self.perkIconBorders[borderIndex];
+         int borderIndex = Mathf.Clamp(assignedPoints - 1, 0, PerksPanel.self.perkIconBorders.Count - 1);
+         _perkBorder.sprite = PerksPanel.self.perkIconBorders[borderIndex];
 
          _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
          _perkBorder.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 0);
@@ -65,7 +65,7 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
          }
       } else {
          // Make the icons grayscale
-         _iconMaterial.SetFloat(_grayscaleIntensityPropertyId, 1);
+         _icon.materialForRendering.SetFloat(_grayscaleIntensityPropertyId, 1);
       }
    }
 
@@ -79,7 +79,7 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       _fadeInfoSequence = DOTween.Sequence();
 
       // Disable the grid layout group so we can move the icons
-      CharacterInfoPanel.self.perksGridLayoutGroup.enabled = false;
+      PerksPanel.self.perksGridLayoutGroup.enabled = false;
 
       _fadeInfoSequence.Join(_rectTransform.DOPivotY(_originalPivotY - _iconMoveUpOnHoverAmount, _infoOnHoverFadeTime));
 

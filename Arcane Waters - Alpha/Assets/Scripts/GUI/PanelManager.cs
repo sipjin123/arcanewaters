@@ -66,6 +66,10 @@ public class PanelManager : MonoBehaviour {
             confirmScreen.hide();
          } else if (noticeScreen.canvasGroup.alpha > 0f) {
             noticeScreen.hide();
+         } else if (PerksPanel.self.isShowing()) {
+            PerksPanel.self.hide();
+         } else if (get<AuctionPanel>(Panel.Type.Auction).auctionInfoPanel.isShowing()) {
+            AuctionPanel.self.auctionInfoPanel.hide();
          } else if (hasPanelInLinkedList()) {
             unlinkPanel();
          } else if (!((OptionsPanel) get(Panel.Type.Options)).isShowing()) {

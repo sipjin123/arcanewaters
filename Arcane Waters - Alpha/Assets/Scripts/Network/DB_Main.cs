@@ -6478,6 +6478,31 @@ public class DB_Main : DB_MainStub
       return info;
    }
 
+   public static new string getGuildInfoJSON (int guildId) {
+      GuildInfo info = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM guilds WHERE gldId=@gldId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@gldId", guildId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  info = new GuildInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return JsonUtility.ToJson(info);
+   }
+
    public static new List<UserInfo> getUsersForGuild (int guildId) {
       List<UserInfo> userList = new List<UserInfo>();
 

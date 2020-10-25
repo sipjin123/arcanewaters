@@ -27,6 +27,15 @@ public class NubisDirect
          D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
       }
 
+      // Process guild info
+      GuildInfo guildInfo = new GuildInfo();
+      if (newUserInfo.guildId > 0) {
+         guildInfo = JsonConvert.DeserializeObject<GuildInfo>(DB_Main.getGuildInfoJSON(newUserInfo.guildId));
+         if (guildInfo == null) {
+            D.editorLog("Something went wrong with guild info data fetch for user " + userIdStr, Color.red);
+         }
+      }
+
       // Process user equipped items
       string equippedItemContent = DB_Main.fetchEquippedItems(userIdStr);
       EquippedItemData equippedItemData = EquippedItems.processEquippedItemData(equippedItemContent);
@@ -53,6 +62,7 @@ public class NubisDirect
          equippedArmor = equippedArmor,
          equippedWeapon = equippedWeapon,
          user = newUserInfo,
+         guildInfo = guildInfo,
          totalItemCount = itemCount
       };
       return JsonConvert.SerializeObject(bundle,new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });

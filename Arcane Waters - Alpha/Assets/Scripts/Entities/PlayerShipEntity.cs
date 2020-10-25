@@ -226,8 +226,6 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   }
-
    public override bool isMoving () {
       return getVelocity().magnitude > SHIP_MOVING_MAGNITUDE;
    }

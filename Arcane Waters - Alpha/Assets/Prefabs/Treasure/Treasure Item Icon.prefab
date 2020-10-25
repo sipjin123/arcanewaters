@@ -146,14 +146,14 @@ RectTransform:
   m_GameObject: {fileID: 5843722878690689404}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children: []
   m_Father: {fileID: 4208724857720028265}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -11.4}
   m_SizeDelta: {x: 79.4039, y: 30}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &2522517039671580572
@@ -302,7 +302,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0.2}
   m_SizeDelta: {x: 128, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3360474313994834138
@@ -371,6 +371,7 @@ GameObject:
   - component: {fileID: 52861808220284424}
   - component: {fileID: 3452886214061459621}
   - component: {fileID: 2718070571306004538}
+  - component: {fileID: 300669396496485651}
   m_Layer: 0
   m_Name: Treasure Item Icon
   m_TagString: Untagged
@@ -424,3 +425,22 @@ MonoBehaviour:
   lifetime: 3
   floatHeight: 0.32
   nameText: {fileID: 7888012016219845422}
+--- !u!95 &300669396496485651
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7967739637322197745}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 414e25fe1b2a429448c58ff126864183, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

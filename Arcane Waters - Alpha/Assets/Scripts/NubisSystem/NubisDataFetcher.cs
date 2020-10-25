@@ -22,6 +22,9 @@ namespace NubisDataHandling {
       // Reference to the user info.
       public UserInfo user;
 
+      // The guild info.
+      public GuildInfo guildInfo;
+
       // The equipped weapon.
       public Item equippedWeapon;
 
@@ -255,7 +258,7 @@ namespace NubisDataHandling {
          inventoryPanel.clearPanel();
 
          UserObjects userObjects = new UserObjects { userInfo = inventoryBundle.user, weapon = inventoryBundle.equippedWeapon, armor = inventoryBundle.equippedArmor, hat = inventoryBundle.equippedHat };
-         inventoryPanel.receiveItemForDisplay(itemList, userObjects, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
+         inventoryPanel.receiveItemForDisplay(itemList, userObjects, inventoryBundle.guildInfo, categoryFilter, pageIndex, inventoryBundle.totalItemCount, true);
       }
 
       public async void getInventoryForItemSelection (List<Item.Category> categoryFilter, List<int> itemIdsToExclude,

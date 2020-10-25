@@ -14,6 +14,7 @@ public static class ToolsUtil
    public const string CLOSED = "Closed";
 
    public const string ASSIGN = "Assign";
+   public const string WATCH = "Watch";
    public const string CREATE = "Create";
    public const string CLEAR = "Clear";
    public const string CLOSE = "Close";

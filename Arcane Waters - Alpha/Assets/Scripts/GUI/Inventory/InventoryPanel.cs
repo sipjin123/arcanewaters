@@ -42,6 +42,8 @@ public class InventoryPanel : Panel {
    public Text characterNameText;
    public Text goldText;
    public Text gemsText;
+   public Text levelText;
+   public Text xpText;
 
    // The common object used to display any grabbed item
    public GrabbedItem grabbedItem;
@@ -59,6 +61,12 @@ public class InventoryPanel : Panel {
    public InventoryStatRow earthStatRow;
    public InventoryStatRow airStatRow;
    public InventoryStatRow waterStatRow;
+
+   // The guild icon
+   public GuildIcon guildIcon;
+
+   // The experience progress bar
+   public Image levelProgressBar;
 
    // Self
    public static InventoryPanel self;
@@ -186,7 +194,7 @@ public class InventoryPanel : Panel {
       }
    }
 
-   public void receiveItemForDisplay (List<Item> itemArray, UserObjects userObjects, List<Item.Category> categoryFilter,
+   public void receiveItemForDisplay (List<Item> itemArray, UserObjects userObjects, GuildInfo guildInfo, List<Item.Category> categoryFilter,
       int pageIndex, int totalItems, bool overrideEquipmentCache) {
       loadBlocker.SetActive(false);
       Global.lastUserGold = userObjects.userInfo.gold;
@@ -222,6 +230,15 @@ public class InventoryPanel : Panel {
       if (Global.player != null) {
          characterNameText.text = Global.player.entityName;
       }
+
+      // Update the level and level progress bar
+      int currentLevel = LevelUtil.levelForXp(userObjects.userInfo.XP);
+      levelProgressBar.fillAmount = (float) LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) / (float) LevelUtil.xpForLevel(currentLevel + 1);
+      levelText.text = "LVL " + currentLevel;
+      xpText.text = "EXP: " + LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) + " / " + LevelUtil.xpForLevel(currentLevel + 1);
+
+      // Initialize the guild icon
+      guildIcon.initialize(guildInfo);
 
       // Select the correct tab
       itemTabs.updateCategoryTabs(categoryFilter[0]);
@@ -443,6 +460,10 @@ public class InventoryPanel : Panel {
          // Otherwise, simply stop grabbing
          stopGrabbingItem();
       }
+   }
+
+   public void onPerksButtonPressed () {
+      PerksPanel.self.show();
    }
 
    public void enableLoadBlocker () {
