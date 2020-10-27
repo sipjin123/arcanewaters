@@ -23,6 +23,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _effectProgress = 1;
       _effectProgressPropertyID = Shader.PropertyToID("_Progress");
       _spotPositionPropertyID = Shader.PropertyToID("_SpotPosition");
+      _screenSizePropertyID = Shader.PropertyToID("_ScreenSize");
 
       createMaterialIfNull();
    }
@@ -40,7 +41,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
 
    private void updateScreenSize () {
-      _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
+      _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
    }
 
    private void OnDestroy () {
@@ -65,7 +66,10 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 #endif
 
    private void OnRenderImage (RenderTexture source, RenderTexture destination) {
+      recalibrateSpotPosition();
+
       _material.SetFloat(_effectProgressPropertyID, _effectProgress);
+      _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
       Graphics.Blit(source, destination, _material);
    }
 
@@ -89,12 +93,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       recalibrateSpotPosition();
 
       _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 1, _fadeInDuration);
-      _fadeTween.OnUpdate(() => {
-         if (_effectProgress >= _fadeInDuration) {
-            recalibrateSpotPosition();
-         }
-         _material.SetFloat(_effectProgressPropertyID, _effectProgress);
-      });
 
       return _fadeInDuration;
    }
@@ -105,9 +103,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       recalibrateSpotPosition();
 
       _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration);
-      _fadeTween.OnUpdate(() => {
-         _material.SetFloat(_effectProgressPropertyID, _effectProgress);
-      });
 
       return _fadeOutDuration;
    }
@@ -116,7 +111,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       // If we have a player, close towards the player position. Otherwise, close towards the center of the screen.
       if (Global.player != null) {
          setSpotWorldPosition(Global.player.sortPoint.transform.position);
-      } else if (CharacterScreen.self.isShowing() && CharacterSpot.lastInteractedSpot != null && CharacterSpot.lastInteractedSpot.character != null) {
+      } else if (CharacterScreen.self != null && CharacterScreen.self.isShowing() && CharacterSpot.lastInteractedSpot != null && CharacterSpot.lastInteractedSpot.character != null) {
          setSpotWorldPosition(CharacterSpot.lastInteractedSpot.character.transform.position);
       } else {
          setSpotPositionToCenter();
@@ -181,6 +176,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 
    // The property ID of the "_SpotPosition" property
    private int _spotPositionPropertyID;
+
+   // The property ID of the "_ScreenSize" property
+   private int _screenSizePropertyID;
 
    #endregion
 }

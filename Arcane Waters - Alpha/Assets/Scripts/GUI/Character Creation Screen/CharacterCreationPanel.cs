@@ -184,7 +184,7 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
          // Send the creation request to the server
          NetworkClient.Send(new CreateUserMessage(Global.netId,
-            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName));
+            _char.getUserInfo(), _char.armor.equipmentId, _char.armor.getPalettes(), chosenPerks, SystemInfo.deviceName, Global.isFirstLogin));
 
          // Show loading screen until player warps to map
          StartCoroutine(showLoadingScreen());

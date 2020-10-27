@@ -39,6 +39,9 @@ public class LogInUserMessage : MessageBase {
    // The client's machine identifier
    public string machineIdentifier;
 
+   // False if the player has already logged in successfully.
+   public bool isFirstLogin;
+
    #endregion
 
    public LogInUserMessage () { }
@@ -47,7 +50,7 @@ public class LogInUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -59,5 +62,6 @@ public class LogInUserMessage : MessageBase {
       this.steamAuthTicket = steamAuthTicket;
       this.steamTicketSize = steamTicketSize;
       this.machineIdentifier = machineIdentifier;
+      this.isFirstLogin = isFirstLogin;
    }
 }

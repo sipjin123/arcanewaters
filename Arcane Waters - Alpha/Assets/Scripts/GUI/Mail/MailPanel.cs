@@ -148,7 +148,7 @@ public class MailPanel : Panel
       }
    }
 
-   public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems) {
+   public void updatePanelWithSingleMail (MailInfo mail, List<Item> attachedItems, bool hasUnreadMail) {
       _displayedMailId = mail.mailId;
 
       // Configure the panel
@@ -190,6 +190,9 @@ public class MailPanel : Panel
 
       // Refresh the mail list
       refreshMailList();
+
+      // Update the new mail notification
+      BottomBar.self.setUnreadMailNotificationStatus(hasUnreadMail);
    }
 
    public void composeNewMail () {

@@ -89,7 +89,7 @@ public class ClientManager : MonoBehaviour
          // Wait for the php request response
          SteamLoginManager.self.getAuthTicketEvent.AddListener(_ => {
             // Extract the credentials
-            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket, machineIdentifier);
+            LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket, machineIdentifier, Global.isFirstLogin);
 
             // Send a message to the Server letting them know which of our Users we want to log in to
             NetworkClient.Send(msg);
@@ -99,7 +99,7 @@ public class ClientManager : MonoBehaviour
          SteamLoginManager.self.getAuthenticationTicket();
       } else {
          LogInUserMessage msg = new LogInUserMessage(Global.netId,
-             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0, machineIdentifier);
+             Global.lastUsedAccountName, Global.lastUserAccountPassword, false, Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, new byte[0], 0, machineIdentifier, Global.isFirstLogin);
 
          // Send a message to the Server letting them know which of our Users we want to log in to
          NetworkClient.Send(msg);

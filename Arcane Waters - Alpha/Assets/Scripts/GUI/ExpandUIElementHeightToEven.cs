@@ -25,7 +25,7 @@ public class ExpandUIElementHeightToEven : MonoBehaviour {
       ContentSizeFitter contentFitter = GetComponent<ContentSizeFitter>();
       if (contentFitter) {
          _fitMode = contentFitter.verticalFit;
-         contentFitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+         contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
       }
 
       float sizeY = GetComponent<RectTransform>().sizeDelta.y;

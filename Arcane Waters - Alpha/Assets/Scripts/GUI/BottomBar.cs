@@ -9,10 +9,17 @@ public class BottomBar : MonoBehaviour {
    // Self
    public static BottomBar self;
 
+   // The mail panel when there is no unread mail
+   public GameObject normalMailPanelButton;
+
+   // The mail panel when there is unread mail
+   public GameObject unreadMailPanelButton;
+
    #endregion
 
    private void Awake () {
       self = this;
+      setUnreadMailNotificationStatus(false);
    }
 
    private void Update () {
@@ -38,19 +45,9 @@ public class BottomBar : MonoBehaviour {
       }
    }
 
-   public void toggleCharacterInfoPanel () {
-      CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
-
-      // If the panel is not showing, send a request to the server
-      if (!panel.isShowing()) {
-         if (Global.player != null) {
-            PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
-            panel.loadCharacterCache();
-            Global.player.rpc.Cmd_RequestCharacterInfoFromServer(Global.player.userId);
-         }
-      } else {
-         PanelManager.self.togglePanel(Panel.Type.CharacterInfo);
-      }
+   public void setUnreadMailNotificationStatus (bool active) {
+      unreadMailPanelButton.SetActive(active);
+      normalMailPanelButton.SetActive(!active);
    }
 
    public void toggleInventoryPanel () {

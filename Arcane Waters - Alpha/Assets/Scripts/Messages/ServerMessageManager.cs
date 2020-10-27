@@ -94,11 +94,6 @@ public class ServerMessageManager : MonoBehaviour
             }
          }
 
-         // Storing login info
-         if (conn != null) {
-            DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
-         }
-
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (isUnauthenticatedSteamUser && !hasFailedToCreateAccount) {
@@ -118,6 +113,13 @@ public class ServerMessageManager : MonoBehaviour
             if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
                // Keep track of the user ID that's been authenticated for this connection
                MyNetworkManager.noteUserIdForConnection(logInUserMessage.selectedUserId, conn);
+
+               // Storing login info
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  if (conn != null && logInUserMessage.isFirstLogin) {
+                     DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
+                  }
+               });
 
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
@@ -418,11 +420,6 @@ public class ServerMessageManager : MonoBehaviour
          slotNumber++;
       }
 
-      // Storing login info
-      if (conn != null) {
-         DB_Main.storeLoginInfo(userId, accountId, conn.address, msg.machineIdentifier ?? "");
-      }
-
       // Give some additional armor and weapons to test users
       /*if (true) {
          DB_Main.addGold(userId, 800);
@@ -462,6 +459,13 @@ public class ServerMessageManager : MonoBehaviour
          if (userId > 0) {
             // Keep track of the user ID that's been authenticated for this connection
             MyNetworkManager.noteUserIdForConnection(userId, conn);
+
+            // Storing login information
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               if (conn != null && msg.isFirstLogin) {
+                  DB_Main.storeLoginInfo(userId, accountId, conn.address, msg.machineIdentifier ?? "");
+               }
+            });
 
             // Now tell the client to move forward with the login process
             LogInCompleteMessage loginCompleteMsg = new LogInCompleteMessage(Global.netId, (Direction) userInfo.facingDirection,

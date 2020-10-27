@@ -10,8 +10,11 @@ public class MyCamera : BaseCamera
 {
    #region Public Variables
 
-   // The scale of the confiner at wide screen
-   public static float CONFINER_DEFAULT_SCALE = 0.16f;
+   // The height of the confiner
+   public const float CONFINER_DEFAULT_HEIGHT = 0.162f;
+
+   // The width of the confiner
+   public const float CONFINER_DEFAULT_WIDTH = 0.16f;
 
    #endregion
 
@@ -53,10 +56,10 @@ public class MyCamera : BaseCamera
             CinemachineConfiner confiner = _vcam.GetComponent<CinemachineConfiner>();
             if (confiner != null) {
                if (confiner.m_BoundingShape2D != null) {
-                  float confinerScale = confiner.m_BoundingShape2D.transform.localScale.x;
-                  if (confinerScale != CONFINER_DEFAULT_SCALE) {
-                     confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_SCALE, CONFINER_DEFAULT_SCALE, 1);
-                     D.debug(gameObject.name + ": CAMERA CONFINER Scaled into default: " + CONFINER_DEFAULT_SCALE);
+                  Vector2 confinerScale = confiner.m_BoundingShape2D.transform.localScale;
+                  if (confinerScale.y != CONFINER_DEFAULT_HEIGHT || confinerScale.x != CONFINER_DEFAULT_WIDTH) {
+                     confiner.m_BoundingShape2D.transform.localScale = new Vector3(CONFINER_DEFAULT_WIDTH, CONFINER_DEFAULT_HEIGHT, 1);
+                     D.debug(gameObject.name + ": CAMERA CONFINER Scaled into default. Height: " + CONFINER_DEFAULT_HEIGHT + ", Width: " + CONFINER_DEFAULT_WIDTH);
                   }
                }
             }

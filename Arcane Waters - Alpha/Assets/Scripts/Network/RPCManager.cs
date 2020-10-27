@@ -503,24 +503,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveCharacterInfo (NetworkConnection connection, UserObjects userObjects, Stats stats, Jobs jobs, string guildName, Perk[] perks) {
-      // Make sure the panel is showing
-      CharacterInfoPanel panel = (CharacterInfoPanel) PanelManager.self.get(Panel.Type.CharacterInfo);
-      if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(Panel.Type.CharacterInfo);
-         panel.loadCharacterCache();
-      }
-
-      // If this is the local player, update perk points in the perk manager
-      if (Global.player != null && userObjects.userInfo.userId == Global.player.userId) {
-         PerkManager.self.setPlayerPerkPoints(perks);
-      }
-
-      // Update the Inventory Panel with the items we received from the server
-      panel.receiveDataFromServer(userObjects, stats, jobs, guildName, perks);
-   }
-
-   [TargetRpc]
    public void Target_ReceiveGuildInfo (NetworkConnection connection, GuildInfo info) {
       // Make sure the panel is showing
       GuildPanel panel = (GuildPanel) PanelManager.self.get(Panel.Type.Guild);
@@ -773,7 +755,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveSingleMail (NetworkConnection connection, MailInfo mail, Item[] attachedItems) {
+   public void Target_ReceiveSingleMail (NetworkConnection connection, MailInfo mail, Item[] attachedItems, bool hasUnreadMail) {
       List<Item> attachedItemList = new List<Item>(attachedItems);
 
       // Make sure the panel is showing
@@ -784,7 +766,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass the data to the panel
-      panel.updatePanelWithSingleMail(mail, attachedItemList);
+      panel.updatePanelWithSingleMail(mail, attachedItemList, hasUnreadMail);
    }
 
    [TargetRpc]
@@ -968,30 +950,6 @@ public class RPCManager : NetworkBehaviour {
       
       // If we don't have the latest version of the map, download it
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations);
-   }
-
-   [Command]
-   public void Cmd_RequestCharacterInfoFromServer (int userId) {
-      if (userId == 0) {
-         userId = _player.userId;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         Stats stats = DB_Main.getStats(userId);
-         Jobs jobs = DB_Main.getJobXP(userId);
-         UserObjects userObjects = DB_Main.getUserObjects(userId);
-         UserInfo userInfo = userObjects.userInfo;
-         GuildInfo guildInfo = userInfo.guildId > 0 ? DB_Main.getGuildInfo(userInfo.guildId) : null;
-         Perk[] perks = DB_Main.getPerkPointsForUser(userId).ToArray();
-
-         string guildName = userInfo.guildId > 0 ? guildInfo.guildName : "";
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            _player.rpc.Target_ReceiveCharacterInfo(_player.connectionToClient, userObjects, stats, jobs, guildName, perks);
-         });
-      });
    }
 
    [Command]
@@ -2297,9 +2255,12 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.updateMailReadStatus(mailId, true);
          }
 
+         // Check if the user has unread mail
+         bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray());
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail);
          });
       });
    }
@@ -2331,9 +2292,12 @@ public class RPCManager : NetworkBehaviour {
          // Get the attached items
          List<Item> attachedItems = DB_Main.getItems(-mail.mailId, new Item.Category[] { Item.Category.None }, 1, MailManager.MAX_ATTACHED_ITEMS);
 
+         // Check if the user has unread mail
+         bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
+
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray());
+            Target_ReceiveSingleMail(_player.connectionToClient, mail, attachedItems.ToArray(), hasUnreadMail);
          });
       });
    }
@@ -2401,6 +2365,21 @@ public class RPCManager : NetworkBehaviour {
          // Back to the Unity thread to send the results back to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_ReceiveMailList(_player.connectionToClient, mailList.ToArray(), pageNumber, totalMailCount);
+         });
+      });
+   }
+
+   [Server]
+   public void checkForUnreadMails () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         bool hasUnreadMail = DB_Main.hasUnreadMail(_player.userId);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (hasUnreadMail) {
+               _player.Target_ReceiveUnreadMailNotification(_player.connectionToClient);
+            }
          });
       });
    }

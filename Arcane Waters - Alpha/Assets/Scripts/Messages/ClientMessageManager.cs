@@ -323,6 +323,8 @@ public class ClientMessageManager : MonoBehaviour {
       Global.initialFacingDirection = msg.initialFacingDirection;
       Global.lastAccountEmail = msg.accountEmail;
       Global.lastAccountCreationTime = System.DateTime.FromBinary(msg.accountCreationTime);
+      // We have already logged in successfully for the first time
+      Global.isFirstLogin = false;
 
       // Send the account name and password to the server
       /*StringMessage msg = new StringMessage(

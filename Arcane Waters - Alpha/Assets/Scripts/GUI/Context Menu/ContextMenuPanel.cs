@@ -14,6 +14,9 @@ public class ContextMenuPanel : MonoBehaviour
    // The prefab we use for creating buttons
    public ContextMenuButton buttonPrefab;
 
+   // The prefab we use for creating a row with the 'empty' label
+   public GameObject emptyRowPrefab;
+
    // The container for the buttons
    public GameObject buttonContainer;
 
@@ -43,6 +46,11 @@ public class ContextMenuPanel : MonoBehaviour
       } else {
          titleText.transform.parent.gameObject.SetActive(true);
          titleText.text = title;
+      }
+
+      // If there are no buttons, add a row with the 'empty' label
+      if (!_hasAtLeastOneButton) {
+         Instantiate(emptyRowPrefab, buttonContainer.transform, false);
       }
    }
 
@@ -74,11 +82,13 @@ public class ContextMenuPanel : MonoBehaviour
 
    public void clearButtons () {
       buttonContainer.DestroyChildren();
+      _hasAtLeastOneButton = false;
    }
 
    public void addButton (string text, UnityAction action) {
       ContextMenuButton button = Instantiate(buttonPrefab, buttonContainer.transform, false);
       button.initForAction(text, action);
+      _hasAtLeastOneButton = true;
    }
 
    public void showDefaultMenuForUser (int userId, string userName) {
@@ -90,31 +100,33 @@ public class ContextMenuPanel : MonoBehaviour
       NetEntity targetEntity = EntityManager.self.getEntity(userId);
 
       clearButtons();
-      addButton("Info", () => Global.player.rpc.Cmd_RequestCharacterInfoFromServer(userId));
       
       if (Global.player.userId != userId) {
          if (VoyageManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
             if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
-               PanelManager.self.contextMenuPanel.addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
+               addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
             }
          }
-         PanelManager.self.contextMenuPanel.addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
+         addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.guildId > 0 && targetEntity != null && targetEntity.guildId == 0) {
-            PanelManager.self.contextMenuPanel.addButton("Guild Invite", () => Global.player.rpc.Cmd_InviteToGuild(userId));
+            addButton("Guild Invite", () => Global.player.rpc.Cmd_InviteToGuild(userId));
          }
 
-         PanelManager.self.contextMenuPanel.addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
+         addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
       } else if (!VoyageManager.isInGroup(Global.player)) {
-         PanelManager.self.contextMenuPanel.addButton("Create Group", () => VoyageManager.self.createPrivateGroup());
+         addButton("Create Group", () => VoyageManager.self.createPrivateGroup());
       }
 
       show(userName);
    }
 
    #region Private Variables
+
+   // Gets set to true when the context menu has at least one button
+   private bool _hasAtLeastOneButton = false;
 
    #endregion
 }

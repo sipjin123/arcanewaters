@@ -207,7 +207,7 @@ public class CharacterStack : MonoBehaviour {
       }
 
       // We might need to flip the sprites based on our new direction
-      Vector2 scale = _originalScale;
+      Vector3 scale = _originalScale;
       if (_direction == Direction.West) {
          scale.x *= -1;
       }
@@ -260,7 +260,7 @@ public class CharacterStack : MonoBehaviour {
    protected bool _setDirectionOnStart = false;
 
    // The original scale of the stack
-   protected Vector2 _originalScale;
+   protected Vector3 _originalScale;
 
    #endregion
 }

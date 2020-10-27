@@ -58,6 +58,12 @@ public abstract class TemporaryController : MonoBehaviour
       endControl(puppet);
    }
 
+   protected void tryTriggerController (BodyEntity entity) {
+      if (!entity.hasScheduledController(this)) {
+         entity.requestControl(this);
+      }
+   }
+
    protected abstract void onForceFastForward (ControlData puppet);
    protected virtual void controlUpdate (ControlData puppet) { }
    protected virtual void startControl (ControlData puppet) { }

@@ -11,10 +11,6 @@ namespace MapCustomization
    public class MapCustomizationManager : ClientMonoBehaviour
    {
       #region Public Variables
-
-      // How many pixels are in one length unit of a tile
-      const int PIXELS_PER_TILE = 16;
-
       // When user creats new prefabs, from where to start their IDS
       const int NEW_PREFAB_ID_START = 100000000;
 
@@ -24,9 +20,6 @@ namespace MapCustomization
 
       // Singleton instance
       public static MapCustomizationManager self;
-
-      // Custom camera for rendering images at runtime
-      public Camera utilCam;
 
       // Current area that is being customized, null if customization is not active currently
       public static Area currentArea { get; private set; }
@@ -53,6 +46,7 @@ namespace MapCustomization
 
       private void OnEnable () {
          self = this;
+         _propIconCamera = GetComponentInChildren<PropIconCamera>();
       }
 
       public static bool isCustomizing => currentArea != null;
@@ -471,7 +465,7 @@ namespace MapCustomization
          }
 
          if (!found) {
-            ItemInstance item = new ItemInstance (itemDefinitionId, -1, 1);
+            ItemInstance item = new ItemInstance(itemDefinitionId, -1, 1);
             remainingProps.Add(item);
             CustomizationUI.updatePropCount(item);
          }
@@ -545,12 +539,6 @@ namespace MapCustomization
 
       private static void updatePlaceablePrefabData () {
          // Delete old entries
-         for (int i = 0; i < _placeablePrefabData.Count; i++) {
-            if (_placeablePrefabData[i].displaySprite != null) {
-               Destroy(_placeablePrefabData[i].displaySprite.texture);
-               Destroy(_placeablePrefabData[i].displaySprite);
-            }
-         }
          _placeablePrefabData.Clear();
 
          // Get the type of the current area
@@ -568,40 +556,10 @@ namespace MapCustomization
                _placeablePrefabData.Add(new PlaceablePrefabData {
                   serializationId = indexPref.Key,
                   prefab = cPref,
-                  displaySprite = createPrefabSprite(cPref)
+                  displaySprite = self._propIconCamera.getIcon(indexPref.Key)
                });
             }
          }
-      }
-
-      private static Sprite createPrefabSprite (CustomizablePrefab prefab) {
-         Vector2Int pixelSize = prefab.size * PIXELS_PER_TILE;
-         Vector3 renderSpot = new Vector3(0, -5000f, 0);
-
-         // Set camera and texture settings
-         RenderTexture renTex = new RenderTexture(pixelSize.x, pixelSize.y, 16);
-         self.utilCam.targetTexture = renTex;
-         self.utilCam.orthographicSize = prefab.size.y * 0.5f * 0.16f;
-         self.utilCam.transform.position = renderSpot - Vector3.forward * 10f;
-
-         // Instantiate the target prefab
-         CustomizablePrefab prefInstance = Instantiate(prefab, renderSpot, Quaternion.identity);
-
-         // Render the image and turn into texture
-         self.utilCam.Render();
-         RenderTexture.active = renTex;
-         Texture2D result = new Texture2D(renTex.width, renTex.height);
-         result.filterMode = FilterMode.Point;
-         result.ReadPixels(new Rect(0, 0, renTex.width, renTex.height), 0, 0);
-         result.Apply();
-         RenderTexture.active = null;
-
-         // Clean up
-         prefInstance.gameObject.SetActive(false);
-         Destroy(renTex);
-         Destroy(prefInstance.gameObject);
-
-         return Sprite.Create(result, new Rect(Vector2.zero, pixelSize), Vector2.one * 0.5f);
       }
 
       #region Private Variables
@@ -626,6 +584,9 @@ namespace MapCustomization
 
       // State that was approved by a server as valid
       private static Dictionary<int, PrefabState> _serverApprovedState;
+
+      // Custom camera for rendering images at runtime
+      private PropIconCamera _propIconCamera;
 
       #endregion
    }

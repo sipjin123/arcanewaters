@@ -27,6 +27,9 @@ public class CreateUserMessage : MessageBase {
    // Client's machine identifier
    public string machineIdentifier;
 
+   // False if the player has already logged in successfully.
+   public bool isFirstLogin;
+
    #endregion
 
    public CreateUserMessage () { }
@@ -35,7 +38,7 @@ public class CreateUserMessage : MessageBase {
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
@@ -43,5 +46,6 @@ public class CreateUserMessage : MessageBase {
       this.characterSpot = userInfo.charSpot;
       this.perks = perks;
       this.machineIdentifier = machineIdentifier;
+      this.isFirstLogin = isFirstLogin;
    }
 }

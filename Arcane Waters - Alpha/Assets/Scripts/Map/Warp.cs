@@ -186,7 +186,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    }
 
    private bool canPlayerUseWarp (NetEntity player) {
-      if (string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
+      if (player.isAboutToWarpOnClient || player.isAboutToWarpOnServer || string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
          return false;
       }
 

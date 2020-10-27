@@ -92,9 +92,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
          return;
       }
 
-      if (!player.hasScheduledController(this)) {
-         player.requestControl(this);
-      }
+      tryTriggerController(player);
    }
 
    private Vector2 calculateEndPos (Rigidbody2D puppetBody, Collider2D puppetCollider) {

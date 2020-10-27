@@ -116,6 +116,12 @@ namespace MapCreationTool
          }
       }
 
+      public static void ensureLoaded () {
+         if (!loaded) {
+            load();
+         }
+      }
+
       public static void load () {
          var asm = Resources.Load<AssetSerializationMaps>("AssetSerializationMaps");
          if (asm == null)

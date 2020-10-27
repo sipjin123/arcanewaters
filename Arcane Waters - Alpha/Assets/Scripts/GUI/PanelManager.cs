@@ -85,9 +85,7 @@ public class PanelManager : MonoBehaviour {
       }
 
       // Bottom button panels
-      if (Input.GetKeyDown(KeyCode.C)) {
-         BottomBar.self.toggleCharacterInfoPanel();
-      } else if (Input.GetKeyDown(KeyCode.I)) {
+      if (Input.GetKeyDown(KeyCode.I)) {
          BottomBar.self.toggleInventoryPanel();
       } else if (Input.GetKeyDown(KeyCode.G)) {
          BottomBar.self.toggleGuildPanel();

@@ -182,7 +182,7 @@ namespace MapCreationTool
          Vector3 confinerScale = map.area.cameraBounds.transform.localScale;
          Vector3 confinerPosition = map.area.cameraBounds.transform.localPosition;
          map.area.cameraBounds.transform.localScale = new Vector3(confinerScale.x, confinerScale.y, confinerScale.z);
-         map.area.cameraBounds.transform.localPosition = new Vector3(confinerPosition.x, confinerPosition.y - .2f, confinerPosition.z);
+         map.area.cameraBounds.transform.localPosition = new Vector3(confinerPosition.x, confinerPosition.y - .1f, confinerPosition.z);
       }
 
       public static Bounds calculateBounds (ExportedProject001 project) {
@@ -320,13 +320,6 @@ namespace MapCreationTool
          }
 
          area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, secretsData, seaMonstersData);
-      }
-
-      public static void ensureSerializationMapsLoaded () {
-         if (AssetSerializationMaps.loaded)
-            return;
-
-         AssetSerializationMaps.load();
       }
    }
 }

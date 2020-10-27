@@ -1048,6 +1048,14 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static List<int> getUserIdsHavingUnreadMail (DateTime startDate) {
+      return null;
+   }
+
+   public static bool hasUnreadMail (int userId) {
+      return false;
+   }
+
    public static int getMinimumClientGameVersionForWindows () {
       return 0;
    }

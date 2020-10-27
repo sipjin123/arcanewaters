@@ -15,13 +15,6 @@ public class Ledge : TemporaryController, IMapEditorDataReceiver
 
    #endregion
 
-   private void Start () {
-      // The server doesn't need to both with this
-      if (Util.isBatch()) {
-         this.gameObject.SetActive(false);
-      }
-   }
-
    private void OnTriggerStay2D (Collider2D collision) {
       BodyEntity player = collision.transform.GetComponent<BodyEntity>();
 
@@ -39,9 +32,7 @@ public class Ledge : TemporaryController, IMapEditorDataReceiver
          return;
       }
 
-      if (!player.hasScheduledController(this)) {
-         player.requestControl(this);
-      }
+      tryTriggerController(player);
    }
 
    private Vector2 calculateEndPos (Rigidbody2D puppetBody, Collider2D puppetCollider) {

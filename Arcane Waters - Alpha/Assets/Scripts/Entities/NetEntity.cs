@@ -1060,6 +1060,11 @@ public class NetEntity : NetworkBehaviour
       messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = message;
    }
 
+   [TargetRpc]
+   public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
+      BottomBar.self.setUnreadMailNotificationStatus(true);
+   }
+
    [Command]
    public void Cmd_PlantCrop (Crop.Type cropType, int cropNumber, string areaKey) {
       // We have to holding the seed bag
@@ -1274,6 +1279,11 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+      if (this.isAboutToWarpOnServer) {
+         D.log($"The player {netId} is already being warped.");
+         return;
+      }
+
       GameObject entityObject = this.gameObject;
 
       // Make a note that we're about to proceed with a warp
@@ -1286,7 +1296,6 @@ public class NetEntity : NetworkBehaviour
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setNewLocalPosition(this.userId, newLocalPosition, newFacingDirection, newArea);
 
-         // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Remove the player from the current instance
             InstanceManager.self.removeEntityFromInstance(this);

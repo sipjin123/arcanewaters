@@ -2092,23 +2092,53 @@ public class DB_Main : DB_MainStub
       return result;
    }
 
+
    public static new string getMapInfo (string areaKey) {
       MapInfo mapInfo = null;
 
-      string cmdText = "SELECT * FROM maps_v2 JOIN map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version) AND maps_v2.name=@mapName";
+      // fetch the map if and version
+      int mapVersion = -1;
+      int mapId = -1;
+      string cmdText = "SELECT id,publishedVersion FROM maps_v2 WHERE (name=@mapName)";
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             cmd.Parameters.AddWithValue("@mapName", areaKey);
             conn.Open();
             cmd.Prepare();
-
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
-                  string mapName = dataReader.GetString("name");
+                  mapId = dataReader.GetInt32("id");
+                  mapVersion = dataReader.GetInt32("publishedVersion");
+                  //string mapName = dataReader.GetString("name");
+                  //string gameData = dataReader.GetString("gameData");
+                  //int version = dataReader.GetInt32("publishedVersion");
+                  //mapInfo = new MapInfo(mapName, gameData, version);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.debug("Failed to get Map Id and Version for: " + areaKey);
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      if (mapId < 0 || mapVersion < 0) {
+         D.error("Failed to get Map Id and Version for: " + areaKey);
+      }
+
+      string mapName = areaKey;
+      cmdText = "SELECT gameData FROM map_versions_v2 WHERE (mapid = @mapid AND version = @version) LIMIT 1";
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+            cmd.Parameters.AddWithValue("@mapid", mapId);
+            cmd.Parameters.AddWithValue("@version", mapVersion);
+            conn.Open();
+            cmd.Prepare();
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
                   string gameData = dataReader.GetString("gameData");
-                  int version = dataReader.GetInt32("publishedVersion");
-                  mapInfo = new MapInfo(mapName, gameData, version);
+                  mapInfo = new MapInfo(mapName, gameData, mapVersion);
                }
             }
          }
@@ -7215,6 +7245,7 @@ public class DB_Main : DB_MainStub
    }
 
    protected static new bool setMetric (string machineId, string processName, string PID, string keySuffix, string value) {
+      bool result = false;
       try {
 
          if (string.IsNullOrEmpty(processName)) return false;
@@ -7226,17 +7257,20 @@ public class DB_Main : DB_MainStub
             key = $"{machineId}/{key}";
          }
          key = key.Replace(" ", "_");
-         using (MySqlConnection conn = getConnection()) {
+
+         using (MySqlConnection conn = getConnectionToDevGlobal()) {
             // Open the connection.
             conn.Open();
             // A key is tracked if it is present in the database.
 
             bool IsKeyAlreadyTracked = false;
-            using (MySqlCommand cmd = new MySqlCommand($"SELECT * FROM `metrics` WHERE `key`=@key", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `metrics` WHERE `key`=@key", conn)) {
                //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                using (var reader = cmd.ExecuteReader()) {
-                  IsKeyAlreadyTracked = reader.Read();
+                  if (reader.Read()) {
+                     IsKeyAlreadyTracked = reader.GetInt32(0) > 0;
+                  }
                }
             }
 
@@ -7251,14 +7285,14 @@ public class DB_Main : DB_MainStub
                //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                cmd.Parameters.AddWithValue("@value", value);
-               cmd.ExecuteNonQuery();
+               result = cmd.ExecuteNonQuery() > 0;
             }
          }
-         return true;
       } catch (Exception ex) {
          D.error(ex.Message);
          return false;
       }
+      return result;
    }
 
    public static new bool setMetricPlayersCount (string machineId, string processName, string PID, int playerCount) {
@@ -7423,6 +7457,56 @@ public class DB_Main : DB_MainStub
       }
 
       return mailCount;
+   }
+
+   public static new List<int> getUserIdsHavingUnreadMail (DateTime startDate) {
+      List<int> userIdsList = new List<int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT recipientUsrId FROM mails WHERE receptionDate >= @startDate AND isRead < 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userIdsList.Add(dataReader.GetInt32("recipientUsrId"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userIdsList;
+   }
+
+   public static new bool hasUnreadMail (int userId) {
+      int mailCount = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT count(*) AS mailCount FROM mails WHERE recipientUsrId=@recipientUsrId AND isRead < 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@recipientUsrId", userId);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  mailCount = dataReader.GetInt32("mailCount");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return mailCount > 0;
    }
 
    #endregion

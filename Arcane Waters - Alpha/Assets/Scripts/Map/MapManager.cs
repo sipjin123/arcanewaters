@@ -127,7 +127,7 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
-      MapImporter.ensureSerializationMapsLoaded();
+      AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
 

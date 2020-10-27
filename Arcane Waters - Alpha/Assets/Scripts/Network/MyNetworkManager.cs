@@ -195,6 +195,9 @@ public class MyNetworkManager : NetworkManager
       // Start the auction management
       AuctionManager.self.startAuctionManagement();
 
+      // Start the mail management
+      MailManager.self.startMailManagement();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -386,6 +389,7 @@ public class MyNetworkManager : NetworkManager
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
             player.rpc.sendItemShortcutList();
+            player.rpc.checkForUnreadMails();
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
