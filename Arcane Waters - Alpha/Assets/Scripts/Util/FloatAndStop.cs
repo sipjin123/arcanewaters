@@ -20,9 +20,15 @@ public class FloatAndStop : MonoBehaviour {
    // How fast this should float up
    public static float RISE_SPEED = .005f;
 
+   // Alters the transform using an animator instead of this script
+   public bool animateTransform;
+
    #endregion
 
    void Start () {
+      // Make sure we show up in front
+      Util.setZ(this.transform, -.32f);
+
       _startTime = Time.time;
       _startPos = this.transform.position;
 
@@ -31,9 +37,6 @@ public class FloatAndStop : MonoBehaviour {
 
       // Our Canvas Group
       _canvasGroup = GetComponentInChildren<CanvasGroup>();
-
-      // Make sure we show up in front
-      Util.setZ(this.transform, -.32f);
 
       // Start floating upwards
       InvokeRepeating("floatUp", 0f, .02f);
@@ -46,10 +49,12 @@ public class FloatAndStop : MonoBehaviour {
       Vector3 currentPos = this.transform.position;
       float timeAlive = Time.time - _startTime;
 
-      // Slowly move upwards
-      if (currentPos.y - _startPos.y < floatHeight) {
-         currentPos.y += RISE_SPEED;
-         this.transform.position = currentPos;
+      if (!animateTransform) {
+         // Slowly move upwards
+         if (currentPos.y - _startPos.y < floatHeight) {
+            currentPos.y += RISE_SPEED;
+            this.transform.position = currentPos;
+         }
       }
 
       // Also fade in

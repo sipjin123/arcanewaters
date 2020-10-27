@@ -425,6 +425,7 @@ MonoBehaviour:
   lifetime: 3
   floatHeight: 0.32
   nameText: {fileID: 7888012016219845422}
+  animateTransform: 1
 --- !u!95 &300669396496485651
 Animator:
   serializedVersion: 3

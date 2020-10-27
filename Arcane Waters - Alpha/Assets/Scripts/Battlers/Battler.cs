@@ -278,7 +278,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
          this.player = enemyIdent.GetComponent<NetEntity>();
       } else {
-         D.debug("TrackLog:: NetworkIdentity does not contain NetID: " + playerNetId + " Type:" + enemyType);
          StartCoroutine(CO_AssignPlayerNetId());
          return;
       }
@@ -309,7 +308,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Keep track of Battlers when they're created
       BattleManager.self.storeBattler(this);
-      D.debug("TrackLog:: Battle Manager has stored battler: NetID:{" + netId + "} Type:{" + enemyType + "} UserID:{" + userId + "}");
 
       // Look up the Battle Board that contains this Battler
       BattleBoard battleBoard = BattleManager.self.battleBoard;
@@ -325,7 +323,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          BattleUIManager.self.usernameText.text = Global.player.entityName;
          BattleUIManager.self.prepareBattleUI();
-         D.debug("TrackLog:: Battler Player {" + userId + "} is initialized: " + enemyType);
       } else {
          // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
          if (enemyType == Enemy.Type.PlayerBattler) {
@@ -353,9 +350,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                BattleUIManager.self.playerStanceFrame.SetActive(false);
                BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(false);
             });
-         } else {
-            D.debug("TrackLog:: Battler Enemy {" + userId + "} is initialized: " + enemyType);
-         }
+         } 
       }
 
       // Start off with the displayed values matching the sync vars
@@ -388,7 +383,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[playerNetId];
       this.player = enemyIdent.GetComponent<NetEntity>();
-      D.debug("TrackLog:: Player Assign Net ID: " + playerNetId);
       initializeBattler();
    }
 

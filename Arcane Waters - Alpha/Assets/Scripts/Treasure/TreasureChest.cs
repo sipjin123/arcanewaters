@@ -296,6 +296,9 @@ public class TreasureChest : NetworkBehaviour {
             ArmorStatData armorStatData = EquipmentXMLManager.self.getArmorDataBySqlId(item.itemTypeId);
             image.sprite = ImageManager.getSprite(armorStatData.equipmentIconPath);
             itemName = armorStatData.equipmentName;
+         } else if (item.category == Item.Category.CraftingIngredients) {
+            string iconPath = CraftingIngredients.getBorderlessIconPath((CraftingIngredients.Type) item.itemTypeId);
+            image.sprite = ImageManager.getSprite(iconPath);
          } else {
             image.sprite = ImageManager.getSprite(item.getIconPath());
          }
