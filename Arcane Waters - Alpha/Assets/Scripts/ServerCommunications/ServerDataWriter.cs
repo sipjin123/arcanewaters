@@ -72,22 +72,26 @@ namespace ServerCommunicationHandlerv2 {
 
       public List<VoyageInviteData> fetchVoyageInvitesFromText () {
          // Read file from text file
-         StreamReader reader = new StreamReader(invitePath + voyageInviteText);
-         string rawTextData = reader.ReadToEnd();
-         reader.Close();
+         try {
+            StreamReader reader = new StreamReader(invitePath + voyageInviteText);
+            string rawTextData = reader.ReadToEnd();
+            reader.Close();
 
-         // Return empty list if the text file is empty
-         if (rawTextData.Length < 1) {
+            // Return empty list if the text file is empty
+            if (rawTextData.Length < 1) {
+               return new List<VoyageInviteData>();
+            }
+
+            // Unserialize text content
+            string[] voyageString = new string[1] { rawTextData };
+            List<VoyageInviteData> voyageSerializer = Util.unserialize<VoyageInviteData>(voyageString);
+
+            // Fetch only the invites that is relevant to our port
+            List<VoyageInviteData> newInvites = voyageSerializer.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.getPort());
+            return newInvites;
+         } catch {
             return new List<VoyageInviteData>();
          }
-
-         // Unserialize text content
-         string[] voyageString = new string[1] { rawTextData };
-         List<VoyageInviteData> voyageSerializer = Util.unserialize<VoyageInviteData>(voyageString);
-
-         // Fetch only the invites that is relevant to our port
-         List<VoyageInviteData> newInvites = voyageSerializer.FindAll(_ => _.serverPort == ServerCommunicationHandler.self.getPort());
-         return newInvites;
       }
 
       public void clearExistingData (ServerData serverData) {
@@ -108,9 +112,17 @@ namespace ServerCommunicationHandlerv2 {
          if (!File.Exists(path + fileName)) {
             // Create file if non existent
             File.Create(path + fileName).Close();
-            File.WriteAllText(path + fileName, content);
+            try {
+               File.WriteAllText(path + fileName, content);
+            } catch {
+               D.debug("Text file: " + fileName + " is being used, delay write");
+            }
          } else {
-            File.WriteAllText(path + fileName, content);
+            try {
+               File.WriteAllText(path + fileName, content);
+            } catch {
+               D.debug("Text file: " + fileName + " is being used, delay write");
+            }
          }
       }
 
@@ -127,14 +139,18 @@ namespace ServerCommunicationHandlerv2 {
          List<ServerData> copiedExistingServerList = copyServerContent(existingServerList);
 
          foreach (ServerData existingServerData in copiedExistingServerList) {
-            StreamReader reader = new StreamReader(path + "/" + existingServerData.port + ".txt");
-            string rawTextData = reader.ReadToEnd();
-            reader.Close();
+            try {
+               StreamReader reader = new StreamReader(path + "/" + existingServerData.port + ".txt");
+               string rawTextData = reader.ReadToEnd();
+               reader.Close();
 
-            ServerData newServerData = JsonUtility.FromJson<ServerData>(rawTextData);
-            newServerData.latestUpdateTime = existingServerData.latestUpdateTime;
+               ServerData newServerData = JsonUtility.FromJson<ServerData>(rawTextData);
+               newServerData.latestUpdateTime = existingServerData.latestUpdateTime;
 
-            newServerContentList.Add(newServerData);
+               newServerContentList.Add(newServerData);
+            } catch {
+               D.debug("Text file: " + existingServerData.port + ".txt is being used, delay read");
+            }
          }
 
          return newServerContentList;
