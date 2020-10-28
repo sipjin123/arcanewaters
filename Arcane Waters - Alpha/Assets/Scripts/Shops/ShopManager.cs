@@ -149,6 +149,27 @@ public class ShopManager : MonoBehaviour {
                   // Add it to the list
                   _itemsByShopName[shopData.shopName].Add(item.id);
                }
+            } else if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.CraftingIngredient) {
+               Rarity.Type rarity = Rarity.getRandom();
+               int randomizedPrice = rawItemData.shopItemCostMax;
+
+               CraftingIngredients item = new CraftingIngredients {
+                  category = Item.Category.CraftingIngredients,
+                  itemTypeId = rawItemData.shopItemTypeIndex,
+                  count = rawItemData.shopItemCountMin,
+                  id = _itemId++,
+                  paletteNames = "",
+                  data = ""
+               };
+
+               string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+               item.data = data;
+
+               // Store the item
+               _items[item.id] = item;
+
+               // Add it to the list
+               _itemsByShopName[shopData.shopName].Add(item.id);
             }
          }
       }

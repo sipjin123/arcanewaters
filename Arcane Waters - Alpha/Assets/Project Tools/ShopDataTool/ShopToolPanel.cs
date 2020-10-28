@@ -31,7 +31,8 @@ public class ShopToolPanel : MonoBehaviour
       Weapon = 1,
       Armor = 2,
       Crop = 3,
-      Ship = 4
+      Ship = 4,
+      CraftingIngredient = 5
    }
 
    // Event for crop selection update
@@ -76,6 +77,9 @@ public class ShopToolPanel : MonoBehaviour
       });
       _addCropButton.onClick.AddListener(() => {
          createTemplate(ShopCategory.Crop);
+      });
+      _addIngredientButton.onClick.AddListener(() => {
+         createTemplate(ShopCategory.CraftingIngredient);
       });
 
       _selectShopIcon.onClick.AddListener(() => {
@@ -132,6 +136,20 @@ public class ShopToolPanel : MonoBehaviour
                updateCropTypeEvent.RemoveAllListeners();
                updateCropTypeEvent.AddListener(() => {
                   shopItemTemp.itemIDType.text = ((int) Enum.Parse(typeof(Crop.Type), shopItemTemp.itemName.text)).ToString();
+               });
+            });
+            break;
+         case ShopCategory.CraftingIngredient:
+            shopItemTemp.itemSelection.onClick.AddListener(() => {
+               genericPopup.callItemTypeSelectionPopup(Item.Category.CraftingIngredients, shopItemTemp.itemName, shopItemTemp.itemIDType, shopItemTemp.itemImage, updateCropTypeEvent);//(GenericSelectionPopup.selectionType.ItemType, shopItemTemp.itemName, updateCropTypeEvent);
+
+               updateCropTypeEvent.RemoveAllListeners();
+               updateCropTypeEvent.AddListener(() => {
+                  shopItemTemp.itemIDType.text = ((int) Enum.Parse(typeof(CraftingIngredients.Type), shopItemTemp.itemName.text)).ToString();
+                  itemData.itemIconPath = CraftingIngredients.getIconPath((CraftingIngredients.Type) int.Parse(shopItemTemp.itemIDType.text));
+                  shopItemTemp.iconPath.text = itemData.itemIconPath;
+                  shopItemTemp.itemIDCategory.text = ((int) Item.Category.CraftingIngredients).ToString();
+                  shopItemTemp.itemImage.sprite = ImageManager.getSprite(itemData.itemIconPath);
                });
             });
             break;
@@ -215,7 +233,7 @@ public class ShopToolPanel : MonoBehaviour
 
    // Add weapon templates
    [SerializeField]
-   private Button _addWeaponButton, _addArmorButton, _addShipButton, _addCropButton;
+   private Button _addWeaponButton, _addArmorButton, _addShipButton, _addCropButton, _addIngredientButton;
 
    // Parent Transform
    [SerializeField]

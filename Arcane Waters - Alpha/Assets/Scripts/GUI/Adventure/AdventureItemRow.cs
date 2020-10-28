@@ -42,10 +42,19 @@ public class AdventureItemRow : MonoBehaviour {
    public void setRowForItem (Item item) {
       this.item = item;
 
-      string path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath();
-      icon.sprite = ImageManager.getSprite(path);
-      iconShadow.sprite = icon.sprite;
-      itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
+      string path = ""; 
+      if (item.category == Item.Category.CraftingIngredients) {
+         CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+         path = CraftingIngredients.getIconPath(ingredientType);
+         icon.sprite = ImageManager.getSprite(path);
+         iconShadow.sprite = icon.sprite;
+         itemName.text = CraftingIngredients.getName(ingredientType);
+      } else {
+         path = Item.isUsingEquipmentXML(item.category) ? item.iconPath : item.getIconPath(); 
+         icon.sprite = ImageManager.getSprite(path);
+         iconShadow.sprite = icon.sprite;
+         itemName.text = Item.isUsingEquipmentXML(item.category) ? item.itemName : item.getName();
+      }
       goldAmount.text = item.getSellPrice() + "";
 
       // Rarity stars

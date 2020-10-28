@@ -2409,7 +2409,11 @@ public class RPCManager : NetworkBehaviour {
             singleShopItem.count = 1;
 
             // Create a new instance of the item
-            newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
+            if (shopItem.category == Item.Category.CraftingIngredients) {
+               newItem = DB_Main.createItemOrUpdateItemCount(_player.userId, singleShopItem);
+            } else {
+               newItem = DB_Main.createNewItem(_player.userId, singleShopItem);
+            }
          }
 
          // Back to Unity thread
@@ -2438,8 +2442,15 @@ public class RPCManager : NetworkBehaviour {
                AchievementManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
             }
 
+            string itemName = "";
+            if (shopItem.category == Item.Category.CraftingIngredients) {
+               itemName = CraftingIngredients.getName((CraftingIngredients.Type) shopItem.itemTypeId);
+            } else {
+               itemName = shopItem.getName();
+            }
+
             // Let the client know that it was successful
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + shopItem.getName() + "!");
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.StoreItemBought, _player, "You have purchased a " + itemName + "!");
 
             // Make sure their gold display gets updated
             getItemsForArea(shopName);
@@ -4286,7 +4297,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
-      foreach (Item item in sortedList) {
+      foreach (Item item in sortedList) { 
          switch (item.category) {
             case Item.Category.Weapon:
                WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
@@ -4305,6 +4316,10 @@ public class RPCManager : NetworkBehaviour {
                if (hatData != null) {
                   item.setBasicInfo(hatData.equipmentName, hatData.equipmentDescription, hatData.equipmentIconPath, item.paletteNames);
                }
+               break;
+            case Item.Category.CraftingIngredients:
+               CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
+               item.setBasicInfo(CraftingIngredients.getName(ingredientType), "", CraftingIngredients.getIconPath(ingredientType));
                break;
          }
       }

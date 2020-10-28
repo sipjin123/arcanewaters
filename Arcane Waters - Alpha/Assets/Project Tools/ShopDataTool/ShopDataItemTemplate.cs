@@ -32,7 +32,7 @@ public class ShopDataItemTemplate : MonoBehaviour {
    public Item itemData;
 
    // Icon Images
-   public GameObject weaponIcon, armorIcon, shipIcon, cropIcon;
+   public GameObject weaponIcon, armorIcon, shipIcon, cropIcon, ingredientIcon;
 
    // Current shop category of the template
    public ShopToolPanel.ShopCategory currentCategory;
@@ -55,6 +55,7 @@ public class ShopDataItemTemplate : MonoBehaviour {
       armorIcon.SetActive(false);
       shipIcon.SetActive(false);
       cropIcon.SetActive(false);
+      ingredientIcon.SetActive(false);
 
       switch (category) {
          case ShopToolPanel.ShopCategory.Weapon:
@@ -68,6 +69,9 @@ public class ShopDataItemTemplate : MonoBehaviour {
             break;
          case ShopToolPanel.ShopCategory.Crop:
             cropIcon.SetActive(true);
+            break;
+         case ShopToolPanel.ShopCategory.CraftingIngredient:
+            ingredientIcon.SetActive(true);
             break;
       }
 

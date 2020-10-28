@@ -98,6 +98,9 @@ public class AdventureShopScreen : Panel {
                itemName = UNKNOWN_ITEM;
             }
             break;
+         case Item.Category.CraftingIngredients:
+            itemName = CraftingIngredients.getName((CraftingIngredients.Type) item.itemTypeId);
+            break;
       }
 
       // Associate a new function with the confirmation button

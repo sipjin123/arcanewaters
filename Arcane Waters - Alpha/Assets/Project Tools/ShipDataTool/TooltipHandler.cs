@@ -24,18 +24,26 @@ public class TooltipHandler : MonoBehaviour {
    }
 
    public void callToolTip (string msg, Vector2 coordinates) {
-      toolTipTMPText.transform.gameObject.SetActive(true);
-      backgroundRect.transform.gameObject.SetActive(true);
-      toolTipTMPText.SetText(msg);
-      toolTipTMPText.ForceMeshUpdate();
+      if (toolTipTMPText) {
+         toolTipTMPText.transform.gameObject.SetActive(true);
+         toolTipTMPText.SetText(msg);
+         toolTipTMPText.ForceMeshUpdate();
+      }
+      if (backgroundRect) {
+         backgroundRect.transform.gameObject.SetActive(true);
 
-      // Set position of tooltip
-      backgroundRect.transform.position = new Vector2(coordinates.x, coordinates.y + offSetY);
+         // Set position of tooltip
+         backgroundRect.transform.position = new Vector2(coordinates.x, coordinates.y + offSetY);
+      }
    }
 
    public void cancelToolTip() {
-      toolTipTMPText.transform.gameObject.SetActive(false);
-      backgroundRect.transform.gameObject.SetActive(false);
+      if (toolTipTMPText) {
+         toolTipTMPText.transform.gameObject.SetActive(false);
+      }
+      if (backgroundRect) {
+         backgroundRect.transform.gameObject.SetActive(false);
+      }
    }
 
    #region Private Variables
