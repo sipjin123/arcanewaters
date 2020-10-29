@@ -162,7 +162,7 @@ public class ShopManager : MonoBehaviour {
                   data = ""
                };
 
-               string data = string.Format("rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
+               string data = string.Format("armor={0}, rarity={1}, price={2}", 0, (int) rarity, randomizedPrice);
                item.data = data;
 
                // Store the item

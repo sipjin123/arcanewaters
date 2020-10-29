@@ -42,43 +42,38 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
       puppet.entity.fallDirection = (int) Direction.North;
       puppet.entity.facing = Direction.North;
 
-      // Disable the collider for the entity
-      if (puppet.entity.getMainCollider() != null) {
-         puppet.entity.getMainCollider().isTrigger = true;
-      }
-
       // Calculate global target spot
       puppet.endPos = calculateEndPos(puppet.entity.getRigidbody(), puppet.entity.getMainCollider());
    }
 
    protected override void controlUpdate (ControlData puppet) {
-      // Move the player according to animation curve
-      float t = movementCurve.Evaluate(puppet.time);
-      puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(puppet.startPos, puppet.endPos, t));
+      if (puppet.entity.isLocalPlayer) {
+         // Move the player according to animation curve
+         float t = movementCurve.Evaluate(puppet.time);
+         puppet.entity.getRigidbody().MovePosition(Vector3.LerpUnclamped(puppet.startPos, puppet.endPos, t));
+      }
 
       // End control if time has run out
       if (puppet.time >= movementCurve.keys.Last().time) {
-         puppet.entity.fallDirection = 0;
-         puppet.entity.getRigidbody().MovePosition(puppet.endPos);
-         if (puppet.entity.getMainCollider() != null) {
-            puppet.entity.getMainCollider().isTrigger = false;
+         if (puppet.entity.isLocalPlayer) {
+            puppet.entity.getRigidbody().MovePosition(puppet.endPos);
          }
+         puppet.entity.fallDirection = 0;
          endControl(puppet);
       }
    }
 
    protected override void onForceFastForward (ControlData puppet) {
-      puppet.entity.fallDirection = 0;
-      puppet.entity.transform.position = puppet.endPos;
-      if (puppet.entity.getMainCollider() != null) {
-         puppet.entity.getMainCollider().isTrigger = false;
+      if (puppet.entity.isLocalPlayer) {
+         puppet.entity.transform.position = puppet.endPos;
       }
+      puppet.entity.fallDirection = 0;
    }
 
    private void OnTriggerStay2D (Collider2D collision) {
       BodyEntity player = collision.transform.GetComponent<BodyEntity>();
 
-      if (player == null) {
+      if (player == null || !player.isLocalPlayer) {
          return;
       }
 

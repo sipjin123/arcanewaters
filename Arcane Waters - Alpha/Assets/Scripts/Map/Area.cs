@@ -169,6 +169,9 @@ public class Area : MonoBehaviour
       // Store a reference to all the warps in this area
       _warps = new List<Warp>(GetComponentsInChildren<Warp>());
 
+      // Store all references to temporary controllers
+      _tempControllers = new List<TemporaryController>(GetComponentsInChildren<TemporaryController>());
+
       // If the area is interior, find the town where it is located
       if (isInterior) {
          foreach (Warp warp in _warps) {
@@ -232,6 +235,11 @@ public class Area : MonoBehaviour
 
    public List<Warp> getWarps () {
       return _warps;
+   }
+
+   public TemporaryController getTemporaryControllerAtPosition (Vector2 localPosition) {
+      return _tempControllers
+         .FirstOrDefault(c => ((Vector2) c.transform.localPosition - localPosition).sqrMagnitude < 0.01f);
    }
 
    public static bool isHouse (string areaKey) {
@@ -408,6 +416,9 @@ public class Area : MonoBehaviour
 
    // The list of warps in this area
    protected List<Warp> _warps = new List<Warp>();
+
+   // The list of temporary controllers in this rea
+   protected List<TemporaryController> _tempControllers = new List<TemporaryController>();
 
    #endregion
 }

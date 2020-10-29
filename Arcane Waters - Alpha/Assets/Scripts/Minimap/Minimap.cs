@@ -37,15 +37,13 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for marking sea monster entity
    public MM_LandMonsterIcon landMonsterIconPrefab;
 
-   // The prefab we use for showing player ship entity (enemy, friendly, neutral)
-   public MM_ShipEntityIcon enemyShipIconPrefab;
-   public MM_ShipEntityIcon friendlyShipIconPrefab;
-   public MM_ShipEntityIcon neutralShipIconPrefab;
+   // The prefab we use for showing ship entity icon
+   public MM_ShipEntityIcon shipIconPrefab;
 
-   // The prefab we use for showing bot ship entity (enemy, friendly, neutral)
-   public MM_ShipEntityIcon enemyBotShipIconPrefab;
-   public MM_ShipEntityIcon friendlyBotShipIconPrefab;
-   public MM_ShipEntityIcon neutralBotShipIconPrefab;
+   // The sprites we use for identifying ship entity icons (enemy, friendly, neutral)
+   public Sprite enemyShipSprite;
+   public Sprite friendlyShipSprite;
+   public Sprite neutralShipSprite;
 
    // The icon to use for NPCs
    public Sprite npcIcon;
@@ -266,6 +264,7 @@ public class Minimap : ClientMonoBehaviour {
       // Adjust based on minimap translation (map is focused on player icon)
       relativePosition += mapPos;
       relativePosition -= (minimapSize - minimapMaskSize) * 0.5f;
+      relativePosition -= minimapMaskSize * 0.5f;
 
       return relativePosition;
    }
@@ -362,37 +361,48 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       MM_ShipEntityIcon[] shipIcons = this.playerShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
-      PlayerShipEntity[] shipsArray = GameObject.FindObjectsOfType<PlayerShipEntity>();
+      PlayerShipEntity[] shipsArray = area.GetComponentsInChildren<PlayerShipEntity>();
       foreach (PlayerShipEntity ship in shipsArray) {
-         bool stopLoop = false;
+         bool isCreated = false;
+         MM_ShipEntityIcon icon = null;
+
          if (ship == Global.player) {
             continue;
          }
          foreach (MM_ShipEntityIcon iconShip in shipIcons) {
             if (iconShip.shipEntity == ship) {
-               stopLoop = true;
+               isCreated = true;
+               icon = iconShip;
                break;
             }
          }
-         if (stopLoop) {
+         if (isCreated) {
             continue;
          }
 
-         MM_ShipEntityIcon icon = null;
+         if (!isCreated) {
+            if (ship.isDead()) {
+               continue;
+            }
+            // Spawn ship prefab
+            icon = Instantiate(shipIconPrefab, this.botShipIconContainer.transform);
+            icon.shipEntity = ship;
+            icon.currentArea = area;
+            icon.setCorrectPosition();
+         }
+
          // Enemy ship
          if (ship.isEnemyOf(Global.player)) {
-            icon = Instantiate(enemyShipIconPrefab, this.playerShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = enemyShipSprite;
          }
          // Friendly ship
          else if (ship.isAllyOf(Global.player)) {
-            icon = Instantiate(friendlyShipIconPrefab, this.playerShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = friendlyShipSprite;
          }
          // Neutral ship
          else {
-            icon = Instantiate(neutralShipIconPrefab, this.playerShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = neutralShipSprite;
          }
-         icon.shipEntity = ship;
-         icon.currentArea = area;
       }
    }
 
@@ -407,34 +417,42 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       MM_ShipEntityIcon[] shipIcons = this.botShipIconContainer.transform.GetComponentsInChildren<MM_ShipEntityIcon>();
-      BotShipEntity[] shipsArray = GameObject.FindObjectsOfType<BotShipEntity>();
+      BotShipEntity[] shipsArray = area.GetComponentsInChildren<BotShipEntity>();
       foreach (BotShipEntity ship in shipsArray) {
-         bool stopLoop = false;
+         bool isCreated = false;
+         MM_ShipEntityIcon icon = null;
+
          foreach (MM_ShipEntityIcon iconShip in shipIcons) {
             if (iconShip.shipEntity == ship) {
-               stopLoop = true;
+               isCreated = true;
+               icon = iconShip;
                break;
             }
          }
-         if (stopLoop) {
-            continue;
+
+         if (!isCreated) {
+            if (ship.isDead()) {
+               continue;
+            }
+            // Spawn ship prefab
+            icon = Instantiate(shipIconPrefab, this.botShipIconContainer.transform);
+            icon.shipEntity = ship;
+            icon.currentArea = area;
+            icon.setCorrectPosition();
          }
 
-         MM_ShipEntityIcon icon = null;
          // Enemy ship
          if (ship.isEnemyOf(Global.player)) {
-            icon = Instantiate(enemyShipIconPrefab, this.botShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = enemyShipSprite;
          }
          // Friendly ship
          else if (ship.isAllyOf(Global.player)) {
-            icon = Instantiate(friendlyShipIconPrefab, this.botShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = friendlyShipSprite;
          }
          // Neutral ship
          else {
-            icon = Instantiate(neutralShipIconPrefab, this.botShipIconContainer.transform);
+            icon.GetComponent<Image>().sprite = neutralShipSprite;
          }
-         icon.shipEntity = ship;
-         icon.currentArea = area;
       }
    }
 

@@ -4729,6 +4729,38 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [TargetRpc]
+   private void Target_OnWarpFailed () {
+      D.log("Warp failed");
+      _player.onWarpFailed();
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
+   }
+
+   [Command]
+   public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
+      Area area = AreaManager.self.getArea(_player.areaKey);
+
+      if (area == null) {
+         Debug.Log("Area was null");
+         Target_OnWarpFailed();
+         return;
+      }
+
+      // Get the warps for the area the player is currently in
+      List<Warp> warps = area.getWarps();
+
+      foreach (Warp warp in warps) {
+         // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
+         if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
+            warp.startWarpForPlayer(_player);
+            return;
+         }
+      }
+      
+      // If no valid warp was found, let the player know so at least they're not stuck
+      Target_OnWarpFailed();
+   }
+
    #region Private Variables
 
    // Our associated Player object

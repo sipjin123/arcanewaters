@@ -30,14 +30,14 @@ public class BottomBar : MonoBehaviour {
       // Disable the bottom bar buttons when the area is being loaded
       if (!AreaManager.self.hasArea(Global.player.areaKey)) {
          if (_areButtonsActive) {
-            foreach (Button button in GetComponentsInChildren<Button>()) {
+            foreach (Button button in GetComponentsInChildren<Button>(true)) {
                button.interactable = false;
             }
             _areButtonsActive = false;
          }
       } else {
          if (!_areButtonsActive) {
-            foreach (Button button in GetComponentsInChildren<Button>()) {
+            foreach (Button button in GetComponentsInChildren<Button>(true)) {
                button.interactable = true;
             }
             _areButtonsActive = true;

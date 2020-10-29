@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public abstract class TemporaryController : MonoBehaviour
+public abstract class TemporaryController : ClientMonoBehaviour
 {
    #region Public Variables
 
@@ -25,6 +25,11 @@ public abstract class TemporaryController : MonoBehaviour
       };
       _puppets.Add(puppet);
 
+      // Disable collider for the entity
+      if (puppet.entity.isLocalPlayer) {
+         puppet.entity.getMainCollider().isTrigger = true;
+      }
+
       // Allow child class to react to the beginning of control
       startControl(puppet);
    }
@@ -44,6 +49,12 @@ public abstract class TemporaryController : MonoBehaviour
 
    protected void endControl (ControlData puppet) {
       _puppets.Remove(puppet);
+
+      // Reenable collider for entity
+      if (puppet.entity.isLocalPlayer) {
+         puppet.entity.getMainCollider().isTrigger = false;
+      }
+
       puppet.entity.giveBackControl(this);
    }
 
@@ -59,6 +70,11 @@ public abstract class TemporaryController : MonoBehaviour
    }
 
    protected void tryTriggerController (BodyEntity entity) {
+      if (!entity.isLocalPlayer) {
+         D.error("Control can only be triggered by local player.");
+         return;
+      }
+
       if (!entity.hasScheduledController(this)) {
          entity.requestControl(this);
       }

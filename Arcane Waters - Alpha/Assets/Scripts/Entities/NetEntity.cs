@@ -218,6 +218,11 @@ public class NetEntity : NetworkBehaviour
          // We need the follow text to be lower for ships
          _nameText.GetComponent<RectTransform>().offsetMin = (this is PlayerShipEntity) ? new Vector2(0, 32) : new Vector2(0, 64);
 
+         // Disable our collider if we are not the localplayer
+         if (!isLocalPlayer) {
+            getMainCollider().isTrigger = true;
+         }
+
          // Keep track in our Entity Manager
          EntityManager.self.storeEntity(this);
       }
@@ -610,7 +615,7 @@ public class NetEntity : NetworkBehaviour
 
    public CircleCollider2D getMainCollider () {
       if (_mainCollider == null) {
-         _mainCollider = GetComponents<CircleCollider2D>().FirstOrDefault(c => !c.isTrigger && c.enabled);
+         _mainCollider = GetComponent<CircleCollider2D>();
       }
 
       return _mainCollider;
@@ -693,6 +698,23 @@ public class NetEntity : NetworkBehaviour
       // Disable all animators in children
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
          anim.enabled = false;
+      }
+   }
+
+   public void onWarpFailed () {
+      isAboutToWarpOnClient = false;
+
+      // Unfreeze the rigidbody
+      getRigidbody().constraints = RigidbodyConstraints2D.FreezeRotation;
+
+      // Enable all sprite animations in children
+      foreach (SimpleAnimation anim in GetComponentsInChildren<SimpleAnimation>()) {
+         anim.enabled = true;
+      }
+
+      // Enable all animators in children
+      foreach (Animator anim in GetComponentsInChildren<Animator>()) {
+         anim.enabled = true;
       }
    }
 
@@ -988,6 +1010,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       _temporaryControllers.Add(controller);
+      Cmd_TemporaryControlRequested(controller.transform.localPosition);
 
       if (_temporaryControllers.Count == 1) {
          controller.controlGranted(this);
@@ -1005,6 +1028,28 @@ public class NetEntity : NetworkBehaviour
 
       if (willBeChanges && _temporaryControllers.Count > 0) {
          _temporaryControllers[0].controlGranted(this);
+      }
+   }
+
+   [Command]
+   public void Cmd_TemporaryControlRequested (Vector2 controllerLocalPosition) {
+      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+      if (con != null && !hasScheduledController(con)) {
+         requestControl(con);
+         Rpc_TemporaryControlRequested(controllerLocalPosition);
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
+      // If we are the local player, we don't do anything, the control was handled locally
+      if (isLocalPlayer) {
+         return;
+      }
+
+      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+      if (con != null && !hasScheduledController(con)) {
+         requestControl(con);
       }
    }
 

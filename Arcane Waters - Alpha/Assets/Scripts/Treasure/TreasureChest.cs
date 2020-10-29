@@ -364,7 +364,10 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    private void deleteTreasureChestIcon () {
-      Minimap.self.deleteTreasureChestIcon(this.gameObject);
+      // Delete chest icon, only if not in batchmode
+      if (!Util.isBatch()) {
+         Minimap.self.deleteTreasureChestIcon(this.gameObject);
+      }
    }
 
    public void disableChest () {

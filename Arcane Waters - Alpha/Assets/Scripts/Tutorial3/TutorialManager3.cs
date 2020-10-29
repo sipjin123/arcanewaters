@@ -187,11 +187,13 @@ public class TutorialManager3 : MonoBehaviour {
 
       // Temporary until new item system is implemented
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
-      Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
+      if (weaponData != null) {
+         Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
 
-      // Check that the weapon action type is the one required
-      if (newWeapon.getActionType() == _currentTutorial.steps[_currentStep].weaponAction) {
-         nextStep();
+         // Check that the weapon action type is the one required
+         if (newWeapon.getActionType() == _currentTutorial.steps[_currentStep].weaponAction) {
+            nextStep();
+         }
       }
    }
 

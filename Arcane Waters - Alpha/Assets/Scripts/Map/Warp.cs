@@ -48,27 +48,30 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          return;
       }
 
-      if (canPlayerUseWarp(player)) {
-         // If a player entered this warp on the server, move them
-         if (player.isServer && player.connectionToClient != null) {
-            // Lets give a bit more time for the client to perform any visual animations for warping
-            StartCoroutine(CO_ExecWarpServer(player, 0.5f));
+      if (player.isLocalPlayer && canPlayerUseWarp(player)) {
+         // If a player is client, show loading screen and stop the player         
+         // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
+         if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
+            if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> _)) {
+               return;
+            }
          }
 
-         // If a player is client, show loading screen and stop the player
-         if (player.isLocalPlayer) {
-            // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
-            if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
-               if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> _)) {
-                  return;
-               }
-            }
+         player.setupForWarpClient();
+         Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
 
-            player.setupForWarpClient();
+         if (PanelManager.self.loadingScreen != null) {
+            PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
+         }
+      }
+   }
 
-            if (PanelManager.self.loadingScreen != null) {
-               PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
-            }
+   [ServerOnly]
+   public void startWarpForPlayer (NetEntity player) {
+      if (!player.isAboutToWarpOnServer) {
+         if (player.connectionToClient != null) {
+            // Lets give a bit more time for the client to perform any visual animations for warping
+            StartCoroutine(CO_ExecWarpServer(player, 0.5f));
          }
       }
    }
