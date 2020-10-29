@@ -1502,7 +1502,6 @@ public class RPCManager : NetworkBehaviour {
          if (databaseQuestStatusList.Count < 1) {
             for (int i = 0; i < questData.questDataNodes.Length; i++) {
                DB_Main.updateQuestStatus(npcId, _player.userId, questId, i, 0);
-               D.editorLog("Non existing npc quest status, creating now: " + npcId + " : " + questId + " : " + i, Color.magenta);
             }
             databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
          }
@@ -4151,7 +4150,6 @@ public class RPCManager : NetworkBehaviour {
       }
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
-         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
          Target_ReceiveRefreshCasting(connectionToClient);
          return;
       }
@@ -4754,7 +4752,7 @@ public class RPCManager : NetworkBehaviour {
          if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
             warp.startWarpForPlayer(_player);
             return;
-         }
+         } 
       }
       
       // If no valid warp was found, let the player know so at least they're not stuck

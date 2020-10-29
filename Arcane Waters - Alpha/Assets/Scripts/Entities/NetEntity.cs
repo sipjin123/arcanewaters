@@ -1304,8 +1304,6 @@ public class NetEntity : NetworkBehaviour
       // Check which server we're likely to redirect to
       Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
-      D.debug("Investigation Log :: Spawning player in new map:: " + this.userId + " : " + newArea);
-
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
    }

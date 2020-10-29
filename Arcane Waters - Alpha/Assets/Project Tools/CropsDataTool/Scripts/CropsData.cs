@@ -42,5 +42,8 @@ public class CropsData {
    // The number of levels before the crop reaches max level
    public int maxGrowthLevel = 2;
 
+   // The number of minutes before the plant can be watered
+   public float minutesToRipe = 3;
+
    #endregion
 }

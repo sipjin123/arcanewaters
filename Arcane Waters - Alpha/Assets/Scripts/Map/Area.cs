@@ -194,6 +194,10 @@ public class Area : MonoBehaviour
       AreaManager.self.storeArea(this);
    }
 
+   public void registerWarpFromSecretEntrance (Warp warp) {
+      _warps.Add(warp);
+   }
+
    public void OnDestroy () {
       if (!ClientManager.isApplicationQuitting) {
          AstarPath.active.data.RemoveGraph(_graph);

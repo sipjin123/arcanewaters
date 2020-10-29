@@ -271,8 +271,6 @@ public class MyNetworkManager : NetworkManager
                // Send a Redirect message to the client
                RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);
                conn.Send(redirectMessage);
-
-               D.debug("Investigation Log :: Sending Redirect Message instead of area info {Investigate Here}");
                return;
             }
 
@@ -378,7 +376,6 @@ public class MyNetworkManager : NetworkManager
                   if (map != null) {
                      player.rpc.Target_ReceiveMapInfo(map);
                   }
-                  D.debug("Investigation Log :: Giving area info to player: " + player.userId + " : " + baseMapAreaKey);
                   player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
                });
             });

@@ -110,10 +110,7 @@ namespace CloudBuildDataFetch {
                      logData("CloudDataLogger: Finished adding new cloud data");
                   });
                });
-            } else {
-               D.debug("CloudDataLogger: Prevent creating data, please check database for trash entry, build might be in progress");
-               D.debug("Build id = " + newCloudBuildData.buildId + " : Msg Length = " + newCloudBuildData.buildMessage.Length);
-            }
+            } 
          } else {
             logData("CloudDataLogger: Cloud is up to date: " + cloudData.buildId);
          }

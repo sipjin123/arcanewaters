@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -126,7 +127,12 @@ MonoBehaviour:
   title: Anvil
   canInheritPosition: 0
   canControlPosition: 1
-  dataFields: []
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: isFunctional
+    defaultValue: false
+    toolTip: 
+    type: 3
   selectDataFields: []
   customDataFields: []
 --- !u!1001 &2601288285672669446

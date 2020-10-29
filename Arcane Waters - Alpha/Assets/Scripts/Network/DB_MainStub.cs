@@ -714,11 +714,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string ipAddres) {
+   public static int storeChatLog (int userId, string userName, string message, DateTime dateTime, ChatInfo.Type chatType, string ipAddress) {
       return 0;
    }
 
-   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, string ipAddres, bool hasInterval = true, int limit = 0) {
+   public static List<ChatInfo> getChat (ChatInfo.Type chatType, int seconds, string ipAddress, bool hasInterval = true, int limit = 0) {
       return new List<ChatInfo>();
    }
 
