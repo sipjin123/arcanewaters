@@ -34,6 +34,9 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       _borderImage.material = material;
 
       _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
+      gameObject.AddComponent<ToolTipComponent>();
+      gameObject.GetComponent<ToolTipComponent>().tooltipPlacement = ToolTipComponent.TooltipPlacement.LeftSideOfPanel;
+      gameObject.GetComponent<ToolTipComponent>().message = _tooltipText + _tooltipAssignedPointsText;
    }
 
    public void initialize (PerkData data) {
@@ -48,12 +51,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       builder.AppendLine(perkData.description);
       builder.AppendLine();
       _tooltipText = builder.ToString();
-
       _tooltipAssignedPointsText = $"\nAssigned Points: 0";
-   }
-
-   private void showTooltip () {
-      TooltipManager.self.showTooltip(_tooltipText + _tooltipAssignedPointsText);
    }
 
    public void setAssignedPoints (int points, bool updateTooltip) {
@@ -69,7 +67,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
       _tooltipAssignedPointsText = $"\nAssigned Points: {points}";
       if (updateTooltip) {
-         showTooltip();
+         gameObject.GetComponent<ToolTipComponent>().message = _tooltipText + _tooltipAssignedPointsText;
       }
 
       _assignedPointsText.text = points.ToString();
@@ -86,13 +84,9 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 0);
 
       SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
-
-      showTooltip();
    }
 
    public void OnPointerExit (PointerEventData eventData) {
-      TooltipManager.self.hideTooltip();
-
       transform.localScale = _originalScale;
 
       if (!_hasAssignedPoints) {

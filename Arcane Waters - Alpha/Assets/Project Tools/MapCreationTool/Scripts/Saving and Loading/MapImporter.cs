@@ -280,7 +280,7 @@ namespace MapCreationTool
                      }
                   }
                }
-
+               
                GameObject pref = UnityEngine.Object.Instantiate(
                   original,
                   prefabParent.TransformPoint(targetLocalPos),

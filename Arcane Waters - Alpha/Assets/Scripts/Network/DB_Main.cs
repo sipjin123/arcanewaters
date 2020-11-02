@@ -50,6 +50,7 @@ public class DB_Main : DB_MainStub
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
                command.Parameters.AddWithValue("@itmId", bpId);
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                StringBuilder builder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -83,6 +84,8 @@ public class DB_Main : DB_MainStub
 
             string query = "SELECT * FROM global.xml_status where id = " + slot;
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
+               DebugQuery(command);
+               
                using (MySqlDataReader dataReader = command.ExecuteReader()) {
                   while (dataReader.Read()) {
                      FileSize = dataReader.GetUInt32(dataReader.GetOrdinal("dataSize"));
@@ -127,6 +130,8 @@ public class DB_Main : DB_MainStub
             "SELECT * FROM arcane.items " + whereClause + " order by itmCategory limit " + itemsPerPage +
             " offset " + offset, connection)) {
                D.editorLog(command.CommandText);
+               DebugQuery(command);
+               
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -184,6 +189,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             D.editorLog(cmd.CommandText);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -246,6 +252,7 @@ public class DB_Main : DB_MainStub
             using (MySqlCommand command = new MySqlCommand(
                "SELECT version FROM global.xml_status where id = " + slot,
                connection)) {
+               DebugQuery(command);
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -274,6 +281,7 @@ public class DB_Main : DB_MainStub
                "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=hat%') AND items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -307,6 +315,7 @@ public class DB_Main : DB_MainStub
                connection)) {
 
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -339,6 +348,7 @@ public class DB_Main : DB_MainStub
                "WHERE(itmCategory = 7 AND itmData LIKE '%blueprintType=weapon%') AND items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -371,6 +381,7 @@ public class DB_Main : DB_MainStub
                "WHERE usrId = @usrId and itmCategory = 6",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -403,6 +414,7 @@ public class DB_Main : DB_MainStub
                "where(armId = itmId or wpnId = itmId or hatId = itmId) and items.usrId = @usrId",
                connection)) {
                command.Parameters.AddWithValue("@usrId", usrId);
+               DebugQuery(command);
 
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
@@ -434,6 +446,7 @@ public class DB_Main : DB_MainStub
                connection)) {
                command.Parameters.AddWithValue("@mapName", mapName);
                command.Parameters.AddWithValue("@mapVersion", version);
+               DebugQuery(command);
 
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -469,6 +482,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", usrId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -511,6 +525,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@buildId", cloudData.buildId);
             cmd.Parameters.AddWithValue("@message", cloudData.buildMessage);
             cmd.Parameters.AddWithValue("@lastUserUpdate", DateTime.UtcNow.ToString());
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -526,6 +541,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.cloud_changesets order by buildId DESC limit 1", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -569,6 +585,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.Add("@xmlZipData", MySqlDbType.MediumBlob).Value = bytes;
             cmd.Parameters.AddWithValue("@dataSize", bytes.Length);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -601,6 +618,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -647,6 +665,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -682,6 +701,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -709,6 +729,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -739,6 +760,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", 12);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -769,6 +791,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userId);
             cmd.Parameters.AddWithValue("@abilityId", abilityId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -800,6 +823,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@abilityId", abilityId);
             cmd.Parameters.AddWithValue("@abilityEquipSlot", slotNumber);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -827,6 +851,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@abilityDescription", abilityData.description);
             cmd.Parameters.AddWithValue("@abilityEquipSlot", abilityData.equipSlotIndex);
             cmd.Parameters.AddWithValue("@abilityType", abilityData.abilityType);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -851,6 +876,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@actionTypeId", (int) actionType);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -887,6 +913,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@achievementItemCategoryID", (int) achievementData.itemCategory);
             cmd.Parameters.AddWithValue("@isCompleted", isCompleted == true ? 1 : 0);
             cmd.Parameters.AddWithValue("@tier", achievementData.tier);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -907,6 +934,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userID", userID);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -952,6 +980,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@ability_type", abilityType);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
             cmd.Parameters.AddWithValue("@default_ability", 0);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -968,6 +997,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", skillId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -986,6 +1016,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1016,6 +1047,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@default_ability", 1);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1061,6 +1093,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlId", xmlId);
             cmd.Parameters.AddWithValue("@biomeType", (int) biomeType);
             cmd.Parameters.AddWithValue("@xmlContent", rawXmlContent);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1077,6 +1110,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.treasure_drops_xml_v2", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1109,6 +1143,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1153,6 +1188,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@minPitch", effect.minPitch);
             cmd.Parameters.AddWithValue("@maxPitch", effect.maxPitch);
             cmd.Parameters.AddWithValue("@offset", effect.offset);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1170,6 +1206,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@id", effect.id);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1195,6 +1232,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@friendshipLevel", friendshipLevel);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1217,6 +1255,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1243,6 +1282,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@friendshipLevel", friendshipLevel);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1265,6 +1305,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1310,6 +1351,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@itmCategory_" + i, categoryList[i]);
                cmd.Parameters.AddWithValue("@itmType_" + i, typeList[i]);
             }
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1348,6 +1390,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
             cmd.Parameters.AddWithValue("@questDialogueId", dialogueId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1371,6 +1414,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@questId", questId);
             cmd.Parameters.AddWithValue("@questNodeId", questNodeId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1398,6 +1442,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@npcId", npcId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1426,6 +1471,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1451,6 +1497,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1500,6 +1547,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@crops_type", cropsType);
             cmd.Parameters.AddWithValue("@is_enabled", isEnabled);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1518,6 +1566,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1545,6 +1594,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1582,6 +1632,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1600,6 +1651,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1627,6 +1679,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1667,6 +1720,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@monster_name", battlerName);
             cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1685,6 +1739,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1712,6 +1767,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1752,6 +1808,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@monster_name", battlerName);
             cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1770,6 +1827,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1797,6 +1855,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1840,6 +1899,7 @@ public class DB_Main : DB_MainStub
             } else {
                cmd.Parameters.AddWithValue("@creatorUserID", 0);
             }
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1858,6 +1918,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1885,6 +1946,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xmlId", typeID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1913,6 +1975,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_id", typeIndex);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1931,6 +1994,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -1952,6 +2016,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -1970,6 +2035,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "UPDATE users SET customHouseBase = @baseMapId WHERE usrId = @userId;";
       cmd.Parameters.AddWithValue("@userId", userId);
       cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
    }
 
@@ -1978,6 +2044,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "UPDATE users SET customFarmBase = @baseMapId WHERE usrId = @userId;";
       cmd.Parameters.AddWithValue("@userId", userId);
       cmd.Parameters.AddWithValue("@baseMapId", baseMapId);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
    }
 
@@ -1990,6 +2057,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "SELECT data FROM map_customization_changes WHERE map_id = @map_id AND user_id = @user_id;";
       cmd.Parameters.AddWithValue("@map_id", mapId);
       cmd.Parameters.AddWithValue("@user_id", userId);
+      DebugQuery(cmd);
 
       List<PrefabState> changes = new List<PrefabState>();
       using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2011,6 +2079,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@map_id", mapId);
       cmd.Parameters.AddWithValue("@user_id", userId);
       cmd.Parameters.AddWithValue("@prefab_id", prefabId);
+      DebugQuery(cmd);
 
       using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
          if (dataReader.Read()) {
@@ -2029,6 +2098,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@user_id", userId);
       cmd.Parameters.AddWithValue("@prefab_id", changes.id);
       cmd.Parameters.AddWithValue("@data", changes.serialize());
+      DebugQuery(cmd);
 
       cmd.ExecuteNonQuery();
    }
@@ -2044,6 +2114,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@areaKey", areaKey);
          conn.Open();
          cmd.Prepare();
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             if (dataReader.Read()) {
@@ -2064,6 +2135,7 @@ public class DB_Main : DB_MainStub
             "FROM maps_v2 " +
                "LEFT JOIN global.accounts ON maps_v2.creatorUserId = accId " +
             "ORDER BY name;";
+      DebugQuery(cmd);
 
       List<Map> result = new List<Map>();
 
@@ -2106,6 +2178,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@mapName", areaKey);
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
+            
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
                   mapId = dataReader.GetInt32("id");
@@ -2135,6 +2209,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@version", mapVersion);
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
+            
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
                   string gameData = dataReader.GetString("gameData");
@@ -2158,6 +2234,7 @@ public class DB_Main : DB_MainStub
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
@@ -2185,6 +2262,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@id", map.id);
          conn.Open();
          cmd.Prepare();
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
@@ -2212,6 +2290,7 @@ public class DB_Main : DB_MainStub
 
          cmd.Parameters.AddWithValue("@id", version.mapId);
          cmd.Parameters.AddWithValue("@version", version.version);
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             if (!dataReader.HasRows) {
@@ -2237,6 +2316,7 @@ public class DB_Main : DB_MainStub
          conn.Open();
          cmd.Prepare();
          cmd.Parameters.AddWithValue("@id", map.id);
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             if (!dataReader.HasRows) {
@@ -2266,6 +2346,7 @@ public class DB_Main : DB_MainStub
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
@@ -2302,6 +2383,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@publishedVersion", mapVersion.map.publishedVersion);
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             long mapId = cmd.LastInsertedId;
@@ -2318,6 +2400,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@updatedAt", mapVersion.updatedAt);
             cmd.Parameters.AddWithValue("@editorData", mapVersion.editorData);
             cmd.Parameters.AddWithValue("@gameData", mapVersion.gameData);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Insert spawns
@@ -2330,6 +2413,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
 
@@ -2376,6 +2460,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.Clear();
       cmd.CommandText = "SELECT id FROM maps_v2 WHERE sourceMapId = @mapID;";
       cmd.Parameters.AddWithValue("@mapID", parentMapId);
+      DebugQuery(cmd);
 
       using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
          while (dataReader.Read()) {
@@ -2399,6 +2484,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@creatorID", newCreatorId);
       cmd.Parameters.AddWithValue("@sourceMapID", newSourceMapId);
       cmd.Parameters.AddWithValue("@publishedVersion", -1);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       resultId = (int) cmd.LastInsertedId;
@@ -2408,12 +2494,14 @@ public class DB_Main : DB_MainStub
          "SELECT @resultID, version, @nowDate, @nowDate, editorData, gameData " +
             "FROM map_versions_v2 WHERE mapId = @mapID;";
       cmd.Parameters.AddWithValue("@resultID", resultId);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Insert spawns
       cmd.CommandText = "INSERT INTO map_spawns_v2(mapId, mapVersion, name, posX, posY) " +
          "SELECT @resultID, mapVersion, name, posX, posY " +
             "FROM map_spawns_v2 WHERE mapId = @mapID;";
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       return resultId;
@@ -2435,6 +2523,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@specialType", map.specialType);
          cmd.Parameters.AddWithValue("@displayName", map.displayName);
          cmd.Parameters.AddWithValue("@weatherEffect", map.weatherEffectType);
+         DebugQuery(cmd);
 
          // Execute the command
          cmd.ExecuteNonQuery();
@@ -2454,10 +2543,12 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@mapId", mapVersion.mapId);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
             cmd.CommandText = "UPDATE maps_v2 SET biome = @biome WHERE id = @mapId;";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Fetch latest version of a map
             cmd.CommandText = "SELECT IFNULL(MAX(version), -1) as latestVersion FROM map_versions_v2 WHERE mapId = @mapId;";
+            DebugQuery(cmd);
 
             int latestVersion = -1;
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2486,6 +2577,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@updatedAt", result.updatedAt);
             cmd.Parameters.AddWithValue("@editorData", result.editorData);
             cmd.Parameters.AddWithValue("@gameData", result.gameData);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Insert spawns
@@ -2498,6 +2590,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
 
@@ -2528,6 +2621,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@editorType", (int) mapVersion.map.editorType);
             cmd.Parameters.AddWithValue("@biome", (int) mapVersion.map.biome);
             cmd.CommandText = "UPDATE maps_v2 SET editorType = @editorType, biome = @biome WHERE id = @mapId;";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Update entry in map versions
@@ -2545,10 +2639,12 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@updatedAt", mapVersion.updatedAt);
             cmd.Parameters.AddWithValue("@editorData", mapVersion.editorData);
             cmd.Parameters.AddWithValue("@gameData", mapVersion.gameData);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Delete old spawns
             cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Insert spawns
@@ -2561,6 +2657,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@name", spawn.name);
                cmd.Parameters.AddWithValue("@posX", spawn.posX);
                cmd.Parameters.AddWithValue("@posY", spawn.posY);
+               DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
 
@@ -2624,14 +2721,17 @@ public class DB_Main : DB_MainStub
 
       // Delete map entry
       cmd.CommandText = "DELETE FROM maps_v2 WHERE id = @id;";
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Delete all version entries
       cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @id;";
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Delete all spawn entries
       cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @id;";
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
    }
 
@@ -2649,14 +2749,17 @@ public class DB_Main : DB_MainStub
 
             // Unpublish version
             cmd.CommandText = "UPDATE maps_v2 SET publishedVersion = NULL WHERE id = @mapId and publishedVersion = @version";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Delete version entry
             cmd.CommandText = "DELETE FROM map_versions_v2 WHERE mapId = @mapId AND version = @version;";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Delete all spawn entries
             cmd.CommandText = "DELETE FROM map_spawns_v2 WHERE mapId = @mapId AND mapVersion = @version;";
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             transaction.Commit();
@@ -2686,6 +2789,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.Clear();
                cmd.CommandText = "UPDATE maps_v2 SET publishedVersion = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id) WHERE id = @id";
                cmd.Parameters.AddWithValue("@id", id);
+               DebugQuery(cmd);
                cmd.ExecuteNonQuery();
             }
 
@@ -2706,6 +2810,7 @@ public class DB_Main : DB_MainStub
 
          cmd.Parameters.AddWithValue("@mapId", version.mapId);
          cmd.Parameters.AddWithValue("@version", version.version);
+         DebugQuery(cmd);
 
          // Execute the command
          cmd.ExecuteNonQuery();
@@ -2741,6 +2846,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_name", shopName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2759,6 +2865,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2786,6 +2893,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2826,6 +2934,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@ship_name", shipName);
             cmd.Parameters.AddWithValue("@isActive", isActive);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2844,6 +2953,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2870,6 +2980,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2908,6 +3019,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_name", name);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2924,6 +3036,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_name", name);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -2942,6 +3055,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -2977,6 +3091,7 @@ public class DB_Main : DB_MainStub
 
             cmd.Parameters.AddWithValue("@usrId", usrId);
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3008,6 +3123,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@perkPoints", 1);
 
             cmd.Prepare();
+            DebugQuery(cmd);
 
             cmd.ExecuteNonQuery();
          }
@@ -3031,6 +3147,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", usrId);
             cmd.Parameters.AddWithValue("@perkId", perkId);
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3061,6 +3178,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@perkPoints", perkPoints);
 
             cmd.Prepare();
+            DebugQuery(cmd);
 
             cmd.ExecuteNonQuery();
          }
@@ -3094,6 +3212,7 @@ public class DB_Main : DB_MainStub
          cmd.CommandText = cmdText.ToString();
          cmd.CommandType = System.Data.CommandType.Text;
          cmd.Prepare();
+         DebugQuery(cmd);
          cmd.ExecuteNonQuery();
       }
    }
@@ -3113,6 +3232,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_id", perkId);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3131,6 +3251,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3152,6 +3273,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3181,6 +3303,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@bookTitle", name);
             cmd.Parameters.AddWithValue("@bookContent", bookContent);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3199,6 +3322,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3223,6 +3347,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Parameters.AddWithValue("@bookId", bookId);
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3245,6 +3370,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@bookId", bookId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3274,6 +3400,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
             cmd.Parameters.AddWithValue("@rarity", data.rarity);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3301,6 +3428,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sourceImageUrl", data.spriteUrl);
             cmd.Parameters.AddWithValue("@rarity", data.rarity);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3319,6 +3447,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3343,6 +3472,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3365,6 +3495,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@discoveryId", discoveryId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3405,6 +3536,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self ? MasterToolAccountManager.self.currentAccountID : 0);
             cmd.Parameters.AddWithValue("@isEnabled", isEnabled);
             cmd.Parameters.AddWithValue("@tag", tag);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3421,6 +3553,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@palette_name", name);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3437,6 +3570,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@paletteId", id);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3455,6 +3589,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3488,6 +3623,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@name", tag);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3512,6 +3648,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@tagId", tagId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3543,6 +3680,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@tagId", tagId);
             cmd.Parameters.AddWithValue("@subcategory", subcategory);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3594,6 +3732,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@equipmentCategory", category);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3612,6 +3751,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3639,6 +3779,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3678,6 +3819,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@xml_name", bgName);
             cmd.Parameters.AddWithValue("@xmlContent", rawData);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self == null ? 0 : MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3699,6 +3841,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3726,6 +3869,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xmlId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3777,6 +3921,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@equipment_type", equipType.ToString());
             cmd.Parameters.AddWithValue("@is_enabled", isEnabled ? 1 : 0);
             cmd.Parameters.AddWithValue("@creator_userID", MasterToolAccountManager.self.currentAccountID);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3806,6 +3951,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", xml_id);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -3837,6 +3983,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3873,6 +4020,7 @@ public class DB_Main : DB_MainStub
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
+         DebugQuery(cmd);
 
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
@@ -3899,6 +4047,7 @@ public class DB_Main : DB_MainStub
             cmd.CommandText = "INSERT INTO global.item_definitions(category, serializedData) VALUES(@category, @serializedData);";
             cmd.Parameters.AddWithValue("@category", -1);
             cmd.Parameters.AddWithValue("@serializedData", "undefined");
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Get the id of the new inserted entry
@@ -3914,6 +4063,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@category", (int) definition.category);
             cmd.Parameters.AddWithValue("@serializedData", definition.serialize());
             cmd.Parameters.AddWithValue("@creatorUserId", definition.creatorUserId);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Commit our transaction
@@ -3936,6 +4086,7 @@ public class DB_Main : DB_MainStub
          cmd.Parameters.AddWithValue("@id", definition.id);
          cmd.Parameters.AddWithValue("@category", (int) definition.category);
          cmd.Parameters.AddWithValue("@serializedData", definition.serialize());
+         DebugQuery(cmd);
 
          cmd.ExecuteNonQuery();
       }
@@ -3948,6 +4099,7 @@ public class DB_Main : DB_MainStub
          cmd.Prepare();
 
          cmd.Parameters.AddWithValue("@id", id);
+         DebugQuery(cmd);
 
          cmd.ExecuteNonQuery();
       }
@@ -3962,6 +4114,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "SELECT * FROM item_instances WHERE item_instances.userId = @ownerUserId AND category = @category;";
       cmd.Parameters.AddWithValue("@ownerUserId", ownerUserId);
       cmd.Parameters.AddWithValue("@category", (int) category);
+      DebugQuery(cmd);
 
       List<ItemInstance> result = new List<ItemInstance>();
       using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -3978,6 +4131,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "SELECT * FROM item_instances WHERE userId = @userId AND itemDefinitionId = @itemDefinitionId;";
       cmd.Parameters.AddWithValue("@userId", userId);
       cmd.Parameters.AddWithValue("@itemDefinitionId", itemDefinitionId);
+      DebugQuery(cmd);
 
       using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
          if (dataReader.Read()) {
@@ -4027,6 +4181,7 @@ public class DB_Main : DB_MainStub
       cmd.Parameters.AddWithValue("@palettes", itemInstance.palettes);
       cmd.Parameters.AddWithValue("@rarity", (int) itemInstance.rarity);
       cmd.Parameters.AddWithValue("@category", (int) itemInstance.getDefinition().category);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
 
       // Set the ID that was created for the instance
@@ -4038,6 +4193,7 @@ public class DB_Main : DB_MainStub
       cmd.CommandText = "UPDATE item_instances SET count = count + @increaseBy WHERE id=@id;";
       cmd.Parameters.AddWithValue("@increaseBy", increaseBy);
       cmd.Parameters.AddWithValue("@id", id);
+      DebugQuery(cmd);
       cmd.ExecuteNonQuery();
    }
 
@@ -4052,6 +4208,7 @@ public class DB_Main : DB_MainStub
 
          cmd.Parameters.AddWithValue("@id", id);
          cmd.Parameters.AddWithValue("@decreaseBy", decreaseBy);
+         DebugQuery(cmd);
          cmd.ExecuteNonQuery();
          cmd.Transaction.Commit();
       } catch (Exception ex) {
@@ -4077,6 +4234,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@companionId", xmlId);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@companionExp", exp);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4101,6 +4259,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@companionId", xmlId);
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@equippedSlot", slot);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4137,6 +4296,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@equippedSlot", equippedSlot);
             cmd.Parameters.AddWithValue("@iconPath", iconPath);
             cmd.Parameters.AddWithValue("@companionExp", companionExp);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4155,6 +4315,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4200,6 +4361,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
             cmd.Parameters.AddWithValue("@usrId", usrId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4245,6 +4407,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@chestId", chestId);
             cmd.Parameters.AddWithValue("@areaId", areaId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4275,6 +4438,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@chestId", treasureId);
             cmd.Parameters.AddWithValue("@areaId", areaKey);
             cmd.Parameters.AddWithValue("@status", 1);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4299,6 +4463,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4337,6 +4502,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@creationTime", cropInfo.creationTime);
             cmd.Parameters.AddWithValue("@waterInterval", cropInfo.waterInterval);
             cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4359,6 +4525,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", cropInfo.userId);
             cmd.Parameters.AddWithValue("@cropNumber", cropInfo.cropNumber);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4376,6 +4543,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@cropNumber", cropNumber);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4400,6 +4568,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4427,6 +4596,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4454,6 +4624,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4479,6 +4650,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4504,6 +4676,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4534,6 +4707,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@wpnId", newWeaponId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -4562,6 +4736,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@hatId", newHatId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -4590,6 +4765,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@armId", newArmorId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -4613,6 +4789,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4644,6 +4821,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4679,6 +4857,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4707,6 +4886,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@crpType", (int) cropType);
             cmd.Parameters.AddWithValue("@cropCount", 1);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4729,6 +4909,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmId", itemId);
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itemCategory", itemCategory);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4757,6 +4938,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@localY", localPosition.y);
             cmd.Parameters.AddWithValue("@usrFacing", (int) facingDirection);
             cmd.Parameters.AddWithValue("@areaKey", areaKey);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4776,6 +4958,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
             cmd.Parameters.AddWithValue("@shipHealth", shipHealth);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4795,6 +4978,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@amount", amount);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4815,6 +4999,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@gold", gold);
             cmd.Parameters.AddWithValue("@XP", XP);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4833,6 +5018,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4857,6 +5043,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -4880,6 +5067,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
             cmd.Parameters.AddWithValue("@amount", amount);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4910,6 +5098,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4923,6 +5112,7 @@ public class DB_Main : DB_MainStub
             actionCmd.Parameters.AddWithValue("@taskId", bugId);
             actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
             actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
+            DebugQuery(cmd);
             actionCmd.ExecuteNonQuery();
 
             // Saving screenshot in bug_reports_screenshots
@@ -4930,6 +5120,7 @@ public class DB_Main : DB_MainStub
             screenshotCmd.Prepare();
             screenshotCmd.Parameters.AddWithValue("@taskId", bugId);
             screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
+            DebugQuery(cmd);
             screenshotCmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
@@ -4951,6 +5142,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@serverIpAddress", serverIpAddress);
             cmd.Parameters.AddWithValue("@time", dateTime);
             cmd.Parameters.AddWithValue("@chatType", (int) chatType);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -4989,6 +5181,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@chatType", chatType);
             cmd.Parameters.AddWithValue("@serverIpAddress", serverIpAddress);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5044,6 +5237,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accName", accountName);
             cmd.Parameters.AddWithValue("@accPassword", accountPassword);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5070,6 +5264,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5095,6 +5290,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5119,6 +5315,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5143,6 +5340,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5167,6 +5365,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrName", username);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5201,6 +5400,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5245,6 +5445,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", int.Parse(userId));
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5269,6 +5470,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrName", userName);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5294,6 +5496,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5338,6 +5541,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@armId", userInfo.armorId);
             cmd.Parameters.AddWithValue("@areaKey", area.areaKey);
             cmd.Parameters.AddWithValue("@charSpot", userInfo.charSpot);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5358,6 +5562,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5388,6 +5593,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmPalettes", baseItem.paletteNames);
             cmd.Parameters.AddWithValue("@itmData", baseItem.data);
             cmd.Parameters.AddWithValue("@itmCount", baseItem.count);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5415,6 +5621,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", armorType);
             cmd.Parameters.AddWithValue("@itmPalettes", palettes);
             cmd.Parameters.AddWithValue("@itmData", "");
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5442,6 +5649,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", (int) weaponType);
             cmd.Parameters.AddWithValue("@itmPalettes", palettes);
             cmd.Parameters.AddWithValue("@itmData", "");
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5462,6 +5670,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmId", itemId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5480,6 +5689,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", itmCategory);
             cmd.Parameters.AddWithValue("@itmType", itmType);
+            DebugQuery(cmd);
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
@@ -5502,6 +5712,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmId", itemId);
             cmd.Parameters.AddWithValue("@itmCount", itemCount);
+            DebugQuery(cmd);
             // Execute the command
             cmd.ExecuteNonQuery();
          }
@@ -5523,6 +5734,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmId", itemId);
             cmd.Parameters.AddWithValue("@deductBy", deductedValue);
+            DebugQuery(cmd);
 
             cmd.ExecuteNonQuery();
          }
@@ -5629,6 +5841,7 @@ public class DB_Main : DB_MainStub
                   cmd.Parameters.AddWithValue("@toItmCount", amount);
                }
                cmd.Parameters.AddWithValue("@toUsrId", toUserId);
+               DebugQuery(cmd);
 
                // Execute the command
                cmd.ExecuteNonQuery();
@@ -5649,6 +5862,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@toUsrId", toUserId);
             cmd.Parameters.AddWithValue("@fromUsrId", fromUserId);
             cmd.Parameters.AddWithValue("@itmId", itemId);
+            DebugQuery(cmd);
             // Execute the command
             cmd.ExecuteNonQuery();
          }
@@ -5670,6 +5884,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", itemCategory);
             cmd.Parameters.AddWithValue("@itmType", itemType);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5756,6 +5971,7 @@ public class DB_Main : DB_MainStub
             for (int i = 0; i < categoriesToFilter.Length; i++) {
                cmd.Parameters.AddWithValue("@filteredCategory" + i, categoriesToFilter[i]);
             }
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5845,6 +6061,7 @@ public class DB_Main : DB_MainStub
             for (int i = 0; i < categoriesToFilter.Count; i++) {
                cmd.Parameters.AddWithValue("@filteredCategory" + i, categoriesToFilter[i]);
             }
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5894,6 +6111,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmCategory", (int) Item.Category.CraftingIngredients);
             cmd.Parameters.AddWithValue("@usrId", usrId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -5931,6 +6149,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
             cmd.Parameters.AddWithValue("@itmPalettes", palettes);
             cmd.Parameters.AddWithValue("@itmData", "");
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5958,6 +6177,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
             cmd.Parameters.AddWithValue("@itmPalettes", "");
             cmd.Parameters.AddWithValue("@itmData", "skinType=" + ((int) skinType));
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -5985,6 +6205,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itmType", (int) itemType);
             cmd.Parameters.AddWithValue("@itmPalettes", "");
             cmd.Parameters.AddWithValue("@itmData", "hairType=" + ((int) hairType));
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6007,6 +6228,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@itmId", itemId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             rowsAffected = cmd.ExecuteNonQuery();
@@ -6029,6 +6251,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmId", itemId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6067,6 +6290,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@itmCategory", (int) itemCategory);
             cmd.Parameters.AddWithValue("@itmType", itemTypeId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6105,6 +6329,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@slotNumber", slotNumber);
             cmd.Parameters.AddWithValue("@itemId", itemId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6125,6 +6350,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@slotNumber", slotNumber);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6146,6 +6372,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6172,6 +6399,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accountId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6190,6 +6418,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@hairPalettes", newPalette);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -6213,6 +6442,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@hairType", (int) newType);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -6238,6 +6468,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6296,6 +6527,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@sailors", shipInfo.sailors);
             cmd.Parameters.AddWithValue("@rarity", (int) shipInfo.rarity);
             cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6316,6 +6548,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
             cmd.Parameters.AddWithValue("@shipAbilities", abilityXML);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6364,6 +6597,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@speed", shipyardInfo.speed);
             cmd.Parameters.AddWithValue("@rarity", (int) shipyardInfo.rarity);
             cmd.Parameters.AddWithValue("@shipAbilities", serializedShipAbilities);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6388,6 +6622,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@start", (page - 1) * shipsPerPage);
             cmd.Parameters.AddWithValue("@perPage", shipsPerPage);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6413,6 +6648,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@skinType", (int) newSkin);
             cmd.Parameters.AddWithValue("@shipId", shipId);
+            DebugQuery(cmd);
 
             // Execute the command
             int rowsAffected = cmd.ExecuteNonQuery();
@@ -6435,6 +6671,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@shipId", shipId);
             cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6458,6 +6695,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6488,6 +6726,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6518,6 +6757,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6542,6 +6782,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6567,6 +6808,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6591,6 +6833,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6622,6 +6865,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@gldIconSigil", guildInfo.iconSigil);
             cmd.Parameters.AddWithValue("@gldIconBackPalettes", guildInfo.iconBackPalettes);
             cmd.Parameters.AddWithValue("@gldIconSigilPalettes", guildInfo.iconSigilPalettes);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6641,6 +6885,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6658,6 +6903,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@userId", userId);
             cmd.Parameters.AddWithValue("@gldId", guildId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6688,6 +6934,7 @@ public class DB_Main : DB_MainStub
 
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
             cmd.Parameters.AddWithValue("@jobTime", DateTime.UtcNow);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6706,6 +6953,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6738,6 +6986,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@unitXP", tradeInfo.xpPerUnit);
             cmd.Parameters.AddWithValue("@totalXP", tradeInfo.totalXP);
             cmd.Parameters.AddWithValue("@tradeTime", DateTime.FromBinary(tradeInfo.tradeTime));
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6756,6 +7005,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6783,6 +7033,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@start", page * tradesPerPage);
             cmd.Parameters.AddWithValue("@perPage", tradesPerPage);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6809,6 +7060,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@untilDate", untilDate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6839,6 +7091,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@jobType", (int) jobType);
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@endDate", endDate);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6869,6 +7122,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@period", (int) period);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6906,7 +7160,8 @@ public class DB_Main : DB_MainStub
                cmd.Parameters["@period"].Value = (int) entries[i].period;
                cmd.Parameters["@usrId"].Value = entries[i].userId;
                cmd.Parameters["@score"].Value = entries[i].score;
-
+               DebugQuery(cmd);
+               
                // Execute the command
                cmd.ExecuteNonQuery();
             }
@@ -6929,6 +7184,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@period", (int) period);
             cmd.Parameters.AddWithValue("@startDate", startDate);
             cmd.Parameters.AddWithValue("@endDate", endDate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -6950,6 +7206,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@period", (int) period);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -6986,6 +7243,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@period", (int) period);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7041,6 +7299,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
             cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
             cmd.Parameters.AddWithValue("@lastContactDate", lastContactDate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7064,6 +7323,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
             cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
             cmd.Parameters.AddWithValue("@lastContactDate", lastContactDate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7083,6 +7343,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7103,6 +7364,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@friendUsrId", friendUserId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7133,6 +7395,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
             cmd.Parameters.AddWithValue("@start", (page - 1) * friendsPerPage);
             cmd.Parameters.AddWithValue("@perPage", friendsPerPage);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7154,11 +7417,15 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT count(*) as friendCount FROM friendship WHERE usrId=@usrId AND friendshipStatus=@friendshipStatus", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT count(*) as friendCount FROM friendship " +
+            "JOIN users ON friendship.friendUsrId = users.usrId " +
+            "WHERE friendship.usrId=@usrId AND friendship.friendshipStatus=@friendshipStatus", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
             cmd.Parameters.AddWithValue("@friendshipStatus", friendshipStatus);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7174,6 +7441,33 @@ public class DB_Main : DB_MainStub
       return friendCount;
    }
 
+   public static new List<int> getUserIdsHavingPendingFriendshipRequests (DateTime startDate) {
+      List<int> userIdsList = new List<int>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT usrId FROM friendship WHERE lastContactDate>=@startDate AND friendshipStatus=@friendshipStatus", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@startDate", startDate);
+            cmd.Parameters.AddWithValue("@friendshipStatus", Friendship.Status.InviteReceived);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userIdsList.Add(dataReader.GetInt32("usrId"));
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userIdsList;
+   }
+
    #endregion
 
    public static new bool updateDeploySchedule (long scheduleDateAsTicks, int buildVersion) {
@@ -7184,6 +7478,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@scheduleVersion", buildVersion.ToString());
             cmd.Parameters.AddWithValue("@scheduleDate", scheduleDateAsTicks.ToString());
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7201,6 +7496,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM deploy_schedule WHERE id=1", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Execute the command
             using (var reader = cmd.ExecuteReader()) {
@@ -7232,6 +7528,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@scheduleVersion", string.Empty);
             cmd.Parameters.AddWithValue("@scheduleDate", string.Empty);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7267,6 +7564,7 @@ public class DB_Main : DB_MainStub
             using (MySqlCommand cmd = new MySqlCommand($"SELECT COUNT(*) FROM `metrics` WHERE `key`=@key", conn)) {
                //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
+               DebugQuery(cmd);
                using (var reader = cmd.ExecuteReader()) {
                   if (reader.Read()) {
                      IsKeyAlreadyTracked = reader.GetInt32(0) > 0;
@@ -7285,6 +7583,7 @@ public class DB_Main : DB_MainStub
                //cmd.Prepare();
                cmd.Parameters.AddWithValue("@key", key);
                cmd.Parameters.AddWithValue("@value", value);
+               DebugQuery(cmd);
                result = cmd.ExecuteNonQuery() > 0;
             }
          }
@@ -7330,6 +7629,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@isRead", mailInfo.isRead);
             cmd.Parameters.AddWithValue("@mailSubject", mailInfo.mailSubject);
             cmd.Parameters.AddWithValue("@message", mailInfo.message);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7352,6 +7652,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@mailId", mailId);
             cmd.Parameters.AddWithValue("@isRead", isRead);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7370,6 +7671,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@mailId", mailId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7389,6 +7691,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@mailId", mailId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7419,6 +7722,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
             cmd.Parameters.AddWithValue("@start", (page - 1) * mailsPerPage);
             cmd.Parameters.AddWithValue("@perPage", mailsPerPage);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7444,6 +7748,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7469,6 +7774,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@startDate", startDate);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7494,6 +7800,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@recipientUsrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7521,6 +7828,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionWin FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7544,6 +7852,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionMac FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7567,6 +7876,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT minClientVersionLinux FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7590,6 +7900,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT minToolsVersionWin FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7613,6 +7924,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand("SELECT minToolsVersionMac FROM game_version", conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7641,6 +7953,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7672,6 +7985,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@itemCategory", itemCategory);
             cmd.Parameters.AddWithValue("@itemName", itemName);
             cmd.Parameters.AddWithValue("@itemCount", itemCount);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7708,6 +8022,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
             cmd.Parameters.AddWithValue("@start", (pageNumber - 1) * rowsPerPage);
             cmd.Parameters.AddWithValue("@perPage", rowsPerPage);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7737,6 +8052,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7794,6 +8110,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
 
             cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7822,6 +8139,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@mailId", mailId);
             cmd.Parameters.AddWithValue("@recipientUsrId", recipientUserId);
             cmd.Parameters.AddWithValue("@receptionDate", DateTime.UtcNow);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
 
             // Set the auction as delivered by clearing the mailId
@@ -7829,6 +8147,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.Clear();
             cmd.Parameters.AddWithValue("@mailId", -1);
             cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
@@ -7848,6 +8167,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@highestBidUser", highestBidUser);
             cmd.Parameters.AddWithValue("@auctionId", auctionId);
             cmd.Parameters.AddWithValue("@expiryDate", expiryDate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7873,6 +8193,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7907,6 +8228,7 @@ public class DB_Main : DB_MainStub
          using (MySqlCommand cmd = new MySqlCommand(query.ToString(), conn)) {
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7938,6 +8260,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@deviceName", groupInfo.deviceName);
             cmd.Parameters.AddWithValue("@isQuickmatchEnabled", groupInfo.isQuickmatchEnabled);
             cmd.Parameters.AddWithValue("@isPrivate", groupInfo.isPrivate);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -7962,6 +8285,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -7988,6 +8312,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@voyageId", voyageId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8013,6 +8338,7 @@ public class DB_Main : DB_MainStub
 
             conn.Open();
             cmd.Prepare();
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8030,6 +8356,25 @@ public class DB_Main : DB_MainStub
       return voyageToGroupCount;
    }
 
+   public static new void updateVoyageInVoyageGroup (int groupId, int voyageId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE voyage_groups SET voyageId=@voyageId WHERE groupId=@groupId", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@groupId", groupId);
+            cmd.Parameters.AddWithValue("@voyageId", voyageId);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -8040,6 +8385,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
             cmd.Parameters.AddWithValue("@isQuickmatchEnabled", isQuickmatchEnabled);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8058,6 +8404,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8080,6 +8427,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@voyageId", voyageId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8109,6 +8457,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8139,6 +8488,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8171,6 +8521,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@deviceName", deviceName);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8201,6 +8552,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@groupId", groupId);
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8219,6 +8571,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8239,6 +8592,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@deviceName", deviceName);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8257,6 +8611,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@srvStatus", -1);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8369,6 +8724,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accountId", accountId);
+            DebugQuery(cmd);
 
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
@@ -8545,6 +8901,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@accPassword", accountPassword);
             cmd.Parameters.AddWithValue("@accEmail", accountEmail);
             cmd.Parameters.AddWithValue("@accValidated", validated);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8565,6 +8922,7 @@ public class DB_Main : DB_MainStub
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accoundId);
             cmd.Parameters.AddWithValue("@isSinglePlayer", isSinglePlayer ? 1 : 0);
+            DebugQuery(cmd);
 
             // Execute the command
             cmd.ExecuteNonQuery();
@@ -8591,6 +8949,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@ipAddress", finalAddress);
                cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
                cmd.Parameters.AddWithValue("@loginSource", "game");
+               DebugQuery(cmd);
 
                // Execute the command
                cmd.ExecuteNonQuery();
@@ -8600,7 +8959,13 @@ public class DB_Main : DB_MainStub
          }
       }
    }
+   #endregion
 
+   #region Db debug
+   private static void DebugQuery(MySqlCommand cmd) {
+      if (!CommandCodes.get(CommandCodes.Type.SERVER_DB_DEBUG)) return;
+      D.warning(cmd.CommandText);
+   }
    #endregion
 
    /*

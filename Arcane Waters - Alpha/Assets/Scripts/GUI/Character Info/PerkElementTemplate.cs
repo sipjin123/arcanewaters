@@ -71,7 +71,6 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
 
    public void OnPointerEnter (PointerEventData eventData) {
       if (!isLocalPlayer) {
-         showTooltip();
          return;
       }
 
@@ -92,13 +91,11 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
             }));
       }
 
-      _fadeInfoSequence.AppendCallback(showTooltip);
-
       _fadeInfoSequence.Play();
    }
 
    public void OnPointerExit (PointerEventData eventData) {
-      TooltipManager.self.hideTooltip();
+      TooltipHandler.self.cancelToolTip();
 
       if (!isLocalPlayer) {
          return;
@@ -153,10 +150,6 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
 
       Global.player.rpc.Cmd_AssignPerkPoint(_perkData.perkId);
-   }
-
-   private void showTooltip () {
-      TooltipManager.self.showTooltip(_tooltipText + _tooltipAssignedPointsText);
    }
 
    #region Private Variables

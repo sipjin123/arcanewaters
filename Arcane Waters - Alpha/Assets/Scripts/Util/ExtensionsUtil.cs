@@ -253,6 +253,11 @@ public static class ExtensionsUtil {
       return new Vector3(source.x, source.y, 0.0f);
    }
 
+   public static float NextFloat (this System.Random r, float lowerBound, float upperBound) {
+      double value = r.NextDouble() * (upperBound - lowerBound) + lowerBound;
+      return (float) value;
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

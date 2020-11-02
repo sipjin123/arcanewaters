@@ -23,7 +23,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
    public Image selectedBox;
 
    // The tooltip showing the name of the item
-   public Tooltipped tooltip;
+   public ToolTipComponent tooltip;
 
    // The recolored sprite component on the icon
    public RecoloredSprite recoloredSprite;
@@ -173,7 +173,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Set the tooltip
-      tooltip.text = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
+      tooltip.message = item.category == Item.Category.Blueprint ? EquipmentXMLManager.self.getItemName(item) : item.getTooltip();
 
       // Saves the item
       _item = item;
@@ -201,7 +201,7 @@ public class ItemCell : MonoBehaviour, IPointerClickHandler
       }
 
       // Set the tooltip
-      tooltip.text = item.getTooltip();
+      tooltip.message = item.getTooltip();
 
       // Hides the selection box
       hideSelectedBox();

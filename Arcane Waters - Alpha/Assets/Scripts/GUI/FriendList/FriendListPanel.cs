@@ -180,6 +180,9 @@ public class FriendListPanel : Panel
          default:
             break;
       }
+
+      // Update the pending friendship request notification
+      BottomBar.self.setFriendshipRequestNotificationStatus(pendingRequestCount > 0);
    }
 
    public void onFriendListTabButtonPress () {

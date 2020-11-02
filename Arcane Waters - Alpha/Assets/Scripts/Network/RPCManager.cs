@@ -484,8 +484,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, long lastCropRegenTime, string greetingText) {
-      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), lastCropRegenTime, greetingText);
+   public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, string greetingText) {
+      MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), greetingText);
    }
 
    [TargetRpc]
@@ -1241,8 +1241,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SellCrops (int offerId, int amountToSell, string shopName) {
-      _player.cropManager.sellCrops(offerId, amountToSell, shopName);
+   public void Cmd_SellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, string shopName) {
+      _player.cropManager.sellCrops(offerId, amountToSell, rarityToSellAt, shopName);
    }
 
    [Command]
@@ -1434,7 +1434,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_GetOffersForArea (string shopName) {
+   public void Cmd_GetCropOffersForShop (string shopName) {
       bool useShopName = shopName == ShopManager.DEFAULT_SHOP_NAME ? false : true;
 
       // Get the current list of offers for the area
@@ -1442,26 +1442,22 @@ public class RPCManager : NetworkBehaviour {
       if (useShopName) {
          list = ShopManager.self.getOffersByShopName(shopName);
       } else {
-         list = ShopManager.self.getOffers(_player.areaKey);
+         D.error("A crop shop in area " + _player.areaKey + " has no defined shopName");
       }
-
-      // Get the last offer regeneration time
-      long lastCropRegenTime = ShopManager.self.lastCropRegenTime.ToBinary();
 
       // Look up their current gold in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int gold = DB_Main.getGold(_player.userId);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ShopData shopData = new ShopData();
+            string greetingText = "";
             if (useShopName) {
+               ShopData shopData = new ShopData();
                shopData = ShopXMLManager.self.getShopDataByName(shopName);
-            } else {
-               shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
+               greetingText = shopData.shopGreetingText;
             }
-            string greetingText = shopData.shopGreetingText;
 
-            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), lastCropRegenTime, greetingText);
+            _player.rpc.Target_ReceiveOffers(_player.connectionToClient, gold, list.ToArray(), greetingText);
          });
       });
    }
@@ -2126,6 +2122,21 @@ public class RPCManager : NetworkBehaviour {
             }
 
             Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
+         });
+      });
+   }
+
+   [Server]
+   public void checkForPendingFriendshipRequests () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int pendingRequestCount = DB_Main.getFriendshipInfoCount(_player.userId, Friendship.Status.InviteReceived);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (pendingRequestCount > 0) {
+               _player.Target_ReceiveFriendshipRequestNotification(_player.connectionToClient);
+            }
          });
       });
    }
@@ -2907,18 +2918,25 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
-         // Create a new private group
-         VoyageGroupInfo voyageGroup = new VoyageGroupInfo(-1, 0, DateTime.UtcNow, deviceName,
-            false, true, 0);
-         voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
-         DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Update the user voyage group in the net entity
-            _player.voyageGroupId = voyageGroup.groupId;
-         });
+         // Create a new private group and add the user to it
+         VoyageGroupInfo voyageGroup = createPrivateVoyageGroupCommon(deviceName);
       });
+   }
+
+   // Must be called from the background thread
+   [Server]
+   private VoyageGroupInfo createPrivateVoyageGroupCommon (string deviceName) {
+      // Create the group and add the user to it
+      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(-1, 0, DateTime.UtcNow, deviceName, false, true, 0);
+      voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
+      DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
+
+      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+         // Update the user voyage group in the net entity
+         _player.voyageGroupId = voyageGroup.groupId;
+      });
+
+      return voyageGroup;
    }
 
    [Command]
@@ -2963,17 +2981,14 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // If the player is not in a group, send an error
-      if (!VoyageManager.isInGroup(_player)) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You must belong to a voyage group to invite someone!");
-         return;
-      }
-
       // Prevent spamming invitations
       if (VoyageManager.self.isGroupInvitationSpam(_player.userId, inviteeName)) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You must wait " + VoyageManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
          return;
       }
+
+      // Get the name of this computer
+      string deviceName = SystemInfo.deviceName;
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -2987,7 +3002,13 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Get the voyage group info
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
+         VoyageGroupInfo voyageGroup;
+         if (VoyageManager.isInGroup(_player)) {
+            voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
+         } else {
+            // If the player is not in a group, create one
+            voyageGroup = createPrivateVoyageGroupCommon(deviceName);
+         }
 
          // Check that the group is private
          if (!voyageGroup.isPrivate) {

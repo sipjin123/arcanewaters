@@ -310,7 +310,8 @@ public class PanelManager : MonoBehaviour {
       // Check for any tooltips and close them
       TooltipHandler[] toolTips = FindObjectsOfType<TooltipHandler>();
       foreach (TooltipHandler toolTip in toolTips) {
-         toolTip.transform.GetChild(0).gameObject.SetActive(false);
+         toolTip.GetComponent<CanvasGroup>().alpha = 0;
+         toolTip.GetComponent<CanvasGroup>().blocksRaycasts = false;
       }
    }
 

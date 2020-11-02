@@ -242,7 +242,7 @@ public class CropManager : NetworkBehaviour {
    }
 
    [Server]
-   public void sellCrops (int offerId, int amountToSell, string shopName) {
+   public void sellCrops (int offerId, int amountToSell, Rarity.Type rarityToSellAt, string shopName) {
       // Make sure they aren't spamming requests
       if (recentlySoldCrops(_player.userId)) {
          D.log("Ignoring spam sell request from player: " + _player);
@@ -253,11 +253,7 @@ public class CropManager : NetworkBehaviour {
       CropOffer offer = new CropOffer();
 
       if (Util.isEmpty(shopName)) {
-         foreach (CropOffer availableOffer in ShopManager.self.getOffers(_player.areaKey)) {
-            if (availableOffer.id == offerId) {
-               offer = availableOffer;
-            }
-         }
+         D.error("A crop shop in area " + _player.areaKey + " has no defined shop name.");
       } else {
          foreach (CropOffer availableOffer in ShopManager.self.getOffersByShopName(shopName)) {
             if (availableOffer.id == offerId) {
@@ -273,9 +269,10 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
-      // Make sure it hasn't sold out
-      if (offer.amount <= 0) {
-         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "This offer has sold out!");
+      // Make sure the rarity hasn't changed
+      if (offer.rarity != rarityToSellAt) {
+         ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, "The price of this crop has changed!");
+         Target_CloseTradeScreenAndReloadCropOffers(_player.connectionToClient);
          return;
       }
 
@@ -299,8 +296,10 @@ public class CropManager : NetworkBehaviour {
                continue;
             }
 
-            // Sell only up to the available amount in the offer
-            amountToSell = amountToSell < offer.amount ? amountToSell : offer.amount;
+            // Sell only up to the available demand in the offer
+            if (!offer.isLowestRarity()) {
+               amountToSell = amountToSell < offer.demand ? amountToSell : Mathf.CeilToInt(offer.demand);
+            }
 
             int goldForThisCrop = offer.pricePerUnit * amountToSell;
             earnedGold = goldForThisCrop;
@@ -311,8 +310,8 @@ public class CropManager : NetworkBehaviour {
             // Remove the crops from their silo
             DB_Main.addToSilo(_player.userId, info.cropType, -amountToSell);
 
-            // Remove the amount of crops from the offer
-            ShopManager.self.decreaseOfferCount(offerId, amountToSell);
+            // Handle crop demand
+            ShopManager.self.onUserSellCrop(shopName, offerId, amountToSell);
 
             // Keep a sum of the total gold
             totalGoldMade += goldForThisCrop;
@@ -339,6 +338,7 @@ public class CropManager : NetworkBehaviour {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
             if (totalGoldMade > 0) {
                Target_JustSoldCrops(_player.connectionToClient, offer.cropType, totalGoldMade);
 
@@ -448,7 +448,16 @@ public class CropManager : NetworkBehaviour {
       SoundManager.create3dSound("ui_buy_sell", Global.player.transform.position);
 
       // Updates the offers in the merchant panel
-      Global.player.rpc.Cmd_GetOffersForArea(MerchantScreen.self.shopName);
+      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopName);
+
+      // Trigger the tutorial
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.SellCrops);
+   }
+
+   [TargetRpc]
+   public void Target_CloseTradeScreenAndReloadCropOffers (NetworkConnection connection) {
+      PanelManager.self.tradeConfirmScreen.hide();
+      Global.player.rpc.Cmd_GetCropOffersForShop(MerchantScreen.self.shopName);
    }
 
    protected static int getWaterIntervalSeconds (Crop.Type cropType) {

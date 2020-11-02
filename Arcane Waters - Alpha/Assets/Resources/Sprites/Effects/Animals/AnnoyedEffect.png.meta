@@ -1,0 +1,461 @@
+fileFormatVersion: 2
+guid: 99a2daa25a95f404595948a961ada83b
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -6039617207042012728
+    second: AnnoyedEffect_0
+  - first:
+      213: -971445333527784881
+    second: AnnoyedEffect_1
+  - first:
+      213: -4354092551980510415
+    second: AnnoyedEffect_2
+  - first:
+      213: -8229188027859175107
+    second: AnnoyedEffect_3
+  - first:
+      213: -1314605904546683706
+    second: AnnoyedEffect_4
+  - first:
+      213: -22106366049595662
+    second: AnnoyedEffect_5
+  - first:
+      213: 6948565088993919720
+    second: AnnoyedEffect_6
+  - first:
+      213: 3111320027306322466
+    second: AnnoyedEffect_7
+  - first:
+      213: 8628129703399831031
+    second: AnnoyedEffect_8
+  - first:
+      213: 5378695577882530171
+    second: AnnoyedEffect_9
+  - first:
+      213: -8073445650672834273
+    second: AnnoyedEffect_10
+  - first:
+      213: -8555989769870386343
+    second: AnnoyedEffect_11
+  - first:
+      213: 7828052884703579339
+    second: AnnoyedEffect_12
+  - first:
+      213: 8663637465504897759
+    second: AnnoyedEffect_13
+  - first:
+      213: -7887202532816409093
+    second: AnnoyedEffect_14
+  - first:
+      213: -4754989539468711851
+    second: AnnoyedEffect_15
+  - first:
+      213: -8617243646671809196
+    second: AnnoyedEffect_16
+  - first:
+      213: -1989585828169233817
+    second: AnnoyedEffect_17
+  - first:
+      213: -5863141374976015400
+    second: AnnoyedEffect_18
+  - first:
+      213: 8803306644589618891
+    second: AnnoyedEffect_19
+  - first:
+      213: -2826144801060631115
+    second: AnnoyedEffect_20
+  - first:
+      213: -248905341887642876
+    second: AnnoyedEffect_21
+  - first:
+      213: 995813737288755120
+    second: AnnoyedEffect_22
+  - first:
+      213: 6459242795348870146
+    second: AnnoyedEffect_23
+  - first:
+      213: 3558974045687468284
+    second: AnnoyedEffect_24
+  - first:
+      213: 1580821076174286431
+    second: AnnoyedEffect_25
+  - first:
+      213: 9211148675721003231
+    second: AnnoyedEffect_26
+  - first:
+      213: -124116240386630443
+    second: AnnoyedEffect_27
+  - first:
+      213: -5528985282284480880
+    second: AnnoyedEffect_28
+  - first:
+      213: 7833515111007907179
+    second: AnnoyedEffect_29
+  - first:
+      213: 6865233880196395870
+    second: AnnoyedEffect_30
+  - first:
+      213: 2523381336257463742
+    second: AnnoyedEffect_31
+  - first:
+      213: 399746870335892022
+    second: AnnoyedEffect_32
+  - first:
+      213: -4548066314658891264
+    second: AnnoyedEffect_33
+  - first:
+      213: -3745858496606457032
+    second: AnnoyedEffect_34
+  - first:
+      213: 462409400004664320
+    second: AnnoyedEffect_35
+  - first:
+      213: -1947383949246210426
+    second: AnnoyedEffect_36
+  - first:
+      213: 277900389417101961
+    second: AnnoyedEffect_37
+  - first:
+      213: 848117706784757946
+    second: AnnoyedEffect_38
+  - first:
+      213: -8683617979031660129
+    second: AnnoyedEffect_39
+  - first:
+      213: -4287152035726373439
+    second: AnnoyedEffect_40
+  externalObjects: {}
+  serializedVersion: 11
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  applyGammaDecoding: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: 4
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: AnnoyedEffect_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c98ce24628fe2ca0800000000000000
+      internalID: -6039617207042012728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_1
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f429d58bd9bb482f0800000000000000
+      internalID: -971445333527784881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 133170894e72393c0800000000000000
+      internalID: -4354092551980510415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_3
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d397e89b61d0ccd80800000000000000
+      internalID: -8229188027859175107
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_4
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c42dd715e491cde0800000000000000
+      internalID: -1314605904546683706
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_5
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2fec650906671bff0800000000000000
+      internalID: -22106366049595662
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_6
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e2c92422234e6060800000000000000
+      internalID: 6948565088993919720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_7
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22ae6229411ad2b20800000000000000
+      internalID: 3111320027306322466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_8
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f5b42f50464db770800000000000000
+      internalID: 8628129703399831031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AnnoyedEffect_9
+      rect:
+        serializedVersion: 2
+        x: 432
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7117aa6127f4aa40800000000000000
+      internalID: 5378695577882530171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

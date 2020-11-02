@@ -471,9 +471,9 @@ public class Util : MonoBehaviour {
 
    public static float getBellCurveFloat (float mean, float stdDev, float min, float max) {
       // Add 3 randomly generated floats together, each one between -1 and 1
-      float sum = UnityEngine.Random.Range(-1f, 1f) +
-          UnityEngine.Random.Range(-1f, 1f) +
-          UnityEngine.Random.Range(-1f, 1f);
+      float sum = r.NextFloat(-1f, 1f) +
+          r.NextFloat(-1f, 1f) +
+          r.NextFloat(-1f, 1f);
 
       // Create our uniform random number using the specified mean and standard deviation
       float bellCurveRandom = (sum * stdDev) + mean;

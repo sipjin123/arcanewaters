@@ -153,6 +153,10 @@ public class PrefabsManager : MonoBehaviour {
    // Prefab used to create new palette texture for material
    public Texture2D textureSquare256;
 
+   [Header("Effects prefabs")]
+   // The prefab we use to show effects after petting animal
+   public GameObject pettingAnimatorPrefab;
+
    // Self
    public static PrefabsManager self;
 

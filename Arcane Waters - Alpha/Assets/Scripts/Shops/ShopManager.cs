@@ -15,9 +15,6 @@ public class ShopManager : MonoBehaviour {
    // Self
    public static ShopManager self;
 
-   // The last time the crops were regenerated
-   public DateTime lastCropRegenTime;
-
    // Default Shop Name
    public static string DEFAULT_SHOP_NAME = "None";
 
@@ -38,14 +35,16 @@ public class ShopManager : MonoBehaviour {
    private void checkIfDataSetupIsFinished () {
       // Initialize random generated ships only when ship data and ship abilities data are setup
       if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
-         InvokeRepeating("randomlyGenerateShips", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+         InvokeRepeating(nameof(randomlyGenerateShips), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       }
 
       // TODO: Confirm if palette swap manager is still needed for shop initialization
       if (ShopXMLManager.self.hasInitialized && EquipmentXMLManager.self.loadedAllEquipment) {// && PaletteSwapManager.self.getPaletteList().Count > 0) {
          // Routinely change out the items
-         InvokeRepeating("generateItemsFromXML", 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
-         InvokeRepeating("randomlyGenerateCropOffers", 0f, (float) TimeSpan.FromHours(CropOffer.REGEN_INTERVAL).TotalSeconds);
+         InvokeRepeating(nameof(generateItemsFromXML), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
+
+         // Initialize the crop offers
+         initializeCropOffers();
       }
    }
 
@@ -264,97 +263,31 @@ public class ShopManager : MonoBehaviour {
       }
    }
 
-   protected void randomlyGenerateCropOffers () {
-      //// If we've already generated something previously, we might not generate anything more this time
-      //if (_offers.Count > 0 && UnityEngine.Random.Range(0f, 1f) <= .75f) {
-      //   return;
-      //}
-
-      // Saves the current time
-      lastCropRegenTime = DateTime.UtcNow;
-
-      // Generate offers for each of the areas
-      foreach (string areaKey in AreaManager.self.getAreaKeys()) {
-         Biome.Type biomeType = Area.getBiome(areaKey);
-
-         // Clear out the previous list
-         _offersByArea[areaKey] = new List<CropOffer>();
-
-         // The types of crops that might show  up
-         List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
-         cropList.Remove(Crop.Type.None);
-         cropList.Remove(CropManager.STARTING_CROP);
-         cropList.Shuffle();
-
-         // Make 3 new offers
-         for (int i = 0; i < 3; i++) {
-            Rarity.Type rarity = Rarity.getRandom();
-
-            Crop.Type cropType = cropList[i];
-            int stockCount = Util.getBellCurveInt(1000, 100, 100, CropOffer.MAX_STOCK);
-            stockCount = Util.roundToPrettyNumber(stockCount);
-            int pricePerUnit = (int) (CropManager.getBasePrice(cropType) * Rarity.getCropSellPriceModifier(rarity));
-            pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
-            CropOffer offer = new CropOffer(_offerId++, areaKey, cropType, stockCount, pricePerUnit, rarity);
-
-            // Store the offer
-            _offers[offer.id] = offer;
-
-            // Add it to the list
-            _offersByArea[areaKey].Add(offer);
-         }
+   private void initializeCropOffers () {
+      if (_areCropOffersInitialized) {
+         return;
       }
 
-      generateShopCrops();
-
-      // Update the Tip Manager now that the offers have changed
-      TipManager.self.updateCropTips();
-   }
-
-   private void generateShopCrops () {
-      int index = 0;
       foreach (ShopData shopData in ShopXMLManager.self.shopDataList) {
          _offersByShopName[shopData.shopName] = new List<CropOffer>();
          foreach (ShopItemData rawItemData in ShopXMLManager.self.getShopDataByName(shopData.shopName).shopItems) {
             if (rawItemData.shopItemCategory == ShopToolPanel.ShopCategory.Crop) {
-               float randomizedChance = UnityEngine.Random.Range(0, 100);
-               if (randomizedChance < rawItemData.dropChance) {
-                  // The types of crops that might show  up
-                  List<Crop.Type> cropList = Util.getAllEnumValues<Crop.Type>();
-                  cropList.Remove(Crop.Type.None);
-                  cropList.Remove(CropManager.STARTING_CROP);
-                  cropList.Shuffle();
+               // Set the offer characteristics
+               Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
+               Rarity.Type rarity = Rarity.getRandom();
 
-                  // Make offers from the database
-                  Rarity.Type rarity = Rarity.getRandom();
+               CropOffer offer = new CropOffer(_offerId++, "None", cropType, CropOffer.MAX_DEMAND / 2, rawItemData.shopItemCostMax, rarity);
 
-                  Crop.Type cropType = (Crop.Type) rawItemData.shopItemTypeIndex;
-                  int stockCount = UnityEngine.Random.Range(rawItemData.shopItemCountMin, rawItemData.shopItemCountMax);
-                  stockCount = Util.roundToPrettyNumber(stockCount);
-                  int pricePerUnit = rawItemData.shopItemCostMax;
-                  pricePerUnit = Util.roundToPrettyNumber(pricePerUnit);
+               // Store the offer
+               _offers[offer.id] = offer;
 
-                  CropOffer offer = new CropOffer(_offerId++, "None", cropType, stockCount, pricePerUnit, rarity);
-
-                  // Store the offer
-                  _offers[offer.id] = offer;
-
-                  // Add it to the list
-                  _offersByShopName[shopData.shopName].Add(offer);
-
-                  index++;
-               }
+               // Add it to the list
+               _offersByShopName[shopData.shopName].Add(offer);
             }
          }
       }
-   }
 
-   public List<CropOffer> getOffers (string areaKey) {
-      if (_offersByArea.ContainsKey(areaKey)) {
-         return _offersByArea[areaKey];
-      }
-
-      return new List<CropOffer>();
+      _areCropOffersInitialized = true;
    }
 
    public List<CropOffer> getOffersByShopName (string shopName) {
@@ -363,10 +296,6 @@ public class ShopManager : MonoBehaviour {
       }
 
       return new List<CropOffer>();
-   }
-
-   public List<CropOffer> getAllOffers () {
-      return new List<CropOffer>(_offers.Values);
    }
 
    public List<Item> getItems (string areaKey) {
@@ -445,12 +374,62 @@ public class ShopManager : MonoBehaviour {
       return list;
    }
 
-   public void decreaseOfferCount (int offerId, int amount) {
-      _offers[offerId].amount -= amount;
+   public void onUserSellCrop (string shopName, int offerId, float amount) {
+      if (!_offersByShopName.TryGetValue(shopName, out List<CropOffer> shopOffers) || shopOffers.Count == 0) {
+         return;
+      }
 
-      // Clamp to 0
-      if (_offers[offerId].amount < 0) {
-         _offers[offerId].amount = 0;
+      // The demand lost by the crop will be gained by the others in the same shop
+      float demandIncreaseValue = amount / (shopOffers.Count - 1);
+
+      foreach (CropOffer offer in shopOffers) {
+         if (offer.id == offerId) {
+            decreaseCropOfferDemand(offer, amount);
+         } else {
+            increaseCropOfferDemand(offer, demandIncreaseValue);
+         }
+      }
+   }
+
+   private void increaseCropOfferDemand (CropOffer offer, float amount) {
+      offer.demand += amount;
+
+      if (offer.demand >= CropOffer.MAX_DEMAND) {
+         float excess = offer.demand - CropOffer.MAX_DEMAND;
+
+         // When the demand reaches the maximum, we jump to the higher rarity and increase the price accordingly
+         if (!offer.isHighestRarity()) {
+            offer.rarity += 1;
+            offer.recalculatePrice();
+            offer.demand = CropOffer.MAX_DEMAND / 2;
+
+            // If the increase was higher than the max demand, continue increasing it in the next tier
+            increaseCropOfferDemand(offer, excess);
+         } else {
+            // If we reached the maximum rarity, simply clamp the demand
+            offer.demand = CropOffer.MAX_DEMAND;
+         }
+      }
+   }
+
+   private void decreaseCropOfferDemand (CropOffer offer, float amount) {
+      offer.demand -= amount;
+
+      if (offer.demand <= 0) {
+         float excess = -offer.demand;
+
+         // When the demand reaches the minimum, we jump to the lower rarity and decrease the price accordingly
+         if (!offer.isLowestRarity()) {
+            offer.rarity -= 1;
+            offer.recalculatePrice();
+            offer.demand = CropOffer.MAX_DEMAND / 2;
+
+            // If the decrease was lower than 0, continue decreasing in the next tier
+            decreaseCropOfferDemand(offer, excess);
+         } else {
+            // If we reached the minimum rarity, simply clamp the demand
+            offer.demand = 0;
+         }
       }
    }
 
@@ -489,6 +468,9 @@ public class ShopManager : MonoBehaviour {
    // A unique ID we can assign to the crop offers we generate
    protected int _offerId = -1;
 
+   // Gets set to true when crop offers have been initialized
+   protected bool _areCropOffersInitialized = false;
+
    // Stores the items we've generated
    protected Dictionary<int, Item> _items = new Dictionary<int, Item>();
 
@@ -503,9 +485,6 @@ public class ShopManager : MonoBehaviour {
 
    // Keeps lists of ships based on Area
    protected Dictionary<string, List<int>> _shipsByArea = new Dictionary<string, List<int>>();
-
-   // Keeps lists of Crop Offers based on Area
-   protected Dictionary<string, List<CropOffer>> _offersByArea = new Dictionary<string, List<CropOffer>>();
 
    // Keeps lists of items based on Shop Name
    protected Dictionary<string, List<int>> _itemsByShopName = new Dictionary<string, List<int>>();

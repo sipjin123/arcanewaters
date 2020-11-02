@@ -198,6 +198,9 @@ public class MyNetworkManager : NetworkManager
       // Start the mail management
       MailManager.self.startMailManagement();
 
+      // Start the friend list management
+      FriendListManager.self.startFriendListManagement();
+
       // Make note that we started up a server
       wasServerStarted = true;
    }
@@ -387,6 +390,7 @@ public class MyNetworkManager : NetworkManager
             player.cropManager.sendSiloInfo();
             player.rpc.sendItemShortcutList();
             player.rpc.checkForUnreadMails();
+            player.rpc.checkForPendingFriendshipRequests();
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());

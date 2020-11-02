@@ -70,7 +70,7 @@ public class ContextMenuPanel : MonoBehaviour
          hide();
       }
 
-      if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) {
+      if (InputManager.isLeftClickKeyPressed() || InputManager.isRightClickKeyPressed()) {
          // Hide the menu if a mouse button is clicked and the pointer is not over any button
          if (!RectTransformUtility.RectangleContainsScreenPoint(buttonsRectTransform, Input.mousePosition)) {
             hide();
@@ -107,6 +107,9 @@ public class ContextMenuPanel : MonoBehaviour
             if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
                addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
             }
+         } else {
+            // If we are not in a group, always allow to invite someone
+            addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
          }
          addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
 

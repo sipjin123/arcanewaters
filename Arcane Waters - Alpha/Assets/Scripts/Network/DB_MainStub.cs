@@ -1026,6 +1026,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static List<int> getUserIdsHavingPendingFriendshipRequests (DateTime startDate) {
+      return null;
+   }
+
    public static int createMail (MailInfo mailInfo) {
       return 0;
    }

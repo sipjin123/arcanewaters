@@ -48,7 +48,7 @@ public class VoyagePanel : Panel
    }
 
    public void selectVoyageMap (Voyage voyage) {
-      PanelManager.self.showConfirmationPanel("Please confirm your destination: " + Area.getName(voyage.areaKey) + ".",
+      PanelManager.self.showConfirmationPanel("Please confirm your destination: " + voyage.areaName + ".",
          () => confirmJoinVoyage(voyage));
    }
 

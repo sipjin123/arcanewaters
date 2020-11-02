@@ -17,6 +17,7 @@ public class TutorialData3 : MonoBehaviour
       Farm = 3,
       House = 4,
       TutorialSeaMap = 5,
+      TutorialTownCropMerchant = 6
    }
 
    // The locations and the corresponding area key
@@ -26,6 +27,7 @@ public class TutorialData3 : MonoBehaviour
       { Location.Farm, "customfarm" },
       { Location.House, "customhouse" },
       { Location.TutorialSeaMap, "Tutorial Sea Map" },
+      { Location.TutorialTownCropMerchant, "Tutorial Town Crop Merchant" },
    };
 
    // The tutorials and, for each step, the npc speech and completion triggers
@@ -85,7 +87,12 @@ public class TutorialData3 : MonoBehaviour
          new TutorialStep3(TutorialTrigger.PlantCrop, "You're a farmer already! Now, let's plant a few more.", 4),
          new TutorialStep3(TutorialTrigger.CropGrewToMaxLevel, "Press <#FF8000>2</color> to equip the watering pot and <#FF8000>Right-Click</color> to use it on a plant. Your crops will need to be watered a few times before they are ready for harvest.", 5),
          new TutorialStep3(TutorialTrigger.HarvestCrop, "The crops are ready to be harvested! Press <#FF8000>3</color> to equip the pitchfork and collect your vegetables.", 5),
-         new TutorialStep3(Location.TutorialTown, "Now that's good sweaty work! All your harvests can be sold at the crop merchant. You will find merchants in most villages."),
+         new TutorialStep3(Location.TutorialTown, "Now that's good sweaty work! All your harvests can be sold at the crop merchant. Return to the town and I'll show you how!"),
+         new TutorialStep3(Location.TutorialTownCropMerchant, "Go to the merchant located north-west of the town."),
+         new TutorialStep3(TutorialTrigger.OpenMerchantScreen, "Talk to the shop owner."),
+         new TutorialStep3(TutorialTrigger.OpenTradeConfirmScreen, "The merchant's prices vary depending on what he needs. Selling a high rated crop will always be more profitable. For now, select tomatoes to sell."),
+         new TutorialStep3(TutorialTrigger.SellCrops, "Pick any amount and sell your vegetables!"),
+         new TutorialStep3(TutorialTrigger.CloseMerchantScreen, "All that work did pay off! That is all for crops. Close the panel to start the next tutorial!"),
       }),
 
       new Tutorial3("SailShip", "Sail your ship",
@@ -169,5 +176,9 @@ public enum TutorialTrigger
    LeaveVoyageGroup = 35,
    SelectPirateShip = 36,
    MoveObject = 37,
-   SelectObject = 38
-};
+   SelectObject = 38,
+   OpenMerchantScreen = 39,
+   OpenTradeConfirmScreen = 40,
+   SellCrops = 41,
+   CloseMerchantScreen = 42,
+}; 

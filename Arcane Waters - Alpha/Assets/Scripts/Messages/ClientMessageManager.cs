@@ -166,9 +166,12 @@ public class ClientMessageManager : MonoBehaviour {
 
             return;
          case ConfirmMessage.Type.General:
-         case ConfirmMessage.Type.StoreItemBought:
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
+            return;
+         case ConfirmMessage.Type.StoreItemBought:
+            // Show the confirmation message in the notice screen
+            PanelManager.self.noticeScreen.show(msg.customMessage);
             return;
          case ConfirmMessage.Type.ShipBought:
             // Hide the ship panel

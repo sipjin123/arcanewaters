@@ -330,7 +330,11 @@ MonoBehaviour:
   npcId: 0
   isDebug: 0
   isShopNpc: 0
+  isAnimal: 0
   isStationary: 0
+  canMove: 1
+  pettingAnimatorPrefab: {fileID: 2373478916719622243, guid: e5b2987717589934ebf0f20cbc308b4f,
+    type: 3}
 --- !u!114 &114041420384177890
 MonoBehaviour:
   m_ObjectHideFlags: 0

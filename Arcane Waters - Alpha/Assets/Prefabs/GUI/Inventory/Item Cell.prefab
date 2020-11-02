@@ -196,7 +196,8 @@ GameObject:
   - component: {fileID: 4117296722770417787}
   - component: {fileID: 37832890852455594}
   - component: {fileID: 8133805591703312007}
-  - component: {fileID: 9063640410305460505}
+  - component: {fileID: 3877609146054890878}
+  - component: {fileID: 4263017178270130461}
   m_Layer: 5
   m_Name: Item Cell
   m_TagString: Untagged
@@ -282,7 +283,7 @@ MonoBehaviour:
   iconShadow: {fileID: 210983869630208678}
   itemCountText: {fileID: 7628187383587867788}
   selectedBox: {fileID: 3721385354708349985}
-  tooltip: {fileID: 9063640410305460505}
+  tooltip: {fileID: 4263017178270130461}
   recoloredSprite: {fileID: 8890626033674572602}
   foodIcon: {fileID: 21300000, guid: 75f6c2ad27552444f85d01591789c053, type: 3}
   defaultItemIcon: {fileID: 21300000, guid: f048dd06213522f4a9db2e98f670e6cb, type: 3}
@@ -345,7 +346,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &9063640410305460505
+--- !u!114 &3877609146054890878
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -354,10 +355,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 4117296722763361349}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d45e50f956068424da261c7239c70d29, type: 3}
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: 
+  m_Delegates: []
+--- !u!114 &4263017178270130461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4117296722763361349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipPlacement: 0
+  message: 
 --- !u!1 &6115582277942859362
 GameObject:
   m_ObjectHideFlags: 0

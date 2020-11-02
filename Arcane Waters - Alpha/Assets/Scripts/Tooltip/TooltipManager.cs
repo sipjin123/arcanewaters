@@ -27,50 +27,7 @@ public class TooltipManager : ClientMonoBehaviour {
 
       self = this;
    }
-
-   public void Update () {
-      // Figure out where we want the tooltip to show up
-      Vector2 pos = Input.mousePosition + new Vector3(0f, 8f);
-
-      // Keep it within the screen bounds
-      pos.x = Mathf.Clamp(pos.x, 0 + tooltip.rectTransform.sizeDelta.x, Screen.width);
-      pos.y = Mathf.Clamp(pos.y, 0, Screen.height - tooltip.rectTransform.sizeDelta.y);
-      
-      // Keep the tooltip at the mouse hotspot
-      Util.setXY(tooltip.transform, pos);
-            
-      if (isAutomaticTooltipEnabled) {
-         // Check if there's any text to show based on where the mouse currently is
-         string tooltipText = getRelevantTooltip();
-
-         // Decide whether the tooltip should be visible
-         bool shouldTooltipShow = !Util.isEmpty(tooltipText);
-
-         // Toggle visibility
-         tooltip.gameObject.SetActive(shouldTooltipShow);
-
-         // Sets the text in the component
-         tooltip.text.SetText(tooltipText);
-      }
-   }
-
-   public void showTooltip (string text, bool disableAutomaticTooltip = false) {
-      tooltip.gameObject.SetActive(true);
-      tooltip.text.SetText(text);
-
-      if (disableAutomaticTooltip) {
-         isAutomaticTooltipEnabled = false;
-      }
-   }
-
-   public void hideTooltip (bool enableAutomaticTooltip = false) {
-      tooltip.gameObject.SetActive(false);
-
-      if (enableAutomaticTooltip) {
-         isAutomaticTooltipEnabled = true;
-      }
-   }
-
+ 
    public void keepToolTipOnScreen (RectTransform toolTipRect) {
       // Find the real world location of the tooltip
       Vector3 toolTipPos = toolTipRect.transform.position;

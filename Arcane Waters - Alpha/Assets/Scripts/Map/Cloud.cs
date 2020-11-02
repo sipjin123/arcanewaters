@@ -27,6 +27,9 @@ public class Cloud : ClientMonoBehaviour {
    public Sprite darkCloudSprite, darkCloudShadow;
    public const int darkCloudAnimSpriteMax = 5;
 
+   // Area into which this cloud is spawned
+   public Area area;
+
    #endregion
 
    void Start () {
@@ -38,14 +41,20 @@ public class Cloud : ClientMonoBehaviour {
       _randomOffset = Random.Range(0f, 100f);
 
       // Pick a random sprite type
-      int randomType = new List<int>() { 3, 4 }.ChooseRandom();
-      if (weatherEffectType == WeatherEffectType.Cloud) {
-         cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType));
-         shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType + "_shadow"));
-      } else {
+      if (weatherEffectType != WeatherEffectType.Cloud) {
          cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(darkCloudSprite.texture);
          shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(darkCloudShadow.texture); 
          cloudSprite.GetComponent<SimpleAnimation>().updateIndexMinMax(0, darkCloudAnimSpriteMax);
+      } else {
+         if (area.isSea) {
+            int randomType = new List<int>() { 1, 2, 3, 4 }.ChooseRandom();
+            cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_resize_" + randomType));
+            shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_resize_shadow_" + randomType));
+         } else {
+            int randomType = new List<int>() { 3, 4 }.ChooseRandom();
+            cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType));
+            shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType + "_shadow"));
+         }
       }
 
       // Check for nearby objects

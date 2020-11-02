@@ -80,7 +80,7 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       return this.gameObject.activeSelf && canvasGroup.alpha > 0f;
    }
 
-   public void close () {
+   public virtual void close () {
       if (isShowing()) {
          PanelManager.self.unlinkPanel();
       }

@@ -29,7 +29,10 @@ public class Anim : MonoBehaviour {
       Punch = 24,
       NC_Jump_East = 25,
       NC_Jump_South = 26,
-      NC_Jump_North = 27
+      NC_Jump_North = 27,
+      Pet_East = 28,
+      Pet_North = 29,
+      Pet_South = 30
    }
 
    // The different animation groups

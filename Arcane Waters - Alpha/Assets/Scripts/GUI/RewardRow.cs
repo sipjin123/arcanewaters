@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class RewardRow : MonoBehaviour {
    #region Public Variables
@@ -69,7 +70,7 @@ public class RewardRow : MonoBehaviour {
       cell.icon.sprite = newSprite;
       cell.itemCountText.gameObject.SetActive(false);
       cell.iconShadow.sprite = newSprite; 
-      cell.tooltip.text = name;
+      cell.tooltip.message = name;
    }
 
    #region Private Variables

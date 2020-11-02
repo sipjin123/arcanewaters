@@ -108,7 +108,7 @@ public class PerksPanel : MonoBehaviour, IPointerClickHandler
       this.canvasGroup.interactable = false;
 
       // Disable any tooltip we may have enabled and reenable automatic tooltips
-      TooltipManager.self.hideTooltip(true);
+      TooltipHandler.self.cancelToolTip();
    }
 
    public bool isShowing () {

@@ -18,7 +18,8 @@ public class CommandCodes : MonoBehaviour {
       MAX_INSTANCE_PLAYERS = 8,  // Sets the maximum number of players allowed in an instance
       NPC_DISABLE = 9,           // Disables NPCs for area (Area.npcDatafields)
       SERVER_DISABLE_COMMUNICATION = 10, // Disables ServerCommunicationHandler
-      SERVER_DISABLE_DATA_HANDLER = 11 // Disables SharedServerDataHandler
+      SERVER_DISABLE_DATA_HANDLER = 11, // Disables SharedServerDataHandler
+      SERVER_DB_DEBUG = 12 // Enables server DB debug 
    }
 
    #endregion

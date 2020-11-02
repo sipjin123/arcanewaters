@@ -50,63 +50,20 @@ public class MerchantCropRow : MonoBehaviour {
       cropName.text = Util.UppercaseFirst(offer.cropType.ToString());
 
       // Determines the demand meter fill amount
+      float demand = offer.demand / CropOffer.MAX_DEMAND;
+
       int demandIndex;
-      demandIndex = Mathf.CeilToInt(
-         (float) offer.amount / (CropOffer.MAX_STOCK / (DEMAND_METER_FILL_AMOUNTS.Length - 1)));
+      demandIndex = Mathf.CeilToInt(demand * (DEMAND_METER_FILL_AMOUNTS.Length - 1));
       demandIndex = Mathf.Clamp(demandIndex, 0, DEMAND_METER_FILL_AMOUNTS.Length - 1);
       demandMeterImage.fillAmount = DEMAND_METER_FILL_AMOUNTS[demandIndex];
 
       goldAmount.text = offer.pricePerUnit + "";
 
       // Rarity stars
-      switch (offer.rarity) {
-         case Rarity.Type.None:
-            star1Image.sprite = baseStarSprite;
-            star2Image.sprite = baseStarSprite;
-            star3Image.sprite = baseStarSprite;
-            break;
-         case Rarity.Type.Common:
-            star1Image.sprite = bronzeStarSprite;
-            star2Image.sprite = baseStarSprite;
-            star3Image.sprite = baseStarSprite;
-            break;
-         case Rarity.Type.Uncommon:
-            star1Image.sprite = bronzeStarSprite;
-            star2Image.sprite = bronzeStarSprite;
-            star3Image.sprite = baseStarSprite;
-            break;
-         case Rarity.Type.Rare:
-            star1Image.sprite = bronzeStarSprite;
-            star2Image.sprite = bronzeStarSprite;
-            star3Image.sprite = bronzeStarSprite;
-            break;
-         case Rarity.Type.Epic:
-            star1Image.sprite = silverStarSprite;
-            star2Image.sprite = silverStarSprite;
-            star3Image.sprite = silverStarSprite;
-            break;
-         case Rarity.Type.Legendary:
-            star1Image.sprite = diamondStarSprite;
-            star2Image.sprite = diamondStarSprite;
-            star3Image.sprite = diamondStarSprite;
-            break;
-         default:
-            break;
-      }
-
-      // If everything has been sold, greys out the row
-      if (offer.amount <= 0) {
-         cropImage.color = GREYED_OUT_COLOR;
-         cropName.color = GREYED_OUT_COLOR;
-         demandMeterImage.color = GREYED_OUT_COLOR;
-         demandMeterBaseImage.color = GREYED_OUT_COLOR;
-         goldIcon.color = GREYED_OUT_COLOR;
-         goldAmount.color = GREYED_OUT_COLOR;
-         star1Image.color = GREYED_OUT_COLOR;
-         star2Image.color = GREYED_OUT_COLOR;
-         star3Image.color = GREYED_OUT_COLOR;
-         sellButton.interactable = false;
-      }
+      Sprite[] rarityStars = Rarity.getRarityStars(offer.rarity);
+      star1Image.sprite = rarityStars[0];
+      star2Image.sprite = rarityStars[1];
+      star3Image.sprite = rarityStars[2];
 
       // Associate a new function with the confirmation button
       sellButton.onClick.RemoveAllListeners();
@@ -114,9 +71,6 @@ public class MerchantCropRow : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // The greyed out color, when the offer expired
-   private static Color GREYED_OUT_COLOR = new Color(137f / 255f, 137f / 255f, 137f / 255f, 87f / 255f);
 
    // The fill amount values for the demand meter
    private static float[] DEMAND_METER_FILL_AMOUNTS = new float[]

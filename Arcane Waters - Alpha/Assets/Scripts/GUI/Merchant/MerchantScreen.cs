@@ -22,16 +22,6 @@ public class MerchantScreen : Panel {
    // The text we want to type out
    public TextMeshProUGUI greetingText;
 
-   // The timer
-   public Image timerImage;
-
-   // The timer sprites
-   public Sprite[] timerSprites;
-   public Sprite timerEmptySprite;
-
-   // The time left text
-   public Text timeLeftText;
-
    // Self
    public static MerchantScreen self;
 
@@ -45,19 +35,17 @@ public class MerchantScreen : Panel {
 
    public override void Awake () {
       base.Awake();
-
       self = this;
 
-      // Initializes the offer expiration countdown
-      timeLeftText.text = "";
-      timerImage.sprite = timerEmptySprite;
+      // Clear out any crop rows
+      cropRowsContainer.DestroyChildren();
    }
 
    public override void show () {
       base.show();
 
       // Show the correct offers based on our current area
-      Global.player.rpc.Cmd_GetOffersForArea(shopName);
+      Global.player.rpc.Cmd_GetCropOffersForShop(shopName);
 
       // Update the head icon image
       headAnim.setNewTexture(headIconSprite.texture);
@@ -66,93 +54,48 @@ public class MerchantScreen : Panel {
       greetingText.text = "";
    }
 
-   public override void Update () {
-      base.Update();
-      
-      // Determine the time left until the offers expire
-      TimeSpan timeLeft = TimeSpan.FromSeconds(CropOffer.REGEN_INTERVAL * 3600)
-      - (DateTime.UtcNow - _lastCropRegenTime);
-
-      // If the offers have expired, show a special message
-      if (timeLeft.Ticks <= 0) {
-         timeLeftText.text = "The offers have expired!";
-         timerImage.sprite = timerEmptySprite;
-      } else {
-         // Show the seconds if it happened in the last 60s, the
-         // minutes in the last 60m, or the hours.
-         if (timeLeft.TotalSeconds <= 60) {
-            if (timeLeft.Seconds <= 1) {
-               timeLeftText.text = timeLeft.Seconds.ToString() + " second left";
-            } else {
-               timeLeftText.text = timeLeft.Seconds.ToString() + " seconds left";
-            }
-         } else if (timeLeft.TotalMinutes <= 60) {
-            timeLeftText.text = timeLeft.Minutes.ToString() + " min left";
-         } else {
-            if (timeLeft.Hours <= 1) {
-               timeLeftText.text = timeLeft.Hours.ToString() + " hour left";
-            } else {
-               timeLeftText.text = timeLeft.Hours.ToString() + " hours left";
-            }
-         }
-
-         // Determine the timer sprite
-         int spriteIndex = Mathf.FloorToInt(
-            (float) timeLeft.TotalSeconds / ((CropOffer.REGEN_INTERVAL * 3600) / timerSprites.Length));
-         timerImage.sprite = timerSprites[spriteIndex];
+   public override void close () {
+      if (isShowing()) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.CloseMerchantScreen);
       }
+      base.close();
    }
 
    public void sellButtonPressed (int offerId) {
       CropOffer offer = getOffer(offerId);
-
-      // Calculate the time left until the offers regenerate
-      float timeLeftUntilRegeneration = (CropOffer.REGEN_INTERVAL * 3600)
-         - (float) (DateTime.UtcNow - _lastCropRegenTime).TotalSeconds;
-
-      // Check if the offer has expired
-      if (timeLeftUntilRegeneration <= 0 || offer == null) {
-         // Show an error pannel
-         PanelManager.self.noticeScreen.show("This offer has expired!");
-         return;
-      }
-
-      // Check if everything has been sold
-      if (offer.amount <= 0) {
-         // Show an error pannel
-         PanelManager.self.noticeScreen.show("This offer has sold out!");
-
-         // Update the offers
-         Global.player.rpc.Cmd_GetOffersForArea(ShopManager.DEFAULT_SHOP_NAME);
-         return;
-      }
+      Rarity.Type rarityToSellAt = offer.rarity;
 
       TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
 
       // Update the Trade Confirm Screen
       confirmScreen.cropType = offer.cropType;
-      confirmScreen.maxAmount = offer.amount;
+      confirmScreen.maxAmount = offer.isLowestRarity() ? int.MaxValue : Mathf.CeilToInt(offer.demand);
 
       // Associate a new function with the confirmation button
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId));
+      confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId, rarityToSellAt));
 
       // Show a confirmation panel
       string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
       confirmScreen.show("How many " + cropName + " do you want to sell?");
+
+      // Trigger the tutorial if the user has any of the selected crop to sell
+      if (CargoBoxManager.self.getCargoCount(offer.cropType) > 0) {
+         TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenTradeConfirmScreen);
+      }
    }
 
-   protected void sellButtonConfirmed (int offerId) {
+   protected void sellButtonConfirmed (int offerId, Rarity.Type rarityToSellAt) {
       int amountToSell = int.Parse(PanelManager.self.tradeConfirmScreen.sliderText.text);
 
       // Hide the confirm screen
       PanelManager.self.confirmScreen.hide();
 
       // Send the request to the server
-      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell, shopName);
+      Global.player.rpc.Cmd_SellCrops(offerId, amountToSell, rarityToSellAt, shopName);
    }
 
-   public void updatePanelWithOffers (int gold, List<CropOffer> offers, long lastCropRegenTime, string greetingText) {
+   public void updatePanelWithOffers (int gold, List<CropOffer> offers, string greetingText) {
       // Keep track of these offers for later reference
       _offers = offers;
 
@@ -172,8 +115,7 @@ public class MerchantScreen : Panel {
          row.setRowForCrop(offer);
       }
 
-      // Store the last regeneration time
-      _lastCropRegenTime = DateTime.FromBinary(lastCropRegenTime);
+      TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenMerchantScreen);
    }
 
    protected CropOffer getOffer (int offerId) {
@@ -193,9 +135,6 @@ public class MerchantScreen : Panel {
 
    // Keeps track of what our starting text is
    protected string _greetingText = "";
-
-   // Keeps track of the time at which the offers were generated
-   protected DateTime _lastCropRegenTime = DateTime.UtcNow;
 
    #endregion
 }

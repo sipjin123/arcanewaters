@@ -3,10 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class FriendListManager : MonoBehaviour {
 
    #region Public Variables
+
+   // The number of seconds between pending friendship request checks
+   public static float PENDING_REQUESTS_CHECK_INTERVAL = 5 * 60f;
 
    // Self
    public static FriendListManager self;
@@ -15,6 +19,34 @@ public class FriendListManager : MonoBehaviour {
 
    void Awake () {
       self = this;
+      _pendingRequestsLastCheckTime = DateTime.UtcNow;
+   }
+
+   public void startFriendListManagement () {
+      // Regularly check pending friendship requests and send a notification if the user is connected to this server
+      InvokeRepeating(nameof(sendPendingFriendshipNotifications), 30f, PENDING_REQUESTS_CHECK_INTERVAL);
+   }
+
+   public void sendPendingFriendshipNotifications () {
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get all the users that pending friendship requests, received since the last check time
+         List<int> userIdsList = DB_Main.getUserIdsHavingPendingFriendshipRequests(_pendingRequestsLastCheckTime);
+
+         // Back to Unity Thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Check if the user is connected to this server and send a notification
+            NetEntity entity;
+            foreach (int userId in userIdsList) {
+               entity = EntityManager.self.getEntity(userId);
+               if (entity != null) {
+                  entity.Target_ReceiveFriendshipRequestNotification(entity.connectionToClient);
+               }
+            }
+
+            _pendingRequestsLastCheckTime = DateTime.UtcNow;
+         });
+      });
    }
 
    public void sendFriendshipInvite (string friendUserName) {
@@ -42,6 +74,9 @@ public class FriendListManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // The last time the pending friendship requests were checked
+   private DateTime _pendingRequestsLastCheckTime = DateTime.UtcNow;
 
    #endregion
 }

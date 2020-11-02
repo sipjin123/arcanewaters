@@ -39,13 +39,19 @@ public class CloudManager : ClientMonoBehaviour {
       // Store any clouds that we already made in the Editor
       _clouds = new List<Cloud>(GetComponentsInChildren<Cloud>());
 
+      float addPosVal = 2.0f;
+      if (_area.isSea) {
+         addPosVal = 4.0f;
+      }
+
       // Create clouds in a random grid
-      for (float y = expandedBounds.min.y; y <= expandedBounds.max.y; y += 2f) {
-         for (float x = expandedBounds.min.x; x <= expandedBounds.max.x; x += 2f) {
-            Vector2 spawnPos = Util.randFromCenter(x, y, .75f);
+      for (float y = expandedBounds.min.y; y <= expandedBounds.max.y; y += addPosVal) {
+         for (float x = expandedBounds.min.x; x <= expandedBounds.max.x; x += addPosVal) {
+            Vector2 spawnPos = Util.randFromCenter(x, y, 0.375f * addPosVal);
             Cloud cloud = Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
             cloud.weatherEffectType = weatherEffectType;
             cloud.transform.parent = this.transform;
+            cloud.area = _area;
             _clouds.Add(cloud);
          }
       }

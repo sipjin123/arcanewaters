@@ -485,6 +485,12 @@ public class NetEntity : NetworkBehaviour
                animator.SetBool("interact", true);
                StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
                break;
+            case Anim.Type.Pet_East:
+            case Anim.Type.Pet_North:
+            case Anim.Type.Pet_South:
+               animator.SetBool("petting", true);
+               StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
+               break;
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
@@ -507,6 +513,11 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Interact_North:
             case Anim.Type.Interact_South:
                animator.SetBool("interact", false);
+               break;
+            case Anim.Type.Pet_East:
+            case Anim.Type.Pet_North:
+            case Anim.Type.Pet_South:
+               animator.SetBool("petting", false);
                break;
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
@@ -1115,6 +1126,11 @@ public class NetEntity : NetworkBehaviour
    [TargetRpc]
    public void Target_ReceiveUnreadMailNotification (NetworkConnection conn) {
       BottomBar.self.setUnreadMailNotificationStatus(true);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveFriendshipRequestNotification (NetworkConnection conn) {
+      BottomBar.self.setFriendshipRequestNotificationStatus(true);
    }
 
    [Command]

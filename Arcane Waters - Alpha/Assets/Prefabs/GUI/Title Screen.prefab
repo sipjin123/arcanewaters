@@ -2134,6 +2134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tooltipPlacement: 3
   message: Causes only a server to start up, with no client functionality.
 --- !u!1 &5917290719998804429
 GameObject:
@@ -3366,6 +3367,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tooltipPlacement: 3
   message: Causes a client and server to run in the same window.
 --- !u!1 &5917290720275826474
 GameObject:
@@ -3500,6 +3502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tooltipPlacement: 3
   message: When this box is checked, you will not encounter any other players during
     your adventures in Arcane Waters.
 --- !u!1 &5917290720279278425
@@ -3689,6 +3692,7 @@ MonoBehaviour:
   windowResolutionText: {fileID: 5917290721916967915}
   monitorResolutionText: {fileID: 5917290720302887935}
   titleScreenReference: {fileID: 0}
+  battleBoardReference: {fileID: 0}
 --- !u!222 &5917290720302048103
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4687,6 +4691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tooltipPlacement: 3
   message: Causes only a client to start up, with no server functionality.
 --- !u!1 &5917290720615476276
 GameObject:

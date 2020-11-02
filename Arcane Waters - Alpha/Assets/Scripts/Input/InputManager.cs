@@ -123,6 +123,14 @@ public class InputManager : MonoBehaviour
       return new Vector2(getHorizontalAxis(), getVerticalAxis());
    }
 
+   public static bool isLeftClickKeyPressed () {
+      if (isActionInputEnabled()) {
+         return Input.GetKeyDown(KeyCode.Mouse0);
+      }
+
+      return false;
+   }
+
    public static bool isRightClickKeyPressed () {
       if (isActionInputEnabled()) {
          // Define the set of keys that we want to allow as "action" keys

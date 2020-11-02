@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Tooltips>
+  <Tooltip key1="Accept Button" key2="accept_button" value="Accept Friendship Request" />
+  <Tooltip key1="Building Icon" key2="mm_orange_square" value="Building" />
+  <Tooltip key1="Cancel Button" key2="x_button" value="Cancel Friendship Request" />
+  <Tooltip key1="Chat Button" key2="chat_button" value="Chat" />
+  <Tooltip key1="Collapse Button" key2="button_shrink_dark_default" value="Collapse" />
+  <Tooltip key1="Copy Button" key2="panel_button_brown_normal_2x" value="Copy file to storage" />
+  <Tooltip key1="Delete Button" key2="x_button" value="Delete Friend" />
+  <Tooltip key1="Discovery Icon" key2="unknown_discovery" value="Discovery" />
+  <Tooltip key1="Effects Row" key2="" value="Change sound effect volume" />
+  <Tooltip key1="Expand Button" key2="button_expand_dark_default" value="Expand" />
+  <Tooltip key1="Gem Icon" key2="crafting_jewel_icon" value="Gems" />
+  <Tooltip key1="Gold Icon" key2="crafting_money_icon" value="Gold coins" />
+  <Tooltip key1="GUIScaleRow" key2="" value="Increases the size of the interface components such as buttons and text fields" />
+  <Tooltip key1="Icon" key2="element_earth" value="Earth" />
+  <Tooltip key1="Icon" key2="element_air" value="Air" />
+  <Tooltip key1="Icon" key2="element_fire" value="Fire" />
+  <Tooltip key1="Icon" key2="element_physical" value="Physical" />
+  <Tooltip key1="Icon" key2="element_water" value="Water" />
+  <Tooltip key1="Icon (2)" key2="icon_weapon" value="Attack" />
+  <Tooltip key1="Icon (3)" key2="icon_shield" value="Defense" />
+  <Tooltip key1="Impassable Icon" key2="mm_impassable" value="Impassable" />
+  <Tooltip key1="Keybindings row (1)" key2="" value="Customize which keys are mapped to actions" />
+  <Tooltip key1="Message Button" key2="message_button" value="Send Message" />
+  <Tooltip key1="MinimapScaleRow" key2="" value="Increases the size of in-game art such as characters and scenery" />
+  <Tooltip key1="Music Row" key2="" value="Change music volume" />
+  <Tooltip key1="NPC Icon" key2="NPCMinimap" value="NPC" />
+  <Tooltip key1="Open Button" key2="panel_button_brown_normal_2x" value="Open the game log file" />
+  <Tooltip key1="Player Count Icon" key2="voyage_icon_2" value="The number of players in the instance" />
+  <Tooltip key1="PvP Icon" key2="voyage_icon_5" value="The voyage mode" />
+  <Tooltip key1="Reject Button" key2="x_button" value="Reject Friendship Request" />
+  <Tooltip key1="Single Player Row" key2="" value="When this box is checked, you will not encounter any other players during your adventures in Arcane Waters" />
+  <Tooltip key1="Time Icon" key2="voyage_icon_3" value="The time since the voyage started" />
+  <Tooltip key1="Toggle - Client" key2="" value="Causes only a client to start up, with no server functionality" />
+  <Tooltip key1="Toggle - Host" key2="" value="Causes a client and server to run in the same window" />
+  <Tooltip key1="Toggle - Server" key2="" value="Causes only a server to start up, with no client functionality" />
+  <Tooltip key1="Toggle - SinglePlayer" key2="" value="When this box is checked, you will not encounter any other players during your adventures in Arcane Waters" />
+  <Tooltip key1="Treasure Chest Icon" key2="chest" value="Treasure Chest" />
+  <Tooltip key1="Treasure Icon" key2="voyage_icon_1" value="The remaining treasure sites" />
+  <Tooltip key1="VSync Row" key2="" value="Sync the game framerate with your monitor refresh rate" />
+  <Tooltip key1="X Button" key2="floating_exit_button_default" value="Leave Voyage Group" />
+  <Tooltip key1="Inventory Button" key2="btn_inventory" value="Inventory" />
+  <Tooltip key1="Abilities Button" key2="btn_abilities" value="Abilities" />
+  <Tooltip key1="Guild Button" key2="btn_guild" value="Guild" />
+  <Tooltip key1="Ships Button" key2="btn_ship" value="Ship" />
+  <Tooltip key1="Leader Boards Button" key2="btn_leader" value="Leader Boards" />
+  <Tooltip key1="Trade Button" key2="btn_trade" value="Trade" />
+  <Tooltip key1="Friends Button" key2="btn_friends" value="Friends" />
+  <Tooltip key1="Mail Button" key2="btn_mail" value="Mail" />
+  <Tooltip key1="Options Button" key2="btn_options" value="Options" />
+  <Tooltip key1="Female Toggle" key2="" value="Female" />
+  <Tooltip key1="Male Toggle" key2="" value="Male" />
+</Tooltips>

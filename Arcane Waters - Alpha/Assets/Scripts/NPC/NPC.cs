@@ -61,8 +61,20 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Determines if this npc is a shop npc
    public bool isShopNpc;
 
+   [SyncVar]
+   // Determines if this npc is animal which can be interacted with (pet)
+   public bool isAnimal;
+
+   [SyncVar]
+   // The Type of reaction after petting (if this NPC is animal)
+   public AnimalPetting.ReactionType animalReactionType;
+
    // Determines if this npc is staying still or moving around
    public bool isStationary;
+
+   [SyncVar]
+   // Check if NPC is currently able to move and if seeker should continue its work
+   public bool canMove = true;
 
    #endregion
 
@@ -224,8 +236,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    protected override void FixedUpdate () {
       base.FixedUpdate();
 
-      // If we're talking to the player, don't move
-      if (isTalkingToGlobalPlayer()) {
+      // If we're talking to the player or movement is blocked, don't move
+      if (isTalkingToGlobalPlayer() || !canMove) {
          return;
       }
 
@@ -261,6 +273,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Only works when the player is close enough
       if (Vector2.Distance(transform.position, Global.player.transform.position) > TALK_DISTANCE) {
          FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
+         return;
+      }
+
+      // If NPC is marked as "animal", player can interact with it
+      if (isAnimal) {
+         if (!_isInteractingAnimal) {
+            startAnimalPetting();
+         }
          return;
       }
 
@@ -473,6 +493,42 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       this.transform.SetParent(area.npcParent, worldPositionStays);
    }
 
+   private void startAnimalPetting () {
+      // Set correct NPC state
+      _isInteractingAnimal = true;
+      canMove = false;
+      foreach (Animator animator in _animators) {
+         animator.enabled = false;
+      }
+
+      // Play player animation of petting animal
+      Global.player.requestAnimationPlay(Anim.Type.Pet_East, false);
+
+      // Play animal's reaction
+      if (_animalPetting == null) {
+         _animalPetting = GetComponent<AnimalPetting>();
+         if (_animalPetting == null) {
+            _animalPetting = this.gameObject.AddComponent<AnimalPetting>();
+         }
+      }
+      _animalPetting.playAnimalAnimation(this, animalReactionType);
+   }
+
+   public void finishAnimalPetting () {
+      if (_isInteractingAnimal) {
+         foreach (Animator animator in _animators) {
+            animator.enabled = true;
+         }
+      }
+   }
+
+   public void finishAnimalReaction () {
+      if (_isInteractingAnimal) {
+         _isInteractingAnimal = false;
+         canMove = true;
+      }
+   }
+
    #region Private Variables
 
    // How long, in seconds, the NPC should pause between finding new paths to walk
@@ -510,6 +566,12 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // Are we currently moving this NPC along a Path?
    private bool _moving = true;
+
+   // Determine if NPC being animal, is currently being pet by player
+   private bool _isInteractingAnimal = false;
+
+   // Script used for handling petting sequence of an animal
+   private AnimalPetting _animalPetting;
 
    #endregion
 }

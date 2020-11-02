@@ -283,64 +283,66 @@ public class PlayerBodyEntity : BodyEntity {
    }
 
    private void processActionLogic () {
-      if (InputManager.isRightClickKeyPressed()) {
+      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null && !PanelManager.self.hasPanelInLinkedList()) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
-         } else {
-            bool isNearInteractables = false;
-            float overlapRadius = .35f;
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
-            List<NPC> npcsNearby = new List<NPC>();
-            List<TreasureChest> treasuresNearby = new List<TreasureChest>();
+         }
+      }
 
-            int currentCount = 0;
-            if (hits.Length > 0) {
-               foreach (Collider2D hit in hits) {
-                  if (currentCount > MAX_COLLISION_COUNT) {
-                     break;
-                  }
-                  currentCount++;
+      if (InputManager.isRightClickKeyPressed()) {
+         bool isNearInteractables = false;
+         float overlapRadius = .35f;
+         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
+         List<NPC> npcsNearby = new List<NPC>();
+         List<TreasureChest> treasuresNearby = new List<TreasureChest>();
 
-                  if (hit.GetComponent<NPC>() != null) {
-                     npcsNearby.Add(hit.GetComponent<NPC>());
-                  }
+         int currentCount = 0;
+         if (hits.Length > 0) {
+            foreach (Collider2D hit in hits) {
+               if (currentCount > MAX_COLLISION_COUNT) {
+                  break;
+               }
+               currentCount++;
 
-                  if (hit.GetComponent<TreasureChest>() != null) {
-                     treasuresNearby.Add(hit.GetComponent<TreasureChest>());
-                  }
+               if (hit.GetComponent<NPC>() != null) {
+                  npcsNearby.Add(hit.GetComponent<NPC>());
                }
 
-               if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) {
-                  // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
-                  isNearInteractables = true;
-               }
-
-               // Loot the nearest lootbag/treasure chest
-               interactNearestLoot(treasuresNearby);
-
-               // If there are no loots nearby, interact with nearest npc
-               if (treasuresNearby.Count < 1) {
-                  interactNearestNpc(npcsNearby);
+               if (hit.GetComponent<TreasureChest>() != null) {
+                  treasuresNearby.Add(hit.GetComponent<TreasureChest>());
                }
             }
 
-            if (!isNearInteractables && !isMoving()) {
-               Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-               if (!interactingAnimation) {
-                  farmingTrigger.interactFarming();
-               }
-               if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-                  || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
-               } else if (newDirection == Direction.North) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
-               } else if (newDirection == Direction.South) {
-                  rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
-               }
-               miningTrigger.interactOres();
+            if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) {
+               // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
+               isNearInteractables = true;
             }
+
+            // Loot the nearest lootbag/treasure chest
+            interactNearestLoot(treasuresNearby);
+
+            // If there are no loots nearby, interact with nearest npc
+            if (treasuresNearby.Count < 1) {
+               interactNearestNpc(npcsNearby);
+            }
+         }
+
+         if (!isNearInteractables && !isMoving()) {
+            Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+            if (!interactingAnimation) {
+               farmingTrigger.interactFarming();
+            }
+            if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+               || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+               rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
+            } else if (newDirection == Direction.North) {
+               rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
+            } else if (newDirection == Direction.South) {
+               rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
+            }
+            miningTrigger.interactOres();
          }
       }
    }
@@ -542,27 +544,19 @@ public class PlayerBodyEntity : BodyEntity {
    }
 
    protected PlayerBodyEntity getClickedBody () {
-      float closest = float.MaxValue;
-      PlayerBodyEntity clickedBody = null;
-
-      // Cycle through all of the player bodies we know about
-      foreach (PlayerBodyEntity body in FindObjectsOfType<PlayerBodyEntity>()) {
-         Vector2 screenPos = Camera.main.WorldToScreenPoint(body.transform.position);
-         float distance = Vector2.Distance(screenPos, Input.mousePosition);
-
-         // Check if this is the closest player we've found so far
-         if (distance < closest) {
-            clickedBody = body;
-            closest = distance;
+      NetEntity entityHovered = null;
+      foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+         if (entity.isMouseOver()) {
+            entityHovered = entity;
+            break;
          }
       }
 
-      // If no one was close enough, return null
-      if (closest > 48f) {
+      if (entityHovered != null && entityHovered is PlayerBodyEntity) {
+         return (PlayerBodyEntity) entityHovered;
+      } else {
          return null;
       }
-
-      return clickedBody;
    }
 
    public override void setAreaParent (Area area, bool worldPositionStays) {
