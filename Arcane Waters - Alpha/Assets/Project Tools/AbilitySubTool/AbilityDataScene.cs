@@ -267,7 +267,7 @@ public class AbilityDataScene : MonoBehaviour
       skillTemplateParent.gameObject.DestroyChildren();
       BattleItemData battleItemData = BattleItemData.CreateInstance(ability.itemID, ability.itemName, ability.itemDescription, ability.elementType, ability.hitSoundEffectId, ability.hitSpritesPath, ability.battleItemType, ability.classRequirement, ability.itemIconPath, ability.levelRequirement);
       BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, ability.abilityCost, ability.castSpritesPath, ability.castSoundEffectId, ability.allowedStances, ability.abilityType, ability.abilityCooldown, ability.apChange, ability.FXTimePerFrame, ability.abilityCastPosition, ability.hitFXTimePerFrame);
-      AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked, ability.hasKnockBack, ability.projectileSpeed, ability.projectileSpritePath, ability.projectileScale);
+      AttackAbilityData attackAbility = AttackAbilityData.CreateInstance(basicData, ability.hasKnockup, ability.baseDamage, ability.hasShake, ability.abilityActionType, ability.canBeBlocked, ability.hasKnockBack, ability.projectileSpeed, ability.projectileSpritePath, ability.projectileScale, ability.useCustomProjectileSprite);
       finalizeAttackTemplate(attackAbility);
    }
 
@@ -285,7 +285,7 @@ public class AbilityDataScene : MonoBehaviour
                // Basic data set
                BattleItemData battleItemData = BattleItemData.CreateInstance(-1, "Name", "Desc", Element.ALL, -1, null, BattleItemType.UNDEFINED, Weapon.Class.Any, String.Empty, 1);
                BasicAbilityData basicData = BasicAbilityData.CreateInstance(battleItemData, 1, null, -1, new Battler.Stance[] { }, AbilityType.Standard, 1, 1, 1, BasicAbilityData.AbilityCastPosition.Self, .1f);
-               AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false, false, 2, null, 1);
+               AttackAbilityData attackData = AttackAbilityData.CreateInstance(basicData, false, 0, false, AbilityActionType.UNDEFINED, false, false, 2, null, 1, true);
                finalizeAttackTemplate(attackData);
             }
             break;

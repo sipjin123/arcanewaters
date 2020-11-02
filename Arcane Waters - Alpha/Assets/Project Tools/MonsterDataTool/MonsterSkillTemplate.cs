@@ -120,6 +120,10 @@ public class MonsterSkillTemplate : MonoBehaviour
    public Text abilityCastPositionText;
    public Slider abilityCastPosition;
 
+   // Makes use of the custom projectile sprite
+   public Toggle userCustomProjectileSprite;
+   public GameObject projectileSpriteSelectionHolder;
+
    // Holds the variables only available to ability types with projectile
    public GameObject[] projectileVariables;
 
@@ -182,7 +186,11 @@ public class MonsterSkillTemplate : MonoBehaviour
       buffType.maxValue = Enum.GetValues(typeof(BuffType)).Length - 1;
       buffActionType.maxValue = Enum.GetValues(typeof(BuffActionType)).Length - 1;
       bonusStatType.maxValue = Enum.GetValues(typeof(BonusStatType)).Length - 1;
-      abilityCastPosition.maxValue = Enum.GetValues(typeof(BasicAbilityData.AbilityCastPosition)).Length - 1; 
+      abilityCastPosition.maxValue = Enum.GetValues(typeof(BasicAbilityData.AbilityCastPosition)).Length - 1;
+
+      userCustomProjectileSprite.onValueChanged.AddListener(_ => {
+         projectileSpriteSelectionHolder.SetActive(_);
+      });
 
       itemName.onValueChanged.AddListener(_ => {
          skillName.text = itemName.text;
@@ -302,6 +310,9 @@ public class MonsterSkillTemplate : MonoBehaviour
       projectileSpeed.text = attackData.projectileSpeed.ToString();
       projectileScale.text = attackData.projectileScale.ToString();
       projectileSpritePath.text = attackData.projectileSpritePath;
+      userCustomProjectileSprite.isOn = attackData.useCustomProjectileSprite;
+      projectileSpriteSelectionHolder.SetActive(userCustomProjectileSprite.isOn);
+
       if (attackData.abilityActionType != AbilityActionType.Melee) {
          if (attackData.projectileSpritePath != null) {
             projectileSprite.sprite = ImageManager.getSprite(attackData.projectileSpritePath);
@@ -432,7 +443,8 @@ public class MonsterSkillTemplate : MonoBehaviour
          canBeBlocked.isOn, hasKnockBack.isOn,
          float.Parse(projectileSpeed.text),
          projectileSpritePath.text,
-         float.Parse(projectileScale.text));
+         float.Parse(projectileScale.text),
+         userCustomProjectileSprite.isOn);
       attackData.abilityCastPosition = (BasicAbilityData.AbilityCastPosition) abilityCastPosition.value;
 
       return attackData;

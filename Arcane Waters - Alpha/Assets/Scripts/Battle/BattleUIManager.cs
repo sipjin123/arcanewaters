@@ -201,7 +201,6 @@ public class BattleUIManager : MonoBehaviour {
                   abilityButton.abilityIndex = indexCounter;
                   abilityButton.setAbility(abilityType);
                   if (abilityType == AbilityType.Standard) {
-                     AttackAbilityData attackAbility = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitydata[indexCounter].abilityID);
                      abilityButton.abilityTypeIndex = attackAbilityIndex;
                      attackAbilityIndex++;
                   }

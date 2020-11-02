@@ -3907,11 +3907,17 @@ public class RPCManager : NetworkBehaviour {
             int validAbilities = 0;
             List<AbilitySQLData> equippedAbilityList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
             foreach (AbilitySQLData abilitySql in equippedAbilityList) {
-               if (abilitySql.abilityType == AbilityType.Standard) {
+               BasicAbilityData basicAbilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == abilitySql.abilityID);
+
+               // Overwrite the ability type of the fetched ability sql
+               abilitySql.abilityType = basicAbilityData.abilityType;
+               if (basicAbilityData.abilityType == AbilityType.Standard) {
                   AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
                   if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee()) || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())) {
                      validAbilities++;
                   }
+               } else {
+                  validAbilities++;
                }
             }
 

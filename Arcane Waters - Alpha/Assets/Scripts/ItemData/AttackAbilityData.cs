@@ -37,6 +37,8 @@ public class AttackAbilityData : BasicAbilityData
    // The projectile scale
    public float projectileScale = 1;
 
+   // Makes use of a custom projectile sprite / otherwise it will use the projectile sprite of the weapon
+   public bool useCustomProjectileSprite = true;
 
    #endregion
 
@@ -69,7 +71,7 @@ public class AttackAbilityData : BasicAbilityData
 
    // Builder for the Item creation window
    public static AttackAbilityData CreateInstance (BasicAbilityData basicAbilityData, bool _hasKnockup, int _damage, bool _hasShake,
-      AbilityActionType _abilityActionType, bool _canBeBlocked, bool _hasKnockBack, float _projectileSpeed, string _projectileSpritePath, float _projectileScale) {
+      AbilityActionType _abilityActionType, bool _canBeBlocked, bool _hasKnockBack, float _projectileSpeed, string _projectileSpritePath, float _projectileScale, bool _useCustomProjectileSprite) {
 
       AttackAbilityData data = new AttackAbilityData();
 
@@ -87,6 +89,7 @@ public class AttackAbilityData : BasicAbilityData
       data.projectileSpeed = _projectileSpeed;
       data.projectileSpritePath = _projectileSpritePath;
       data.projectileScale = _projectileScale;
+      data.useCustomProjectileSprite = _useCustomProjectileSprite;
 
       return data;
    }

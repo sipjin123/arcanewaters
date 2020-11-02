@@ -17,6 +17,9 @@ public class WeaponStatData : EquipmentStatData
    [XmlElement(Namespace = "WeaponClass")]
    public Weapon.Class weaponClass = Weapon.Class.Any;
 
+   [XmlElement(Namespace = "ProjectileSprite")]
+   public string projectileSprite = "";
+
    // The damage of the weapon
    public int weaponBaseDamage = 0;
 

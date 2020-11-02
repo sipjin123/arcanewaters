@@ -105,7 +105,14 @@ public class AttackPanel : MonoBehaviour {
       recentAbilityRequest.abilityType = AbilityType.BuffDebuff;
       recentAbilityRequest.targetNetId = target.netId;
       recentAbilityRequest.abilityIndex = abilityIndex;
-      Global.player.rpc.Cmd_RequestAbility((int) AbilityType.BuffDebuff, target.netId, abilityIndex, false);
+
+      // Send the request to the server
+      if (BattleManager.self.getPlayerBattler().canCastAbility()) {
+         recentAbilityRequest.abilityType = AbilityType.BuffDebuff;
+         recentAbilityRequest.targetNetId = target.netId;
+         recentAbilityRequest.abilityIndex = abilityIndex;
+         Global.player.rpc.Cmd_RequestAbility((int) AbilityType.BuffDebuff, target.netId, abilityIndex, false);
+      }
    }
 
    protected Battler getBattler () {

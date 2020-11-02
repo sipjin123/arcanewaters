@@ -39,9 +39,10 @@ public class FileReadWriteSimulator : MonoBehaviour {
       writeTimer = 0;
       path = Application.persistentDataPath;
       hasBegun = true;
+      InvokeRepeating("processPerFrame", 0, .5f);
    }
 
-   private void Update () {
+   private void processPerFrame () {
       if (hasBegun) {
          if (isWriter) {
             writeTimer += Time.deltaTime;
@@ -57,15 +58,6 @@ public class FileReadWriteSimulator : MonoBehaviour {
          } else {
             readStuff();
          }
-
-         if ((int) overAllTimer % 30 == 0) {
-            readCount = 0;
-            cantReadCount = 0;
-
-            writeCount = 0;
-            cantWriteCount = 0;
-         }
-         overAllTimer += Time.deltaTime;
       }
    }
 
@@ -110,20 +102,38 @@ public class FileReadWriteSimulator : MonoBehaviour {
          isWriter = false;
          Begin();
       }
+      if (GUILayout.Button("Clear Timers")) {
+         readCount = 0;
+         cantReadCount = 0;
+
+         writeCount = 0;
+         cantWriteCount = 0;
+      }
 
       GUILayout.Space(10);
       GUILayout.Box("Time: " + overAllTimer.ToString("f2"));
-      GUILayout.Box("ReadData: " + debugger);
+      
+      if (!isWriter) {
+         GUILayout.Box("ReadData: " + debugger);
 
-      GUILayout.Space(10);
-      GUILayout.Box("Read Loss %: "+readPercent.ToString("f2"));
-      GUILayout.Box("ReadCount: " + readCount, GUILayout.Width(200));
-      GUILayout.Box("CantReadCount: " + cantReadCount);
+         GUILayout.Space(10);
+         GUILayout.Box("Read Loss %: " + readPercent.ToString("f2"));
+         GUILayout.Box("ReadCount: " + readCount, GUILayout.Width(200));
+         GUILayout.Box("CantReadCount: " + cantReadCount);
+      } else {
+         GUILayout.Box("WriteData: " + writeTimer);
 
-      GUILayout.Space(10);
-      GUILayout.Box("Write Loss %: " + writePercent.ToString("f2"));
-      GUILayout.Box("WriteCount: " + writeCount, GUILayout.Width(200));
-      GUILayout.Box("CantWriteCount: " + cantWriteCount);
+         GUILayout.Space(10);
+         GUILayout.Box("Write Loss %: " + writePercent.ToString("f2"));
+         GUILayout.Box("WriteCount: " + writeCount, GUILayout.Width(200));
+         GUILayout.Box("CantWriteCount: " + cantWriteCount);
+      }
+
+      /*
+      if (GUILayout.Button("Save Pref: " + newTimer)) {
+         PlayerPrefs.SetFloat("TEST_PREF", newTimer);
+      }*/
+      //GUILayout.Box("Fetched Pref :: " + PlayerPrefs.GetFloat("TEST_PREF", 0));
    }
 
    #region Private Variables

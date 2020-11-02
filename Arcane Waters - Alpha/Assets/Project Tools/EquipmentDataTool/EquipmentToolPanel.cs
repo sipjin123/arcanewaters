@@ -57,6 +57,9 @@ public class EquipmentToolPanel : MonoBehaviour {
    // Gender type for preview
    public Gender.Type genderType = Gender.Type.Female;
 
+   // Holds the projectile sprite icon selection
+   public GameObject projectileSpriteHolder;
+
    #endregion
 
    private void Awake () {
@@ -69,7 +72,8 @@ public class EquipmentToolPanel : MonoBehaviour {
 
       _weaponClass.maxValue = Enum.GetValues(typeof(Weapon.Class)).Length - 1;
       _weaponClass.onValueChanged.AddListener(_ => {
-         _weaponClassText.text = ((Weapon.Class)_).ToString();
+         _weaponClassText.text = ((Weapon.Class) _).ToString();
+         projectileSpriteHolder.SetActive((Weapon.Class) _ != Weapon.Class.Melee);
       });
 
       _materialType.maxValue = 0;
@@ -112,6 +116,10 @@ public class EquipmentToolPanel : MonoBehaviour {
          } else if (equipmentType == EquipmentType.Hat) {
             genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.HatIcon, _icon, _iconPath);
          }
+      });
+      
+      _changeProjectileIconPathButton.onClick.AddListener(() => {
+         genericSelectionPopup.callImageTextSelectionPopup(GenericSelectionPopup.selectionType.CannonSprites, _projectileIcon, _projectileIconPath);
       });
 
       _equipmentTypeButton.onClick.AddListener(() => {
@@ -305,6 +313,14 @@ public class EquipmentToolPanel : MonoBehaviour {
       _equipmentTypeText.text = statData.weaponType.ToString();
       _weaponClass.value = (int) statData.weaponClass;
       _weaponClassText.text = statData.weaponClass.ToString();
+
+      _projectileIconPath.text = statData.projectileSprite;
+      if (statData.projectileSprite.Length > 0) {
+         Sprite projectileSprite = ImageManager.getSprite(statData.projectileSprite);
+         _projectileIcon.sprite = projectileSprite;
+      } else {
+         _projectileIcon.sprite = ImageManager.self.blankSprite;
+      }
 
       int spriteIndex = 0;
       string path = getInGameSprite(statData.weaponType);
@@ -630,6 +646,14 @@ public class EquipmentToolPanel : MonoBehaviour {
    private Button _changeIconPathButton;
    [SerializeField]
    private Image _icon;
+
+   // Projectile Icon UI
+   [SerializeField]
+   private Text _projectileIconPath;
+   [SerializeField]
+   private Button _changeProjectileIconPathButton;
+   [SerializeField]
+   private Image _projectileIcon;
 
    // Action Type
    [SerializeField]

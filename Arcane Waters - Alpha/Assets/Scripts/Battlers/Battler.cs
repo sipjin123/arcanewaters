@@ -868,6 +868,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       BuffAbilityData abilityDataReference = (BuffAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.BuffDebuff);
       BuffAbilityData globalAbilityData = BuffAbilityData.CreateInstance(abilityDataReference);
 
+      // Highlight ability to be casted
+      if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
+         BattleUIManager.self.initializeAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex);
+      }
+
+      triggerAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+
       switch (globalAbilityData.buffActionType) {
          case BuffActionType.Regeneration:
             // Cast version of the Buff Action
