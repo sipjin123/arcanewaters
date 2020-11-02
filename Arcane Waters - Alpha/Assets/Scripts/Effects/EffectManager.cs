@@ -242,11 +242,11 @@ public class EffectManager : MonoBehaviour {
          }
       }
    }
-   public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, string projectileSpritePath, float scale) {
+   public static void spawnProjectile (Battler source, AttackAction action, Vector2 sourcePos, Vector2 targetPos, float projectileSpeed, string projectileSpritePath, float scale, float fxSpeed) {
       GameObject genericEffect = Instantiate(self.projectilePrefab.gameObject, sourcePos, Quaternion.identity);
       genericEffect.transform.position = sourcePos;
       BattlerProjectile battlerProjectile = genericEffect.GetComponent<BattlerProjectile>();
-      battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed);
+      battlerProjectile.setTrajectory(sourcePos, targetPos, projectileSpeed, fxSpeed);
       battlerProjectile.projectileRenderer.sprite = ImageManager.getSprite(projectileSpritePath);
       if (projectileSpritePath.Contains("empty")) {
          battlerProjectile.shadowObj.SetActive(false);

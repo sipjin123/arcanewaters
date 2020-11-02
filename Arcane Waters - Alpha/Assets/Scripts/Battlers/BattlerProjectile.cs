@@ -30,7 +30,9 @@ public class BattlerProjectile : MonoBehaviour {
 
    #endregion
 
-   public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float projectileSpeed) {
+   public void setTrajectory (Vector2 startPos, Vector2 targetPosition, float projectileSpeed, float fxTime) {
+      GetComponentInChildren<SimpleAnimation>().modifyAnimSpeed(fxTime);
+
       isInitialized = true;
       this.startPosition = startPos;
       this.targetPosition = targetPosition;

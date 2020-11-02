@@ -245,6 +245,13 @@ public class NetEntity : NetworkBehaviour
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
 
+         // This will allow the local host in unity editor to simulate time for features such as crops
+         #if UNITY_EDITOR
+         if (Global.player != null && isServer) {
+            InvokeRepeating("requestServerTime", 0f, 1f);
+         }
+         #endif
+
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
 

@@ -859,11 +859,6 @@ public class RPCManager : NetworkBehaviour {
       // Create a Chat Info for this message
       ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId);
 
-      // Store this message in the database
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         chatInfo.chatId = DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, ServerCommunicationHandler.self.ourIp);
-      });
-
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
 

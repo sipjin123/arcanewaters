@@ -40,12 +40,15 @@ public class CropManager : NetworkBehaviour {
       }
       crop.growthLevel = cropInfo.growthLevel;
       crop.creationTime = cropInfo.creationTime;
-      crop.waterInterval = cropInfo.waterInterval;
       crop.setData(cropInfo.cropType, cropInfo.cropNumber, cropInfo.lastWaterTimestamp);
       int growthLevel = Mathf.Min(cropInfo.growthLevel, Crop.getMaxGrowthLevel(crop.cropType));
       string spriteName = "crop_" + crop.cropType + "_" + growthLevel;
       crop.anim.setNewTexture(ImageManager.getTexture("Crops/" + spriteName));
       crop.name = "Crop " + crop.cropNumber + " [" + crop.cropType + "]";
+
+      // Crop water interval accepts seconds, the crop data registers minutes to ripe, so multiply by 60 to get the seconds 
+      CropsData fetchedCropData = CropsDataManager.self.getCropData(cropInfo.cropType);
+      crop.waterInterval = fetchedCropData.minutesToRipe * 60;
 
       if (cropSpot == null) {
          crop.gameObject.SetActive(false);

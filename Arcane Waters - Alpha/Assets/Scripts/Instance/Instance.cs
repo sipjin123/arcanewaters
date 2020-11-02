@@ -391,7 +391,11 @@ public class Instance : NetworkBehaviour
             NetworkServer.Spawn(secretObjNode.gameObject);
             spawnIdCounter++;
 
-            area.registerWarpFromSecretEntrance(secretObjNode.cachedSecretEntrance.warp);
+            try {
+               area.registerWarpFromSecretEntrance(secretObjNode.cachedSecretEntrance.warp);
+            } catch {
+
+            }
          }
       }
 

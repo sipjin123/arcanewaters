@@ -1216,7 +1216,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Shoot the projectile after playing cast time
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(PRE_SHOOT_DELAY);
 
@@ -1325,7 +1325,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(PRE_CAST_DELAY);
 
             // Shoot the projectile after playing cast time
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale);
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);

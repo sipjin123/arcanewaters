@@ -99,11 +99,11 @@ public class AttackAction : BattleAction {
       action.sourceId = Convert.ToInt32(stringArray[3]);
       action.targetId = Convert.ToInt32(stringArray[4]);
       action.damage = Convert.ToInt32(stringArray[5]);
-      action.actionEndTime = Convert.ToSingle(stringArray[6]);
+      action.actionEndTime = float.Parse(stringArray[6]);
       action.abilityInventoryIndex = Convert.ToInt32(stringArray[7]);
       action.wasCritical = Convert.ToBoolean(stringArray[8]);
       action.wasBlocked = Convert.ToBoolean(stringArray[9]);
-      action.cooldownDuration = Convert.ToSingle(stringArray[10]);
+      action.cooldownDuration = float.Parse(stringArray[10]);
       action.sourceApChange = Convert.ToInt32(stringArray[11]);
       action.targetApChange = Convert.ToInt32(stringArray[12]);
       action.abilityGlobalID = Convert.ToInt32(stringArray[13]);
