@@ -47,6 +47,7 @@ public class BuffAbilityData : BasicAbilityData
       data.iconPath = datacopy.iconPath;
       data.value = datacopy.value;
       data.bonusStatType = datacopy.bonusStatType;
+      data.abilityCastPosition = datacopy.abilityCastPosition;
 
       return data;
    }

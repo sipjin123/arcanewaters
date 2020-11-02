@@ -467,6 +467,7 @@ public class EquipmentToolPanel : MonoBehaviour {
       weaponStatData.weaponClass = (Weapon.Class) Enum.Parse(typeof(Weapon.Class), _weaponClassText.text);
       weaponStatData.actionType = (Weapon.ActionType) Enum.Parse(typeof(Weapon.ActionType), _actionType.text);
       weaponStatData.actionTypeValue = int.Parse(_actionTypeValue.text);
+      weaponStatData.projectileSprite = _projectileIconPath.text;
       return weaponStatData;
    }
 

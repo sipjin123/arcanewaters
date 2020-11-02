@@ -899,7 +899,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
 
             // Play The effect of the buff
-            EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
+            Vector3 castPosition = targetBattler.getMagicGroundPosition();
+
+            // TODO: Adjust casting offset based on cast position
+            switch (abilityDataReference.abilityCastPosition) {
+               case BasicAbilityData.AbilityCastPosition.AboveSelf:
+                  castPosition = targetBattler.getMagicGroundPosition();
+                  break;
+               case BasicAbilityData.AbilityCastPosition.AboveTarget:
+                  castPosition = targetBattler.getMagicGroundPosition();
+                  break;
+               case BasicAbilityData.AbilityCastPosition.Self:
+                  castPosition = targetBattler.getMagicGroundPosition();
+                  break;
+               default:
+                  D.debug("Unknown Cast Position: " + abilityDataReference.abilityCastPosition);
+                  break;
+            }
+            EffectManager.playCastAbilityVFX(sourceBattler, buffAction, castPosition, BattleActionType.BuffDebuff);
 
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
 
@@ -952,7 +969,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
 
                // Play The effect of the buff
-               EffectManager.playCastAbilityVFX(sourceBattler, buffAction, targetBattler.getMagicGroundPosition(), BattleActionType.BuffDebuff);
+               castPosition = targetBattler.getMagicGroundPosition();
+
+               // TODO: Adjust casting offset based on cast position
+               switch (abilityDataReference.abilityCastPosition) {
+                  case BasicAbilityData.AbilityCastPosition.AboveSelf:
+                     castPosition = targetBattler.getMagicGroundPosition();
+                     break;
+                  case BasicAbilityData.AbilityCastPosition.AboveTarget:
+                     castPosition = targetBattler.getMagicGroundPosition();
+                     break;
+                  case BasicAbilityData.AbilityCastPosition.Self:
+                     castPosition = targetBattler.getMagicGroundPosition();
+                     break;
+                  default:
+                     D.debug("Unknown Cast Position: " + abilityDataReference.abilityCastPosition);
+                     break;
+               }
+               EffectManager.playCastAbilityVFX(sourceBattler, buffAction, castPosition, BattleActionType.BuffDebuff);
 
                yield return new WaitForSeconds(sourceBattler.getPreContactLength());
 
@@ -1221,9 +1255,17 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                yield return new WaitForSeconds(AIM_DURATION);
             }
-
+            
             // Shoot the projectile after playing cast time
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
+            string spriteProjectile = "";
+            if (abilityDataReference.useCustomProjectileSprite) {
+               spriteProjectile = attackerAbility.projectileSpritePath;
+            } else {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
+               spriteProjectile = weaponData.projectileSprite;
+            }
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
+
             EffectManager.show(Effect.Type.Cannon_Smoke, sourcePos);
             yield return new WaitForSeconds(PRE_SHOOT_DELAY);
 
@@ -1332,7 +1374,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(PRE_CAST_DELAY);
 
             // Shoot the projectile after playing cast time
-            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, attackerAbility.projectileSpritePath, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
+            if (abilityDataReference.useCustomProjectileSprite) {
+               spriteProjectile = attackerAbility.projectileSpritePath;
+            } else {
+               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
+               spriteProjectile = weaponData.projectileSprite;
+            }
+            EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
 
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);
