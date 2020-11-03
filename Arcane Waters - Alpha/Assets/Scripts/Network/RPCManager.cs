@@ -4594,6 +4594,16 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_RequestCustomMapPanelClient (string customMapType, bool warpAfterSelecting) {
+      if (!AreaManager.self.tryGetCustomMapManager(customMapType, out CustomMapManager manager)) {
+         D.debug("Custom map manager cant fetch custom map for: " + customMapType);
+         return;
+      }
+
+      _player.rpc.Target_ShowCustomMapPanel(customMapType, warpAfterSelecting, manager.getRelatedMaps());
+   }
+
+   [Command]
    public async void Cmd_SetCustomMapBaseMap (string customMapKey, int baseMapId, bool warpIntoAfterSetting) {
       // Check if this is a custom map key
       if (!AreaManager.self.tryGetCustomMapManager(customMapKey, out CustomMapManager manager)) {

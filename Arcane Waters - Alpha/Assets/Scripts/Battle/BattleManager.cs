@@ -267,7 +267,7 @@ public class BattleManager : MonoBehaviour {
       Battler battler = Instantiate(baseBattlerPrefab);
       battler = assignBattlerData(battle, battler, player, teamType);
       battler.health = battler.getStartingHealth(Enemy.Type.PlayerBattler);
-
+      
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
@@ -276,6 +276,7 @@ public class BattleManager : MonoBehaviour {
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);
+      assignBattlerSyncData(battler, player);
 
       return battler;
    }
@@ -307,6 +308,10 @@ public class BattleManager : MonoBehaviour {
       battler.hairPalettes = player.hairPalettes;
       battler.eyesPalettes = player.eyesPalettes;
 
+      return battler;
+   }
+
+   private void assignBattlerSyncData (Battler battler, PlayerBodyEntity player) {
       // Copy the Armor Info
       if (player.armorManager.armorType < 1) {
          battler.armorManager.updateArmorSyncVars(0, 0, "");
@@ -339,8 +344,6 @@ public class BattleManager : MonoBehaviour {
          battler.hatManager.hatType = player.hatsManager.hatType;
          battler.hatManager.palettes = player.hatsManager.palettes;
       }
-
-      return battler;
    }
 
    private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp) {
@@ -886,6 +889,9 @@ public class BattleManager : MonoBehaviour {
             if (battler.player is PlayerBodyEntity) {
                // Registers the death of the player in combat
                AchievementManager.registerUserAchievement(battler.player.userId, ActionType.CombatDie);
+
+               // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
+               battler.player.Rpc_WarpToArea(Area.STARTING_TOWN, Vector3.zero);
             }
          }
       }

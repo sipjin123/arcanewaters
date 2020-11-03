@@ -92,7 +92,7 @@ public class ImageManager : ClientMonoBehaviour {
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprite == null) {
          if (!Util.isBatch()) {
-            Debug.LogWarning("Could not find sprite at path(" + path + "). Returning a blank sprite");
+            D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
          }
          return self.blankSprite;
       }
@@ -105,8 +105,8 @@ public class ImageManager : ClientMonoBehaviour {
       // Returns a blank texture if the fetched data from the path is null
       if (fetchedTexture == null) {
          if (warnOnNull) {
-            if (!Util.isBatch()) { 
-               Debug.LogWarning("Could not find Texture at path(" + path + "). Returning a blank texture");
+            if (!Util.isBatch()) {
+               D.debug("Could not find Texture at path(" + path + "). Returning a blank texture");
             }
          }
          return self.blankTexture;
@@ -188,7 +188,7 @@ public class ImageManager : ClientMonoBehaviour {
       // Returns a blank sprite if the fetched data from the path is null
       if (fetchedSprites == null) {
          if (!Util.isBatch()) {
-            D.warning("Could not find sprites at path(" + path + "). Returning a blank sprite array");
+            D.debug("Could not find sprites at path(" + path + "). Returning a blank sprite array");
          }
          return new Sprite[] { self.blankSprite };
       }
@@ -205,7 +205,7 @@ public class ImageManager : ClientMonoBehaviour {
       Sprite sprite = Resources.Load<Sprite>(path);
 
       if (sprite == null) {
-         D.warning("Could not find sprite at path(" + path + "). Returning a blank sprite");
+         D.debug("Could not find sprite at path(" + path + "). Returning a blank sprite");
          return self.blankSprite;
       }
       return sprite;
@@ -222,7 +222,7 @@ public class ImageManager : ClientMonoBehaviour {
 
       if (tex == null && warnOnNull) {
          if (!Util.isBatch()) {
-            D.warning("Couldn't find texture for path: " + path);
+            D.debug("Couldn't find texture for path: " + path);
          }
          return blankTexture;
       }

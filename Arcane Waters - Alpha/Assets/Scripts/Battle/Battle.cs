@@ -217,7 +217,6 @@ public class Battle : NetworkBehaviour {
 
          if (participant.player != null) {
             participant.player.battleId = 0;
-            participant.player.voyageGroupId = -1;
             participant.player.resetCombatInit();
          }
       }

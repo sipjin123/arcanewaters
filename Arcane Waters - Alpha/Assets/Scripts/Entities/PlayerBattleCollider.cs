@@ -33,7 +33,7 @@ public class PlayerBattleCollider : MonoBehaviour {
                   messageCanvas.GetComponentInChildren<TextMeshProUGUI>().text = "Cannot join battle of different voyage group";
                }
             } 
-         } 
+         }
       }
    }
 

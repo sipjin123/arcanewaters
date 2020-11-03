@@ -114,6 +114,12 @@ public class AnimUtil : MonoBehaviour {
 
                case Anim.Type.NC_Jump_South:
                   return new AnimInfo(animType, 29, 29);
+
+               case Anim.Type.Throw_Projectile:
+                  return new AnimInfo(animType, 32, 33);
+
+               case Anim.Type.Toast:
+                  return new AnimInfo(animType, 34, 34);
             }
             break;
 

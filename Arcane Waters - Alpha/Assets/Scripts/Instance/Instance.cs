@@ -394,7 +394,7 @@ public class Instance : NetworkBehaviour
             try {
                area.registerWarpFromSecretEntrance(secretObjNode.cachedSecretEntrance.warp);
             } catch {
-
+               D.debug("No warp assigned to secret entrance!");
             }
          }
       }

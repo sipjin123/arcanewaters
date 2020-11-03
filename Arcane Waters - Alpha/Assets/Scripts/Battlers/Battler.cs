@@ -892,7 +892,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Start the buff animation that will eventually create the magic effect
             if (isFirstAction) {
                // Cast Animation
-               sourceBattler.playAnim(Anim.Type.Attack_East);
+               sourceBattler.playAnim(Anim.Type.Toast);
             }
 
             // Play any sounds that go along with the ability casting
@@ -962,7 +962,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Start the buff animation that will eventually create the magic effect
                if (isFirstAction) {
                   // Cast Animation
-                  sourceBattler.playAnim(Anim.Type.Attack_East);
+                  sourceBattler.playAnim(Anim.Type.Toast);
                }
 
                // Play any sounds that go along with the ability being cast
@@ -1056,7 +1056,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.Standard);
       AttackAbilityData globalAbilityData = AttackAbilityData.CreateInstance(abilityDataReference);
-
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
+      
       // Highlight ability to be casted
       if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
          BattleUIManager.self.initializeAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex);
@@ -1261,8 +1262,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (abilityDataReference.useCustomProjectileSprite) {
                spriteProjectile = attackerAbility.projectileSpritePath;
             } else {
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
-               spriteProjectile = weaponData.projectileSprite;
+               // Enemy battlers do not need to use this logic
+               if (enemyType != Enemy.Type.PlayerBattler) {
+                  spriteProjectile = attackerAbility.projectileSpritePath;
+               } else {
+                  if (weaponData == null) {
+                     D.debug("Weapon data missing!: " + weaponManager.equipmentDataId + " : " + weaponManager.equippedWeaponId);
+                  } else {
+                     spriteProjectile = weaponData.projectileSprite;
+                  }
+               }
             }
             EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
 
@@ -1272,7 +1281,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(shootAnimSpeed);
             sourceBattler.pauseAnim(false);
-            sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            if (weaponData.weaponClass == Weapon.Class.Magic) {
+               sourceBattler.playAnim(Anim.Type.Throw_Projectile);
+            } else {
+               sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            }
             yield return new WaitForSeconds(POST_SHOOT_DELAY);
 
             // Return to battle stance
@@ -1377,7 +1390,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (abilityDataReference.useCustomProjectileSprite) {
                spriteProjectile = attackerAbility.projectileSpritePath;
             } else {
-               WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
                spriteProjectile = weaponData.projectileSprite;
             }
             EffectManager.spawnProjectile(sourceBattler, action, sourcePos, targetPos, attackerAbility.projectileSpeed, spriteProjectile, attackerAbility.projectileScale, attackerAbility.FXTimePerFrame);
@@ -1385,7 +1397,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(castAnimSpeed);
             sourceBattler.pauseAnim(false);
-            sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            if (weaponData.weaponClass == Weapon.Class.Magic) {
+               sourceBattler.playAnim(Anim.Type.Throw_Projectile);
+            } else {
+               sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            }
             yield return new WaitForSeconds(POST_CAST_DELAY);
 
             // Return to battle stance
