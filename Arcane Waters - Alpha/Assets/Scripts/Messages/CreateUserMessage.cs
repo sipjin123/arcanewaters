@@ -5,7 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class CreateUserMessage : MessageBase {
+public class CreateUserMessage : NetworkMessage
+{
    #region Public Variables
 
    // The network instance id associated with this message

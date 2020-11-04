@@ -105,6 +105,15 @@ public class PlayerBodyEntity : BodyEntity {
       speedMeter = SPEEDUP_METER_MAX;
    }
 
+   protected override void Start () {
+      base.Start();
+
+      // Disable our collider if we are not the localplayer
+      if (!isLocalPlayer) {
+         getMainCollider().isTrigger = true;
+      }
+   }
+
    private void OnDrawGizmos () {
       Gizmos.color = Color.yellow;
       Gizmos.DrawWireSphere(obstacleDetectionCollider.transform.position, obstacleColliderScale);

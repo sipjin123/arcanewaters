@@ -47,7 +47,7 @@ public class CloudManager : ClientMonoBehaviour {
       // Create clouds in a random grid
       for (float y = expandedBounds.min.y; y <= expandedBounds.max.y; y += addPosVal) {
          for (float x = expandedBounds.min.x; x <= expandedBounds.max.x; x += addPosVal) {
-            Vector2 spawnPos = Util.randFromCenter(x, y, 0.375f * addPosVal);
+            Vector2 spawnPos = Util.randFromCenter(x, y, 0.75f);
             Cloud cloud = Instantiate(cloudPrefab, spawnPos, Quaternion.identity);
             cloud.weatherEffectType = weatherEffectType;
             cloud.transform.parent = this.transform;

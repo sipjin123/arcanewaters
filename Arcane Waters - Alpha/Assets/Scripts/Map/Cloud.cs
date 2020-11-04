@@ -50,6 +50,9 @@ public class Cloud : ClientMonoBehaviour {
             int randomType = new List<int>() { 1, 2, 3, 4 }.ChooseRandom();
             cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_resize_" + randomType));
             shadowSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_resize_shadow_" + randomType));
+
+            // Set sea area clouds higher
+            Util.setLocalY(cloudSprite.transform, SEA_AREA_CLOUD_HEIGHT);
          } else {
             int randomType = new List<int>() { 3, 4 }.ChooseRandom();
             cloudSprite.GetComponent<SimpleAnimation>().setNewTexture(ImageManager.getTexture("Map/cloud_" + randomType));
@@ -86,7 +89,7 @@ public class Cloud : ClientMonoBehaviour {
 
    protected void checkNearby () {
       Collider2D[] results = new Collider2D[1];
-      int count = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, .7f, results, LayerMask.GetMask(LayerUtil.SHIPS));
+      int count = Physics2D.OverlapCircleNonAlloc(cloudSprite.transform.position, area.isSea ? 1.4f : .7f, results, LayerMask.GetMask(LayerUtil.SHIPS));
 
       // If we found a ship, then there's something near us
       hasSomethingNearby = count > 0;
@@ -105,6 +108,9 @@ public class Cloud : ClientMonoBehaviour {
 
    // How fast we changed opacity
    protected static float OPACITY_CHANGE_SPEED = .60f;
+
+   // Height of clouds in sea area
+   protected static float SEA_AREA_CLOUD_HEIGHT = 1.5f;
 
    #endregion
 }

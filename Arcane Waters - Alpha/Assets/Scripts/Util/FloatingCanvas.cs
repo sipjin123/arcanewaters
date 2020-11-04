@@ -59,6 +59,14 @@ public class FloatingCanvas : MonoBehaviour {
       return this;
    }
 
+   public FloatingCanvas asTooClose () {
+      if (text != null) {
+         text.text = "Too Close...";
+      }
+
+      return this;
+   }
+
    public FloatingCanvas asNoResponse () {
       if (text != null) {
          text.text = "No Response...";

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using System.Xml.Linq;
+using System.Linq;
 
 public class UIToolTipManager : MonoBehaviour {
 
@@ -21,6 +22,29 @@ public class UIToolTipManager : MonoBehaviour {
 
       // Read in XML file
       loadXMLFile();
+   }
+
+   private void Start () {
+      //initializeRuntimeTooltips();
+   }
+
+   private void initializeRuntimeTooltips () {
+      // Find icons that require ToolTiipComponent to be added at runtime
+      IEnumerable<GameObject> icons = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == "Icon");
+      foreach (GameObject go in icons) {
+         if (go.GetComponent<ToolTipComponent>() == null) {
+            go.AddComponent(typeof(ToolTipComponent));
+            go.GetComponent<ToolTipComponent>().tooltipPlacement = ToolTipComponent.TooltipPlacement.AutoPlacement;
+         }
+      }
+
+      IEnumerable<GameObject> gemIcons = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == "Gem Icon");
+      foreach (GameObject go in gemIcons) {
+         if (go.GetComponent<ToolTipComponent>() == null) {
+            go.AddComponent(typeof(ToolTipComponent));
+            go.GetComponent<ToolTipComponent>().tooltipPlacement = ToolTipComponent.TooltipPlacement.AutoPlacement;
+         }
+      }
    }
 
    private void loadXMLFile () {

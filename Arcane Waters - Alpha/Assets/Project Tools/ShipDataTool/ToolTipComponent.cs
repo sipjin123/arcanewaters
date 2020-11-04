@@ -61,7 +61,7 @@ public class ToolTipComponent : MonoBehaviour {
       Transform currentParent = transform.parent;
       while (currentParent != null) {
          if (currentParent.gameObject.GetComponent<Image>() != null) {
-            if ((currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_base_2x_nails") || (currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_background")) {
+            if ((currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_base_2x_nails") || (currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_background") || (currentParent.gameObject.GetComponent<Image>().sprite.name == "panel_base_2x")) {
                _panelRoot = currentParent.gameObject;
             }
          }

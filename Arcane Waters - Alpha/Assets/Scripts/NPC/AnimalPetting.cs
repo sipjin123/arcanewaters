@@ -18,6 +18,12 @@ public class AnimalPetting : MonoBehaviour {
    #endregion
 
    public void playAnimalAnimation(NPC npc, ReactionType reactionType) {
+      // Hide all position of animal petting
+      foreach (GameObject spot in _npc.animalPettingPositions) {
+         spot.SetActive(false);
+      }
+      StopAllCoroutines();
+
       _npc = npc;
       _initialPosition = transform.position;
       _currentPosition = _initialPosition;
@@ -37,11 +43,23 @@ public class AnimalPetting : MonoBehaviour {
       }
    }
 
+   public void hideSpotsAfterTime (NPC npc) {
+      _npc = npc;
+      StartCoroutine(CO_HideSpots());
+   }
+
    private void Update () {
       if (_isAnimalAnimationPlaying) {
          transform.position = Vector3.Lerp(_currentPosition, _initialPosition + _additionalPosition, _currentTransitionTime / _maxTransitionTime);
          _currentPosition = transform.position;
          _currentTransitionTime += Time.deltaTime;
+      }
+   }
+
+   private IEnumerator CO_HideSpots () {
+      yield return new WaitForSeconds(5.0f);
+      foreach (GameObject spot in _npc.animalPettingPositions) {
+         spot.SetActive(false);
       }
    }
 

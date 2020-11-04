@@ -1,54 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Tooltips not found in this list are created at runtime.  See list below.-->
+<!-- Map Signs, Bulletin Boards, Gravestones, Player Perks -->
+
 <Tooltips>
   <Tooltip key1="Accept Button" key2="accept_button" value="Accept Friendship Request" />
   <Tooltip key1="Building Icon" key2="mm_orange_square" value="Building" />
   <Tooltip key1="Cancel Button" key2="x_button" value="Cancel Friendship Request" />
   <Tooltip key1="Chat Button" key2="chat_button" value="Chat" />
   <Tooltip key1="Collapse Button" key2="button_shrink_dark_default" value="Collapse" />
-  <Tooltip key1="Copy Button" key2="panel_button_brown_normal_2x" value="Copy file to storage" />
   <Tooltip key1="Delete Button" key2="x_button" value="Delete Friend" />
   <Tooltip key1="Discovery Icon" key2="unknown_discovery" value="Discovery" />
-  <Tooltip key1="Effects Row" key2="" value="Change sound effect volume" />
   <Tooltip key1="Expand Button" key2="button_expand_dark_default" value="Expand" />
   <Tooltip key1="Gem Icon" key2="crafting_jewel_icon" value="Gems" />
   <Tooltip key1="Gold Icon" key2="crafting_money_icon" value="Gold coins" />
-  <Tooltip key1="GUIScaleRow" key2="" value="Increases the size of the interface components such as buttons and text fields" />
   <Tooltip key1="Icon" key2="element_earth" value="Earth" />
   <Tooltip key1="Icon" key2="element_air" value="Air" />
   <Tooltip key1="Icon" key2="element_fire" value="Fire" />
   <Tooltip key1="Icon" key2="element_physical" value="Physical" />
   <Tooltip key1="Icon" key2="element_water" value="Water" />
+  <Tooltip key1="Gem Icon" key2="gem_icon" value="Gems" />
   <Tooltip key1="Icon (2)" key2="icon_weapon" value="Attack" />
   <Tooltip key1="Icon (3)" key2="icon_shield" value="Defense" />
   <Tooltip key1="Impassable Icon" key2="mm_impassable" value="Impassable" />
-  <Tooltip key1="Keybindings row (1)" key2="" value="Customize which keys are mapped to actions" />
-  <Tooltip key1="Message Button" key2="message_button" value="Send Message" />
-  <Tooltip key1="MinimapScaleRow" key2="" value="Increases the size of in-game art such as characters and scenery" />
-  <Tooltip key1="Music Row" key2="" value="Change music volume" />
   <Tooltip key1="NPC Icon" key2="NPCMinimap" value="NPC" />
-  <Tooltip key1="Open Button" key2="panel_button_brown_normal_2x" value="Open the game log file" />
   <Tooltip key1="Player Count Icon" key2="voyage_icon_2" value="The number of players in the instance" />
   <Tooltip key1="PvP Icon" key2="voyage_icon_5" value="The voyage mode" />
   <Tooltip key1="Reject Button" key2="x_button" value="Reject Friendship Request" />
-  <Tooltip key1="Single Player Row" key2="" value="When this box is checked, you will not encounter any other players during your adventures in Arcane Waters" />
   <Tooltip key1="Time Icon" key2="voyage_icon_3" value="The time since the voyage started" />
+  <Tooltip key1="Treasure Chest Icon" key2="chest" value="Treasure Chest" />
+  <Tooltip key1="Treasure Icon" key2="voyage_icon_1" value="The remaining treasure sites" />
+  <Tooltip key1="X Button" key2="floating_exit_button_default" value="Leave Voyage Group" />
+  
+  <!-- Quick Launch Panel-->
   <Tooltip key1="Toggle - Client" key2="" value="Causes only a client to start up, with no server functionality" />
   <Tooltip key1="Toggle - Host" key2="" value="Causes a client and server to run in the same window" />
   <Tooltip key1="Toggle - Server" key2="" value="Causes only a server to start up, with no client functionality" />
   <Tooltip key1="Toggle - SinglePlayer" key2="" value="When this box is checked, you will not encounter any other players during your adventures in Arcane Waters" />
-  <Tooltip key1="Treasure Chest Icon" key2="chest" value="Treasure Chest" />
-  <Tooltip key1="Treasure Icon" key2="voyage_icon_1" value="The remaining treasure sites" />
+  
+  <!-- Options Panel-->
+  <Tooltip key1="Open Button" key2="panel_button_brown_normal_2x" value="Open the game log file" />
+  <Tooltip key1="Copy Button" key2="panel_button_brown_normal_2x" value="Copy log to clipboard" />
+  <Tooltip key1="Single Player Row" key2="" value="When this box is checked, you will not encounter any other players during your adventures in Arcane Waters" />
   <Tooltip key1="VSync Row" key2="" value="Sync the game framerate with your monitor refresh rate" />
-  <Tooltip key1="X Button" key2="floating_exit_button_default" value="Leave Voyage Group" />
-  <Tooltip key1="Inventory Button" key2="btn_inventory" value="Inventory" />
-  <Tooltip key1="Abilities Button" key2="btn_abilities" value="Abilities" />
-  <Tooltip key1="Guild Button" key2="btn_guild" value="Guild" />
-  <Tooltip key1="Ships Button" key2="btn_ship" value="Ship" />
-  <Tooltip key1="Leader Boards Button" key2="btn_leader" value="Leader Boards" />
-  <Tooltip key1="Trade Button" key2="btn_trade" value="Trade" />
-  <Tooltip key1="Friends Button" key2="btn_friends" value="Friends" />
-  <Tooltip key1="Mail Button" key2="btn_mail" value="Mail" />
-  <Tooltip key1="Options Button" key2="btn_options" value="Options" />
+  <Tooltip key1="Keybindings row (1)" key2="" value="Customize which keys are mapped to actions" />
+  <Tooltip key1="Message Button" key2="message_button" value="Send Message" />
+  <Tooltip key1="MinimapScaleRow" key2="" value="Increases the size of in-game art such as characters and scenery" />
+  <Tooltip key1="GUIScaleRow" key2="" value="Increases the size of the interface components such as buttons and text fields" />
+  <Tooltip key1="Music Row" key2="" value="Change music volume" />
+  <Tooltip key1="Effects Row" key2="" value="Change sound effect volume" />
+  
+  <!-- Character Creation Panel-->
   <Tooltip key1="Female Toggle" key2="" value="Female" />
   <Tooltip key1="Male Toggle" key2="" value="Male" />
+  
+  <!-- Flagship Panel-->
+  <Tooltip key1="Flagship Icon" key2="icon_flagship" value="Assigns your &lt;color=red&gt;flagship&lt;/color&gt;.  This is the default ship that will be used when you leave town." />
+  <Tooltip key1="Icon" key2="ship_damage" value="How much &lt;color=red&gt;damage&lt;/color&gt; is done by the cannons on this ship." />
+  <Tooltip key1="Icon" key2="ship_range" value="The maximum &lt;color=red&gt;range&lt;/color&gt; at which this ship can fire." />
+  <Tooltip key1="Icon" key2="ship_health" value="How &lt;color=red&gt;durable&lt;/color&gt; the ship's hull is. If this reaches 0, the ship sinks!" />
+  <Tooltip key1="Icon" key2="ship_speed" value="The &lt;color=red&gt;speed&lt;/color&gt; at which the ship moves while sailing.  The higher the number, the better.  Large warships tend to move slower." />
+  <Tooltip key1="Icon" key2="ship_cargo" value="How much &lt;color=red&gt;cargo&lt;/color&gt; the ship can carry to sell at the market." />
+  <Tooltip key1="Icon" key2="ship_supplies" value="How many &lt;color=red&gt;supplies&lt;/color&gt; the ship can carry to feed the crew during long voyages." />
+  <Tooltip key1="Icon" key2="ship_sailors" value="The number of &lt;color=red&gt;sailors&lt;/color&gt; that it takes to run this ship.  The larger the crew, the more supplies it takes to feed them during voyages.
+    Large warships generally require large crews, but smaller ships with small crews are better for sailing long voyages." />
+
+  <!-- Guild Tooltips-->
+  <Tooltip key1="temp1" key2="icon_rank3" value="The &lt;color=red>&gt;level&lt;/color&gt; the guild has reached.  This increases as the members of the guild gain experience." />
+  <Tooltip key1="temp2" key2="guild_emblem" value="The &lt;color=red>&gt;emblem&lt;/color&gt; the guild has chosen." />
+  
+  <!-- Bottom Bar-->
+  <Tooltip key1="Inventory Button" key2="btn_inventory" value="Inventory &lt;color=green&gt;[I]&lt;/color&gt;" />
+  <Tooltip key1="Abilities Button" key2="btn_abilities" value="Abilities &lt;color=green&gt;[U]&lt;/color&gt;" />
+  <Tooltip key1="Guild Button" key2="btn_guild" value="Guild Info &lt;color=green&gt;[G]&lt;/color&gt;" />
+  <Tooltip key1="Ships Button" key2="btn_ship" value="Ship &lt;color=green&gt;[L]&lt;/color&gt;" />
+  <Tooltip key1="Leader Boards Button" key2="btn_leader" value="Leader Boards &lt;color=green&gt;[B]&lt;/color&gt;" />
+  <Tooltip key1="Trade Button" key2="btn_trade" value="Trade History &lt;color=green&gt;[T]&lt;/color&gt;" />
+  <Tooltip key1="Friends Button" key2="btn_friends" value="Friends List &lt;color=green&gt;[F]&lt;/color&gt;" />
+  <Tooltip key1="Mail Button" key2="btn_mail" value="Mail &lt;color=green&gt;[K]&lt;/color&gt;" />
+  <Tooltip key1="Options Button" key2="btn_options" value="Options &lt;color=green&gt;[O]&lt;/color&gt;" />
+
 </Tooltips>

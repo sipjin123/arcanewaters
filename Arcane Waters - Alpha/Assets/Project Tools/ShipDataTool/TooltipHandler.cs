@@ -16,7 +16,7 @@ public class TooltipHandler : MonoBehaviour
    public GameObject toolTipPanel;
    public TextMeshProUGUI toolTipTMPText;
    public RectTransform backgroundRect;
-   public static int widthThreshold = 100;
+   public static int WIDTH_THRESHOLD = 100;
 
    #endregion
 
@@ -83,7 +83,7 @@ public class TooltipHandler : MonoBehaviour
 
    public void placeAutomatically (Vector3 elementPosition, GameObject panelRoot) {
       // If the tooltip is small, place it above the element
-      if (_tooltipDimensions.x < widthThreshold) {
+      if (_tooltipDimensions.x < WIDTH_THRESHOLD) {
          placeAboveUIELement(elementPosition);
       }
       // If the tooltip is large, place it to the side of panel that is closest to the element

@@ -16,6 +16,16 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // How close we have to be in order to talk to the NPC
    public static float TALK_DISTANCE = .65f;
 
+   // How close we have to be in order to pet animal (main axis)
+   public float ANIMAL_PET_DISTANCE = .08f;
+
+   // How close we have to be in order to pet animal (additional axis)
+   public float ANIMAL_PET_DISTANCE_ADDITIONAL = .03f;
+
+   // How far from pet, player has to be in order to play animation
+   public float ANIMAL_PET_DISTANCE_MINIMAL_X = .15f;
+   public float ANIMAL_PET_DISTANCE_MINIMAL_Y = .05f;
+
    // The Types of different NPCs
    public enum Type
    {
@@ -75,6 +85,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    [SyncVar]
    // Check if NPC is currently able to move and if seeker should continue its work
    public bool canMove = true;
+
+   // List of position that allows player to pet animal
+   public List<GameObject> animalPettingPositions;
 
    #endregion
 
@@ -270,17 +283,97 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      // Only works when the player is close enough
-      if (Vector2.Distance(transform.position, Global.player.transform.position) > TALK_DISTANCE) {
-         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
-         return;
-      }
-
       // If NPC is marked as "animal", player can interact with it
       if (isAnimal) {
          if (!_isInteractingAnimal) {
-            startAnimalPetting();
+            GameObject closestSpot = null;
+            foreach (GameObject spot in animalPettingPositions) {
+               spot.SetActive(false);
+            }
+
+            float distPlayerToAnimal = 0.0f;
+            bool farCorrect = false;
+            bool closeCorrect = false;
+            Vector3 playerPos = Global.player.transform.position;
+
+            // Choose spot to start petting
+            switch (Global.player.facing) {
+               case Direction.North:
+                  closestSpot = animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Bottom"));
+                  break;
+               case Direction.East:
+                  closestSpot = animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Left"));
+                  break;
+               case Direction.South:
+                  float minDist = float.MaxValue;
+                  foreach (GameObject spot in animalPettingPositions) {
+                     if (Vector2.Distance(spot.transform.position, playerPos) < minDist) {
+                        minDist = Vector2.Distance(spot.transform.position, playerPos);
+                        closestSpot = spot;
+                     }
+                  }
+                  closestSpot.SetActive(true);
+                  FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
+                  return;
+               case Direction.West:
+                  closestSpot = animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Right"));
+                  break;
+            }
+
+            // Calculate distance to spot
+            float distX = Mathf.Abs(closestSpot.transform.position.x - playerPos.x);
+            float distY = Mathf.Abs(closestSpot.transform.position.y - playerPos.y);
+
+            // Check if conditions to start animation are met
+            switch (Global.player.facing) {
+               case Direction.North:
+                  farCorrect = distY <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.y - this.transform.position.y) < Mathf.Abs(closestSpot.transform.position.y - this.transform.position.y);
+                  farCorrect &= distX <= ANIMAL_PET_DISTANCE_ADDITIONAL;
+                  distPlayerToAnimal = this.transform.position.y - playerPos.y;
+                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_Y);
+                  break;
+               case Direction.East:
+                  farCorrect = distX <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.x - this.transform.position.x) < Mathf.Abs(closestSpot.transform.position.x - this.transform.position.x);
+                  farCorrect &= distY <= ANIMAL_PET_DISTANCE_ADDITIONAL;
+                  distPlayerToAnimal = this.transform.position.x - playerPos.x;
+                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_X);
+                  break;
+               case Direction.West:
+                  farCorrect = distX <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.x - this.transform.position.x) < Mathf.Abs(closestSpot.transform.position.x - this.transform.position.x);
+                  farCorrect &= distY <= ANIMAL_PET_DISTANCE_ADDITIONAL;
+                  distPlayerToAnimal = playerPos.x - this.transform.position.x;
+                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_X);
+                  break;
+            }
+
+            // Hide animal petting positions after time
+            if (farCorrect || closeCorrect) {
+               if (_animalPetting == null) {
+                  _animalPetting = GetComponent<AnimalPetting>();
+                  if (_animalPetting == null) {
+                     _animalPetting = this.gameObject.AddComponent<AnimalPetting>();
+                  }
+               }
+               closestSpot.SetActive(true);
+               _animalPetting.StopAllCoroutines();
+               _animalPetting.hideSpotsAfterTime(this);
+            }
+
+            // Plan animation or show message that player is too far
+            if (!farCorrect) {
+               FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
+            } else if (!closeCorrect) {
+               FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooClose();
+            } else {
+               startAnimalPetting();
+            }
          }
+         return;
+      }
+
+      // Only works when the player is close enough
+      if (Vector2.Distance(transform.position, Global.player.transform.position) > TALK_DISTANCE) {
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
          return;
       }
 

@@ -218,11 +218,6 @@ public class NetEntity : NetworkBehaviour
          // We need the follow text to be lower for ships
          _nameText.GetComponent<RectTransform>().offsetMin = (this is PlayerShipEntity) ? new Vector2(0, 32) : new Vector2(0, 64);
 
-         // Disable our collider if we are not the localplayer
-         if (!isLocalPlayer) {
-            getMainCollider().isTrigger = true;
-         }
-
          // Keep track in our Entity Manager
          EntityManager.self.storeEntity(this);
       }
@@ -488,7 +483,12 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Pet_East:
             case Anim.Type.Pet_North:
             case Anim.Type.Pet_South:
+               animator.SetFloat("velocityX", 0);
+               animator.SetFloat("velocityY", 0);
+               animator.SetBool("isMoving", false);
+               animator.SetBool("inBattle", false);
                animator.SetBool("petting", true);
+
                StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
                break;
             case Anim.Type.NC_Jump_East:

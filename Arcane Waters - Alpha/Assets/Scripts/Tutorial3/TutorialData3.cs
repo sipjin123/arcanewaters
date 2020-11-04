@@ -17,7 +17,8 @@ public class TutorialData3 : MonoBehaviour
       Farm = 3,
       House = 4,
       TutorialSeaMap = 5,
-      TutorialTownCropMerchant = 6
+      TutorialTownCropMerchant = 6,
+      PinesSea = 7
    }
 
    // The locations and the corresponding area key
@@ -28,6 +29,7 @@ public class TutorialData3 : MonoBehaviour
       { Location.House, "customhouse" },
       { Location.TutorialSeaMap, "Tutorial Sea Map" },
       { Location.TutorialTownCropMerchant, "Tutorial Town Crop Merchant" },
+      { Location.PinesSea, "Pine Exploration Sea Map" },
    };
 
    // The tutorials and, for each step, the npc speech and completion triggers
@@ -125,12 +127,19 @@ public class TutorialData3 : MonoBehaviour
          new TutorialStep3(TutorialTrigger.LeaveVoyageGroup, "This is all for voyages. To continue with other tutorials, leave the voyage by clicking on the X button above the group members."),
       }),
 
+      new Tutorial3("ExploreTheWorld", "Explore the world",
+      new List<TutorialStep3>() {
+         new TutorialStep3(Location.TutorialSeaMap, "In the starting town, head to the docks located south and sail the seas."),
+         new TutorialStep3(Location.PinesSea, "You will soon discover that this isn't the only place you can explore! In the North-East corner of the map, find the narrow channel heading East and follow it to the Pines seas!"),
+         new TutorialStep3(TutorialTrigger.Manual, "Each sea has its own town with stores, unique voyages to take and hidden treasure maps."),
+         new TutorialStep3(TutorialTrigger.Manual, "Sail even further to discover the Desert and Snow seas. But beware, the challenge increases with each new area. Good luck sailor!"),
+      }),
 
 
       // ----------------------------------------
       // This must always be the last tutorial!
       // ----------------------------------------
-      new Tutorial3("EndNotice", "Explore the world",
+      new Tutorial3("EndNotice", "End",
       new List<TutorialStep3>() {
          new TutorialStep3(TutorialTrigger.None, "Congratulations! You have completed all the tutorials. Now it is time to find your sea legs, unfurl your sails and head out into the world!"),
       }),

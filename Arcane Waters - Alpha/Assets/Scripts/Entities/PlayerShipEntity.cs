@@ -113,15 +113,14 @@ public class PlayerShipEntity : ShipEntity
          rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
 
-         _localAimAngle = desiredAngle;
          speedUpEffectHolder.SetActive(false);
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
-      }
-
-      if (Util.isServer()) {
+      } else if (Util.isServer()) {
          _serverSideMoveAngle = desiredAngle;
-         _serverSideAimAngle = desiredAngle;
+      } else {
+         // Disable our collider if we are not either the local player or the server
+         getMainCollider().isTrigger = true;
       }
    }
 
@@ -664,42 +663,8 @@ public class PlayerShipEntity : ShipEntity
    // The position the player is currently aiming at
    private Vector2 _currentAimPosition;
 
-   // The direction this ship is aiming at
-   private AimDirection _aimDirection;
-
-   // The directions ships can use for aiming
-   protected enum AimDirection
-   {
-      Left = 0,
-      Right = 1
-   }
-
-   // The time at which the ship started aiming   
-   private double _startedAimingTime;
-
-   // The client-side aiming direction
-   private float _localAimAngle;
-
-   // Whether the player should start aiming again after reloading
-   private bool _isAimScheduled;
-
    // The direction of the ship server-side
    private float _serverSideMoveAngle;
-
-   // The aim direction of the ship server-side
-   private float _serverSideAimAngle;
-
-   // The minimum force multiplier for cannon balls
-   private const float MIN_CANNON_FORCE_SCALE = 0.5f;
-
-   // The maximum force multiplier for cannon balls
-   private const float MAX_CANNON_FORCE_SCALE = 3.0f;
-
-   // The time it takes for a ship to reach the max force when firing
-   private const float TIME_TO_REACH_MAX_CANNON_FORCE = 1.0f;
-
-   // The minimum distance the cannon ball can travel from the ship
-   private const float MIN_CANNON_DISTANCE_FROM_SHIP = 0.5f;
 
    // A multiplier for the force added locally in order to mask delay   
    private const float CLIENT_SIDE_FORCE = 0.1f;
