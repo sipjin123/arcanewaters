@@ -362,6 +362,8 @@ namespace MapCreationTool.Serialization
       public const string SIGN_TYPE = "sign type";
       public const string GRAVE_NAME = "grave name";
 
+      public const string DEBUG_OBJECT_ID = "debug map data";
+
       public string k; // Key
       public string v; // Value
 

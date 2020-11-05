@@ -207,10 +207,10 @@ namespace MapCreationTool
          List<ExportedPrefab001> oreData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> treasureSiteData = new List<ExportedPrefab001>();
          List<ExportedPrefab001> shipData = new List<ExportedPrefab001>();
-         List<ExportedPrefab001> secretsData = new List<ExportedPrefab001>();
 
          int unrecognizedPrefabs = 0;
          int cropSpotCounter = 0;
+         int spawnIdCounter = 0;
 
          foreach (var prefab in project.prefabs) {
             GameObject original = AssetSerializationMaps.tryGetPrefabGame(prefab.i, project.biome);
@@ -249,12 +249,14 @@ namespace MapCreationTool
                if (prefab.d != null) {
                   shipData.Add(prefab);
                }
-            }  else if (original.GetComponent<SecretEntranceHolder>() != null) {
-               if (prefab.d != null) {
-                  secretsData.Add(prefab);
-               }
             } else {
                Vector3 targetLocalPos = new Vector3(prefab.x, prefab.y, 0) * 0.16f + Vector3.back * 10;
+
+               GameObject pref = UnityEngine.Object.Instantiate(
+                  original,
+                  prefabParent.TransformPoint(targetLocalPos),
+                  Quaternion.identity,
+                  prefabParent);
 
                // Register treasure spot prefab id 
                if (original.GetComponent<TreasureSpot>() != null) {
@@ -279,13 +281,31 @@ namespace MapCreationTool
                         }
                      }
                   }
+               } else if (original.GetComponent<SecretEntranceHolder>() != null) {
+                  SecretEntranceHolder secretEntranceObj = pref.GetComponent<SecretEntranceHolder>();
+                  if (prefab.d != null) {
+                     // Make sure obj has correct data
+                     IMapEditorDataReceiver receiver = pref.GetComponent<IMapEditorDataReceiver>();
+                     if (receiver != null && prefab.d != null) {
+                        receiver.receiveData(prefab.d);
+                     }
+
+                     secretEntranceObj.areaKey = area.areaKey;
+
+                     // Transform Setup
+                     secretEntranceObj.transform.localPosition = targetLocalPos;
+                     secretEntranceObj.setAreaParent(area, false);
+
+                     secretEntranceObj.spawnId = spawnIdCounter;
+                     spawnIdCounter++;
+
+                     try {
+                        area.registerWarpFromSecretEntrance(secretEntranceObj.cachedSecretEntrance.warp);
+                     } catch {
+                        D.debug("No warp assigned to secret entrance!");
+                     }
+                  }
                }
-               
-               GameObject pref = UnityEngine.Object.Instantiate(
-                  original,
-                  prefabParent.TransformPoint(targetLocalPos),
-                  Quaternion.identity,
-                  prefabParent);
 
                foreach (IBiomable biomable in pref.GetComponentsInChildren<IBiomable>()) {
                   biomable.setBiome(project.biome);
@@ -329,7 +349,7 @@ namespace MapCreationTool
             Utilities.warning($"Could not recognize { unrecognizedPrefabs } prefabs of map { mapInfo.mapName }");
          }
 
-         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, secretsData, seaMonstersData);
+         area.registerNetworkPrefabData(npcData, enemyData, oreData, treasureSiteData, shipData, seaMonstersData);
       }
    }
 }

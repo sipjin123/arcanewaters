@@ -553,8 +553,8 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static AchievementData getAchievementData (int userID, ActionType actionType) {
-      return new AchievementData();
+   public static List<AchievementData> getAchievementData (int userID, ActionType actionType) {
+      return new List<AchievementData>();
    }
 
    public static List<AchievementData> getAchievementDataList (int userID) {

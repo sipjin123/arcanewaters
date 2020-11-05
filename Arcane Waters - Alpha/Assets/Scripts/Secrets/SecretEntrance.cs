@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using MapCreationTool.Serialization;
 
 public class SecretEntrance : MonoBehaviour {
    #region Public Variables
@@ -101,8 +100,10 @@ public class SecretEntrance : MonoBehaviour {
          warp.areaTarget = secretEntranceHolder.areaTarget;
          warp.spawnTarget = secretEntranceHolder.spawnTarget;
          warp.newFacingDirection = secretEntranceHolder.newFacingDirection;
-         warp.gameObject.SetActive(false);
       }
+
+      // Disable warp gameobject which can only be activated by the client side upon interaction, server warp will activate shortly
+      warp.gameObject.SetActive(false);
 
       if (!Util.isBatch()) { 
          if (subSprite.name == "none") {
@@ -175,7 +176,7 @@ public class SecretEntrance : MonoBehaviour {
 
    public void tryToInteract () {
       if (isGlobalPlayerNearby()) {
-         Global.player.rpc.Cmd_InteractSecretEntrance(secretEntranceHolder.instanceId, secretEntranceHolder.spawnId);
+         Global.player.rpc.Cmd_InteractSecretEntrance(secretEntranceHolder.spawnId);
       } else {
          D.editorLog("Player it Too far from the secret entrance!", Color.red);
       }
@@ -239,6 +240,8 @@ public class SecretEntrance : MonoBehaviour {
       }
    }
 
+   #region Playing Animation
+
    private void playMainSpriteAnimationClose () {
       if (mainSpriteComponent.currentIndex < mainSpriteComponent.maxIndex -1) {
          mainSpriteComponent.currentIndex++;
@@ -261,7 +264,7 @@ public class SecretEntrance : MonoBehaviour {
          CancelInvoke();
       }
    }
-
+   
    private void playMainSpriteAnimation () {
       if (mainSpriteComponent.currentIndex < mainSpriteComponent.maxIndex / 2) {
          mainSpriteComponent.currentIndex++;
@@ -282,6 +285,8 @@ public class SecretEntrance : MonoBehaviour {
       }
    }
 
+   #endregion
+
    public void processInteraction () {
       // Let the animation play before enabling the warp object
       StartCoroutine(CO_ProcessInteraction());
@@ -289,7 +294,6 @@ public class SecretEntrance : MonoBehaviour {
 
    private IEnumerator CO_ProcessInteraction () {
       yield return new WaitForSeconds(2);
-      //spriteRenderer.transform.position = interactPosition.position;
       warp.gameObject.SetActive(true);
       secretEntranceHolder.isFinishedAnimating = true;
       blockerSprite.gameObject.SetActive(false);

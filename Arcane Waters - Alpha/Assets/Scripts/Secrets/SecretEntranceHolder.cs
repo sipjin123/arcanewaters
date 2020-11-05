@@ -7,16 +7,9 @@ using MapCreationTool.Serialization;
 using System;
 using System.Linq;
 
-public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
+public class SecretEntranceHolder : MonoBehaviour, IMapEditorDataReceiver
 {
    #region Public Variables
-
-   // Datafields to be provided to the clients
-   public SyncListString cachedDataFieldKeys, cachedDataFieldValues;
-
-   // The instance that this node is in
-   [SyncVar]
-   public int instanceId;
 
    // Information about targeted map, can be null if unset
    public Map targetInfo;
@@ -34,27 +27,21 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
    public string spawnTarget;
 
    // The unique id for each secret entrance per instance id
-   [SyncVar]
    public int spawnId;
 
    // If the sprites can blend with the assets behind it
-   [SyncVar]
    public bool canBlend, canBlendInteract2;
 
    // The secret type
-   [SyncVar]
    public SecretType secretType;
 
    // The area key assigned to this node
-   [SyncVar]
    public string areaKey;
 
    // Determines if the object is interacted
-   [SyncVar]
    public bool isInteracted = false;
 
    // If the animation is finished
-   [SyncVar]
    public bool isFinishedAnimating;
 
    // List of secret entrance data for spawning
@@ -78,9 +65,7 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
       // Make the node a child of the Area
       StartCoroutine(CO_SetAreaParent());
 
-      if (!isServer) {
-         processSecretEntrance();
-      }
+      processSecretEntrance();
    }
 
    public void setAreaParent (Area area, bool worldPositionStays) {
@@ -95,6 +80,7 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
 
       // Set as a child of the area
       Area area = AreaManager.self.getArea(this.areaKey);
+      area.registerSecretEntrance(this);
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
    }
@@ -113,17 +99,10 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
       isFinishedAnimating = false;
       cachedSecretEntrance.warp.gameObject.SetActive(false);
       cachedSecretEntrance.closeEntrance();
-      Rpc_CloseAnimation();
+      CloseAnimation();
    }
 
-   [ClientRpc]
-   public void Rpc_InteractAnimation () {
-      // Sends animation commands to all clients
-      cachedSecretEntrance.interactAnimation();
-   }
-
-   [ClientRpc]
-   public void Rpc_CloseAnimation () {
+   public void CloseAnimation () {
       // Sends animation commands to all clients
       if (!isRunningCoroutineAnimation) {
          cachedSecretEntrance.closeEntrance();
@@ -132,8 +111,6 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
 
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
-         cachedDataFieldKeys.Add(field.k);
-         cachedDataFieldValues.Add(field.v);
          string value = field.v.Split(':')[0];
          switch (field.k.ToLower()) {
             case DataField.SECRETS_TYPE_ID:
@@ -169,27 +146,28 @@ public class SecretEntranceHolder : NetworkBehaviour, IMapEditorDataReceiver
                break;
          }
       }
+
+      // Assign data to the warp entity associated with this secret entrance
+      cachedSecretEntrance.warp.targetInfo = targetInfo; 
+      cachedSecretEntrance.warp.areaTarget = targetInfo.name;
+      cachedSecretEntrance.warp.spawnTarget = spawnTarget;
    }
 
    private void processSecretEntrance () {
-      if (secretType != SecretType.None) {
+      if (!_hasReceivedMapData && secretType != SecretType.None && cachedSecretEntrance == null) {
          GameObject secretObjVariant = Instantiate(secretEntranceDataList.Find(_ => _.secretType == secretType).secretPrefabVariant, secretObjHolder);
          SecretEntrance secretEntrance = secretObjVariant.GetComponent<SecretEntrance>();
          cachedSecretEntrance = secretEntrance;
          secretEntrance.secretEntranceHolder = this;
          secretEntrance.enabled = true;
-
-         List<DataField> datafieldList = new List<DataField>();
-         for (int i = 0; i < cachedDataFieldKeys.Count; i++) {
-            datafieldList.Add(new DataField {
-               k = cachedDataFieldKeys[i],
-               v = cachedDataFieldValues[i]
-            });
-         }
+         _hasReceivedMapData = true;
       }
    }
 
    #region Private Variables
+
+   // If this map entity has received its data
+   private bool _hasReceivedMapData = false;
 
    #endregion
 }

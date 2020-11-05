@@ -69,9 +69,6 @@ public class Area : MonoBehaviour
    public List<ExportedPrefab001> privateerShipDataFields = new List<ExportedPrefab001>();
    public List<ExportedPrefab001> pirateShipDataFields = new List<ExportedPrefab001>();
 
-   // Secret entrance to be loaded by the server
-   public List<ExportedPrefab001> secretsEntranceDataFields = new List<ExportedPrefab001>();
-
    // Sea Monsters to be loaded by the server
    public List<ExportedPrefab001> seaMonsterDataFields = new List<ExportedPrefab001>();
 
@@ -93,18 +90,19 @@ public class Area : MonoBehaviour
    // Container for checking types of cell(a stack of tiles in the same XY position)
    public CellTypesContainer cellTypes;
 
+   // List of secret entrance entities
+   public List<SecretEntranceHolder> secretEntranceList = new List<SecretEntranceHolder>();
+
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
       List<ExportedPrefab001> oreDataFields, List<ExportedPrefab001> treasureSiteDataFields,
-      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> secretsEntranceDataFields,
-      List<ExportedPrefab001> seaMonsterDataFields) {
+      List<ExportedPrefab001> shipDataFields, List<ExportedPrefab001> seaMonsterDataFields) {
       this.npcDatafields = npcDatafields;
       this.enemyDatafields = enemyDatafields;
       this.oreDataFields = oreDataFields;
       this.treasureSiteDataFields = treasureSiteDataFields;
       this.shipDataFields = shipDataFields;
-      this.secretsEntranceDataFields = secretsEntranceDataFields;
       this.seaMonsterDataFields = seaMonsterDataFields;
 
       if (CommandCodes.get(CommandCodes.Type.NPC_DISABLE) || Util.isForceServerLocalWithAutoDbconfig()) {
@@ -167,7 +165,10 @@ public class Area : MonoBehaviour
       }
 
       // Store a reference to all the warps in this area
-      _warps = new List<Warp>(GetComponentsInChildren<Warp>());
+      List<Warp> warpEntities = new List<Warp>(GetComponentsInChildren<Warp>());
+      foreach (Warp warp in warpEntities) {
+         _warps.Add(warp);
+      }
 
       // Store all references to temporary controllers
       _tempControllers = new List<TemporaryController>(GetComponentsInChildren<TemporaryController>());
@@ -192,6 +193,10 @@ public class Area : MonoBehaviour
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
+   }
+
+   public void registerSecretEntrance (SecretEntranceHolder secretHolder) {
+      secretEntranceList.Add(secretHolder);
    }
 
    public void registerWarpFromSecretEntrance (Warp warp) {
@@ -419,6 +424,7 @@ public class Area : MonoBehaviour
    protected Tilemap _firstTilemap = null;
 
    // The list of warps in this area
+   [SerializeField]
    protected List<Warp> _warps = new List<Warp>();
 
    // The list of temporary controllers in this rea

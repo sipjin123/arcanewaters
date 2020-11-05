@@ -61,8 +61,6 @@ public class PlayerObserverManager : NetworkVisibility
          _instanceId = ((TreasureChest) _entity).instanceId;
       } else if (_entity is OreNode) {
          _instanceId = ((OreNode) _entity).instanceId;
-      } else if (_entity is SecretEntranceHolder) {
-         _instanceId = ((SecretEntranceHolder) _entity).instanceId;
       } else if (_entity is Discovery) {
          _instanceId = ((Discovery) _entity).instanceId;
       } 

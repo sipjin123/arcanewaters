@@ -228,13 +228,21 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractSecretEntrance (int instanceId, int spawnId) {
-      SecretEntranceHolder secretEntranceHolder = InstanceManager.self.getSecretEntranceInstance(instanceId, spawnId);
+   public void Cmd_InteractSecretEntrance (int spawnId) {
+      SecretEntranceHolder secretEntranceHolder = AreaManager.self.getArea(_player.areaKey).secretEntranceList.Find(_ => _.spawnId == spawnId);
       if (secretEntranceHolder != null) {
          if (!secretEntranceHolder.isInteracted) {
-            secretEntranceHolder.completeInteraction();
-            secretEntranceHolder.Rpc_InteractAnimation();
+            Target_InteractSecretEntrance(_player.connectionToClient, spawnId);
          }
+      } 
+   }
+
+   [TargetRpc]
+   public void Target_InteractSecretEntrance (NetworkConnection connection, int spawnId) {
+      SecretEntranceHolder secretEntranceHolder = AreaManager.self.getArea(_player.areaKey).secretEntranceList.Find(_ => _.spawnId == spawnId);
+      if (secretEntranceHolder != null) {
+         secretEntranceHolder.completeInteraction();
+         secretEntranceHolder.cachedSecretEntrance.interactAnimation();
       } else {
          D.editorLog("Failed to find interactable", Color.blue);
       }
@@ -4782,9 +4790,15 @@ public class RPCManager : NetworkBehaviour {
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
          if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
-            warp.startWarpForPlayer(_player);
+            if (warp.gameObject.activeInHierarchy) {
+               warp.startWarpForPlayer(_player);
+            } else {
+               // Inactive warps are children of secret entrance, the warp will be activated in the server side only, the warp game object will be automatically disabled after warping the player since secret entrance warps have a boolean "isSecretWarp"
+               warp.gameObject.SetActive(true);
+               warp.startWarpForPlayer(_player);
+            }
             return;
-         } 
+         }
       }
       
       // If no valid warp was found, let the player know so at least they're not stuck
