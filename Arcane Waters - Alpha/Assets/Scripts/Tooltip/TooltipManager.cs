@@ -29,6 +29,9 @@ public class TooltipManager : ClientMonoBehaviour {
    }
  
    public void keepToolTipOnScreen (RectTransform toolTipRect) {
+      if (Util.isBatch()) {
+         return;
+      }
       // Find the real world location of the tooltip
       Vector3 toolTipPos = toolTipRect.transform.position;
 

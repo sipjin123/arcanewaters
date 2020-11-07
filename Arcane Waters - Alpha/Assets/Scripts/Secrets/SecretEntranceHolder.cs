@@ -80,7 +80,6 @@ public class SecretEntranceHolder : MonoBehaviour, IMapEditorDataReceiver
 
       // Set as a child of the area
       Area area = AreaManager.self.getArea(this.areaKey);
-      area.registerSecretEntrance(this);
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
    }
@@ -99,10 +98,10 @@ public class SecretEntranceHolder : MonoBehaviour, IMapEditorDataReceiver
       isFinishedAnimating = false;
       cachedSecretEntrance.warp.gameObject.SetActive(false);
       cachedSecretEntrance.closeEntrance();
-      CloseAnimation();
+      closeAnimation();
    }
 
-   public void CloseAnimation () {
+   public void closeAnimation () {
       // Sends animation commands to all clients
       if (!isRunningCoroutineAnimation) {
          cachedSecretEntrance.closeEntrance();

@@ -228,27 +228,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_InteractSecretEntrance (int spawnId) {
-      SecretEntranceHolder secretEntranceHolder = AreaManager.self.getArea(_player.areaKey).secretEntranceList.Find(_ => _.spawnId == spawnId);
-      if (secretEntranceHolder != null) {
-         if (!secretEntranceHolder.isInteracted) {
-            Target_InteractSecretEntrance(_player.connectionToClient, spawnId);
-         }
-      } 
-   }
-
-   [TargetRpc]
-   public void Target_InteractSecretEntrance (NetworkConnection connection, int spawnId) {
-      SecretEntranceHolder secretEntranceHolder = AreaManager.self.getArea(_player.areaKey).secretEntranceList.Find(_ => _.spawnId == spawnId);
-      if (secretEntranceHolder != null) {
-         secretEntranceHolder.completeInteraction();
-         secretEntranceHolder.cachedSecretEntrance.interactAnimation();
-      } else {
-         D.editorLog("Failed to find interactable", Color.blue);
-      }
-   }
-
-   [Command]
    public void Cmd_InteractAnimation (Anim.Type animType, Direction direction) {
       _player.Rpc_ForceLookat(direction);
       Rpc_InteractAnimation(animType);

@@ -948,11 +948,6 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   [ClientRpc]
-   public void Rpc_WarpToArea (string areaKey, Vector3 newPosition) {
-      this.transform.position = newPosition;
-   }
-
    [TargetRpc]
    public void Target_ReceiveSiloInfo (NetworkConnection connection, SiloInfo[] siloInfo) {
       _siloInfo = new List<SiloInfo>(siloInfo);

@@ -27,9 +27,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
    public const int ENTER_TREASURE_SITE_QUEST_INDEX = 14;
 
-   // If this warp is associated with secret entrance
-   public bool isSecretWarp;
-
    #endregion
 
    void Awake () {
@@ -86,11 +83,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       yield return new WaitForSeconds(delay);
 
       player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
-
-      // Secret entrance warps disable immediately for server only, this is so other clients would have to interact with the secret entrance before they can warp properly
-      if (isSecretWarp) {
-         gameObject.SetActive(false);
-      }
    }
 
    public void receiveData (DataField[] dataFields) {

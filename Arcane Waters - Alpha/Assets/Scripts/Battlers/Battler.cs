@@ -752,7 +752,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    #region Battle Callers
-
+   
    public void playDeathSound () {
       SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
 
@@ -774,19 +774,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                enemy.isDefeated = true;
             }
          } else {
-            // Player battler
-            if (isLocalBattler()) {
-               // If they're still connected, we can warp them directly
-               if (player != null && player.connectionToClient != null) {
-                  player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
-               } else {
-                  // The user might be offline, in which case we need to modify their position in the DB
-                  Vector2 pos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
-                  });
-               }
-            }
+            // The user might be offline, in which case we need to modify their position in the DB
+            Vector2 pos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
+            });
          }
       }
    }
@@ -1281,10 +1273,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Speed up animation then Animate Shoot clip for a Recoil Effect
             sourceBattler.modifyAnimSpeed(shootAnimSpeed);
             sourceBattler.pauseAnim(false);
-            if (weaponData.weaponClass == Weapon.Class.Magic) {
-               sourceBattler.playAnim(Anim.Type.Throw_Projectile);
-            } else {
+            if (weaponData == null) {
                sourceBattler.playAnim(Anim.Type.Finish_Attack);
+            } else {
+               if (weaponData.weaponClass == Weapon.Class.Magic) {
+                  sourceBattler.playAnim(Anim.Type.Throw_Projectile);
+               } else {
+                  sourceBattler.playAnim(Anim.Type.Finish_Attack);
+               }
             }
             yield return new WaitForSeconds(POST_SHOOT_DELAY);
 

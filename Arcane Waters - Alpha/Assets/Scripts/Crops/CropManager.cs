@@ -142,7 +142,7 @@ public class CropManager : NetworkBehaviour {
          }
       }
 
-      cropInfo = updatedCropInfo(quickGrow, cropInfo);
+      cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
 
       // Send the new Crop to the player
       this.Target_ReceiveCrop(_player.connectionToClient, cropInfo, justGrew);
@@ -393,7 +393,7 @@ public class CropManager : NetworkBehaviour {
             }
 
             // Modifies the water interval for crops
-            cropList = updatedCropArrayInfo(quickGrow, cropList);
+            cropList = getUpdatedCropArrayInfo(quickGrow, cropList);
 
             // Send it to the player
             this.Target_ReceiveCropArray(_player.connectionToClient, cropList.ToArray(), quickGrow);
@@ -404,20 +404,20 @@ public class CropManager : NetworkBehaviour {
       });
    }
 
-   private List<CropInfo> updatedCropArrayInfo (bool quickGrow, List<CropInfo> cropList) {
+   private List<CropInfo> getUpdatedCropArrayInfo (bool quickGrow, List<CropInfo> cropList) {
       List<CropInfo> newCropInfoList = new List<CropInfo>();
 
       // Alter water interval for each crop info
       for (int i = 0; i < cropList.Count; i++) {
          CropInfo cropInfo = cropList[i];
-         cropInfo = updatedCropInfo(quickGrow, cropInfo);
+         cropInfo = getUpdatedCropInfo(quickGrow, cropInfo);
          newCropInfoList.Add(cropInfo);
       }
 
       return newCropInfoList;
    }
 
-   private CropInfo updatedCropInfo (bool quickGrow, CropInfo cropInfo) {
+   private CropInfo getUpdatedCropInfo (bool quickGrow, CropInfo cropInfo) {
       if (quickGrow) {
          // For tutorial purposes, set the water interval into 3 seconds
          cropInfo.waterInterval = 3;

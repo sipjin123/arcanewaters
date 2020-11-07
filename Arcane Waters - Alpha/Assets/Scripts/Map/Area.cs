@@ -90,9 +90,6 @@ public class Area : MonoBehaviour
    // Container for checking types of cell(a stack of tiles in the same XY position)
    public CellTypesContainer cellTypes;
 
-   // List of secret entrance entities
-   public List<SecretEntranceHolder> secretEntranceList = new List<SecretEntranceHolder>();
-
    #endregion
 
    public void registerNetworkPrefabData (List<ExportedPrefab001> npcDatafields, List<ExportedPrefab001> enemyDatafields,
@@ -193,10 +190,6 @@ public class Area : MonoBehaviour
 
       // Store it in the Area Manager
       AreaManager.self.storeArea(this);
-   }
-
-   public void registerSecretEntrance (SecretEntranceHolder secretHolder) {
-      secretEntranceList.Add(secretHolder);
    }
 
    public void registerWarpFromSecretEntrance (Warp warp) {

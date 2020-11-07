@@ -100,10 +100,16 @@ public class SecretEntrance : MonoBehaviour {
          warp.areaTarget = secretEntranceHolder.areaTarget;
          warp.spawnTarget = secretEntranceHolder.spawnTarget;
          warp.newFacingDirection = secretEntranceHolder.newFacingDirection;
-      }
 
-      // Disable warp gameobject which can only be activated by the client side upon interaction, server warp will activate shortly
-      warp.gameObject.SetActive(false);
+         // Make sure warp is disabled for host mode, otherwise player will be able to warp even if secret entrance has not been interacted
+         if (NetworkClient.active && NetworkClient.isConnected) {
+            warp.gameObject.SetActive(false);
+         }
+      } else {
+         // Warp objects are only inactive for clients and will be enabled upon interaction
+         // Server warps are always enabled since colliding on server side no longer triggers warp, server warp needs to stay active so server side warping coroutine can process properly
+         warp.gameObject.SetActive(false);
+      }
 
       if (!Util.isBatch()) { 
          if (subSprite.name == "none") {
@@ -176,7 +182,8 @@ public class SecretEntrance : MonoBehaviour {
 
    public void tryToInteract () {
       if (isGlobalPlayerNearby()) {
-         Global.player.rpc.Cmd_InteractSecretEntrance(secretEntranceHolder.spawnId);
+         secretEntranceHolder.completeInteraction();
+         secretEntranceHolder.cachedSecretEntrance.interactAnimation();
       } else {
          D.editorLog("Player it Too far from the secret entrance!", Color.red);
       }
