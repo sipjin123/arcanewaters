@@ -42,6 +42,7 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    public Text highestBidConsult;
    public Text buyoutPriceConsult;
    public GameObject cancelAuctionContainer;
+   public GameObject youWonThisAuctionGO;
 
    // The create section fields
    public Toggle duration1hToggle;
@@ -58,6 +59,8 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    public Text highestBidBid;
    public Text buyoutPriceBid;
    public InputField newBidInput;
+   public Text goldText;
+   public GameObject youAreHighestBidderGO;
 
    #endregion
 
@@ -134,6 +137,16 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
       // Set the new bid to the current highest + 1
       newBidInput.text = (auction.highestBidPrice + 1).ToString();
 
+      // Set the user gold
+      goldText.text = string.Format("{0:n0}", Global.lastUserGold);
+
+      // Display a special row when the highest bidder is the local user
+      if (Global.player != null && auction.highestBidUser == Global.player.userId) {
+         youAreHighestBidderGO.SetActive(true);
+      } else {
+         youAreHighestBidderGO.SetActive(false);
+      }
+
       show();
    }
 
@@ -172,6 +185,13 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
 
       // Hide the cancel button
       cancelAuctionContainer.SetActive(false);
+
+      // Display a special row when the local user won the auction
+      if (Global.player != null && auction.highestBidUser == Global.player.userId) {
+         youWonThisAuctionGO.SetActive(true);
+      } else {
+         youWonThisAuctionGO.SetActive(false);
+      }
 
       show();
    }

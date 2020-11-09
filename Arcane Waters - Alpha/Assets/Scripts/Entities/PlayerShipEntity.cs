@@ -40,20 +40,6 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public string hatColors;
 
-   // The guild icon layers
-   [SyncVar]
-   public string guildIconBorder;
-   [SyncVar]
-   public string guildIconBackground;
-   [SyncVar]
-   public string guildIconSigil;
-
-   // The guild icon colors
-   [SyncVar]
-   public string guildIconBackPalettes;
-   [SyncVar]
-   public string guildIconSigilPalettes;
-
    // True when the local player is aiming   
    public bool isAiming;
 

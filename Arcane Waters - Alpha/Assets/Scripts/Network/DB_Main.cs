@@ -7947,17 +7947,23 @@ public class DB_Main : DB_MainStub
    public static new void deleteAuction (int auctionId) {
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "DELETE FROM auction_table_v1 WHERE auctionId=@auctionId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("", conn)) {
+               conn.Open();
 
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@auctionId", auctionId);
-            DebugQuery(cmd);
+               // Delete the auction
+               cmd.CommandText = "DELETE FROM auction_table_v1 WHERE auctionId=@auctionId";
+               cmd.Prepare();
+               cmd.Parameters.AddWithValue("@auctionId", auctionId);
+               DebugQuery(cmd);
+               cmd.ExecuteNonQuery();
 
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
+               // Delete the bidders
+               cmd.CommandText = "DELETE FROM auction_bidders WHERE auctionId=@auctionId";
+               cmd.Parameters.Clear();
+               cmd.Parameters.AddWithValue("@auctionId", auctionId);
+               DebugQuery(cmd);
+               cmd.ExecuteNonQuery();
+            }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
@@ -7998,27 +8004,26 @@ public class DB_Main : DB_MainStub
       return auctionId;
    }
 
-   public static new string getAuctionList (string pageNumberStr, string rowsPerPageStr, string categoryFilter, string userIdStr, string onlyHistory, string onlySelfAuctions) {
+   public static new string getAuctionList (string pageNumberStr, string rowsPerPageStr, string categoryFilter, string userIdStr, string auctionFilter) {
       List<AuctionItemData> auctionList = new List<AuctionItemData>();
 
       // Param translation
       int rowsPerPage = int.Parse(rowsPerPageStr);
       int pageNumber = int.Parse(pageNumberStr);
 
-      string whereClause = getAuctionListWhereClause(userIdStr, categoryFilter, onlyHistory, onlySelfAuctions);
+      string whereClause = getAuctionListWhereClause(userIdStr, categoryFilter, auctionFilter);
 
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM auction_table_v1 auctions " +
-            "LEFT JOIN items ON(items.usrId = -auctions.mailId AND auctions.mailId > 0) " +
+            "SELECT * FROM auction_table_v1 " +
+            "LEFT JOIN items ON(items.usrId = -auction_table_v1.mailId AND auction_table_v1.mailId > 0) " +
             whereClause +
             " ORDER BY expiryDate LIMIT @start, @perPage"
             , conn)) {
             conn.Open();
             cmd.Prepare();
 
-            UnityEngine.Debug.Log("list query " + cmd.CommandText);
             cmd.Parameters.AddWithValue("@expiryDate", DateTime.UtcNow);
             cmd.Parameters.AddWithValue("@start", (pageNumber - 1) * rowsPerPage);
             cmd.Parameters.AddWithValue("@perPage", rowsPerPage);
@@ -8039,9 +8044,9 @@ public class DB_Main : DB_MainStub
       return AuctionItemData.getXmlDataGroup(auctionList);
    }
 
-   public static new string getAuctionListCount (string userIdStr, string filterData, string onlyHistory, string onlyOwnAuctions) {
+   public static new string getAuctionListCount (string userIdStr, string filterData, string auctionFilter) {
       int auctionCount = 0;
-      string whereClause = getAuctionListWhereClause(userIdStr, filterData, onlyHistory, onlyOwnAuctions);
+      string whereClause = getAuctionListWhereClause(userIdStr, filterData, auctionFilter);
 
       try {
          using (MySqlConnection conn = getConnection())
@@ -8068,19 +8073,27 @@ public class DB_Main : DB_MainStub
       return auctionCount.ToString();
    }
 
-   private static string getAuctionListWhereClause (string userIdStr, string categoryFilter, string onlyHistory, string onlyOwnAuctions) {
+   private static string getAuctionListWhereClause (string userIdStr, string categoryFilter, string auctionFilterStr) {
       StringBuilder clause = new StringBuilder();
-      clause.Append(" WHERE ");
+      AuctionPanel.ListFilter auctionFilter = (AuctionPanel.ListFilter) Enum.Parse(typeof(AuctionPanel.ListFilter), auctionFilterStr);
 
-      // Set the history and self filters
-      if (onlyHistory == "1") {
-         clause.Append("expiryDate < @expiryDate AND highestBidUser = ");
-         clause.Append(userIdStr);
-      } else {
-         clause.Append("expiryDate >= @expiryDate ");
-         if (onlyOwnAuctions == "1") {
-            clause.Append(" AND sellerId = " + userIdStr);
-         }
+      // Set the main auction filters
+      switch (auctionFilter) {
+         case AuctionPanel.ListFilter.AllActive:
+            clause.Append(" WHERE ");
+            clause.Append(" expiryDate >= @expiryDate ");
+            break;
+         case AuctionPanel.ListFilter.MyAuctions:
+            clause.Append(" WHERE ");
+            clause.Append(" sellerId = " + userIdStr);
+            break;
+         case AuctionPanel.ListFilter.MyBids:
+            clause.Append(" JOIN auction_bidders ON(auction_table_v1.auctionId = auction_bidders.auctionId) ");
+            clause.Append(" WHERE ");
+            clause.Append(" auction_bidders.usrId = " + userIdStr);
+            break;
+         default:
+            break;
       }
 
       // Add the category filter
@@ -8207,6 +8220,27 @@ public class DB_Main : DB_MainStub
       }
 
       return auction;
+   }
+
+   public static new void addBidderOnAuction (int auctionId, int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO auction_bidders (auctionId, usrId) VALUES (@auctionId, @usrId) " +
+            "ON DUPLICATE KEY UPDATE auctionId = values(auctionId), usrId = values(usrId)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
    }
 
    #endregion

@@ -120,11 +120,11 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
-      return createNewInstance(areaKey, isSinglePlayer, false, -1, false, Voyage.Difficulty.None);
+      return createNewInstance(areaKey, isSinglePlayer, false, -1, false, Voyage.Difficulty.None, Biome.Type.None);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
-      Voyage.Difficulty difficulty) {
+      Voyage.Difficulty difficulty, Biome.Type biome) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -135,6 +135,7 @@ public class InstanceManager : MonoBehaviour {
       instance.creationDate = DateTime.UtcNow.ToBinary();
       instance.isVoyage = isVoyage;
       instance.voyageId = voyageId;
+      instance.biome = biome;
       instance.isPvP = isPvP;
       instance.difficulty = difficulty;
 

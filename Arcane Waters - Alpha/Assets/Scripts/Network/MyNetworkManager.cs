@@ -256,6 +256,7 @@ public class MyNetworkManager : NetworkManager
 
          // Get the voyage id, if any
          int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
+         Biome.Type voyageBiome = voyageId != -1 ? VoyageManager.self.getVoyage(voyageId).biome : Biome.Type.None;
 
          string previousAreaKey = userInfo.areaKey;
 
@@ -308,7 +309,7 @@ public class MyNetworkManager : NetworkManager
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             } else {
                // If we don't have the requested area, we need to create it now
-               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey);
+               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey, voyageBiome);
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             }
 
@@ -379,7 +380,7 @@ public class MyNetworkManager : NetworkManager
                   if (map != null) {
                      player.rpc.Target_ReceiveMapInfo(map);
                   }
-                  player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData);
+                  player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData, voyageBiome);
                });
             });
 

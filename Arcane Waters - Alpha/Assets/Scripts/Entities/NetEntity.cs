@@ -145,6 +145,20 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int customFarmBaseId;
 
+   // The guild icon layers
+   [SyncVar]
+   public string guildIconBorder;
+   [SyncVar]
+   public string guildIconBackground;
+   [SyncVar]
+   public string guildIconSigil;
+
+   // The guild icon colors
+   [SyncVar]
+   public string guildIconBackPalettes;
+   [SyncVar]
+   public string guildIconSigilPalettes;
+
    // Values that determines if the magnitude indicates moving
    public const float MOVING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;

@@ -28,14 +28,14 @@ public class MapManager : MonoBehaviour
    }
 
    public void createLiveMap (string areaKey) {
-      createLiveMap(areaKey, areaKey);
+      createLiveMap(areaKey, areaKey, Biome.Type.None);
    }
 
-   public void createLiveMap (string areaKey, string baseMapAreaKey) {
-      createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null);
+   public void createLiveMap (string areaKey, string baseMapAreaKey, Biome.Type voyageBiome) {
+      createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null, voyageBiome);
    }
 
-   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData) {
+   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
          D.debug("Cant create live map due to missing area key: " + areaKey);
@@ -91,7 +91,7 @@ public class MapManager : MonoBehaviour
                D.debug($"Could not find entry for map { areaKey } in the database");
 
                // If db_main fails to return due to connection issues, attempt nubis connection
-               processNubisData(areaKey, mapPosition, customizationData);
+               processNubisData(areaKey, mapPosition, customizationData, voyageBiome);
             } else if (string.IsNullOrEmpty(mapInfo.gameData)) {
                D.error($"Could not find gameData from map { areaKey } in the database. Ensure that the map has a published version available.");
             } else {
@@ -99,14 +99,14 @@ public class MapManager : MonoBehaviour
                ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
                if (exportedProject != null) {
-                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
+                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome));
                }
             }
          });
       });
    }
 
-   private async void processNubisData (string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
+   private async void processNubisData (string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       D.editorLog("Attempting to fetch using Nubis Data", Color.green);
 
       // Request the map from Nubis Cloud
@@ -121,12 +121,12 @@ public class MapManager : MonoBehaviour
          ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
          if (exportedProject != null) {
-            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData));
+            StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome));
          }
       }
    }
 
-   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData) {
+   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
@@ -134,10 +134,15 @@ public class MapManager : MonoBehaviour
       if (exportedProject.biome == Biome.Type.None) {
          // Biome should never be None, redownload map data using nubis and overwrite the cached map data
          D.error("Map Log: Invalid biome type NONE in map data. Redownloading map data using Nubis");
-         downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData);
+         downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData, voyageBiome);
       } else {
          // Create the area
          Area area = result.area;
+
+         // Use random biome for voyages
+         if (voyageBiome != Biome.Type.None) {
+            exportedProject.biome = voyageBiome;
+         }
 
          // Set area properties
          area.areaKey = areaKey;
@@ -239,11 +244,11 @@ public class MapManager : MonoBehaviour
          // Initialize the area
          area.initialize();
 
-         onAreaCreationIsFinished(area);
+         onAreaCreationIsFinished(area, voyageBiome);
       }
    }
 
-   public void onAreaCreationIsFinished (Area area) {
+   public void onAreaCreationIsFinished (Area area, Biome.Type voyageBiome) {
       D.debug("Area creation is Finished: " + area.areaKey);
 
       // Remove the area from being under creation
@@ -271,7 +276,7 @@ public class MapManager : MonoBehaviour
 
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
-         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData);
+         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData, voyageBiome);
          _nextAreaKey = null;
       }
    }
@@ -379,7 +384,7 @@ public class MapManager : MonoBehaviour
       return new Vector2();
    }
 
-   public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData) {
+   public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call(nameof(DB_Main.fetchMapData), baseMapAreaKey, version);
 
@@ -393,7 +398,7 @@ public class MapManager : MonoBehaviour
          D.debug("Map Log: Creating map data fetched from Nubis: (" + areaKey + ") Ver: " + version);
 
          // Spawn the Area using the map data
-         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData);
+         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData, voyageBiome);
       }
    }
 

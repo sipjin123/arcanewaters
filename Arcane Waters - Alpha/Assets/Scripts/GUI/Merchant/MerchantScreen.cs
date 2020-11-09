@@ -63,6 +63,14 @@ public class MerchantScreen : Panel {
 
    public void sellButtonPressed (int offerId) {
       CropOffer offer = getOffer(offerId);
+      string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
+      int availableCropCount = CargoBoxManager.self.getCargoCount(offer.cropType);
+
+      if (availableCropCount <= 0) {
+         PanelManager.self.noticeScreen.show("You do not have any " + cropName + " to sell!");
+         return;
+      }
+
       Rarity.Type rarityToSellAt = offer.rarity;
 
       TradeConfirmScreen confirmScreen = PanelManager.self.tradeConfirmScreen;
@@ -70,13 +78,14 @@ public class MerchantScreen : Panel {
       // Update the Trade Confirm Screen
       confirmScreen.cropType = offer.cropType;
       confirmScreen.maxAmount = offer.isLowestRarity() ? int.MaxValue : Mathf.CeilToInt(offer.demand);
+      confirmScreen.maxAmount = Mathf.Clamp(confirmScreen.maxAmount, 0, availableCropCount);
+      confirmScreen.pricePerUnit = offer.pricePerUnit;
 
       // Associate a new function with the confirmation button
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
       confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId, rarityToSellAt));
 
       // Show a confirmation panel
-      string cropName = System.Enum.GetName(typeof(Crop.Type), offer.cropType);
       confirmScreen.show("How many " + cropName + " do you want to sell?");
 
       // Trigger the tutorial if the user has any of the selected crop to sell
@@ -86,7 +95,7 @@ public class MerchantScreen : Panel {
    }
 
    protected void sellButtonConfirmed (int offerId, Rarity.Type rarityToSellAt) {
-      int amountToSell = int.Parse(PanelManager.self.tradeConfirmScreen.sliderText.text);
+      int amountToSell = PanelManager.self.tradeConfirmScreen.getAmount();
 
       // Hide the confirm screen
       PanelManager.self.confirmScreen.hide();

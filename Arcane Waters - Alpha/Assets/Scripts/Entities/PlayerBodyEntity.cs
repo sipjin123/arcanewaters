@@ -98,6 +98,9 @@ public class PlayerBodyEntity : BodyEntity {
    public float jumpCooldownTimer;
    public bool isJumpCoolingDown = false;
 
+   // Custom icon of the guild
+   public GuildIcon guildIcon;
+
    #endregion
 
    protected override void Awake () {
@@ -107,6 +110,11 @@ public class PlayerBodyEntity : BodyEntity {
 
    protected override void Start () {
       base.Start();
+
+      // Set guild icon
+      guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
+      guildIcon.setBorder(guildIconBorder);
+      guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
 
       // Disable our collider if we are not the localplayer
       if (!isLocalPlayer) {
@@ -156,6 +164,20 @@ public class PlayerBodyEntity : BodyEntity {
       processJumpLogic();
       processActionLogic();
       processSprintLogic();
+
+      toggleGuildIcon();
+   }
+
+   private void toggleGuildIcon () {
+      if (isMouseOver()) {
+         guildIcon.GetComponent<CanvasGroup>().alpha = 1f;
+         guildIcon.GetComponent<CanvasGroup>().interactable = true;
+         guildIcon.GetComponent<CanvasGroup>().blocksRaycasts = true;
+      } else {
+         guildIcon.GetComponent<CanvasGroup>().alpha = 0f;
+         guildIcon.GetComponent<CanvasGroup>().interactable = false;
+         guildIcon.GetComponent<CanvasGroup>().blocksRaycasts = false;
+      }
    }
 
    private void processJumpLogic () {

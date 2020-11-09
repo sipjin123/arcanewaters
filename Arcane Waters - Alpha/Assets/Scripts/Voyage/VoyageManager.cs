@@ -50,7 +50,7 @@ public class VoyageManager : MonoBehaviour {
       InvokeRepeating(nameof(updateVoyageInstancesList), 5.5f, 5f);
    }
 
-   public void createVoyageInstance (string areaKey, bool isPvP) {
+   public void createVoyageInstance (string areaKey, bool isPvP, Biome.Type biome) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
@@ -76,7 +76,7 @@ public class VoyageManager : MonoBehaviour {
             Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
 
             // Create the area instance
-            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty);
+            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty, biome);
          });
       });
    }
@@ -364,7 +364,7 @@ public class VoyageManager : MonoBehaviour {
       List<Voyage> allVoyages = new List<Voyage>();
 
       foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
-         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.isPvP,
+         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
             instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount);
          allVoyages.Add(voyage);
       }
@@ -462,6 +462,7 @@ public class VoyageManager : MonoBehaviour {
             _isNewVoyagePvP = !_isNewVoyagePvP;
 
             if (bestServer != null) {
+               int biomeCount = Enum.GetValues(typeof(Biome.Type)).Length;
                // Create a new voyage instance on the chosen server
                pendingVoyageList.Add(new PendingVoyageCreation {
                   id = -1,
@@ -471,7 +472,8 @@ public class VoyageManager : MonoBehaviour {
                   serverIp = bestServer.ipAddress,
                   serverName = bestServer.deviceName,
                   serverPort = bestServer.port,
-                  updateTime = DateTime.UtcNow
+                  updateTime = DateTime.UtcNow,
+                  biome = UnityEngine.Random.Range(1, biomeCount - 1)
                });
             } else {
                D.editorLog("Could not find best server!", Color.red);

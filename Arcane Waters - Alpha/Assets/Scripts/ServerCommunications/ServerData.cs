@@ -125,6 +125,9 @@ public class PendingVoyageCreation {
 
    // The xml id of this entry
    public int id;
+
+   // Biome of this voyage
+   public int biome;
 }
 
 public enum InviteStatus {

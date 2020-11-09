@@ -76,11 +76,11 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
-   public static string getAuctionList (string pageNumberStr, string itemCountLimitStr, string categoryFilter, string userIdStr, string onlyHistory, string onlySelfAuctions) {
+   public static string getAuctionList (string pageNumberStr, string itemCountLimitStr, string categoryFilter, string userIdStr, string auctionFilter) {
       return "";
    }
 
-   public static string getAuctionListCount (string userIdStr, string filterData, string onlyHistory, string onlySelfAuctions) {
+   public static string getAuctionListCount (string userIdStr, string filterData, string auctionFilter) {
       return "0";
    }
 
@@ -107,6 +107,10 @@ public class DB_MainStub : MonoBehaviour
 
    public static AuctionItemData getAuction (int auctionId, bool readItemData) {
       return null;
+   }
+
+   public static void addBidderOnAuction (int auctionId, int userId) {
+
    }
 
    public static void updateNPCQuestXML (string rawData, int typeIndex, string xmlName, int isActive) {

@@ -69,12 +69,13 @@ public class Voyage
 
    }
 
-   public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, bool isPvP,
+   public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, Biome.Type biome, bool isPvP,
       long creationDate, int treasureSiteCount, int capturedTreasureSiteCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
       this.areaName = areaName;
       this.difficulty = difficulty;
+      this.biome = biome;
       this.isPvP = isPvP;
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;

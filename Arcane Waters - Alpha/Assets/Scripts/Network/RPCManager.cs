@@ -148,6 +148,9 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.addGold(auction.highestBidUser, auction.highestBidPrice);
          }
 
+         // Add the user to the list of bidders for this auction
+         DB_Main.addBidderOnAuction(auctionId, _player.userId);
+
          string resultMessage = "";
          if (bidAmount >= auction.buyoutPrice) {
             // Set this user as the highest bidder and close the auction. The item is delivered by the auction manager.
@@ -899,7 +902,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations) {
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations, Biome.Type voyageBiome) {
       // Check if we already have the Area created
       Area area = AreaManager.self.getArea(areaKey);
 
@@ -924,14 +927,14 @@ public class RPCManager : NetworkBehaviour {
          } else {
             // Only enter this process for server builds, this function accesses the background thread DB_Main
             if (NetworkServer.active) {
-               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations);
+               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, voyageBiome);
                return;
             } 
          }
       }
       
       // If we don't have the latest version of the map, download it
-      MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations);
+      MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, voyageBiome);
    }
 
    [Command]
@@ -2752,7 +2755,9 @@ public class RPCManager : NetworkBehaviour {
                   voyage.groupCount = groupCount;
 
                   // Set the biome of the area where the voyage is set
-                  voyage.biome = AreaManager.self.getAreaBiome(voyage.areaKey);
+                  if (voyage.biome == Biome.Type.None) {
+                     voyage.biome = AreaManager.self.getAreaBiome(voyage.areaKey);
+                  }
 
                   // Calculate the time since the voyage started
                   DateTime voyageCreationDate = DateTime.FromBinary(voyage.creationDate);

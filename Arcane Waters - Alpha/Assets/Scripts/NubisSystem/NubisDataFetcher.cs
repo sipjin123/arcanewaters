@@ -99,7 +99,7 @@ namespace NubisDataHandling {
       #region Auction Features
 
       public async void getAuctionList (int pageNumber, int rowsPerPage, Item.Category[] categoryFilters,
-         bool onlyHistory, bool onlyOwnAuctions) {
+         AuctionPanel.ListFilter auctionFilter) {
          AuctionPanel panel = (AuctionPanel) PanelManager.self.get(Panel.Type.Auction);
          panel.setLoadBlocker(true);
 
@@ -107,29 +107,30 @@ namespace NubisDataHandling {
          List<int> categoryFilterInt = Array.ConvertAll(categoryFilters.ToArray(), x => (int) x).ToList();
          string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
 
-         // Call the list and list count in parallel
+         // Call the nubis functions in parallel
          Task<string> listTask = NubisClient.call(nameof(DB_Main.getAuctionList), pageNumber.ToString(),
-            rowsPerPage.ToString(), categoryFilterJSON, Global.player.userId.ToString(),
-            onlyHistory ? "1" : "0", onlyOwnAuctions ? "1" : "0");
+            rowsPerPage.ToString(), categoryFilterJSON, Global.player.userId.ToString(), auctionFilter.ToString());
          Task<string> totalCountTask = NubisClient.call(nameof(DB_Main.getAuctionListCount),
-            Global.player.userId.ToString(), categoryFilterJSON,
-            onlyHistory ? "1" : "0", onlyOwnAuctions ? "1" : "0");
+            Global.player.userId.ToString(), categoryFilterJSON, auctionFilter.ToString());
+         Task<string> userInfoTask = NubisClient.call(nameof(DB_Main.getUserInfoJSON), Global.player.userId.ToString());
 
-         await Task.WhenAll(listTask, totalCountTask);
+         await Task.WhenAll(listTask, totalCountTask, userInfoTask);
 
          // Parse the received data
          List<AuctionItemData> auctionList = new List<AuctionItemData>();
          int totalAuctionCount = 0;
+         UserInfo userInfo = new UserInfo();
          try {
             auctionList = Util.xmlLoad<List<AuctionItemData>>(listTask.Result);
             totalAuctionCount = int.Parse(totalCountTask.Result);
+            userInfo = JsonConvert.DeserializeObject<UserInfo>(userInfoTask.Result);
          } catch {
             D.debug("Something went wrong with nubis fetching: " + nameof(DB_Main.getAuctionList));
          }
 
          // Update the panel with the results
          PanelManager.self.linkIfNotShowing(Panel.Type.Auction);
-         panel.receiveAuctionsFromServer(auctionList, categoryFilters, onlyHistory, onlyOwnAuctions, pageNumber, totalAuctionCount);
+         panel.receiveAuctionsFromServer(auctionList, categoryFilters, auctionFilter, pageNumber, totalAuctionCount, userInfo.gold);
       }
 
       #endregion

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class TradeConfirmScreen : MonoBehaviour
 {
@@ -17,15 +18,17 @@ public class TradeConfirmScreen : MonoBehaviour
    // The maximum amount of crops that can be sold
    public int maxAmount;
 
+   // The price per unit of crop
+   public int pricePerUnit;
+
    // Our various components that we need references to
    public Text text;
    public Text cancelButtonText;
    public Text confirmButtonText;
-   public Text costText;
    public Button confirmButton;
-   public GameObject costRow;
-   public Slider slider;
-   public Text sliderText;
+   public InputField amountInput;
+   public Text sellValueText;
+   public Image cropImage;
 
    #endregion
 
@@ -38,30 +41,21 @@ public class TradeConfirmScreen : MonoBehaviour
    }
 
    public void show (string newText) {
-      this.show(newText, 0);
-   }
-
-   public void show (string newText, int cost) {
       text.text = newText;
-
-      // Only show the Cost row if there's a cost associated
-      if (cost > 0) {
-         costRow.SetActive(true);
-         costText.text = cost + "";
-      } else {
-         costRow.SetActive(false);
-      }
 
       // Standard button text
       cancelButtonText.text = "Cancel";
       confirmButtonText.text = "Confirm";
+
+      setAmount(maxAmount);
+      cropImage.sprite = ImageManager.getSprite("Cargo/" + cropType);
 
       // Now make us visible
       show();
    }
 
    public void show () {
-      sliderChanged();
+      setAmount(_amount);
       this.canvasGroup.alpha = 1f;
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
@@ -72,19 +66,53 @@ public class TradeConfirmScreen : MonoBehaviour
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
+      this.gameObject.SetActive(false);
    }
 
-   public void sliderChanged () {
-      int cropCount = CargoBoxManager.self.getCargoCount(this.cropType);
+   public void onUpButtonClicked () {
+      setAmount(_amount + 1);
+   }
 
-      // Allow to sell up to the maximum of the offer
-      cropCount = cropCount < maxAmount ? cropCount : maxAmount;
+   public void onDownButtonClicked () {
+      setAmount(_amount - 1);
+   }
 
-      // Update the text associated with the slider
-      sliderText.text = (int) (slider.value * cropCount) + "";
+   public void onMaxButtonClicked () {
+      setAmount(maxAmount);
+   }
+
+   public void onAmountInputValueChanged () {
+      // While the user is writing the value, only update the displayed sell value when possible
+      if (int.TryParse(amountInput.text, out int parsedAmount)) {
+         sellValueText.text = (parsedAmount * pricePerUnit).ToString();
+      } else {
+         sellValueText.text = "0";
+      }
+   }
+
+   public void onAmountInputEndEdit () {
+      if (int.TryParse(amountInput.text, out int parsedAmount)) {
+         setAmount(parsedAmount);
+      } else {
+         // Restore the previous value
+         setAmount(_amount);
+      }
+   }
+
+   private void setAmount(int amount) {
+      _amount = Mathf.Clamp(amount, 0, maxAmount);
+      amountInput.SetTextWithoutNotify(_amount.ToString());
+      sellValueText.text = (_amount * pricePerUnit).ToString();
+   }
+
+   public int getAmount () {
+      return _amount;
    }
 
    #region Private Variables
+
+   // The amount to trade
+   private int _amount = 0;
 
    #endregion
 }

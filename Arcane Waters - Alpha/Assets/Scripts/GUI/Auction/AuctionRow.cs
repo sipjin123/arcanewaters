@@ -35,6 +35,7 @@ public class AuctionRow : MonoBehaviour
 
    // The colors for different auction statuses
    public Color ownAuctionColor;
+   public Color highestBidderColor;
    public Color expiredAuctionColor;
 
    // All the text components that will be colored
@@ -105,6 +106,13 @@ public class AuctionRow : MonoBehaviour
          if (Global.player != null && auction.sellerId == Global.player.userId) {
             foreach (Text t in rowTexts) {
                t.color = ownAuctionColor;
+            }
+         }
+
+         // Recolor the text when the highest bidder is the local user
+         if (Global.player != null && auction.highestBidUser == Global.player.userId) {
+            foreach (Text t in rowTexts) {
+               t.color = highestBidderColor;
             }
          }
       }

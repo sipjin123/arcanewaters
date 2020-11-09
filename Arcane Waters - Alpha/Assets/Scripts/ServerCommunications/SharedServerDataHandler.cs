@@ -97,7 +97,7 @@ namespace ServerCommunicationHandlerv2 {
 
       public void createVoyage (List<PendingVoyageCreation> voyageList) {
          foreach (PendingVoyageCreation voyageEntry in voyageList) {
-            VoyageManager.self.createVoyageInstance(voyageEntry.areaKey, voyageEntry.isPvP);
+            VoyageManager.self.createVoyageInstance(voyageEntry.areaKey, voyageEntry.isPvP, (Biome.Type)voyageEntry.biome);
          }
       }
 

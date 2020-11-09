@@ -86,6 +86,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
 
+   [SyncVar]
+   // The biome of this instance
+   public Biome.Type biome = Biome.Type.None;
+
    // Player that is currently customizing the area
    public NetEntity playerMakingCustomizations;
 
