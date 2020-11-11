@@ -96,6 +96,15 @@ public class Instance : NetworkBehaviour
    // Our network ident
    public NetworkIdentity netIdent;
 
+   // The start time
+   public long startTime;
+
+   // The user id registered to this area if this is a private area
+   public int privateAreaUserId;
+
+   // Number of minutes that this instance can be active when it is a private area
+   public const int ACTIVE_MINUTES_CAP = 10;
+
    #endregion
 
    public void Awake () {
@@ -104,6 +113,8 @@ public class Instance : NetworkBehaviour
    }
 
    private void Start () {
+      resetActiveTimer();
+
       // On clients, set the instance manager as the parent transform
       if (isClient) {
          transform.SetParent(InstanceManager.self.transform);
@@ -116,6 +127,10 @@ public class Instance : NetworkBehaviour
 
       // Routinely check if the instance is empty
       InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
+   }
+
+   public void resetActiveTimer () {
+      startTime = DateTime.UtcNow.ToBinary();
    }
 
    public int getPlayerCount() {
@@ -200,14 +215,33 @@ public class Instance : NetworkBehaviour
       if (getPlayerCount() <= 0) {
          _consecutiveEmptyChecks++;
 
-         // If the Instance has been empty for long enough, just remove it
-         if (_consecutiveEmptyChecks > 10 || AreaManager.self.isPrivateArea(areaKey)) {
-            InstanceManager.self.removeEmptyInstance(this);
-         }
+         TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(startTime));
 
+         // If this is a private area and the active minutes exceeds the cap, respawn player to starting town and remove this instance
+         if ((AreaManager.self.isPrivateArea(areaKey) && timeSinceStart.TotalMinutes >= ACTIVE_MINUTES_CAP)) {
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               UserObjects userObj = DB_Main.getUserObjects(privateAreaUserId);
+
+               // If the player saved area is still this instance, Update the player area in the database since this private area will now be removed
+               if (userObj.userInfo.areaKey == areaKey) {
+                  Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(Area.STARTING_TOWN);
+                  DB_Main.setNewLocalPosition(privateAreaUserId, spawnLocalPosition, Direction.South, Area.STARTING_TOWN);
+               } 
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  // Remove the private area
+                  InstanceManager.self.removeEmptyInstance(this);
+               });
+            });
+         } else {
+            // If the Instance has been empty for long enough, just remove it
+            if (_consecutiveEmptyChecks > 10) {
+               InstanceManager.self.removeEmptyInstance(this);
+            }
+         }
       } else {
          // There's someone in the instance, so reset the counter
          _consecutiveEmptyChecks = 0;
+         resetActiveTimer();
       }
    }
 

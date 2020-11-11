@@ -28,7 +28,7 @@ public class TreasureChest : NetworkBehaviour {
    public SpriteRenderer spriteRenderer;
 
    // The list of user IDs that have opened this chest
-   public SyncListInt userIds = new SyncListInt();
+   public SyncList<int> userIds = new SyncList<int>();
 
    // The Open button
    public GameObject openButtonContainer;
@@ -142,10 +142,15 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // Check if this chest is marked as interacted
-      if (Global.userObjects != null) {
+      if (Global.userObjects != null && chestType == ChestSpawnType.Site) {
          if (PlayerPrefs.GetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId+ "_" + areaKey + "_" + chestSpawnId, 0) == 1) {
             isLocallyInteracted = true;
-         }
+         } 
+      } 
+
+      // Disables opened loot bags
+      if (hasBeenOpened() && (chestType == ChestSpawnType.Land || chestType == ChestSpawnType.Sea)) {
+         gameObject.SetActive(false);
       }
    }
 
@@ -382,6 +387,12 @@ public class TreasureChest : NetworkBehaviour {
 
    private IEnumerator CO_DisableChestAfterLifetime () {
       yield return new WaitForSeconds(30);
+
+      // Add the player to user list so when reconnecting, this chest will no longer be shown
+      if (Global.player != null) {
+         PlayerPrefs.SetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + areaKey + "_" + chestSpawnId, 1);
+         Global.player.rpc.Cmd_MarkUnopennedBags(this.id);
+      }
       gameObject.SetActive(false);
       deleteTreasureChestIcon();
    }

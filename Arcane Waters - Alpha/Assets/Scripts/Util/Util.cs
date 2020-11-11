@@ -72,7 +72,10 @@ public class Util : MonoBehaviour {
             itemTypeName = ((UsableItem.Type) typeID).ToString();
             break;
          case Item.Category.Hats:
-            itemTypeName = EquipmentXMLManager.self.getHatData(typeID).equipmentName;
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(typeID);
+            if (hatData != null) {
+               itemTypeName = hatData.equipmentName;
+            }
             break;
          case Item.Category.Quest_Item:
             itemTypeName = ((QuestItem.Type) typeID).ToString();

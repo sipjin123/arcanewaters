@@ -82,6 +82,7 @@ public class TreasureManager : MonoBehaviour {
 
       // Sets the type of enemy
       chest.enemyType = (int)enemyType;
+      chest.areaKey = instance.areaKey;
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);
@@ -114,6 +115,7 @@ public class TreasureManager : MonoBehaviour {
 
       // Sets the type of enemy
       chest.enemyType = enemyTypeID;
+      chest.areaKey = instance.areaKey;
 
       // Keep it parented to this Manager
       chest.transform.SetParent(this.transform, true);

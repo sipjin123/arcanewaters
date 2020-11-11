@@ -588,6 +588,12 @@ public class RPCManager : NetworkBehaviour {
       processLootBagRewards(chestId);
    }
 
+   [Command]
+   public void Cmd_MarkUnopennedBags (int chestId) {
+      TreasureChest chest = TreasureManager.self.getChest(chestId);
+      chest.userIds.Add(_player.userId);
+   }
+
    [Server]
    private void processLootBagRewards (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);

@@ -33,10 +33,10 @@ public class Battle : NetworkBehaviour {
    public TeamType teamThatWon = TeamType.None;
 
    // The list of Battlers that are attacking
-   public SyncListInt attackers = new SyncListInt();
+   public SyncList<int> attackers = new SyncList<int>();
 
    // The list of Battlers that are defending
-   public SyncListInt defenders = new SyncListInt();
+   public SyncList<int> defenders = new SyncList<int>();
 
    // Local events to execute whenever we finish a battle. (hiding battle UI for example)
    [HideInInspector] public UnityEvent onBattleEnded = new UnityEvent();
@@ -72,7 +72,7 @@ public class Battle : NetworkBehaviour {
             }
          }
       } catch {
-         D.editorLog("Battle has not loaded yet", Color.red);
+         D.editorLog("Battle has not loaded yet: " + battleId + " : {" + BattleManager.self.getBattle(battleId) + "}", Color.red);
          StartCoroutine(CO_RetryRepositioning());
       }
    }
@@ -318,6 +318,11 @@ public class Battle : NetworkBehaviour {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
 
+      // TODO: Investigate instances wherein this value is blank
+      if (actionStrings.Length < 1) {
+         D.debug("ERROR HERE! There are no action strings for this combat action: " + battleActionType);
+         return;
+      }
       if (battleActionType == BattleActionType.Stance) {
          // Stance action change
          actionToSend = StanceAction.deserialize(actionStrings[0]);

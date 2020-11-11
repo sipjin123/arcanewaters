@@ -300,7 +300,9 @@ public class EquipmentXMLManager : MonoBehaviour {
       switch (item.category) {
          case Item.Category.Hats:
             HatStatData hatData = getHatData(item.itemTypeId);
-            newName = hatData.equipmentName;
+            if (hatData != null) {
+               newName = hatData.equipmentName;
+            }
             break;
          case Item.Category.Armor:
             ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);

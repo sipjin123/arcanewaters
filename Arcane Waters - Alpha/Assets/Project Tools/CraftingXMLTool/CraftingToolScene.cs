@@ -125,8 +125,11 @@ public class CraftingToolScene : MonoBehaviour {
             imageIcon.sprite = ImageManager.getSprite(imagePath);
             break;
          case Item.Category.Hats:
-            imagePath = EquipmentXMLManager.self.getHatData(resultType).equipmentIconPath;
-            imageIcon.sprite = ImageManager.getSprite(imagePath);
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(resultType);
+            if (hatData != null) {
+               imagePath = hatData.equipmentIconPath;
+               imageIcon.sprite = ImageManager.getSprite(imagePath);
+            }
             break;
          default:
             imageIcon.sprite = Util.getRawSpriteIcon(category, resultType);

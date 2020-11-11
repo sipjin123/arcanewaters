@@ -34,7 +34,24 @@ public class InstanceManager : MonoBehaviour {
 
       // For private areas, we always create a new instance, to ensure that players don't join instances of other players
       if (AreaManager.self.isPrivateArea(areaKey)) {
-         instance = createNewInstance(areaKey, player.isSinglePlayer);
+         Instance existingPrivateInstance = getPlayerPrivateOpenInstance(areaKey, player.userId);
+
+         if (existingPrivateInstance == null) {
+            instance = createNewInstance(areaKey, player.isSinglePlayer);
+         } else {
+            TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(existingPrivateInstance.startTime));
+
+            // Check if somehow the instance has a player in id {less likely} / confirm if the private area user id is the same with this player user id / if the active time is less than 10 minutes
+            if (existingPrivateInstance.getPlayerCount() < 1 && existingPrivateInstance.privateAreaUserId == player.userId && timeSinceStart.TotalMinutes < Instance.ACTIVE_MINUTES_CAP) {
+               instance = getOpenInstance(areaKey, player.isSinglePlayer);
+            } else {
+               // Return the player to the starting town if the instance does not exist anymore
+               instance = getOpenInstance(Area.STARTING_TOWN, false);
+               if (instance == null) {
+                  instance = createNewInstance(Area.STARTING_TOWN, false);
+               }
+            }
+         }
       }
 
       if (instance == null) {
@@ -52,6 +69,12 @@ public class InstanceManager : MonoBehaviour {
 
       // Add the player to the list
       instance.entities.Add(player);
+      instance.resetActiveTimer();
+
+      // Register the user id as the privateAreaUserId if the area is a private area
+      if (AreaManager.self.isPrivateArea(areaKey)) {
+         instance.privateAreaUserId = player.userId;
+      }
 
       // If we just hit the max number of players, we need to recheck which areas are open
       if (instance.getPlayerCount() >= instance.getMaxPlayers()) {
@@ -160,6 +183,16 @@ public class InstanceManager : MonoBehaviour {
             if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers()) {
                return instance;
             }
+         }
+      }
+
+      return null;
+   }
+
+   public Instance getPlayerPrivateOpenInstance (string areaKey, int userId) {
+      foreach (Instance instance in _instances.Values) {
+         if (instance.areaKey == areaKey && instance.getPlayerCount() < instance.getMaxPlayers() && instance.privateAreaUserId == userId) {
+            return instance;
          }
       }
 

@@ -47,7 +47,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public enum Stance { Balanced = 0, Attack = 1, Defense = 2 };
 
    // The list of battler ability ID's
-   public SyncListInt basicAbilityIDList = new SyncListInt();
+   public SyncList<int> basicAbilityIDList = new SyncList<int>();
 
    // The userId associated with this Battler, if any
    [SyncVar]
