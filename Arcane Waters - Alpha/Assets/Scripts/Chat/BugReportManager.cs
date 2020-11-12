@@ -197,6 +197,12 @@ public class BugReportManager : MonoBehaviour {
    private Texture2D takeScreenshot (int resWidth, int resHeight) {
       // Prepare data
       Camera camera = Camera.main;
+
+      // Use battle camera if player is currently in battle
+      if (BattleCamera.self.GetComponent<Camera>() && BattleCamera.self.GetComponent<Camera>().enabled) {
+         camera = BattleCamera.self.GetComponent<Camera>();
+      }
+
       RenderTexture savedCameraRT = camera.targetTexture;
       RenderTexture savedActiveRT = RenderTexture.active;
       RenderMode cameraRenderMode = canvasGUI.renderMode;
@@ -207,7 +213,7 @@ public class BugReportManager : MonoBehaviour {
       if (cameraRenderMode != RenderMode.ScreenSpaceCamera) {
          canvasGUI.renderMode = RenderMode.ScreenSpaceCamera;
          canvasGUI.worldCamera = camera;
-         canvasGUI.planeDistance = 1;
+         canvasGUI.planeDistance = camera == Camera.main ? 1.0f : -2.0f;
       }
 
       // Create render texture, assign and render to it

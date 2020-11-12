@@ -814,6 +814,11 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
+      // If this is a bot ship and the other entity isn't (or viceversa), we're enemies
+      if (isBotShip() != otherEntity.isBotShip()) {
+         return true;
+      }
+
       if (VoyageManager.isInGroup(this) && VoyageManager.isInGroup(otherEntity)) {
          // In PvE voyage instances, players from other groups are not enemies
          Instance instance = getInstance();

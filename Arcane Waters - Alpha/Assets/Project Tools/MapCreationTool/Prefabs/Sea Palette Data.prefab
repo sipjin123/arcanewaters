@@ -46,6 +46,50 @@ MonoBehaviour:
   mainBounds:
     m_Position: {x: -13, y: -28, z: 0}
     m_Size: {x: 7, y: 12, z: 0}
+--- !u!1 &630252343474004374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6647265753067701178}
+  - component: {fileID: 2571120792000024014}
+  m_Layer: 0
+  m_Name: warp treasure site
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6647265753067701178
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630252343474004374}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 39.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 3719976920741877196}
+  m_RootOrder: 12
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2571120792000024014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630252343474004374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d14a3bae45cba31478d29685e1dea398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1055444113122847771, guid: 113c9262514ce2347ba397b4ee9bb909, type: 3}
 --- !u!1 &1311226322039583309
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,6 +311,7 @@ Transform:
   - {fileID: 4280075263895297527}
   - {fileID: 2618996253594009138}
   - {fileID: 5661005333346249694}
+  - {fileID: 6647265753067701178}
   m_Father: {fileID: 6003827098852396580}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -7574,7 +7619,7 @@ MonoBehaviour:
       collisionType: 0
     - layer: 
       sublayer: 0
-      cluster: 0
+      cluster: 2
       collisionType: 0
     - layer: 
       sublayer: 0
@@ -11778,7 +11823,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 13
-      m_TileSpriteIndex: 13
+      m_TileSpriteIndex: 11
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -11787,7 +11832,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 12
-      m_TileSpriteIndex: 12
+      m_TileSpriteIndex: 13
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -11855,10 +11900,10 @@ Tilemap:
   - first: {x: 19, y: 32, z: 0}
     second:
       m_AnimatedSprites:
-      - {fileID: -3652778826761303346, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
-      - {fileID: 2309206073311205213, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
-      - {fileID: -5834203374229188370, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
-      - {fileID: -3699460685454291143, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+      - {fileID: -7918630617697491052, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+      - {fileID: 359511861503283649, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+      - {fileID: -8153699574850186907, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
+      - {fileID: -3351188643728560559, guid: 7a44bb395aa628c42836fa19a2af555e, type: 3}
       m_AnimationSpeed: 4
       m_AnimationTimeOffset: 0
       m_IsLooping: 1
@@ -11944,14 +11989,13 @@ Tilemap:
     m_Data: {fileID: 0}
   - m_RefCount: 0
     m_Data: {fileID: 0}
-  - m_RefCount: 1
+  - m_RefCount: 2
     m_Data: {fileID: -3351188643728560559, guid: 7a44bb395aa628c42836fa19a2af555e,
       type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   - m_RefCount: 1
     m_Data: {fileID: 1875239679653658758, guid: 7a44bb395aa628c42836fa19a2af555e,
-      type: 3}
-  - m_RefCount: 1
-    m_Data: {fileID: -3699460685454291143, guid: 7a44bb395aa628c42836fa19a2af555e,
       type: 3}
   - m_RefCount: 1
     m_Data: {fileID: 4704907916876943783, guid: 7a44bb395aa628c42836fa19a2af555e,

@@ -256,7 +256,12 @@ public class MyNetworkManager : NetworkManager
 
          // Get the voyage id, if any
          int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
-         Biome.Type voyageBiome = voyageId != -1 ? VoyageManager.self.getVoyage(voyageId).biome : Biome.Type.None;
+
+         Biome.Type fetchedBiomeType = Biome.Type.None;
+         if (VoyageManager.self.getVoyage(voyageId) != null) {
+            fetchedBiomeType = VoyageManager.self.getVoyage(voyageId).biome;
+         }
+         Biome.Type voyageBiome = voyageId != -1 ? fetchedBiomeType : Biome.Type.None;
 
          string previousAreaKey = userInfo.areaKey;
 

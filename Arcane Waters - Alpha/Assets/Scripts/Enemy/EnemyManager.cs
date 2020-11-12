@@ -25,6 +25,9 @@ public class EnemyManager : MonoBehaviour {
    }
 
    public void storeSpawner (Enemy_Spawner spawner, string areaKey) {
+      if (!_spawners.ContainsKey(areaKey)) {
+         _spawners.Add(areaKey, new List<Enemy_Spawner>());
+      }
       List<Enemy_Spawner> list = _spawners[areaKey];
       list.Add(spawner);
       _spawners[areaKey] = list;
@@ -40,7 +43,7 @@ public class EnemyManager : MonoBehaviour {
 
    public void spawnEnemiesOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done
-      if (!_spawners.ContainsKey(instance.areaKey)) {
+      if (instance == null || !_spawners.ContainsKey(instance.areaKey)) {
          return;
       }
 
@@ -52,6 +55,7 @@ public class EnemyManager : MonoBehaviour {
          // Add it to the Instance
          InstanceManager.self.addEnemyToInstance(enemy, instance);
          enemy.transform.position = spawner.transform.position;
+         enemy.areaKey = instance.areaKey;
          NetworkServer.Spawn(enemy.gameObject);
       }
    }

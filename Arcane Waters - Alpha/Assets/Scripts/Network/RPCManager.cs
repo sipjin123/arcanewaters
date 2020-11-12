@@ -4765,7 +4765,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
+   public void Cmd_RequestWarp (string areaTarget, string spawnTarget, bool warpToRandomTreasureSite) {
       Area area = AreaManager.self.getArea(_player.areaKey);
 
       if (area == null) {
@@ -4780,6 +4780,14 @@ public class RPCManager : NetworkBehaviour {
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
          if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
+            if (warpToRandomTreasureSite) {
+               if (VoyageManager.self.lastMapName.ContainsKey(_player.userId)) {
+                  VoyageManager.self.lastMapName[_player.userId] = _player.areaKey;
+               } else {
+                  VoyageManager.self.lastMapName.Add(_player.userId, _player.areaKey);
+               }
+            }
+
             if (warp.gameObject.activeInHierarchy) {
                warp.startWarpForPlayer(_player);
             } else {
@@ -4793,6 +4801,80 @@ public class RPCManager : NetworkBehaviour {
       
       // If no valid warp was found, let the player know so at least they're not stuck
       Target_OnWarpFailed();
+   }
+
+   [Command]
+   public void Cmd_RequestWarpFromRandomTreasureSite () {
+      //Area area = AreaManager.self.getArea(_player.areaKey);
+
+      //if (area == null) {
+      //   Debug.Log("Area was null");
+      //   return;
+      //}
+
+      //string areaTarget = VoyageManager.self.lastMapName[_player.userId];
+      //string spawnTarget = VoyageManager.self.lastSpawnTargetName[_player.userId];
+
+      //List<Warp> warps = area.getWarps();
+      //foreach (Warp warp in warps) {
+      //   warp.areaTarget = areaTarget;
+      //   warp.spawnTarget = spawnTarget;
+      //}
+      //Cmd_RequestWarp(areaTarget, spawnTarget, false);
+   }
+
+   [Command]
+   public void Cmd_RequestWarpToRandomTreasureSite () {
+      //Area area = AreaManager.self.getArea(_player.areaKey);
+
+      //if (area == null) {
+      //   Debug.Log("Area was null");
+      //   Target_OnWarpFailed();
+      //   return;
+      //}
+
+      //// Get the warps for the area the player is currently in
+      //List<Warp> warps = area.getWarps();
+      //Warp closestWarp = null;
+      //float minDist = float.MaxValue;
+      //foreach (Warp warp in warps) {
+      //   if (Vector2.Distance(warp.transform.position, transform.position) < minDist) {
+      //      minDist = Vector2.Distance(warp.transform.position, transform.position);
+      //      closestWarp = warp;
+      //   }
+      //}
+
+      //// Find return point from treasure site
+      //MapSpawn finalSpawn = null;
+      //minDist = float.MaxValue;
+      //UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+      //   List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
+
+      //   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+      //      foreach (MapSpawn spawn in mapSpawns) {
+      //         if (spawn.mapName == _player.areaKey) {
+      //            if (Vector2.Distance(new Vector2(spawn.posX, spawn.posY), closestWarp.transform.localPosition) < minDist) {
+      //               minDist = Vector2.Distance(new Vector2(spawn.posX, spawn.posY), closestWarp.transform.localPosition);
+      //               finalSpawn = spawn;
+      //            }
+      //         }
+      //      }
+
+      //      if (finalSpawn != null) {
+      //         if (VoyageManager.self.lastSpawnTargetName.ContainsKey(_player.userId)) {
+      //            VoyageManager.self.lastSpawnTargetName[_player.userId] = finalSpawn.name;
+      //         } else {
+      //            VoyageManager.self.lastSpawnTargetName.Add(_player.userId, finalSpawn.name);
+      //         }
+      //      }
+
+      //      if (closestWarp != null) {
+      //         string areaTarget = closestWarp.areaTarget;
+      //         string spawnTarget = closestWarp.spawnTarget;
+      //         Cmd_RequestWarp(areaTarget, spawnTarget, true);
+      //      }
+      //   });
+      //});
    }
 
    #region Private Variables

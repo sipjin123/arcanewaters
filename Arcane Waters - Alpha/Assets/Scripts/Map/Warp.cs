@@ -22,6 +22,12 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The animated arrow
    public GameObject arrow;
 
+   // Check whether this warp takes player to random treasure site
+   public bool warpToRandomTreasureSite = false;
+
+   // Check whether this warp takes player back from random treasure site
+   public bool warpFromRandomTreasureSite = false;
+
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -29,7 +35,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    #endregion
 
-   void Awake () {
+   protected virtual void Awake () {
       _collider = GetComponent<BoxCollider2D>();
    }
 
@@ -59,7 +65,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          }
 
          player.setupForWarpClient();
-         Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
+         if (warpToRandomTreasureSite) {
+            Global.player.rpc.Cmd_RequestWarpToRandomTreasureSite();
+         } else if (warpFromRandomTreasureSite) {
+            Global.player.rpc.Cmd_RequestWarpFromRandomTreasureSite();
+         } else {
+            Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget, false);
+         }
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);

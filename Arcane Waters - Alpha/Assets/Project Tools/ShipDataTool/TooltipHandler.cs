@@ -67,7 +67,6 @@ public class TooltipHandler : MonoBehaviour
             placeOnRightSideOfPanel(_rightEdge, _middleOfEdge, _tooltipDimensions);
             break;
       }
-      TooltipManager.self.keepToolTipOnScreen(backgroundRect);
 
       // Turn the tooltip visible
       toolTipPanel.GetComponent<CanvasGroup>().alpha = 1;

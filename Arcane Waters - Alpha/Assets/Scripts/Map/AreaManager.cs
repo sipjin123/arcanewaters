@@ -190,12 +190,11 @@ public class AreaManager : MonoBehaviour
 
       _areas.Add(area.areaKey, area);
 
-      // Store all of the Enemy Spawners in each area
-      foreach (Enemy_Spawner spawner in area.GetComponentsInChildren<Enemy_Spawner>()) {
-         EnemyManager.self.storeSpawner(spawner, area.areaKey);
-      }
+      // Spawn enemies
+      Instance instance = InstanceManager.self.getOpenInstance(area.areaKey, false);
+      EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
    }
-
+   
    public void removeArea (string areaKey) {
       _areas.Remove(areaKey);
 

@@ -218,6 +218,9 @@ public class PanelManager : MonoBehaviour {
          // Otherwise, just add it to the linkedList and show it now
          linkPanel(panelType);
       }
+
+      // Hide any tooltips that were previously showing
+      hideToolTips();
    }
 
    public void toggleMainPanel (Panel.Type panelType) {
