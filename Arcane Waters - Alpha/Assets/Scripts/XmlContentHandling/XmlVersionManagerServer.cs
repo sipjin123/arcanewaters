@@ -268,7 +268,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string weaponData = DB_Main.getXmlContent(WEAPON_TABLE);
          string hatData = DB_Main.getXmlContent(HAT_TABLE);
 
-         string shopData = DB_Main.getXmlContent(SHOP_TABLE);
+         string shopData = DB_Main.getXmlContent(SHOP_TABLE, EditorToolType.Shop);
          string shipData = DB_Main.getXmlContent(SHIP_TABLE);
          string shipAbilityData = DB_Main.getXmlContent(SHIP_ABILITY_TABLE);
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);

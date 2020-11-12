@@ -143,7 +143,8 @@ public class TreasureChest : NetworkBehaviour {
 
       // Check if this chest is marked as interacted
       if (Global.userObjects != null && chestType == ChestSpawnType.Site) {
-         if (PlayerPrefs.GetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId+ "_" + areaKey + "_" + chestSpawnId, 0) == 1) {
+         int userId = Global.userObjects.userInfo.userId;
+         if (PlayerPrefs.GetInt(PREF_CHEST_STATE + "_" + userId + "_" + areaKey + "_" + chestSpawnId, 0) == 1 && userId > 0) {
             isLocallyInteracted = true;
          } 
       } 

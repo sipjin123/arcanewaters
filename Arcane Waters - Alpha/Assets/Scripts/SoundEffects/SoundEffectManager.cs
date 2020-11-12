@@ -15,10 +15,10 @@ public class SoundEffectManager : MonoBehaviour
    public AudioSource source;
 
    // The database id of the jump start
-   public const int JUMP_START_ID = 4;
+   public const int JUMP_START_ID = 5;
 
    // The database id of the jump end
-   public const int JUMP_END_ID = 5;
+   public const int JUMP_END_ID = 6;
 
    #endregion
 
@@ -76,6 +76,10 @@ public class SoundEffectManager : MonoBehaviour
       SoundEffect effect;
       if (_soundEffects.TryGetValue(id, out effect)) {
          source.clip = effect.clip;
+         if (effect.clip == null) {
+            D.debug("Missing Sound Effect ID: " +id);
+            return;
+         }
          effect.calibrateSource(source);
 
          source.loop = false;

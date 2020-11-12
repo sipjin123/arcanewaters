@@ -239,6 +239,10 @@ public class RPCManager : NetworkBehaviour {
    [ClientRpc]
    public void Rpc_InteractAnimation (Anim.Type animType) {
       _player.requestAnimationPlay(animType);
+
+      PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
+      playerBody.farmingTrigger.interactFarming();
+      playerBody.miningTrigger.interactOres();
    }
 
    [ClientRpc]
@@ -3272,6 +3276,7 @@ public class RPCManager : NetworkBehaviour {
       if (oreNode.orePickupCollection.Count > 0) {
          if (oreNode.orePickupCollection.ContainsKey(effectId)) {
             Vector3 position = oreNode.orePickupCollection[effectId].transform.position;
+            oreNode.tryToMineNodeOnClient();
 
             // TODO: Create sprite effects for ore collect
             EffectManager.self.create(Effect.Type.Crop_Harvest, position);
@@ -4147,7 +4152,16 @@ public class RPCManager : NetworkBehaviour {
       if (abilityInventoryIndex > -1) {
          if (abilityType == AbilityType.Standard) {
             // Get the ability from the battler abilities.
-            abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+            try {
+               abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
+            } catch {
+               if (sourceBattler == null) {
+                  D.debug("Failed to fetch the source battler!");
+               } else {
+                  D.debug("Failed to fetch attack abilities for battler: " + sourceBattler.gameObject.name);
+               }
+               abilityData = AbilityManager.self.punchAbility();
+            }
          } else {
             // Get the ability from the battler abilities.
             abilityData = sourceBattler.getBuffAbilities()[abilityInventoryIndex];

@@ -609,6 +609,8 @@ public class DB_Main : DB_MainStub
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
          contentToFetch = "id, serializedData ";
          addedFields = ", category";
+      } else if (toolType == EditorSQLManager.EditorToolType.Shop) {
+         contentToFetch = "xml_id, xmlContent, isActive ";
       }
 
       try {
@@ -644,6 +646,16 @@ public class DB_Main : DB_MainStub
                      xmlContent = dataReader.GetString("xmlContent"); ;
                   }
 
+                  if (toolType == EditorSQLManager.EditorToolType.Shop) {
+                     try {
+                        if (dataReader.GetInt32("isActive") == 0) {
+                           D.debug("do not process insactive Shop with id: " + xmlId);
+                           continue;
+                        }
+                     } catch {
+                        D.debug("Failed to fetch column: isActive");
+                     }
+                  }
                   content += xmlId + "[space]" + addedContent + xmlContent + "[next]\n";
                }
             }
@@ -2871,12 +2883,16 @@ public class DB_Main : DB_MainStub
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
                   XMLPair newPair = new XMLPair {
-                     isEnabled = true,
+                     isEnabled = dataReader.GetInt32("isActive") == 1 ? true : false,
                      rawXmlData = dataReader.GetString("xmlContent"),
                      xmlId = dataReader.GetInt32("xml_id"),
                      xmlOwnerId = dataReader.GetInt32("creator_userID")
                   };
-                  rawDataList.Add(newPair);
+                  if (newPair.isEnabled) {
+                     rawDataList.Add(newPair);
+                  } else {
+                     D.debug("Ignoring shop entry id: " + newPair.xmlId);
+                  }
                }
             }
          }

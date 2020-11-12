@@ -286,7 +286,7 @@ public class Minimap : ClientMonoBehaviour {
       if (_treasureChestIcons.Find(icon => icon.target == chestObject) != null) {
          _treasureChestIcons.Find(icon => icon.target == chestObject).gameObject.SetActive(false);
       } else {
-         Debug.LogError("Treasure Chest Icon is NULL in minimap!");
+         D.debug("ERROR! Treasure Chest Icon is NULL in minimap!");
       }
    }
    

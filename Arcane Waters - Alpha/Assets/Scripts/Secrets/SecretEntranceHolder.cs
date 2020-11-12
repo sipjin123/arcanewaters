@@ -147,9 +147,17 @@ public class SecretEntranceHolder : MonoBehaviour, IMapEditorDataReceiver
       }
 
       // Assign data to the warp entity associated with this secret entrance
-      cachedSecretEntrance.warp.targetInfo = targetInfo; 
-      cachedSecretEntrance.warp.areaTarget = targetInfo.name;
-      cachedSecretEntrance.warp.spawnTarget = spawnTarget;
+      if (cachedSecretEntrance != null) {
+         if (cachedSecretEntrance.warp != null) {
+            cachedSecretEntrance.warp.targetInfo = targetInfo;
+            cachedSecretEntrance.warp.areaTarget = targetInfo.name;
+            cachedSecretEntrance.warp.spawnTarget = spawnTarget;
+         } else {
+            D.debug("Secret entrance has no warp!");
+         }
+      } else {
+         D.debug("Secret entrance is not Cached!");
+      }
    }
 
    private void processSecretEntrance () {

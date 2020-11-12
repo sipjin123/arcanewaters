@@ -112,9 +112,15 @@ public class PlayerBodyEntity : BodyEntity {
       base.Start();
 
       // Set guild icon
-      guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
-      guildIcon.setBorder(guildIconBorder);
-      guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
+      if (!Util.isEmpty(guildIconBackground)) {
+         guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
+      }
+      if (!Util.isEmpty(guildIconBorder)) {
+         guildIcon.setBorder(guildIconBorder);
+      }
+      if (!Util.isEmpty(guildIconSigil)) {
+         guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
+      }
 
       // Disable our collider if we are not the localplayer
       if (!isLocalPlayer) {
@@ -362,9 +368,6 @@ public class PlayerBodyEntity : BodyEntity {
          if (!isNearInteractables && !isMoving()) {
             Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-            if (!interactingAnimation) {
-               farmingTrigger.interactFarming();
-            }
             if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
                || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
@@ -373,7 +376,6 @@ public class PlayerBodyEntity : BodyEntity {
             } else if (newDirection == Direction.South) {
                rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
             }
-            miningTrigger.interactOres();
          }
       }
    }
