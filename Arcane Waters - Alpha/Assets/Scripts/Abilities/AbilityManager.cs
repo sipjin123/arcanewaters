@@ -28,6 +28,9 @@ public class AbilityManager : MonoBehaviour
    // The id of the shoot ability
    public static int SHOOT_ID = 27;
 
+   // The id of the rum ability
+   public static int RUM_ID = 88;
+
    // A convenient self reference
    public static AbilityManager self;
 
@@ -56,6 +59,10 @@ public class AbilityManager : MonoBehaviour
 
    public AttackAbilityData shootAbility () {
       return allAttackbilities.Find(_ => _.itemID == SHOOT_ID);
+   }
+
+   public AttackAbilityData throwRum () {
+      return allAttackbilities.Find(_ => _.itemID == RUM_ID);
    }
 
    public void initializeAbilities () {

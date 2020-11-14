@@ -202,5 +202,6 @@ public enum WeaponCategory {
    None = 0,
    Blade = 1,
    Gun = 2,
-   Blunt = 3
+   Blunt = 3,
+   Rum = 4
 }

@@ -656,6 +656,27 @@ public class DB_Main : DB_MainStub
                         D.debug("Failed to fetch column: isActive");
                      }
                   }
+
+                  if (tableName == XmlVersionManagerServer.WEAPON_TABLE) {
+                     WeaponStatData weaponData = Util.xmlLoad<WeaponStatData>(xmlContent);
+                     if (weaponData != null && weaponData.weaponType < 1) {
+                        D.debug("WARNING! A weapon has no assigned weapon type!" + xmlId + " : " + weaponData.weaponType);
+                        continue;
+                     }
+                  } else if (tableName == XmlVersionManagerServer.ARMOR_TABLE) {
+                     ArmorStatData armorData = Util.xmlLoad<ArmorStatData>(xmlContent);
+                     if (armorData != null && armorData.armorType < 1) {
+                        D.debug("WARNING! A armor has no assigned armor type!" + xmlId + " : " + armorData.armorType);
+                        continue;
+                     }
+                  } else if (tableName == XmlVersionManagerServer.HAT_TABLE) {
+                     HatStatData hatData = Util.xmlLoad<HatStatData>(xmlContent);
+                     if (hatData != null && hatData.hatType < 1) {
+                        D.debug("WARNING! A hat has no assigned hat type! " + xmlId + " : " + hatData.hatType);
+                        continue;
+                     }
+                  }
+
                   content += xmlId + "[space]" + addedContent + xmlContent + "[next]\n";
                }
             }

@@ -53,8 +53,10 @@ public class PlayerTargetSelector : MonoBehaviour {
    private void OnTriggerEnter2D (Collider2D collision) {
       // If a ship entered our area and it's our enemy, add it to the list
       SeaEntity entity = collision.GetComponentInChildren<SeaEntity>();
-      if (entity != null && Global.player.isEnemyOf(entity)) {
-         _nearbyShips.Add(entity);
+      if (entity != null && Global.player != null) {
+         if (Global.player.isEnemyOf(entity)) {
+            _nearbyShips.Add(entity);
+         }
       }
    }
 

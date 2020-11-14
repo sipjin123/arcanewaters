@@ -3920,7 +3920,10 @@ public class RPCManager : NetworkBehaviour {
                      validAbilities++;
                   }
                } else {
-                  validAbilities++;
+                  BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
+                  if (buffAbilityData != null && weaponClass == Weapon.Class.Magic) {
+                     validAbilities++;
+                  } 
                }
             }
 
@@ -3938,6 +3941,10 @@ public class RPCManager : NetworkBehaviour {
                      if (weaponClass == Weapon.Class.Ranged) {
                         weaponCategory = WeaponCategory.Gun;
                         equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
+                     }
+                     if (weaponClass == Weapon.Class.Magic) {
+                        weaponCategory = WeaponCategory.Rum;
+                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
                      }
                   } else {
                      weaponCategory = WeaponCategory.None;

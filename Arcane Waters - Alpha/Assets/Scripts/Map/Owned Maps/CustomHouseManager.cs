@@ -22,9 +22,15 @@ public class CustomHouseManager : CustomMapManager
             denyWarpHandler = null;
             return true;
          }
-
+         
          // Otherwise, show panel for selecting the layout
-         denyWarpHandler = (player) => player.rpc.Target_ShowCustomMapPanel(mapTypeAreaKey, true, getRelatedMaps());
+         denyWarpHandler = (player) => {
+            if (player.isServer) {
+               player.rpc.Target_ShowCustomMapPanel(mapTypeAreaKey, true, getRelatedMaps());
+            } else {
+               player.rpc.Cmd_RequestCustomMapPanelClient(mapTypeAreaKey, true);
+            }
+         };
          return false;
       } else {
          // User is trying to warp into someone else's house
