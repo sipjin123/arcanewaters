@@ -318,6 +318,11 @@ MonoBehaviour:
   isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  guildIconBorder: 
+  guildIconBackground: 
+  guildIconSigil: 
+  guildIconBackPalettes: 
+  guildIconSigilPalettes: 
   isAboutToWarpOnServer: 0
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
@@ -327,6 +332,8 @@ MonoBehaviour:
   _animators: []
   ANIMAL_PET_DISTANCE: 0.05
   ANIMAL_PET_DISTANCE_ADDITIONAL: 0.03
+  ANIMAL_PET_DISTANCE_MINIMAL_X: 0.15
+  ANIMAL_PET_DISTANCE_MINIMAL_Y: 0.05
   spritePath: 
   iconPath: 
   npcType: 0
@@ -336,6 +343,8 @@ MonoBehaviour:
   isDebug: 0
   isShopNpc: 0
   isAnimal: 0
+  animalPettingConfig: {fileID: 11400000, guid: 90fa11813700af24eb140d773952cca0,
+    type: 2}
   animalReactionType: 0
   isStationary: 0
   canMove: 1
@@ -448,6 +457,7 @@ MonoBehaviour:
   isScaleCompressed: 0
   isVelocityCompressed: 0
   isAngularVelocityCompressed: 0
+  automaticallyResetTime: 1
   isSmoothingAuthorityChanges: 0
   transformSource: 0
   whenToUpdateTransform: 1

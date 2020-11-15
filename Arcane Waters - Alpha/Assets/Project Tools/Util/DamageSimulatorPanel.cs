@@ -234,11 +234,11 @@ public class DamageSimulatorPanel : MonoBehaviour {
 
    private void processPlayerOutputDamage () {
       AttackAbilityData fetchedAbility = AbilityManager.self.allGameAbilities.Find(_ => _.itemName == abilityText.text) as AttackAbilityData;
-      BattlerData battleData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
+      BattlerData battlerData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
-      baseDamage = battleData.baseDamage;
-      baseDmgLvl = battleData.damagePerLevel;
+      baseDamage = battlerData.baseDamage;
+      baseDmgLvl = battlerData.damagePerLevel;
 
       baseAtkText.text = baseDamage + " + (" + level + " * " + baseDmgLvl + ")";
 
@@ -266,11 +266,11 @@ public class DamageSimulatorPanel : MonoBehaviour {
    }
 
    private void processPlayerOutputDefense () {
-      BattlerData battleData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
+      BattlerData battlerData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
       int level = int.Parse(playerLevel.text);
 
-      baseDefense = battleData.baseDefense;
-      baseDefLvl = battleData.defensePerLevel;
+      baseDefense = battlerData.baseDefense;
+      baseDefLvl = battlerData.defensePerLevel;
 
       float playerDef = baseDefense + (baseDefLvl * level);
       baseDefText.text = playerDef.ToString();

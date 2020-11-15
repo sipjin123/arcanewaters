@@ -412,7 +412,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_HireCompanion (int landMonsterId) {
-      BattlerData battlerData = MonsterManager.self.getBattler(landMonsterId);
+      BattlerData battlerData = MonsterManager.self.getBattlerData(landMonsterId);
 
       CompanionInfo companionInfo = new CompanionInfo {
          companionName = battlerData.enemyName,
@@ -3734,7 +3734,7 @@ public class RPCManager : NetworkBehaviour {
       PlayerBodyEntity localBattler = (PlayerBodyEntity) _player;
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[netId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
-      BattlerData enemyData = MonsterManager.self.getBattler(enemy.enemyType);
+      BattlerData enemyData = MonsterManager.self.getBattlerData(enemy.enemyType);
       Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
       List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
 
@@ -3830,7 +3830,7 @@ public class RPCManager : NetworkBehaviour {
 
                   if (randomizedSpawnChance < 5) {
                      Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
-                     BattlerData battlerData = MonsterManager.self.getBattler(backupEnemy.enemyType);
+                     BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
                      modifiedDefenderList.Add(new BattlerInfo {
                         battlerName = battlerData.enemyName,
                         battlerType = BattlerType.AIEnemyControlled,
@@ -3981,7 +3981,7 @@ public class RPCManager : NetworkBehaviour {
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
 
-      BattlerData enemyData = MonsterManager.self.getBattler(enemy.enemyType);
+      BattlerData enemyData = MonsterManager.self.getBattlerData(enemy.enemyType);
       List<BattlerInfo> battlerInfoList = new List<BattlerInfo>();
       battlerInfoList.Add(new BattlerInfo {
          battlerName = enemyData.enemyName,
@@ -4786,7 +4786,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_RequestWarp (string areaTarget, string spawnTarget, bool warpToRandomTreasureSite) {
+   public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
       Area area = AreaManager.self.getArea(_player.areaKey);
 
       if (area == null) {
@@ -4801,14 +4801,6 @@ public class RPCManager : NetworkBehaviour {
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
          if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
-            if (warpToRandomTreasureSite) {
-               if (VoyageManager.self.lastMapName.ContainsKey(_player.userId)) {
-                  VoyageManager.self.lastMapName[_player.userId] = _player.areaKey;
-               } else {
-                  VoyageManager.self.lastMapName.Add(_player.userId, _player.areaKey);
-               }
-            }
-
             if (warp.gameObject.activeInHierarchy) {
                warp.startWarpForPlayer(_player);
             } else {
@@ -4826,76 +4818,44 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestWarpFromRandomTreasureSite () {
-      //Area area = AreaManager.self.getArea(_player.areaKey);
+      List<TreasureSite> treasureSites = InstanceManager.self.getInstance(_player.instanceId).treasureSites;
+      if (treasureSites.Count == 0) {
+         D.log("Treasure sites list is empty");
+         return;
+      }
+      TreasureSite treasureSite = treasureSites[0];
 
-      //if (area == null) {
-      //   Debug.Log("Area was null");
-      //   return;
-      //}
+      if (treasureSite == null) {
+         D.log("Treasure site was null");
+         return;
+      }
 
-      //string areaTarget = VoyageManager.self.lastMapName[_player.userId];
-      //string spawnTarget = VoyageManager.self.lastSpawnTargetName[_player.userId];
-
-      //List<Warp> warps = area.getWarps();
-      //foreach (Warp warp in warps) {
-      //   warp.areaTarget = areaTarget;
-      //   warp.spawnTarget = spawnTarget;
-      //}
-      //Cmd_RequestWarp(areaTarget, spawnTarget, false);
+      _player.spawnInNewMap(treasureSite.areaKey, treasureSite.spawnTarget, treasureSite.getWarpDirection());
    }
 
    [Command]
    public void Cmd_RequestWarpToRandomTreasureSite () {
-      //Area area = AreaManager.self.getArea(_player.areaKey);
+      Area area = AreaManager.self.getArea(_player.areaKey);
 
-      //if (area == null) {
-      //   Debug.Log("Area was null");
-      //   Target_OnWarpFailed();
-      //   return;
-      //}
+      if (area == null) {
+         Debug.Log("Area was null");
+         Target_OnWarpFailed();
+         return;
+      }
 
-      //// Get the warps for the area the player is currently in
-      //List<Warp> warps = area.getWarps();
-      //Warp closestWarp = null;
-      //float minDist = float.MaxValue;
-      //foreach (Warp warp in warps) {
-      //   if (Vector2.Distance(warp.transform.position, transform.position) < minDist) {
-      //      minDist = Vector2.Distance(warp.transform.position, transform.position);
-      //      closestWarp = warp;
-      //   }
-      //}
+      List<Warp> warps = area.getWarps();
+      Warp closestWarp = null;
+      float minDist = float.MaxValue;
+      foreach (Warp warp in warps) {
+         if (Vector2.Distance(warp.transform.position, transform.position) < minDist) {
+            minDist = Vector2.Distance(warp.transform.position, transform.position);
+            closestWarp = warp;
+         }
+      }
 
-      //// Find return point from treasure site
-      //MapSpawn finalSpawn = null;
-      //minDist = float.MaxValue;
-      //UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-      //   List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
-
-      //   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-      //      foreach (MapSpawn spawn in mapSpawns) {
-      //         if (spawn.mapName == _player.areaKey) {
-      //            if (Vector2.Distance(new Vector2(spawn.posX, spawn.posY), closestWarp.transform.localPosition) < minDist) {
-      //               minDist = Vector2.Distance(new Vector2(spawn.posX, spawn.posY), closestWarp.transform.localPosition);
-      //               finalSpawn = spawn;
-      //            }
-      //         }
-      //      }
-
-      //      if (finalSpawn != null) {
-      //         if (VoyageManager.self.lastSpawnTargetName.ContainsKey(_player.userId)) {
-      //            VoyageManager.self.lastSpawnTargetName[_player.userId] = finalSpawn.name;
-      //         } else {
-      //            VoyageManager.self.lastSpawnTargetName.Add(_player.userId, finalSpawn.name);
-      //         }
-      //      }
-
-      //      if (closestWarp != null) {
-      //         string areaTarget = closestWarp.areaTarget;
-      //         string spawnTarget = closestWarp.spawnTarget;
-      //         Cmd_RequestWarp(areaTarget, spawnTarget, true);
-      //      }
-      //   });
-      //});
+      if (closestWarp != null) {
+         closestWarp.startWarpForPlayer(_player);
+      }
    }
 
    #region Private Variables

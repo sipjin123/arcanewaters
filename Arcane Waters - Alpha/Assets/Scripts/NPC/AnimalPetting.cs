@@ -18,15 +18,15 @@ public class AnimalPetting : MonoBehaviour {
    #endregion
 
    public void playAnimalAnimation(NPC npc, ReactionType reactionType) {
+      _npc = npc;
+      _initialPosition = transform.position;
+      _currentPosition = _initialPosition;
+
       // Hide all position of animal petting
       foreach (GameObject spot in _npc.animalPettingPositions) {
          spot.SetActive(false);
       }
       StopAllCoroutines();
-
-      _npc = npc;
-      _initialPosition = transform.position;
-      _currentPosition = _initialPosition;
 
       switch (reactionType) {
          case ReactionType.None:

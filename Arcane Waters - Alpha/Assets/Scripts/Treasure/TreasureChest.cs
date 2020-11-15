@@ -251,7 +251,7 @@ public class TreasureChest : NetworkBehaviour {
 
    public Item getLandMonsterLootContents () {
       Enemy.Type monsterType = (Enemy.Type) enemyType;
-      BattlerData battlerData = MonsterManager.self.getBattler(monsterType);
+      BattlerData battlerData = MonsterManager.self.getBattlerData(monsterType);
 
       List<TreasureDropsData> treasureDropsDataList = TreasureDropsDataManager.self.getTreasureDropsById(battlerData.lootGroupId);
       return processItemChance(treasureDropsDataList);

@@ -17,14 +17,14 @@ public class ContextMenuPanel : MonoBehaviour
    // The prefab we use for creating a row with the 'empty' label
    public GameObject emptyRowPrefab;
 
+   // The prefab we use for creating a title row
+   public GameObject titleRowPrefab;
+
    // The container for the buttons
    public GameObject buttonContainer;
 
    // The rect transform of the button zone
    public RectTransform buttonsRectTransform;
-
-   // The title of the context menu (often the user name)
-   public Text titleText;
 
    #endregion
 
@@ -41,11 +41,10 @@ public class ContextMenuPanel : MonoBehaviour
       transform.position = position;
 
       // Set the title
-      if (string.IsNullOrEmpty(title)) {
-         titleText.transform.parent.gameObject.SetActive(false);
-      } else {
-         titleText.transform.parent.gameObject.SetActive(true);
-         titleText.text = title;
+      if (!string.IsNullOrEmpty(title)) {
+         GameObject titleRow = Instantiate(titleRowPrefab, buttonContainer.transform, false);
+         titleRow.transform.SetAsFirstSibling();
+         titleRow.GetComponentInChildren<Text>().text = title;
       }
 
       // If there are no buttons, add a row with the 'empty' label

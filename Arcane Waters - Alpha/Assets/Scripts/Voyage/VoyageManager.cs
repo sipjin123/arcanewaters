@@ -17,12 +17,6 @@ public class VoyageManager : MonoBehaviour {
    // The number of seconds a user must wait before inviting the same user to a group again
    public static int GROUP_INVITE_MIN_INTERVAL = 60;
 
-   // Store data about last voyage map per user (key is userID)
-   public Dictionary<int, string> lastMapName = new Dictionary<int, string>();
-
-   // Store data about last voyage spawn point per user (key is userID)
-   public Dictionary<int, string> lastSpawnTargetName = new Dictionary<int, string>();
-
    // Self
    public static VoyageManager self;
 

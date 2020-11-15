@@ -30,6 +30,10 @@ public class TradeConfirmScreen : MonoBehaviour
    public Text sellValueText;
    public Image cropImage;
 
+   // The spinner buttons
+   public Button upButton;
+   public Button downButton;
+
    #endregion
 
    public void showYesNo (string newText) {
@@ -103,6 +107,15 @@ public class TradeConfirmScreen : MonoBehaviour
       _amount = Mathf.Clamp(amount, 0, maxAmount);
       amountInput.SetTextWithoutNotify(_amount.ToString());
       sellValueText.text = (_amount * pricePerUnit).ToString();
+
+      // Disable the spinner buttons when at the limits of valid amounts
+      downButton.interactable = true;
+      upButton.interactable = true;
+      if (_amount <= 0) {
+         downButton.interactable = false;
+      } else if (_amount >= maxAmount) {
+         upButton.interactable = false;
+      }
    }
 
    public int getAmount () {

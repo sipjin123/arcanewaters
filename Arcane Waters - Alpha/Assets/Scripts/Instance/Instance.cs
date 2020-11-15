@@ -303,13 +303,13 @@ public class Instance : NetworkBehaviour
             enemy.transform.localPosition = targetLocalPos;
             enemy.setAreaParent(area, false);
                   
-            BattlerData battleData = MonsterManager.self.getBattler(enemy.enemyType);
-            if (battleData != null) {
-               enemy.isBossType = battleData.isBossType;
-               enemy.isSupportType = battleData.isSupportType;
-               enemy.animGroupType = battleData.animGroup;
+            BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+            if (battlerData != null) {
+               enemy.isBossType = battlerData.isBossType;
+               enemy.isSupportType = battlerData.isSupportType;
+               enemy.animGroupType = battlerData.animGroup;
                enemy.facing = Direction.South;
-               enemy.displayNameText.text = battleData.enemyName;
+               enemy.displayNameText.text = battlerData.enemyName;
             }
 
             InstanceManager.self.addEnemyToInstance(enemy, this);

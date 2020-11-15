@@ -235,7 +235,8 @@ public class PaletteToolManager : XmlDataToolManager {
       Ship = 7,
       GuildIconBackground = 8,
       GuildIconSigil = 9,
-      MAX = 10
+      Guild = 10,
+      MAX = 11
    }
 
    public static string[] paletteImageTypePaths = {
@@ -249,6 +250,7 @@ public class PaletteToolManager : XmlDataToolManager {
       "Assets/Sprites/Ships/",
       "Assets/Sprites/GUI/Guild/Icons/Backgrounds/",
       "Assets/Sprites/GUI/Guild/Icons/Sigils/",
+      "",
       "",
    };
 

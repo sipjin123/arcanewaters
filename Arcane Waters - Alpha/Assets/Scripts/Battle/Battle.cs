@@ -105,7 +105,7 @@ public class Battle : NetworkBehaviour {
          // If any of our monsters are ready to attack, then do so
          if (battler.isMonster() && NetworkTime.time > battler.animatingUntil && NetworkTime.time > bufferedCooldown) {
             BattlePlan battlePlan = battler.getBattlePlan(this);
-            BattlerData battlerData = MonsterManager.self.getBattler(battler.enemyType);
+            BattlerData battlerData = MonsterManager.self.getBattlerData(battler.enemyType);
             List<Battler> battlerAllies = new List<Battler>();
             int lowHpAllies = battlePlan.targetAllies.FindAll(_ => _.health < _.getStartingHealth(_.enemyType)).Count;
 

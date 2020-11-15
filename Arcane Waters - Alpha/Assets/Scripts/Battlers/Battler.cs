@@ -428,14 +428,14 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void initializeBattlerData () {
       if (!_hasInitializedStats) {
-         BattlerData battlerData = MonsterManager.self.getBattler(enemyType);
+         BattlerData battlerData = MonsterManager.self.getBattlerData(enemyType);
 
          if (battlerType == BattlerType.PlayerControlled) {
-            battlerData = MonsterManager.self.getBattler(Enemy.Type.PlayerBattler);
+            battlerData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
          } else {
             // Sets the default monster if data is not yet created in xml editor
             if (battlerData == null) {
-               battlerData = MonsterManager.self.getBattler(Enemy.Type.Lizard);
+               battlerData = MonsterManager.self.getBattlerData(Enemy.Type.Lizard);
             }
          }
 
@@ -1679,7 +1679,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public int getStartingHealth (Enemy.Type enemyType) {
-      BattlerData battData = MonsterManager.self.getBattler(enemyType);
+      BattlerData battData = MonsterManager.self.getBattlerData(enemyType);
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
@@ -1689,7 +1689,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public int getStartingHealth () {
-      BattlerData battData = MonsterManager.self.getBattler(enemyType);
+      BattlerData battData = MonsterManager.self.getBattlerData(enemyType);
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level

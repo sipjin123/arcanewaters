@@ -119,7 +119,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
          InvokeRepeating(nameof(landMonsterBehavior), Random.Range(0f, 1f), 1f);
       } else {
-         displayNameText.text = MonsterManager.self.getBattler(enemyType).enemyName;
+         displayNameText.text = MonsterManager.self.getBattlerData(enemyType).enemyName;
       }
    }
 
@@ -147,7 +147,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          if (shouldDisableColliderOnDeath()) {
             circleCollider.enabled = false;
          }
-         if (MonsterManager.self.getBattler(this.enemyType).disableOnDeath) {
+         if (MonsterManager.self.getBattlerData(this.enemyType).disableOnDeath) {
             bodyAnim.gameObject.SetActive(false);
          }
       }

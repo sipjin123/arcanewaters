@@ -14,8 +14,8 @@ public class WarpTreasureSite : Warp {
       base.Awake();
 
       // Temporarily disable to push to Unity collab until problem with Networking in Treasure Sites is solved
-      //warpToRandomTreasureSite = true;
-      //chooseRandomArea();
+      warpToRandomTreasureSite = true;
+      chooseRandomArea();
    }
 
    [ServerOnly]

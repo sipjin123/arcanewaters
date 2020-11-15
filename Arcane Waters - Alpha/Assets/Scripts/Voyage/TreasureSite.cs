@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MapCreationTool.Serialization;
 
 public class TreasureSite : NetworkBehaviour
 {
@@ -25,6 +26,10 @@ public class TreasureSite : NetworkBehaviour
    // The key of the area this site is in
    [SyncVar]
    public string areaKey;
+
+   // The target spawn to return from treasure site
+   [SyncVar]
+   public string spawnTarget;
 
    // The voyage group that has ownership of this site, and has captured or is capturing it
    [SyncVar]
@@ -219,6 +224,10 @@ public class TreasureSite : NetworkBehaviour
       this.transform.SetParent(area.treasureSiteParent, worldPositionStays);
    }
 
+   public Direction getWarpDirection () {
+      return _warp == null ? Direction.North : _warp.newFacingDirection;
+   }
+
    private IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(areaKey) == null) {
@@ -249,6 +258,37 @@ public class TreasureSite : NetworkBehaviour
 
       if (!found) {
          D.debug("Could not find the warp associated with a treasure site in area " + areaKey);
+      }
+
+      setSpawnTarget();
+   }
+
+   [ServerOnly]
+   private void setSpawnTarget () {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
+         MapSpawn finalSpawn = null;
+         float minDist = float.MaxValue;
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            foreach (MapSpawn spawn in mapSpawns) {
+               if (spawn.mapName == areaKey) {
+                  if (Vector2.Distance(new Vector2(spawn.posX, spawn.posY), _warp.transform.localPosition) < minDist) {
+                     minDist = Vector2.Distance(new Vector2(spawn.posX, spawn.posY), _warp.transform.localPosition);
+                     finalSpawn = spawn;
+                  }
+               }
+            }
+
+            if (finalSpawn != null) {
+               spawnTarget = finalSpawn.name;
+            }
+         });
+      });
+
+      if (_warp as WarpTreasureSite) {
+         _warp.areaTarget = areaKey;
+         _warp.spawnTarget = spawnTarget;
       }
    }
 

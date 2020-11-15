@@ -1984,6 +1984,8 @@ MonoBehaviour:
   amountInput: {fileID: 8352383072720459103}
   sellValueText: {fileID: 515754600902070881}
   cropImage: {fileID: 78886047992168442}
+  upButton: {fileID: 3484573800624019826}
+  downButton: {fileID: 8728354867851451950}
 --- !u!114 &6086203560674464521
 MonoBehaviour:
   m_ObjectHideFlags: 0

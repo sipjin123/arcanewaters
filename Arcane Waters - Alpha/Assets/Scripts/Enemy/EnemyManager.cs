@@ -50,12 +50,22 @@ public class EnemyManager : MonoBehaviour {
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          // Create an Enemy in this instance
          Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+         enemy.transform.localPosition = spawner.transform.localPosition;
          enemy.enemyType = spawner.enemyType;
+         enemy.areaKey = instance.areaKey;
+         enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+
+         BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+         if (battlerData != null) {
+            enemy.isBossType = battlerData.isBossType;
+            enemy.isSupportType = battlerData.isSupportType;
+            enemy.animGroupType = battlerData.animGroup;
+            enemy.facing = Direction.South;
+            enemy.displayNameText.text = battlerData.enemyName;
+         }
 
          // Add it to the Instance
          InstanceManager.self.addEnemyToInstance(enemy, instance);
-         enemy.transform.position = spawner.transform.position;
-         enemy.areaKey = instance.areaKey;
          NetworkServer.Spawn(enemy.gameObject);
       }
    }

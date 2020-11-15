@@ -107,7 +107,7 @@ public class TeamCombatPanel : Panel
    }
 
    private void createTemplate (Enemy.Type enemyType, Transform parent) {
-      BattlerData battlerData = MonsterManager.self.getBattler(enemyType);
+      BattlerData battlerData = MonsterManager.self.getBattlerData(enemyType);
       BattlerTemplate template = Instantiate(battlerTempPrefab.gameObject, parent).GetComponent<BattlerTemplate>();
       template.battlerName.text = battlerData.enemyName;
       template.battlerIcon.sprite = ImageManager.getSprite(battlerData.imagePath);

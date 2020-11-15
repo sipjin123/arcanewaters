@@ -66,7 +66,7 @@ public class MonsterManager : MonoBehaviour {
       mainData.lootGroupId = rawData.lootGroupId;
    }
 
-   public BattlerData getBattler (Enemy.Type enemyType) {
+   public BattlerData getBattlerData (Enemy.Type enemyType) {
       if (!_monsterDataList.Exists(_=>_.battler.enemyType == enemyType)) {
          D.debug("Enemy type is not registered: " + enemyType);
          return null;
@@ -75,7 +75,7 @@ public class MonsterManager : MonoBehaviour {
       return _monsterDataList.Find(_=>_.battler.enemyType == enemyType).battler;
    }
 
-   public BattlerData getBattler (int battlerId) {
+   public BattlerData getBattlerData (int battlerId) {
       if (!_monsterDataList.Exists(_=>_.xmlId == battlerId)) {
          D.debug("Enemy type is not registered: " + battlerId);
          return null;

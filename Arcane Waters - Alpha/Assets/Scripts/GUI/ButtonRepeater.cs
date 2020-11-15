@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class ButtonRepeater : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-
    #region Public Variables
 
    // The initial delay before the pressed button starts to repeat its action
@@ -24,7 +23,7 @@ public class ButtonRepeater : MonoBehaviour, IPointerDownHandler, IPointerUpHand
    }
 
    void Update () {
-      if (_isHeld) {
+      if (_button.interactable && _isHeld) {
          if (Time.time - _lastPointerDownTime > initialRepeatInterval &&
              Time.time - _lastRepeatTime > repeatInterval) {
             _button.onClick.Invoke();

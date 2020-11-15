@@ -172,6 +172,7 @@ public class NetEntity : NetworkBehaviour
    public bool isAboutToWarpOnClient = false;
 
    // Determines if the player is animating an interact clip
+   [SyncVar]
    public bool interactingAnimation = false;
 
    // Determines if this unit is speeding

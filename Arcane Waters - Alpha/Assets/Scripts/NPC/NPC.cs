@@ -16,15 +16,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // How close we have to be in order to talk to the NPC
    public static float TALK_DISTANCE = .65f;
 
-   // How close we have to be in order to pet animal (main axis)
-   public float ANIMAL_PET_DISTANCE = .08f;
-
-   // How close we have to be in order to pet animal (additional axis)
-   public float ANIMAL_PET_DISTANCE_ADDITIONAL = .03f;
-
-   // How far from pet, player has to be in order to play animation
-   public float ANIMAL_PET_DISTANCE_MINIMAL_X = .15f;
-   public float ANIMAL_PET_DISTANCE_MINIMAL_Y = .05f;
+   // How close we have to be in order to pet animal
+   public static float ANIMAL_PET_DISTANCE = .5f;
 
    // The Types of different NPCs
    public enum Type
@@ -72,12 +65,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    public bool isShopNpc;
 
    [SyncVar]
-   // Determines if this npc is animal which can be interacted with (pet)
-   public bool isAnimal;
-
-   [SyncVar]
    // The Type of reaction after petting (if this NPC is animal)
    public AnimalPetting.ReactionType animalReactionType;
+
+   [SyncVar]
+   // Determine if NPC being animal, is currently being pet by player
+   public bool isInteractingAnimal = false;
+
+   // Settings determining animal's reaction to petting
+   public AnimalPettingConfig animalPettingConfig;
 
    // Determines if this npc is staying still or moving around
    public bool isStationary;
@@ -222,18 +218,20 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             direction = Global.player.transform.position - transform.position;
          }
 
-         // Calculate an angle for that direction
-         float angle = Util.angle(direction);
+         if (!interactingAnimation) {
+            // Calculate an angle for that direction
+            float angle = Util.angle(direction);
 
-         // Set our facing direction based on that angle
-         facing = hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+            // Set our facing direction based on that angle
+            facing = hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
 
-         // Pass our angle and velocity on to the Animator
-         foreach (Animator animator in _animators) {
-            animator.SetFloat("velocityX", _body.velocity.x);
-            animator.SetFloat("velocityY", _body.velocity.y);
-            animator.SetBool("isMoving", _body.velocity.magnitude > .01f);
-            animator.SetInteger("facing", (int) facing);
+            // Pass our angle and velocity on to the Animator
+            foreach (Animator animator in _animators) {
+               animator.SetFloat("velocityX", _body.velocity.x);
+               animator.SetFloat("velocityY", _body.velocity.y);
+               animator.SetBool("isMoving", _body.velocity.magnitude > .01f);
+               animator.SetInteger("facing", (int) facing);
+            }
          }
       }
 
@@ -284,16 +282,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       // If NPC is marked as "animal", player can interact with it
-      if (isAnimal) {
-         if (!_isInteractingAnimal) {
+      if (animalReactionType != AnimalPetting.ReactionType.None) {
+         if (!isInteractingAnimal) {
             GameObject closestSpot = null;
             foreach (GameObject spot in animalPettingPositions) {
                spot.SetActive(false);
             }
 
-            float distPlayerToAnimal = 0.0f;
-            bool farCorrect = false;
-            bool closeCorrect = false;
             Vector3 playerPos = Global.player.transform.position;
 
             // Choose spot to start petting
@@ -320,52 +315,17 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                   break;
             }
 
-            // Calculate distance to spot
-            float distX = Mathf.Abs(closestSpot.transform.position.x - playerPos.x);
-            float distY = Mathf.Abs(closestSpot.transform.position.y - playerPos.y);
+            float distance = Vector2.Distance(closestSpot.transform.position, playerPos);
 
-            // Check if conditions to start animation are met
-            switch (Global.player.facing) {
-               case Direction.North:
-                  farCorrect = distY <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.y - this.transform.position.y) < Mathf.Abs(closestSpot.transform.position.y - this.transform.position.y);
-                  farCorrect &= distX <= ANIMAL_PET_DISTANCE_ADDITIONAL;
-                  distPlayerToAnimal = this.transform.position.y - playerPos.y;
-                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_Y);
-                  break;
-               case Direction.East:
-                  farCorrect = distX <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.x - this.transform.position.x) < Mathf.Abs(closestSpot.transform.position.x - this.transform.position.x);
-                  farCorrect &= distY <= ANIMAL_PET_DISTANCE_ADDITIONAL;
-                  distPlayerToAnimal = this.transform.position.x - playerPos.x;
-                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_X);
-                  break;
-               case Direction.West:
-                  farCorrect = distX <= ANIMAL_PET_DISTANCE || Mathf.Abs(playerPos.x - this.transform.position.x) < Mathf.Abs(closestSpot.transform.position.x - this.transform.position.x);
-                  farCorrect &= distY <= ANIMAL_PET_DISTANCE_ADDITIONAL;
-                  distPlayerToAnimal = playerPos.x - this.transform.position.x;
-                  closeCorrect = (distPlayerToAnimal > ANIMAL_PET_DISTANCE_MINIMAL_X);
-                  break;
-            }
-
-            // Hide animal petting positions after time
-            if (farCorrect || closeCorrect) {
-               if (_animalPetting == null) {
-                  _animalPetting = GetComponent<AnimalPetting>();
-                  if (_animalPetting == null) {
-                     _animalPetting = this.gameObject.AddComponent<AnimalPetting>();
-                  }
-               }
+            // Play animation or show message that player is too far
+            if (distance > ANIMAL_PET_DISTANCE) {
                closestSpot.SetActive(true);
-               _animalPetting.StopAllCoroutines();
-               _animalPetting.hideSpotsAfterTime(this);
-            }
-
-            // Plan animation or show message that player is too far
-            if (!farCorrect) {
+               getAnimalPetting().StopAllCoroutines();
+               getAnimalPetting().hideSpotsAfterTime(this);
                FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
-            } else if (!closeCorrect) {
-               FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooClose();
             } else {
-               startAnimalPetting();
+               Vector2 distToMoveAnimal = playerPos - closestSpot.transform.position;
+               startAnimalPetting(distToMoveAnimal, distance);
             }
          }
          return;
@@ -539,6 +499,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                string spritePath = npcData.spritePath;
                if (spritePath != "") {
                   this.spritePath = spritePath;
+                  animalReactionType = calculateAnimalReactionType(this.spritePath);
                }
                iconPath = npcData.iconPath;
 
@@ -586,29 +547,87 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       this.transform.SetParent(area.npcParent, worldPositionStays);
    }
 
-   private void startAnimalPetting () {
+   private void startAnimalPetting (Vector2 distToMoveAnimal, float distanceToAnimal) {
       // Set correct NPC state
-      _isInteractingAnimal = true;
+      isInteractingAnimal = true;
+      interactingAnimation = true;
       canMove = false;
+
+      // Play animal animation - moving to correct position
+      AnimalPuppet puppet = GetComponent<AnimalPuppet>();
+      if (puppet == null) {
+         puppet = gameObject.AddComponent<AnimalPuppet>();
+      }
+      Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
+      float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
+      puppet.setData(animalEndPos, maxTime);
+      puppet.controlGranted(this);
+
+      // Start player's petting animation
+      StartCoroutine(CO_StartAnimalPettingContinue(maxTime + 0.05f));
+   }
+
+   private IEnumerator CO_StartAnimalPettingContinue (float timeToWait) {
+      // Wait until animal has moved to correct spot
+      yield return new WaitForSeconds(timeToWait);
+
+      // Spot animal animators when player is playing petting animation
       foreach (Animator animator in _animators) {
          animator.enabled = false;
       }
 
+      // TemporaryController is no longer needed - destroy it
+      AnimalPuppet puppet = GetComponent<AnimalPuppet>();
+      Destroy(puppet);
+
       // Play player animation of petting animal
-      Global.player.requestAnimationPlay(Anim.Type.Pet_East, false);
+      if (Global.player) {
+         Global.player.requestAnimationPlay(Anim.Type.Pet_East, false);
+         gameObject.AddComponent<AnimalPettingPuppetController>().controlGranted(Global.player);
+      }
 
       // Play animal's reaction
+      getAnimalPetting().playAnimalAnimation(this, animalReactionType);
+   }
+
+   private AnimalPetting getAnimalPetting () {
       if (_animalPetting == null) {
          _animalPetting = GetComponent<AnimalPetting>();
          if (_animalPetting == null) {
             _animalPetting = this.gameObject.AddComponent<AnimalPetting>();
          }
       }
-      _animalPetting.playAnimalAnimation(this, animalReactionType);
+      return _animalPetting;
+   }
+
+   private AnimalPetting.ReactionType calculateAnimalReactionType (string path) {
+      string[] splits = path.Split('/');
+      if (splits.Length > 0) {
+         path = splits[splits.Length - 1];
+         foreach (string name in animalPettingConfig.heartReaction) {
+            if (path == name) {
+               return AnimalPetting.ReactionType.Hearts;
+            }
+         }
+
+         foreach (string name in animalPettingConfig.angryReaction) {
+            if (path == name) {
+               return AnimalPetting.ReactionType.Angry;
+            }
+         }
+
+         foreach (string name in animalPettingConfig.confusedReaction) {
+            if (path == name) {
+               return AnimalPetting.ReactionType.Confused;
+            }
+         }
+      }
+
+      return AnimalPetting.ReactionType.None;
    }
 
    public void finishAnimalPetting () {
-      if (_isInteractingAnimal) {
+      if (isInteractingAnimal) {
          foreach (Animator animator in _animators) {
             animator.enabled = true;
          }
@@ -616,10 +635,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    public void finishAnimalReaction () {
-      if (_isInteractingAnimal) {
-         _isInteractingAnimal = false;
+      if (isInteractingAnimal) {
+         isInteractingAnimal = false;
          canMove = true;
       }
+      gameObject.GetComponent<AnimalPettingPuppetController>().stopAnimalPetting();
+      Destroy(gameObject.GetComponent<AnimalPettingPuppetController>());
+      interactingAnimation = false;
    }
 
    #region Private Variables
@@ -660,11 +682,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Are we currently moving this NPC along a Path?
    private bool _moving = true;
 
-   // Determine if NPC being animal, is currently being pet by player
-   private bool _isInteractingAnimal = false;
-
    // Script used for handling petting sequence of an animal
    private AnimalPetting _animalPetting;
-
+   
    #endregion
 }

@@ -70,7 +70,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          } else if (warpFromRandomTreasureSite) {
             Global.player.rpc.Cmd_RequestWarpFromRandomTreasureSite();
          } else {
-            Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget, false);
+            Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
          }
 
          if (PanelManager.self.loadingScreen != null) {
