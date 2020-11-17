@@ -10,6 +10,9 @@ public class Global
 {
    #region Public Variables
 
+   // The port that identifies our "master" server, which starts up first and has authority over all other server processes
+   public static int MASTER_SERVER_PORT = 7777;
+
    // The version of the client
    public static int clientGameVersion = 0;
 

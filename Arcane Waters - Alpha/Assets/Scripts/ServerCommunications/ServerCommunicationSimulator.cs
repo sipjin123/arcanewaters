@@ -221,7 +221,7 @@ namespace ServerCommunicationHandlerv1 {
             newData.deviceName += _alphabets[randomIndex].ToString();
          }
          newData.ip = "127.0.0.1";
-         newData.port = 7777;
+         newData.port = Global.MASTER_SERVER_PORT;
          newData.latestUpdateTime = DateTime.UtcNow;
 
          newData.voyageList = new List<Voyage>();

@@ -61,5 +61,8 @@ public class SpriteLayer : RecoloredSprite {
    // The sprite swap used for animated sprites
    protected SpriteSwap _spriteSwap;
 
+   // The stencil reference ID used for hiding hair behind the hat
+   protected const int HAT_STENCIL_ID = 3;
+
    #endregion
 }

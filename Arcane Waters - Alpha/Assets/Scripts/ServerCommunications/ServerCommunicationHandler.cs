@@ -82,7 +82,7 @@ namespace ServerCommunicationHandlerv2 {
          };
 
          // Initialize server data writer if this is the main server
-         if (ourPort == 7777) {
+         if (ourPort == Global.MASTER_SERVER_PORT) {
             ServerDataWriter.self.initializeMainServerInviteFile();
          } 
          InvokeRepeating("processServerDeclaredInvites", 3, 2);

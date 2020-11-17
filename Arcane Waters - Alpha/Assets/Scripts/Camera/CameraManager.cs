@@ -124,6 +124,10 @@ public class CameraManager : ClientMonoBehaviour {
       _quakeEffect.enabled = false;
    }
 
+   public static Camera getCurrentCamera () {
+      return defaultCamera.getDepth() > battleCamera.getDepth() ? defaultCamera.getCamera() : battleCamera.getCamera();
+   }
+
    public static void enableBattleDisplay () {
       self.StartCoroutine(self.CO_EnableBattleDisplay());
    }

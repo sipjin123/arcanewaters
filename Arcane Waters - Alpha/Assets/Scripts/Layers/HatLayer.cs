@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.Rendering;
 
 public class HatLayer : SpriteLayer
 {
@@ -25,6 +26,19 @@ public class HatLayer : SpriteLayer
       } else {
          StartCoroutine(CO_SwapTexture(result));
       }
+
+      _material = getMaterial();
+            
+      _material.SetInt("_StencilPass", newType != 0 ? (int) StencilOp.Replace : (int) StencilOp.Keep);
+      _material.SetInt("_StencilCompare", (int) CompareFunction.Always);
+      _material.SetInt("_StencilRef", HAT_STENCIL_ID);
+      _material.SetFloat("_UseHatStencil", 1);
+
+      if (newType != 0) {
+         _material.EnableKeyword("USE_HAT_STENCIL");
+      } else {
+         _material.DisableKeyword("USE_HAT_STENCIL");
+      }
    }
 
    public int getType () {
@@ -35,6 +49,9 @@ public class HatLayer : SpriteLayer
 
    // Our current type
    protected int _type;
+
+   // The material used by this layer
+   protected Material _material;
 
    #endregion
 }

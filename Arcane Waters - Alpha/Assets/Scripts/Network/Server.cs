@@ -59,7 +59,7 @@ public class Server : MonoBehaviour {
    }
 
    public bool isMainServer () {
-      return port == 7777;
+      return port == Global.MASTER_SERVER_PORT;
    }
 
    public void SendGlobalChat (string message, int senderUserId, string userName) {

@@ -12,6 +12,7 @@ using BackgroundTool;
 using ServerCommunicationHandlerv2;
 using MapCustomization;
 using System;
+using MLAPI;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -158,6 +159,13 @@ public class MyNetworkManager : NetworkManager
    public override void OnStartServer () {
       D.debug("Server started on port: " + MyNetworkManager.getCurrentPort() + " with Cloud Build version: " + Util.getGameVersion());
 
+      // If this is the "Master" server, then start hosting the Server Network
+      if (getCurrentPort() == Global.MASTER_SERVER_PORT) {
+         ServerNetworkingManager.get().StartHost();
+      } else {
+         ServerNetworkingManager.get().StartClient();
+      }
+
       // Initializes the server
       ServerRoomManager.self.initializeServer();
 
@@ -229,6 +237,9 @@ public class MyNetworkManager : NetworkManager
    public override void OnStopServer () {
       _players.Clear();
       DisconnectionManager.self.clearDisconnectedUsers();
+
+      // Stop any servers or clients on the Server Network
+      ServerNetworkingManager.get().StopHost();
    }
 
    [ServerOnly]

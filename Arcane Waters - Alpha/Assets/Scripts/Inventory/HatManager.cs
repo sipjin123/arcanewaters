@@ -33,7 +33,7 @@ public class HatManager : EquipmentManager {
 
    public void Update () {
       // If we don't have anything equipped, turn off the animated sprite
-      if (hatLayer != null) {
+      if (hatLayer != null) {         
          Util.setAlpha(hatLayer.getRenderer().material, (hasHat() ? bodySprite.color.a : 0f));
       }
    }

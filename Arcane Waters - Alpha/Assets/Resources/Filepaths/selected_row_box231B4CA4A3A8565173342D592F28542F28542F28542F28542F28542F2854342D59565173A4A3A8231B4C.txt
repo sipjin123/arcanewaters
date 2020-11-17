@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/GUI/Inventory/selected_row_box
+Assets/Resources/Sprites/GUI/selected_row_box

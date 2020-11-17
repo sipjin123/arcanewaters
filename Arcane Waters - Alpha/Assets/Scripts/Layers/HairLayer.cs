@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using UnityEngine.Rendering;
 
 public class HairLayer : SpriteLayer {
    #region Public Variables
@@ -36,6 +37,11 @@ public class HairLayer : SpriteLayer {
 
       // Update our Animated Sprite
       getSpriteSwap().newTexture = getTexture(newType, isFront);
+
+      Material mat = getMaterial();
+      mat.SetInt("_StencilPass", (int)StencilOp.Keep);
+      mat.SetInt("_StencilCompare", (int) CompareFunction.NotEqual);
+      mat.SetInt("_StencilRef", HAT_STENCIL_ID);
    }
 
    public static Texture2D getTexture (Type hairType, bool isFront) {
