@@ -2912,7 +2912,7 @@ public class DB_Main : DB_MainStub
                   if (newPair.isEnabled) {
                      rawDataList.Add(newPair);
                   } else {
-                     D.debug("Ignoring shop entry id: " + newPair.xmlId);
+                     D.editorLog("Ignoring shop entry id: " + newPair.xmlId, Color.red);
                   }
                }
             }

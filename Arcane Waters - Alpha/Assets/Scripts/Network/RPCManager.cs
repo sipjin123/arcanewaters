@@ -592,12 +592,6 @@ public class RPCManager : NetworkBehaviour {
       processLootBagRewards(chestId);
    }
 
-   [Command]
-   public void Cmd_MarkUnopennedBags (int chestId) {
-      TreasureChest chest = TreasureManager.self.getChest(chestId);
-      chest.userIds.Add(_player.userId);
-   }
-
    [Server]
    private void processLootBagRewards (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
@@ -618,7 +612,7 @@ public class RPCManager : NetworkBehaviour {
    [Server]
    public void spawnBattlerMonsterChest (int instanceID, Vector3 position, int enemyID) {
       Instance currentInstance = InstanceManager.self.getInstance(instanceID);
-      TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID);
+      TreasureManager.self.createBattlerMonsterChest(currentInstance, position, enemyID, _player.userId);
    }
 
    [Server]
@@ -3916,15 +3910,20 @@ public class RPCManager : NetworkBehaviour {
                abilitySql.abilityType = basicAbilityData.abilityType;
                if (basicAbilityData.abilityType == AbilityType.Standard) {
                   AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
-                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee()) || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())) {
+                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee()) 
+                  || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile()) 
+                  || (weaponClass == Weapon.Class.Magic && attackAbilityData.isProjectile())) {
                      validAbilities++;
                   }
-               } else {
+               } 
+               // TODO: Review this logic if its still necessary
+               /*else {
                   BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
                   if (buffAbilityData != null && weaponClass == Weapon.Class.Magic) {
+                     D.debug("Valid ability due to buff data: " + buffAbilityData.itemName + " : " + buffAbilityData.itemID + " : " + buffAbilityData.classRequirement);
                      validAbilities++;
                   } 
-               }
+               }*/
             }
 
             // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
@@ -3952,7 +3951,7 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
-
+            
             // Provides all the abilities for the players in the party
             setupAbilitiesForPlayers(bodyEntities, validAbilities > 0, weaponCategory);
             Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
@@ -4087,6 +4086,9 @@ public class RPCManager : NetworkBehaviour {
                         case WeaponCategory.Gun:
                            basicAbilityList[0] = AbilityManager.self.shootAbility();
                            break;
+                        case WeaponCategory.Rum:
+                           basicAbilityList[0] = AbilityManager.self.throwRum();
+                           break;
                      }
                   }
 
@@ -4145,7 +4147,7 @@ public class RPCManager : NetworkBehaviour {
 
       if (_player == null || !(_player is PlayerBodyEntity)) {
          D.editorLog("Invalid Source!");
-         Target_ReceiveRefreshCasting(connectionToClient);
+         Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
 
@@ -4163,9 +4165,9 @@ public class RPCManager : NetworkBehaviour {
                abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
             } catch {
                if (sourceBattler == null) {
-                  D.debug("Failed to fetch the source battler!");
+                  D.debug("Setting ability to Punch :: Failed to fetch the source battler!");
                } else {
-                  D.debug("Failed to fetch attack abilities for battler: " + sourceBattler.gameObject.name);
+                  D.debug("Setting ability to Punch :: Failed to fetch attack abilities for battler: " + sourceBattler.gameObject.name);
                }
                abilityData = AbilityManager.self.punchAbility();
             }
@@ -4186,12 +4188,12 @@ public class RPCManager : NetworkBehaviour {
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
          D.editorLog("Invalid Targets!");
-         Target_ReceiveRefreshCasting(connectionToClient);
+         Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
       // Make sure the source battler can use that ability type
       if (!abilityData.isReadyForUseBy(sourceBattler) && !cancelAction) {
-         Target_ReceiveRefreshCasting(connectionToClient);
+         Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
 
@@ -4199,7 +4201,7 @@ public class RPCManager : NetworkBehaviour {
          // If it's a Melee Ability, make sure the target isn't currently protected
          if (((AttackAbilityData) abilityData).isMelee() && targetBattler.isProtected(battle)) {
             D.warning("Battler requested melee ability against protected target! Player: " + playerBody.entityName);
-            Target_ReceiveRefreshCasting(connectionToClient);
+            Target_ReceiveRefreshCasting(connectionToClient, false);
             return;
          }
       }
@@ -4209,13 +4211,20 @@ public class RPCManager : NetworkBehaviour {
       if (cancelAction) {
          BattleManager.self.cancelBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
       } else {
+         if (!sourceBattler.battlerAbilitiesInitialized && sourceBattler.getBasicAbilities().Count < 1 && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+            Target_ReceiveRefreshCasting(connectionToClient, true);
+            return;
+         }
          BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
       }
    }
 
    [TargetRpc]
-   public void Target_ReceiveRefreshCasting (NetworkConnection connection) {
+   public void Target_ReceiveRefreshCasting (NetworkConnection connection, bool refreshAbilityCache) {
       BattleManager.self.getPlayerBattler().setBattlerCanCastAbility(true);
+      if (refreshAbilityCache) {
+         AttackPanel.self.clearCachedAbilityCast();
+      }
    }
 
    [Command]

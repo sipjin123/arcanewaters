@@ -217,10 +217,14 @@ public class BattleUIManager : MonoBehaviour {
                      if (BattleSelectionManager.self.selectedBattler == null) {
                         abilityButton.invalidButtonClick();
                      } else {
-                        if (abilityType == AbilityType.Standard) {
-                           attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
-                        } else if (abilityType == AbilityType.BuffDebuff) {
-                           attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+                        if (!abilityButton.cooldownImage.enabled) {
+                           if (abilityType == AbilityType.Standard) {
+                              attackPanel.requestAttackTarget(abilityButton.abilityTypeIndex);
+                           } else if (abilityType == AbilityType.BuffDebuff) {
+                              attackPanel.requestBuffTarget(abilityButton.abilityTypeIndex);
+                           }
+                        } else {
+                           abilityButton.invalidButtonClick();
                         }
                      }
                   });
@@ -591,10 +595,10 @@ public class BattleUIManager : MonoBehaviour {
       DamageText damageText = damageTextObject.GetComponent<DamageText>();
 
       // Place the damage numbers just above where the impact occurred for the given ability
-      damageText.transform.position = abilityData.isProjectile() ?
-          new Vector3(0f, .10f, -3f) + (Vector3) damagedBattler.getRangedEndPosition() :
-          new Vector3(damagedBattler.transform.position.x, damagedBattler.transform.position.y + .25f, -3f);
+      Vector3 damageSpawnPosition = new Vector3(damagedBattler.transform.position.x, damagedBattler.transform.position.y + .45f, -3f);
+
       damageText.setDamageAmount(action.damage, action.wasCritical, action.wasBlocked);
+      damageText.transform.position = damageSpawnPosition;
       damageText.transform.SetParent(EffectManager.self.transform, false);
       damageText.name = "DamageText_"+ abilityData.elementType;
 

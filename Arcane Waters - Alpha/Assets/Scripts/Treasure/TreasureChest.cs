@@ -30,6 +30,9 @@ public class TreasureChest : NetworkBehaviour {
    // The list of user IDs that have opened this chest
    public SyncList<int> userIds = new SyncList<int>();
 
+   // This is a list of user ids that are allowed to interact with this loot bag, this is so other users cannot loot a loot bag that was not spawned by the enemy they defeated
+   public SyncList<int> allowedUserIds = new SyncList<int>();
+
    // The Open button
    public GameObject openButtonContainer;
 
@@ -71,6 +74,10 @@ public class TreasureChest : NetworkBehaviour {
    // If this treasure is using a custom sprite
    [SyncVar]
    public bool useCustomSprite;
+
+   // If this gameobject is expired and should no longer render
+   [SyncVar]
+   public bool isExpired;
 
    // The custom sprite path
    [SyncVar]
@@ -150,7 +157,7 @@ public class TreasureChest : NetworkBehaviour {
       } 
 
       // Disables opened loot bags
-      if (hasBeenOpened() && (chestType == ChestSpawnType.Land || chestType == ChestSpawnType.Sea)) {
+      if (isExpired || (hasBeenOpened() && (chestType == ChestSpawnType.Land || chestType == ChestSpawnType.Sea))) {
          gameObject.SetActive(false);
       }
    }
@@ -186,7 +193,7 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
-   public void sendOpenRequest () {
+   public void sendOpenRequest (int userId) {
       if (hasBeenOpened()) {
          return;
       }
@@ -195,6 +202,12 @@ public class TreasureChest : NetworkBehaviour {
       // The player has to be close enough
       if (!_isGlobalPlayerNearby) {
          FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
+         return;
+      }
+
+      // If the user is NOT part of the sync list of allowed user interaction, do not proceed and send out a warning
+      if (!allowedUserIds.Contains(userId) && chestType != ChestSpawnType.Site) {
+         FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asInvalidLoot();
          return;
       }
 
@@ -389,13 +402,18 @@ public class TreasureChest : NetworkBehaviour {
    private IEnumerator CO_DisableChestAfterLifetime () {
       yield return new WaitForSeconds(30);
 
-      // Add the player to user list so when reconnecting, this chest will no longer be shown
-      if (Global.player != null) {
-         PlayerPrefs.SetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + areaKey + "_" + chestSpawnId, 1);
-         Global.player.rpc.Cmd_MarkUnopennedBags(this.id);
+      if (NetworkServer.active) {
+         // The server will mark this loot bag as expired, if so then it should not render for the clients anymore
+         isExpired = true;
+         gameObject.SetActive(false);
+      } else {
+         // Add the player to user list so when reconnecting, this chest will no longer be shown
+         if (Global.player != null) {
+            PlayerPrefs.SetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + areaKey + "_" + chestSpawnId, 1);
+         }
+         gameObject.SetActive(false);
+         deleteTreasureChestIcon();
       }
-      gameObject.SetActive(false);
-      deleteTreasureChestIcon();
    }
 
    #region Private Variables

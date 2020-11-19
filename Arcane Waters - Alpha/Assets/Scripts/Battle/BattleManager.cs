@@ -476,16 +476,14 @@ public class BattleManager : MonoBehaviour {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
 
-      if (source.getAttackAbilities().Count > 0) {
-         if (abilityType == AbilityType.Standard) {
-            abilityData = source.getAttackAbilities()[abilityInventoryIndex];
-         } else if (abilityType == AbilityType.BuffDebuff) {
-            abilityData = source.getBuffAbilities()[abilityInventoryIndex];
-         }
-      } else if (source.getBuffAbilities().Count > 0) {
+      if (source.getAttackAbilities().Count > 0 && abilityType == AbilityType.Standard && abilityInventoryIndex >= 0) {
+         abilityData = source.getAttackAbilities()[abilityInventoryIndex];
+      } else if (source.getBuffAbilities().Count > 0 && abilityType == AbilityType.BuffDebuff && abilityInventoryIndex >= 0) {
          abilityData = source.getBuffAbilities()[abilityInventoryIndex];
       } else {
-         D.editorLog("Enemy: " + source.battlerType + " has no proper ability assigned", Color.red);
+         if (source.enemyType == Enemy.Type.PlayerBattler) {
+            D.debug("Ability is set to punch! " + source.getAttackAbilities().Count + " : " + source.getBasicAbilities().Count + " : " + abilityType + " : " + abilityInventoryIndex);
+         }
          abilityData = AbilityManager.self.punchAbility();
       }
 
@@ -831,7 +829,10 @@ public class BattleManager : MonoBehaviour {
                   }
                }
             }
-         } 
+         } else {
+            // Set the enemy entity voyage group id to -1 so they can engage in battle again
+            battler.player.voyageGroupId = -1;
+         }
       }
 
       List<Vector3> spawnPositions = new List<Vector3>();

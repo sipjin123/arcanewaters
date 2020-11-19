@@ -63,7 +63,7 @@ public class AttackPanel : MonoBehaviour {
       // Cancels recent ability triggered
       if (isValidRecentAbility()) {
          cancelAbility(recentAbilityRequest.abilityType, recentAbilityRequest.abilityIndex);
-      }
+      } 
 
       // Send the request to the server
       recentAbilityRequest.abilityType = AbilityType.Standard;
@@ -77,7 +77,9 @@ public class AttackPanel : MonoBehaviour {
 
          // Trigger the tutorial
          TutorialManager3.self.tryCompletingStep(TutorialTrigger.AttackBattleTarget);
-      } 
+      } else {
+         D.warning("Casting is on cooldown!");
+      }
    }
 
    private bool isValidRecentAbility () {

@@ -77,7 +77,7 @@ public class MiningTrigger : MonoBehaviour
                   if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
                      bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
                      oreIdsInteracted.Add(oreNode.id);
-                  }
+                  } 
                }
             } 
          }

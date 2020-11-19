@@ -418,6 +418,7 @@ MonoBehaviour:
   - {fileID: 1094522575478650534}
   attackTypeSprites:
   - {fileID: 5859784698421252928}
+  isInvalidAbility: 0
 --- !u!95 &7768413648986102060
 Animator:
   serializedVersion: 3
@@ -575,7 +576,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2828f6a09e2c1e441ad62f28062bcfd5, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 37aa2aae1a42efd46941c19f42428556, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

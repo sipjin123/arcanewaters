@@ -136,6 +136,9 @@ public class CropManager : NetworkBehaviour {
    private void sendCropsToPlayer (CropInfo cropInfo, List<AchievementData> harvestCropAchievements, bool justGrew) {
       // Checks achievements to determine if the plant will grow quickly for tutorial purposes
       bool quickGrow = false;
+      if (harvestCropAchievements.Count < 1) {
+         quickGrow = true;
+      }
       foreach (AchievementData achievementData in harvestCropAchievements) {
          if (achievementData.count < TUTORIAL_CROP_COUNT) {
             quickGrow = true;
@@ -386,6 +389,9 @@ public class CropManager : NetworkBehaviour {
 
             // Checks achievements to determine if the plant will grow quickly for tutorial purposes
             bool quickGrow = false;
+            if (harvestCropAchievements.Count < 1) {
+               quickGrow = true;
+            }
             foreach (AchievementData achievementData in harvestCropAchievements) {
                if (achievementData.count < TUTORIAL_CROP_COUNT) {
                   quickGrow = true;

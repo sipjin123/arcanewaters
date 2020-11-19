@@ -172,7 +172,6 @@ public class NetEntity : NetworkBehaviour
    public bool isAboutToWarpOnClient = false;
 
    // Determines if the player is animating an interact clip
-   [SyncVar]
    public bool interactingAnimation = false;
 
    // Determines if this unit is speeding
@@ -304,6 +303,12 @@ public class NetEntity : NetworkBehaviour
             animator.SetBool("isMoving", moving);
             animator.SetInteger("facing", (int) this.facing);
             animator.SetBool("inBattle", battling);
+
+            // Update the direction of the dash animator
+            if (this is PlayerBodyEntity) {
+               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) this;
+               bodyEntity.dashAnimator.SetInteger("direction", (int) facing);
+            }
 
             if (this is BodyEntity) {
                animator.SetInteger("fallDirection", (int) this.fallDirection);
@@ -1178,12 +1183,6 @@ public class NetEntity : NetworkBehaviour
    public void Cmd_HarvestCrop (int cropNumber) {
       // We have to holding the pitchfork
       BodyEntity body = GetComponent<BodyEntity>();
-
-      if (body == null || body.weaponManager.actionType != Weapon.ActionType.HarvestCrop) {
-         D.warning("Can't harvest without a pitchfork!");
-         return;
-      }
-
       this.cropManager.harvestCrop(cropNumber);
    }
 

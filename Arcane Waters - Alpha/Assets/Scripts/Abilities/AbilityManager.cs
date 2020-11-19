@@ -176,6 +176,10 @@ public class AbilityManager : MonoBehaviour
          switch (action.battleActionType) {
             case BattleActionType.Attack:
                // Get the ability object for this action
+               if (sourceBattler.getAttackAbilities().Count < action.abilityInventoryIndex || sourceBattler.getAttackAbilities().Count == 0) {
+                  D.debug("Failed to process attack execution! AbilityIndex: " + action.abilityInventoryIndex + " TotalAttacks: " + sourceBattler.getAttackAbilities().Count + " Total Abilities: " + sourceBattler.getBasicAbilities().Count);
+                  return;
+               }
                AttackAbilityData abilityData = sourceBattler.getAttackAbilities()[action.abilityInventoryIndex];
                if (abilityData != null) {
                   if (targetBattler != null) {

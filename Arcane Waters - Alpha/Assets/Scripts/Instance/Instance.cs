@@ -153,13 +153,13 @@ public class Instance : NetworkBehaviour
       return entities;
    }
 
-   public List<NetworkBehaviour> getPlayerEntities () {
-      List<NetworkBehaviour> newEntityList = new List<NetworkBehaviour>();
+   public List<PlayerBodyEntity> getPlayerEntities () {
+      List<PlayerBodyEntity> newEntityList = new List<PlayerBodyEntity>();
       
       // Gathers all the player bodies in the area
       foreach (NetworkBehaviour existingEntity in entities) {
          if (existingEntity is PlayerBodyEntity) {
-            newEntityList.Add(existingEntity);
+            newEntityList.Add((PlayerBodyEntity) existingEntity);
          }
       }
       return newEntityList;

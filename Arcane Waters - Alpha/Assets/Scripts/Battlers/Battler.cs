@@ -1305,7 +1305,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
-
+            
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
 
@@ -2046,7 +2046,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public Vector2 getRangedEndPosition () {
       Vector2 startPos = battleSpot.transform.position;
-      return startPos + new Vector2(0f, mainSpriteRenderer.bounds.extents.x * 2) * (isAttacker() ? 1f : -1f);
+      float xValue = mainSpriteRenderer.bounds.extents.x / 2;
+      return startPos + new Vector2(xValue, .15f);
    }
 
    // Gets the battler initialized data (health, ap, etc)

@@ -67,6 +67,14 @@ public class FloatingCanvas : MonoBehaviour {
       return this;
    }
 
+   public FloatingCanvas asInvalidLoot () {
+      if (text != null) {
+         text.text = "Cannot Loot this...";
+      }
+
+      return this;
+   }
+
    public FloatingCanvas asNoResponse () {
       if (text != null) {
          text.text = "No Response...";

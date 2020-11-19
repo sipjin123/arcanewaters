@@ -63,10 +63,12 @@ namespace ServerCommunicationHandlerv2 {
          string[] content = Util.serialize(remoteVoyageInvites);
 
          // Write to file to be read by other servers
-         try {
-            File.WriteAllText(invitePath + voyageInviteText, content.Length > 0 ? content[0] : "");
-         } catch {
-            D.debug("Cancelled File Write to avoid violation");
+         if (content.Length > 0) {
+            try {
+               File.WriteAllText(invitePath + voyageInviteText, content.Length > 0 ? content[0] : "");
+            } catch {
+               D.debug("Cancelled File Write to avoid violation");
+            }
          }
       }
 

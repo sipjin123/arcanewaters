@@ -41,7 +41,7 @@ public class OreNode : NetworkBehaviour
    public Sprite[] oreSprites;
 
    // The list of user IDs that have mined this node
-   public SyncListInt userIds = new SyncListInt();
+   public SyncList<int> userIds = new SyncList<int>();
 
    // List of arrows that indicate where the player is facing
    public List<DirectionalArrow> directionalArrow;

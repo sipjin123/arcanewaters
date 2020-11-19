@@ -74,8 +74,7 @@ public class TreasureManager : MonoBehaviour {
 
    public TreasureChest createSeaMonsterChest (Instance instance, Vector3 spot, SeaMonsterEntity.Type enemyType) {
       // Instantiate a new Treasure Chest
-      TreasureChest chest = null;
-      chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
+      TreasureChest chest = Instantiate(seaChestPrefab, spot, Quaternion.identity);
 
       // Sets the chest to be destroyed after interaction
       chest.autoDestroy = true;
@@ -105,16 +104,15 @@ public class TreasureManager : MonoBehaviour {
       return chest;
    }
 
-   public TreasureChest createBattlerMonsterChest (Instance instance, Vector3 spot, int enemyTypeID) {
+   public TreasureChest createBattlerMonsterChest (Instance instance, Vector3 spot, int enemyTypeId, int userId) {
       // Instantiate a new Treasure Chest
-      TreasureChest chest = null;
-      chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
+      TreasureChest chest = Instantiate(monsterBagPrefab, spot, Quaternion.identity);
 
       // Sets the chest to be destroyed after interaction
       chest.autoDestroy = true;
 
       // Sets the type of enemy
-      chest.enemyType = enemyTypeID;
+      chest.enemyType = enemyTypeId;
       chest.areaKey = instance.areaKey;
 
       // Keep it parented to this Manager
@@ -134,6 +132,20 @@ public class TreasureManager : MonoBehaviour {
 
       // Spawn the network object on the Clients
       NetworkServer.Spawn(chest.gameObject);
+
+      // Automatically allow the user who triggered the spawn loot bag to have permission to interact with this loot bag
+      chest.allowedUserIds.Add(userId);
+
+      List<PlayerBodyEntity> instancePlayerEntities = instance.getPlayerEntities();
+      if (instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId > 0) {
+         int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
+         foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {
+            // If there are players in the instance that share the same voyage group id with the player, then add them to the allowed list of user interaction
+            if (playerEntity.userId != userId && playerEntity.voyageGroupId == playerVoyageGroupId) {
+               chest.allowedUserIds.Add(playerEntity.userId); 
+            }
+         }
+      }
 
       return chest;
    }

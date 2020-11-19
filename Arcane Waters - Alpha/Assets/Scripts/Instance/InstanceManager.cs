@@ -41,7 +41,7 @@ public class InstanceManager : MonoBehaviour {
          } else {
             TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(existingPrivateInstance.startTime));
 
-            // Check if somehow the instance has a player in id {less likely} / confirm if the private area user id is the same with this player user id / if the active time is less than 10 minutes
+            // Check if the instance has a player in it {less likely} / confirm if the private area user ID is the same with this player's user ID / if the active time is less than 10 minutes
             if (existingPrivateInstance.getPlayerCount() < 1 && existingPrivateInstance.privateAreaUserId == player.userId && timeSinceStart.TotalMinutes < Instance.ACTIVE_MINUTES_CAP) {
                instance = getOpenInstance(areaKey, player.isSinglePlayer);
             } else {
