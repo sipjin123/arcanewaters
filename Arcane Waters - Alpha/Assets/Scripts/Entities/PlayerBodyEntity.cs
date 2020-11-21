@@ -35,8 +35,8 @@ public class PlayerBodyEntity : BodyEntity {
    // Script handling the battle initializer
    public PlayerBattleCollider playerBattleCollider;
 
-   // The animator handling the dash vfx
-   public Animator dashAnimator;
+   // The animators handling the dash vfx
+   public Animator[] dashAnimators;
 
    // If the player is near an enemy
    public bool isWithinEnemyRadius;
@@ -101,6 +101,9 @@ public class PlayerBodyEntity : BodyEntity {
    // Custom icon of the guild
    public GuildIcon guildIcon;
 
+   // Sprinting animator parameter name
+   public const string IS_SPRINTING = "isSprinting";
+
    #endregion
 
    protected override void Awake () {
@@ -128,13 +131,6 @@ public class PlayerBodyEntity : BodyEntity {
       }
    }
 
-   private void OnDrawGizmos () {
-      Gizmos.color = Color.yellow;
-      Gizmos.DrawWireSphere(obstacleDetectionCollider.transform.position, obstacleColliderScale);
-      Gizmos.color = Color.grey;
-      Gizmos.DrawWireSphere(jumpEndCollider.transform.position, jumpEndColliderScale);
-   }
-
    protected override void FixedUpdate () {
       // Blocks user input and user movement if an enemy is within player collider radius
       if (!isWithinEnemyRadius) {
@@ -144,7 +140,7 @@ public class PlayerBodyEntity : BodyEntity {
 
    protected override void Update () {
       base.Update();
-
+      
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
 
@@ -270,7 +266,6 @@ public class PlayerBodyEntity : BodyEntity {
       if (!canSprint()) {
          // Only notify other clients once if disabling
          if (isSpeedingUp) {
-            Cmd_UpdateSpeedupDisplay(false);
             isSpeedingUp = false;
          }
 
@@ -279,7 +274,6 @@ public class PlayerBodyEntity : BodyEntity {
          } else {
             isReadyToSpeedup = true;
          }
-         dashAnimator.gameObject.SetActive(false);
          setDustParticles(false);
       }
       updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
@@ -287,7 +281,9 @@ public class PlayerBodyEntity : BodyEntity {
 
    private void processSprintLogic () {
       // Sets animators speed to default
-      dashAnimator.speed = 1;
+      foreach (Animator animator in dashAnimators) {
+         animator.speed = 1;
+      }
       foreach (Animator animator in animators) {
          animator.speed = 1;
       }
@@ -298,19 +294,23 @@ public class PlayerBodyEntity : BodyEntity {
          if (speedMeter > 0 && !waterChecker.inWater()) {
             speedMeter -= Time.deltaTime * fuelDepleteValue;
 
-            Direction overrideDirection = facing;
-            dashAnimator.SetInteger("direction", (int) overrideDirection);
-            Cmd_UpdateSpeedupDisplay(true);
-            dashAnimator.gameObject.SetActive(true);
             setDustParticles(true);
+            foreach (Animator dashAnimator in dashAnimators) {
+               dashAnimator.SetBool(IS_SPRINTING, true);
+            }
          } else {
             isReadyToSpeedup = false;
             isSpeedingUp = false;
-            Cmd_UpdateSpeedupDisplay(false);
+            foreach (Animator dashAnimator in dashAnimators) {
+               dashAnimator.SetBool(IS_SPRINTING, false);
+            }
          }
 
          updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
       } else {
+         foreach (Animator dashAnimator in dashAnimators) {
+            dashAnimator.SetBool(IS_SPRINTING, false);
+         }
          sprintRecovery();
       }
    }
@@ -416,21 +416,19 @@ public class PlayerBodyEntity : BodyEntity {
    private void jumpOver (Collider2D[] obstacleCollidedEntries, Collider2D[] jumpEndCollidedEntries) {
       if (obstacleCollidedEntries.Length > 2 && jumpEndCollidedEntries.Length < 3) {
          Cmd_JumpOver(transform.position, jumpEndCollider.transform.position, (int) facing);
-      } 
+      }
    }
 
    private void updateSprintEffects (bool isOn) {
-      dashAnimator.gameObject.SetActive(isOn);
-
       // Handle sprite effects
       if (isOn) {
-         Direction overrideDirection = facing;
-         dashAnimator.SetInteger("direction", (int) overrideDirection);
-         windDashSprite.localPosition = new Vector3(0, 0, overrideDirection == Direction.South ? windDashZOffset : -windDashZOffset);
+         windDashSprite.localPosition = new Vector3(0, 0, facing == Direction.South ? windDashZOffset : -windDashZOffset);
 
          setDustParticles(true);
 
-         dashAnimator.speed = ANIM_SPEEDUP_VALUE;
+         foreach (Animator dashAnimator in dashAnimators) {
+            dashAnimator.speed = ANIM_SPEEDUP_VALUE;
+         }
          foreach (Animator animator in animators) {
             animator.speed = ANIM_SPEEDUP_VALUE;
          }
@@ -441,7 +439,9 @@ public class PlayerBodyEntity : BodyEntity {
       foreach (Animator animator in animators) {
          animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
-      dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
+      foreach (Animator dashAnimator in dashAnimators) {
+         dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
+      }
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
@@ -479,19 +479,6 @@ public class PlayerBodyEntity : BodyEntity {
       jumpOverWorldLocation = new Vector2(worldLocation.x, worldLocation.y);
       isJumpingOver = true;
       requestAnimationPlay((Anim.Type) direction);
-   }
-
-   [Command]
-   void Cmd_UpdateSpeedupDisplay (bool isOn) {
-      updateSprintEffects(isOn);
-      Rpc_UpdateSpeedupDisplay(isOn, userId);
-   }
-
-   [ClientRpc]
-   public void Rpc_UpdateSpeedupDisplay (bool isOn, int userId) {
-      if (!isLocalPlayer) {
-         updateSprintEffects(isOn);
-      }
    }
 
    [Command]

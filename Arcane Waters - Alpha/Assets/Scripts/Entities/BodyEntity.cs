@@ -104,8 +104,10 @@ public class BodyEntity : NetEntity
 
    public void restartAnimations () {
       foreach (Animator animator in GetComponents<Animator>()) {
-         animator.StopPlayback();
-         animator.StartPlayback();
+         if (!_ignoredAnimators.Contains(animator)) {
+            animator.StopPlayback();
+            animator.StartPlayback();
+         }
       }
    }
 

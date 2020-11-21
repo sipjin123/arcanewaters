@@ -200,13 +200,14 @@ public class NetEntity : NetworkBehaviour
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
 
+      if (this.gameObject.HasComponent<Animator>()) {
+         _animators.Add(GetComponent<Animator>());
+      }
+
       foreach (Animator ignoredAnim in _ignoredAnimators) {
          _animators.Remove(ignoredAnim);
       }
 
-      if (this.gameObject.HasComponent<Animator>()) {
-         _animators.Add(GetComponent<Animator>());
-      }
       if (this.gameObject.HasComponent<SpriteRenderer>()) {
          _renderers.Add(GetComponent<SpriteRenderer>());
       }
@@ -307,7 +308,9 @@ public class NetEntity : NetworkBehaviour
             // Update the direction of the dash animator
             if (this is PlayerBodyEntity) {
                PlayerBodyEntity bodyEntity = (PlayerBodyEntity) this;
-               bodyEntity.dashAnimator.SetInteger("direction", (int) facing);
+               foreach (Animator dashAnimator in bodyEntity.dashAnimators) {
+                  dashAnimator.SetInteger("direction", (int) facing);
+               }
             }
 
             if (this is BodyEntity) {
@@ -735,7 +738,9 @@ public class NetEntity : NetworkBehaviour
 
       // Disable all animators in children
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
-         anim.enabled = false;
+         if (!_ignoredAnimators.Contains(anim)) {
+            anim.enabled = false;
+         } 
       }
    }
 
@@ -752,7 +757,9 @@ public class NetEntity : NetworkBehaviour
 
       // Enable all animators in children
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
-         anim.enabled = true;
+         if (!_ignoredAnimators.Contains(anim)) {
+            anim.enabled = true;
+         } 
       }
    }
 
@@ -1308,7 +1315,6 @@ public class NetEntity : NetworkBehaviour
          if (!customMapManager.canUserWarpInto(this, newArea, out System.Action<NetEntity> denyWarphandler)) {
             // Deny access to owned area
             denyWarphandler?.Invoke(this);
-            D.debug("Investigation Log :: Cannot warp {" + userId + "} to area: " + newArea);
             return;
          }
 

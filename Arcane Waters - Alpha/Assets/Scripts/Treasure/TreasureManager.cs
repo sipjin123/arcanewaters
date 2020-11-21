@@ -136,7 +136,7 @@ public class TreasureManager : MonoBehaviour {
       // Automatically allow the user who triggered the spawn loot bag to have permission to interact with this loot bag
       chest.allowedUserIds.Add(userId);
 
-      List<PlayerBodyEntity> instancePlayerEntities = instance.getPlayerEntities();
+      List<PlayerBodyEntity> instancePlayerEntities = instance.getPlayerBodyEntities();
       if (instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId > 0) {
          int playerVoyageGroupId = instancePlayerEntities.Find(_ => _.userId == userId).voyageGroupId;
          foreach (PlayerBodyEntity playerEntity in instancePlayerEntities) {

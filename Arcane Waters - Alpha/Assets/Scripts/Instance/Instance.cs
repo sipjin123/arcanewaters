@@ -153,7 +153,7 @@ public class Instance : NetworkBehaviour
       return entities;
    }
 
-   public List<PlayerBodyEntity> getPlayerEntities () {
+   public List<PlayerBodyEntity> getPlayerBodyEntities () {
       List<PlayerBodyEntity> newEntityList = new List<PlayerBodyEntity>();
       
       // Gathers all the player bodies in the area

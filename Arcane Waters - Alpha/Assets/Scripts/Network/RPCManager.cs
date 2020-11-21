@@ -3923,14 +3923,16 @@ public class RPCManager : NetworkBehaviour {
                      validAbilities++;
                   }
                } 
-               // TODO: Review this logic if its still necessary
-               /*else {
-                  BuffAbilityData buffAbilityData = AbilityManager.self.allBuffAbilities.Find(_ => _.itemID == abilitySql.abilityID);
-                  if (buffAbilityData != null && weaponClass == Weapon.Class.Magic) {
-                     D.debug("Valid ability due to buff data: " + buffAbilityData.itemName + " : " + buffAbilityData.itemID + " : " + buffAbilityData.classRequirement);
-                     validAbilities++;
-                  } 
-               }*/
+            }
+
+            // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
+            if (equippedAbilityList.Count < 1) {
+               validAbilities = 0;
+               equippedAbilityList = new List<AbilitySQLData>(); 
+               equippedAbilityList.Add(new AbilitySQLData { 
+                  abilityID = -1,
+                  name = "",
+               });
             }
 
             // Override ability if no ability matches the weapon type ex:{all melee abilities but user has gun weapon}
@@ -3958,10 +3960,9 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
-            
+
             // Provides all the abilities for the players in the party
-            setupAbilitiesForPlayers(bodyEntities, validAbilities > 0, weaponCategory);
-            Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+            setupAbilitiesForPlayers(bodyEntities, equippedAbilityList, weaponClass, validAbilities, validAbilities > 0, weaponCategory);
          });
       });
    }
@@ -4056,7 +4057,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
+   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, List<AbilitySQLData> equippedAbilityList  ,Weapon.Class weaponClass,int validAbilities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
@@ -4101,6 +4102,7 @@ public class RPCManager : NetworkBehaviour {
 
                   try {
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                     Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
                   } catch {
                      D.debug("Cant add battler abilities for: " + battler);
                   }
@@ -4171,11 +4173,6 @@ public class RPCManager : NetworkBehaviour {
             try {
                abilityData = sourceBattler.getAttackAbilities()[abilityInventoryIndex];
             } catch {
-               if (sourceBattler == null) {
-                  D.debug("Setting ability to Punch :: Failed to fetch the source battler!");
-               } else {
-                  D.debug("Setting ability to Punch :: Failed to fetch attack abilities for battler: " + sourceBattler.gameObject.name);
-               }
                abilityData = AbilityManager.self.punchAbility();
             }
          } else {
@@ -4194,7 +4191,6 @@ public class RPCManager : NetworkBehaviour {
 
       // Ignore invalid or dead sources and targets
       if (sourceBattler == null || targetBattler == null || sourceBattler.isDead() || targetBattler.isDead()) {
-         D.editorLog("Invalid Targets!");
          Target_ReceiveRefreshCasting(connectionToClient, false);
          return;
       }
