@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 using Random = UnityEngine.Random;
-using ServerCommunicationHandlerv2;
 
 [Serializable]
 public class PrefabTypes
@@ -161,7 +160,7 @@ public class BattleManager : MonoBehaviour {
       _activeBattles[player.userId] = battle;
 
       // The Player needs to return to this specific server if they reconnect
-      ServerCommunicationHandler.self.claimPlayer(player.userId);
+      ServerNetworkingManager.self.claimPlayer(player.userId);
 
       Battler battler = createBattlerForPlayer(battle, player, teamType);
 
@@ -218,7 +217,7 @@ public class BattleManager : MonoBehaviour {
 
          // If this was a Player, we can release the server claim now, so they can relog into any server
          if (battler.userId > 0) {
-            ServerCommunicationHandler.self.releasePlayerClaim(battler.userId);
+            ServerNetworkingManager.self.releasePlayerClaim(battler.userId);
          }
 
          // Warp any losing players back to the starting town, or show the death animation for Enemies

@@ -105,7 +105,9 @@ MonoBehaviour:
   ServerListenPort: 7500
   ServerWebsocketListenPort: 8887
   SupportWebsocket: 0
-  Channels: []
+  Channels:
+  - Name: Fragmented
+    Type: 4
   UseMLAPIRelay: 0
   MLAPIRelayAddress: 184.72.104.138
   MLAPIRelayPort: 8888
@@ -121,3 +123,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0fab1ff914248c8aa1184437291fe9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  server: {fileID: 0}

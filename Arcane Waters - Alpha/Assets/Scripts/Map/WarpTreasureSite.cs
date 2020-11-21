@@ -15,10 +15,16 @@ public class WarpTreasureSite : Warp {
 
       // Temporarily disable to push to Unity collab until problem with Networking in Treasure Sites is solved
       warpToRandomTreasureSite = true;
-      chooseRandomArea();
+
+      if (NetworkServer.active) {
+         chooseRandomArea();
+      } else {
+         // Fill with any data to enable colliders; Real data of warp is available only on server
+         areaTarget = "a";
+         spawnTarget = "a";
+      }
    }
 
-   [ServerOnly]
    private void chooseRandomArea () {
       // Find potential maps
       if (_randomTreasureSites.Count == 0) {

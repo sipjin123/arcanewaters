@@ -426,11 +426,11 @@ public class PlayerShipEntity : ShipEntity
          if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
             Cmd_ModifyMoveAngle(+1);
             _lastAngleChangeTime = NetworkTime.time;
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipLeft);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
             Cmd_ModifyMoveAngle(-1);
             _lastAngleChangeTime = NetworkTime.time;
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.TurnShipRight);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
       }
 
@@ -439,7 +439,7 @@ public class PlayerShipEntity : ShipEntity
 
          if (InputManager.getKeyAction(KeyAction.MoveUp)) {
             Cmd_RequestMovement();
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShipForward);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
       }
    }
@@ -461,7 +461,7 @@ public class PlayerShipEntity : ShipEntity
 
          if (inputVector.x != 0 || inputVector.y != 0) {
             Cmd_RequestServerAddForce(inputVector, isSpeedingUp);
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShipForward);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
       }
    }

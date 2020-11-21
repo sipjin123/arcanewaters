@@ -1339,7 +1339,7 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void spawnInNewMap (string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       // Check which server we're likely to redirect to
-      Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
+      NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
@@ -1348,7 +1348,7 @@ public class NetEntity : NetworkBehaviour
    [Server]
    public void spawnInNewMap (int voyageId, string newArea, Direction newFacingDirection) {
       // Find the server hosting the voyage
-      Server voyageServer = ServerNetwork.self.getServerHostingVoyage(voyageId);
+      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
 
       // Get the default spawn of the area
       Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(newArea);
@@ -1358,7 +1358,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Server]
-   public void spawnOnSpecificServer (Server newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
+   public void spawnOnSpecificServer (NetworkedServer newServer, string newArea, Vector2 newLocalPosition, Direction newFacingDirection) {
       if (this.isAboutToWarpOnServer) {
          D.log($"The player {netId} is already being warped.");
          return;
@@ -1381,7 +1381,7 @@ public class NetEntity : NetworkBehaviour
             InstanceManager.self.removeEntityFromInstance(this);
 
             // Send a Redirect message to the client
-            RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.port);
+            RedirectMessage redirectMessage = new RedirectMessage(this.netId, MyNetworkManager.self.networkAddress, newServer.networkedPort.Value);
             this.connectionToClient.Send(redirectMessage);
 
             // Destroy the old Player object

@@ -13,7 +13,7 @@ public class AdminManager : NetworkBehaviour
    #region Public Variables
 
    // The types of administration privileges
-   public enum Type { None = 0, Admin = 1, QA = 2, ContentWriter = 3 }
+   public enum Type { None = 0, Admin = 1, QA = 2, ContentWriter = 3, Support = 4 }
 
    // The email address we use for test accounts
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";

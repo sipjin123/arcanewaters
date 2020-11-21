@@ -8,7 +8,6 @@ using Crosstales.BWF.Manager;
 using System;
 using System.Text;
 using Random = UnityEngine.Random;
-using ServerCommunicationHandlerv2;
 using MapCustomization;
 using NubisDataHandling;
 using MapCreationTool.Serialization;
@@ -860,7 +859,7 @@ public class RPCManager : NetworkBehaviour {
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
          _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType);
       } else if (chatType == ChatInfo.Type.Global) {
-         ServerNetwork.self.sendGlobalMessage(chatInfo);
+         ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       }
    }
 
@@ -958,7 +957,7 @@ public class RPCManager : NetworkBehaviour {
             // Determine if the members are online
             if (_player.guildId > 0) {
                foreach (UserInfo member in info.guildMembers) {
-                  member.isOnline = ServerNetwork.self.isUserOnline(member.userId);
+                  member.isOnline = ServerNetworkingManager.self.isUserOnline(member.userId);
                }
             }
 
@@ -2112,7 +2111,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Determine if the friends are online
             foreach (FriendshipInfo friend in friendshipInfoList) {
-               friend.isOnline = ServerNetwork.self.isUserOnline(friend.friendUserId);
+               friend.isOnline = ServerNetworkingManager.self.isUserOnline(friend.friendUserId);
             }
 
             Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
@@ -2541,6 +2540,14 @@ public class RPCManager : NetworkBehaviour {
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + guildName + "!");
+
+               // Net entity _player are where the syncvars are stored for the player's guild icon
+               _player.GetComponent<PlayerBodyEntity>().guildIconBackground = iconBackground;
+               _player.GetComponent<PlayerBodyEntity>().guildIconBorder = iconBorder;
+               _player.GetComponent<PlayerBodyEntity>().guildIconBackPalettes = iconBackPalettes;
+               _player.GetComponent<PlayerBodyEntity>().guildIconSigil = iconSigil;
+               _player.GetComponent<PlayerBodyEntity>().guildIconSigilPalettes = iconSigilPalettes;
+               _player.GetComponent<PlayerBodyEntity>().setGuildIcon();
             });
 
          } else {
@@ -3034,7 +3041,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Find the server where the invitee is located
-            Server inviteeServer = ServerNetwork.self.getServerContainingUser(inviteeInfo.userId);
+            NetworkedServer inviteeServer = ServerNetworkingManager.self.getServerContainingUser(inviteeInfo.userId);
 
             if (inviteeServer == null) {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not find the player " + inviteeName);
@@ -3042,7 +3049,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Send the invitation
-            SharedServerDataHandler.self.createInvite(inviteeServer, voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
+            ServerNetworkingManager.self.sendVoyageGroupInvitation(voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
 
             // Write in the inviter chat that the invitation has been sent
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
@@ -4827,19 +4834,35 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestWarpFromRandomTreasureSite () {
-      List<TreasureSite> treasureSites = InstanceManager.self.getInstance(_player.instanceId).treasureSites;
-      if (treasureSites.Count == 0) {
-         D.log("Treasure sites list is empty");
-         return;
-      }
-      TreasureSite treasureSite = treasureSites[0];
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Verify The validity of the request
+         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
+         if (voyageGroup == null) {
+            sendError("Error when retrieving the voyage group!");
+            return;
+         }
 
-      if (treasureSite == null) {
-         D.log("Treasure site was null");
-         return;
-      }
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
+            if (voyage == null) {
+               sendError("Cannot find voyage with given id");
+            }
 
-      _player.spawnInNewMap(treasureSite.areaKey, treasureSite.spawnTarget, treasureSite.getWarpDirection());
+            Instance instance = InstanceManager.self.getVoyageInstance(voyage.voyageId);
+
+            foreach (TreasureSite treasureSite in instance.treasureSites) {
+               if (treasureSite.playerListInSite.Contains(_player.userId)) {
+                  treasureSite.playerListInSite.Remove(_player.userId);
+                  _player.spawnInNewMap(voyage.areaKey, treasureSite.spawnTarget, Direction.West);
+                  break;
+               }
+            }
+
+
+         });
+      });
    }
 
    [Command]
@@ -4862,9 +4885,51 @@ public class RPCManager : NetworkBehaviour {
          }
       }
 
+      foreach (TreasureSite treasureSite in InstanceManager.self.getInstance(_player.instanceId).treasureSites) {
+         if (treasureSite.getWarpHashCode() == closestWarp.GetHashCode()) {
+            treasureSite.playerListInSite.Add(_player.userId);
+            break;
+         }
+      }
+
       if (closestWarp != null) {
          closestWarp.startWarpForPlayer(_player);
       }
+   }
+
+   [Command]
+   public void Cmd_StartPettingAnimal (int npcId, int facing) {
+      NPC npc = NPCManager.self.getNPC(npcId);
+
+      GameObject closestSpot = null;
+      Vector3 playerPos = _player.transform.position;
+
+      // Choose spot to start petting
+      switch ((Direction)facing) {
+         case Direction.North:
+            closestSpot = npc.animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Bottom"));
+            break;
+         case Direction.East:
+            closestSpot = npc.animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Left"));
+            break;
+         case Direction.West:
+            closestSpot = npc.animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Right"));
+            break;
+      }
+
+      float distance = Vector2.Distance(closestSpot.transform.position, playerPos);
+      Vector2 distToMoveAnimal = playerPos - closestSpot.transform.position;
+      Vector2 animalEndPos = new Vector2(npc.transform.position.x, npc.transform.position.y) + distToMoveAnimal;
+      float maxTime = Mathf.Lerp(0.0f, 0.75f, distance / NPC.ANIMAL_PET_DISTANCE);
+
+      Rpc_ContinuePettingAnimal(npcId, animalEndPos, maxTime);
+      npc.continueAnimalPetting(animalEndPos, maxTime);
+   }
+
+   [ClientRpc]
+   public void Rpc_ContinuePettingAnimal (int npcId, Vector2 animalEndPos, float maxTime) {
+      NPC npc = NPCManager.self.getNPC(npcId);
+      npc.continueAnimalPetting(animalEndPos, maxTime);
    }
 
    #region Private Variables

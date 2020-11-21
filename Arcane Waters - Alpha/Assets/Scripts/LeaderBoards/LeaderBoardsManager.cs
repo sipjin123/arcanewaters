@@ -197,20 +197,20 @@ public class LeaderBoardsManager : MonoBehaviour
 
    private IEnumerator CO_ScheduleLeaderBoardsRecalculation () {
       // Wait until our server is defined
-      while (ServerNetwork.self.server == null) {
+      while (ServerNetworkingManager.self.server == null) {
          yield return null;
       }
 
       // Wait until our server port is initialized
-      while (ServerNetwork.self.server.port == 0) {
+      while (ServerNetworkingManager.self.server.networkedPort.Value == 0) {
          yield return null;
       }
 
       // Get our server
-      Server server = ServerNetwork.self.server;
+      NetworkedServer server = ServerNetworkingManager.self.server;
 
       // Check that our server is the main server
-      if (server.isMainServer()) {
+      if (server.isMasterServer()) {
          InvokeRepeating(nameof(tryRecalculateLeaderBoards), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       }
    }

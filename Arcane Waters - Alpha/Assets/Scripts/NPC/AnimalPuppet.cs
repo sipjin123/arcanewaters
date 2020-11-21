@@ -44,9 +44,7 @@ public class AnimalPuppet : TemporaryController
 
       // End control if time has run out
       if (puppet.time >= _maxTime) {
-         if (puppet.entity.isLocalPlayer) {
-            puppet.entity.getRigidbody().MovePosition(puppet.endPos);
-         }
+         puppet.entity.getRigidbody().MovePosition(puppet.endPos);
          puppet.entity.fallDirection = 0;
 
          // Reset animator to idle state

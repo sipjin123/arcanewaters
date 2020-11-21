@@ -519,7 +519,7 @@ public class PlayerBodyEntity : BodyEntity {
       }
 
       if (targetChest != null) {
-         targetChest.sendOpenRequest();
+         targetChest.sendOpenRequest(userId);
          forceLookAt(targetChest.transform.position);
       } else {
          chestList.Clear();

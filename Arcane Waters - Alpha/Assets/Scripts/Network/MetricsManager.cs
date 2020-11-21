@@ -44,7 +44,7 @@ namespace Assets.Scripts.Network
                var procID = proc.Id.ToString();
 
                // Server.players_count
-               var server = ServerNetwork.self.server;
+               var server = ServerNetworkingManager.self.server;
                //D.debug($"Metrics Manager: server={machineID} - users={server.connectedUserIds.Count}");
                DB_Main.setMetricPlayersCount(machineID, procName, procID, server.connectedUserIds.Count);
 

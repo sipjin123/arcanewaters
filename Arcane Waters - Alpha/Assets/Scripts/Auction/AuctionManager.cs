@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
-using ServerCommunicationHandlerv2;
 
 public class AuctionManager : MonoBehaviour
 {
@@ -28,10 +27,10 @@ public class AuctionManager : MonoBehaviour
 
    private void deliverAuctionItems () {
       // Get our server
-      Server server = ServerNetwork.self.server;
+      NetworkedServer server = ServerNetworkingManager.self.server;
 
       // Check that our server is the main server
-      if (server == null || !server.isMainServer()) {
+      if (server == null || !server.isMasterServer()) {
          return;
       }
 

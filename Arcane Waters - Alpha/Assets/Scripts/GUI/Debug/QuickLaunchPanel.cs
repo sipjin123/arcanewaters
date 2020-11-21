@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
-using ServerCommunicationHandlerv2;
 
 public class QuickLaunchPanel : MonoBehaviour {
    #region Public Variables
@@ -110,7 +109,6 @@ public class QuickLaunchPanel : MonoBehaviour {
 
    public void changePort (int modifier) {
       MyNetworkManager.self.telepathy.port += (ushort) modifier;
-      ServerCommunicationHandler.self.setPort(MyNetworkManager.self.telepathy.port);
    }
 
    public void startWithFastLogin () {

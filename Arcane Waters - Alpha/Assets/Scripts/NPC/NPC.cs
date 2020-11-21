@@ -68,7 +68,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // The Type of reaction after petting (if this NPC is animal)
    public AnimalPetting.ReactionType animalReactionType;
 
-   [SyncVar]
    // Determine if NPC being animal, is currently being pet by player
    public bool isInteractingAnimal = false;
 
@@ -324,6 +323,14 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                getAnimalPetting().hideSpotsAfterTime(this);
                FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asTooFar();
             } else {
+               if (Global.player.isMoving()) {
+                  FloatingCanvas floatingCanvas = FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f));
+                  if (floatingCanvas.text != null) {
+                     floatingCanvas.text.text = "Stand still...";
+                  }
+                  return;
+               }
+
                Vector2 distToMoveAnimal = playerPos - closestSpot.transform.position;
                startAnimalPetting(distToMoveAnimal, distance);
             }
@@ -553,21 +560,34 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       interactingAnimation = true;
       canMove = false;
 
+      Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
+      float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
+
+      Global.player.rpc.Cmd_StartPettingAnimal(npcId, (int)Global.player.facing);
+
+      // Take control over player to ensure that character stays in place
+      gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
+   }
+
+   public void continueAnimalPetting (Vector2 animalEndPos, float maxTime) {
+      isInteractingAnimal = true;
+      interactingAnimation = true;
+      canMove = false;
+
       // Play animal animation - moving to correct position
       AnimalPuppet puppet = GetComponent<AnimalPuppet>();
       if (puppet == null) {
          puppet = gameObject.AddComponent<AnimalPuppet>();
       }
-      Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
-      float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
+
       puppet.setData(animalEndPos, maxTime);
       puppet.controlGranted(this);
 
       // Start player's petting animation
-      StartCoroutine(CO_StartAnimalPettingContinue(maxTime + 0.05f));
+      StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f));
    }
 
-   private IEnumerator CO_StartAnimalPettingContinue (float timeToWait) {
+   private IEnumerator CO_ContinueAnimalPettingWithCorrectPos (float timeToWait) {
       // Wait until animal has moved to correct spot
       yield return new WaitForSeconds(timeToWait);
 
@@ -583,7 +603,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Play player animation of petting animal
       if (Global.player) {
          Global.player.requestAnimationPlay(Anim.Type.Pet_East, false);
-         gameObject.AddComponent<AnimalPettingPuppetController>().controlGranted(Global.player);
       }
 
       // Play animal's reaction
@@ -639,9 +658,13 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          isInteractingAnimal = false;
          canMove = true;
       }
-      gameObject.GetComponent<AnimalPettingPuppetController>().stopAnimalPetting();
-      Destroy(gameObject.GetComponent<AnimalPettingPuppetController>());
       interactingAnimation = false;
+
+      AnimalPettingPuppetController animalPettingController = gameObject.GetComponent<AnimalPettingPuppetController>();
+      if (animalPettingController != null) {
+         animalPettingController.stopAnimalPetting();
+         Destroy(animalPettingController);
+      }
    }
 
    #region Private Variables

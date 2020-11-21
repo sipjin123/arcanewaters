@@ -54,6 +54,9 @@ public class TreasureSite : NetworkBehaviour
    // The capture circle
    public TreasureSiteCaptureCircle captureCircle;
 
+   // Players currently in this treasure site
+   public List<int> playerListInSite = new List<int>();
+
    #endregion
 
    public void Awake () {
@@ -228,6 +231,10 @@ public class TreasureSite : NetworkBehaviour
       return _warp == null ? Direction.North : _warp.newFacingDirection;
    }
 
+   public int getWarpHashCode () {
+      return _warp ? _warp.GetHashCode() : 0;
+   }
+
    private IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(areaKey) == null) {
@@ -260,10 +267,11 @@ public class TreasureSite : NetworkBehaviour
          D.debug("Could not find the warp associated with a treasure site in area " + areaKey);
       }
 
-      setSpawnTarget();
+      if (isServer) {
+         setSpawnTarget();
+      }
    }
 
-   [ServerOnly]
    private void setSpawnTarget () {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
@@ -285,11 +293,6 @@ public class TreasureSite : NetworkBehaviour
             }
          });
       });
-
-      if (_warp as WarpTreasureSite) {
-         _warp.areaTarget = areaKey;
-         _warp.spawnTarget = spawnTarget;
-      }
    }
 
    #region Private Variables

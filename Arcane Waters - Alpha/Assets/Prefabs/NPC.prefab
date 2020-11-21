@@ -283,6 +283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  testBooleanToggle: 0
   accountId: 0
   userId: 0
   instanceId: 0
@@ -330,10 +331,6 @@ MonoBehaviour:
   shadow: {fileID: 212606258195260266}
   _ignoredAnimators: []
   _animators: []
-  ANIMAL_PET_DISTANCE: 0.05
-  ANIMAL_PET_DISTANCE_ADDITIONAL: 0.03
-  ANIMAL_PET_DISTANCE_MINIMAL_X: 0.15
-  ANIMAL_PET_DISTANCE_MINIMAL_Y: 0.05
   spritePath: 
   iconPath: 
   npcType: 0
@@ -342,10 +339,10 @@ MonoBehaviour:
   npcId: 0
   isDebug: 0
   isShopNpc: 0
-  isAnimal: 0
+  animalReactionType: 0
+  isInteractingAnimal: 0
   animalPettingConfig: {fileID: 11400000, guid: 90fa11813700af24eb140d773952cca0,
     type: 2}
-  animalReactionType: 0
   isStationary: 0
   canMove: 1
   animalPettingPositions:
@@ -398,6 +395,7 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1
 --- !u!114 &5575320467910960297
 MonoBehaviour:
@@ -427,7 +425,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   interpolationBackTime: 0.1
-  extrapolationMode: 1
+  extrapolationMode: 0
   useExtrapolationTimeLimit: 1
   extrapolationTimeLimit: 5
   useExtrapolationDistanceLimit: 0
@@ -464,8 +462,8 @@ MonoBehaviour:
   sendRate: 4
   networkChannel: 1
   childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 0
-  maxPositionDifferenceForVelocitySyncing: 10
+  setVelocityInsteadOfPositionOnNonOwners: 1
+  maxPositionDifferenceForVelocitySyncing: 0.5
   useLocalTransformOnly: 0
   ownerChangeIndicator: 1
   receivedStatesCounter: 0

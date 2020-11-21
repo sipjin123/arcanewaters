@@ -10,6 +10,10 @@ public class AnimalPettingPuppetController : TemporaryController
 
    #endregion
 
+   public void startControlOverPlayer (NetEntity player) {
+      player.requestControl(this);
+   }
+
    protected override void onForceFastForward (ControlData puppet) {
       // Do nothing
    }

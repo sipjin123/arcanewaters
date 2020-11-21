@@ -9,7 +9,6 @@ using System.Xml;
 using MapCreationTool;
 using MapCreationTool.Serialization;
 using BackgroundTool;
-using ServerCommunicationHandlerv2;
 using MapCustomization;
 using System;
 using MLAPI;
@@ -44,9 +43,6 @@ public class MyNetworkManager : NetworkManager
 
    // Self
    public static MyNetworkManager self;
-
-   // Reference to the server communication handler
-   public ServerCommunicationHandler serverCommunicationHandler;
 
    // An event triggered when the client is about to start
    public event Action clientStarting;
@@ -88,7 +84,6 @@ public class MyNetworkManager : NetworkManager
          if (arg.Contains("port=")) {
             string[] split = arg.Split('=');
             telepathy.port = ushort.Parse(split[1]);
-            serverCommunicationHandler.setPort(telepathy.port);
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
@@ -165,9 +160,6 @@ public class MyNetworkManager : NetworkManager
       } else {
          ServerNetworkingManager.get().StartClient();
       }
-
-      // Initializes the server
-      ServerRoomManager.self.initializeServer();
 
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
@@ -284,12 +276,12 @@ public class MyNetworkManager : NetworkManager
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Check if we need to redirect to a different server
-            Server bestServer = ServerNetwork.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
+            NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
 
-            if (bestServer != null && bestServer.port != ServerCommunicationHandler.self.getPort()) {
+            if (bestServer != null && bestServer.networkedPort.Value != ServerNetworkingManager.self.server.networkedPort.Value) {
                // Send a Redirect message to the client
-               RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.port);
+               RedirectMessage redirectMessage = new RedirectMessage(Global.netId, networkAddress, bestServer.networkedPort.Value);
                conn.Send(redirectMessage);
                return;
             }
@@ -344,7 +336,6 @@ public class MyNetworkManager : NetworkManager
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
-            ServerCommunicationHandler.self.addPlayer(player.userId);
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo);
 
@@ -469,9 +460,6 @@ public class MyNetworkManager : NetworkManager
          // Remove the player from our internal list
          _players.Remove(conn.connectionId);
 
-         // Remove this player from the user list of the server
-         ServerCommunicationHandler.self.removePlayer(player.userId);
-
          // Manage the voyage groups on user disconnection
          VoyageManager.self.onUserDisconnectsFromServer(player.userId);
 
@@ -491,9 +479,6 @@ public class MyNetworkManager : NetworkManager
 
       // Get the connection
       NetworkConnection conn = player.netIdent.connectionToClient;
-
-      // Remove this player from the user list of the server
-      ServerCommunicationHandler.self.removePlayer(player.userId);
 
       // Remove the player from the instance
       InstanceManager.self.removeEntityFromInstance(player);

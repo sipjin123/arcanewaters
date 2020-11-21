@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
-using ServerCommunicationHandlerv2;
 
 public class VoyageManager : MonoBehaviour {
 
@@ -83,7 +82,7 @@ public class VoyageManager : MonoBehaviour {
 
    public Voyage getVoyage (int voyageId) {
       // Search the voyage in all the servers we know about
-      foreach (Server server in ServerNetwork.self.servers) {
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          foreach (Voyage voyage in server.voyages) {
             if (voyage.voyageId == voyageId) {
                return voyage;
@@ -98,7 +97,7 @@ public class VoyageManager : MonoBehaviour {
       List<Voyage> voyages = new List<Voyage>();
 
       // Get all the voyages we know about in all the servers we know about
-      foreach (Server server in ServerNetwork.self.servers) {
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          foreach (Voyage voyage in server.voyages) {
             voyages.Add(voyage);
          }
@@ -369,19 +368,16 @@ public class VoyageManager : MonoBehaviour {
          allVoyages.Add(voyage);
       }
 
-      ServerCommunicationHandler.self.refreshVoyageInstances(allVoyages);
+      ServerNetworkingManager.self.updateHostedVoyageInstances(allVoyages);
    }
 
    protected void createVoyageInstanceIfNeeded () {
-      // Get our server
-      Server server = ServerNetwork.self.server;
-
-      // Check that our server is the main server
-      if (server == null || !server.isMainServer()) {
+      // Only the master server launches the creation of voyages instances
+      NetworkedServer server = ServerNetworkingManager.self.server;
+      if (server == null || !server.isMasterServer()) {
          return;
       }
 
-      // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Get the group count in each active voyage
          Dictionary<int, int> voyageToGroupCount = DB_Main.getGroupCountInAllVoyages();
@@ -409,25 +405,13 @@ public class VoyageManager : MonoBehaviour {
             // If there are missing voyages, create a new one
             if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
                // Find the server with the least people
-               Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
+               NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
-               // Toggle the PvP variable
-               _isNewVoyagePvP = !_isNewVoyagePvP;
-
-               // Create a new voyage instance on the chosen server
-               List<PendingVoyageCreation> voyageList = new List<PendingVoyageCreation>();
-               PendingVoyageCreation newVoyage = new PendingVoyageCreation {
-                  serverName = bestServer.deviceName,
-                  serverIp = bestServer.ipAddress,
-                  id = -1,
-                  isPending = true,
-                  serverPort = bestServer.port,
-                  updateTime = DateTime.UtcNow,
-                  areaKey = "",
-                  isPvP = _isNewVoyagePvP
-               };
-               voyageList.Add(newVoyage);
-               SharedServerDataHandler.self.createVoyage(voyageList);
+               if (bestServer != null) {
+                  // Alternate PvP and PvE instances
+                  _isNewVoyagePvP = !_isNewVoyagePvP;
+                  ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, "", _isNewVoyagePvP, Util.randomEnum<Biome.Type>());
+               }
             }
          });
       });
@@ -435,73 +419,49 @@ public class VoyageManager : MonoBehaviour {
 
    private IEnumerator CO_CreateInitialVoyages () {
       // Wait until our server is defined
-      while (ServerNetwork.self.server == null) {
+      while (ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
          yield return null;
       }
 
       // Wait until our server port is initialized
-      while (ServerNetwork.self.server.port == 0) {
+      while (ServerNetworkingManager.self.server.networkedPort.Value == 0) {
          yield return null;
       }
 
-      // Get our server
-      Server server = ServerNetwork.self.server;
-      List<PendingVoyageCreation> pendingVoyageList = new List<PendingVoyageCreation>();
-
-      // Check that our server is the main server
-      if (server.isMainServer()) {
-         // Get the list of sea maps area keys
-         List<string> seaMaps = getVoyageAreaKeys();
+      // Only the master server launches the creation of voyages instances
+      if (ServerNetworkingManager.self.server.isMasterServer()) {
 
          // Create a voyage instance for each available sea map
+         List<string> seaMaps = getVoyageAreaKeys();
          foreach (string areaKey in seaMaps) {
             // Find the server with the least people
-            Server bestServer = ServerNetwork.self.getServerWithLeastPlayers();
-
-            // Toggle the PvP variable
-            _isNewVoyagePvP = !_isNewVoyagePvP;
+            NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
             if (bestServer != null) {
-               int biomeCount = Enum.GetValues(typeof(Biome.Type)).Length;
-               // Create a new voyage instance on the chosen server
-               pendingVoyageList.Add(new PendingVoyageCreation {
-                  id = -1,
-                  areaKey = areaKey,
-                  isPvP = _isNewVoyagePvP,
-                  isPending = true,
-                  serverIp = bestServer.ipAddress,
-                  serverName = bestServer.deviceName,
-                  serverPort = bestServer.port,
-                  updateTime = DateTime.UtcNow,
-                  biome = UnityEngine.Random.Range(1, biomeCount - 1)
-               });
-            } else {
-               D.editorLog("Could not find best server!", Color.red);
+               // Alternate PvP and PvE instances
+               _isNewVoyagePvP = !_isNewVoyagePvP;
+               ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, areaKey, _isNewVoyagePvP, Util.randomEnum<Biome.Type>());
             }
-         }
-
-         if (pendingVoyageList.Count > 0) {
-            SharedServerDataHandler.self.createVoyage(pendingVoyageList);
          }
       }
    }
 
    private IEnumerator CO_ClearVoyageGroups () {
       // Wait until our server is defined
-      while (ServerNetwork.self.server == null) {
+      while (ServerNetworkingManager.self.server == null) {
          yield return null;
       }
 
       // Get our server
-      Server server = ServerNetwork.self.server;
+      NetworkedServer server = ServerNetworkingManager.self.server;
 
       // Wait until our server port is initialized
-      while (server.port == 0) {
+      while (server.networkedPort.Value == 0) {
          yield return null;
       }
 
       // Check that our server is the main server
-      if (!server.isMainServer()) {
+      if (!server.isMasterServer()) {
          yield break;
       }
 

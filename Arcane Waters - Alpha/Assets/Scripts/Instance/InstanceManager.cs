@@ -301,8 +301,11 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public void recalculateOpenAreas () {
-      if (ServerNetwork.self.server != null) {
-         ServerNetwork.self.server.openAreas = getOpenAreas();
+      if (ServerNetworkingManager.self.server != null) {
+         ServerNetworkingManager.self.server.openAreas.Clear();
+         foreach (string openArea in getOpenAreas()) {
+            ServerNetworkingManager.self.server.openAreas.Add(openArea);
+         }
       }
    }
 

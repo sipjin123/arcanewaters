@@ -249,19 +249,15 @@ public class TutorialManager3 : MonoBehaviour {
       string npcSpeech = _currentTutorial.steps[_currentStep].npcSpeech;
 
       // Handle dynamic npc speechs
-      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.TurnShipLeft) {
-         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveLeft).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveLeft).secondary.ToString());
-      }
-
-      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.TurnShipRight) {
-         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveRight).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveRight).secondary.ToString());
-      }
-
-      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.MoveShipForward) {
-         npcSpeech = npcSpeech.Replace("[primary]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
-         npcSpeech = npcSpeech.Replace("[secondary]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
+      if (_currentTutorial.steps[_currentStep].completionTrigger == TutorialTrigger.MoveShip) {
+         npcSpeech = npcSpeech.Replace("[northp]", InputManager.getBinding(KeyAction.MoveUp).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[norths]", InputManager.getBinding(KeyAction.MoveUp).secondary.ToString());
+         npcSpeech = npcSpeech.Replace("[eastp]", InputManager.getBinding(KeyAction.MoveRight).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[easts]", InputManager.getBinding(KeyAction.MoveRight).secondary.ToString());
+         npcSpeech = npcSpeech.Replace("[southp]", InputManager.getBinding(KeyAction.MoveDown).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[souths]", InputManager.getBinding(KeyAction.MoveDown).secondary.ToString());
+         npcSpeech = npcSpeech.Replace("[westp]", InputManager.getBinding(KeyAction.MoveLeft).primary.ToString());
+         npcSpeech = npcSpeech.Replace("[wests]", InputManager.getBinding(KeyAction.MoveLeft).secondary.ToString());
       }
 
       panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,

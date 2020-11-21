@@ -68,6 +68,20 @@ public class TooltipHandler : MonoBehaviour
             break;
       }
 
+      // If tooltip does not fit in the desired loaction, place it in the center top of the screen.
+      if (toolTipPanel.transform.position.x + _tooltipDimensions.x / 2 > Screen.width) {
+         toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
+      } else
+      if (toolTipPanel.transform.position.x - _tooltipDimensions.x / 2 < 0) {
+         toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
+      } else
+      if (toolTipPanel.transform.position.y - _tooltipDimensions.y / 2 < 0) {
+         toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
+      } else
+      if (toolTipPanel.transform.position.y + _tooltipDimensions.y / 2 > Screen.height) {
+         toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
+      }
+
       // Turn the tooltip visible
       toolTipPanel.GetComponent<CanvasGroup>().alpha = 1;
       toolTipPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
