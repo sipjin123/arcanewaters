@@ -114,6 +114,10 @@ public class VoyageManager : MonoBehaviour {
       return getVoyageAreaKeys().Contains(areaKey);
    }
 
+   public static bool isTreasureSiteArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.TreasureSite;
+   }
+
    public List<string> getVoyageAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }
@@ -533,7 +537,7 @@ public class VoyageManager : MonoBehaviour {
       UserObjects userObjects = DB_Main.getUserObjects(userId);
 
       // If the user is in a voyage area, move him to the starting town
-      if (isVoyageArea(userObjects.userInfo.areaKey)) {
+      if (isVoyageArea(userObjects.userInfo.areaKey) || isTreasureSiteArea(userObjects.userInfo.areaKey)) {
          DB_Main.setNewLocalPosition(userId, startingSpawnLocalPos, Direction.South, Area.STARTING_TOWN);
       }
 

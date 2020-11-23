@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
-using Smooth;
 
 public class WaterTrailCreator : ClientMonoBehaviour {
    #region Public Variables

@@ -402,9 +402,6 @@ public class MyNetworkManager : NetworkManager
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
-
-            // Give the player local authority so that movement feels instantaneous
-            player.netIdent.AssignClientAuthority(conn);
          });
       });
    }

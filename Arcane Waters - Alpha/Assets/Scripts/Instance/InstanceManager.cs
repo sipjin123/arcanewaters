@@ -25,10 +25,18 @@ public class InstanceManager : MonoBehaviour {
       Instance instance = null;
 
       // If the player is warping to a voyage instance, search for it
-      if (voyageId != -1 && VoyageManager.self.isVoyageArea(areaKey)) {
-         instance = getVoyageInstance(voyageId);
-         if (instance == null) {
-            D.error("Could not find the voyage instance for voyage id " + voyageId);
+      if (voyageId != -1) {
+         if (VoyageManager.self.isVoyageArea(areaKey)) {
+            instance = getVoyageInstance(voyageId);
+            if (instance == null) {
+               D.error("Could not find the voyage instance for voyage id " + voyageId);
+            }
+         } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
+            instance = getTreasureSiteInstance(voyageId);
+            if (instance == null) {
+               // If the treasure site instance doesn't exist yet, create it
+               instance = createNewInstance(areaKey, false, voyageId);
+            }
          }
       }
 
@@ -144,6 +152,10 @@ public class InstanceManager : MonoBehaviour {
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
       return createNewInstance(areaKey, isSinglePlayer, false, -1, false, Voyage.Difficulty.None, Biome.Type.None);
+   }
+
+   public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
+      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, Voyage.Difficulty.None, Biome.Type.None);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
@@ -281,6 +293,16 @@ public class InstanceManager : MonoBehaviour {
    public Instance getVoyageInstance (int voyageId) {
       foreach (Instance instance in _instances.Values) {
          if (instance.isVoyage && instance.voyageId == voyageId) {
+            return instance;
+         }
+      }
+
+      return null;
+   }
+
+   public Instance getTreasureSiteInstance (int voyageId) {
+      foreach (Instance instance in _instances.Values) {
+         if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId == voyageId) {
             return instance;
          }
       }

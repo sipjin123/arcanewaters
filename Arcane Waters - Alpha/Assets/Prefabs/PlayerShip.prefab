@@ -467,6 +467,7 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1
 --- !u!1 &16428
 GameObject:
@@ -999,8 +1000,8 @@ GameObject:
   - component: {fileID: 24490}
   - component: {fileID: 25472}
   - component: {fileID: 25324}
-  - component: {fileID: 25910}
   - component: {fileID: -573325106903764786}
+  - component: {fileID: -8173071070013123805}
   m_Layer: 8
   m_Name: PlayerShip
   m_TagString: Untagged
@@ -1083,6 +1084,11 @@ MonoBehaviour:
   isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
+  guildIconBorder: 
+  guildIconBackground: 
+  guildIconSigil: 
+  guildIconBackPalettes: 
+  guildIconSigilPalettes: 
   isAboutToWarpOnServer: 0
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
@@ -1145,11 +1151,6 @@ MonoBehaviour:
   armorColors: 
   hatType: 0
   hatColors: 
-  guildIconBorder: 
-  guildIconBackground: 
-  guildIconSigil: 
-  guildIconBackPalettes: 
-  guildIconSigilPalettes: 
   isAiming: 0
   speedUpEffectHolder: {fileID: 6117704228605984004}
   speedupGUI: {fileID: 8875239540421010013}
@@ -1344,62 +1345,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &25910
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 16787}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad225009ad414e1428332cab226f38fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  interpolationBackTime: 0.1
-  extrapolationMode: 1
-  useExtrapolationTimeLimit: 1
-  extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 0
-  extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
-  sendRotationThreshold: 0
-  sendScaleThreshold: 0
-  sendVelocityThreshold: 0
-  sendAngularVelocityThreshold: 0
-  receivedPositionThreshold: 0
-  receivedRotationThreshold: 0
-  snapPositionThreshold: 5
-  snapRotationThreshold: 0
-  snapScaleThreshold: 0
-  positionLerpSpeed: 0.85
-  rotationLerpSpeed: 0.85
-  scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
-  snapTimeThreshold: 3
-  syncPosition: 1
-  syncRotation: 7
-  syncScale: 7
-  syncVelocity: 1
-  syncAngularVelocity: 7
-  isPositionCompressed: 0
-  isRotationCompressed: 0
-  isScaleCompressed: 0
-  isVelocityCompressed: 0
-  isAngularVelocityCompressed: 0
-  isSmoothingAuthorityChanges: 0
-  transformSource: 1
-  whenToUpdateTransform: 1
-  sendRate: 4
-  networkChannel: 1
-  childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 1
-  maxPositionDifferenceForVelocitySyncing: 0.5
-  useLocalTransformOnly: 0
-  ownerChangeIndicator: 1
-  receivedStatesCounter: 0
 --- !u!61 &-573325106903764786
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1426,6 +1371,24 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 0.07}
   m_EdgeRadius: 0
+--- !u!114 &-8173071070013123805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 16787}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2718c14c56dd58847bb7ae3f07782a2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  target: {fileID: 20007}
+  lerpVelocityAmount: 0.5
+  lerpPositionAmount: 0.5
+  clientAuthority: 0
 --- !u!1 &16792
 GameObject:
   m_ObjectHideFlags: 0

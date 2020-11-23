@@ -211,6 +211,14 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      // Treasure site instances exist as long as the main sea voyage exists
+      if (VoyageManager.isTreasureSiteArea(areaKey)) {
+         Voyage voyage = VoyageManager.self.getVoyage(voyageId);
+         if (voyage != null) {
+            return;
+         }
+      }
+
       // If there's no one in the instance right now, increase the  count
       if (getPlayerCount() <= 0) {
          _consecutiveEmptyChecks++;

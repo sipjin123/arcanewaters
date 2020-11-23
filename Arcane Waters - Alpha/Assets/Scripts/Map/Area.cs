@@ -180,15 +180,6 @@ public class Area : MonoBehaviour
          }
       }
 
-      // Mark warps in treasure site to return to last sea voyage map
-      if (AreaManager.self.getAreaSpecialType(areaKey) == SpecialType.TreasureSite) {
-         if (Global.player != null && VoyageManager.isInGroup(Global.player)) {
-            foreach (Warp warp in gameObject.GetComponentsInChildren<Warp>()) {
-               warp.warpFromRandomTreasureSite = true;
-            }
-         }
-      }
-
       if (string.IsNullOrEmpty(townAreaKey)) {
          townAreaKey = areaKey;
       }

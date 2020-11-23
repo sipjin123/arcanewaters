@@ -55,6 +55,7 @@ public class MapManager : MonoBehaviour
          _nextMapInfo = mapInfo;
          _nextMapPosition = mapPosition;
          _nextMapCustomizationData = customizationData;
+         _nextBiome = voyageBiome;
          return;
       }
 
@@ -276,7 +277,7 @@ public class MapManager : MonoBehaviour
 
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
-         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData, voyageBiome);
+         createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData, _nextBiome);
          _nextAreaKey = null;
       }
    }
@@ -423,6 +424,7 @@ public class MapManager : MonoBehaviour
    private MapInfo _nextMapInfo;
    private Vector3 _nextMapPosition;
    private MapCustomizationData _nextMapCustomizationData;
+   private Biome.Type _nextBiome;
 
    // The list of areas under creation and their position
    private Dictionary<string, Vector2> _areasUnderCreation = new Dictionary<string, Vector2>();

@@ -31,6 +31,14 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public string spawnTarget;
 
+   // The destination area this site warps to
+   [SyncVar]
+   public string destinationArea;
+
+   // The destination spawn this site warps to
+   [SyncVar]
+   public string destinationSpawn;
+
    // The voyage group that has ownership of this site, and has captured or is capturing it
    [SyncVar]
    public int voyageGroupId = -1;
@@ -66,6 +74,9 @@ public class TreasureSite : NetworkBehaviour
    }
 
    public void Start () {
+      // Choose the random destination of this site
+      chooseRandomDestinationArea();
+
       // Make the site a child of the Area
       StartCoroutine(CO_SetAreaParent());
    }
@@ -203,6 +214,52 @@ public class TreasureSite : NetworkBehaviour
       }
    }
 
+   private void chooseRandomDestinationArea () {
+      if (!isServer) {
+         return;
+      }
+
+      // Find potential maps
+      if (_randomTreasureSites.Count == 0) {
+         foreach (string key in AreaManager.self.getAreaKeys()) {
+            if (AreaManager.self.getAreaSpecialType(key) == Area.SpecialType.TreasureSite) {
+               _randomTreasureSites.Add(key);
+            }
+         }
+      }
+
+      // Choose map and target spawn
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
+
+         // Process downloaded data
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            while (_randomTreasureSites.Count > 0) {
+               destinationArea = _randomTreasureSites.ChooseRandom();
+               foreach (MapSpawn spawn in mapSpawns) {
+                  if (spawn.mapName == destinationArea) {
+                     destinationSpawn = spawn.name;
+                     break;
+                  }
+               }
+
+               // If map doesn't have any spawn, try another treasure site map
+               if (destinationSpawn == "") {
+                  _randomTreasureSites.Remove(destinationArea);
+                  destinationArea = "";
+               } else {
+                  break;
+               }
+            }
+
+            // If there are no existing treasure site maps or no treasure site map has correct spawn target
+            if (destinationArea == "" || destinationSpawn == "") {
+               D.error("No treasure site maps available");
+            }
+         });
+      });
+   }
+
    public void setBiome (Biome.Type biomeType) {
       string spriteName = "site_" + biomeType.ToString().ToLower() + "-new";
       _spriteRenderer.sprite = ImageManager.getSprite("Assets/Sprites/Treasure Sites/" + spriteName);
@@ -311,6 +368,9 @@ public class TreasureSite : NetworkBehaviour
 
    // The associated warp
    private Warp _warp = null;
+
+   // Maps that can be chosen as destination of this warp
+   private static List<string> _randomTreasureSites = new List<string>();
 
    #endregion
 }

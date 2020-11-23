@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using Cinemachine;
-using Smooth;
 using TMPro;
 using System.Linq;
 
@@ -196,7 +195,6 @@ public class NetEntity : NetworkBehaviour
       _body = GetComponent<Rigidbody2D>();
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
-      _smoothSync = GetComponent<SmoothSyncMirror>();
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
 
@@ -874,12 +872,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public Vector2 getVelocity () {
-      // The velocity is handled differently for locally controlled and remotely controlled entities
-      if (_body.velocity.magnitude != 0f) {
-         return _body.velocity;
-      } else {
-         return _smoothSync.latestReceivedVelocity;
-      }
+      return _body.velocity;
    }
 
    public virtual void setAreaParent (Area area, bool worldPositionStays) {
@@ -1225,60 +1218,6 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_ChangeMass (bool increasedMass) {
-      updateMassAndDrag(increasedMass);
-
-      // Update the desired angle Sync Var based on our current facing direction
-      if (this is PlayerShipEntity) {
-         PlayerShipEntity ship = (PlayerShipEntity) this;
-         ship.desiredAngle = DirectionUtil.getAngle(this.facing);
-
-         _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Owner;
-      }
-   }
-
-   [Command]
-   public void Cmd_SetServerAuthoritativeMode () {
-      // Update the desired angle Sync Var based on our current facing direction
-      if (this is PlayerShipEntity) {
-         PlayerShipEntity ship = (PlayerShipEntity) this;
-         ship.desiredAngle = DirectionUtil.getAngle(this.facing);
-
-         _body.mass = 6f;
-         _body.drag = 2.5f;
-         _body.angularDrag = 10f;
-
-         // The server controls the final position of the object instead of the owner
-         _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
-
-         Rpc_SetServerAuthoritativeMode();
-      }
-   }
-
-   [Command]
-   public void Cmd_ToggleVelocityDrivenTransform () {
-      bool useVelocity = !_smoothSync.setVelocityInsteadOfPositionOnNonOwners;
-      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = useVelocity;
-      _smoothSync.transformSource = useVelocity ? SmoothSyncMirror.TransformSource.Server : SmoothSyncMirror.TransformSource.Owner;
-      Rpc_SetVelocityDrivenTransform(_smoothSync.setVelocityInsteadOfPositionOnNonOwners);
-   }
-
-   [ClientRpc]
-   private void Rpc_SetServerAuthoritativeMode () {
-      _body.mass = 6f;
-      _body.drag = 2.5f;
-      _body.angularDrag = 10f;
-
-      // The server controls the final position of the object instead of the owner
-      _smoothSync.transformSource = SmoothSyncMirror.TransformSource.Server;
-   }
-
-   [ClientRpc]
-   private void Rpc_SetVelocityDrivenTransform (bool useVelocityDriven) {
-      _smoothSync.setVelocityInsteadOfPositionOnNonOwners = useVelocityDriven;
-   }
-
-   [Command]
    public void Cmd_GoHome () {
       // Don't allow users to go home if they are in PVP.
       if (hasAttackers()) {
@@ -1353,11 +1292,18 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInNewMap (int voyageId, string newArea, Direction newFacingDirection) {
+      spawnInNewMap(voyageId, newArea, "", newFacingDirection);
+   }
+
+   [Server]
+   public void spawnInNewMap (int voyageId, string newArea, string spawn, Direction newFacingDirection) {
       // Find the server hosting the voyage
       NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
 
-      // Get the default spawn of the area
-      Vector2 spawnLocalPosition = SpawnManager.self.getDefaultLocalPosition(newArea);
+      // Get the spawn position for the given spawn
+      Vector2 spawnLocalPosition = spawn == ""
+            ? SpawnManager.self.getDefaultLocalPosition(newArea)
+            : SpawnManager.self.getLocalPosition(newArea, spawn);
 
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(voyageServer, newArea, spawnLocalPosition, newFacingDirection);
@@ -1438,12 +1384,6 @@ public class NetEntity : NetworkBehaviour
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }
-
-      // Wait until the position is stabilized by SmoothSync, then disable distance threshold to save a distance calculation
-      yield return new WaitForSeconds(0.5f);
-      if (_smoothSync != null) {
-         _smoothSync.snapPositionThreshold = 0;
-      }
    }
 
    protected virtual void onStartMoving () { }
@@ -1466,7 +1406,6 @@ public class NetEntity : NetworkBehaviour
    protected Rigidbody2D _body;
    protected ClickableBox _clickableBox;
    protected SpriteOutline _outline;
-   protected SmoothSyncMirror _smoothSync;
 
    [SerializeField]
    protected List<Animator> _ignoredAnimators = new List<Animator>();

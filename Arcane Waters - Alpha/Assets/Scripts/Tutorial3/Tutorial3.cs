@@ -6,29 +6,32 @@ using Mirror;
 
 public class Tutorial3
 {
-   #region Public Variables
+    #region Public Variables
 
-   // The unique key identifying the tutorial
-   public string key;
+    // The unique key identifying the tutorial
+    public string key;
 
-   // The title of the tutorial
-   public string title;
+    // The title of the tutorial
+    public string title;
 
-   // The steps of the tutorial
-   public List<TutorialStep3> steps;
+    // The steps of the tutorial
+    public List<TutorialStep3> steps;
 
-   // Gets set to true when the tutorial is completed
-   public bool isCompleted = false;
+    // Gets set to true when the tutorial is completed
+    public bool isCompleted = false;
 
-   #endregion
+    #endregion
 
-   public Tutorial3 (string key, string title, List<TutorialStep3> steps) {
-      this.key = key;
-      this.title = title;
-      this.steps = steps;
-   }
+    public Tutorial3() { }
 
-   #region Private Variables
+    public Tutorial3(string key, string title, List<TutorialStep3> steps)
+    {
+        this.key = key;
+        this.title = title;
+        this.steps = steps;
+    }
 
-   #endregion
+    #region Private Variables
+
+    #endregion
 }

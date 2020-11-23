@@ -3154,7 +3154,7 @@ public class RPCManager : NetworkBehaviour {
             _player.voyageGroupId = -1;
 
             // If the player is in a voyage area, warp him to the starting town
-            if (VoyageManager.self.isVoyageArea(_player.areaKey)) {
+            if (VoyageManager.self.isVoyageArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
                _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
             }
          });
@@ -3201,7 +3201,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
-      if (!VoyageManager.isInGroup(_player) || !VoyageManager.self.isVoyageArea(_player.areaKey)) {
+      if (!VoyageManager.isInGroup(_player) && !VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          return;
       }
 
@@ -4799,8 +4799,11 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_RequestWarp (string areaTarget, string spawnTarget) {
-      Area area = AreaManager.self.getArea(_player.areaKey);
+      if (_player == null || _player.connectionToClient == null) {
+         Target_OnWarpFailed();
+      }
 
+      Area area = AreaManager.self.getArea(_player.areaKey);
       if (area == null) {
          Debug.Log("Area was null");
          Target_OnWarpFailed();
@@ -4812,7 +4815,7 @@ public class RPCManager : NetworkBehaviour {
 
       foreach (Warp warp in warps) {
          // Only warp the player if they're close enough to the warp. Check area and spawn targets are the ones player requested just in case two warps are too close together.
-         if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget) {
+         if (Vector2.Distance(warp.transform.position, transform.position) < 2f && areaTarget == warp.areaTarget && spawnTarget == warp.spawnTarget && warp.canPlayerUseWarp(_player)) {
             if (warp.gameObject.activeInHierarchy) {
                warp.startWarpForPlayer(_player);
             } else {
@@ -4823,74 +4826,9 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
       }
-      
+
       // If no valid warp was found, let the player know so at least they're not stuck
       Target_OnWarpFailed();
-   }
-
-   [Command]
-   public void Cmd_RequestWarpFromRandomTreasureSite () {
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Verify The validity of the request
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
-         if (voyageGroup == null) {
-            sendError("Error when retrieving the voyage group!");
-            return;
-         }
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
-            if (voyage == null) {
-               sendError("Cannot find voyage with given id");
-            }
-
-            Instance instance = InstanceManager.self.getVoyageInstance(voyage.voyageId);
-
-            foreach (TreasureSite treasureSite in instance.treasureSites) {
-               if (treasureSite.playerListInSite.Contains(_player.userId)) {
-                  treasureSite.playerListInSite.Remove(_player.userId);
-                  _player.spawnInNewMap(voyage.areaKey, treasureSite.spawnTarget, Direction.West);
-                  break;
-               }
-            }
-
-
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_RequestWarpToRandomTreasureSite () {
-      Area area = AreaManager.self.getArea(_player.areaKey);
-
-      if (area == null) {
-         Debug.Log("Area was null");
-         Target_OnWarpFailed();
-         return;
-      }
-
-      List<Warp> warps = area.getWarps();
-      Warp closestWarp = null;
-      float minDist = float.MaxValue;
-      foreach (Warp warp in warps) {
-         if (Vector2.Distance(warp.transform.position, transform.position) < minDist) {
-            minDist = Vector2.Distance(warp.transform.position, transform.position);
-            closestWarp = warp;
-         }
-      }
-
-      foreach (TreasureSite treasureSite in InstanceManager.self.getInstance(_player.instanceId).treasureSites) {
-         if (treasureSite.getWarpHashCode() == closestWarp.GetHashCode()) {
-            treasureSite.playerListInSite.Add(_player.userId);
-            break;
-         }
-      }
-
-      if (closestWarp != null) {
-         closestWarp.startWarpForPlayer(_player);
-      }
    }
 
    [Command]

@@ -22,12 +22,6 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The animated arrow
    public GameObject arrow;
 
-   // Check whether this warp takes player to random treasure site
-   public bool warpToRandomTreasureSite = false;
-
-   // Check whether this warp takes player back from random treasure site
-   public bool warpFromRandomTreasureSite = false;
-
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -57,7 +51,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       if (player.isLocalPlayer && canPlayerUseWarp(player)) {
          // If a player is client, show loading screen and stop the player         
          // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
-         if (AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
+         if (!string.IsNullOrEmpty(areaTarget) && AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
             if (!customMapManager.canUserWarpInto(player, areaTarget, out System.Action<NetEntity> warpHandler)) {
                warpHandler?.Invoke(player);
                return;
@@ -65,13 +59,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          }
 
          player.setupForWarpClient();
-         if (warpToRandomTreasureSite) {
-            Global.player.rpc.Cmd_RequestWarpToRandomTreasureSite();
-         } else if (warpFromRandomTreasureSite) {
-            Global.player.rpc.Cmd_RequestWarpFromRandomTreasureSite();
-         } else {
-            Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
-         }
+         Global.player.rpc.Cmd_RequestWarp(areaTarget, spawnTarget);
 
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);
@@ -81,12 +69,8 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    [ServerOnly]
    public void startWarpForPlayer (NetEntity player) {
-      if (!player.isAboutToWarpOnServer) {
-         if (player.connectionToClient != null) {
-            // Lets give a bit more time for the client to perform any visual animations for warping
-            StartCoroutine(CO_ExecWarpServer(player, 0.5f));
-         }
-      }
+      // Lets give a bit more time for the client to perform any visual animations for warping
+      StartCoroutine(CO_ExecWarpServer(player, 0.5f));
    }
 
    [ServerOnly]
@@ -94,7 +78,35 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       D.debug("Warping player: " + player.userId + " : To area: " + areaTarget + " : Spawn Target: " + spawnTarget);
       yield return new WaitForSeconds(delay);
 
-      player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+      // Any warp inside a treasure site area is considered an exit towards the sea voyage area
+      if (VoyageManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+         // Try to find the treasure site entrance (spawn) where the user is registered
+         int voyageId = player.getInstance().voyageId;
+         Instance destinationInstance = InstanceManager.self.getVoyageInstance(voyageId);
+         string spawnTarget = "";
+
+         foreach (TreasureSite treasureSite in destinationInstance.treasureSites) {
+            if (treasureSite.playerListInSite.Contains(player.userId)) {
+               treasureSite.playerListInSite.Remove(player.userId);
+               spawnTarget = treasureSite.spawnTarget;
+               break;
+            }
+         }
+
+         player.spawnInNewMap(voyageId, destinationInstance.areaKey, spawnTarget, newFacingDirection);
+      }
+      // Check if the destination is a treasure site
+      else if (VoyageManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
+         TreasureSite treasureSite = getTreasureSite(player.instanceId);
+
+         // Register this user as being inside the treasure site
+         treasureSite.playerListInSite.Add(player.userId);
+
+         int voyageId = player.getInstance().voyageId;
+         player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
+      } else {
+         player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
+      }
    }
 
    public void receiveData (DataField[] dataFields) {
@@ -201,18 +213,42 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       _treasureSites.Remove(instanceId);
    }
 
-   private bool canPlayerUseWarp (NetEntity player) {
-      if (player.isAboutToWarpOnClient || player.isAboutToWarpOnServer || string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
+   public bool isWarpToTreasureSite (int instanceId) {
+      return _treasureSites.ContainsKey(instanceId);
+   }
+
+   public TreasureSite getTreasureSite (int instanceId) {
+      if (_treasureSites.TryGetValue(instanceId, out TreasureSite site)) {
+         return site;
+      }
+
+      return null;
+   }
+
+   public bool canPlayerUseWarp (NetEntity player) {
+      if (player.isClient && !player.isServer && player.isAboutToWarpOnClient) {
          return false;
       }
 
+      if (player.isServer && player.isAboutToWarpOnServer) {
+         return false;
+      }
+
+      // Inside a treasure site, all warps are considered an exit and are always active
+      if (VoyageManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+         return true;
+      }
+
       // Check if a treasure site is controlling the warp in this instance
-      TreasureSite site;
-      if (_treasureSites.TryGetValue(player.instanceId, out site)) {
-         // Verify that the player is allowed to use the warp
-         if (site != null && !(VoyageManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId)) {
-            return false;
+      if (_treasureSites.TryGetValue(player.instanceId, out TreasureSite site)) {
+         if (site != null && VoyageManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId) {
+            return true;
          }
+      }
+
+      // If the warp has a static destination, it must be defined
+      if (string.IsNullOrEmpty(areaTarget) || string.IsNullOrEmpty(spawnTarget)) {
+         return false;
       }
 
       return true;

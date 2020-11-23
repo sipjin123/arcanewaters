@@ -114,16 +114,7 @@ public class PlayerBodyEntity : BodyEntity {
    protected override void Start () {
       base.Start();
 
-      // Set guild icon
-      if (!Util.isEmpty(guildIconBackground)) {
-         guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
-      }
-      if (!Util.isEmpty(guildIconBorder)) {
-         guildIcon.setBorder(guildIconBorder);
-      }
-      if (!Util.isEmpty(guildIconSigil)) {
-         guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
-      }
+      setGuildIcon();
 
       // Disable our collider if we are not the localplayer
       if (!isLocalPlayer) {
@@ -170,8 +161,20 @@ public class PlayerBodyEntity : BodyEntity {
       toggleGuildIcon();
    }
 
+   public void setGuildIcon () {
+      // Set guild icon
+      if (!Util.isEmpty(guildIconBackground)) {
+         guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
+      }
+      if (!Util.isEmpty(guildIconBorder)) {
+         guildIcon.setBorder(guildIconBorder);
+      }
+      if (!Util.isEmpty(guildIconSigil)) {
+         guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
+      }
+   }
    private void toggleGuildIcon () {
-      if (isMouseOver()) {
+      if (isMouseOver() && (Global.player.guildId != 0)) {
          guildIcon.GetComponent<CanvasGroup>().alpha = 1f;
          guildIcon.GetComponent<CanvasGroup>().interactable = true;
          guildIcon.GetComponent<CanvasGroup>().blocksRaycasts = true;
