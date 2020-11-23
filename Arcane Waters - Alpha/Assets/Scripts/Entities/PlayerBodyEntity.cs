@@ -136,6 +136,15 @@ public class PlayerBodyEntity : BodyEntity {
       _outline.recreateOutlineIfVisible();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
+         if (getVelocity().magnitude > NETWORK_SHIP_SPEEDUP_MAGNITUDE) {
+            foreach(Animator animator in dashAnimators) {
+               animator.SetBool(IS_SPRINTING, true);
+            }
+         } else {
+            foreach (Animator animator in dashAnimators) {
+               animator.SetBool(IS_SPRINTING, false);
+            }
+         }
          sprintRecovery();
          return;
       }

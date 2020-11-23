@@ -166,6 +166,9 @@ public class NetEntity : NetworkBehaviour
    public const float SHIP_SPEEDUP_MAGNITUDE = .01f;
    public const float SHIP_SLOWDOWN_MAGNITUDE = .006f;
 
+   // The magnitude which determines that the ship has enough speed buildup through the network
+   public const float NETWORK_SHIP_SPEEDUP_MAGNITUDE = .02f;
+
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
    public bool isAboutToWarpOnClient = false;
