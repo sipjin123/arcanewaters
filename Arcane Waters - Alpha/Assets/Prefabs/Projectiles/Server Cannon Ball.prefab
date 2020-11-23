@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 114139461824647792}
   - component: {fileID: 1036786386496551606}
   - component: {fileID: 7057684672032809782}
-  - component: {fileID: -1404492274714073947}
   - component: {fileID: 8871122193511679103}
+  - component: {fileID: 3748842707968269389}
   m_Layer: 11
-  m_Name: Server Cannon Ball (new)
+  m_Name: Server Cannon Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -90,62 +90,6 @@ MonoBehaviour:
   serverOnly: 0
   m_AssetId: 
   hasSpawned: 0
---- !u!114 &-1404492274714073947
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1319247393852024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad225009ad414e1428332cab226f38fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  interpolationBackTime: 0.1
-  extrapolationMode: 1
-  useExtrapolationTimeLimit: 0
-  extrapolationTimeLimit: 5
-  useExtrapolationDistanceLimit: 1
-  extrapolationDistanceLimit: 20
-  sendPositionThreshold: 0
-  sendRotationThreshold: 0
-  sendScaleThreshold: 0
-  sendVelocityThreshold: 0
-  sendAngularVelocityThreshold: 0
-  receivedPositionThreshold: 0
-  receivedRotationThreshold: 0
-  snapPositionThreshold: 0
-  snapRotationThreshold: 0
-  snapScaleThreshold: 0
-  positionLerpSpeed: 0.1
-  rotationLerpSpeed: 0.85
-  scaleLerpSpeed: 0.85
-  timeCorrectionSpeed: 0.1
-  snapTimeThreshold: 3
-  syncPosition: 7
-  syncRotation: 7
-  syncScale: 7
-  syncVelocity: 1
-  syncAngularVelocity: 7
-  isPositionCompressed: 0
-  isRotationCompressed: 0
-  isScaleCompressed: 0
-  isVelocityCompressed: 0
-  isAngularVelocityCompressed: 0
-  isSmoothingAuthorityChanges: 0
-  transformSource: 1
-  whenToUpdateTransform: 0
-  sendRate: 4
-  networkChannel: 1
-  childObjectToSync: {fileID: 0}
-  setVelocityInsteadOfPositionOnNonOwners: 1
-  maxPositionDifferenceForVelocitySyncing: 0.1
-  useLocalTransformOnly: 0
-  ownerChangeIndicator: 1
-  receivedStatesCounter: 0
 --- !u!114 &8871122193511679103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,6 +106,25 @@ MonoBehaviour:
   syncInterval: 0.1
   projectileVelocity: {x: 0, y: 0}
   _rigidbody: {fileID: 1036786386496551606}
+--- !u!114 &3748842707968269389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319247393852024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2718c14c56dd58847bb7ae3f07782a2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  target: {fileID: 1036786386496551606}
+  lerpVelocityAmount: 0.5
+  lerpPositionAmount: 0.5
+  clientAuthority: 0
+  lastVelocityTime: 0
 --- !u!1 &1374969627706598
 GameObject:
   m_ObjectHideFlags: 0

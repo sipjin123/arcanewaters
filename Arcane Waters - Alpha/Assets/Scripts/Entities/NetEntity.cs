@@ -195,6 +195,7 @@ public class NetEntity : NetworkBehaviour
       _body = GetComponent<Rigidbody2D>();
       _outline = GetComponentInChildren<SpriteOutline>();
       _clickableBox = GetComponentInChildren<ClickableBox>();
+      _networkLerp = GetComponent<NetworkLerpRigidbody2D>();
       _animators.AddRange(GetComponentsInChildren<Animator>());
       _renderers.AddRange(GetComponentsInChildren<SpriteRenderer>());
 
@@ -783,7 +784,13 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual bool isMoving () {
-      // The velocity is handled differently for locally controlled and remotely controlled entities
+      // If we're using a NetworkLerp component, check that to see if we're moving
+      if (_networkLerp  != null) {
+         // Check if we've recently applied any sort of velocity
+         return (NetworkTime.time - _networkLerp.lastVelocityTime) < .1f;
+      }
+
+      // Otherwise, just check the rigidbody velocity directly
       return getVelocity().magnitude > .01f;
    }
 
@@ -1406,6 +1413,7 @@ public class NetEntity : NetworkBehaviour
    protected Rigidbody2D _body;
    protected ClickableBox _clickableBox;
    protected SpriteOutline _outline;
+   protected NetworkLerpRigidbody2D _networkLerp;
 
    [SerializeField]
    protected List<Animator> _ignoredAnimators = new List<Animator>();

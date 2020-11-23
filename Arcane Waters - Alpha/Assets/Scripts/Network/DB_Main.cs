@@ -7449,7 +7449,9 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId WHERE friendship.usrId=@usrId AND friendship.friendUsrId=@friendUsrId", conn)) {
+            "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId" +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
+            "WHERE friendship.usrId=@usrId AND friendship.friendUsrId=@friendUsrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
@@ -7477,6 +7479,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
             "WHERE friendship.usrId=@usrId AND friendship.friendshipStatus=@friendshipStatus " +
             "ORDER BY users.usrName LIMIT @start, @perPage", conn)) {
             conn.Open();

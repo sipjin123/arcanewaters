@@ -37,6 +37,21 @@ public class FriendshipInfo
    // The XP of the friend
    public int friendXP;
 
+   // The friend Guild ID
+   public int friendGuildId;
+
+   // The friend Guild Name
+   public string friendGuildName;
+
+   // The friend guild icon layers
+   public string friendIconBorder;
+   public string friendIconBackground;
+   public string friendIconSigil;
+
+   // The friend guild icon palettes
+   public string friendIconBackPalettes;
+   public string friendIconSigilPalettes;
+
    #endregion
 
    public FriendshipInfo () { }
@@ -51,6 +66,13 @@ public class FriendshipInfo
       this.friendName = DataUtil.getString(dataReader, "usrName");
       this.friendAreaKey = DataUtil.getString(dataReader, "areaKey");
       this.friendXP = DataUtil.getInt(dataReader, "usrXP");
+      this.friendGuildId = DataUtil.getInt(dataReader, "gldId"); ;
+      this.friendGuildName = DataUtil.getString(dataReader, "gldName");
+      this.friendIconBorder = DataUtil.getString(dataReader, "gldIconBorder");
+      this.friendIconBackground = DataUtil.getString(dataReader, "gldIconBackground");
+      this.friendIconSigil = DataUtil.getString(dataReader, "gldIconSigil");
+      this.friendIconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
+      this.friendIconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
    }
 
 #endif

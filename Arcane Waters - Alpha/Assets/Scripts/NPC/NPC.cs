@@ -203,34 +203,32 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInLinkedList());
       }
 
-      if (isServer) {
-         Vector2 direction;
-         if (_currentPathIndex < _currentPath.Count) {
-            direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
-         } else {
-            direction = Util.getDirectionFromFacing(facing);
-         }
-         // Figure out the direction we want to face
+      Vector2 direction;
+      if (isServer && _currentPathIndex < _currentPath.Count) {
+         direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
+      } else {
+         direction = Util.getDirectionFromFacing(facing);
+      }
+      // Figure out the direction we want to face
 
-         // If this NPC is talking to this client's player, then face them
-         if (isTalkingToGlobalPlayer()) {
-            direction = Global.player.transform.position - transform.position;
-         }
+      // If this NPC is talking to this client's player, then face them
+      if (isTalkingToGlobalPlayer()) {
+         direction = Global.player.transform.position - transform.position;
+      }
 
-         if (!interactingAnimation) {
-            // Calculate an angle for that direction
-            float angle = Util.angle(direction);
+      if (!interactingAnimation) {
+         // Calculate an angle for that direction
+         float angle = Util.angle(direction);
 
-            // Set our facing direction based on that angle
-            facing = hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+         // Set our facing direction based on that angle
+         facing = hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
 
-            // Pass our angle and velocity on to the Animator
-            foreach (Animator animator in _animators) {
-               animator.SetFloat("velocityX", _body.velocity.x);
-               animator.SetFloat("velocityY", _body.velocity.y);
-               animator.SetBool("isMoving", _body.velocity.magnitude > .01f);
-               animator.SetInteger("facing", (int) facing);
-            }
+         // Pass our angle and velocity on to the Animator
+         foreach (Animator animator in _animators) {
+            animator.SetFloat("velocityX", _body.velocity.x);
+            animator.SetFloat("velocityY", _body.velocity.y);
+            animator.SetBool("isMoving", _body.velocity.magnitude > .01f);
+            animator.SetInteger("facing", (int) facing);
          }
       }
 

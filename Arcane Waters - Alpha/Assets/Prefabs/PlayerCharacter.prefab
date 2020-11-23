@@ -993,7 +993,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513150390263812}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000003}
+  m_LocalPosition: {x: 0, y: 0, z: 0.000011}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7280967387605188078}
@@ -2144,6 +2144,7 @@ MonoBehaviour:
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
   clientAuthority: 1
+  lastVelocityTime: 0
 --- !u!1 &1765715922958734
 GameObject:
   m_ObjectHideFlags: 0

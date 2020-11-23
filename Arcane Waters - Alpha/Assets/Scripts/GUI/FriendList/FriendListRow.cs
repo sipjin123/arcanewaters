@@ -23,6 +23,12 @@ public class FriendListRow : MonoBehaviour
    // The level text
    public Text level;
 
+   // The gameobject of the friend's guild icon
+   public GameObject rootGuildIcon;
+
+   // The guild icon of the friend
+   public GuildIcon friendGuildIcon;
+
    #endregion
 
    public void setRowForFriendshipInfo (FriendshipInfo entry) {
@@ -37,6 +43,14 @@ public class FriendListRow : MonoBehaviour
          offlineIcon.SetActive(true);
       }
       level.text = LevelUtil.levelForXp(entry.friendXP).ToString();
+      if (entry.friendGuildId > 0) {
+         friendGuildIcon.setBackground(entry.friendIconBackground, entry.friendIconBackPalettes);
+         friendGuildIcon.setBorder(entry.friendIconBorder);
+         friendGuildIcon.setSigil(entry.friendIconSigil, entry.friendIconSigilPalettes);
+         rootGuildIcon.SetActive(true);
+      } else {
+         rootGuildIcon.SetActive(false);
+      }
    }
 
    public void onChatButtonPress () {

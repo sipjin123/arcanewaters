@@ -31,6 +31,9 @@ public class NetworkLerpRigidbody2D : NetworkBehaviour
 
    bool ClientWithAuthority => clientAuthority && hasAuthority;
 
+   // The time at which we last had any sort of rigidbody velocity
+   public double lastVelocityTime;
+
    void OnValidate () {
       if (target == null) {
          target = GetComponent<Rigidbody2D>();
@@ -42,6 +45,11 @@ public class NetworkLerpRigidbody2D : NetworkBehaviour
          SyncToClients();
       } else if (ClientWithAuthority) {
          SendToServer();
+      }
+
+      // Keep track of any times at which we're applying velocity
+      if (targetVelocity.magnitude > .00001f) {
+         lastVelocityTime = NetworkTime.time;
       }
    }
 
