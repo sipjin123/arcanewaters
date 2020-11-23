@@ -35,7 +35,8 @@ public class EditorSQLManager {
       Palette = 26,
       Treasure_Drops = 27,
       Quest = 28,
-      ItemDefinitions = 29
+      ItemDefinitions = 29,
+      Tool_Tip = 30
    }
 
    public static string getSqlTable (EditorToolType editorType) {

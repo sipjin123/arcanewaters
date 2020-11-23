@@ -649,7 +649,6 @@ public class DB_Main : DB_MainStub
                   if (toolType == EditorSQLManager.EditorToolType.Shop) {
                      try {
                         if (dataReader.GetInt32("isActive") == 0) {
-                           D.debug("do not process insactive Shop with id: " + xmlId);
                            continue;
                         }
                      } catch {
@@ -4140,6 +4139,60 @@ public class DB_Main : DB_MainStub
 
          cmd.ExecuteNonQuery();
       }
+   }
+
+   #endregion
+
+   #region ToolTip
+   
+   public static new string getTooltipXmlContent () {
+      string xmlContent = "";
+      
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.tooltips_v4", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TooltipSqlData newPair = new TooltipSqlData(dataReader);
+                  xmlContent += newPair.id + "[space]" + newPair.key1 + "[space]" + newPair.key2 + "[space]" + newPair.value + "[space]" + newPair.displayLocation + "[next]\n";
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return xmlContent;
+   }
+
+   public static new List<TooltipSqlData> getTooltipData () {
+      List<TooltipSqlData> rawDataList = new List<TooltipSqlData>();
+
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.tooltips_v4", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  TooltipSqlData newPair = new TooltipSqlData(dataReader);
+                  rawDataList.Add(newPair);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return new List<TooltipSqlData>(rawDataList);
    }
 
    #endregion

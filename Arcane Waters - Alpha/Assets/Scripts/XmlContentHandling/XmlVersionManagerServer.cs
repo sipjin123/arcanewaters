@@ -73,6 +73,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string TREASURE_DROPS_FILE = "treasure_drops";
    public static string QUEST_DATA_FILE = "quest_data";
    public static string ITEM_DEFINITIONS_FILE = "item_definitions";
+   public static string TOOL_TIP_FILE = "tool_tip";
 
    // Progress indicators
    public int targetProgress;
@@ -128,6 +129,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(TREASURE_DROPS_FILE);
       confirmTextFile(QUEST_DATA_FILE);
       confirmTextFile(ITEM_DEFINITIONS_FILE);
+      confirmTextFile(TOOL_TIP_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -280,6 +282,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string treasureDropsData = DB_Main.getXmlContent(TREASURE_DROPS_TABLE, EditorToolType.Treasure_Drops);
          string questData = DB_Main.getXmlContent(QUEST_DATA_TABLE, EditorToolType.Quest);
          string itemDefinitionsData = DB_Main.getXmlContent(ITEM_DEFINITIONS_TABLE, EditorToolType.ItemDefinitions);
+         string tooltipData = DB_Main.getTooltipXmlContent();
 
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
@@ -304,6 +307,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TREASURE_DROPS_FILE + ".txt", treasureDropsData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + QUEST_DATA_FILE + ".txt", questData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ITEM_DEFINITIONS_FILE + ".txt", itemDefinitionsData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

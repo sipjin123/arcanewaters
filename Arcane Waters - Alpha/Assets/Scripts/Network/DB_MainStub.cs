@@ -281,6 +281,14 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static string getTooltipXmlContent () {
+      return "";
+   }
+
+   public static List<TooltipSqlData> getTooltipData () {
+      return new List<TooltipSqlData>();
+   }
+
    public static List<XMLPair> getCraftingXML () {
       return new List<XMLPair>();
    }

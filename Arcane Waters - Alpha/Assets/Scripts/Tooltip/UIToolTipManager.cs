@@ -16,6 +16,9 @@ public class UIToolTipManager : MonoBehaviour {
    // Dictionary of tooltip text
    public Dictionary<string, string> toolTipDict = new Dictionary<string, string>();
 
+   // List of tool tip data fetched from xml content
+   public List<TooltipSqlData> toolTipDataList = new List<TooltipSqlData>();
+
    #endregion
 
    private void Awake () {
@@ -23,6 +26,10 @@ public class UIToolTipManager : MonoBehaviour {
 
       // Read in XML file
       loadXMLFile();
+   }
+
+   public void receiveZipData (List<TooltipSqlData> xmlTooltipList) {
+      toolTipDataList = xmlTooltipList;
    }
 
    private void loadXMLFile () {

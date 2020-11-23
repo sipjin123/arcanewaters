@@ -158,6 +158,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.QUEST_DATA_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.ITEM_DEFINITIONS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
+      checkStreamingAssetFile(XmlVersionManagerServer.TOOL_TIP_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -241,6 +242,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Treasure_Drops);
       extractXmlType(EditorToolType.Quest);
       extractXmlType(EditorToolType.ItemDefinitions);
+      extractXmlType(EditorToolType.Tool_Tip);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -315,6 +317,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Crafting:
             path = TEXT_PATH + XmlVersionManagerServer.CRAFTING_FILE + ".txt";
+            break;
+         case EditorToolType.Tool_Tip:
+            path = TEXT_PATH + XmlVersionManagerServer.TOOL_TIP_FILE + ".txt";
             break;
       }
 
@@ -688,6 +693,33 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             CraftingManager.self.receiveZipData(_craftingData);
+            break;
+
+         case EditorToolType.Tool_Tip:
+            List<TooltipSqlData> tooltipDataList = new List<TooltipSqlData>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length > 1) {
+                  int uniqueId = int.Parse(xmlSubGroup[0]);
+                  string key1 = xmlSubGroup[1];
+                  string key2 = xmlSubGroup[2];
+                  string value = xmlSubGroup[3];
+                  int locationId = int.Parse(xmlSubGroup[4]);
+
+                  TooltipSqlData newSqlData = new TooltipSqlData {
+                     id = uniqueId,
+                     key1 = key1,
+                     key2 = key2,
+                     value = value,
+                     displayLocation = locationId
+                  };
+                  tooltipDataList.Add(newSqlData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            UIToolTipManager.self.receiveZipData(tooltipDataList);
             break;
       }
 
