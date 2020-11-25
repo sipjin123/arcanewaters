@@ -57,11 +57,6 @@ public class ServerNetworkingManager : MonoBehaviour {
 
    public NetworkedServer findBestServerForConnectingPlayer (string areaKey, string username, int userId, string address,
       bool isSinglePlayer, int voyageId) {
-      // Always return the current server if single player
-      if (isSinglePlayer) {
-         return server;
-      }
-
       // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
       if (voyageId != -1 &&
          (VoyageManager.self.isVoyageArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
@@ -83,8 +78,8 @@ public class ServerNetworkingManager : MonoBehaviour {
       // Find the server with the least people
       NetworkedServer bestServer = getFirstServerWithLeastPlayers();
       try {
-         string logMsg = string.Format("Found best server {0} with player count {1} for {2} ({3})",
-            bestServer.networkedPort.Value, bestServer.connectedUserIds.Count, username, address);
+         string logMsg = string.Format("Found best server {0} with player count {1} for {2} ({3}) ServerName:{4} ServerCount:{5}",
+            bestServer.networkedPort.Value, bestServer.connectedUserIds.Count, username, address, bestServer.name, servers.Count);
          D.debug(logMsg);
       } catch {
          D.debug("Found best server but cannot get details");
@@ -142,7 +137,8 @@ public class ServerNetworkingManager : MonoBehaviour {
       if (bestServers.Count == 0) {
          return null;
       } else {
-         return bestServers.ChooseRandom();
+         NetworkedServer randomServer = bestServers.ChooseRandom();
+         return randomServer;
       }
    }
 

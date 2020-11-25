@@ -156,11 +156,18 @@ public class MyNetworkManager : NetworkManager
 
       // If this is the "Master" server, then start hosting the Server Network
       if (getCurrentPort() == Global.MASTER_SERVER_PORT) {
-         ServerNetworkingManager.get().StartHost();
+         ServerNetworkingManager.get().StartHost(); 
+         processServerManagers();
       } else {
+         processServerManagers();
          ServerNetworkingManager.get().StartClient();
       }
 
+      // Make note that we started up a server
+      wasServerStarted = true;
+   }
+
+   private void processServerManagers () {
       // We have to register handlers to be able to send and receive messages
       MessageManager.registerServerHandlers();
 
@@ -200,9 +207,6 @@ public class MyNetworkManager : NetworkManager
 
       // Start the friend list management
       FriendListManager.self.startFriendListManagement();
-
-      // Make note that we started up a server
-      wasServerStarted = true;
    }
 
    private void initializeXmlData () {

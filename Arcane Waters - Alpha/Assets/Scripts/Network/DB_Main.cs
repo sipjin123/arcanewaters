@@ -7446,12 +7446,12 @@ public class DB_Main : DB_MainStub
    public static new FriendshipInfo getFriendshipInfo (int userId, int friendUserId) {
       FriendshipInfo friendshipInfo = null;
 
+      string query = "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
+            "WHERE friendship.usrId=@usrId AND friendship.friendUsrId=@friendUsrId";
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM friendship JOIN users ON friendship.friendUsrId = users.usrId" +
-            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
-            "WHERE friendship.usrId=@usrId AND friendship.friendUsrId=@friendUsrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(query, conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);

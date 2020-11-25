@@ -45,6 +45,10 @@ namespace Assets.Scripts.Network
 
                // Server.players_count
                var server = ServerNetworkingManager.self.server;
+               if (server == null) {
+                  D.debug("Error here, Server is NULL!");
+               }
+
                //D.debug($"Metrics Manager: server={machineID} - users={server.connectedUserIds.Count}");
                DB_Main.setMetricPlayersCount(machineID, procName, procID, server.connectedUserIds.Count);
 

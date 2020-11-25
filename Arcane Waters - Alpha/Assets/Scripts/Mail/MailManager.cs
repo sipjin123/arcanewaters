@@ -47,7 +47,7 @@ public class MailManager : MonoBehaviour
                entity = EntityManager.self.getEntity(userId);
                if (entity != null) {
                   entity.Target_ReceiveUnreadMailNotification(entity.connectionToClient);
-               }
+               } 
             }
 
             _unreadMailsLastCheckTime = DateTime.UtcNow;

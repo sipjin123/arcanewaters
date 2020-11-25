@@ -135,7 +135,7 @@ public class CraftingPanel : Panel
       }
 
       // Update the current page text
-      pageNumberText.text = "Page " + (_currentPage + 1).ToString() + " of " + _maxPage.ToString();
+      pageNumberText.text = "Page " + (_currentPage == 0 ? "1" : _currentPage.ToString()) + " of " + _maxPage.ToString();
 
       // Update the navigation buttons
       updateNavigationButtons();
