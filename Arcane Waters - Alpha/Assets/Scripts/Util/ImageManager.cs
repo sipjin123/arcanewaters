@@ -276,7 +276,7 @@ public class ImageManager : ClientMonoBehaviour {
       try {
          path = path.Replace("Assets/Sprites/", "Sprites/");
          path = path.Replace("Assets/Resources/Sprites/", "Sprites/");
-         if (!path.StartsWith("Sprites/")) {
+         if (!path.ToLower().StartsWith("sprites/")) {
             path = "Sprites/" + path;
          }
          return System.IO.Path.ChangeExtension(path, null);

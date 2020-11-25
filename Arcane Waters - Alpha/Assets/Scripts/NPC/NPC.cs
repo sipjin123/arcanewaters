@@ -113,26 +113,52 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          animator.SetInteger("facing", (int) facing);
       }
 
-      NPCData npcData = NPCManager.self.getNPCData(npcId);
+      // We can't proceed until our NPC Data has been received
+      StartCoroutine(CO_InitializeAfterDataReady());
+   }
 
-      if (npcData == null) {
-         D.error("No npc data for npc id: " + npcId);
-         gameObject.SetActive(false);
-         return;
+   public IEnumerator CO_InitializeAfterDataReady () {
+      while (npcId == 0 || NPCManager.self.getNPCData(npcId) == null) {
+         yield return null;
       }
 
+      NPCData npcData = NPCManager.self.getNPCData(npcId);
+
+      finishInitialization(npcData);
+   }
+
+   public void finishInitialization (NPCData npcData) {
       isStationary = npcData.isStationary;
 
-      string spriteAddress = spritePath;
-      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(spriteAddress);
+      // Set npc name
+      _npcName = npcData.name;
+      if (nameText != null) {
+         nameText.text = _npcName;
+      }
+
+      // Set NPC texture
+      SpriteSwap spriteSwap = GetComponent<SpriteSwap>();
+      this.spritePath = npcData.spritePath;
+
+      try {
+         spriteSwap.newTexture = ImageManager.getTexture(this.spritePath);
+      } catch {
+         spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
+      }
+
+      if (spriteSwap.newTexture.name.Contains("empty")) {
+         D.debug("Invalid NPC Path, please complete details in NPC Editor");
+         spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
+      }
+
+      List<ImageManager.ImageData> newSprites = ImageManager.getSpritesInDirectory(this.spritePath);
       if (newSprites.Count > 0) {
          GetComponent<SpriteRenderer>().sprite = newSprites[0].sprites[0];
 
          // If we have a sprite swapper, we want to check that instead
          Texture2D newTexture = newSprites[0].texture2D;
          if (newTexture) {
-            SpriteSwap swapper = GetComponent<SpriteSwap>();
-            swapper.newTexture = newTexture;
+            spriteSwap.newTexture = newTexture;
          }
       }
 
@@ -151,7 +177,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
          _startPosition = transform.position;
       } else {
-         setupClientSideValues();
+         _shopTrigger = gameObject.AddComponent<ShopTrigger>();
+         _shopTrigger.panelType = shopPanelType;
       }
 
       shadow.transform.localScale = new Vector3(npcData.shadowScale, npcData.shadowScale, npcData.shadowScale);
@@ -162,37 +189,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
-   }
-
-   private void setupClientSideValues () {
-      _shopTrigger = gameObject.AddComponent<ShopTrigger>();
-      _shopTrigger.panelType = shopPanelType;
-   }
-
-   public void initData () {
-      NPCData npcData = NPCManager.self.getNPCData(npcId);
-
-      // Sprite path insert here
-      if (npcData != null) {
-         // Set npc name and specialty
-         _npcName = npcData.name;
-         if (nameText != null) {
-            nameText.text = _npcName;
-         }
-         try {
-            GetComponent<SpriteSwap>().newTexture = ImageManager.getTexture(npcData.spritePath);
-         } catch {
-            D.debug("Cant get Sprite for NPC: " + this.npcId);
-            GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
-         }
-      } else {
-         D.debug("Cant get Data for NPC: " + npcId);
-      }
-
-      if (GetComponent<SpriteSwap>().newTexture.name.Contains("empty")) {
-         D.debug("Invalid NPC Path, please complete details in NPC Editor");
-         GetComponent<SpriteSwap>().newTexture = NPCManager.self.defaultNpcBodySprite.texture;
-      }
    }
 
    protected override void Update () {

@@ -15,6 +15,16 @@ public class EnemyManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
+
+      if (_shipTypes == null) {
+         _shipTypes = new Dictionary<Ship.Type, string>();
+         foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
+            if (type == Ship.Type.None) {
+               continue;
+            }
+            _shipTypes.Add(type, type.ToString().ToLower() + "_random_pirate");
+         }
+      }
    }
 
    public void Start () {
@@ -77,50 +87,37 @@ public class EnemyManager : MonoBehaviour {
       }
 
       int guildId = 1;
-      int xmlId = 0;
       Area area = AreaManager.self.getArea(instance.areaKey);
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
-         SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(xmlId);
+         Ship.Type shipType = randomizeShipType(instance.biome);
+         if (!_shipTypes.ContainsKey(shipType)) {
+            D.debug("Dictionary does not contain this ship type: " + shipType);
+            continue;
+         }
+
+         string shipName = _shipTypes[shipType];
+         SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.monsterName == shipName);
+
+         if (seaMonsterData == null) {
+            D.debug("Sea monster data is null! Name: " + shipName);
+            continue;
+         }
+
          BotShipEntity botShip = Instantiate(PrefabsManager.self.botShipPrefab);
          botShip.areaKey = instance.areaKey;
          botShip.facing = Direction.South;
          botShip.setAreaParent(area, false);
          botShip.transform.localPosition = spawner.transform.localPosition;
 
-         //botShip.seaEntityData = seaMonsterData;
-         //botShip.maxHealth = seaMonsterData.maxHealth;
-         //botShip.currentHealth = seaMonsterData.maxHealth;
-         botShip.maxHealth = 100;
-         botShip.currentHealth = botShip.maxHealth;
-
-         Ship.Type shipType = Ship.Type.Type_1;
-
-         switch (area.biome) {
-            case Biome.Type.Forest:
-               shipType = Ship.Type.Type_1;
-               break;
-            case Biome.Type.Desert:
-               shipType = new List<Ship.Type> { Ship.Type.Type_1, Ship.Type.Type_2, Ship.Type.Type_3 }.ChooseRandom();
-               break;
-            case Biome.Type.Pine:
-               shipType = new List<Ship.Type> { Ship.Type.Type_1, Ship.Type.Type_2 }.ChooseRandom();
-               break;
-            case Biome.Type.Snow:
-               shipType = new List<Ship.Type> { Ship.Type.Type_2, Ship.Type.Type_3, Ship.Type.Type_4 }.ChooseRandom();
-               break;
-            case Biome.Type.Lava:
-               shipType = new List<Ship.Type> { Ship.Type.Type_4, Ship.Type.Type_5, Ship.Type.Type_6 }.ChooseRandom();
-               break;
-            case Biome.Type.Mushroom:
-               shipType = new List<Ship.Type> { Ship.Type.Type_6, Ship.Type.Type_7, Ship.Type.Type_8 }.ChooseRandom();
-               break;
-         }
+         botShip.seaEntityData = seaMonsterData;
+         botShip.maxHealth = seaMonsterData.maxHealth;
+         botShip.currentHealth = seaMonsterData.maxHealth;
 
          botShip.shipType = shipType;
-         //if (seaMonsterData.skillIdList.Count > 0) {
-         //   botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
-         //}
+         if (seaMonsterData.skillIdList.Count > 0) {
+            botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
+         }
          botShip.guildId = guildId;
          botShip.setShipData(shipType);
 
@@ -129,10 +126,40 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
+   private Ship.Type randomizeShipType (Biome.Type biome) {
+      Ship.Type shipType = Ship.Type.Type_1;
+
+      switch (biome) {
+         case Biome.Type.Forest:
+            shipType = Ship.Type.Type_1;
+            break;
+         case Biome.Type.Desert:
+            shipType = new List<Ship.Type> { Ship.Type.Type_1, Ship.Type.Type_2, Ship.Type.Type_3 }.ChooseRandom();
+            break;
+         case Biome.Type.Pine:
+            shipType = new List<Ship.Type> { Ship.Type.Type_1, Ship.Type.Type_2 }.ChooseRandom();
+            break;
+         case Biome.Type.Snow:
+            shipType = new List<Ship.Type> { Ship.Type.Type_2, Ship.Type.Type_3, Ship.Type.Type_4 }.ChooseRandom();
+            break;
+         case Biome.Type.Lava:
+            shipType = new List<Ship.Type> { Ship.Type.Type_4, Ship.Type.Type_5, Ship.Type.Type_6 }.ChooseRandom();
+            break;
+         case Biome.Type.Mushroom:
+            shipType = new List<Ship.Type> { Ship.Type.Type_6, Ship.Type.Type_7, Ship.Type.Type_8 }.ChooseRandom();
+            break;
+      }
+
+      return shipType;
+   }
+
    #region Private Variables
 
    // Stores a list of Enemy Spawners for each type of Site
    protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();
+
+   // Stores translation from Ship.Type enum to name of ship bot in database
+   protected static Dictionary<Ship.Type, string> _shipTypes = null;
 
    #endregion
 }

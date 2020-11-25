@@ -455,7 +455,6 @@ public class XmlVersionManagerClient : MonoBehaviour {
             EquipmentXMLManager.self.receiveHatFromZipData(hatList);
             break;
          case EditorToolType.NPC:
-            List<NPCData> npcList = new List<NPCData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
@@ -463,11 +462,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
                if (xmlSubGroup.Length == 2) {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   NPCData actualData = Util.xmlLoad<NPCData>(xmlSubGroup[1]);
-                  npcList.Add(actualData);
+                  NPCManager.self.storeNPCData(actualData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }
-            NPCManager.self.initializeNPCClientData(npcList.ToArray());
             break;
          case EditorToolType.LandMonster:
             List<BattlerData> battlerDataList = new List<BattlerData>();

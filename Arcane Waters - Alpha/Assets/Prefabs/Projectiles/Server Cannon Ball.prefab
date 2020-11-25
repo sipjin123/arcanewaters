@@ -119,10 +119,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
+  syncInterval: 0
   target: {fileID: 1036786386496551606}
-  lerpVelocityAmount: 0.5
-  lerpPositionAmount: 0.5
+  lerpVelocityAmount: 0
+  lerpPositionAmount: 0
   clientAuthority: 0
   lastVelocityTime: 0
 --- !u!1 &1374969627706598

@@ -14,7 +14,7 @@ public class UIToolTipManager : MonoBehaviour {
    public static UIToolTipManager self;
 
    // Dictionary of tooltip text
-   public Dictionary<string, string> toolTipDict = new Dictionary<string, string>();
+   public Dictionary<string, TooltipSqlData> toolTipDict = new Dictionary<string, TooltipSqlData>();
 
    // List of tool tip data fetched from xml content
    public List<TooltipSqlData> toolTipDataList = new List<TooltipSqlData>();
@@ -23,44 +23,22 @@ public class UIToolTipManager : MonoBehaviour {
 
    private void Awake () {
       self = this;
-
-      // Read in XML file
-      loadXMLFile();
    }
 
    public void receiveZipData (List<TooltipSqlData> xmlTooltipList) {
       toolTipDataList = xmlTooltipList;
-   }
-
-   private void loadXMLFile () {
-      // Load the xml file from disk
-      XElement baseElement = XElement.Load(Path.Combine(Application.dataPath, "StreamingAssets/XmlTexts/XMLTooltips.xml"));
-
-      // Write xml file to dictionary
-      toolTipDict = xmlToDictionary("key1", "key2", "value", baseElement);
-   }
-
-   public static XElement dictToXml (Dictionary<string, string> inputDict, string elmName, string valuesName) {
-      XElement outElm = new XElement(elmName);
-      Dictionary<string, string>.KeyCollection keys = inputDict.Keys;
-
-      foreach (string key in keys) {
-         XElement entry = new XElement(valuesName);
-         entry.Add(new XAttribute("key", key));
-         entry.Add(new XAttribute("value", inputDict[key]));
-         outElm.Add(entry);
+      if (toolTipDataList != null) {
+         toolTipDict = listToDictionary(toolTipDataList);
       }
-      return outElm;
    }
 
-   public static Dictionary<string, string> xmlToDictionary (string key1, string key2, string value, XElement baseElm) {
-      Dictionary<string, string> dict = new Dictionary<string, string>();
+   public Dictionary<string, TooltipSqlData> listToDictionary (List<TooltipSqlData> toolTipDataList) {
+      Dictionary<string, TooltipSqlData> dict = new Dictionary<string, TooltipSqlData>();
 
-      foreach (XElement elm in baseElm.Elements()) {
-         string dictKey = elm.Attribute(key1).Value + elm.Attribute(key2).Value;
-         string dictVal = elm.Attribute(value).Value;
-
-         dict.Add(dictKey, dictVal);
+      // Add each key to dictionary
+      foreach (TooltipSqlData tooltip in toolTipDataList) {
+         string dictKey = tooltip.key1 + tooltip.key2;
+         dict.Add(dictKey, tooltip);
       }
       return dict;
    }

@@ -21,6 +21,9 @@ namespace MapCustomization
       // Singleton instance
       public static MapCustomizationManager self;
 
+      // A reference to the Customization UI
+      public CustomizationUI customizationUI;
+
       // Current area that is being customized, null if customization is not active currently
       public static Area currentArea { get; private set; }
 
@@ -96,6 +99,9 @@ namespace MapCustomization
          }
 
          areaOwnerId = CustomMapManager.getUserId(areaName);
+
+         // Make sure the customization UI is active
+         self.customizationUI.gameObject.SetActive(true);
 
          CustomizationUI.ensureShowing();
          CustomizationUI.setLoading(true);

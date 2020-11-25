@@ -16,7 +16,7 @@ public class TooltipHandler : MonoBehaviour
    public GameObject toolTipPanel;
    public TextMeshProUGUI toolTipTMPText;
    public RectTransform backgroundRect;
-   public static int WIDTH_THRESHOLD = 100;
+   public static int WIDTH_THRESHOLD = 150;
 
    #endregion
 
@@ -32,7 +32,6 @@ public class TooltipHandler : MonoBehaviour
    }
 
    public IEnumerator CO_placeTooltip (ToolTipComponent.TooltipPlacement placement, Vector3 elementPosition, GameObject panelRoot) {
-
       // Wait for end of frame for rect transform to update correctly
       toolTipTMPText.ForceMeshUpdate();
       backgroundRect.ForceUpdateRectTransforms();
@@ -69,10 +68,10 @@ public class TooltipHandler : MonoBehaviour
       }
 
       // If tooltip does not fit in the desired loaction, place it in the center top of the screen.
-      if (toolTipPanel.transform.position.x + _tooltipDimensions.x / 2 > Screen.width) {
+      if ((toolTipPanel.transform.position.x + _tooltipDimensions.x / 2 > Screen.width) && (_tooltipDimensions.x > WIDTH_THRESHOLD)) {
          toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
       } else
-      if (toolTipPanel.transform.position.x - _tooltipDimensions.x / 2 < 0) {
+      if ((toolTipPanel.transform.position.x - _tooltipDimensions.x / 2 < 0) && (_tooltipDimensions.x > WIDTH_THRESHOLD)) {
          toolTipPanel.transform.position = new Vector2(Screen.width / 2, Screen.height - (_tooltipDimensions.y / 2 + 10));
       } else
       if (toolTipPanel.transform.position.y - _tooltipDimensions.y / 2 < 0) {

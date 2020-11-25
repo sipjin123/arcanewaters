@@ -89,8 +89,8 @@ public class ToolTipComponent : MonoBehaviour {
             if (UIToolTipManager.self.toolTipDict[dictKey] != null) {
 
                // Retrieve the tootip text if the key is in the dictionary
-               message = UIToolTipManager.self.toolTipDict[dictKey];
-
+               message = UIToolTipManager.self.toolTipDict[dictKey].value;
+               tooltipPlacement = (TooltipPlacement)UIToolTipManager.self.toolTipDict[dictKey].displayLocation;
                // Send the message to the tooltip handler
                TooltipHandler.self.callToolTip(message, tooltipPlacement, this.transform.position, _panelRoot);
             }

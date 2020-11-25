@@ -136,8 +136,6 @@ public class AdminManager : NetworkBehaviour
          requestWarp(parameters);
       } else if (ABILITY.Equals(adminCommand)) {
          requestAllAbilities(parameters);
-      } else if (NPC.Equals(adminCommand)) {
-         Cmd_NpcTest(parameters);
       } else if (GET_ITEM.Equals(adminCommand)) {
          requestGetItem(parameters);
       } else if (SHIP_SPEED_UP.Equals(adminCommand)) {
@@ -839,70 +837,6 @@ public class AdminManager : NetworkBehaviour
       Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
       if (area != null) {
          _player.transform.localPosition = localPosition;
-      }
-   }
-
-   [Command]
-   public void Cmd_NpcTest (string messg) {
-      spawnNPCs();
-      string[] serialize = MyNetworkManager.self.serializedNPCData(NPCManager.self.npcDataList);
-      Rpc_NpcTestReceive(serialize);
-   }
-
-   [ClientRpc]
-   public void Rpc_NpcTestReceive (string[] npcDataSerialized) {
-      NPCData[] npcDataList = Util.unserialize<NPCData>(npcDataSerialized).ToArray();
-      NPCManager.self.initializeNPCClientData(npcDataList);
-      spawnNPCs();
-   }
-
-   private void spawnNPCs () {
-      Vector3 playerPos = _player.transform.position;
-      int indexCounter = 0;
-      float offsetMagnitude = .3f;
-      int gridCount = 5;
-      float xOffset = -(2 * offsetMagnitude);
-      float yOffset = 0;
-
-      foreach (NPCData npcData in NPCManager.self.npcDataList) {
-         if (NPCManager.self.getNPC(npcData.npcId) == null) {
-            Sprite npcSprite = null;
-
-            bool isValid = true;
-            if (npcData.spritePath != null && npcData.spritePath != "") {
-               npcSprite = ImageManager.getSprite(npcData.spritePath);
-               if (npcSprite == null || npcSprite.name.Contains("empty_layer")) {
-                  isValid = false;
-               }
-            } else {
-               isValid = false;
-            }
-
-            if (!isValid) {
-               D.debug("Invalid NPC Path, please complete details in NPC Editor");
-               npcSprite = NPCManager.self.defaultNpcFaceSprite;
-            }
-
-            // Object Setup
-            GameObject npcPref = Instantiate(PrefabsManager.self.npcPrefab.gameObject, AreaManager.self.getArea(_player.areaKey).transform);
-            npcPref.transform.position = new Vector3(playerPos.x + xOffset, playerPos.y + yOffset, playerPos.z);
-
-            // Data Setup
-            NPC npc = npcPref.GetComponent<NPC>();
-            npc.isDebug = true;
-            npc.npcId = npcData.npcId;
-            npc.GetComponent<SpriteSwap>().newTexture = npcSprite.texture;
-            npc.gameObject.SetActive(true);
-            npc.initData();
-
-            // Spawn Grid Setup
-            if (indexCounter % gridCount != 0) {
-               xOffset += offsetMagnitude;
-            } else {
-               yOffset += offsetMagnitude;
-            }
-            indexCounter++;
-         }
       }
    }
 

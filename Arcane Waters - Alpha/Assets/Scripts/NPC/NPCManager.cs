@@ -13,9 +13,6 @@ public class NPCManager : MonoBehaviour {
    // Self
    public static NPCManager self;
 
-   // Returns the list of npc data
-   public List<NPCData> npcDataList { get { return _npcData.Values.ToList(); } }
-
    // If the server finished the initialization of data
    public bool serverInitialized;
 
@@ -50,38 +47,13 @@ public class NPCManager : MonoBehaviour {
 
                   // Initializes info of the npc
                   if (_npcs.ContainsKey(npcData.npcId)) {
-                     _npcs[npcData.npcId].initData();
+                     _npcs[npcData.npcId].finishInitialization(npcData);
                   }
                }
             }
             serverInitialized = true;
          });
       });
-   }
-
-   public void initializeNPCClientData (NPCData[] dataList) {
-      if (serverInitialized) {
-         return;
-      }
-
-      _npcData = new Dictionary<int, NPCData>();
-      foreach (NPCData data in dataList) {
-         // Save the NPC data in the memory cache
-         if (data.isActive) {
-            if (_npcData.ContainsKey(data.npcId)) {
-               _npcData[data.npcId] = data;
-            } else {
-               npcList.Add(data);
-               _npcData.Add(data.npcId, data);
-            }
-
-            // Initializes info of the npc
-            if (_npcs.ContainsKey(data.npcId)) {
-               _npcs[data.npcId].initData();
-            }
-         }
-      }
-
    }
 
    public void storeNPC (NPC npc) {
@@ -121,6 +93,10 @@ public class NPCManager : MonoBehaviour {
          return _npcs[npcId];
       }
       return null;
+   }
+
+   public void storeNPCData (NPCData npcData) {
+      _npcData[npcData.npcId] = npcData;
    }
 
    public NPCData getNPCData (int npcID) {
