@@ -123,6 +123,8 @@ public class Instance : NetworkBehaviour
       // Spawn all the area prefabs that are specific to this instance
       if (NetworkServer.active) {
          StartCoroutine(CO_SpawnInstanceSpecificPrefabs());
+      } else {
+         InstanceManager.self.addClientInstanceToManager(this);
       }
 
       // Routinely check if the instance is empty
@@ -160,6 +162,18 @@ public class Instance : NetworkBehaviour
       foreach (NetworkBehaviour existingEntity in entities) {
          if (existingEntity is PlayerBodyEntity) {
             newEntityList.Add((PlayerBodyEntity) existingEntity);
+         }
+      }
+      return newEntityList;
+   }
+
+   public List<PlayerShipEntity> getPlayerShipEntities () {
+      List<PlayerShipEntity> newEntityList = new List<PlayerShipEntity>();
+
+      // Gathers all the player ships in the area
+      foreach (NetworkBehaviour existingEntity in entities) {
+         if (existingEntity is PlayerShipEntity) {
+            newEntityList.Add((PlayerShipEntity) existingEntity);
          }
       }
       return newEntityList;

@@ -79,6 +79,7 @@ public class ChatPanel : MonoBehaviour {
    // The custom color for each entity speaking
    public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor, globalChatLocalColor, globalChatOtherColor;
    public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor, globalNameLocalColor, globalNameOtherColor;
+   public Color whisperNameColor, whisperMessageColor, whisperReceiverNameColor, whisperReceiverMessageColor;
 
    #endregion
 
@@ -349,7 +350,7 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
-      if (chatInfo.messageType != ChatInfo.Type.Emote) {
+      if (chatInfo.messageType != ChatInfo.Type.Emote && chatInfo.messageType != ChatInfo.Type.Whisper) {
          // If we have a Body for the specified sender, create a speech bubble
          BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
          if (body != null) {
@@ -384,6 +385,13 @@ public class ChatPanel : MonoBehaviour {
          case ChatInfo.Type.System:
             newColor = systemNameColor;
             break;
+         case ChatInfo.Type.Whisper:
+            if (isLocalPlayer) {
+               newColor = whisperReceiverNameColor;
+            } else {
+               newColor = whisperNameColor;
+            }
+            break;
       }
       return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
    }
@@ -409,12 +417,14 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public void chatModeButtonPressed () {
-      if (currentChatType == ChatInfo.Type.Global) {
+      if (currentChatType == ChatInfo.Type.Whisper) {
          currentChatType = ChatInfo.Type.Local;
       } else if (currentChatType == ChatInfo.Type.Local) {
          currentChatType = ChatInfo.Type.Guild;
       } else if (currentChatType == ChatInfo.Type.Guild) {
          currentChatType = ChatInfo.Type.Global;
+      } else if (currentChatType == ChatInfo.Type.Global) {
+         currentChatType = ChatInfo.Type.Whisper;
       }
    }
 
@@ -472,6 +482,8 @@ public class ChatPanel : MonoBehaviour {
             return string.Format("<color={0}>Global</color>", colorString);
          case ChatInfo.Type.Guild:
             return string.Format("<color={0}>Guild</color>", colorString);
+         case ChatInfo.Type.Whisper:
+            return string.Format("<color={0}>Whisper</color>", colorString);
       }
 
       return "";
@@ -489,6 +501,9 @@ public class ChatPanel : MonoBehaviour {
             return isLocalPlayer ? globalChatLocalColor : globalChatOtherColor;
          case ChatInfo.Type.Local:
             return isLocalPlayer ? playerSpeechColor : otherPlayerSpeechColor;
+         case ChatInfo.Type.Whisper:
+            var chatColor = isLocalPlayer ? whisperReceiverMessageColor : whisperMessageColor;
+            return chatColor;
          case ChatInfo.Type.Guild:
             return Color.white;
          case ChatInfo.Type.Emote:

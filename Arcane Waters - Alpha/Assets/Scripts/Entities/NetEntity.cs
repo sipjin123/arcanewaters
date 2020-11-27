@@ -1118,8 +1118,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, userId);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, int senderId, long timestamp, ChatInfo.Type chatType) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);

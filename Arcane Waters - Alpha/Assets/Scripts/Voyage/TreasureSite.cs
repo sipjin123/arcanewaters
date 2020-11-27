@@ -79,6 +79,11 @@ public class TreasureSite : NetworkBehaviour
 
       // Make the site a child of the Area
       StartCoroutine(CO_SetAreaParent());
+
+      // Assign the entity to the instance
+      if (!NetworkServer.active) {
+         StartCoroutine(CO_RegisterToInstance());
+      }
    }
 
    public void Update () {
@@ -292,6 +297,16 @@ public class TreasureSite : NetworkBehaviour
       return _warp ? _warp.GetHashCode() : 0;
    }
 
+   private IEnumerator CO_RegisterToInstance () {
+      while (InstanceManager.self.getInstance(instanceId) == null) {
+         yield return 0;
+      }
+
+      if (!InstanceManager.self.getInstance(instanceId).treasureSites.Contains(this)) {
+         InstanceManager.self.getInstance(instanceId).treasureSites.Add(this);
+      }
+   }
+
    private IEnumerator CO_SetAreaParent () {
       // Wait until we have finished instantiating the area
       while (AreaManager.self.getArea(areaKey) == null) {
@@ -330,6 +345,10 @@ public class TreasureSite : NetworkBehaviour
    }
 
    private void setSpawnTarget () {
+      if (_warp == null) {
+         D.debug("Warp is missing!");
+         return;
+      }
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
          MapSpawn finalSpawn = null;

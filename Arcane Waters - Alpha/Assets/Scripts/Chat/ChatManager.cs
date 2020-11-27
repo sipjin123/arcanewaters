@@ -74,8 +74,31 @@ public class ChatManager : MonoBehaviour {
          return;
       }
 
+      if (chatType == ChatInfo.Type.Whisper && Global.player.entityName.ToLower() == extractWhisperNameFromChat(message).ToLower()) {
+         this.addChat("You cannot send a message to yourself!", ChatInfo.Type.Error);
+         return;
+      }
+
       // Pass the message along to the server
       Global.player.rpc.Cmd_SendChat(message, chatType);
+   }
+
+   public static string extractWhisperNameFromChat (string message) {
+      string extractedUserName = "";
+      foreach (char letter in message) {
+         if (letter != ' ' && letter != '-') {
+            extractedUserName += letter;
+         } else {
+            if (letter == ' ') {
+               break;
+            }
+         }
+      }
+      return extractedUserName;
+   }
+
+   public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
+      return message.Replace("-" + extractedUserName + " ", "");
    }
 
    public void processChatInput (string textToProcess) {
@@ -118,7 +141,7 @@ public class ChatManager : MonoBehaviour {
                   // Send the chat to everyone online in that guild
                   foreach (NetEntity player in MyNetworkManager.getPlayers().Values) {
                      if (player != null && player.connectionToClient != null && player.guildId == chat.guildId) {
-                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.chatTime.ToBinary(), chat.messageType);
+                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.senderId, chat.chatTime.ToBinary(), chat.messageType);
                      }
                   }
                }

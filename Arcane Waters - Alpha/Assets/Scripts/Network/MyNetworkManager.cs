@@ -406,6 +406,15 @@ public class MyNetworkManager : NetworkManager
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
+
+            // Make sure that the treasure site is disabled on the client side if they are not in an active voyage
+            if (AreaManager.self.isSeaArea(previousAreaKey)) {
+               if (voyageId <= 0) {
+                  player.rpc.Target_UpdateTreasureSiteState(false);
+               }
+            } else {
+               player.rpc.Target_UpdateTreasureSiteState(true);
+            }
          });
       });
    }

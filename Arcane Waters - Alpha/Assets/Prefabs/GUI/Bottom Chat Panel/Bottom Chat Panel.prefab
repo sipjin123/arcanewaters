@@ -3984,6 +3984,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
 --- !u!1 &7400312856274305303
 GameObject:
   m_ObjectHideFlags: 0
@@ -4823,6 +4825,10 @@ MonoBehaviour:
   systemNameColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
   globalNameLocalColor: {r: 0.8509804, g: 0.82137495, b: 0.16470587, a: 1}
   globalNameOtherColor: {r: 0.04405483, g: 0.27101472, b: 0.8490566, a: 1}
+  whisperNameColor: {r: 0.7694423, g: 0.8773585, b: 0.15312389, a: 1}
+  whisperMessageColor: {r: 0.4455026, g: 0.764151, b: 0.039649345, a: 1}
+  whisperReceiverNameColor: {r: 0.9056604, g: 0.71721363, b: 0.07262372, a: 1}
+  whisperReceiverMessageColor: {r: 0.9245283, g: 0.11774653, b: 0.11774653, a: 1}
 --- !u!225 &7320058996177905761
 CanvasGroup:
   m_ObjectHideFlags: 0

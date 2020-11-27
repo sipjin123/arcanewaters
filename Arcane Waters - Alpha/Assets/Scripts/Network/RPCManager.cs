@@ -860,6 +860,32 @@ public class RPCManager : NetworkBehaviour {
          _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType);
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
+      } else if (chatType == ChatInfo.Type.Whisper) {
+         string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
+         if (message[0] == '-') {
+            message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
+            NetEntity entityReceiver = null;
+            Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+            if (instance != null) {
+               foreach (PlayerBodyEntity player in instance.getPlayerBodyEntities()) {
+                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
+                     entityReceiver = _player;
+                  }
+               }
+               foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
+                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
+                     entityReceiver = _player;
+                   }
+               }
+            }
+            if (entityReceiver != null) {
+               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.senderId, chatInfo.chatTime.ToBinary(), chatInfo.messageType);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.senderId, chatInfo.chatTime.ToBinary(), chatInfo.messageType);
+            } else {
+               string errorMsg = "Recipient is either offline or does not exist!";
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", 0, chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error);
+            }
+         }
       }
    }
 
@@ -4045,6 +4071,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SwapAbility (int abilityID, int equipSlot) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string rawAbilityData = DB_Main.userAbilities(_player.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
+         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
+         AbilitySQLData abilityInSlot = abilityDataList.Find(_ => _.equipSlotIndex == equipSlot);
+         AbilitySQLData abilityReplacement = abilityDataList.Find(_ => _.abilityID == abilityID);
+
+         // Update the slot number of the specific abilities to swap them out
+         DB_Main.updateAbilitySlot(_player.userId, abilityID, abilityInSlot.equipSlotIndex);
+         DB_Main.updateAbilitySlot(_player.userId, abilityInSlot.abilityID, abilityReplacement.equipSlotIndex);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_FinishedUpdatingAbility(_player.connectionToClient);
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_UpdateAbilities (AbilitySQLData[] abilities) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (AbilitySQLData ability in abilities) {
@@ -4677,6 +4721,13 @@ public class RPCManager : NetworkBehaviour {
       }
 
       await giveItemRewardsToPlayer(_player.userId, rewards, false);
+   }
+
+   [TargetRpc]
+   public void Target_UpdateTreasureSiteState (bool warpsEnabled) {
+      if (!warpsEnabled) {
+         InstanceManager.self.disableClientTreasureSiteWarp(_player.instanceId, _player.areaKey);
+      }
    }
 
    [TargetRpc]
