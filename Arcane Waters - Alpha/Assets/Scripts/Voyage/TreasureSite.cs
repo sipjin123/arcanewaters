@@ -79,11 +79,6 @@ public class TreasureSite : NetworkBehaviour
 
       // Make the site a child of the Area
       StartCoroutine(CO_SetAreaParent());
-
-      // Assign the entity to the instance
-      if (!NetworkServer.active) {
-         StartCoroutine(CO_RegisterToInstance());
-      }
    }
 
    public void Update () {
@@ -295,16 +290,6 @@ public class TreasureSite : NetworkBehaviour
 
    public int getWarpHashCode () {
       return _warp ? _warp.GetHashCode() : 0;
-   }
-
-   private IEnumerator CO_RegisterToInstance () {
-      while (InstanceManager.self.getInstance(instanceId) == null) {
-         yield return 0;
-      }
-
-      if (!InstanceManager.self.getInstance(instanceId).treasureSites.Contains(this)) {
-         InstanceManager.self.getInstance(instanceId).treasureSites.Add(this);
-      }
    }
 
    private IEnumerator CO_SetAreaParent () {

@@ -84,9 +84,10 @@ public class ChatManager : MonoBehaviour {
    }
 
    public static string extractWhisperNameFromChat (string message) {
+      message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
       string extractedUserName = "";
       foreach (char letter in message) {
-         if (letter != ' ' && letter != '-') {
+         if (letter != ' ') {
             extractedUserName += letter;
          } else {
             if (letter == ' ') {
@@ -98,7 +99,7 @@ public class ChatManager : MonoBehaviour {
    }
 
    public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
-      return message.Replace("-" + extractedUserName + " ", "");
+      return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
    }
 
    public void processChatInput (string textToProcess) {
@@ -107,7 +108,7 @@ public class ChatManager : MonoBehaviour {
       }
 
       // Check if it's a chat command
-      if (textToProcess.StartsWith("/")) {
+      if (textToProcess.StartsWith("/") && !textToProcess.StartsWith(ChatPanel.WHISPER_PREFIX)) {
          executeChatCommand(textToProcess);
       } else {
          sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);

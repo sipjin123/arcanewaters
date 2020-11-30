@@ -123,8 +123,6 @@ public class Instance : NetworkBehaviour
       // Spawn all the area prefabs that are specific to this instance
       if (NetworkServer.active) {
          StartCoroutine(CO_SpawnInstanceSpecificPrefabs());
-      } else {
-         InstanceManager.self.addClientInstanceToManager(this);
       }
 
       // Routinely check if the instance is empty

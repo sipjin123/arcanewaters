@@ -862,19 +862,19 @@ public class RPCManager : NetworkBehaviour {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {
          string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
-         if (message[0] == '-') {
+         if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
             message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
             NetEntity entityReceiver = null;
             Instance instance = InstanceManager.self.getInstance(_player.instanceId);
             if (instance != null) {
                foreach (PlayerBodyEntity player in instance.getPlayerBodyEntities()) {
                   if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = _player;
+                     entityReceiver = player;
                   }
                }
                foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
                   if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = _player;
+                     entityReceiver = player;
                    }
                }
             }
@@ -4724,13 +4724,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_UpdateTreasureSiteState (bool warpsEnabled) {
-      if (!warpsEnabled) {
-         InstanceManager.self.disableClientTreasureSiteWarp(_player.instanceId, _player.areaKey);
-      }
-   }
-
-   [TargetRpc]
    public void Target_BaseMapUpdated (string customMapKey, int baseMapId) {
       PanelManager.self.get<CustomMapsPanel>(Panel.Type.CustomMaps).baseMapUpdated(customMapKey, baseMapId);
    }
@@ -4843,7 +4836,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    private void Target_OnWarpFailed () {
-      D.log("Warp failed");
+      D.debug("Warp failed");
       _player.onWarpFailed();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }

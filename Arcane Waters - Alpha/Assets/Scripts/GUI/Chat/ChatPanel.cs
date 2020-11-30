@@ -25,6 +25,12 @@ public class ChatPanel : MonoBehaviour {
    // The maximum number of characters in a single chat message, before reaching 'too many vertices' with the Text+Outline components
    public static int CHAT_LINE_MAX_LENGTH = 700;
 
+   // The input field where the whisper recipient name will be input
+   public InputField nameInputField;
+
+   // The constant whisper prefix for server message processing
+   public const string WHISPER_PREFIX = "/w ";
+
    // The panel modes
    public enum Mode {
       Minimized = 0,
@@ -232,7 +238,12 @@ public class ChatPanel : MonoBehaviour {
 
          if (inputField.text != "") {
             // Send the message off to the server for processing
-            ChatManager.self.processChatInput(inputField.text);
+            string message = inputField.text;
+            if (currentChatType == ChatInfo.Type.Whisper) {
+               message = WHISPER_PREFIX + nameInputField.text + " " + message;
+            }
+
+            ChatManager.self.processChatInput(message);
 
             // Clear out the text now that it's been used
             inputField.text = "";
@@ -328,9 +339,14 @@ public class ChatPanel : MonoBehaviour {
          bool isLocalPlayer = true;
          if (Global.player != null) {
             isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
-         } 
+         }
 
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
+         string messageSource = chatInfo.sender;
+         if (chatInfo.messageType == ChatInfo.Type.Whisper) {
+            messageSource = (isLocalPlayer ? "You whispered to " : "") + messageSource + (!isLocalPlayer ? " whispers" : "");
+         }
+
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
       }
 
       // In minimized mode, keep the scrollbar at the bottom
@@ -426,6 +442,8 @@ public class ChatPanel : MonoBehaviour {
       } else if (currentChatType == ChatInfo.Type.Global) {
          currentChatType = ChatInfo.Type.Whisper;
       }
+
+      nameInputField.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
    }
 
    protected bool shouldShowChat () {

@@ -142,34 +142,6 @@ public class InstanceManager : MonoBehaviour {
       instance.treasureSiteCount++;
    }
 
-   public void disableClientTreasureSiteWarp (int instanceId, string areaKey) {
-      StartCoroutine(CO_DisableTreasureSiteWarp(instanceId, areaKey));
-   }
-
-   private IEnumerator CO_DisableTreasureSiteWarp (int instanceId, string areaKey) {
-      // Wait until our instance finished loading
-      while (getInstance(instanceId) == null) {
-         yield return null;
-      }
-
-      // Wait until our area finished loading
-      while (AreaManager.self.getArea(areaKey) == null) {
-         yield return null;
-      }
-
-      Instance instance = getOpenInstance(areaKey, false);
-      Area area = AreaManager.self.getArea(areaKey);
-
-      foreach (TreasureSite treasureSite in instance.treasureSites) {
-         foreach (Warp warp in area.getWarps()) {
-            if (warp.targetInfo.specialType == Area.SpecialType.TreasureSite) {
-               // Make sure that the warp is not active when the user is not in the voyage
-               warp.gameObject.SetActive(false);
-            }
-         }
-      }
-   }
-
    public Instance getInstance (int instanceId) {
       if (_instances.ContainsKey(instanceId)) {
          return _instances[instanceId];
@@ -215,14 +187,6 @@ public class InstanceManager : MonoBehaviour {
          NetworkServer.Spawn(instance.gameObject);
       }
       return instance;
-   }
-
-   public void addClientInstanceToManager (Instance clientInstance) {
-      if (_instances.ContainsKey(clientInstance.id)) {
-         _instances[clientInstance.id] = clientInstance;
-      } else {
-         _instances.Add(clientInstance.id, clientInstance);
-      }
    }
 
    public Instance getOpenInstance (string areaKey, bool isSinglePlayer) {
