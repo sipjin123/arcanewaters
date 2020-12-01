@@ -60,9 +60,6 @@ public class Voyage
    // The biome of the area the voyage is set in
    public Biome.Type biome = Biome.Type.None;
 
-   // The time passed since the creation of the voyage instance
-   public long timeSinceStart = 0;
-
    #endregion
 
    public Voyage () {
@@ -70,7 +67,7 @@ public class Voyage
    }
 
    public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, Biome.Type biome, bool isPvP,
-      long creationDate, int treasureSiteCount, int capturedTreasureSiteCount) {
+      long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int groupCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
       this.areaName = areaName;
@@ -80,6 +77,7 @@ public class Voyage
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;
+      this.groupCount = groupCount;
    }
 
    public static int getMaxGroupSize (Difficulty voyageDifficulty) {

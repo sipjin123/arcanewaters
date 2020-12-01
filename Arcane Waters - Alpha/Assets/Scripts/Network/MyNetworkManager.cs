@@ -258,18 +258,6 @@ public class MyNetworkManager : NetworkManager
          ShipInfo shipInfo = userObjects.shipInfo;
          GuildInfo guildInfo = userObjects.guildInfo;
 
-         // Get the current voyage group the user is member of, if any
-         VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(authenticatedUserId);
-
-         // Get the voyage id, if any
-         int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
-
-         Biome.Type fetchedBiomeType = Biome.Type.None;
-         if (VoyageManager.self.getVoyage(voyageId) != null) {
-            fetchedBiomeType = VoyageManager.self.getVoyage(voyageId).biome;
-         }
-         Biome.Type voyageBiome = voyageId != -1 ? fetchedBiomeType : Biome.Type.None;
-
          string previousAreaKey = userInfo.areaKey;
 
          // Get information about owned map
@@ -279,6 +267,10 @@ public class MyNetworkManager : NetworkManager
 
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Get the current voyage info the user is part of, if any
+            VoyageGroupInfo voyageGroupInfo = VoyageGroupManager.self.getGroupByUser(authenticatedUserId);
+            int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
+
             // Check if we need to redirect to a different server
             NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,
                conn.address, userObjects.isSinglePlayer, voyageId);
@@ -294,7 +286,7 @@ public class MyNetworkManager : NetworkManager
             DisconnectionManager.self.reconnectDisconnectedUser(userInfo, shipInfo);
 
             // Manage the voyage groups on user connection
-            VoyageManager.self.onUserConnectsToServer(userInfo.userId);
+            VoyageGroupManager.self.onUserConnectsToServer(userInfo.userId);
 
             // Create the Player object
             GameObject prefab = AreaManager.self.isSeaArea(previousAreaKey) == true ? PrefabsManager.self.playerShipPrefab : PrefabsManager.self.playerBodyPrefab;
@@ -307,6 +299,12 @@ public class MyNetworkManager : NetworkManager
                   baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
                }
             }
+
+            Biome.Type fetchedBiomeType = Biome.Type.None;
+            if (VoyageManager.self.getVoyage(voyageId) != null) {
+               fetchedBiomeType = VoyageManager.self.getVoyage(voyageId).biome;
+            }
+            Biome.Type voyageBiome = voyageId != -1 ? fetchedBiomeType : Biome.Type.None;
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
@@ -462,7 +460,7 @@ public class MyNetworkManager : NetworkManager
          _players.Remove(conn.connectionId);
 
          // Manage the voyage groups on user disconnection
-         VoyageManager.self.onUserDisconnectsFromServer(player.userId);
+         VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
 
          if (player is ShipEntity) {
             // If the player is a ship, keep it in the server for a few seconds

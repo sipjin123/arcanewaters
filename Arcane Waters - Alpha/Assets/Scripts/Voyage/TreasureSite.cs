@@ -187,7 +187,7 @@ public class TreasureSite : NetworkBehaviour
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
-         if (ship != null && ship.instanceId == instanceId && VoyageManager.isInGroup(ship)) {
+         if (ship != null && ship.instanceId == instanceId && VoyageGroupManager.isInGroup(ship)) {
             // Add the ship to the list of capturing ships
             _capturingShips.Add(ship);
          }
@@ -330,10 +330,6 @@ public class TreasureSite : NetworkBehaviour
    }
 
    private void setSpawnTarget () {
-      if (_warp == null) {
-         D.debug("Warp is missing!");
-         return;
-      }
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
          MapSpawn finalSpawn = null;

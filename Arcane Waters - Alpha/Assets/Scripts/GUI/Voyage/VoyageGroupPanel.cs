@@ -47,7 +47,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void Update () {
       // Hide the panel when there is no player or he doesn't belong to a group
-      if (!VoyageManager.isInGroup(Global.player)) {
+      if (!VoyageGroupManager.isInGroup(Global.player)) {
          hide();
          return;
       }
@@ -72,7 +72,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    public void updatePanelWithGroupMembers (List<int> groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
-      if (!VoyageManager.isInGroup(Global.player) || groupMembers.Count <= 0) {
+      if (!VoyageGroupManager.isInGroup(Global.player) || groupMembers.Count <= 0) {
          // Clear out any old info
          memberContainer.DestroyChildren();
          _memberCells.Clear();
@@ -126,7 +126,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.LeaveVoyageGroup);
 
       // Request the server to remove the user from the group
-      Global.player.rpc.Cmd_RemoveUserFromVoyageGroup();
+      Global.player.rpc.Cmd_RemoveUserFromGroup();
    }
 
    public bool isMouseOverMemberCell (int memberUserId) {

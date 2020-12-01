@@ -165,18 +165,6 @@ public class Instance : NetworkBehaviour
       return newEntityList;
    }
 
-   public List<PlayerShipEntity> getPlayerShipEntities () {
-      List<PlayerShipEntity> newEntityList = new List<PlayerShipEntity>();
-
-      // Gathers all the player ships in the area
-      foreach (NetworkBehaviour existingEntity in entities) {
-         if (existingEntity is PlayerShipEntity) {
-            newEntityList.Add((PlayerShipEntity) existingEntity);
-         }
-      }
-      return newEntityList;
-   }
-
    public int getMaxPlayers () {
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager || customMapManager is CustomHouseManager) {
@@ -224,11 +212,8 @@ public class Instance : NetworkBehaviour
       }
 
       // Treasure site instances exist as long as the main sea voyage exists
-      if (VoyageManager.isTreasureSiteArea(areaKey)) {
-         Voyage voyage = VoyageManager.self.getVoyage(voyageId);
-         if (voyage != null) {
-            return;
-         }
+      if (VoyageManager.isTreasureSiteArea(areaKey) && VoyageManager.self.doesVoyageExists(voyageId)) {
+         return;
       }
 
       // If there's no one in the instance right now, increase the  count

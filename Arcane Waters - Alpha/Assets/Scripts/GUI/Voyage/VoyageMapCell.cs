@@ -90,7 +90,7 @@ public class VoyageMapCell : MonoBehaviour {
       }
 
       // Set the time since the voyage started
-      timeText.text = TimeSpan.FromTicks(voyage.timeSinceStart).ToString(@"mm\:ss");
+      timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(voyage.creationDate)).ToString(@"mm\:ss");
 
       // Set the plaque labels outline color
       switch (voyage.difficulty) {

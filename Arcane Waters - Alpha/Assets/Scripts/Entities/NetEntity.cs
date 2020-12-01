@@ -219,6 +219,7 @@ public class NetEntity : NetworkBehaviour
 
       // Check command line
       _autoMove = CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
+
    }
 
    protected virtual void Start () {
@@ -840,7 +841,7 @@ public class NetEntity : NetworkBehaviour
          return true;
       }
 
-      if (VoyageManager.isInGroup(this) && VoyageManager.isInGroup(otherEntity)) {
+      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.isInGroup(otherEntity)) {
          // In PvE voyage instances, players from other groups are not enemies
          Instance instance = getInstance();
          if (instance != null && !instance.isPvP) {
@@ -866,7 +867,7 @@ public class NetEntity : NetworkBehaviour
          return false;
       }
 
-      if (VoyageManager.isInGroup(this) && VoyageManager.isInGroup(otherEntity)) {
+      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.isInGroup(otherEntity)) {
          if (this.voyageGroupId == otherEntity.voyageGroupId) {
             return true;
          } else {
@@ -1102,32 +1103,32 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, senderUserId);
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, senderUserId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, userId);
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, userId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, int senderId, long timestamp, ChatInfo.Type chatType) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, userId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupInvitation (NetworkConnection conn, int voyageGroupId, string inviterName) {
-      VoyageManager.self.receiveVoyageInvitation(voyageGroupId, inviterName);
+   public void Target_ReceiveGroupInvitationNotification (NetworkConnection conn, int voyageGroupId, string inviterName) {
+      VoyageGroupManager.self.receiveGroupInvitation(voyageGroupId, inviterName);
    }
 
    [TargetRpc]

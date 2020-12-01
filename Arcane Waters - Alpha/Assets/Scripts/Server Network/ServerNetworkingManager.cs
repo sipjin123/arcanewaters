@@ -9,6 +9,7 @@ using System.IO;
 using Newtonsoft.Json;
 using MLAPI;
 using System.Linq;
+using MLAPI.Messaging;
 
 public class ServerNetworkingManager : MonoBehaviour {
    #region Public Variables
@@ -172,13 +173,6 @@ public class ServerNetworkingManager : MonoBehaviour {
       return null;
    }
 
-   public void updateHostedVoyageInstances (List<Voyage> allVoyages) {
-      server.voyages.Clear();
-      foreach (Voyage voyage in allVoyages) {
-         server.voyages.Add(voyage);
-      }
-   }
-
    public bool isUserOnline (int userId) {
       bool isOnline = false;
 
@@ -202,16 +196,24 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.claimedUserIds.Remove(userId);
    }
 
+   public RpcResponse<int> getNewVoyageGroupId () {
+      return server.InvokeServerRpc(server.MasterServer_GetNewVoyageGroupId);
+   }
+
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId);
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, chatInfo.iconBackground, chatInfo.iconBackPalettes, chatInfo.iconBorder, chatInfo.iconSigil, chatInfo.iconSigilPalettes);
    }
 
-   public void sendVoyageGroupInvitation (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
-      server.InvokeServerRpc(server.MasterServer_SendVoyageGroupInvitation, groupId, inviterUserId, inviterName, inviteeUserId);
+   public void sendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {
+      server.InvokeServerRpc(server.MasterServer_SendGroupInvitationNotification, groupId, inviterUserId, inviterName, inviteeUserId);
    }
 
-   public void sendVoyageInstanceCreation (int serverPort, string areaKey, bool isPvP, Biome.Type biome) {
-      server.InvokeServerRpc(server.MasterServer_SendVoyageInstanceCreation, serverPort, areaKey, isPvP, biome);
+   public void sendVoyageInstanceCreation (int serverPort, int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
+      server.InvokeServerRpc(server.MasterServer_SendVoyageInstanceCreation, serverPort, voyageId, areaKey, isPvP, biome);
+   }
+
+   public void sendVoyageGroupMembersToUser (int userId) {
+      server.InvokeServerRpc(server.MasterServer_SendVoyageGroupMembersToUser, userId);
    }
 
    #region Private Variables

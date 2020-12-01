@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using static MyNetworkManager;
 using System;
+using MLAPI.NetworkedVar;
 
 public class Global
 {
@@ -79,6 +80,9 @@ public class Global
 
    // Gets set to false if the player has already logged in successfully.
    public static bool isFirstLogin = true;
+
+   // The default settings for networked vars in the server network
+   public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 
    #endregion
 

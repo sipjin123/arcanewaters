@@ -215,14 +215,7 @@ public class FriendListPanel : Panel
    }
 
    public void onChatButtonPress (int friendUserId, string friendName) {
-      // Input the friends name in the whisper name input field
-      ChatPanel.self.nameInputField.text = friendName;
 
-      // Cycle through chat modes until it is in whisper mode
-      while (ChatPanel.self.currentChatType != ChatInfo.Type.Whisper) {
-         ChatPanel.self.chatModeButtonPressed();
-      }
-      close();
    }
 
    public void onSendMessageButtonPress (string friendName) {

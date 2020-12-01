@@ -271,7 +271,7 @@ public class OptionsPanel : Panel
       }
 
       // Hide the voyage group invite panel, if opened
-      VoyageManager.self.refuseVoyageInvitation();
+      VoyageGroupManager.self.refuseGroupInvitation();
 
       // Stop weather simulation
       WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
@@ -330,7 +330,7 @@ public class OptionsPanel : Panel
       }
 
       // Hide the voyage group invite panel, if opened
-      VoyageManager.self.refuseVoyageInvitation();
+      VoyageGroupManager.self.refuseGroupInvitation();
 
       // Tell the server that the player logged out safely
       Global.player.rpc.Cmd_OnPlayerLogOutSafely();

@@ -25,12 +25,6 @@ public class ChatPanel : MonoBehaviour {
    // The maximum number of characters in a single chat message, before reaching 'too many vertices' with the Text+Outline components
    public static int CHAT_LINE_MAX_LENGTH = 700;
 
-   // The input field where the whisper recipient name will be input
-   public InputField nameInputField;
-
-   // The constant whisper prefix for server message processing
-   public const string WHISPER_PREFIX = "/w ";
-
    // The panel modes
    public enum Mode {
       Minimized = 0,
@@ -66,6 +60,10 @@ public class ChatPanel : MonoBehaviour {
    public TradeChatLine tradeChatLinePrefab;
    public GuildChatLine guildChatLinePrefab;
    public GuildInviteChatLine guildInviteChatLinePrefab;
+   public GameObject speakChatRow;
+   public GameObject tradeChatRow;
+   public GameObject guildChatRow;
+   public GameObject guildInviteChatRow;
 
    // Our currently selected chatType
    public ChatInfo.Type currentChatType = ChatInfo.Type.Global;
@@ -85,7 +83,6 @@ public class ChatPanel : MonoBehaviour {
    // The custom color for each entity speaking
    public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor, globalChatLocalColor, globalChatOtherColor;
    public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor, globalNameLocalColor, globalNameOtherColor;
-   public Color whisperNameColor, whisperMessageColor, whisperReceiverNameColor, whisperReceiverMessageColor;
 
    #endregion
 
@@ -238,12 +235,7 @@ public class ChatPanel : MonoBehaviour {
 
          if (inputField.text != "") {
             // Send the message off to the server for processing
-            string message = inputField.text;
-            if (currentChatType == ChatInfo.Type.Whisper) {
-               message = WHISPER_PREFIX + nameInputField.text + " " + message;
-            }
-
-            ChatManager.self.processChatInput(message);
+            ChatManager.self.processChatInput(inputField.text);
 
             // Clear out the text now that it's been used
             inputField.text = "";
@@ -317,15 +309,29 @@ public class ChatPanel : MonoBehaviour {
 
    public void addGuildInvite (GuildInvite invite) {
       // Create a new Chat Line instance and assign the parent
-      GuildInviteChatLine chatLine = Instantiate(guildInviteChatLinePrefab, messagesContainer.transform);
+      GameObject chatRow = Instantiate(guildInviteChatRow, messagesContainer.transform);
+      GuildInviteChatLine chatLine = chatRow.GetComponentInChildren<GuildInviteChatLine>();
       chatLine.name = "Guild Invite";
    }
 
    public void addChatInfo (ChatInfo chatInfo) {
-      // Create a new Chat Line instance and assign the parent
-      SpeakChatLine chatLine = Instantiate(speakChatLinePrefab, messagesContainer.transform);
+      // Create a new Chat Row instance and assign the parent
+      GameObject chatRow = Instantiate(speakChatRow, messagesContainer.transform);
+      SpeakChatLine chatLine = chatRow.GetComponentInChildren<SpeakChatLine>();
+      GuildIcon rowGuildIcon = chatRow.GetComponentInChildren<GuildIcon>();
       chatLine.name = "Chat Message";
       chatLine.chatInfo = chatInfo;
+
+      // Assign guild icon parts if sender is part of a guild
+      if (Global.player != null && Global.player.guildId > 0) {
+         // Set the guild icon parts
+         rowGuildIcon.gameObject.SetActive(true);
+         rowGuildIcon.setBorder(chatInfo.iconBorder);
+         rowGuildIcon.setBackground(chatInfo.iconBackground, chatInfo.iconBackPalettes);
+         rowGuildIcon.setSigil(chatInfo.iconSigil, chatInfo.iconSigilPalettes);
+      } else {
+         rowGuildIcon.gameObject.SetActive(false);
+      }
 
       // This will prevent a 'too many vertices' error with the Text and Outline components
       string chatLineText = chatInfo.text.Substring(0, Mathf.Min(chatInfo.text.Length, CHAT_LINE_MAX_LENGTH));
@@ -339,14 +345,9 @@ public class ChatPanel : MonoBehaviour {
          bool isLocalPlayer = true;
          if (Global.player != null) {
             isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
-         }
+         } 
 
-         string messageSource = chatInfo.sender;
-         if (chatInfo.messageType == ChatInfo.Type.Whisper) {
-            messageSource = (isLocalPlayer ? "You whispered to " : "") + messageSource + (!isLocalPlayer ? " whispers" : "");
-         }
-
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
       }
 
       // In minimized mode, keep the scrollbar at the bottom
@@ -366,7 +367,7 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
-      if (chatInfo.messageType != ChatInfo.Type.Emote && chatInfo.messageType != ChatInfo.Type.Whisper) {
+      if (chatInfo.messageType != ChatInfo.Type.Emote) {
          // If we have a Body for the specified sender, create a speech bubble
          BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
          if (body != null) {
@@ -401,20 +402,14 @@ public class ChatPanel : MonoBehaviour {
          case ChatInfo.Type.System:
             newColor = systemNameColor;
             break;
-         case ChatInfo.Type.Whisper:
-            if (isLocalPlayer) {
-               newColor = whisperReceiverNameColor;
-            } else {
-               newColor = whisperNameColor;
-            }
-            break;
       }
       return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
    }
 
    public void addGuildChatInfo (ChatInfo chatInfo) {
       // Create a new Chat Line instance and assign the parent
-      GuildChatLine chatLine = Instantiate(guildChatLinePrefab, messagesContainer.transform);
+      GameObject chatRow = Instantiate(guildInviteChatRow, messagesContainer.transform);
+      GuildChatLine chatLine = chatRow.GetComponentInChildren<GuildChatLine>();
       chatLine.name = "Guild Chat Message";
       chatLine.chatInfo = chatInfo;
 
@@ -433,17 +428,13 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public void chatModeButtonPressed () {
-      if (currentChatType == ChatInfo.Type.Whisper) {
+      if (currentChatType == ChatInfo.Type.Global) {
          currentChatType = ChatInfo.Type.Local;
       } else if (currentChatType == ChatInfo.Type.Local) {
          currentChatType = ChatInfo.Type.Guild;
       } else if (currentChatType == ChatInfo.Type.Guild) {
          currentChatType = ChatInfo.Type.Global;
-      } else if (currentChatType == ChatInfo.Type.Global) {
-         currentChatType = ChatInfo.Type.Whisper;
       }
-
-      nameInputField.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
    }
 
    protected bool shouldShowChat () {
@@ -500,8 +491,6 @@ public class ChatPanel : MonoBehaviour {
             return string.Format("<color={0}>Global</color>", colorString);
          case ChatInfo.Type.Guild:
             return string.Format("<color={0}>Guild</color>", colorString);
-         case ChatInfo.Type.Whisper:
-            return string.Format("<color={0}>Whisper</color>", colorString);
       }
 
       return "";
@@ -519,9 +508,6 @@ public class ChatPanel : MonoBehaviour {
             return isLocalPlayer ? globalChatLocalColor : globalChatOtherColor;
          case ChatInfo.Type.Local:
             return isLocalPlayer ? playerSpeechColor : otherPlayerSpeechColor;
-         case ChatInfo.Type.Whisper:
-            var chatColor = isLocalPlayer ? whisperReceiverMessageColor : whisperMessageColor;
-            return chatColor;
          case ChatInfo.Type.Guild:
             return Color.white;
          case ChatInfo.Type.Emote:

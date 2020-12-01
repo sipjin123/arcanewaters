@@ -101,14 +101,14 @@ public class ContextMenuPanel : MonoBehaviour
       clearButtons();
       
       if (Global.player.userId != userId) {
-         if (VoyageManager.isInGroup(Global.player)) {
+         if (VoyageGroupManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
             if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
-               addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
+               addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
             }
          } else {
             // If we are not in a group, always allow to invite someone
-            addButton("Group Invite", () => VoyageManager.self.invitePlayerToVoyageGroup(userName));
+            addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
          }
          addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
 
@@ -118,8 +118,8 @@ public class ContextMenuPanel : MonoBehaviour
          }
 
          addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
-      } else if (!VoyageManager.isInGroup(Global.player)) {
-         addButton("Create Group", () => VoyageManager.self.createPrivateGroup());
+      } else if (!VoyageGroupManager.isInGroup(Global.player)) {
+         addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
       }
 
       show(userName);

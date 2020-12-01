@@ -804,17 +804,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_CloseVoyagePanel (NetworkConnection connection) {
-      // Get the panel
-      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
-
-      // Close the panel if it is showing
-      if (panel.isShowing()) {
-         PanelManager.self.unlinkPanel();
-      }
-   }
-
-   [TargetRpc]
    public void Target_ConfirmWarpToVoyageArea (NetworkConnection connection) {
       VoyageManager.self.displayWarpToVoyageConfirmScreen();
    }
@@ -850,42 +839,16 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId);
+      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType);
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
-      } else if (chatType == ChatInfo.Type.Whisper) {
-         string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
-         if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
-            message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
-            NetEntity entityReceiver = null;
-            Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-            if (instance != null) {
-               foreach (PlayerBodyEntity player in instance.getPlayerBodyEntities()) {
-                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = player;
-                  }
-               }
-               foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
-                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = player;
-                   }
-               }
-            }
-            if (entityReceiver != null) {
-               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.senderId, chatInfo.chatTime.ToBinary(), chatInfo.messageType);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.senderId, chatInfo.chatTime.ToBinary(), chatInfo.messageType);
-            } else {
-               string errorMsg = "Recipient is either offline or does not exist!";
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", 0, chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error);
-            }
-         }
       }
    }
 
@@ -2758,58 +2721,15 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // If the user has already joined a voyage map, display a confirm screen to warp to the map
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
-         if (voyageGroup != null && voyageGroup.voyageId > 0) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
-            });
-            return;
-         }
+      // If the user has already joined a voyage map, display a confirm screen to warp to the map
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup != null && voyageGroup.voyageId > 0) {
+         Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
+         return;
+      }
 
-         // Get the group count in each active voyage
-         Dictionary<int, int> voyageToGroupCount = DB_Main.getGroupCountInAllVoyages();
-
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Get the voyage instances in all known servers
-            List<Voyage> allVoyages = VoyageManager.self.getAllVoyages();
-
-            // Select the voyages that are open to new groups
-            List<Voyage> allOpenVoyages = new List<Voyage>();
-            foreach (Voyage voyage in allVoyages) {
-               // Get the number of groups in the voyage instance
-               int groupCount;
-               if (!voyageToGroupCount.TryGetValue(voyage.voyageId, out groupCount)) {
-                  // If the number of groups could not be found, set it to 0
-                  groupCount = 0;
-               }
-
-               if (VoyageManager.isVoyageOpenToNewGroups(voyage, groupCount)) {
-                  // Set the number of groups in the voyage object, to send the info to the client
-                  voyage.groupCount = groupCount;
-
-                  // Set the biome of the area where the voyage is set
-                  if (voyage.biome == Biome.Type.None) {
-                     voyage.biome = AreaManager.self.getAreaBiome(voyage.areaKey);
-                  }
-
-                  // Calculate the time since the voyage started
-                  DateTime voyageCreationDate = DateTime.FromBinary(voyage.creationDate);
-                  TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(voyageCreationDate);
-                  voyage.timeSinceStart = timeSinceStart.Ticks;
-
-                  // Select the voyage
-                  allOpenVoyages.Add(voyage);
-               }
-            }
-
-            // Send the list to the client
-            Target_ReceiveVoyageInstanceList(_player.connectionToClient, allOpenVoyages.ToArray());
-         });
-      });
+      // Send the list to the client
+      Target_ReceiveVoyageInstanceList(_player.connectionToClient, VoyageManager.self.getAllOpenVoyageInstances().ToArray());
    }
 
    [Command]
@@ -2819,61 +2739,37 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Retrieve the voyage data
+      // Check the validity of the request
       Voyage voyage = VoyageManager.self.getVoyage(voyageId);
       if (voyage == null) {
          sendError("This voyage is not available anymore!");
          return;
       }
 
-      // Get the name of this computer
-      string deviceName = SystemInfo.deviceName;
-
-      // Check if the user is already in a group
-      if (VoyageManager.isInGroup(_player)) {
+      if (VoyageGroupManager.isInGroup(_player)) {
          sendError("You must leave your group to join another voyage map!");
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Find the oldest incomplete quickmatch group in the given area
-         VoyageGroupInfo voyageGroup = DB_Main.getBestVoyageGroupForQuickmatch(voyageId);
+      // Find the oldest incomplete quickmatch group in the given area
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getBestGroupForQuickmatch(voyageId);
 
-         // Check if no group is available
-         if (voyageGroup == null) {
-            // Count the number of groups in the voyage
-            int groupCount = DB_Main.getGroupCountInVoyage(voyageId);
-
-            // Check that the voyage is open for new groups
-            if (!VoyageManager.isVoyageOpenToNewGroups(voyage, groupCount)) {
-               sendError("This voyage cannot be joined anymore!");
-               return;
-            }
-
-            // Create a new group
-            voyageGroup = new VoyageGroupInfo(-1, voyage.voyageId, DateTime.UtcNow, deviceName,
-               true, false, 0);
-            voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
+      // If no group is available, create a new one if possible
+      if (voyageGroup == null) {
+         // Check that the voyage is open for new groups
+         if (!VoyageManager.isVoyageOpenToNewGroups(voyage)) {
+            sendError("This voyage cannot be joined anymore!");
+            return;
          }
 
+         VoyageGroupManager.self.createGroup(_player, voyageId, false);
+      } else {
          // Add the user to the group
-         DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
+         VoyageGroupManager.self.addUserToGroup(voyageGroup, _player);
+      }
 
-         // If the group is now complete, disable its quickmatch
-         voyageGroup.memberCount++;
-         if (voyageGroup.memberCount >= Voyage.getMaxGroupSize(voyage.difficulty)) {
-            DB_Main.updateVoyageGroupQuickmatchStatus(voyageGroup.groupId, false);
-         }
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_CloseVoyagePanel(_player.connectionToClient);
-
-            // Warp the player to the voyage map immediately
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
-         });
-      });
+      // Warp the player to the voyage map immediately
+      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
    }
 
    [Command]
@@ -2890,42 +2786,34 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Verify The validity of the request
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
-         if (voyageGroup == null) {
-            sendError("Error when retrieving the voyage group!");
-            return;
-         }
+      // Verify the validity of the request
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup == null) {
+         sendError("Error when retrieving the voyage group!");
+         return;
+      }
 
-         if (voyageGroup.memberCount >= Voyage.getMaxGroupSize(voyage.difficulty)) {
-            sendError("The maximum group size for this map difficulty is " + Voyage.getMaxGroupSize(voyage.difficulty) + "!");
-            return;
-         }
+      if (voyageGroup.members.Count > Voyage.getMaxGroupSize(voyage.difficulty)) {
+         sendError("The maximum group size for this map difficulty is " + Voyage.getMaxGroupSize(voyage.difficulty) + "!");
+         return;
+      }
 
-         if (voyageGroup.voyageId > 0) {
-            sendError("You must leave your group to join another voyage map!");
-            return;
-         }
+      if (voyageGroup.voyageId > 0) {
+         sendError("You must leave your group to join another voyage map!");
+         return;
+      }
 
-         int groupCount = DB_Main.getGroupCountInVoyage(voyageId);
-         if (!VoyageManager.isVoyageOpenToNewGroups(voyage, groupCount)) {
-            sendError("This voyage is full and cannot be joined anymore!");
-            return;
-         }
+      if (!VoyageManager.isVoyageOpenToNewGroups(voyage)) {
+         sendError("This voyage is full and cannot be joined anymore!");
+         return;
+      }
 
-         // Set the voyage id in the group
-         DB_Main.updateVoyageInVoyageGroup(voyageGroup.groupId, voyageId);
+      // Set the voyage id in the group
+      voyageGroup.voyageId = voyageId;
+      VoyageGroupManager.self.updateGroup(voyageGroup);
 
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_CloseVoyagePanel(_player.connectionToClient);
-
-            // Warp the player to the voyage map immediately
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
-         });
-      });
+      // Warp the player to the voyage map immediately
+      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
    }
 
    [Command]
@@ -2935,37 +2823,14 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Get the name of this computer
-      string deviceName = SystemInfo.deviceName;
+      // Verify that the user is not already in a group
+      if (VoyageGroupManager.isInGroup(_player)) {
+         sendError("You must leave your current group before creating another!");
+         return;
+      }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Verify that the user is not already in a group
-         VoyageGroupInfo previousGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
-         if (previousGroupInfo != null) {
-            sendError("You must leave your current group before creating another!");
-            return;
-         }
-
-         // Create a new private group and add the user to it
-         VoyageGroupInfo voyageGroup = createPrivateVoyageGroupCommon(deviceName);
-      });
-   }
-
-   // Must be called from the background thread
-   [Server]
-   private VoyageGroupInfo createPrivateVoyageGroupCommon (string deviceName) {
-      // Create the group and add the user to it
-      VoyageGroupInfo voyageGroup = new VoyageGroupInfo(-1, 0, DateTime.UtcNow, deviceName, false, true, 0);
-      voyageGroup.groupId = DB_Main.createVoyageGroup(voyageGroup);
-      DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
-
-      UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-         // Update the user voyage group in the net entity
-         _player.voyageGroupId = voyageGroup.groupId;
-      });
-
-      return voyageGroup;
+      // Create a new private group and add the user to it
+      VoyageGroupManager.self.createGroup(_player, -1, true);
    }
 
    [Command]
@@ -2975,32 +2840,24 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Verify that the user is in a group
-         VoyageGroupInfo voyageGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
+      // Verify that the user is in a group
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup == null) {
+         D.error(string.Format("Could not warp player {0} to its current voyage group - the player does not belong to a group.", _player.userId));
+         sendError("An error occurred when searching the voyage group.");
+         return;
+      }
 
-         if (voyageGroupInfo == null) {
-            D.error(string.Format("Could not warp player {0} to its current voyage group - the player does not belong to a group.", _player.userId));
-            sendError("An error occurred when searching the voyage group.");
-            return;
-         }
+      // Retrieve the voyage data
+      Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
+      if (voyage == null) {
+         D.error(string.Format("Could not find the voyage {0} for user {1}.", voyageGroup.groupId, _player.userId));
+         sendError("An error occurred when searching for the voyage.");
+         return;
+      }
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Retrieve the voyage data
-            Voyage voyage = VoyageManager.self.getVoyage(voyageGroupInfo.voyageId);
-
-            if (voyage == null) {
-               D.error(string.Format("Could not find the voyage {0} for user {1}.", voyageGroupInfo.groupId, _player.userId));
-               sendError("An error occurred when searching for the voyage.");
-               return;
-            }
-
-            // Warp to the voyage area
-            _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
-         });
-      });
+      // Warp to the voyage area
+      _player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
    }
 
    [Command]
@@ -3010,181 +2867,60 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // Prevent spamming invitations
-      if (VoyageManager.self.isGroupInvitationSpam(_player.userId, inviteeName)) {
-         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You must wait " + VoyageManager.GROUP_INVITE_MIN_INTERVAL.ToString() + " seconds before inviting " + inviteeName + " again!");
+      VoyageGroupManager.self.inviteUserToGroup(_player, inviteeName);
+   }
+
+   [Command]
+   public void Cmd_AcceptGroupInvitation (int destinationGroupId) {
+      if (_player == null) {
+         D.warning("No player object found.");
          return;
       }
 
-      // Get the name of this computer
-      string deviceName = SystemInfo.deviceName;
+      // Verify the validity of the request
+      VoyageGroupInfo destinationGroup = VoyageGroupManager.self.getGroupById(destinationGroupId);
+      if (destinationGroup == null) {
+         sendError("The group does not exist!");
+      }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Try to retrieve the invitee info
-         UserInfo inviteeInfo = DB_Main.getUserInfo(inviteeName);
-         if (inviteeInfo == null) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + inviteeName + " does not exists!");
-            });
+      if (VoyageGroupManager.isGroupFull(destinationGroup)) {
+         sendError("The group is full!");
+         return;
+      }
+
+      VoyageGroupInfo currentGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (currentGroup != null) {
+         if (currentGroup.groupId == destinationGroup.groupId) {
+            // If the user already belongs to the destination group, do nothing
             return;
-         }
-
-         // Get the voyage group info
-         VoyageGroupInfo voyageGroup;
-         if (VoyageManager.isInGroup(_player)) {
-            voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
          } else {
-            // If the player is not in a group, create one
-            voyageGroup = createPrivateVoyageGroupCommon(deviceName);
+            sendError("You must leave your current group before joining another!");
          }
+      }
 
-         // Check that the group is private
-         if (!voyageGroup.isPrivate) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Only private groups allow inviting players!");
-            });
-            return;
-         }
-
-         // Get the invitee voyage group, if any
-         VoyageGroupInfo inviteeVoyageGroup = DB_Main.getVoyageGroupForMember(inviteeInfo.userId);
-
-         // Check if the invitee already belongs to the group
-         if (inviteeVoyageGroup != null && inviteeVoyageGroup.groupId == voyageGroup.groupId) {
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, inviteeName + " already belongs to the group!");
-            });
-            return;
-         }
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Check that there is a spot left in the group
-            if (VoyageManager.isGroupFull(voyageGroup)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Your voyage group is full!");
-               return;
-            }
-
-            // Find the server where the invitee is located
-            NetworkedServer inviteeServer = ServerNetworkingManager.self.getServerContainingUser(inviteeInfo.userId);
-
-            if (inviteeServer == null) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not find the player " + inviteeName);
-               return;
-            }
-
-            // Send the invitation
-            ServerNetworkingManager.self.sendVoyageGroupInvitation(voyageGroup.groupId, _player.userId, _player.entityName, inviteeInfo.userId);
-
-            // Write in the inviter chat that the invitation has been sent
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The voyage invitation has been sent to " + inviteeName);
-
-            // Log the invitation
-            VoyageManager.self.logGroupInvitation(_player.userId, inviteeName);
-         });
-      });
+      // Add the user to the group
+      VoyageGroupManager.self.addUserToGroup(destinationGroup, _player);
    }
 
    [Command]
-   public void Cmd_AddUserToVoyageGroup (int voyageGroupId, string inviterName) {
+   public void Cmd_RemoveUserFromGroup () {
       if (_player == null) {
          D.warning("No player object found.");
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieve the group info
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(voyageGroupId);
-
-         // Check that the group exists
-         if (voyageGroup == null) {
-            sendError("The voyage group does not exist!");
-            return;
-         }
-
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Check that there is a spot left in the group
-            if (VoyageManager.isGroupFull(voyageGroup)) {
-               sendError("The voyage group is full!");
-               return;
-            }
-
-            // Background thread
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               // Get the current voyage group the user belongs to, if any
-               VoyageGroupInfo currentGroupInfo = DB_Main.getVoyageGroupForMember(_player.userId);
-
-               // If the user already belongs to the destination group, do nothing
-               if (currentGroupInfo != null && currentGroupInfo.groupId == voyageGroupId) {
-                  return;
-               }
-
-               if (currentGroupInfo != null) {
-                  sendError("You must leave your current group before joining another!");
-                  return;
-               }
-
-               // Add the user to the group
-               DB_Main.addMemberToVoyageGroup(voyageGroup.groupId, _player.userId);
-
-               // Back to the Unity thread
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  // Update its voyage group in the net entity
-                  _player.voyageGroupId = voyageGroup.groupId;
-               });
-            });
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_DeclineVoyageInvite (int voyageId, string inviterName, int inviteeId) {
-      // TODO: Enter decline logic here
-   }
-
-   [Command]
-   public void Cmd_RemoveUserFromVoyageGroup () {
-      if (_player == null) {
-         D.warning("No player object found.");
+      // If the player is not in a group, do nothing
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup == null) {
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+      VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
 
-         // Get the current voyage group the user belongs to, if any
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(_player.userId);
-
-         // If the player is not in a group, do nothing
-         if (voyageGroup == null) {
-            return;
-         }
-
-         // Remove the player from its group
-         DB_Main.deleteMemberFromVoyageGroup(_player.userId);
-
-         // Update the group member count
-         voyageGroup.memberCount--;
-
-         // If the group is now empty, delete it
-         if (voyageGroup.memberCount <= 0) {
-            DB_Main.deleteVoyageGroup(voyageGroup.groupId);
-         }
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Update the player voyage group id in the net entity
-            _player.voyageGroupId = -1;
-
-            // If the player is in a voyage area, warp him to the starting town
-            if (VoyageManager.self.isVoyageArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
-               _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-            }
-         });
-      });
+      // If the player is in a voyage area, warp him to the starting town
+      if (VoyageManager.self.isVoyageArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+      }
    }
 
    [Command]
@@ -3194,23 +2930,7 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // If the player is not in a group, send an empty group
-      if (!VoyageManager.isInGroup(_player)) {
-         Target_ReceiveVoyageGroupMembers(_player.connectionToClient, new int[0]);
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieve all the group members user info
-         List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
-
-         // Back to the Unity thread to send the results back to the client
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Send the data to the client
-            Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembers.ToArray());
-         });
-      });
+      VoyageGroupManager.self.sendVoyageGroupMembersToClient(_player);
    }
 
    [Command]
@@ -3227,31 +2947,25 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
-      if (!VoyageManager.isInGroup(_player) && !VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      if (!VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          return;
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Retrieve the group info
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroup(_player.voyageGroupId);
+      // Retrieve the group info
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
 
-         // Back to the Unity thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // If the group doesn't exists, clear it from the netentity and redirect to the starting town
-            if (voyageGroup == null) {
-               _player.voyageGroupId = -1;
-               _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-               return;
-            }
+      // If the group doesn't exists, clear it from the netentity and redirect to the starting town
+      if (voyageGroup == null) {
+         _player.voyageGroupId = -1;
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         return;
+      }
 
-            // If the voyage is not defined or doesn't exists, redirect to the starting town
-            if (voyageGroup.voyageId <= 0 || VoyageManager.self.getVoyage(voyageGroup.voyageId) == null) {
-               _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-               return;
-            }
-         });
-      });
+      // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
+      if (voyageGroup.voyageId <= 0 || VoyageManager.self.getVoyage(voyageGroup.voyageId) == null || _player.getInstance().voyageId != voyageGroup.voyageId) {
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         return;
+      }
    }
 
    [TargetRpc]
@@ -3771,137 +3485,135 @@ public class RPCManager : NetworkBehaviour {
       // Look up the player's Area
       Area area = AreaManager.self.getArea(_player.areaKey);
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         List<int> groupMembers = DB_Main.getVoyageGroupMembers(_player.voyageGroupId);
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Cache Attackers Info
-            foreach (BattlerInfo battlerInfo in attackers) {
-               // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-               if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-                  BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+      // Get the group the player belongs to
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
 
-                  if (rawEntity != null) {
-                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-                     if (bodyEntity != null) {
-                        bodyEntities.Add(bodyEntity);
-                     } else {
-                        D.warning("Server cant find this ID: " + rawEntity.userId);
-                     }
-                  }
-               }
-            }
+      // Cache Attackers Info
+      foreach (BattlerInfo battlerInfo in attackers) {
+         // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+         if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+            BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
 
-            // Cache Defenders Info
-            foreach (BattlerInfo battlerInfo in defenders) {
-               // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-               if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-                  BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
-
-                  if (rawEntity != null) {
-                     PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-                     if (bodyEntity != null) {
-                        bodyEntities.Add(bodyEntity);
-                     } else {
-                        D.warning("Server cant find this ID: " + rawEntity.userId);
-                     }
-                  }
-               }
-            }
-
-            Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
-            int attackerCount = attackers.Length < 1 ? 1 : attackers.Length;
-            List<BattlerInfo> modifiedDefenderList = defenders.ToList();
-
-            // Cache the possible enemy roster
-            List<Enemy> enemyRoster = new List<Enemy>();
-            if (battleInstance == null) {
-               D.debug("The battle instance does not exist anymore! Block process for Player: " + _player.userId + " Instance:" + _player.instanceId);
-               return;
-            }
-            foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
-               if (enemyInstance is Enemy) {
-                  if (enemy.animGroupType == ((Enemy) enemyInstance).animGroupType) {
-                     enemyRoster.Add((Enemy) enemyInstance);
-                  }
-               }
-            }
-
-            // Process voyage groups
-            foreach (int memberId in groupMembers) {
-               NetEntity entity = EntityManager.self.getEntity(memberId);
-               if (entity != null) {
-                  if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
-                     attackerCount++;
-                  }
-               }
-            }
-
-            // This block will handle the randomizing of the enemy count 
-            int maximumEnemyCount = (attackerCount * 2) - 1;
-            int combatantCount = 0;
-            bool forceCombatantEntry = false;
-            if (!enemy.isBossType && enemy.enemyType != Enemy.Type.Skelly_Captain_Tutorial) {
-               for (int i = 0; i < maximumEnemyCount; i++) {
-                  float randomizedSpawnChance = 0;
-
-                  // Chance to spawn additional enemies more than the attackers
-                  if (modifiedDefenderList.Count >= attackerCount) {
-                     // Make sure that if the encountered enemy is a support type, there is atleast 1 combatant ally
-                     if (enemyData.isSupportType && i == maximumEnemyCount - 1 && combatantCount < 1) {
-                        randomizedSpawnChance = 0;
-                        forceCombatantEntry = true;
-                     } else {
-                        randomizedSpawnChance = Random.Range(0.0f, 10.0f);
-                     }
-                  }
-
-                  if (randomizedSpawnChance < 5) {
-                     Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
-                     BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
-                     modifiedDefenderList.Add(new BattlerInfo {
-                        battlerName = battlerData.enemyName,
-                        battlerType = BattlerType.AIEnemyControlled,
-                        enemyType = backupEnemy.enemyType,
-                        battlerXp = backupEnemy.XP,
-                        companionId = 0
-                     });
-
-                     if (!battlerData.isSupportType) {
-                        combatantCount++;
-                     }
-                  }
-               }
-            }
-
-            // Declare the voyage group engaging the enemy
-            if (enemy.battleId < 1) {
-               if (_player.voyageGroupId == -1) {
-                  enemy.voyageGroupId = 0;
+            if (rawEntity != null) {
+               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+               if (bodyEntity != null) {
+                  bodyEntities.Add(bodyEntity);
                } else {
-                  enemy.voyageGroupId = _player.voyageGroupId;
+                  D.warning("Server cant find this ID: " + rawEntity.userId);
+               }
+            }
+         }
+      }
+
+      // Cache Defenders Info
+      foreach (BattlerInfo battlerInfo in defenders) {
+         // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+         if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+            BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+
+            if (rawEntity != null) {
+               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+               if (bodyEntity != null) {
+                  bodyEntities.Add(bodyEntity);
+               } else {
+                  D.warning("Server cant find this ID: " + rawEntity.userId);
+               }
+            }
+         }
+      }
+
+      Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
+      int attackerCount = attackers.Length < 1 ? 1 : attackers.Length;
+      List<BattlerInfo> modifiedDefenderList = defenders.ToList();
+
+      // Cache the possible enemy roster
+      List<Enemy> enemyRoster = new List<Enemy>();
+      if (battleInstance == null) {
+         D.debug("The battle instance does not exist anymore! Block process for Player: " + _player.userId + " Instance:" + _player.instanceId);
+         return;
+      }
+      foreach (NetworkBehaviour enemyInstance in battleInstance.getEntities()) {
+         if (enemyInstance is Enemy) {
+            if (enemy.animGroupType == ((Enemy) enemyInstance).animGroupType) {
+               enemyRoster.Add((Enemy) enemyInstance);
+            }
+         }
+      }
+
+      // Process voyage groups
+      foreach (int memberId in voyageGroup.members) {
+         NetEntity entity = EntityManager.self.getEntity(memberId);
+         if (entity != null) {
+            if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
+               attackerCount++;
+            }
+         }
+      }
+
+      // This block will handle the randomizing of the enemy count 
+      int maximumEnemyCount = (attackerCount * 2) - 1;
+      int combatantCount = 0;
+      bool forceCombatantEntry = false;
+      if (!enemy.isBossType && enemy.enemyType != Enemy.Type.Skelly_Captain_Tutorial) {
+         for (int i = 0; i < maximumEnemyCount; i++) {
+            float randomizedSpawnChance = 0;
+
+            // Chance to spawn additional enemies more than the attackers
+            if (modifiedDefenderList.Count >= attackerCount) {
+               // Make sure that if the encountered enemy is a support type, there is atleast 1 combatant ally
+               if (enemyData.isSupportType && i == maximumEnemyCount - 1 && combatantCount < 1) {
+                  randomizedSpawnChance = 0;
+                  forceCombatantEntry = true;
+               } else {
+                  randomizedSpawnChance = Random.Range(0.0f, 10.0f);
                }
             }
 
-            // Get or create the Battle instance
-            Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
+            if (randomizedSpawnChance < 5) {
+               Enemy backupEnemy = forceCombatantEntry ? enemyRoster.FindAll(_ => !_.isSupportType).ChooseRandom() : enemyRoster.ChooseRandom();
+               BattlerData battlerData = MonsterManager.self.getBattlerData(backupEnemy.enemyType);
+               modifiedDefenderList.Add(new BattlerInfo {
+                  battlerName = battlerData.enemyName,
+                  battlerType = BattlerType.AIEnemyControlled,
+                  enemyType = backupEnemy.enemyType,
+                  battlerXp = backupEnemy.XP,
+                  companionId = 0
+               });
 
-            // If the Battle is full, we can't proceed
-            if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
-               return;
+               if (!battlerData.isSupportType) {
+                  combatantCount++;
+               }
             }
+         }
+      }
 
-            // Adds the player to the newly created or existing battle
-            BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
+      // Declare the voyage group engaging the enemy
+      if (enemy.battleId < 1) {
+         if (_player.voyageGroupId == -1) {
+            enemy.voyageGroupId = 0;
+         } else {
+            enemy.voyageGroupId = _player.voyageGroupId;
+         }
+      }
 
-            // Handles ability related logic
-            processPlayerAbilities(localBattler, bodyEntities);
+      // Get or create the Battle instance
+      Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
 
-            // Send Battle Bg data
-            int bgXmlID = battle.battleBoard.xmlID;
-            Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
-         });
-      });
+      // If the Battle is full, we can't proceed
+      if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The battle is already full!");
+         return;
+      }
+
+      // Adds the player to the newly created or existing battle
+      BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
+
+      // Handles ability related logic
+      processPlayerAbilities(localBattler, bodyEntities);
+
+      // Send Battle Bg data
+      int bgXmlID = battle.battleBoard.xmlID;
+      Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
    }
 
    [Server]
@@ -4063,24 +3775,6 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Update the slot number of the specific ability
          DB_Main.updateAbilitySlot(_player.userId, abilityID, equipSlot);
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Target_FinishedUpdatingAbility(_player.connectionToClient);
-         });
-      });
-   }
-
-   [Command]
-   public void Cmd_SwapAbility (int abilityID, int equipSlot) {
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         string rawAbilityData = DB_Main.userAbilities(_player.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
-         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
-         AbilitySQLData abilityInSlot = abilityDataList.Find(_ => _.equipSlotIndex == equipSlot);
-         AbilitySQLData abilityReplacement = abilityDataList.Find(_ => _.abilityID == abilityID);
-
-         // Update the slot number of the specific abilities to swap them out
-         DB_Main.updateAbilitySlot(_player.userId, abilityID, abilityInSlot.equipSlotIndex);
-         DB_Main.updateAbilitySlot(_player.userId, abilityInSlot.abilityID, abilityReplacement.equipSlotIndex);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             Target_FinishedUpdatingAbility(_player.connectionToClient);
@@ -4836,7 +4530,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    private void Target_OnWarpFailed () {
-      D.debug("Warp failed");
+      D.log("Warp failed");
       _player.onWarpFailed();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }
@@ -4876,8 +4570,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_StartPettingAnimal (int npcId, int facing) {
-      NPC npc = NPCManager.self.getNPC(npcId);
+   public void Cmd_StartPettingAnimal (uint netEntityId, int facing) {
+      NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
 
       GameObject closestSpot = null;
       Vector3 playerPos = _player.transform.position;
@@ -4900,13 +4594,13 @@ public class RPCManager : NetworkBehaviour {
       Vector2 animalEndPos = new Vector2(npc.transform.position.x, npc.transform.position.y) + distToMoveAnimal;
       float maxTime = Mathf.Lerp(0.0f, 0.75f, distance / NPC.ANIMAL_PET_DISTANCE);
 
-      Rpc_ContinuePettingAnimal(npcId, animalEndPos, maxTime);
+      Rpc_ContinuePettingAnimal(netEntityId, animalEndPos, maxTime);
       npc.continueAnimalPetting(animalEndPos, maxTime);
    }
 
    [ClientRpc]
-   public void Rpc_ContinuePettingAnimal (int npcId, Vector2 animalEndPos, float maxTime) {
-      NPC npc = NPCManager.self.getNPC(npcId);
+   public void Rpc_ContinuePettingAnimal (uint netEntityId, Vector2 animalEndPos, float maxTime) {
+      NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
       npc.continueAnimalPetting(animalEndPos, maxTime);
    }
 

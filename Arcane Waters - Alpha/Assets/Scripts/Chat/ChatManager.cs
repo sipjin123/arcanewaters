@@ -74,32 +74,8 @@ public class ChatManager : MonoBehaviour {
          return;
       }
 
-      if (chatType == ChatInfo.Type.Whisper && Global.player.entityName.ToLower() == extractWhisperNameFromChat(message).ToLower()) {
-         this.addChat("You cannot send a message to yourself!", ChatInfo.Type.Error);
-         return;
-      }
-
       // Pass the message along to the server
       Global.player.rpc.Cmd_SendChat(message, chatType);
-   }
-
-   public static string extractWhisperNameFromChat (string message) {
-      message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
-      string extractedUserName = "";
-      foreach (char letter in message) {
-         if (letter != ' ') {
-            extractedUserName += letter;
-         } else {
-            if (letter == ' ') {
-               break;
-            }
-         }
-      }
-      return extractedUserName;
-   }
-
-   public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
-      return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
    }
 
    public void processChatInput (string textToProcess) {
@@ -108,7 +84,7 @@ public class ChatManager : MonoBehaviour {
       }
 
       // Check if it's a chat command
-      if (textToProcess.StartsWith("/") && !textToProcess.StartsWith(ChatPanel.WHISPER_PREFIX)) {
+      if (textToProcess.StartsWith("/")) {
          executeChatCommand(textToProcess);
       } else {
          sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);
@@ -142,7 +118,7 @@ public class ChatManager : MonoBehaviour {
                   // Send the chat to everyone online in that guild
                   foreach (NetEntity player in MyNetworkManager.getPlayers().Values) {
                      if (player != null && player.connectionToClient != null && player.guildId == chat.guildId) {
-                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.senderId, chat.chatTime.ToBinary(), chat.messageType);
+                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.chatTime.ToBinary(), chat.messageType, chat.iconBackground, chat.iconBackPalettes, chat.iconBorder, chat.iconSigil, chat.iconSigilPalettes);
                      }
                   }
                }
@@ -185,7 +161,7 @@ public class ChatManager : MonoBehaviour {
       } else if (type == Type.Emote) {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Emote);
       } else if (type == Type.Invite) {
-         VoyageManager.self.handleInviteCommand(trimmedMessage);
+         VoyageGroupManager.self.handleInviteCommand(trimmedMessage);
       }
    }
 

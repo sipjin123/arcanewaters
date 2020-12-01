@@ -5,10 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System;
 
-#if IS_SERVER_BUILD
-using MySql.Data.MySqlClient;
-#endif
-
+[Serializable]
 public class VoyageGroupInfo
 {
    #region Public Variables
@@ -22,57 +19,25 @@ public class VoyageGroupInfo
    // The date at which the group was created
    public long creationDate;
 
-   // The name of the device that created the group
-   public string deviceName;
-
    // Gets set to true when the group is waiting for more quickmatch members
    public bool isQuickmatchEnabled;
 
    // Gets set to true when the group is private
    public bool isPrivate;
 
-   // The number of group members
-   public int memberCount;
+   // The userId of the members
+   public List<int> members = new List<int>();
 
    #endregion
 
    public VoyageGroupInfo () { }
 
-#if IS_SERVER_BUILD
-
-   public VoyageGroupInfo (MySqlDataReader dataReader) {
-      this.groupId = DataUtil.getInt(dataReader, "groupId");
-      this.voyageId = DataUtil.getInt(dataReader, "voyageId");
-      this.creationDate = DataUtil.getDateTime(dataReader, "creationDate").ToBinary();
-      this.deviceName = DataUtil.getString(dataReader, "deviceName");
-      this.isQuickmatchEnabled = DataUtil.getBoolean(dataReader, "isQuickMatchEnabled");
-      this.isPrivate = DataUtil.getBoolean(dataReader, "isPrivate");
-      this.memberCount = DataUtil.getInt(dataReader, "memberCount");
-   }
-
-#endif
-
-   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, string deviceName, 
-      bool isQuickmatchEnabled, bool isPrivate, int memberCount) {
+   public VoyageGroupInfo (int groupId, int voyageId, DateTime creationDate, bool isQuickmatchEnabled, bool isPrivate) {
       this.groupId = groupId;
       this.voyageId = voyageId;
       this.creationDate = creationDate.ToBinary();
-      this.deviceName = deviceName;
       this.isQuickmatchEnabled = isQuickmatchEnabled;
       this.isPrivate = isPrivate;
-      this.memberCount = memberCount;
-   }
-
-   public override bool Equals (object rhs) {
-      if (rhs is VoyageGroupInfo) {
-         var other = rhs as VoyageGroupInfo;
-         return groupId == other.groupId;
-      }
-      return false;
-   }
-
-   public override int GetHashCode () {
-      return groupId.GetHashCode();
    }
 
    #region Private Variables

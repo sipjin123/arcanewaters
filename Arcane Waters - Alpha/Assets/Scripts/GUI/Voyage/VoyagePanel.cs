@@ -53,11 +53,14 @@ public class VoyagePanel : Panel
    }
 
    public void confirmJoinVoyage (Voyage voyage) {
-      if (VoyageManager.isInGroup(Global.player)) {
+      if (VoyageGroupManager.isInGroup(Global.player)) {
          Global.player.rpc.Cmd_JoinVoyageWithGroup(voyage.voyageId);
       } else {
          Global.player.rpc.Cmd_JoinVoyageAlone(voyage.voyageId);
       }
+
+      // Close the panel
+      PanelManager.self.unlinkPanel();
    }
 
    #region Private Variables

@@ -70,7 +70,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    }
 
    public void Update () {
-      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageManager.isInGroup(Global.player) ||
+      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageGroupManager.isInGroup(Global.player) ||
          !_active) {
          return;
       }

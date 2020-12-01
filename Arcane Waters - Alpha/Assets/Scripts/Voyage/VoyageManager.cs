@@ -9,13 +9,7 @@ using System;
 public class VoyageManager : MonoBehaviour {
 
    #region Public Variables
-
-   // The number of seconds before an offline user is removed from its voyage group
-   public static int DELAY_BEFORE_GROUP_REMOVAL = 5 * 60;
-
-   // The number of seconds a user must wait before inviting the same user to a group again
-   public static int GROUP_INVITE_MIN_INTERVAL = 60;
-
+   
    // Self
    public static VoyageManager self;
 
@@ -28,28 +22,17 @@ public class VoyageManager : MonoBehaviour {
       _isNewVoyagePvP = UnityEngine.Random.Range(0, 2) == 0;
    }
 
-   public void Start () {
-      // Update the members of the voyage group, if any
-      InvokeRepeating(nameof(updateVoyageGroupMembers), 0f, 2f);
-   }
-
    public void startVoyageManagement () {
       // At server startup, for dev builds, make all the sea maps accessible by creating one voyage for each
 #if !CLOUD_BUILD
       StartCoroutine(CO_CreateInitialVoyages());
 #endif
 
-      // At server startup, delete all voyage groups
-      StartCoroutine(CO_ClearVoyageGroups());
-
       // Regularly check that there are enough voyage instances open and create more
       InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);
-
-      // Regularly update the list of voyage instances hosted by this server
-      InvokeRepeating(nameof(updateVoyageInstancesList), 5.5f, 5f);
    }
 
-   public void createVoyageInstance (string areaKey, bool isPvP, Biome.Type biome) {
+   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
@@ -64,20 +47,11 @@ public class VoyageManager : MonoBehaviour {
          areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
       }
 
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get a new voyage id
-         int voyageId = DB_Main.getNewVoyageId();
+      // Randomize the voyage parameters
+      Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
 
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Randomize the voyage parameters
-            Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
-
-            // Create the area instance
-            InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty, biome);
-         });
-      });
+      // Create the area instance
+      InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty, biome);
    }
 
    public Voyage getVoyage (int voyageId) {
@@ -106,7 +80,23 @@ public class VoyageManager : MonoBehaviour {
       return voyages;
    }
 
-   public bool doesVoyageExists(int voyageId) {
+   public List<Voyage> getAllOpenVoyageInstances () {
+      // Get the number of groups in all voyage instances
+      Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();
+
+      // Select the voyages that are open to new groups
+      List<Voyage> allOpenVoyages = new List<Voyage>();
+      foreach (Voyage voyage in getAllVoyages()) {
+         allGroupCount.TryGetValue(voyage.voyageId, out int groupCount);
+         if (isVoyageOpenToNewGroups(voyage, groupCount)) {
+            allOpenVoyages.Add(voyage);
+         }
+      }
+
+      return allOpenVoyages;
+   }
+
+   public bool doesVoyageExists (int voyageId) {
       return getVoyage(voyageId) != null;
    }
 
@@ -122,8 +112,8 @@ public class VoyageManager : MonoBehaviour {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
    }
 
-   public static bool isInGroup (NetEntity entity) {
-      return entity != null && entity.voyageGroupId != -1;
+   public static bool isVoyageOpenToNewGroups (Voyage voyage) {
+      return isVoyageOpenToNewGroups(voyage, VoyageGroupManager.self.getGroupCountInVoyage(voyage.voyageId));
    }
 
    public static bool isVoyageOpenToNewGroups (Voyage voyage, int groupCount) {
@@ -144,22 +134,6 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
-   public static bool isGroupFull (VoyageGroupInfo group) {
-      if (group.voyageId <= 0) {
-         // If the group has not joined a map, the limit is the maximum
-         if (group.memberCount >= Voyage.MAX_PLAYERS_PER_GROUP_HARD) {
-            return true;
-         }
-      } else {
-         // If the group has joined a map, we enforce the limit set by the map difficulty
-         Voyage voyage = VoyageManager.self.getVoyage(group.voyageId);
-         if (voyage != null && group.memberCount >= Voyage.getMaxGroupSize(voyage.difficulty)) {
-            return true;
-         }
-      }
-      return false;
-   }
-
    public void showVoyagePanel (NetEntity entity) {
       if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
@@ -177,204 +151,6 @@ public class VoyageManager : MonoBehaviour {
       Global.player.rpc.Cmd_WarpToCurrentVoyageMap();
    }
 
-   public void createPrivateGroup () {
-      Global.player.rpc.Cmd_CreatePrivateVoyageGroup();
-   }
-
-   public void handleInviteCommand (string inputString) {
-      // Get the user name
-      string[] sections = inputString.Split(' ');
-      string userName = sections[0];
-
-      invitePlayerToVoyageGroup(userName);
-   }
-
-   public void invitePlayerToVoyageGroup (string userName) {
-      Global.player.rpc.Cmd_SendVoyageGroupInvitationToUser(userName);
-   }
-
-   public void receiveVoyageInvitation (int voyageGroupId, string inviterName) {
-      // Test if the player is already being invited to a voyage
-      if (_invitationVoyageGroupId != -1) {
-         return;
-      }
-
-      // Store the voyage group id
-      _invitationVoyageGroupId = voyageGroupId;
-      _inviterName = inviterName;
-
-      // Associate a new function with the accept button
-      PanelManager.self.voyageInviteScreen.acceptButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.acceptButton.onClick.AddListener(() => acceptVoyageInvitation());
-
-      // Associate a new function with the refuse button
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.RemoveAllListeners();
-      PanelManager.self.voyageInviteScreen.refuseButton.onClick.AddListener(() => refuseVoyageInvitation());
-
-      // Show the voyage invite screen
-      PanelManager.self.voyageInviteScreen.activate(inviterName);
-   }
-
-   public void acceptVoyageInvitation () {
-      if (Global.player == null) {
-         return;
-      }
-
-      if (Global.player.isInBattle()) {
-         PanelManager.self.noticeScreen.show("You must exit battle before joining a voyage group");
-         return;
-      }
-
-      if (isInGroup(Global.player)) {
-         PanelManager.self.noticeScreen.show("You must leave your current group before joining another");
-         return;
-      }
-
-      // Deactivate the invite panel
-      PanelManager.self.voyageInviteScreen.deactivate();
-
-      // Send the join request to the server
-      Global.player.rpc.Cmd_AddUserToVoyageGroup(_invitationVoyageGroupId, _inviterName);
-
-      // Clear the invitation group id so that we can receive more invitations
-      _invitationVoyageGroupId = -1;
-   }
-
-   public void refuseVoyageInvitation () {
-      if (_invitationVoyageGroupId != -1) {
-         // Deactivate the invite panel
-         PanelManager.self.voyageInviteScreen.deactivate();
-
-         // Send the decline to the server
-         Global.player.rpc.Cmd_DeclineVoyageInvite(_invitationVoyageGroupId, _inviterName, Global.player.userId);
-
-         // Clear the invitation group id so that we can receive more invitations
-         _invitationVoyageGroupId = -1;
-      }
-   }
-
-   public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {
-      // Get the invitee log for this user
-      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
-         if (inviteeLog.Contains(inviteeName)) {
-            return true;
-         }
-      }
-
-      return false;
-   }
-
-   public void logGroupInvitation (int inviterUserId, string inviteeName) {
-      // Check if the log exists for this inviter
-      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
-         if (!inviteeLog.Contains(inviteeName)) {
-            inviteeLog.Add(inviteeName);
-
-            // Remove the invitee from the log after the defined interval
-            StartCoroutine(CO_RemoveGroupInvitationLog(inviterUserId, inviteeName));
-         }
-      } else {
-         // Create the log
-         HashSet<string> newInviteeLog = new HashSet<string>();
-         newInviteeLog.Add(inviteeName);
-         _groupInvitationsLog.Add(inviterUserId, newInviteeLog);
-
-         // Remove the invitee from the log after the defined interval
-         StartCoroutine(CO_RemoveGroupInvitationLog(inviterUserId, inviteeName));
-      }
-   }
-
-   public void onUserDisconnectsFromServer (int userId) {
-      // Stop any existing group removal coroutine
-      stopExistingGroupRemovalCoroutine(userId);
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get the current voyage group the user belongs to, if any
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(userId);
-
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // If the player is not in a group, do nothing
-            if (voyageGroup == null) {
-               return;
-            }
-
-            // Remove the disconnected user from its voyage group after a delay
-            Coroutine removalCO = StartCoroutine(CO_RemoveDisconnectedUserFromVoyageGroup(userId));
-
-            // Keep a reference to the coroutine
-            _pendingRemovalFromGroups.Add(userId, removalCO);
-         });
-      });
-   }
-
-   public void onUserConnectsToServer (int userId) {
-      // Stop any existing group removal coroutine
-      stopExistingGroupRemovalCoroutine(userId);
-   }
-
-   private void stopExistingGroupRemovalCoroutine (int userId) {
-      if (_pendingRemovalFromGroups.TryGetValue(userId, out Coroutine existingCO)) {
-         if (existingCO != null) {
-            StopCoroutine(existingCO);
-         }
-         _pendingRemovalFromGroups.Remove(userId);
-      }
-   }
-
-   private void updateVoyageGroupMembers () {
-      if (Global.player == null || !Global.player.isLocalPlayer) {
-         return;
-      }
-
-      // Check if the player is not in a group
-      if (!isInGroup(Global.player)) {
-         // If the player just left his group, request an update from the server
-         if (_visibleGroupMembers.Count > 0) {
-            _visibleGroupMembers.Clear();
-            Global.player.rpc.Cmd_RequestVoyageGroupMembersFromServer();
-         }
-         return;
-      }
-
-      // Get the list of all entities (visible by this client)
-      List<NetEntity> allEntities = EntityManager.self.getAllEntities();
-
-      // Retrieve the group members that we can see
-      List<int> visibleGroupMembers = new List<int>();
-      foreach (NetEntity entity in allEntities) {
-         if (entity != null && entity.voyageGroupId == Global.player.voyageGroupId) {
-            visibleGroupMembers.Add(entity.userId);
-         }
-      }
-
-      // Compare this new list with the latest
-      bool hasNewGroupMembers = visibleGroupMembers.Except(_visibleGroupMembers).Any();
-      bool hasMissingGroupMembers = _visibleGroupMembers.Except(visibleGroupMembers).Any();
-
-      // If there are differences, request a full group members update from the server
-      if (hasNewGroupMembers || hasMissingGroupMembers) {
-         Global.player.rpc.Cmd_RequestVoyageGroupMembersFromServer();
-      }
-
-      // Save this list for future comparisons
-      _visibleGroupMembers = visibleGroupMembers;
-   }
-
-   private void updateVoyageInstancesList () {
-      // Rebuilds the list of voyage instances and their status held in this server
-      List<Voyage> allVoyages = new List<Voyage>();
-
-      foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
-         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
-            instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount);
-         allVoyages.Add(voyage);
-      }
-
-      ServerNetworkingManager.self.updateHostedVoyageInstances(allVoyages);
-   }
-
    protected void createVoyageInstanceIfNeeded () {
       // Only the master server launches the creation of voyages instances
       NetworkedServer server = ServerNetworkingManager.self.server;
@@ -382,43 +158,17 @@ public class VoyageManager : MonoBehaviour {
          return;
       }
 
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get the group count in each active voyage
-         Dictionary<int, int> voyageToGroupCount = DB_Main.getGroupCountInAllVoyages();
+      // If there are missing voyages, create a new one
+      if (getAllOpenVoyageInstances().Count < Voyage.OPEN_VOYAGE_INSTANCES) {
+         // Find the server with the least people
+         NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
-         // Back to Unity Thread
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Get the voyage instances in all known servers
-            List<Voyage> allVoyages = getAllVoyages();
-
-            // Count the number of voyages that are still open to new groups
-            int openVoyagesCount = 0;
-            foreach (Voyage voyage in allVoyages) {
-               // Get the number of groups in the voyage instance
-               int groupCount;
-               if (!voyageToGroupCount.TryGetValue(voyage.voyageId, out groupCount)) {
-                  // If the number of groups could not be found, set it to zero
-                  groupCount = 0;
-               }
-
-               if (isVoyageOpenToNewGroups(voyage, groupCount)) {
-                  openVoyagesCount++;
-               }
-            }
-
-            // If there are missing voyages, create a new one
-            if (openVoyagesCount < Voyage.OPEN_VOYAGE_INSTANCES) {
-               // Find the server with the least people
-               NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
-
-               if (bestServer != null) {
-                  // Alternate PvP and PvE instances
-                  _isNewVoyagePvP = !_isNewVoyagePvP;
-                  ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, "", _isNewVoyagePvP, Util.randomEnum<Biome.Type>());
-               }
-            }
-         });
-      });
+         if (bestServer != null) {
+            // Alternate PvP and PvE instances
+            _isNewVoyagePvP = !_isNewVoyagePvP;
+            ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, ++_lastVoyageId, "", _isNewVoyagePvP, Util.randomEnumStartAt<Biome.Type>(1));
+         }
+      }
    }
 
    private IEnumerator CO_CreateInitialVoyages () {
@@ -444,128 +194,19 @@ public class VoyageManager : MonoBehaviour {
             if (bestServer != null) {
                // Alternate PvP and PvE instances
                _isNewVoyagePvP = !_isNewVoyagePvP;
-               ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, areaKey, _isNewVoyagePvP, Util.randomEnum<Biome.Type>());
+               ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, ++_lastVoyageId, areaKey, _isNewVoyagePvP, Util.randomEnumStartAt<Biome.Type>(1));
             }
          }
       }
    }
 
-   private IEnumerator CO_ClearVoyageGroups () {
-      // Wait until our server is defined
-      while (ServerNetworkingManager.self.server == null) {
-         yield return null;
-      }
-
-      // Get our server
-      NetworkedServer server = ServerNetworkingManager.self.server;
-
-      // Wait until our server port is initialized
-      while (server.networkedPort.Value == 0) {
-         yield return null;
-      }
-
-      // Check that our server is the main server
-      if (!server.isMasterServer()) {
-         yield break;
-      }
-
-      // Get the location of the starting spawn
-      Vector2 startingSpawnLocalPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-
-      // Get the name of this computer
-      string deviceName = SystemInfo.deviceName;
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get all users, members of groups created by this computer
-         List<int> groupMembers = DB_Main.getAllVoyageGroupMembersForDevice(deviceName);
-
-         // Delete the groups and group members created by this computer
-         DB_Main.deleteAllVoyageGroups(deviceName);
-
-         // Do additional updates on the users after being removed from the group
-         foreach (int userId in groupMembers) {
-            checkUserConsistencyAfterRemovalFromGroup(userId, startingSpawnLocalPos);
-         }
-      });
-   }
-
-   private IEnumerator CO_RemoveGroupInvitationLog (int inviterUserId, string inviteeName) {
-      yield return new WaitForSeconds(GROUP_INVITE_MIN_INTERVAL);
-
-      if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
-         inviteeLog.Remove(inviteeName);
-      }
-   }
-
-   private IEnumerator CO_RemoveDisconnectedUserFromVoyageGroup (int userId) {
-      // Wait a few minutes in case the user reconnects
-      yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
-
-      // Get the location of the starting spawn
-      Vector2 startingSpawnLocalPos = SpawnManager.self.getLocalPosition(Area.STARTING_TOWN, Spawn.STARTING_SPAWN);
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get the current voyage group the user belongs to, if any
-         VoyageGroupInfo voyageGroup = DB_Main.getVoyageGroupForMember(userId);
-
-         // If the player is not in a group, do nothing
-         if (voyageGroup == null) {
-            return;
-         }
-
-         // Remove the player from its group
-         DB_Main.deleteMemberFromVoyageGroup(userId);
-
-         // Update the group member count
-         voyageGroup.memberCount--;
-
-         // If the group is now empty, delete it
-         if (voyageGroup.memberCount <= 0) {
-            DB_Main.deleteVoyageGroup(voyageGroup.groupId);
-         }
-
-         // Do additional updates on the user after being removed from the group
-         checkUserConsistencyAfterRemovalFromGroup(userId, startingSpawnLocalPos);
-      });
-   }
-
-   // Must be called in the background thread!
-   private void checkUserConsistencyAfterRemovalFromGroup (int userId, Vector2 startingSpawnLocalPos) {
-      // Get the user objects
-      UserObjects userObjects = DB_Main.getUserObjects(userId);
-
-      // If the user is in a voyage area, move him to the starting town
-      if (isVoyageArea(userObjects.userInfo.areaKey) || isTreasureSiteArea(userObjects.userInfo.areaKey)) {
-         DB_Main.setNewLocalPosition(userId, startingSpawnLocalPos, Direction.South, Area.STARTING_TOWN);
-      }
-
-      // If the user's ship was killed, restore its hp
-      if (userObjects.shipInfo.health <= 0) {
-         DB_Main.storeShipHealth(userObjects.shipInfo.shipId, userObjects.shipInfo.maxHealth);
-      }
-   }
-
    #region Private Variables
-
-   // Keeps track of the group members visible by this client
-   private List<int> _visibleGroupMembers = new List<int>();
-
-   // The pending coroutines that remove users from groups after disconnecting
-   private Dictionary<int, Coroutine> _pendingRemovalFromGroups = new Dictionary<int, Coroutine>();
-
-   // The id of the group the player is being invited to, if any
-   private int _invitationVoyageGroupId = -1;
-
-   // The name of the voyage inviter
-   private string _inviterName;
 
    // Gets toggled every time a new voyage is created, to ensure an equal number of PvP and PvE instances
    private bool _isNewVoyagePvP = false;
 
-   // Keeps a log of the group invitations to prevent spamming
-   private Dictionary<int, HashSet<string>> _groupInvitationsLog = new Dictionary<int, HashSet<string>>();
+   // The last id used to create a voyage group
+   private int _lastVoyageId = 0;
 
    #endregion
 }

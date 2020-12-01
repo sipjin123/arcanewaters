@@ -1095,65 +1095,6 @@ public class DB_MainStub : MonoBehaviour
    public static int getMinimumToolsVersionForMac () {
       return 0;
    }
-   public static int getNewVoyageId () {
-      return 0;
-   }
-
-   public static int createVoyageGroup (VoyageGroupInfo groupInfo) {
-      return 0;
-   }
-
-   public static VoyageGroupInfo getVoyageGroup (int groupId) {
-      return null;
-   }
-
-   public static int getGroupCountInVoyage (int voyageId) {
-      return 0;
-   }
-
-   public static Dictionary<int, int> getGroupCountInAllVoyages () {
-      return null;
-   }
-
-   public static void updateVoyageGroupQuickmatchStatus (int groupId, bool isQuickmatchEnabled) {
-
-   }
-
-   public static void updateVoyageInVoyageGroup (int groupId, int voyageId) {
-
-   }
-
-   public static void deleteVoyageGroup (int groupId) {
-
-   }
-
-   public static VoyageGroupInfo getBestVoyageGroupForQuickmatch (int voyageId) {
-      return null;
-   }
-
-   public static VoyageGroupInfo getVoyageGroupForMember (int userId) {
-      return null;
-   }
-
-   public static List<int> getVoyageGroupMembers (int groupId) {
-      return null;
-   }
-
-   public static List<int> getAllVoyageGroupMembersForDevice (string deviceName) {
-      return null;
-   }
-
-   public static void addMemberToVoyageGroup (int groupId, int userId) {
-
-   }
-
-   public static void deleteMemberFromVoyageGroup (int userId) {
-
-   }
-
-   public static void deleteAllVoyageGroups (string deviceName) {
-
-   }
 
    public static void setServerFromConfig () {
 

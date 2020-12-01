@@ -557,7 +557,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       Vector2 animalEndPos = new Vector2(transform.position.x, transform.position.y) + distToMoveAnimal;
       float maxTime = Mathf.Lerp(0.0f, 0.75f, distanceToAnimal / ANIMAL_PET_DISTANCE);
 
-      Global.player.rpc.Cmd_StartPettingAnimal(npcId, (int)Global.player.facing);
+      Global.player.rpc.Cmd_StartPettingAnimal(this.netIdentity.netId, (int)Global.player.facing);
 
       // Take control over player to ensure that character stays in place
       gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);

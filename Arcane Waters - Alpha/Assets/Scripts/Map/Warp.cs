@@ -79,7 +79,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       yield return new WaitForSeconds(delay);
 
       // Any warp inside a treasure site area is considered an exit towards the sea voyage area
-      if (VoyageManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+      if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
          // Try to find the treasure site entrance (spawn) where the user is registered
          int voyageId = player.getInstance().voyageId;
          Instance destinationInstance = InstanceManager.self.getVoyageInstance(voyageId);
@@ -96,7 +96,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          player.spawnInNewMap(voyageId, destinationInstance.areaKey, spawnTarget, newFacingDirection);
       }
       // Check if the destination is a treasure site
-      else if (VoyageManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
+      else if (VoyageGroupManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {
          TreasureSite treasureSite = getTreasureSite(player.instanceId);
 
          // Register this user as being inside the treasure site
@@ -235,13 +235,13 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       }
 
       // Inside a treasure site, all warps are considered an exit and are always active
-      if (VoyageManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
+      if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
          return true;
       }
 
       // Check if a treasure site is controlling the warp in this instance
       if (_treasureSites.TryGetValue(player.instanceId, out TreasureSite site)) {
-         if (site != null && VoyageManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId) {
+         if (site != null && VoyageGroupManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId) {
             return true;
          }
       }
