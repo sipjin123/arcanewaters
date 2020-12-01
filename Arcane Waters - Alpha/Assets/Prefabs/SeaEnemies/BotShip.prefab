@@ -576,6 +576,7 @@ MonoBehaviour:
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
   clientAuthority: 0
+  lastVelocityTime: 0
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0
@@ -870,7 +871,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688756565834754581}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.05}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 4441608722781690238}

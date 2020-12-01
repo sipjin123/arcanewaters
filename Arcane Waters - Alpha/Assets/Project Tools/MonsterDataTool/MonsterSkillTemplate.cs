@@ -188,13 +188,9 @@ public class MonsterSkillTemplate : MonoBehaviour
       bonusStatType.maxValue = Enum.GetValues(typeof(BonusStatType)).Length - 1;
       abilityCastPosition.maxValue = Enum.GetValues(typeof(BasicAbilityData.AbilityCastPosition)).Length - 1;
 
-      if (userCustomProjectileSprite != null) {
-         userCustomProjectileSprite.onValueChanged.AddListener(_ => {
-            projectileSpriteSelectionHolder.SetActive(_);
-         });
-      } else {
-         D.debug("No projectile sprite");
-      }
+      userCustomProjectileSprite.onValueChanged.AddListener(_ => {
+         projectileSpriteSelectionHolder.SetActive(_);
+      });
 
       itemName.onValueChanged.AddListener(_ => {
          skillName.text = itemName.text;

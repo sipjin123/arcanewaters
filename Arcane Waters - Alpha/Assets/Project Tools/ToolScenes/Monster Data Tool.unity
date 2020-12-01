@@ -1219,7 +1219,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Physical element attack damage
 --- !u!114 &41246806
 MonoBehaviour:
@@ -2011,7 +2010,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Physical elemental resistance
 --- !u!114 &66283733
 MonoBehaviour:
@@ -2555,7 +2553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Wind element attack damage
 --- !u!114 &81122209
 MonoBehaviour:
@@ -2968,7 +2965,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: 'The action type '
 --- !u!114 &90116728
 MonoBehaviour:
@@ -3277,7 +3273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Wind elemental resistance
 --- !u!114 &110830709
 MonoBehaviour:
@@ -5085,7 +5080,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Undefined
 --- !u!114 &150808862
 MonoBehaviour:
@@ -5600,10 +5594,10 @@ RectTransform:
   m_Father: {fileID: 781801081}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -39.63636}
-  m_SizeDelta: {x: 96, y: 26.727272}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &179308913
 MonoBehaviour:
@@ -6907,7 +6901,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Ability Name
 --- !u!114 &206092211
 MonoBehaviour:
@@ -9398,7 +9391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Total hp of the monster
 --- !u!114 &275760319
 MonoBehaviour:
@@ -9513,7 +9505,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The type of ability
 --- !u!114 &276246943
 MonoBehaviour:
@@ -10682,7 +10673,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Physical elemental resistance
 --- !u!114 &299939440
 MonoBehaviour:
@@ -10770,10 +10760,10 @@ RectTransform:
   m_Father: {fileID: 347495082}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125, y: -57.5}
-  m_SizeDelta: {x: 100, y: 55}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &307636925
 MonoBehaviour:
@@ -10787,7 +10777,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Adjusts the X axis offset
 --- !u!114 &307636926
 MonoBehaviour:
@@ -12487,7 +12476,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Physical element attack damage
 --- !u!114 &354406027
 MonoBehaviour:
@@ -13912,7 +13900,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Fire elemental resistance
 --- !u!114 &402259317
 MonoBehaviour:
@@ -14554,7 +14541,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The buff action type
 --- !u!114 &422576677
 MonoBehaviour:
@@ -14729,7 +14715,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Exp reward earned for eliminating this monster
 --- !u!114 &423252831
 MonoBehaviour:
@@ -15013,7 +14998,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Directory of the ability icon
 --- !u!114 &430948081
 MonoBehaviour:
@@ -15214,10 +15198,10 @@ RectTransform:
   m_Father: {fileID: 1322966287}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -13.136363}
-  m_SizeDelta: {x: 96, y: 22.272726}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &442413390
 MonoBehaviour:
@@ -17734,7 +17718,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Base damage of the attack
 --- !u!114 &518666423
 MonoBehaviour:
@@ -20285,7 +20268,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Water element attack damage
 --- !u!114 &587089196
 MonoBehaviour:
@@ -20354,7 +20336,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Is enabled in the database
 --- !u!114 &591902134
 MonoBehaviour:
@@ -20625,7 +20606,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: If is a blockable skill
 --- !u!114 &596366206
 MonoBehaviour:
@@ -23332,7 +23312,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Level requirement to use this ability
 --- !u!114 &670745727
 MonoBehaviour:
@@ -24231,7 +24210,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Overall elemental resistance
 --- !u!114 &695250587
 MonoBehaviour:
@@ -24459,7 +24437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The action point change value
 --- !u!114 &718970244
 MonoBehaviour:
@@ -26340,7 +26317,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The buff action type
 --- !u!114 &767159391
 MonoBehaviour:
@@ -26843,10 +26819,10 @@ RectTransform:
   m_Father: {fileID: 347495082}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 125, y: -112.5}
-  m_SizeDelta: {x: 100, y: 55}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &781801082
 MonoBehaviour:
@@ -26860,7 +26836,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Adjusts the X axis offset
 --- !u!114 &781801083
 MonoBehaviour:
@@ -27650,7 +27625,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Elemental effect of the ability
 --- !u!114 &796071079
 MonoBehaviour:
@@ -27718,7 +27692,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Fire element attack damage
 --- !u!114 &796480962
 MonoBehaviour:
@@ -28204,7 +28177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Wind elemental resistance
 --- !u!114 &799247767
 MonoBehaviour:
@@ -28455,7 +28427,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The buff icon directory
 --- !u!114 &811169557
 MonoBehaviour:
@@ -28777,7 +28748,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The type of stances that the player should be in to use this ability
 --- !u!114 &826092663
 MonoBehaviour:
@@ -29104,7 +29074,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Earth elemental resistance
 --- !u!114 &832268554
 MonoBehaviour:
@@ -29553,7 +29522,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: 
 --- !u!114 &846926944
 MonoBehaviour:
@@ -29687,7 +29655,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Ability description
 --- !u!114 &853812400
 MonoBehaviour:
@@ -31660,7 +31627,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Undefined
 --- !u!114 &922969254
 MonoBehaviour:
@@ -35685,7 +35651,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Is enabled in the database
 --- !u!114 &1036970468
 MonoBehaviour:
@@ -37055,7 +37020,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Total defense of the monster
 --- !u!114 &1096512764
 MonoBehaviour:
@@ -38107,7 +38071,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The Damage increment per level
 --- !u!114 &1128808282
 MonoBehaviour:
@@ -38258,7 +38221,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Earth element attack damage
 --- !u!114 &1133170714
 MonoBehaviour:
@@ -39022,7 +38984,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Total damage of the monster
 --- !u!114 &1154199950
 MonoBehaviour:
@@ -39263,7 +39224,7 @@ PrefabInstance:
     - target: {fileID: 896672363487637217, guid: 942e910b779ee474085a77e40c39d66d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 896672363487637217, guid: 942e910b779ee474085a77e40c39d66d,
         type: 3}
@@ -40898,10 +40859,10 @@ RectTransform:
   m_Father: {fileID: 781801081}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -13.136363}
-  m_SizeDelta: {x: 96, y: 22.272726}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1205463078
 MonoBehaviour:
@@ -41979,7 +41940,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Total defense of the monster
 --- !u!114 &1237404022
 MonoBehaviour:
@@ -42677,7 +42637,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Earth elemental resistance
 --- !u!114 &1259768258
 MonoBehaviour:
@@ -42869,7 +42828,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Water elemental resistance
 --- !u!114 &1261099656
 MonoBehaviour:
@@ -43979,7 +43937,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Earth element attack damage
 --- !u!114 &1313344641
 MonoBehaviour:
@@ -44229,10 +44186,10 @@ RectTransform:
   m_Father: {fileID: 347495082}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 225, y: -57.5}
-  m_SizeDelta: {x: 100, y: 55}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1322966288
 MonoBehaviour:
@@ -44246,7 +44203,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Adjusts the X axis offset
 --- !u!114 &1322966289
 MonoBehaviour:
@@ -44775,7 +44731,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Determines if this is a weapon or an ability
 --- !u!114 &1330899654
 MonoBehaviour:
@@ -45081,7 +45036,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The icon of the monster
 --- !u!114 &1339574893
 MonoBehaviour:
@@ -45196,7 +45150,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Determines if this is a weapon or an ability
 --- !u!114 &1339739414
 MonoBehaviour:
@@ -45546,7 +45499,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: 
 --- !u!1 &1347183764
 GameObject:
@@ -46236,7 +46188,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Wind element attack damage
 --- !u!114 &1369814289
 MonoBehaviour:
@@ -46350,7 +46301,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Can knock up an enemy
 --- !u!114 &1371433699
 MonoBehaviour:
@@ -46467,7 +46417,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The SFX of the character jump action
 --- !u!114 &1377567567
 MonoBehaviour:
@@ -47785,7 +47734,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The SFX of the character death
 --- !u!114 &1407050702
 MonoBehaviour:
@@ -48117,7 +48065,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Water elemental resistance
 --- !u!114 &1420833364
 MonoBehaviour:
@@ -48749,7 +48696,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The Health increment per level
 --- !u!114 &1456269002
 MonoBehaviour:
@@ -49157,7 +49103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Overall attack damage
 --- !u!114 &1470080911
 MonoBehaviour:
@@ -49824,7 +49769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Overall attack damage
 --- !u!114 &1479536220
 MonoBehaviour:
@@ -51814,7 +51758,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The type of attack
 --- !u!114 &1569914223
 MonoBehaviour:
@@ -52913,7 +52856,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Is enabled in the database
 --- !u!114 &1617800613
 MonoBehaviour:
@@ -54518,7 +54460,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The action point cost for using the ability
 --- !u!114 &1660125342
 MonoBehaviour:
@@ -55095,7 +55036,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Fire element attack damage
 --- !u!114 &1673029835
 MonoBehaviour:
@@ -55805,7 +55745,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Water element attack damage
 --- !u!114 &1713554763
 MonoBehaviour:
@@ -56919,7 +56858,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Gold reward earned for eliminating this monster
 --- !u!114 &1751513758
 MonoBehaviour:
@@ -56970,10 +56908,10 @@ RectTransform:
   m_Father: {fileID: 1322966287}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -39.63636}
-  m_SizeDelta: {x: 96, y: 26.727272}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1752529500
 MonoBehaviour:
@@ -57264,7 +57202,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: If is a blockable skill
 --- !u!114 &1758951646
 MonoBehaviour:
@@ -57861,7 +57798,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The Defense increment per level
 --- !u!114 &1778557056
 MonoBehaviour:
@@ -58153,7 +58089,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The type of buff
 --- !u!114 &1788019467
 MonoBehaviour:
@@ -58789,7 +58724,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The buff value
 --- !u!114 &1803189239
 MonoBehaviour:
@@ -59578,7 +59512,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Fire elemental resistance
 --- !u!114 &1829318757
 MonoBehaviour:
@@ -60264,7 +60197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Overall elemental resistance
 --- !u!114 &1841822344
 MonoBehaviour:
@@ -62078,7 +62010,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Ability cooldown before it can be used again
 --- !u!114 &1908346937
 MonoBehaviour:
@@ -65261,7 +65192,6 @@ RectTransform:
   - {fileID: 1012555829}
   - {fileID: 873612187}
   - {fileID: 680591874}
-  - {fileID: 2105871907}
   - {fileID: 1167471230}
   m_Father: {fileID: 2095715098}
   m_RootOrder: 0
@@ -65933,7 +65863,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The ability id
 --- !u!114 &2064337829
 MonoBehaviour:
@@ -66875,7 +66804,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Determines if this is a weapon or an ability
 --- !u!114 &2089303041
 MonoBehaviour:
@@ -67356,8 +67284,6 @@ MonoBehaviour:
   playCastAudioButton: {fileID: 1196393137}
   abilityCastPositionText: {fileID: 878878320}
   abilityCastPosition: {fileID: 403941736}
-  userCustomProjectileSprite: {fileID: 2105871908}
-  projectileSpriteSelectionHolder: {fileID: 2105871909}
   projectileVariables:
   - {fileID: 1096104155196249096}
   - {fileID: 1096104154988536599}
@@ -68147,154 +68073,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2103658692}
   m_CullTransparentMesh: 0
---- !u!1001 &2105871906
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 2035038923}
-    m_Modifications:
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 273.03915
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -178
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 546.0783
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8936078895495472525, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_Name
-      value: ToggleNode
-      objectReference: {fileID: 0}
-    - target: {fileID: 8936078895495472525, guid: fb7964e7943ea2e46b8070de1d3becc6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: fb7964e7943ea2e46b8070de1d3becc6, type: 3}
---- !u!224 &2105871907 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5458081815706763323, guid: fb7964e7943ea2e46b8070de1d3becc6,
-    type: 3}
-  m_PrefabInstance: {fileID: 2105871906}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2105871908 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2241067947852238521, guid: fb7964e7943ea2e46b8070de1d3becc6,
-    type: 3}
-  m_PrefabInstance: {fileID: 2105871906}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9085046f02f69544eb97fd06b6048fe2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!1 &2105871909 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8936078895495472525, guid: fb7964e7943ea2e46b8070de1d3becc6,
-    type: 3}
-  m_PrefabInstance: {fileID: 2105871906}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2108627791 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 702800922526139589, guid: cf247d87f846fb348af5e917ad74d094,
@@ -68806,7 +68584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The duration of the casting
 --- !u!114 &2141090407
 MonoBehaviour:
@@ -73370,10 +73147,10 @@ RectTransform:
   m_Father: {fileID: 307636924}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -39.63636}
-  m_SizeDelta: {x: 96, y: 26.727272}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4138190781361045314
 MonoBehaviour:
@@ -75297,10 +75074,10 @@ RectTransform:
   m_Father: {fileID: 307636924}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -13.136363}
-  m_SizeDelta: {x: 96, y: 22.272726}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &6255453923562293871
 RectTransform:
@@ -75476,7 +75253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The monster type
 --- !u!114 &6656155208881148271
 MonoBehaviour:
@@ -75523,7 +75299,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Directory of the hit sfx
 --- !u!114 &6656155208943662489
 MonoBehaviour:
@@ -75570,7 +75345,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Directory of the cast sprite
 --- !u!114 &6656155209215847109
 MonoBehaviour:
@@ -75617,7 +75391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: The custom monster name
 --- !u!114 &6656155209620284681
 MonoBehaviour:
@@ -75664,7 +75437,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Directory of the hit sprite
 --- !u!114 &6656155209702430405
 MonoBehaviour:
@@ -75711,7 +75483,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Directory of the cast sfx
 --- !u!114 &6656155210445601914
 MonoBehaviour:
@@ -75913,7 +75684,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Does the attack have a shake effect
 --- !u!114 &7022099343186784219
 MonoBehaviour:
@@ -76558,7 +76328,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c72dec830e9b94e823180f85b934b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tooltipPlacement: 0
   message: Loots that are decided by chance
 --- !u!114 &7913557514031101524
 MonoBehaviour:
