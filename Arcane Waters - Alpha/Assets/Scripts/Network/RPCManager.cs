@@ -839,7 +839,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -849,6 +849,32 @@ public class RPCManager : NetworkBehaviour {
          _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
+      } else if (chatType == ChatInfo.Type.Whisper) {
+         string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
+         if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
+            message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
+            NetEntity entityReceiver = null;
+            Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+            if (instance != null) {
+               foreach (PlayerBodyEntity player in instance.getPlayerBodyEntities()) {
+                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
+                     entityReceiver = player;
+                  }
+               }
+               foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
+                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
+                     entityReceiver = player;
+                   }
+               }
+            }
+            if (entityReceiver != null) {
+               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, "", "", "", "", "", chatInfo.senderId);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, "", "", "", "", "", chatInfo.senderId);
+            } else {
+               string errorMsg = "Recipient is either offline or does not exist!";
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, "", "", "", "", "", 0);
+            }
+         }
       }
    }
 
@@ -3783,6 +3809,24 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SwapAbility (int abilityID, int equipSlot) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         string rawAbilityData = DB_Main.userAbilities(_player.userId.ToString(), ((int) AbilityEquipStatus.Equipped).ToString());
+         List<AbilitySQLData> abilityDataList = JsonConvert.DeserializeObject<List<AbilitySQLData>>(rawAbilityData);
+         AbilitySQLData abilityInSlot = abilityDataList.Find(_ => _.equipSlotIndex == equipSlot);
+         AbilitySQLData abilityReplacement = abilityDataList.Find(_ => _.abilityID == abilityID);
+
+         // Update the slot number of the specific abilities to swap them out
+         DB_Main.updateAbilitySlot(_player.userId, abilityID, abilityInSlot.equipSlotIndex);
+         DB_Main.updateAbilitySlot(_player.userId, abilityInSlot.abilityID, abilityReplacement.equipSlotIndex);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_FinishedUpdatingAbility(_player.connectionToClient);
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_UpdateAbilities (AbilitySQLData[] abilities) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (AbilitySQLData ability in abilities) {
@@ -4530,7 +4574,7 @@ public class RPCManager : NetworkBehaviour {
 
    [TargetRpc]
    private void Target_OnWarpFailed () {
-      D.log("Warp failed");
+      D.debug("Warp failed");
       _player.onWarpFailed();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }

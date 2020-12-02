@@ -186,7 +186,11 @@ public class AbilityPanel : Panel {
 
    public void tryEquipAbility(int abilityId, int slotID) {
       if (_equippedAbilitySlots[slotID].isFree()) {
+         // Equip a vacant ability slot
          Global.player.rpc.Cmd_UpdateAbility(abilityId, _equippedAbilitySlots[slotID].abilitySlotId);
+      } else {
+         // Swap out an occupied slot with the dragged id
+         Global.player.rpc.Cmd_SwapAbility(abilityId, _equippedAbilitySlots[slotID].abilitySlotId);
       }
    }
 

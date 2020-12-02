@@ -167,7 +167,8 @@ public class NetEntity : NetworkBehaviour
    public const float SHIP_SLOWDOWN_MAGNITUDE = .006f;
 
    // The magnitude which determines that the ship has enough speed buildup through the network
-   public const float NETWORK_SHIP_SPEEDUP_MAGNITUDE = .02f;
+   public const float NETWORK_Player_SPEEDUP_MAGNITUDE = .02f;
+   public const float NETWORK_SHIP_SPEEDUP_MAGNITUDE = .41f;
 
    // Gets set to true when we're about to execute a warp on the server or client
    public bool isAboutToWarpOnServer = false;
@@ -219,7 +220,6 @@ public class NetEntity : NetworkBehaviour
 
       // Check command line
       _autoMove = CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
-
    }
 
    protected virtual void Start () {
@@ -926,11 +926,6 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   [Command]
-   public void Cmd_ForceFaceDirection (Direction direction) {
-      Rpc_ForceLookat(direction);
-   }
-
    [ClientRpc]
    public void Rpc_ForceLookat (Direction direction) {
       this.facing = direction;
@@ -1119,8 +1114,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, userId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes, int senderId) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);

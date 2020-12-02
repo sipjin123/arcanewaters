@@ -110,15 +110,22 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   protected override void updateSprites () {
+      base.updateSprites();
+
+      shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
+      shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
+   }
+
    protected override void Update () {
       base.Update();
 
       if (!isLocalPlayer) {
-         // Display the ship boost meter for remote players
-         if (isSpeedingUp) {
-            updateSpeedUpDisplay(0, true, false, true);
+         // Display the ship boost meter for remote players based on velocity
+         if (getVelocity().magnitude > NETWORK_SHIP_SPEEDUP_MAGNITUDE) {
+            updateSpeedUpDisplay(0, true, false);
          } else if (speedUpEffectHolder.activeSelf) {
-            updateSpeedUpDisplay(0, false, false, true);
+            updateSpeedUpDisplay(0, false, false);
          }
 
          return;
@@ -168,7 +175,7 @@ public class PlayerShipEntity : ShipEntity
             isSpeedingUp = true;
 
             // Let the server and other clients know we started speeding up
-            Cmd_StartSpeedUp();
+            updateSpeedUpDisplay(speedMeter, true, false);
          }
 
          if (speedMeter < SPEEDUP_METER_MAX) {
@@ -187,23 +194,19 @@ public class PlayerShipEntity : ShipEntity
       } else {
          if (InputManager.isSpeedUpKeyReleased() || (InputManager.isSpeedUpKeyPressed() && getVelocity().magnitude < SHIP_SLOWDOWN_MAGNITUDE)) {
             isSpeedingUp = false;
-            Cmd_StopSpeedUp();
+            updateSpeedUpDisplay(speedMeter, false, false);
 
             // Trigger the tutorial
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
          }
 
          if (speedMeter > 0) {
-            shipBoostSpriteSwapFront.newTexture = _shipBoostSpritesFront;
-            shipBoostSpriteSwapBack.newTexture = _shipBoostSpritesBack;
-
             speedMeter -= Time.deltaTime * boostDepleteValue;
             shipBoostCooldownObj.SetActive(false);
          } else {
             isReadyToSpeedup = false;
             isSpeedingUp = false;
-
-            Cmd_StopSpeedUp();
+            updateSpeedUpDisplay(speedMeter, false, false);
 
             // Trigger the tutorial
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.ShipSpeedUp);
@@ -263,18 +266,19 @@ public class PlayerShipEntity : ShipEntity
       shipAbilities = new List<int>(abilityIds);
    }
 
-   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool displayAcrossNetwork) {
+   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup) {
       // Handle GUI
-      if (!displayAcrossNetwork) {
+      if (isLocalPlayer) {
          if (meter < SPEEDUP_METER_MAX) {
             speedupGUI.enabled = true;
             speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
          } else {
             speedupGUI.enabled = false;
          }
-
-         speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
+      } else {
+         speedupGUI.enabled = false;
       }
+      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
 
       // Handle sprite effects
       if (isOn) {
@@ -282,24 +286,6 @@ public class PlayerShipEntity : ShipEntity
       } else {
          speedUpEffectHolder.SetActive(false);
       }
-   }
-
-   [Command]
-   private void Cmd_StartSpeedUp () {
-      isSpeedingUp = true;
-      Rpc_UpdateSpeedupDisplay(isSpeedingUp);
-   }
-
-   [Command]
-   private void Cmd_StopSpeedUp () {
-      isSpeedingUp = false;
-      Rpc_UpdateSpeedupDisplay(isSpeedingUp);
-   }
-
-   [ClientRpc]
-   public void Rpc_UpdateSpeedupDisplay (bool isOn) {
-      isSpeedingUp = isOn;
-      updateSpeedUpDisplay(0, isOn, false, true);
    }
 
    protected override void OnDestroy () {

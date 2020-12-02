@@ -330,6 +330,10 @@ public class TreasureSite : NetworkBehaviour
    }
 
    private void setSpawnTarget () {
+      if (_warp == null) {
+         D.debug("Warp is missing!");
+         return;
+      }
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<MapSpawn> mapSpawns = DB_Main.getMapSpawns();
          MapSpawn finalSpawn = null;

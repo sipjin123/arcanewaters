@@ -25,6 +25,12 @@ public class ChatPanel : MonoBehaviour {
    // The maximum number of characters in a single chat message, before reaching 'too many vertices' with the Text+Outline components
    public static int CHAT_LINE_MAX_LENGTH = 700;
 
+   // The input field where the whisper recipient name will be input
+   public InputField nameInputField;
+
+   // The constant whisper prefix for server message processing
+   public const string WHISPER_PREFIX = "/w ";
+
    // The panel modes
    public enum Mode {
       Minimized = 0,
@@ -83,6 +89,7 @@ public class ChatPanel : MonoBehaviour {
    // The custom color for each entity speaking
    public Color enemySpeechColor, playerSpeechColor, otherPlayerSpeechColor, serverChatColor, systemChatColor, globalChatLocalColor, globalChatOtherColor;
    public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor, globalNameLocalColor, globalNameOtherColor;
+   public Color whisperNameColor, whisperMessageColor, whisperReceiverNameColor, whisperReceiverMessageColor;
 
    #endregion
 
@@ -235,7 +242,12 @@ public class ChatPanel : MonoBehaviour {
 
          if (inputField.text != "") {
             // Send the message off to the server for processing
-            ChatManager.self.processChatInput(inputField.text);
+            string message = inputField.text;
+            if (currentChatType == ChatInfo.Type.Whisper) {
+               message = WHISPER_PREFIX + nameInputField.text + " " + message;
+            }
+
+            ChatManager.self.processChatInput(message);
 
             // Clear out the text now that it's been used
             inputField.text = "";
@@ -345,9 +357,14 @@ public class ChatPanel : MonoBehaviour {
          bool isLocalPlayer = true;
          if (Global.player != null) {
             isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
-         } 
+         }
 
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
+         string messageSource = chatInfo.sender;
+         if (chatInfo.messageType == ChatInfo.Type.Whisper) {
+            messageSource = (isLocalPlayer ? "You whispered to " : "") + messageSource + (!isLocalPlayer ? " whispers" : "");
+         }
+
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
       }
 
       // In minimized mode, keep the scrollbar at the bottom
@@ -367,7 +384,7 @@ public class ChatPanel : MonoBehaviour {
          return;
       }
 
-      if (chatInfo.messageType != ChatInfo.Type.Emote) {
+      if (chatInfo.messageType != ChatInfo.Type.Emote && chatInfo.messageType != ChatInfo.Type.Whisper) {
          // If we have a Body for the specified sender, create a speech bubble
          BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
          if (body != null) {
@@ -402,6 +419,13 @@ public class ChatPanel : MonoBehaviour {
          case ChatInfo.Type.System:
             newColor = systemNameColor;
             break;
+         case ChatInfo.Type.Whisper:
+            if (isLocalPlayer) {
+               newColor = whisperReceiverNameColor;
+            } else {
+               newColor = whisperNameColor;
+            }
+            break;
       }
       return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
    }
@@ -428,13 +452,17 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public void chatModeButtonPressed () {
-      if (currentChatType == ChatInfo.Type.Global) {
+      if (currentChatType == ChatInfo.Type.Whisper) {
          currentChatType = ChatInfo.Type.Local;
       } else if (currentChatType == ChatInfo.Type.Local) {
          currentChatType = ChatInfo.Type.Guild;
       } else if (currentChatType == ChatInfo.Type.Guild) {
          currentChatType = ChatInfo.Type.Global;
+      } else if (currentChatType == ChatInfo.Type.Global) {
+         currentChatType = ChatInfo.Type.Whisper;
       }
+
+      nameInputField.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
    }
 
    protected bool shouldShowChat () {
@@ -491,6 +519,8 @@ public class ChatPanel : MonoBehaviour {
             return string.Format("<color={0}>Global</color>", colorString);
          case ChatInfo.Type.Guild:
             return string.Format("<color={0}>Guild</color>", colorString);
+         case ChatInfo.Type.Whisper:
+            return string.Format("<color={0}>Whisper</color>", colorString);
       }
 
       return "";
@@ -508,6 +538,9 @@ public class ChatPanel : MonoBehaviour {
             return isLocalPlayer ? globalChatLocalColor : globalChatOtherColor;
          case ChatInfo.Type.Local:
             return isLocalPlayer ? playerSpeechColor : otherPlayerSpeechColor;
+         case ChatInfo.Type.Whisper:
+            var chatColor = isLocalPlayer ? whisperReceiverMessageColor : whisperMessageColor;
+            return chatColor;
          case ChatInfo.Type.Guild:
             return Color.white;
          case ChatInfo.Type.Emote:
