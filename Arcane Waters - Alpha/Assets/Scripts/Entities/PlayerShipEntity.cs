@@ -44,7 +44,7 @@ public class PlayerShipEntity : ShipEntity
    public bool isAiming;
 
    // The effect that indicates this ship is speeding up
-   public GameObject speedUpEffectHolder;
+   public SpriteRenderer[] speedUpEffectHolders;
    public Canvas speedupGUI;
    public Image speedUpBar;
 
@@ -87,6 +87,10 @@ public class PlayerShipEntity : ShipEntity
       // Player ships spawn hidden and invulnerable, until the client finishes loading the area
       if (isDisabled) {
          StartCoroutine(CO_TemporarilyDisableShip());
+      } else {
+         foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
+            spriteRender.enabled = false;
+         }
       }
 
       if (isLocalPlayer) {
@@ -98,8 +102,6 @@ public class PlayerShipEntity : ShipEntity
          // Notify UI panel to display the current skills this ship has
          rpc.Cmd_RequestShipAbilities(shipId);
          Cmd_RequestAbilityList();
-
-         speedUpEffectHolder.SetActive(false);
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
       } else if (Util.isServer()) {
@@ -124,7 +126,7 @@ public class PlayerShipEntity : ShipEntity
          // Display the ship boost meter for remote players based on velocity
          if (getVelocity().magnitude > NETWORK_SHIP_SPEEDUP_MAGNITUDE) {
             updateSpeedUpDisplay(0, true, false);
-         } else if (speedUpEffectHolder.activeSelf) {
+         } else {
             updateSpeedUpDisplay(0, false, false);
          }
 
@@ -215,7 +217,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    public override bool isMoving () {
-      return getVelocity().magnitude > SHIP_MOVING_MAGNITUDE;
+      return getVelocity().magnitude > (isLocalPlayer ? SHIP_MOVING_MAGNITUDE : NETWORK_SHIP_MOVING_MAGNITUDE);
    }
 
    public Vector2 getAimPosition () {
@@ -275,16 +277,14 @@ public class PlayerShipEntity : ShipEntity
          } else {
             speedupGUI.enabled = false;
          }
+         speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
       } else {
          speedupGUI.enabled = false;
       }
-      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
 
       // Handle sprite effects
-      if (isOn) {
-         speedUpEffectHolder.SetActive(true);
-      } else {
-         speedUpEffectHolder.SetActive(false);
+      foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
+         spriteRender.enabled = isOn;
       }
    }
 
@@ -572,6 +572,10 @@ public class PlayerShipEntity : ShipEntity
 
       foreach (SpriteRenderer renderer in _renderers) {
          renderer.enabled = true;
+      }
+
+      foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
+         spriteRender.enabled = false;
       }
    }
 

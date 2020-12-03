@@ -839,7 +839,7 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       // Create a Chat Info for this message
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId);
+      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);

@@ -1152,7 +1152,9 @@ MonoBehaviour:
   hatType: 0
   hatColors: 
   isAiming: 0
-  speedUpEffectHolder: {fileID: 6117704228605984004}
+  speedUpEffectHolders:
+  - {fileID: 2603686803726275137}
+  - {fileID: 5374690085957716438}
   speedupGUI: {fileID: 8875239540421010013}
   speedUpBar: {fileID: 4588728591472027939}
   recoveringColor: {r: 0.9150943, g: 0.082013145, b: 0.082013145, a: 0.8509804}
@@ -1389,6 +1391,7 @@ MonoBehaviour:
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
   clientAuthority: 0
+  lastVelocityTime: 0
 --- !u!1 &16792
 GameObject:
   m_ObjectHideFlags: 0
@@ -3397,7 +3400,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4325010638897548777}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -5464,7 +5467,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8571601506840067872}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1

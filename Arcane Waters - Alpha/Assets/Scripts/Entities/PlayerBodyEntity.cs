@@ -136,7 +136,7 @@ public class PlayerBodyEntity : BodyEntity {
       _outline.recreateOutlineIfVisible();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
-         if (getVelocity().magnitude > NETWORK_Player_SPEEDUP_MAGNITUDE) {
+         if (getVelocity().magnitude > NETWORK_PLAYER_SPEEDUP_MAGNITUDE) {
             foreach(Animator animator in dashAnimators) {
                animator.SetBool(IS_SPRINTING, true);
             }

@@ -127,4 +127,8 @@ public class SeaMonsterEntityData
 
    // The reference id of the loot group data
    public int lootGroupId = 0;
+
+   // Sounds
+   public int deathSoundEffectId = -1;
+   public int jumpSoundEffectId = -1;
 }

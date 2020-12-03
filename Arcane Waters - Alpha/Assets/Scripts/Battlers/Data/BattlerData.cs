@@ -87,7 +87,7 @@ public class BattlerData {
    public BattlerData () { }
 
 #if IS_SERVER_BUILD
-
+   
    public BattlerData (MySqlDataReader dataReader) {
       this.enemyName = dataReader.GetString("enemyName");
       this.enemyType = (Enemy.Type) dataReader.GetInt32("enemyType");

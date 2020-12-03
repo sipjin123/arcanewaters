@@ -161,13 +161,14 @@ public class NetEntity : NetworkBehaviour
    // Values that determines if the magnitude indicates moving
    public const float MOVING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;
+   public const float NETWORK_SHIP_MOVING_MAGNITUDE = .001f;
 
    // The magnitude which determines that the ship has enough speed buildup
    public const float SHIP_SPEEDUP_MAGNITUDE = .01f;
    public const float SHIP_SLOWDOWN_MAGNITUDE = .006f;
 
    // The magnitude which determines that the ship has enough speed buildup through the network
-   public const float NETWORK_Player_SPEEDUP_MAGNITUDE = .02f;
+   public const float NETWORK_PLAYER_SPEEDUP_MAGNITUDE = .02f;
    public const float NETWORK_SHIP_SPEEDUP_MAGNITUDE = .41f;
 
    // Gets set to true when we're about to execute a warp on the server or client
