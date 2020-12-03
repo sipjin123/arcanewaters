@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5089236539303379457}
   - component: {fileID: 2727933113128544145}
   - component: {fileID: 6046103666272040633}
+  - component: {fileID: 1513195548348909052}
   m_Layer: 5
   m_Name: Ability Row
   m_TagString: Untagged
@@ -64,6 +65,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -147,7 +149,6 @@ MonoBehaviour:
   icon: {fileID: 6593908753915858455}
   abilityName: 
   contentHolder: {fileID: 8285327244084568703}
-  button: {fileID: 5089236539303379457}
 --- !u!114 &6046103666272040633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1513195548348909052
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6593908753136328537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec62a95743df0494fb5297ea6b9d8e5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6593908753915858456
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,6 +241,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -359,6 +373,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

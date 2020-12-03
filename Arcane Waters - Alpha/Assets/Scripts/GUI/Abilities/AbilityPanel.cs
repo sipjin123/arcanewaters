@@ -184,7 +184,7 @@ public class AbilityPanel : Panel {
 
    #region Equip Feature
 
-   public void tryEquipAbility(int abilityId, int slotID) {
+   private void tryEquipAbility(int abilityId, int slotID) {
       if (_equippedAbilitySlots[slotID].isFree()) {
          // Equip a vacant ability slot
          Global.player.rpc.Cmd_UpdateAbility(abilityId, _equippedAbilitySlots[slotID].abilitySlotId);
@@ -212,6 +212,7 @@ public class AbilityPanel : Panel {
       _draggableAbility.activate();
 
       scroller.enabled = false;
+      SoundManager.play2DClip(SoundManager.Type.GUI_Press);
    }
 
    public void tryGrabEquippedAbility (AbilitySlot abilitySlot) {
@@ -225,6 +226,7 @@ public class AbilityPanel : Panel {
       // Initialize the common grabbed object
       _draggedAbilityCell.setRowForAbilityData(castedAbility, castedAbility.itemDescription);
       _draggableAbility.activate();
+      SoundManager.play2DClip(SoundManager.Type.GUI_Press);
    }
 
    public void stopGrabbingAbility () {
@@ -273,6 +275,7 @@ public class AbilityPanel : Panel {
             int abilityIDCache = _cachedAbility.itemID;
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
             droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
+            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
             _draggableAbility.deactivate();
          } else {
             // Otherwise, simply stop grabbing
@@ -299,12 +302,14 @@ public class AbilityPanel : Panel {
 
             int abilityIDCache = _cachedAbility.itemID;
             unequipAbility(abilityIDCache);
+            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
 
             _draggableAbility.deactivate();
          } else if (droppedInEquipmentSlots && droppedSlot != _sourceAbilitySlot) {
             toggleBlockers(true);
 
             int abilityIDCache = _cachedAbility.itemID;
+            SoundManager.play2DClip(SoundManager.Type.GUI_Press);
             tryEquipAbility(abilityIDCache, droppedSlot.abilitySlotId);
             droppedSlot?.setSlotForAbilityData(_cachedAbility.itemID, _cachedAbility, _cachedAbility.itemDescription);
             _draggableAbility.deactivate();

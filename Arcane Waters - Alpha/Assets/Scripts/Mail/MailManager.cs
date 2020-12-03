@@ -16,7 +16,7 @@ public class MailManager : MonoBehaviour
    public static int MAX_MESSAGE_LENGTH = 2000;
 
    // The number of seconds between unread mail checks
-   public static float UNREAD_MAIL_CHECK_INTERVAL = 5 * 60f;
+   public static float UNREAD_MAIL_CHECK_INTERVAL = 10;
 
    // Self
    public static MailManager self;

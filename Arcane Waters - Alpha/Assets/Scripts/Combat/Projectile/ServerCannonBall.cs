@@ -84,6 +84,11 @@ public class ServerCannonBall : NetworkBehaviour {
       if (Util.isServer()) {
          SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
 
+         // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
+         if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
+            return;
+         }
+         
          int damage = (int) (sourceEntity.damage * _damageMultiplier);
          hitEntity.currentHealth -= damage;
 
