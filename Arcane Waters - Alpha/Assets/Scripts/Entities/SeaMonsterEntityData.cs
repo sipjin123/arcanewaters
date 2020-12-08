@@ -130,5 +130,6 @@ public class SeaMonsterEntityData
 
    // Sounds
    public int deathSoundEffectId = -1;
-   public int jumpSoundEffectId = -1;
+   public int attackSoundEffectId = -1;
+   public int hurtSoundEffectId = -1;
 }

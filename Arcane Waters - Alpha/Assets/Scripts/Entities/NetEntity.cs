@@ -437,6 +437,11 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
 
+      // Setup Guild Data
+      this.guildIconBorder = guildInfo.iconBorder;
+      this.guildIconSigil = guildInfo.iconSigil;
+      this.guildIconBackground = guildInfo.iconBackground;
+
       // Body
       this.gender = userInfo.gender;
       this.hairPalettes = userInfo.hairPalettes;

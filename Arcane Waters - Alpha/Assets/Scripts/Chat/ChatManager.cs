@@ -142,7 +142,7 @@ public class ChatManager : MonoBehaviour {
                   // Send the chat to everyone online in that guild
                   foreach (NetEntity player in MyNetworkManager.getPlayers().Values) {
                      if (player != null && player.connectionToClient != null && player.guildId == chat.guildId) {
-                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.chatTime.ToBinary(), chat.messageType, chat.iconBackground, chat.iconBackPalettes, chat.iconBorder, chat.iconSigil, chat.iconSigilPalettes, chat.senderId);
+                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.chatTime.ToBinary(), chat.messageType, chat.guildIconData, chat.senderId);
                      }
                   }
                }

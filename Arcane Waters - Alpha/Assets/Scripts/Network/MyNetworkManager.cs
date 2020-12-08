@@ -109,7 +109,7 @@ public class MyNetworkManager : NetworkManager
    #region Client Functions
 
    public override void OnStartClient () {
-      D.debug("Starting client: " + this.networkAddress + " with Cloud Build version: " + Util.getGameVersion());
+      D.debug("Starting client: " + this.networkAddress + " with Cloud Build version: {" + Util.getGameVersion() + "}");
 
       clientStarting?.Invoke();
 

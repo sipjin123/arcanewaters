@@ -86,10 +86,19 @@ public class ArmorManager : EquipmentManager {
    public void updateArmorSyncVars (int armorTypeId, int armorId, string palettes) {
       ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(armorTypeId);
 
+      // This ensures that there is a palette being assigned for the armor
+      if (string.IsNullOrEmpty(palettes)) {
+         PaletteToolData paletteData = PaletteSwapManager.self.getPaletteByName(PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAME);
+         if (paletteData != null) {
+            palettes = paletteData.paletteName;
+         } else {
+            D.debug("Non existing palette Name: " + PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAME);
+         }
+      }
+
       if (armorData == null) {
          armorData = ArmorStatData.getDefaultData();
       }
-
       cachedArmorData = armorData;
 
       // Assign the armor ID

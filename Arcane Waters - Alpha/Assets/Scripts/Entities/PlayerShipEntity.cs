@@ -342,6 +342,7 @@ public class PlayerShipEntity : ShipEntity
       shipSize = shipData.shipSize;
 
       initialize(shipData);
+      currentHealth = shipInfo.health;
 
       foreach (int newShipAbility in shipInfo.shipAbilities.ShipAbilities) {
          shipAbilities.Add(newShipAbility);

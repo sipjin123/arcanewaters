@@ -2681,6 +2681,11 @@ public class RPCManager : NetworkBehaviour {
             }
          }
 
+         // Make sure that the crafted armor has an assigned palette value
+         if (resultItem.category == Item.Category.Armor && string.IsNullOrEmpty(resultItem.paletteNames)) {
+            resultItem.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+         }
+
          // Add the result item to the user inventory
          Item craftedItem = DB_Main.createItemOrUpdateItemCount(_player.userId, resultItem);
 
@@ -3262,6 +3267,11 @@ public class RPCManager : NetworkBehaviour {
             } else {
                newDatabaseItem = item;
             }
+
+            // Make sure that the loot bag armor has an assigned palette value
+            if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
+               item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+            }
             DB_Main.createItemOrUpdateItemCount(userID, newDatabaseItem);
          }
 
@@ -3337,6 +3347,11 @@ public class RPCManager : NetworkBehaviour {
 
       // Check what we're going to give the user
       Item item = chest.getContents();
+
+      // Make sure that the treasure chest looted armor has an assigned palette value
+      if (item.category == Item.Category.Armor && string.IsNullOrEmpty(item.paletteNames)) {
+         item.paletteNames = PaletteSwapManager.DEFAULT_ARMOR_PALETTE_NAMES;
+      }
 
       // Add it to their inventory
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

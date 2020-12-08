@@ -22,6 +22,13 @@ public class PaletteSwapManager : MonoBehaviour {
    // Threshold for palette swap shader
    public float colorThreshold = 0.05f;
 
+   // The default armor palette id
+   public const int DEFAULT_ARMOR_PALETTE_ID = 37;
+
+   // The default armor palette names
+   public const string DEFAULT_ARMOR_PALETTE_NAME = "armor_primary_iron";
+   public const string DEFAULT_ARMOR_PALETTE_NAMES = "armor_primary_gold, armor_secondary_yellow, , ";
+
    #endregion
 
    private void Awake () {
@@ -42,6 +49,16 @@ public class PaletteSwapManager : MonoBehaviour {
          paletteCompleteEvent.Invoke();
          hasInitialized = true;
       }
+   }
+
+   public PaletteToolData getPaletteById (int id) {
+      PaletteToolData paletteData = _paletteDataList.Find(_ => _.tagId == id);
+      return paletteData;
+   }
+
+   public PaletteToolData getPaletteByName (string paletteName) {
+      PaletteToolData paletteData = _paletteDataList.Find(_ => _.paletteName == paletteName);
+      return paletteData;
    }
 
    public PaletteToolData[] getPaletteData () {

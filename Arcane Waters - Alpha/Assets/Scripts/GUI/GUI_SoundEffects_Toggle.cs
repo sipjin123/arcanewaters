@@ -20,6 +20,7 @@ public class GUI_SoundEffects_Toggle : GUI_SoundEffects
 
    #region Private Variables
 
+   // Our toggle UI component
    private Toggle _toggle;
 
    #endregion

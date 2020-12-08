@@ -174,12 +174,18 @@ public class PlayerBodyEntity : BodyEntity {
       // Set guild icon
       if (!Util.isEmpty(guildIconBackground)) {
          guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
+      } else {
+         guildIcon.background.enabled = false;
       }
       if (!Util.isEmpty(guildIconBorder)) {
          guildIcon.setBorder(guildIconBorder);
+      } else {
+         guildIcon.border.enabled = false;
       }
       if (!Util.isEmpty(guildIconSigil)) {
          guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
+      } else {
+         guildIcon.sigil.enabled = false;
       }
    }
    private void toggleGuildIcon () {

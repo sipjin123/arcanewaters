@@ -79,12 +79,18 @@ public class ShipBarsPlayer : ShipBars
 
          if (!Util.isEmpty(shipEntity.guildIconBorder)) {
             guildIcon.setBorder(shipEntity.guildIconBorder);
+         } else {
+            guildIcon.border.enabled = false;
          }
          if (!Util.isEmpty(shipEntity.guildIconBackground)) {
             guildIcon.setBackground(shipEntity.guildIconBackground, shipEntity.guildIconBackPalettes);
+         } else {
+            guildIcon.background.enabled = false;
          }
          if (!Util.isEmpty(shipEntity.guildIconSigil)) {
             guildIcon.setSigil(shipEntity.guildIconSigil, shipEntity.guildIconSigilPalettes);
+         } else {
+            guildIcon.sigil.enabled = false;
          }
       } else {
          guildIcon.gameObject.SetActive(false);
