@@ -422,7 +422,9 @@ MonoBehaviour:
   target: {fileID: 50000013307885518}
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
+  snapPositionThreshold: 5
   clientAuthority: 0
+  lastVelocityTime: 0
 --- !u!1 &1000013826176310
 GameObject:
   m_ObjectHideFlags: 0

@@ -2143,6 +2143,7 @@ MonoBehaviour:
   target: {fileID: 50702412696534492}
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
+  snapPositionThreshold: 5
   clientAuthority: 1
   lastVelocityTime: 0
 --- !u!1 &1765715922958734

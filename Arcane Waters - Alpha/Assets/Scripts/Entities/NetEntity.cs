@@ -409,7 +409,7 @@ public class NetEntity : NetworkBehaviour
 
       Vector3 localPos = this.transform.localPosition;
 
-      if (isLocalPlayer && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
+      if (Global.player == this && !ClientManager.isApplicationQuitting && !TitleScreen.self.isActive()) {
          // Show the loading screen
          if (PanelManager.self.loadingScreen != null) {
             PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, PostSpotFader.self, PostSpotFader.self);

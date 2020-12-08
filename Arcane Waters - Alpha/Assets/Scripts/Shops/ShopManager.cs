@@ -189,34 +189,12 @@ public class ShopManager : MonoBehaviour {
          for (int i = 1; i <= 3; i++) {
             Ship.Type shipType = Util.randomEnumStartAt<Ship.Type>(1);
             Rarity.Type rarity = Rarity.getRandom();
-            int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
-            speed = Mathf.Clamp(speed, 70, 130);
-            int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-            int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-            int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-            int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-            int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-            int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
-            int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
 
-            // Let's use nice numbers
-            sailors = Util.roundToPrettyNumber(sailors);
-            suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
-            cargoRoom = Util.roundToPrettyNumber(cargoRoom);
-            damage = Util.roundToPrettyNumber(damage);
-            health = Util.roundToPrettyNumber(health);
-            price = Util.roundToPrettyNumber(price);
-            attackRange = Util.roundToPrettyNumber(attackRange);
-
-            ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
-               "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
-
-            // We note the price separately, since it's only used in this context
-            ship.price = price;
+            ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+            ship.shipId = _shipId--;
 
             // Store the ship
             _ships[ship.shipId] = ship;
-
 
             // Add it to the list
             _shipsByArea[areaKey].Add(ship.shipId);
@@ -236,20 +214,13 @@ public class ShopManager : MonoBehaviour {
                   ShipData shipData = ShipDataManager.self.getShipData(shipXmlId);
                   Ship.Type shipType = shipData.shipType;
                   Rarity.Type rarity = Rarity.getRandom();
-                  int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
-                  speed = Mathf.Clamp(speed, 70, 130);
-                  int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-                  int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-                  int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-                  int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-                  int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-                  int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
+
+                  ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+                  ship.shipId = _shipId--;
+
+                  // Set a custom price
                   int price = shopItem.shopItemCostMax;
-
-                  ShipInfo ship = new ShipInfo(_shipId--, 0, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
-                       "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
-
-                  // We note the price separately, since it's only used in this context
+                  price = Util.roundToPrettyNumber(price);
                   ship.price = price;
 
                   // Store the ship

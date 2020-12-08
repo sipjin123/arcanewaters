@@ -129,4 +129,31 @@ public class Ship : SeaEntity {
             return "none";
       }
    }
+
+   public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity) {
+      int speed = (int) (getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
+      speed = Mathf.Clamp(speed, 70, 130);
+      int sailors = (int) (getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
+      int suppliesRoom = (int) (getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+      int cargoRoom = (int) (getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
+      int damage = (int) (getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
+      int health = (int) (getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
+      int price = (int) (getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
+      int attackRange = (int) (getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
+      
+      // Let's use nice numbers
+      sailors = Util.roundToPrettyNumber(sailors);
+      suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
+      cargoRoom = Util.roundToPrettyNumber(cargoRoom);
+      damage = Util.roundToPrettyNumber(damage);
+      health = Util.roundToPrettyNumber(health);
+      price = Util.roundToPrettyNumber(price);
+      attackRange = Util.roundToPrettyNumber(attackRange);
+
+      ShipInfo ship = new ShipInfo(-1, 0, shipType, SkinType.None, MastType.Type_1, SailType.Type_1, getDisplayName(shipType),
+         "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+      ship.price = price;
+
+      return ship;
+   }
 }

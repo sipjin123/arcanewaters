@@ -376,6 +376,8 @@ MonoBehaviour:
     rippleLocOffset: {x: 0, y: 0, z: 0}
     skillIdList: 
     lootGroupId: 0
+    deathSoundEffectId: -1
+    jumpSoundEffectId: -1
   isAttacking: 0
   variety: 0
   monsterType: 0
@@ -562,7 +564,9 @@ MonoBehaviour:
   target: {fileID: 50644847342071564}
   lerpVelocityAmount: 0.5
   lerpPositionAmount: 0.5
+  snapPositionThreshold: 5
   clientAuthority: 0
+  lastVelocityTime: 0
 --- !u!1 &1658159506029436
 GameObject:
   m_ObjectHideFlags: 0

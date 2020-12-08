@@ -648,28 +648,10 @@ public class AdminManager : NetworkBehaviour
             continue;
          }
          Rarity.Type rarity = Rarity.Type.Uncommon;
-         int speed = (int) (Ship.getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
-         speed = Mathf.Clamp(speed, 70, 130);
-         int sailors = (int) (Ship.getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-         int suppliesRoom = (int) (Ship.getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-         int cargoRoom = (int) (Ship.getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-         int damage = (int) (Ship.getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-         int health = (int) (Ship.getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-         int price = (int) (Ship.getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
-         int attackRange = (int) (Ship.getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
-
-         // Let's use nice numbers
-         sailors = Util.roundToPrettyNumber(sailors);
-         suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
-         cargoRoom = Util.roundToPrettyNumber(cargoRoom);
-         damage = Util.roundToPrettyNumber(damage);
-         health = Util.roundToPrettyNumber(health);
-         price = Util.roundToPrettyNumber(price);
-         attackRange = Util.roundToPrettyNumber(attackRange);
-
+         
          // Set up the Ship Info
-         ShipInfo ship = new ShipInfo(0, _player.userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
-            "", "", "", "", suppliesRoom, suppliesRoom, cargoRoom, health, health, damage, attackRange, speed, sailors, rarity, new ShipAbilityInfo(true));
+         ShipInfo ship = Ship.generateNewShip(shipType, rarity);
+         ship.userId = _player.userId;
 
          // Create the ship in the database
          DB_Main.createShipFromShipyard(_player.userId, ship);

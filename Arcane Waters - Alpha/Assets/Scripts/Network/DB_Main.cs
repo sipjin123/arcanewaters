@@ -6576,9 +6576,15 @@ public class DB_Main : DB_MainStub
 
    public static new ShipInfo createStartingShip (int userId) {
       Ship.Type shipType = Ship.Type.Type_1;
-      ShipInfo shipInfo = new ShipInfo(0, userId, shipType, Ship.SkinType.None, Ship.MastType.Type_1, Ship.SailType.Type_1, Ship.getDisplayName(shipType),
-            PaletteDef.ShipHull.Brown, PaletteDef.ShipHull.Brown, PaletteDef.ShipSail.White, PaletteDef.ShipSail.White, 100, 100, 20,
-            80, 80, 15, 100, 90, 10, Rarity.Type.Common, new ShipAbilityInfo(false));
+
+      ShipInfo shipInfo = Ship.generateNewShip(shipType, Rarity.Type.Common);
+      shipInfo.userId = userId;
+      shipInfo.palette1 = PaletteDef.ShipHull.Brown;
+      shipInfo.palette2 = PaletteDef.ShipHull.Brown;
+      shipInfo.sailPalette1 = PaletteDef.ShipSail.White;
+      shipInfo.sailPalette2 = PaletteDef.ShipSail.White;
+      shipInfo.shipAbilities = new ShipAbilityInfo(false);
+
       shipInfo.shipAbilities.ShipAbilities = new int[] { ShipAbilityInfo.DEFAULT_ABILITY };
 
       System.Xml.Serialization.XmlSerializer ser = new System.Xml.Serialization.XmlSerializer(shipInfo.shipAbilities.GetType());
