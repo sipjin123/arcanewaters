@@ -69,7 +69,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    private void updateVoyageInstances () {
       voyages.Clear();
-      
+
       // Get the number of groups in all voyage instances
       Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();
 
@@ -90,15 +90,15 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
-      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+   public void MasterServer_SendGlobalMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+      InvokeClientRpcOnEveryone(Server_ReceiveGlobalChatMessage, chatId, message, timestamp, senderName, senderUserId, guildIconDataString);
    }
 
    [ClientRPC]
-   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
+   public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
       // Send the chat message to all users connected to this server
       foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
-         player.Value.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+         player.Value.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString);
       }
    }
 

@@ -8,15 +8,15 @@ public class GuildIcon : MonoBehaviour
    #region Public Variables
 
    // The directories for the layer sprites
-   public static string BORDER_PATH = "Assets/Sprites/GUI/Guild/Icons/Borders/";
-   public static string MASK_PATH = "Assets/Sprites/GUI/Guild/Icons/Masks/";
-   public static string BACKGROUND_PATH = "Assets/Sprites/GUI/Guild/Icons/Backgrounds/";
-   public static string SIGIL_PATH = "Assets/Sprites/GUI/Guild/Icons/Sigils/";
+   public static string BORDER_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons/Borders/";
+   public static string MASK_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons/Masks/";
+   public static string BACKGROUND_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons/Backgrounds/";
+   public static string SIGIL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons/Sigils/";
 
-   public static string BORDER_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Borders/";
-   public static string MASK_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Masks/";
-   public static string BACKGROUND_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Backgrounds/";
-   public static string SIGIL_SMALL_PATH = "Assets/Sprites/GUI/Guild/Icons Small/Sigils/";
+   public static string BORDER_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Borders/";
+   public static string MASK_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Masks/";
+   public static string BACKGROUND_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Backgrounds/";
+   public static string SIGIL_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Sigils/";
 
    // The icon layer images
    public Image border;
@@ -42,7 +42,7 @@ public class GuildIcon : MonoBehaviour
       sigilRecolored.setNewMaterial(MaterialManager.self.getGUIMaterial());
    }
 
-   public void initialize(GuildInfo guildInfo) {
+   public void initialize (GuildInfo guildInfo) {
       if (guildInfo != null && guildInfo.guildId > 0) {
          show();
          tooltip.text = guildInfo.guildName;

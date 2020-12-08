@@ -11,6 +11,8 @@ public class NetworkLerpRigidbody2D : NetworkBehaviour
    [SerializeField] float lerpVelocityAmount = 0.5f;
    [Tooltip("How quickly current position approaches target position")]
    [SerializeField] float lerpPositionAmount = 0.5f;
+   [Tooltip("The distance threshold above which the target is teleported. A value of 0 disables teleporting.")]
+   [SerializeField] public float snapPositionThreshold = 0;
 
    [Tooltip("Set to true if moves come from owner client, set to false if moves always come from server")]
    [SerializeField] bool clientAuthority = false;
@@ -76,6 +78,12 @@ public class NetworkLerpRigidbody2D : NetworkBehaviour
 
    void FixedUpdate () {
       if (IgnoreSync) { return; }
+
+      if (snapPositionThreshold > 0 && Vector3.Distance(target.position, targetPosition) > snapPositionThreshold) {
+         target.velocity = Vector3.zero;
+         target.position = targetPosition;
+         return;
+      }
 
       target.velocity = Vector3.Lerp(target.velocity, targetVelocity, lerpVelocityAmount);
       target.position = Vector3.Lerp(target.position, targetPosition, lerpPositionAmount);

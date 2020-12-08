@@ -119,6 +119,8 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
 
    private void setSpotWorldPosition (Vector3 worldPosition) {
+      if (!Camera.main) return; // skip if no main camera found
+      
       _spotScreenPosition = Camera.main.WorldToViewportPoint(worldPosition);
       _material.SetVector(_spotPositionPropertyID, _spotScreenPosition);
    }

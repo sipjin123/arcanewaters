@@ -201,7 +201,7 @@ public class ServerNetworkingManager : MonoBehaviour {
    }
 
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
-      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, chatInfo.iconBackground, chatInfo.iconBackPalettes, chatInfo.iconBorder, chatInfo.iconSigil, chatInfo.iconSigilPalettes);
+      server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
    }
 
    public void sendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {

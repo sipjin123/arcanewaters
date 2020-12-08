@@ -14,6 +14,7 @@ public class ShortcutPanel : ClientMonoBehaviour {
 
    protected override void Awake () {
       base.Awake();
+      this.enabled = !Util.isBatchServer();
 
       self = this;
    }

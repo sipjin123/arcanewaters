@@ -180,7 +180,7 @@ public class NetEntity : NetworkBehaviour
 
    // Determines if this unit is speeding
    public bool isSpeedingUp;
-   
+
    // Reference to the shadow
    public SpriteRenderer shadow;
 
@@ -260,11 +260,11 @@ public class NetEntity : NetworkBehaviour
          }
 
          // This will allow the local host in unity editor to simulate time for features such as crops
-         #if UNITY_EDITOR
+      #if UNITY_EDITOR
          if (Global.player != null && isServer) {
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
-         #endif
+      #endif
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
@@ -744,7 +744,7 @@ public class NetEntity : NetworkBehaviour
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
          if (!_ignoredAnimators.Contains(anim)) {
             anim.enabled = false;
-         } 
+         }
       }
    }
 
@@ -763,7 +763,7 @@ public class NetEntity : NetworkBehaviour
       foreach (Animator anim in GetComponentsInChildren<Animator>()) {
          if (!_ignoredAnimators.Contains(anim)) {
             anim.enabled = true;
-         } 
+         }
       }
    }
 
@@ -790,7 +790,7 @@ public class NetEntity : NetworkBehaviour
 
    public virtual bool isMoving () {
       // If we're using a NetworkLerp component, check that to see if we're moving
-      if (_networkLerp  != null) {
+      if (_networkLerp != null && !isLocalPlayer) {
          // Check if we've recently applied any sort of velocity
          return (NetworkTime.time - _networkLerp.lastVelocityTime) < .1f;
       }
@@ -1099,24 +1099,27 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, senderUserId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+   public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+      // Convert Json string back into a GuildIconData object and add to chatInfo
+      GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, senderUserId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [ClientRpc]
-   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, userId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+   public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString) {
+      GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, userId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, string iconBackground, string iconBackPalettes, string iconBorder, string iconSigil, string iconSigilPalettes, int senderId) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId, iconBackground, iconBackPalettes, iconBorder, iconSigil, iconSigilPalettes);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);

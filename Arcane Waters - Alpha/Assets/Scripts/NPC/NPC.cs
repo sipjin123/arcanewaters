@@ -563,7 +563,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
    }
 
-   public void continueAnimalPetting (Vector2 animalEndPos, float maxTime) {
+   public void continueAnimalPetting (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
       isInteractingAnimal = true;
       interactingAnimation = true;
       canMove = false;
@@ -578,10 +578,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       puppet.controlGranted(this);
 
       // Start player's petting animation
-      StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f));
+      StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f, playerEntityId));
    }
 
-   private IEnumerator CO_ContinueAnimalPettingWithCorrectPos (float timeToWait) {
+   private IEnumerator CO_ContinueAnimalPettingWithCorrectPos (float timeToWait, uint playerEntityId) {
       // Wait until animal has moved to correct spot
       yield return new WaitForSeconds(timeToWait);
 
@@ -595,8 +595,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       Destroy(puppet);
 
       // Play player animation of petting animal
-      if (Global.player) {
-         Global.player.requestAnimationPlay(Anim.Type.Pet_East, false);
+      NetEntity player = MyNetworkManager.fetchEntityFromNetId<NetEntity>(playerEntityId);
+      if (player) {
+         player.requestAnimationPlay(Anim.Type.Pet_East, false);
       }
 
       // Play animal's reaction

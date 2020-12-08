@@ -141,7 +141,7 @@ public class MapManager : MonoBehaviour
          Area area = result.area;
 
          // Use random biome for voyages
-         if (voyageBiome != Biome.Type.None) {
+         if (AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage && voyageBiome != Biome.Type.None) {
             exportedProject.biome = voyageBiome;
          }
 
@@ -283,6 +283,10 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_HideLoadingScreen () {
+      if (Util.isServerNonHost()) {
+         yield break;
+      }
+
       PanelManager.self.loadingScreen.setProgress(LoadingScreen.LoadingType.MapCreation, 0.9f);
 
       // Check that player exists

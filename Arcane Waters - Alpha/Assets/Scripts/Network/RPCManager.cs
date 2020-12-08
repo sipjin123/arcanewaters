@@ -838,15 +838,15 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
-      // Create a Chat Info for this message
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+      GuildIconData guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, guildIconData);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
 
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
-         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, _player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+         _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, GuildIconData.guildIconDataToString(guildIconData));
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
       } else if (chatType == ChatInfo.Type.Whisper) {
@@ -868,11 +868,11 @@ public class RPCManager : NetworkBehaviour {
                }
             }
             if (entityReceiver != null) {
-               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, "", "", "", "", "", chatInfo.senderId);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, "", "", "", "", "", chatInfo.senderId);
+               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
             } else {
                string errorMsg = "Recipient is either offline or does not exist!";
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, "", "", "", "", "", 0);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, chatInfo.guildIconData, 0);
             }
          }
       }
@@ -1133,7 +1133,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         UserInfo userInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(_player.userId.ToString()));
+         UserInfo userInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(_player.userId.ToString()));
 
          // Check if this is an equipped armor or weapon
          bool wasEquippedArmor = (itemId == userInfo.armorId);
@@ -1750,7 +1750,7 @@ public class RPCManager : NetworkBehaviour {
          if (item.category == Item.Category.Blueprint) {
             CraftableItemRequirements craftingData = CraftingManager.self.getCraftableData(item.itemTypeId);
             currentItem = currentItems.Find(_ => _.category == craftingData.resultItem.category && _.itemTypeId == craftingData.resultItem.itemTypeId);
-         } 
+         }
          if (currentItem == null) {
             newItemStockList.Add(0);
          } else {
@@ -1910,7 +1910,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the friend user info
-         UserInfo friendUserInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(friendUserId.ToString()));
+         UserInfo friendUserInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(friendUserId.ToString()));
          if (friendUserInfo == null) {
             D.error(string.Format("The user {0} does not exist.", friendUserId));
             return;
@@ -1992,7 +1992,7 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
          // Retrieve the user info of the friend
-         UserInfo friendInfo = JsonUtility.FromJson<UserInfo>( DB_Main.getUserInfoJSON(friendUserId.ToString()));
+         UserInfo friendInfo = JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(friendUserId.ToString()));
 
          // Verify that there is a pending invite
          FriendshipInfo friendshipInfo = DB_Main.getFriendshipInfo(friendUserId, _player.userId);
@@ -3230,7 +3230,7 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
-   
+
    [Server]
    private void giveItemRewardsToPlayer (int userID, List<Item> rewardList, bool showPanel) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3242,8 +3242,8 @@ public class RPCManager : NetworkBehaviour {
                if (itemCache == null) {
                   D.debug("Failed to get crafting data of itemType: " + item.itemTypeId);
                   return;
-               } 
-               
+               }
+
                switch (itemCache.resultItem.category) {
                   case Item.Category.Weapon:
                      newDatabaseItem.data = Blueprint.WEAPON_DATA_PREFIX;
@@ -3283,7 +3283,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Add all items to database in parallel
       await Task.WhenAll(rewardList.Select(async item => await DB_Main.execAsync((cmd) => DB_Main.createOrAppendItemInstance(cmd, item))));
-      
+
       // Show panel to player if needed
       if (showPanel) {
          Target_ReceiveItemRewardList(rewardList.ToArray());
@@ -3513,6 +3513,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Get the group the player belongs to
       VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      List<int> groupMembers = voyageGroup == null ? new List<int>() : voyageGroup.members;
 
       // Cache Attackers Info
       foreach (BattlerInfo battlerInfo in attackers) {
@@ -3567,7 +3568,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Process voyage groups
-      foreach (int memberId in voyageGroup.members) {
+      foreach (int memberId in groupMembers) {
          NetEntity entity = EntityManager.self.getEntity(memberId);
          if (entity != null) {
             if (entity.userId != _player.userId && _player.instanceId == entity.instanceId) {
@@ -3681,19 +3682,19 @@ public class RPCManager : NetworkBehaviour {
                abilitySql.abilityType = basicAbilityData.abilityType;
                if (basicAbilityData.abilityType == AbilityType.Standard) {
                   AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
-                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee()) 
-                  || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile()) 
+                  if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
+                  || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
                   || (weaponClass == Weapon.Class.Magic && attackAbilityData.isProjectile())) {
                      validAbilities++;
                   }
-               } 
+               }
             }
 
             // If no abilities were fetched, create a clean new entry that will be overridden based on the user equipped weapon
             if (equippedAbilityList.Count < 1) {
                validAbilities = 0;
-               equippedAbilityList = new List<AbilitySQLData>(); 
-               equippedAbilityList.Add(new AbilitySQLData { 
+               equippedAbilityList = new List<AbilitySQLData>();
+               equippedAbilityList.Add(new AbilitySQLData {
                   abilityID = -1,
                   name = "",
                });
@@ -3839,7 +3840,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, List<AbilitySQLData> equippedAbilityList  ,Weapon.Class weaponClass,int validAbilities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
+   public void setupAbilitiesForPlayers (List<PlayerBodyEntity> playerEntities, List<AbilitySQLData> equippedAbilityList, Weapon.Class weaponClass, int validAbilities, bool playerHasValidAbilities = true, WeaponCategory weaponCategory = WeaponCategory.None) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          foreach (PlayerBodyEntity entity in playerEntities) {
             // Retrieves skill list from database
@@ -4130,7 +4131,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Sort by rarity
       List<Item> sortedList = list.OrderBy(x => x.getSellPrice()).ToList();
-      foreach (Item item in sortedList) { 
+      foreach (Item item in sortedList) {
          switch (item.category) {
             case Item.Category.Weapon:
                WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(item.itemTypeId);
@@ -4174,7 +4175,7 @@ public class RPCManager : NetworkBehaviour {
          });
       });
    }
-   
+
    [Server]
    protected void requestSetArmorId (int armorId) {
       // They may be in an island scene, or at sea
@@ -4528,7 +4529,7 @@ public class RPCManager : NetworkBehaviour {
    [TargetRpc]
    public void Target_ReceiveItemRewardList (ItemInstance[] items) {
       RewardManager.self.showItemsInRewardPanel(items);
-   } 
+   }
 
    #endregion
 
@@ -4621,7 +4622,7 @@ public class RPCManager : NetworkBehaviour {
       Vector3 playerPos = _player.transform.position;
 
       // Choose spot to start petting
-      switch ((Direction)facing) {
+      switch ((Direction) facing) {
          case Direction.North:
             closestSpot = npc.animalPettingPositions.Find((GameObject obj) => obj.name.Contains("Bottom"));
             break;
@@ -4638,14 +4639,14 @@ public class RPCManager : NetworkBehaviour {
       Vector2 animalEndPos = new Vector2(npc.transform.position.x, npc.transform.position.y) + distToMoveAnimal;
       float maxTime = Mathf.Lerp(0.0f, 0.75f, distance / NPC.ANIMAL_PET_DISTANCE);
 
-      Rpc_ContinuePettingAnimal(netEntityId, animalEndPos, maxTime);
-      npc.continueAnimalPetting(animalEndPos, maxTime);
+      Rpc_ContinuePettingAnimal(netEntityId, _player.netId, animalEndPos, maxTime);
+      npc.continueAnimalPetting(_player.netId, animalEndPos, maxTime);
    }
 
    [ClientRpc]
-   public void Rpc_ContinuePettingAnimal (uint netEntityId, Vector2 animalEndPos, float maxTime) {
+   public void Rpc_ContinuePettingAnimal (uint netEntityId, uint playerEntityId, Vector2 animalEndPos, float maxTime) {
       NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
-      npc.continueAnimalPetting(animalEndPos, maxTime);
+      npc.continueAnimalPetting(playerEntityId, animalEndPos, maxTime);
    }
 
    #region Private Variables
