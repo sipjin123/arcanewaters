@@ -6,6 +6,7 @@ using Mirror;
 using Cinemachine;
 using TMPro;
 using System.Linq;
+using System;
 
 public class NetEntity : NetworkBehaviour
 {
@@ -32,6 +33,10 @@ public class NetEntity : NetworkBehaviour
    // The key of the area we're in
    [SyncVar]
    public string areaKey;
+
+   // Whether the admin user is invisible to other players and enemies
+   [SyncVar]
+   public bool isInvisible;
 
    // The Gender of this entity
    [SyncVar]
@@ -70,6 +75,9 @@ public class NetEntity : NetworkBehaviour
    // Our desired angle of movement
    [SyncVar]
    public float desiredAngle;
+
+   // The DateTime at which the chat suspension ends
+   public DateTime chatSuspensionEndDate;
 
    // Convenient Network Identity reference so we aren't repeatedly calling GetComponent
    [HideInInspector]
@@ -278,6 +286,12 @@ public class NetEntity : NetworkBehaviour
       InvokeRepeating("cleanAttackers", 0f, 1f);
    }
 
+   public override void OnStartClient () {
+      base.OnStartClient();
+
+      updateInvisibilityAlpha(isInvisible);
+   }
+
    private IEnumerator CO_LoadWeather () {
       WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
 
@@ -429,6 +443,44 @@ public class NetEntity : NetworkBehaviour
    public virtual void resetCombatInit () {
    }
 
+   public bool isMuted () {
+      // DateTime.Compare() returns a number < 0 if DateTime.Now is earlier than the chatSuspensionEndDate, 0 if the dates are equal or a number > 0 otherwise
+      int isEarlier = DateTime.Compare(DateTime.Now, chatSuspensionEndDate);
+
+      return isEarlier < 0;
+   }
+
+   [Command]
+   public void Cmd_ToggleAdminInvisibility () {
+      // Make sure only admin players can request invisibility
+      isInvisible = !isInvisible && isAdmin();
+
+      Rpc_OnInvisibilityUpdated(isInvisible);
+   }
+
+   [ClientRpc]
+   public void Rpc_OnInvisibilityUpdated (bool isInvisible) {
+      updateInvisibilityAlpha(isInvisible);
+   }
+
+   private void updateInvisibilityAlpha (bool isInvisible) {
+      if (Global.player == null || !Global.player.isAdmin()) {
+         Util.setAlphaInShader(gameObject, isInvisible ? 0.0f : 1.0f);
+         setCanvasVisibility(!isInvisible);
+      } else {
+         // Admins see other invisible admins and themselves as semi-transparent         
+         Util.setAlphaInShader(gameObject, isInvisible ? 0.5f : 1.0f);
+         setCanvasVisibility(true);
+      }
+   }
+
+   public virtual void setCanvasVisibility (bool isVisible) {
+      Canvas[] canvases = GetComponentsInChildren<Canvas>(true);
+      foreach (Canvas canvas in canvases) {
+         canvas.enabled = isVisible;
+      }
+   }
+
    public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat,
       ShipInfo shipInfo, GuildInfo guildInfo) {
       this.entityName = userInfo.username;
@@ -496,6 +548,16 @@ public class NetEntity : NetworkBehaviour
 
    public bool isInBattle () {
       return battleId > 0;
+   }
+
+   [Server]
+   public void moveToPosition (Vector3 position) {
+      Target_SetPosition(position);
+   }
+
+   [TargetRpc]
+   private void Target_SetPosition (Vector3 position) {
+      transform.position = position;
    }
 
    public void requestAnimationPlay (Anim.Type animType, bool freezeAnim = false) {
@@ -986,6 +1048,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveNormalChat (string message, ChatInfo.Type type) {
+      ChatManager.self.addChat(message, type);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveSiloInfo (NetworkConnection connection, SiloInfo[] siloInfo) {
       _siloInfo = new List<SiloInfo>(siloInfo);
 
@@ -1382,7 +1449,7 @@ public class NetEntity : NetworkBehaviour
          }
 
          // Set the music according to our Area
-         SoundManager.setBackgroundMusic(this.areaKey);
+         SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
 
          // Show the Area name
          LocationBanner.self.setText(Area.getName(this.areaKey));

@@ -164,6 +164,168 @@ TextureImporter:
   - first:
       213: 7907310511409773347
     second: Coursair_53
+  - first:
+      213: 2086761283283254154
+    second: hat_2_0
+  - first:
+      213: 3534052548376381230
+    second: hat_2_1
+  - first:
+      213: 3484566415268162754
+    second: hat_2_2
+  - first:
+      213: 8992271209347562823
+    second: hat_2_3
+  - first:
+      213: 1238594767385713302
+    second: hat_2_4
+  - first:
+      213: -710900648044090314
+    second: hat_2_5
+  - first:
+      213: -67312052294370494
+    second: hat_2_6
+  - first:
+      213: -1548243032749055209
+    second: hat_2_7
+  - first:
+      213: -6540648011585774793
+    second: hat_2_8
+  - first:
+      213: 6875008723167756540
+    second: hat_2_9
+  - first:
+      213: -6448788273315704783
+    second: hat_2_10
+  - first:
+      213: 2188025456935015253
+    second: hat_2_11
+  - first:
+      213: 1740720870840778351
+    second: hat_2_12
+  - first:
+      213: 8883558978509370034
+    second: hat_2_13
+  - first:
+      213: 5587066511469073247
+    second: hat_2_14
+  - first:
+      213: -6636486015483859112
+    second: hat_2_15
+  - first:
+      213: -5584203552790468032
+    second: hat_2_16
+  - first:
+      213: -2904079061016763834
+    second: hat_2_17
+  - first:
+      213: 3187475197607474598
+    second: hat_2_18
+  - first:
+      213: -4653873840660315301
+    second: hat_2_19
+  - first:
+      213: -6953018476586378962
+    second: hat_2_20
+  - first:
+      213: -7712675311390802356
+    second: hat_2_21
+  - first:
+      213: -3926234443334841026
+    second: hat_2_22
+  - first:
+      213: -3164030444213132326
+    second: hat_2_23
+  - first:
+      213: -3687870834695532259
+    second: hat_2_24
+  - first:
+      213: -3820539511359280474
+    second: hat_2_25
+  - first:
+      213: -6615194372152536572
+    second: hat_2_26
+  - first:
+      213: -2408231953818313169
+    second: hat_2_27
+  - first:
+      213: -4966536347722986578
+    second: hat_2_28
+  - first:
+      213: 7583651913528344492
+    second: hat_2_29
+  - first:
+      213: 6510785907347263786
+    second: hat_2_30
+  - first:
+      213: -4986788507620165171
+    second: hat_2_31
+  - first:
+      213: 7758188755057603449
+    second: hat_2_32
+  - first:
+      213: 2021219788277421007
+    second: hat_2_33
+  - first:
+      213: 3723884297105881193
+    second: hat_2_34
+  - first:
+      213: 7252916966501071517
+    second: hat_2_35
+  - first:
+      213: 8140732267937880397
+    second: hat_2_36
+  - first:
+      213: -6189924098859690604
+    second: hat_2_37
+  - first:
+      213: -9091945640649320870
+    second: hat_2_38
+  - first:
+      213: -7661829851989113976
+    second: hat_2_39
+  - first:
+      213: 1618989924240061363
+    second: hat_2_40
+  - first:
+      213: -3988318860568543152
+    second: hat_2_41
+  - first:
+      213: 2656823333462336885
+    second: hat_2_42
+  - first:
+      213: 6528135788194460703
+    second: hat_2_43
+  - first:
+      213: -957855951953894080
+    second: hat_2_44
+  - first:
+      213: -6462666222653733644
+    second: hat_2_45
+  - first:
+      213: -1210195886992321769
+    second: hat_2_46
+  - first:
+      213: 255789641640595154
+    second: hat_2_47
+  - first:
+      213: 3200922987931505027
+    second: hat_2_48
+  - first:
+      213: 1779664855277523074
+    second: hat_2_49
+  - first:
+      213: 5258403544853235063
+    second: hat_2_50
+  - first:
+      213: -3605325241699206175
+    second: hat_2_51
+  - first:
+      213: -2201920534008909055
+    second: hat_2_52
+  - first:
+      213: -1697669370180481664
+    second: hat_2_53
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -182,7 +344,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -261,7 +423,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Coursair_0
+      name: hat_2_0
       rect:
         serializedVersion: 2
         x: 0
@@ -275,14 +437,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d39dda29e345dae30800000000000000
-      internalID: 4516358629048047933
+      spriteID: a8bf22db45aa5fc10800000000000000
+      internalID: 2086761283283254154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_1
+      name: hat_2_1
       rect:
         serializedVersion: 2
         x: 85
@@ -296,14 +458,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 605287e20669b77b0800000000000000
-      internalID: -5225417602792676090
+      spriteID: e27c98b811a7b0130800000000000000
+      internalID: 3534052548376381230
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_2
+      name: hat_2_2
       rect:
         serializedVersion: 2
         x: 170
@@ -317,14 +479,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfad31e0ef34eec10800000000000000
-      internalID: 2084678435956054779
+      spriteID: 2cca05251baab5030800000000000000
+      internalID: 3484566415268162754
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_3
+      name: hat_2_3
       rect:
         serializedVersion: 2
         x: 255
@@ -338,14 +500,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c774842ac00e45240800000000000000
-      internalID: 4779691449413814140
+      spriteID: 74d32259507facc70800000000000000
+      internalID: 8992271209347562823
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_4
+      name: hat_2_4
       rect:
         serializedVersion: 2
         x: 340
@@ -359,14 +521,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3b7e31c041e33a560800000000000000
-      internalID: 7323765674857457587
+      spriteID: 69adeaae06f503110800000000000000
+      internalID: 1238594767385713302
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_5
+      name: hat_2_5
       rect:
         serializedVersion: 2
         x: 425
@@ -380,14 +542,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 19aa25b5b704e3610800000000000000
-      internalID: 1602789415947774609
+      spriteID: 63cacba80af5226f0800000000000000
+      internalID: -710900648044090314
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_6
+      name: hat_2_6
       rect:
         serializedVersion: 2
         x: 510
@@ -401,14 +563,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 56a22be0f1d373320800000000000000
-      internalID: 2537564118646401637
+      spriteID: 24b34e98b0cd01ff0800000000000000
+      internalID: -67312052294370494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_7
+      name: hat_2_7
       rect:
         serializedVersion: 2
         x: 595
@@ -422,14 +584,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c6c3e68d3d920ca0800000000000000
-      internalID: -6052102061650884927
+      spriteID: 713e4072a29838ae0800000000000000
+      internalID: -1548243032749055209
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_8
+      name: hat_2_8
       rect:
         serializedVersion: 2
         x: 680
@@ -443,14 +605,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: edb2de816a5a46840800000000000000
-      internalID: 5216476401203227614
+      spriteID: 73b909c8943fa35a0800000000000000
+      internalID: -6540648011585774793
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_9
+      name: hat_2_9
       rect:
         serializedVersion: 2
         x: 765
@@ -464,14 +626,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 13a6370d3c04f87e0800000000000000
-      internalID: -1761117719518549455
+      spriteID: cf040242200f86f50800000000000000
+      internalID: 6875008723167756540
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_10
+      name: hat_2_10
       rect:
         serializedVersion: 2
         x: 850
@@ -485,14 +647,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e94bcd0133ee66970800000000000000
-      internalID: 8747941229307409566
+      spriteID: 13010598b3d4186a0800000000000000
+      internalID: -6448788273315704783
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_11
+      name: hat_2_11
       rect:
         serializedVersion: 2
         x: 935
@@ -506,14 +668,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b549a3575b326d020800000000000000
-      internalID: 2366117916492600411
+      spriteID: 5539f187f8d6d5e10800000000000000
+      internalID: 2188025456935015253
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_12
+      name: hat_2_12
       rect:
         serializedVersion: 2
         x: 0
@@ -527,14 +689,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 38213ba982ed6e8a0800000000000000
-      internalID: -6276084764718722429
+      spriteID: f6eb297c868482810800000000000000
+      internalID: 1740720870840778351
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_13
+      name: hat_2_13
       rect:
         serializedVersion: 2
         x: 85
@@ -548,14 +710,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7855c64264d337520800000000000000
-      internalID: 2698567973193143687
+      spriteID: 2b27847e2ddb84b70800000000000000
+      internalID: 8883558978509370034
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_14
+      name: hat_2_14
       rect:
         serializedVersion: 2
         x: 170
@@ -569,14 +731,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3af1eb608002125c0800000000000000
-      internalID: -4242074155161346141
+      spriteID: f535890046f398d40800000000000000
+      internalID: 5587066511469073247
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_15
+      name: hat_2_15
       rect:
         serializedVersion: 2
         x: 255
@@ -590,14 +752,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 716dc352c16d12c40800000000000000
-      internalID: 5485901237486147095
+      spriteID: 85fac3a612776e3a0800000000000000
+      internalID: -6636486015483859112
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_16
+      name: hat_2_16
       rect:
         serializedVersion: 2
         x: 340
@@ -611,14 +773,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df59a2e42ae620d80800000000000000
-      internalID: -8285938721033120259
+      spriteID: 04a2372847ce082b0800000000000000
+      internalID: -5584203552790468032
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_17
+      name: hat_2_17
       rect:
         serializedVersion: 2
         x: 425
@@ -632,14 +794,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab8da26771b19bd70800000000000000
-      internalID: 9059301913013180602
+      spriteID: 64222700b73a2b7d0800000000000000
+      internalID: -2904079061016763834
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_18
+      name: hat_2_18
       rect:
         serializedVersion: 2
         x: 510
@@ -653,14 +815,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dec3b94671a28b190800000000000000
-      internalID: -7946555262534730515
+      spriteID: 6a5f2c3edcf2c3c20800000000000000
+      internalID: 3187475197607474598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_19
+      name: hat_2_19
       rect:
         serializedVersion: 2
         x: 595
@@ -674,14 +836,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7d8349c49a1362190800000000000000
-      internalID: -7987642285890979625
+      spriteID: b5385f1366e1a6fb0800000000000000
+      internalID: -4653873840660315301
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_20
+      name: hat_2_20
       rect:
         serializedVersion: 2
         x: 680
@@ -695,14 +857,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 83ce5b206716b62a0800000000000000
-      internalID: -6743188857577673672
+      spriteID: e295752c88ae18f90800000000000000
+      internalID: -6953018476586378962
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_21
+      name: hat_2_21
       rect:
         serializedVersion: 2
         x: 765
@@ -716,14 +878,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 87031c7c582b1dd00800000000000000
-      internalID: 995773280277311608
+      spriteID: c4e30a4faa217f490800000000000000
+      internalID: -7712675311390802356
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_22
+      name: hat_2_22
       rect:
         serializedVersion: 2
         x: 850
@@ -737,14 +899,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2a3fef1d4e691a380800000000000000
-      internalID: -8961715873970719838
+      spriteID: e3d8f1c63963389c0800000000000000
+      internalID: -3926234443334841026
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_23
+      name: hat_2_23
       rect:
         serializedVersion: 2
         x: 935
@@ -758,14 +920,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66ab11d822222bbb0800000000000000
-      internalID: -4921833910971549082
+      spriteID: ad3a722231b1714d0800000000000000
+      internalID: -3164030444213132326
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_24
+      name: hat_2_24
       rect:
         serializedVersion: 2
         x: 0
@@ -779,14 +941,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c31c2e5bac66eba10800000000000000
-      internalID: 1927090711382114620
+      spriteID: d111378d30d02dcc0800000000000000
+      internalID: -3687870834695532259
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_25
+      name: hat_2_25
       rect:
         serializedVersion: 2
         x: 85
@@ -800,14 +962,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 42c43b7912e11a7d0800000000000000
-      internalID: -2909010754676765660
+      spriteID: 6aae5177e87bafac0800000000000000
+      internalID: -3820539511359280474
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_26
+      name: hat_2_26
       rect:
         serializedVersion: 2
         x: 170
@@ -821,14 +983,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5ec77c739055c3850800000000000000
-      internalID: 6358050272019184869
+      spriteID: 4025faf64cb1234a0800000000000000
+      internalID: -6615194372152536572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_27
+      name: hat_2_27
       rect:
         serializedVersion: 2
         x: 255
@@ -842,14 +1004,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c9722d592d705460800000000000000
-      internalID: 7228415018539317702
+      spriteID: f2e1aef1ccd349ed0800000000000000
+      internalID: -2408231953818313169
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_28
+      name: hat_2_28
       rect:
         serializedVersion: 2
         x: 340
@@ -863,14 +1025,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c5e86e4b4f7a46300800000000000000
-      internalID: 244504949233716828
+      spriteID: eabc7ed6181531bb0800000000000000
+      internalID: -4966536347722986578
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_29
+      name: hat_2_29
       rect:
         serializedVersion: 2
         x: 425
@@ -884,14 +1046,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bb5ce9fa5da4f7d70800000000000000
-      internalID: 9043028858418152891
+      spriteID: caf71164c3b8e3960800000000000000
+      internalID: 7583651913528344492
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_30
+      name: hat_2_30
       rect:
         serializedVersion: 2
         x: 510
@@ -905,14 +1067,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b96886c1b76029d70800000000000000
-      internalID: 9048301727168104091
+      spriteID: a219d008945fa5a50800000000000000
+      internalID: 6510785907347263786
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_31
+      name: hat_2_31
       rect:
         serializedVersion: 2
         x: 595
@@ -926,14 +1088,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a30444ceb0bfccea0800000000000000
-      internalID: -5851025787234009030
+      spriteID: dc9bc41064e5bcab0800000000000000
+      internalID: -4986788507620165171
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_32
+      name: hat_2_32
       rect:
         serializedVersion: 2
         x: 680
@@ -947,14 +1109,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f29fa431f6fa494f0800000000000000
-      internalID: -822839940302046929
+      spriteID: 97373ad619f9aab60800000000000000
+      internalID: 7758188755057603449
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_33
+      name: hat_2_33
       rect:
         serializedVersion: 2
         x: 765
@@ -968,14 +1130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b2a18f90ed43a0a0800000000000000
-      internalID: -6871562979293158736
+      spriteID: fc3144540b0dc0c10800000000000000
+      internalID: 2021219788277421007
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_34
+      name: hat_2_34
       rect:
         serializedVersion: 2
         x: 850
@@ -989,14 +1151,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7a933182d3fcee9f0800000000000000
-      internalID: -437184252236056153
+      spriteID: 968b6a9c905eda330800000000000000
+      internalID: 3723884297105881193
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_35
+      name: hat_2_35
       rect:
         serializedVersion: 2
         x: 935
@@ -1010,14 +1172,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f2ba9da19a56a8c40800000000000000
-      internalID: 5515332470642944815
+      spriteID: d9a33bdad8987a460800000000000000
+      internalID: 7252916966501071517
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_36
+      name: hat_2_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1031,14 +1193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 67db44e910fbb07e0800000000000000
-      internalID: -1798133612533203594
+      spriteID: d495ff1cdd0b9f070800000000000000
+      internalID: 8140732267937880397
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_37
+      name: hat_2_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1052,14 +1214,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 38291c0c25aff8310800000000000000
-      internalID: 1409620441718428291
+      spriteID: 49596d4e3d8f81aa0800000000000000
+      internalID: -6189924098859690604
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_38
+      name: hat_2_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1073,14 +1235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 64c9007f2fef30fd0800000000000000
-      internalID: -2376775858841936826
+      spriteID: a569feb6c9be2d180800000000000000
+      internalID: -9091945640649320870
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_39
+      name: hat_2_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1094,14 +1256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a77c0c319b79eb280800000000000000
-      internalID: -9025609782047750278
+      spriteID: 88384bef756bba590800000000000000
+      internalID: -7661829851989113976
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_40
+      name: hat_2_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1115,14 +1277,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4a87205ce7f783880800000000000000
-      internalID: -8631008503407675228
+      spriteID: 3b3f34122cec77610800000000000000
+      internalID: 1618989924240061363
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_41
+      name: hat_2_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1136,14 +1298,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f5a1cedcb21efadc0800000000000000
-      internalID: -3625431596755314081
+      spriteID: 05042d89025a6a8c0800000000000000
+      internalID: -3988318860568543152
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_42
+      name: hat_2_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1157,14 +1319,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f828b227a2ffbe170800000000000000
-      internalID: 8208935303582024335
+      spriteID: 575edfdcebeeed420800000000000000
+      internalID: 2656823333462336885
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_43
+      name: hat_2_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1178,14 +1340,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b51b0fa1d9b2d23b0800000000000000
-      internalID: -5535720413206630053
+      spriteID: f1478dc69e8989a50800000000000000
+      internalID: 6528135788194460703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_44
+      name: hat_2_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1199,14 +1361,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f19b7642bb81ebbb0800000000000000
-      internalID: -4918466550993274593
+      spriteID: 0456bcd261305b2f0800000000000000
+      internalID: -957855951953894080
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_45
+      name: hat_2_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1220,14 +1382,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 331dd757faa44b480800000000000000
-      internalID: -8884394047444233933
+      spriteID: 4f40fc8af4fff46a0800000000000000
+      internalID: -6462666222653733644
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_46
+      name: hat_2_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1241,14 +1403,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aaa12788995477e80800000000000000
-      internalID: -8180993672373724502
+      spriteID: 7131f2fa045843fe0800000000000000
+      internalID: -1210195886992321769
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_47
+      name: hat_2_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1262,14 +1424,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: afabfb60050478170800000000000000
-      internalID: 8180577960596585210
+      spriteID: 2de4637e25fbc8300800000000000000
+      internalID: 255789641640595154
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_48
+      name: hat_2_48
       rect:
         serializedVersion: 2
         x: 0
@@ -1283,14 +1445,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df39248be6e7c9dc0800000000000000
-      internalID: -3630888185564589059
+      spriteID: 3811a019f76fb6c20800000000000000
+      internalID: 3200922987931505027
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_49
+      name: hat_2_49
       rect:
         serializedVersion: 2
         x: 85
@@ -1304,14 +1466,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4600fa8bc6f561930800000000000000
-      internalID: 4113580230209110116
+      spriteID: 280501eb1c3a2b810800000000000000
+      internalID: 1779664855277523074
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_50
+      name: hat_2_50
       rect:
         serializedVersion: 2
         x: 170
@@ -1325,14 +1487,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2cc376f5e44288a0800000000000000
-      internalID: -6304400773892289490
+      spriteID: 775c1a0f92a99f840800000000000000
+      internalID: 5258403544853235063
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_51
+      name: hat_2_51
       rect:
         serializedVersion: 2
         x: 255
@@ -1346,14 +1508,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1ba6f789a42f75500800000000000000
-      internalID: 385042695363455665
+      spriteID: 1ebf4c46bcf47fdc0800000000000000
+      internalID: -3605325241699206175
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_52
+      name: hat_2_52
       rect:
         serializedVersion: 2
         x: 340
@@ -1367,14 +1529,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0160e61e858784640800000000000000
-      internalID: 5064430104112662032
+      spriteID: 103b2cac0f43171e0800000000000000
+      internalID: -2201920534008909055
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Coursair_53
+      name: hat_2_53
       rect:
         serializedVersion: 2
         x: 425
@@ -1388,8 +1550,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 32bba41f3096cbd60800000000000000
-      internalID: 7907310511409773347
+      spriteID: 08dc454d3baa078e0800000000000000
+      internalID: -1697669370180481664
       vertices: []
       indices: 
       edges: []

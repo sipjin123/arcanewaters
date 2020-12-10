@@ -236,8 +236,9 @@ public class TreasureChest : NetworkBehaviour {
          return getLandMonsterLootContents();
       }
 
-      string areaKey = InstanceManager.self.getInstance(instanceId).areaKey;
-      Biome.Type biome = AreaManager.self.getArea(areaKey).biome;
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      string areaKey = instance.areaKey;
+      Biome.Type biome = instance.biome;
       List<TreasureDropsData> treasureDropsList = TreasureDropsDataManager.self.getTreasureDropsFromBiome(biome).OrderBy(_=>_.spawnChance).ToList();
 
       foreach (TreasureDropsData treasureDropsEntry in treasureDropsList) {

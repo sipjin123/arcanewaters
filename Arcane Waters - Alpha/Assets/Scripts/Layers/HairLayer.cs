@@ -38,10 +38,21 @@ public class HairLayer : SpriteLayer {
       // Update our Animated Sprite
       getSpriteSwap().newTexture = getTexture(newType, isFront);
 
+      _stencilCompPropertyId = Shader.PropertyToID("_StencilCompare");
+
       Material mat = getMaterial();
       mat.SetInt("_StencilPass", (int)StencilOp.Keep);
       mat.SetInt("_StencilCompare", (int) CompareFunction.NotEqual);
       mat.SetInt("_StencilRef", HAT_STENCIL_ID);
+   }
+
+   private void Update () {
+      // The hair back layer is only clipped by the hat if we're not facing south
+      if (!isFront) {
+         if (getPlayer() != null) {
+            getMaterial().SetInt(_stencilCompPropertyId, getPlayer().facing == Direction.South ? (int) CompareFunction.Disabled : (int) CompareFunction.NotEqual);
+         }
+      }
    }
 
    public static Texture2D getTexture (Type hairType, bool isFront) {
@@ -77,6 +88,9 @@ public class HairLayer : SpriteLayer {
 
    // Our current type
    protected Type _type;
+
+   // The property ID of the stencil compare function for hats
+   protected int _stencilCompPropertyId;
 
    #endregion
 }

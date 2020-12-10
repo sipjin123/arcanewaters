@@ -207,6 +207,28 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_MutePlayer (int userId, float seconds) {
+      if (!_player.isAdmin()) {
+         D.warning("Non-admin players can't mute other players");
+         return;
+      }
+
+      DateTime suspensionEndDate = DateTime.Now.AddSeconds(seconds);
+      NetEntity mutedPlayer = EntityManager.self.getEntity(userId);
+      mutedPlayer.chatSuspensionEndDate = suspensionEndDate;
+
+      mutedPlayer.Target_ReceiveNormalChat($"You have been muted until {suspensionEndDate}", ChatInfo.Type.System);
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         DB_Main.mutePlayer(userId, suspensionEndDate);
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            ChatManager.self.addChat($"Player with userId {userId} has been muted until {suspensionEndDate}", ChatInfo.Type.System);            
+         });
+      });
+   }
+
+   [Command]
    public void Cmd_RequestTeamCombatData () {
       // Checks if the user is an admin
       if (_player.isAdmin()) {
@@ -838,6 +860,12 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
+      if (_player.isMuted()) {
+         // The player is muted and can't send messages
+         _player.Target_ReceiveNormalChat($"Your message could not be sent because you have been muted by a moderator.", ChatInfo.Type.System);
+         return;
+      }
+
       GuildIconData guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
       ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, guildIconData);
 
@@ -920,7 +948,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations, Biome.Type voyageBiome) {
+   public void Target_ReceiveAreaInfo (NetworkConnection connection, string areaKey, string baseMapAreaKey, int latestVersion, Vector3 mapPosition, MapCustomizationData customizations, Biome.Type biome) {
       // Check if we already have the Area created
       Area area = AreaManager.self.getArea(areaKey);
 
@@ -945,14 +973,14 @@ public class RPCManager : NetworkBehaviour {
          } else {
             // Only enter this process for server builds, this function accesses the background thread DB_Main
             if (NetworkServer.active) {
-               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, voyageBiome);
+               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome);
                return;
             } 
          }
       }
       
       // If we don't have the latest version of the map, download it
-      MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, voyageBiome);
+      MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, biome);
    }
 
    [Command]
@@ -3210,7 +3238,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void giveAbilityToPlayer (int userID, int[] abilityIds) {
+   public void giveAbilityToPlayer (int userID, int[] abilityIds) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Create or update the database ability
          foreach (int abilityId in abilityIds) {
@@ -4491,7 +4519,7 @@ public class RPCManager : NetworkBehaviour {
       List<ItemInstance> remainingProps = await DB_Main.execAsync((cmd) => DB_Main.getItemInstances(cmd, _player.userId, ItemDefinition.Category.Prop).ToList());
 
       // Check if changes are valid
-      if (!MapCustomizationManager.validatePrefabChanges(area, remainingProps, changes, true, out string errorMessage)) {
+      if (!MapCustomizationManager.validatePrefabChanges(area, instance.biome, remainingProps, changes, true, out string errorMessage)) {
          Target_FailAddPrefabCustomization(changes, errorMessage);
          return;
       }
@@ -4502,7 +4530,7 @@ public class RPCManager : NetworkBehaviour {
       int baseMapId = customMapManager.getBaseMapId(areaOwner);
 
       // Find the customizable prefab that is being targeted
-      CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome).GetComponent<CustomizablePrefab>();
+      CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, instance.biome).GetComponent<CustomizablePrefab>();
 
       // Set changes in the database
       PrefabState currentState = await DB_Main.execAsync((cmd) => DB_Main.getMapCustomizationChanges(cmd, baseMapId, areaOwnerId, changes.id));
@@ -4523,10 +4551,10 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Set changes in the server
-      MapManager.self.addCustomizations(area, changes);
+      MapManager.self.addCustomizations(area, instance.biome, changes);
 
       // Notify all clients about them
-      Rpc_AddPrefabCustomizationSuccess(areaKey, changes);
+      Rpc_AddPrefabCustomizationSuccess(areaKey, instance.biome, changes);
    }
 
    [TargetRpc]
@@ -4535,8 +4563,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [ClientRpc]
-   public void Rpc_AddPrefabCustomizationSuccess (string areaKey, PrefabState changes) {
-      MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, changes);
+   public void Rpc_AddPrefabCustomizationSuccess (string areaKey, Biome.Type biome, PrefabState changes) {
+      MapCustomizationManager.serverAddPrefabChangeSuccess(areaKey, biome, changes);
    }
 
    #region Item Instances

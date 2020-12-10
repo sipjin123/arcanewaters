@@ -27,6 +27,10 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public string areaKey;
 
+   // The biome of the instance the site is in
+   [SyncVar]
+   public Biome.Type instanceBiome;
+
    // The target spawn to return from treasure site
    [SyncVar]
    public string spawnTarget;
@@ -34,6 +38,10 @@ public class TreasureSite : NetworkBehaviour
    // The destination area this site warps to
    [SyncVar]
    public string destinationArea;
+
+   // The destination instance this site warps to
+   [SyncVar]
+   public int destinationInstanceId = -1;
 
    // The destination spawn this site warps to
    [SyncVar]
@@ -300,12 +308,12 @@ public class TreasureSite : NetworkBehaviour
 
       // Set the site as a child of the area
       Area area = AreaManager.self.getArea(this.areaKey);
-      setBiome(area.biome);
+      setBiome(instanceBiome);
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 
       // Get all the nearby colliders
-      Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.6f);
+      Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
 
       // Find the warp associated with this treasure site
       bool found = false;

@@ -482,8 +482,8 @@ public class SoundManager : MonoBehaviour {
       return false;
    }
 
-   public static void setBackgroundMusic (string areaKey) {
-      Type areaMusic = Area.getBackgroundMusic(areaKey);
+   public static void setBackgroundMusic (string areaKey, Biome.Type biome) {
+      Type areaMusic = Area.getBackgroundMusic(areaKey, biome);
       if (areaMusic != Type.None) {
          setBackgroundMusic(areaMusic);
       }

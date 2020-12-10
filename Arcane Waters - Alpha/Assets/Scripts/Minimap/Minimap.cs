@@ -157,9 +157,14 @@ public class Minimap : ClientMonoBehaviour {
          return;
       }
 
+      Instance instance = Global.player.getInstance();
+      if (instance == null) {
+         return;
+      }
+
       // Dynamically generate minimap for base map player entered
-      if (area.biome != Biome.Type.None) {
-         TilemapToTextureColorsStatic(area, false);
+      if (instance.biome != Biome.Type.None) {
+         TilemapToTextureColorsStatic(area, instance.biome, false);
       } else {
          // Change the background image
          backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey);
@@ -491,7 +496,7 @@ public class Minimap : ClientMonoBehaviour {
       return tex;
    }
 
-   private MinimapGeneratorPreset chooseBaseMapPreset (Area area) {
+   private MinimapGeneratorPreset chooseBaseMapPreset (Area area, Biome.Type biome) {
       if (!area) {
          D.debug("Couldn't get map instance!");
          return baseForestPreset;
@@ -502,14 +507,12 @@ public class Minimap : ClientMonoBehaviour {
          return specialPresets[specialPresetIndex];
       }
 
-      Biome.Type biomeType = area.biome;
-
       if (area.isSea) {
-         return lookUpSeaPreset(biomeType);
+         return lookUpSeaPreset(biome);
       } else if (area.isInterior) {
          return interiorPreset;
       } else {
-         switch (biomeType) {
+         switch (biome) {
             case Biome.Type.Forest:
                return baseForestPreset;
             case Biome.Type.Desert:
@@ -634,12 +637,12 @@ public class Minimap : ClientMonoBehaviour {
 
          // Get the Area associated with the Map
          GameObject area = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-         TilemapToTextureColorsStatic(area.GetComponent<Area>(), true);
+         TilemapToTextureColorsStatic(area.GetComponent<Area>(), AreaManager.self.getDefaultBiome(area.GetComponent<Area>().name), true);
       }
       #endif
    }
 
-   void TilemapToTextureColorsStatic (Area area, bool saveMap) {
+   void TilemapToTextureColorsStatic (Area area, Biome.Type biome, bool saveMap) {
       List<Texture2D> textureList = new List<Texture2D>();
 
       //  The layer will set the base image size
@@ -672,7 +675,7 @@ public class Minimap : ClientMonoBehaviour {
          RugMarker[] rugs = area.gameObject.GetComponentsInChildren<RugMarker>();
          AreaEffector2D[] areaEffectors2D = area.GetComponentsInChildren<AreaEffector2D>();
          Collider2D[] colliders2D = area.GetComponentsInChildren<Collider2D>();
-         MinimapGeneratorPreset preset = chooseBaseMapPreset(area);
+         MinimapGeneratorPreset preset = chooseBaseMapPreset(area, biome);
 
          if (preset) {
             _tileLayer = preset._tileLayer;

@@ -82,10 +82,10 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
       if (VoyageGroupManager.isInGroup(player) && VoyageManager.isTreasureSiteArea(player.areaKey)) {
          // Try to find the treasure site entrance (spawn) where the user is registered
          int voyageId = player.getInstance().voyageId;
-         Instance destinationInstance = InstanceManager.self.getVoyageInstance(voyageId);
+         Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(voyageId);
          string spawnTarget = "";
 
-         foreach (TreasureSite treasureSite in destinationInstance.treasureSites) {
+         foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
             if (treasureSite.playerListInSite.Contains(player.userId)) {
                treasureSite.playerListInSite.Remove(player.userId);
                spawnTarget = treasureSite.spawnTarget;
@@ -93,7 +93,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             }
          }
 
-         player.spawnInNewMap(voyageId, destinationInstance.areaKey, spawnTarget, newFacingDirection);
+         player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);
       }
       // Check if the destination is a treasure site
       else if (VoyageGroupManager.isInGroup(player) && isWarpToTreasureSite(player.instanceId)) {

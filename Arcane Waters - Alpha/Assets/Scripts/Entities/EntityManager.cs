@@ -45,6 +45,16 @@ public class EntityManager : MonoBehaviour
       return _entities.Count;
    }
 
+   public NetEntity getEntityWithName (string name) {      
+      foreach (NetEntity entity in _entities.Values) {
+         if (name.Equals(entity.entityName, System.StringComparison.InvariantCultureIgnoreCase)) {
+            return entity;
+         }
+      }
+
+      return null;
+   }
+
    #region Private Variables
 
    // A mapping of userId to Entity object

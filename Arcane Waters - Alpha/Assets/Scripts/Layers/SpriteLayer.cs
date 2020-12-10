@@ -25,7 +25,7 @@ public class SpriteLayer : RecoloredSprite {
       return _renderer;
    }
 
-   protected SpriteSwap getSpriteSwap () {
+   public SpriteSwap getSpriteSwap () {
       return _spriteSwap ?? (_spriteSwap = GetComponent<SpriteSwap>());
    }
 
@@ -53,6 +53,14 @@ public class SpriteLayer : RecoloredSprite {
       }
    }
 
+   protected PlayerBodyEntity getPlayer () {
+      if (_player == null) {
+         _player = GetComponentInParent<PlayerBodyEntity>();
+      }
+
+      return _player;
+   }
+
    #region Private Variables
 
    // The sprite renderer we use for displaying animations
@@ -63,6 +71,9 @@ public class SpriteLayer : RecoloredSprite {
 
    // The stencil reference ID used for hiding hair behind the hat
    protected const int HAT_STENCIL_ID = 3;
+
+   // A reference to the player
+   protected PlayerBodyEntity _player;
 
    #endregion
 }

@@ -205,6 +205,60 @@ public class DB_Main : DB_MainStub
       return count.ToString();
    }
 
+   public static new void mutePlayer (int userId, DateTime suspensionEnd) {
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand(
+            // Declaration of table elements
+            "INSERT INTO global.user_chat_suspensions (userId, suspensionEnd) " +
+            "VALUES(@userId, @suspensionEnd) " +
+            "ON DUPLICATE KEY UPDATE suspensionEnd = @suspensionEnd", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@suspensionEnd", suspensionEnd);
+
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new DateTime getPlayerChatSuspensionEndDate (int userId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM global.user_chat_suspensions WHERE (userID=@userID)", conn)) {
+
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userID", userId);
+
+            DebugQuery(cmd);
+
+            cmd.ExecuteNonQuery();
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               if (dataReader.Read()) {
+                  DateTime endDate = dataReader.GetDateTime("suspensionEnd");
+                  return endDate;
+               } else {
+                  return DateTime.Now;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+         return DateTime.Now;
+      }
+   }
+
    private static string getUserInventoryWhereClause (int userId, int[] categoryFilter,
       int[] itemIdsToExclude, bool mustExcludeEquippedItems) {
       StringBuilder clause = new StringBuilder();

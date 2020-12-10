@@ -18,7 +18,7 @@ public class HatLayer : SpriteLayer
       _type = newType;
 
       // Update our Animated Sprite
-      string path = (newType == 0) ? "Empty_Layer" : "Hats/" + gender + "/" + gender + "_hat_" + (int) newType;
+      string path = (newType == 0) ? "Empty_Layer" : "Hats/" + "hat_" + (int) newType;
       Texture2D result = ImageManager.getTexture(path);
 
       if (immediate) {

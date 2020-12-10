@@ -35,10 +35,10 @@ public class MapManager : MonoBehaviour
       createLiveMap(areaKey, new MapInfo(baseMapAreaKey, null, -1), getNextMapPosition(), null, voyageBiome);
    }
 
-   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
+   public void createLiveMap (string areaKey, MapInfo mapInfo, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
       // If the area already exists, don't create it again
       if (AreaManager.self.hasArea(areaKey)) {
-         D.debug("Cant create live map due to missing area key: " + areaKey);
+         D.debug("The area already exists and won't be created again: " + areaKey);
          return;
       }
 
@@ -55,7 +55,7 @@ public class MapManager : MonoBehaviour
          _nextMapInfo = mapInfo;
          _nextMapPosition = mapPosition;
          _nextMapCustomizationData = customizationData;
-         _nextBiome = voyageBiome;
+         _nextBiome = biome;
          return;
       }
 
@@ -74,16 +74,19 @@ public class MapManager : MonoBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Read the map data
-         if (mapInfo.gameData == null) {
-            string rawMapInfo = DB_Main.getMapInfo(mapInfo.mapName);
-            mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
-         }
+         // Only read the DB on server and hosts
+         if (Mirror.NetworkServer.active) {
+            // Read the map data
+            if (mapInfo.gameData == null) {
+               string rawMapInfo = DB_Main.getMapInfo(mapInfo.mapName);
+               mapInfo = JsonUtility.FromJson<MapInfo>(rawMapInfo);
+            }
 
-         // Fetch map customization data if required
-         if (ownerId != -1 && customizationData == null) {
-            int baseMapId = DB_Main.getMapId(mapInfo.mapName);
-            customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
+            // Fetch map customization data if required
+            if (ownerId != -1 && customizationData == null) {
+               int baseMapId = DB_Main.getMapId(mapInfo.mapName);
+               customizationData = DB_Main.exec((cmd) => DB_Main.getMapCustomizationData(cmd, baseMapId, ownerId));
+            }
          }
 
          // Back to the Unity thread
@@ -92,7 +95,7 @@ public class MapManager : MonoBehaviour
                D.debug($"Could not find entry for map { areaKey } in the database");
 
                // If db_main fails to return due to connection issues, attempt nubis connection
-               processNubisData(areaKey, mapPosition, customizationData, voyageBiome);
+               processNubisData(areaKey, mapPosition, customizationData, biome);
             } else if (string.IsNullOrEmpty(mapInfo.gameData)) {
                D.error($"Could not find gameData from map { areaKey } in the database. Ensure that the map has a published version available.");
             } else {
@@ -100,7 +103,7 @@ public class MapManager : MonoBehaviour
                ExportedProject001 exportedProject = MapImporter.deserializeMapData(mapInfo, areaKey);
 
                if (exportedProject != null) {
-                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, voyageBiome));
+                  StartCoroutine(CO_InstantiateMapData(mapInfo, exportedProject, areaKey, mapPosition, customizationData, biome));
                }
             }
          });
@@ -127,7 +130,7 @@ public class MapManager : MonoBehaviour
       }
    }
 
-   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
+   private IEnumerator CO_InstantiateMapData (MapInfo mapInfo, ExportedProject001 exportedProject, string areaKey, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
       AssetSerializationMaps.ensureLoaded();
       MapTemplate result = Instantiate(AssetSerializationMaps.mapTemplate, mapPosition, Quaternion.identity);
       result.name = areaKey;
@@ -135,21 +138,20 @@ public class MapManager : MonoBehaviour
       if (exportedProject.biome == Biome.Type.None) {
          // Biome should never be None, redownload map data using nubis and overwrite the cached map data
          D.error("Map Log: Invalid biome type NONE in map data. Redownloading map data using Nubis");
-         downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData, voyageBiome);
+         downloadAndCreateMap(areaKey, areaKey, mapInfo.version, mapPosition, customizationData, biome);
       } else {
          // Create the area
          Area area = result.area;
 
-         // Use random biome for voyages
-         if (AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage && voyageBiome != Biome.Type.None) {
-            exportedProject.biome = voyageBiome;
+         // Overwrite the default area biome if another is given
+         if (biome != Biome.Type.None) {
+            exportedProject.biome = biome;
          }
 
          // Set area properties
          area.areaKey = areaKey;
          area.baseAreaKey = mapInfo.mapName;
          area.version = mapInfo.version;
-         area.biome = exportedProject.biome;
 
          area.cloudManager.enabled = false;
          area.cloudShadowManager.enabled = false;
@@ -233,7 +235,7 @@ public class MapManager : MonoBehaviour
          yield return null;
 
          if (customizationData != null) {
-            setCustomizations(area, customizationData);
+            setCustomizations(area, exportedProject.biome, customizationData);
          }
 
          // Set up cell types container
@@ -245,11 +247,11 @@ public class MapManager : MonoBehaviour
          // Initialize the area
          area.initialize();
 
-         onAreaCreationIsFinished(area, voyageBiome);
+         onAreaCreationIsFinished(area, biome);
       }
    }
 
-   public void onAreaCreationIsFinished (Area area, Biome.Type voyageBiome) {
+   public void onAreaCreationIsFinished (Area area, Biome.Type biome) {
       D.debug("Area creation is Finished: " + area.areaKey);
 
       // Remove the area from being under creation
@@ -305,13 +307,13 @@ public class MapManager : MonoBehaviour
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
    }
 
-   public void setCustomizations (Area area, MapCustomizationData customizationData) {
+   public void setCustomizations (Area area, Biome.Type biome, MapCustomizationData customizationData) {
       try {
          Dictionary<int, CustomizablePrefab> prefabs = area.gameObject.GetComponentsInChildren<CustomizablePrefab>().ToDictionary(p => p.unappliedChanges.id, p => p);
 
          foreach (PrefabState state in customizationData.prefabChanges) {
             if (state.created) {
-               createPrefab(area, state, true);
+               createPrefab(area, biome, state, true);
             } else {
                if (prefabs.TryGetValue(state.id, out CustomizablePrefab pref)) {
                   pref.revertToMapEditor();
@@ -325,7 +327,7 @@ public class MapManager : MonoBehaviour
       }
    }
 
-   public void addCustomizations (Area area, PrefabState changes) {
+   public void addCustomizations (Area area, Biome.Type biome, PrefabState changes) {
       bool found = false;
       foreach (CustomizablePrefab pref in area.gameObject.GetComponentsInChildren<CustomizablePrefab>()) {
          if (pref.unappliedChanges.id == changes.id) {
@@ -338,12 +340,12 @@ public class MapManager : MonoBehaviour
       }
 
       if (!found && changes.created) {
-         createPrefab(area, changes, true);
+         createPrefab(area, biome, changes, true);
       }
    }
 
-   public CustomizablePrefab createPrefab (Area area, PrefabState state, bool confirmedState) {
-      GameObject prefGO = AssetSerializationMaps.getPrefab(state.serializationId, area.biome, false);
+   public CustomizablePrefab createPrefab (Area area, Biome.Type biome, PrefabState state, bool confirmedState) {
+      GameObject prefGO = AssetSerializationMaps.getPrefab(state.serializationId, biome, false);
       CustomizablePrefab pref = prefGO?.GetComponent<CustomizablePrefab>();
 
       if (pref == null) {
@@ -389,7 +391,7 @@ public class MapManager : MonoBehaviour
       return new Vector2();
    }
 
-   public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type voyageBiome) {
+   public async void downloadAndCreateMap (string areaKey, string baseMapAreaKey, int version, Vector3 mapPosition, MapCustomizationData customizationData, Biome.Type biome) {
       // Request the map from Nubis Cloud
       string mapData = await NubisClient.call(nameof(DB_Main.fetchMapData), baseMapAreaKey, version);
 
@@ -403,7 +405,7 @@ public class MapManager : MonoBehaviour
          D.debug("Map Log: Creating map data fetched from Nubis: (" + areaKey + ") Ver: " + version);
 
          // Spawn the Area using the map data
-         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData, voyageBiome);
+         createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, version), mapPosition, customizationData, biome);
       }
    }
 

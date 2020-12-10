@@ -29,9 +29,6 @@ public class Area : MonoBehaviour
    // When the area is a shop, keep also at hand the town's name
    public string townAreaKey = null;
 
-   // The area biome
-   public Biome.Type biome;
-
    // The Camera Bounds associated with this area
    public PolygonCollider2D cameraBounds;
 
@@ -271,13 +268,7 @@ public class Area : MonoBehaviour
       return Util.toTitleCase(areaKey);
    }
 
-   public static Biome.Type getBiome (string areaKey) {
-      return AreaManager.self.getAreaBiome(areaKey);
-   }
-
-   public static SoundManager.Type getBackgroundMusic (string areaKey) {
-      Biome.Type biome = getBiome(areaKey);
-
+   public static SoundManager.Type getBackgroundMusic (string areaKey, Biome.Type biome) {
       if (AreaManager.self.tryGetCustomMapManager(areaKey, out CustomMapManager customMapManager)) {
          if (customMapManager is CustomFarmManager) {
             return SoundManager.Type.Farm_Music;

@@ -29,6 +29,13 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
+   public static void mutePlayer (int userId, DateTime suspensionEnd) {
+   }
+
+   public static DateTime getPlayerChatSuspensionEndDate (int userId) {
+      return DateTime.Now;
+   }
+
    public static string userInventoryCount (string usrIdStr, string categoryFilterJSON, string itemIdsToExcludeJSON,
       string mustExcludeEquippedItemsStr) {
       return "0";

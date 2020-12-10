@@ -72,7 +72,7 @@ public class ShopManager : MonoBehaviour {
 
       // Generate items for each of the areas
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
-         Biome.Type biomeType = Area.getBiome(areaKey);
+         Biome.Type biomeType = AreaManager.self.getDefaultBiome(areaKey);
 
          // Clear out the previous list
          _itemsByArea[areaKey] = new List<int>();

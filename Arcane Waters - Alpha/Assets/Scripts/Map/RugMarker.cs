@@ -45,7 +45,7 @@ public class RugMarker : MonoBehaviour
 
    public Color getRugColor () {
       Color[] rugLookup = null;
-      Biome.Type biome = AreaManager.self.getArea(Global.player.areaKey).biome;
+      Biome.Type biome = Global.player.getInstance().biome;
       switch (biome) {
          case Biome.Type.Forest:
             rugLookup = Minimap.self.mapEditorConfig.rugLookupForest;

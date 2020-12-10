@@ -19,36 +19,43 @@ public class AdminManager : NetworkBehaviour
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";
 
    // The various command strings
-   protected static string ADD_GOLD = "add_gold";
-   protected static string ADD_SHIPS = "add_ships";
-   protected static string CREATE_TEST_USERS = "create_test_users";
-   protected static string DELETE_TEST_USERS = "delete_test_users";
-   protected static string SET_WEATHER = "set_weather";
-   protected static string SET_WIND = "set_wind";
-   protected static string CHECK_FPS = "check_fps";
-   protected static string CREATE_TEST_INSTANCES = "create_test_instances";
-   protected static string SHUTDOWN = "shutdown";
-   protected static string SPAWN_SHIPS = "spawn_ships";
-   protected static string SERVER_INFO = "server_info";
-   protected static string POLYNAV_TEST = "polynav_test";
-   protected static string CREATE_SHOP_SHIPS = "create_shop_ships";
-   protected static string CREATE_SHOP_ITEMS = "create_shop_items";
-   protected static string PORT_GO = "portgo";
-   protected static string SHIP_SPEED_UP = "ship_speedup";
-   protected static string SITE_GO = "sitego";
-   protected static string PLAYER_GO = "pgo";
-   protected static string BOT_WAYPOINT = "bot_waypoint";
-   protected static string WARP = "warp";
-   protected static string ENEMY = "enemy";
-   protected static string ABILITY = "all_abilities";
-   protected static string NPC = "test_npc";
-   protected static string GET_ITEM = "get_item";
-   protected static string GET_ALL_ITEMS = "get_all_items";
-   protected static string INTERACT_ANVIL = "interact_anvil";
-   protected static string SCHEDULE_SERVER_RESTART = "restart";
-   protected static string CANCEL_SERVER_RESTART = "cancel";
-   protected static string FREE_WEAPON = "free_weapon";
-   protected static string GUN_ABILITIES = "gun_abilities";
+   protected const string ADD_GOLD = "add_gold";
+   protected const string ADD_SHIPS = "add_ships";
+   protected const string CREATE_TEST_USERS = "create_test_users";
+   protected const string DELETE_TEST_USERS = "delete_test_users";
+   protected const string SET_WEATHER = "set_weather";
+   protected const string SET_WIND = "set_wind";
+   protected const string CHECK_FPS = "check_fps";
+   protected const string CREATE_TEST_INSTANCES = "create_test_instances";
+   protected const string SHUTDOWN = "shutdown";
+   protected const string SPAWN_SHIPS = "spawn_ships";
+   protected const string SERVER_INFO = "server_info";
+   protected const string POLYNAV_TEST = "polynav_test";
+   protected const string CREATE_SHOP_SHIPS = "create_shop_ships";
+   protected const string CREATE_SHOP_ITEMS = "create_shop_items";
+   protected const string PORT_GO = "portgo";
+   protected const string SHIP_SPEED_UP = "ship_speedup";
+   protected const string SITE_GO = "sitego";
+   protected const string PLAYER_GO = "pgo";
+   protected const string BOT_WAYPOINT = "bot_waypoint";
+   protected const string WARP = "warp";
+   protected const string ENEMY = "enemy";
+   protected const string ABILITY = "all_abilities";
+   protected const string NPC = "test_npc";
+   protected const string GET_ITEM = "get_item";
+   protected const string GET_ALL_ITEMS = "get_all_items";
+   protected const string INTERACT_ANVIL = "interact_anvil";
+   protected const string SCHEDULE_SERVER_RESTART = "restart";
+   protected const string CANCEL_SERVER_RESTART = "cancel";
+   protected const string FREE_WEAPON = "free_weapon";
+   protected const string GUN_ABILITIES = "gun_abilities";
+   protected const string GET_ALL_HATS = "get_all_hats";   
+   protected const string GO_TO_PLAYER = "goto";
+   protected const string SUMMON_PLAYER = "summon";
+   protected const string TEACH_ABILITY = "learn";
+   protected const string SPAWN_ENEMY = "spawn";
+   protected const string MUTE_PLAYER = "mute";
+   protected const string TOGGLE_INVISIBILITY = "invisible";
 
    #endregion
 
@@ -122,14 +129,18 @@ public class AdminManager : NetworkBehaviour
          Cmd_Shutdown();
       } else if (ENEMY.Equals(adminCommand)) {
          Cmd_SpawnEnemy();
+      } else if (SPAWN_ENEMY.Equals(adminCommand)) {
+         spawnCustomEnemy(parameters);
       } else if (SERVER_INFO.Equals(adminCommand)) {
          Cmd_ServerInfo();
       } else if (CREATE_SHOP_SHIPS.Equals(adminCommand)) {
          Cmd_CreateShopShips();
       } else if (CREATE_SHOP_ITEMS.Equals(adminCommand)) {
          Cmd_CreateShopItems();
-      } else if (PLAYER_GO.Equals(adminCommand)) {
+      } else if (PLAYER_GO.Equals(adminCommand) || GO_TO_PLAYER.Equals(adminCommand)) {
          requestPlayerGo(parameters);
+      } else if (SUMMON_PLAYER.Equals(adminCommand)) {
+         requestSummonPlayer(parameters);
       } else if (BOT_WAYPOINT.Equals(adminCommand)) {
          Cmd_BotWaypoint();
       } else if (WARP.Equals(adminCommand)) {
@@ -150,6 +161,46 @@ public class AdminManager : NetworkBehaviour
          Cmd_CancelServerRestart();
       } else if (FREE_WEAPON.Equals(adminCommand)) {
          freeWeapon(parameters);
+      } else if (GET_ALL_HATS.Equals(adminCommand)) {
+         requestGetAllHats(parameters);
+      } else if (TEACH_ABILITY.Equals(adminCommand)) {
+         requestGiveAbility(parameters);
+      } else if (MUTE_PLAYER.Equals(adminCommand)) {
+         requestMutePlayer(parameters);
+      } else if (TOGGLE_INVISIBILITY.Equals(adminCommand)) {
+         requestInvisibility();
+      }
+   }
+
+   private void requestInvisibility () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      _player.Cmd_ToggleAdminInvisibility(); 
+   }
+
+   private void requestMutePlayer (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      float seconds = 1;
+      string username = "";
+
+      try {
+         username = list[0];
+         seconds = float.Parse(list[1]);
+      } catch (System.Exception e) {
+         ChatManager.self.addChat("Invalid parameters. Correct use: /admin mute [player name] [seconds]", ChatInfo.Type.Error);
+         return;
+      }
+
+      NetEntity entity = EntityManager.self.getEntityWithName(username);
+      
+      if (entity != null) {
+         Global.player.rpc.Cmd_MutePlayer(entity.userId, seconds);
       }
    }
 
@@ -283,9 +334,59 @@ public class AdminManager : NetworkBehaviour
       Cmd_AddGold(gold, username);
    }
 
+   private void requestGiveAbility (string parameters) {
+      string[] list = parameters.Split(' ');
+      string ability = "";
+      string username = "";
+
+      try {
+         username = list[0];
+         ability = parameters.Replace(username, "").Trim(' ');
+      } catch (System.Exception e) {
+         ChatManager.self.addChat($"Unable to give ability {ability} to player {username}. Correct use: /admin learn [username] [ability]. Exception: {e.Message}", ChatInfo.Type.Error);
+         return;
+      }
+
+      Cmd_AddAbility(username, ability);
+   }
+
+   private void Cmd_AddAbility (string username, string ability) {
+      if (!_player.isAdmin()) {
+         ChatManager.self.addChat("AddAbility command requested from non-admin player.", ChatInfo.Type.Error);
+         return;
+      }
+
+      BasicAbilityData abilityData = AbilityManager.self.allGameAbilities.FirstOrDefault(x => x.itemName.ToUpper() == ability.ToUpper());
+
+      if (abilityData == null) {
+         return;
+      }
+
+      BodyEntity targetBody = BodyManager.self.getBodyWithName(username);
+
+      if (targetBody != null) {
+         targetBody.rpc.giveAbilityToPlayer(targetBody.userId, new int[] { abilityData.itemID });
+      }
+   }
+
    protected void requestAllAbilities (string parameters) {
       List<BasicAbilityData> allAbilities = AbilityManager.self.allGameAbilities;
       Global.player.rpc.Cmd_UpdateAbilities(AbilitySQLData.TranslateBasicAbility(allAbilities).ToArray());
+   }
+
+   private void requestSummonPlayer (string parameters) {
+      string[] list = parameters.Split(' ');
+      string targetPlayerName = "";
+
+      try {
+         targetPlayerName = list[0];
+      } catch (System.Exception e) {
+         D.warning("Unable to parse from: " + parameters + ", exception: " + e);
+         ChatManager.self.addChat("Not a valid player name", ChatInfo.Type.Error);
+         return;
+      }
+
+      Cmd_SummonPlayer(targetPlayerName);
    }
 
    protected void requestPlayerGo (string parameters) {
@@ -422,6 +523,35 @@ public class AdminManager : NetworkBehaviour
 
       // Send the request to the server
       Cmd_CreateItem(category, itemTypeId, count);
+   }
+
+   private void requestGetAllHats (string parameters) {
+      Cmd_RequestAllHats();
+   }
+
+   [Command]
+   private void Cmd_RequestAllHats () {
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin player.");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int hatCount = 0;
+
+         // Create all the hats
+         foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
+            if (hatData.hatType != 0) {
+               if (createItemIfNotExistOrReplenishStack(Item.Category.Hats, hatData.hatType, 1)) {
+                  hatCount++;
+               }
+            }
+         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            D.log("You received " + hatCount + " hats.");
+         });
+      });
    }
 
    protected void requestGetAllItems (string parameters) {
@@ -659,18 +789,41 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
+   private void Cmd_SummonPlayer (string targetPlayerName) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      NetEntity targetEntity = EntityManager.self.getEntityWithName(targetPlayerName);
+
+      if (targetEntity == null) {
+         return;
+      }
+
+      if (_player.areaKey != targetEntity.areaKey || _player.instanceId != targetEntity.instanceId) {
+         targetEntity.spawnInNewMap(_player.areaKey, _player.transform.localPosition, Direction.South);
+      } else {
+         targetEntity.moveToPosition(_player.transform.position);
+      }
+   }
+
+   [Command]
    protected void Cmd_PlayerGo (string targetPlayerName) {
       if (!_player.isAdmin()) {
          return;
       }
 
-      BodyEntity targetBody = BodyManager.self.getBodyWithName(targetPlayerName);
+      NetEntity targetEntity = EntityManager.self.getEntityWithName(targetPlayerName);
 
-      if (targetBody == null) {
+      if (targetEntity == null) {
          return;
       }
 
-      _player.spawnInNewMap(targetBody.areaKey, targetBody.transform.localPosition, Direction.South);
+      if (_player.areaKey != targetEntity.areaKey || _player.instanceId != targetEntity.instanceId) {
+         _player.spawnInNewMap(targetEntity.areaKey, targetEntity.transform.localPosition, Direction.South);
+      } else {
+         _player.moveToPosition(targetEntity.transform.position);
+      }      
    }
 
    [Command]
@@ -772,6 +925,23 @@ public class AdminManager : NetworkBehaviour
       }
 
       _player.spawnInNewMap(closestAreaKey);
+   }
+
+   private void spawnCustomEnemy (string parameters) {
+      parameters = parameters.Trim(' ').Replace(" ", "_");
+      if (Enum.TryParse(parameters, out Enemy.Type enemyType)) {
+         Cmd_SpawnCustomEnemy(enemyType);
+      }
+   }
+
+   [Command]
+   private void Cmd_SpawnCustomEnemy (Enemy.Type enemyType) {
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin");
+         return;
+      }
+
+      EnemyManager.self.spawnEnemyAtLocation(enemyType, _player.getInstance(), _player.transform.localPosition);
    }
 
    [Command]

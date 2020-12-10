@@ -75,10 +75,8 @@ public class AreaManager : MonoBehaviour
       return -1;
    }
 
-   public Biome.Type getAreaBiome (string areaKey) {
-      if (hasArea(areaKey)) {
-         return getArea(areaKey).biome;
-      } else if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
+   public Biome.Type getDefaultBiome (string areaKey) {
+      if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
          return map.biome;
       } else {
          return Biome.Type.None;

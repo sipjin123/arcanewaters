@@ -25,32 +25,28 @@ public class RandomEnemySpawner : MonoBehaviour, IMapEditorDataReceiver
          return;
       }
 
-      Enemy.Type type = Enemy.Type.None;
       Area area = GetComponentInParent<Area>();
-      switch (area.biome) {
-         case Biome.Type.Forest:
-            type = forestBiomeEnemies.ChooseRandom();
-            break;
-         case Biome.Type.Desert:
-            type = desertBiomeEnemies.ChooseRandom();
-            break;
-         case Biome.Type.Pine:
-            type = pineBiomeEnemies.ChooseRandom();
-            break;
-         case Biome.Type.Snow:
-            type = snowBiomeEnemies.ChooseRandom();
-            break;
-         case Biome.Type.Lava:
-            type = lavaBiomeEnemies.ChooseRandom();
-            break;
-         case Biome.Type.Mushroom:
-            type = mushroomBiomeEnemies.ChooseRandom();
-            break;
-      }
-
       Enemy_Spawner spawner = gameObject.AddComponent<Enemy_Spawner>();
-      spawner.enemyType = type;
+      spawner.setRandomSpawner(this);
       EnemyManager.self.storeSpawner(spawner, area.areaKey);
+   }
+
+   public Enemy.Type getRandomEnemyType (Biome.Type biome) {
+      switch (biome) {
+         case Biome.Type.Forest:
+            return forestBiomeEnemies.ChooseRandom();
+         case Biome.Type.Desert:
+            return desertBiomeEnemies.ChooseRandom();
+         case Biome.Type.Pine:
+            return pineBiomeEnemies.ChooseRandom();
+         case Biome.Type.Snow:
+            return snowBiomeEnemies.ChooseRandom();
+         case Biome.Type.Lava:
+            return lavaBiomeEnemies.ChooseRandom();
+         case Biome.Type.Mushroom:
+            return mushroomBiomeEnemies.ChooseRandom();
+      }
+      return Enemy.Type.None;
    }
 
    public void receiveData (DataField[] dataFields) {

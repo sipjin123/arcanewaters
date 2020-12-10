@@ -51,34 +51,65 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-   public void spawnEnemiesOnServerForInstance (Instance instance) {
-      // If we don't have any spawners defined for this Area, then we're done
-      if (instance == null || !_spawners.ContainsKey(instance.areaKey)) {
-         return;
-      }
+    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location)
+    {
+        // If we don't have any spawners defined for this Area, then we're done
+        if (instance == null)
+        {
+            D.warning("Invalid instance received when trying to spawn enemy " + enemyType);
+            return;
+        }
 
-      foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
-         // Create an Enemy in this instance
-         Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-         enemy.transform.localPosition = spawner.transform.localPosition;
-         enemy.enemyType = spawner.enemyType;
-         enemy.areaKey = instance.areaKey;
-         enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+        // Create an Enemy in this instance
+        Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+        enemy.transform.localPosition = location;
+        enemy.enemyType = enemyType;
+        enemy.areaKey = instance.areaKey;
+        enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
 
-         BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
-         if (battlerData != null) {
+        BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+        if (battlerData != null)
+        {
             enemy.isBossType = battlerData.isBossType;
             enemy.isSupportType = battlerData.isSupportType;
             enemy.animGroupType = battlerData.animGroup;
             enemy.facing = Direction.South;
             enemy.displayNameText.text = battlerData.enemyName;
-         }
+        }
 
-         // Add it to the Instance
-         InstanceManager.self.addEnemyToInstance(enemy, instance);
-         NetworkServer.Spawn(enemy.gameObject);
-      }
-   }
+        // Add it to the Instance
+        InstanceManager.self.addEnemyToInstance(enemy, instance);
+        NetworkServer.Spawn(enemy.gameObject);
+    }
+
+    public void spawnEnemiesOnServerForInstance (Instance instance) {
+       // If we don't have any spawners defined for this Area, then we're done
+       if (instance == null || !_spawners.ContainsKey(instance.areaKey)) {
+          return;
+       }
+
+       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
+          // Create an Enemy in this instance
+          Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
+          enemy.transform.localPosition = spawner.transform.localPosition;
+          enemy.enemyType = spawner.getEnemyType(instance.biome);
+          enemy.areaKey = instance.areaKey;
+          enemy.setAreaParent(AreaManager.self.getArea(instance.areaKey), false);
+
+          BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
+          if (battlerData != null) {
+             enemy.isBossType = battlerData.isBossType;
+             enemy.isSupportType = battlerData.isSupportType;
+             enemy.animGroupType = battlerData.animGroup;
+             enemy.facing = Direction.South;
+             enemy.displayNameText.text = battlerData.enemyName;
+          }
+
+          // Add it to the Instance
+          InstanceManager.self.addEnemyToInstance(enemy, instance);
+          NetworkServer.Spawn(enemy.gameObject);
+       }
+    }
 
    public void spawnShipsOnServerForInstance (Instance instance) {
       // If we don't have any spawners defined for this Area, then we're done

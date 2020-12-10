@@ -32,10 +32,20 @@ public class InstanceManager : MonoBehaviour {
                D.error("Could not find the voyage instance for voyage id " + voyageId);
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
-            instance = getTreasureSiteInstance(voyageId);
-            if (instance == null) {
-               // If the treasure site instance doesn't exist yet, create it
-               instance = createNewInstance(areaKey, false, voyageId);
+            // Search for the treasure site the player is registered in, in the sea voyage instance
+            Instance seaVoyageInstance = getVoyageInstance(voyageId);
+            foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+               if (treasureSite.playerListInSite.Contains(player.userId)) {
+                  // Check if the treasure site instance has already been created
+                  if (treasureSite.destinationInstanceId > 0) {
+                     instance = getInstance(treasureSite.destinationInstanceId);
+                  } else {
+                     // If the treasure site instance doesn't exist yet, create it
+                     instance = createNewInstance(areaKey, false, voyageId);
+                     treasureSite.destinationInstanceId = instance.id;
+                  }
+                  break;
+               }
             }
          }
       }
@@ -151,11 +161,12 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer) {
-      return createNewInstance(areaKey, isSinglePlayer, false, -1, false, Voyage.Difficulty.None, Biome.Type.None);
+      return createNewInstance(areaKey, isSinglePlayer, -1);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
-      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, Voyage.Difficulty.None, Biome.Type.None);
+      Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
+      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, Voyage.Difficulty.None, biome);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
@@ -170,7 +181,7 @@ public class InstanceManager : MonoBehaviour {
       instance.creationDate = DateTime.UtcNow.ToBinary();
       instance.isVoyage = isVoyage;
       instance.voyageId = voyageId;
-      instance.biome = biome;
+      instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;
       instance.difficulty = difficulty;
 
@@ -308,6 +319,16 @@ public class InstanceManager : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public static Biome.Type getBiomeForInstance (string areaKey, int voyageId) {
+      // Voyages can have a biome different than the default for the area
+      Voyage voyage = VoyageManager.self.getVoyage(voyageId);
+      if (voyage != null) {
+         return voyage.biome;
+      }
+
+      return AreaManager.self.getDefaultBiome(areaKey);
    }
 
    public int getInstanceCount (string areaKey) {

@@ -30,6 +30,12 @@ namespace Assets.Scripts.Network
                return;
             }
 
+            // Wait until the server is initialized
+            var server = ServerNetworkingManager.self.server;
+            if (server == null) {
+               return;
+            }
+
             string machineID = string.Empty;
 
 #if UNITY_STANDALONE_WIN
@@ -42,12 +48,6 @@ namespace Assets.Scripts.Network
                var proc = Process.GetCurrentProcess();
                var procName = proc.ProcessName;
                var procID = proc.Id.ToString();
-
-               // Server.players_count
-               var server = ServerNetworkingManager.self.server;
-               if (server == null) {
-                  D.debug("Error here, Server is NULL!");
-               }
 
                //D.debug($"Metrics Manager: server={machineID} - users={server.connectedUserIds.Count}");
                DB_Main.setMetricPlayersCount(machineID, procName, procID, server.connectedUserIds.Count);

@@ -164,6 +164,168 @@ TextureImporter:
   - first:
       213: 4544956937418643259
     second: Bandana_53
+  - first:
+      213: -1644902000401231900
+    second: hat_1_0
+  - first:
+      213: 3390899813590273786
+    second: hat_1_1
+  - first:
+      213: 131845874159359060
+    second: hat_1_2
+  - first:
+      213: -8406860614665409428
+    second: hat_1_3
+  - first:
+      213: 8950265090804928327
+    second: hat_1_4
+  - first:
+      213: 5158943676669307542
+    second: hat_1_5
+  - first:
+      213: -6097924290457310721
+    second: hat_1_6
+  - first:
+      213: 6765675334562492637
+    second: hat_1_7
+  - first:
+      213: 8909848013503133070
+    second: hat_1_8
+  - first:
+      213: -2516929231164815325
+    second: hat_1_9
+  - first:
+      213: 4942045905676685864
+    second: hat_1_10
+  - first:
+      213: -3468577775491032959
+    second: hat_1_11
+  - first:
+      213: 4583257494468529052
+    second: hat_1_12
+  - first:
+      213: -6594942557672574477
+    second: hat_1_13
+  - first:
+      213: -6472647459420463873
+    second: hat_1_14
+  - first:
+      213: 129012396075299349
+    second: hat_1_15
+  - first:
+      213: -3726774100400921306
+    second: hat_1_16
+  - first:
+      213: -3985660174796322539
+    second: hat_1_17
+  - first:
+      213: 7322239217053866295
+    second: hat_1_18
+  - first:
+      213: -1337195182744772071
+    second: hat_1_19
+  - first:
+      213: 8968059294823190969
+    second: hat_1_20
+  - first:
+      213: -4974837620316269277
+    second: hat_1_21
+  - first:
+      213: -762137592150515493
+    second: hat_1_22
+  - first:
+      213: 8109812045816891566
+    second: hat_1_23
+  - first:
+      213: -1573453009167385317
+    second: hat_1_24
+  - first:
+      213: -495692017985844892
+    second: hat_1_25
+  - first:
+      213: 8263141775203762209
+    second: hat_1_26
+  - first:
+      213: -1225057754201905701
+    second: hat_1_27
+  - first:
+      213: -7589457369360401531
+    second: hat_1_28
+  - first:
+      213: 3524746460182711794
+    second: hat_1_29
+  - first:
+      213: -2397035960821333181
+    second: hat_1_30
+  - first:
+      213: -4503613535952783107
+    second: hat_1_31
+  - first:
+      213: 910435669224482749
+    second: hat_1_32
+  - first:
+      213: -7885381129498037224
+    second: hat_1_33
+  - first:
+      213: 754938885907623986
+    second: hat_1_34
+  - first:
+      213: -8764932868061984820
+    second: hat_1_35
+  - first:
+      213: 2350942510785319215
+    second: hat_1_36
+  - first:
+      213: -2411086299550066795
+    second: hat_1_37
+  - first:
+      213: 7248622799642400623
+    second: hat_1_38
+  - first:
+      213: -2046564563298653009
+    second: hat_1_39
+  - first:
+      213: 2639778551568330251
+    second: hat_1_40
+  - first:
+      213: 417180371507827532
+    second: hat_1_41
+  - first:
+      213: -3949253867776456508
+    second: hat_1_42
+  - first:
+      213: 5948650844129534789
+    second: hat_1_43
+  - first:
+      213: -5996869262080871918
+    second: hat_1_44
+  - first:
+      213: 2762622979745137167
+    second: hat_1_45
+  - first:
+      213: -232168608443192669
+    second: hat_1_46
+  - first:
+      213: 7180104902254557797
+    second: hat_1_47
+  - first:
+      213: -3143160531423156702
+    second: hat_1_48
+  - first:
+      213: -1569530739758326057
+    second: hat_1_49
+  - first:
+      213: -9013045536641938103
+    second: hat_1_50
+  - first:
+      213: -5957285119414709545
+    second: hat_1_51
+  - first:
+      213: -788438759380983898
+    second: hat_1_52
+  - first:
+      213: -4910787962001802515
+    second: hat_1_53
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -182,7 +344,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -261,7 +423,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bandana_0
+      name: hat_1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -275,14 +437,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 911adc794286af990800000000000000
-      internalID: -7351448935353966311
+      spriteID: 4ef41cf78522c29e0800000000000000
+      internalID: -1644902000401231900
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_1
+      name: hat_1_1
       rect:
         serializedVersion: 2
         x: 85
@@ -296,14 +458,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c4394d63cf36ef500800000000000000
-      internalID: 431892549176955724
+      spriteID: afe8cf92a65ee0f20800000000000000
+      internalID: 3390899813590273786
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_2
+      name: hat_1_2
       rect:
         serializedVersion: 2
         x: 170
@@ -317,14 +479,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0a7668e6d83bd35c0800000000000000
-      internalID: -4234030654632335456
+      spriteID: 4549e5ebf1964d100800000000000000
+      internalID: 131845874159359060
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_3
+      name: hat_1_3
       rect:
         serializedVersion: 2
         x: 255
@@ -338,14 +500,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8a1ffcb60a7d54f40800000000000000
-      internalID: 5712208786392871336
+      spriteID: c6c65aaffc4d45b80800000000000000
+      internalID: -8406860614665409428
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_4
+      name: hat_1_4
       rect:
         serializedVersion: 2
         x: 340
@@ -359,14 +521,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 95f5b72f05f501640800000000000000
-      internalID: 5048639983552520025
+      spriteID: 74fc107fdaab53c70800000000000000
+      internalID: 8950265090804928327
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_5
+      name: hat_1_5
       rect:
         serializedVersion: 2
         x: 425
@@ -380,14 +542,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 80e14e833d96c60c0800000000000000
-      internalID: -4581170365029147128
+      spriteID: 69a2f10d0ff389740800000000000000
+      internalID: 5158943676669307542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_6
+      name: hat_1_6
       rect:
         serializedVersion: 2
         x: 510
@@ -401,14 +563,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ead1315b8af3c7320800000000000000
-      internalID: 2556988682264583598
+      spriteID: ff9e0108a22df5ba0800000000000000
+      internalID: -6097924290457310721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_7
+      name: hat_1_7
       rect:
         serializedVersion: 2
         x: 595
@@ -422,14 +584,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 206e6a5035b64e340800000000000000
-      internalID: 4892153099552482818
+      spriteID: dd03836eed184ed50800000000000000
+      internalID: 6765675334562492637
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_8
+      name: hat_1_8
       rect:
         serializedVersion: 2
         x: 680
@@ -443,14 +605,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ce0a1c041b68ce00800000000000000
-      internalID: 1065219045719674563
+      spriteID: e85f297df8326ab70800000000000000
+      internalID: 8909848013503133070
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_9
+      name: hat_1_9
       rect:
         serializedVersion: 2
         x: 765
@@ -464,14 +626,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b224f96b5a21c6550800000000000000
-      internalID: 6155315293651419691
+      spriteID: 328cf931332121dd0800000000000000
+      internalID: -2516929231164815325
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_10
+      name: hat_1_10
       rect:
         serializedVersion: 2
         x: 850
@@ -485,14 +647,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7dd75c050d6a07010800000000000000
-      internalID: 1184630115636968919
+      spriteID: 822588f219ca59440800000000000000
+      internalID: 4942045905676685864
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_11
+      name: hat_1_11
       rect:
         serializedVersion: 2
         x: 935
@@ -506,14 +668,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 477b89e080bf21e40800000000000000
-      internalID: 5625834896562370420
+      spriteID: 188da08f3e22ddfc0800000000000000
+      internalID: -3468577775491032959
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_12
+      name: hat_1_12
       rect:
         serializedVersion: 2
         x: 0
@@ -527,14 +689,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 724251f3c86784140800000000000000
-      internalID: 4704140155514332199
+      spriteID: c9b81f778600b9f30800000000000000
+      internalID: 4583257494468529052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_13
+      name: hat_1_13
       rect:
         serializedVersion: 2
         x: 85
@@ -548,14 +710,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f0f4d6884cdf00840800000000000000
-      internalID: 5188425791275093775
+      spriteID: 3f1f1df6fae0a74a0800000000000000
+      internalID: -6594942557672574477
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_14
+      name: hat_1_14
       rect:
         serializedVersion: 2
         x: 170
@@ -569,14 +731,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: adbe1d593f7535200800000000000000
-      internalID: 167574314845072346
+      spriteID: ffc98e0ed698c26a0800000000000000
+      internalID: -6472647459420463873
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_15
+      name: hat_1_15
       rect:
         serializedVersion: 2
         x: 255
@@ -590,14 +752,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c464bbdf2d76f9640800000000000000
-      internalID: 5088900259849651788
+      spriteID: 512b0b737185ac100800000000000000
+      internalID: 129012396075299349
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_16
+      name: hat_1_16
       rect:
         serializedVersion: 2
         x: 340
@@ -611,14 +773,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8f98b14395801d1d0800000000000000
-      internalID: -3327869470430754312
+      spriteID: 6252a7373b6d74cc0800000000000000
+      internalID: -3726774100400921306
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_17
+      name: hat_1_17
       rect:
         serializedVersion: 2
         x: 425
@@ -632,14 +794,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 44cfd8ae7684e2f10800000000000000
-      internalID: 2246812875258461252
+      spriteID: 51908dd103710b8c0800000000000000
+      internalID: -3985660174796322539
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_18
+      name: hat_1_18
       rect:
         serializedVersion: 2
         x: 510
@@ -653,14 +815,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 06608695ff25759a0800000000000000
-      internalID: -6244431101655775648
+      spriteID: 7391ee4e5c1dd9560800000000000000
+      internalID: 7322239217053866295
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_19
+      name: hat_1_19
       rect:
         serializedVersion: 2
         x: 595
@@ -674,14 +836,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c72e9bce0bb93adc0800000000000000
-      internalID: -3628885690542333316
+      spriteID: 9126229e014517de0800000000000000
+      internalID: -1337195182744772071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_20
+      name: hat_1_20
       rect:
         serializedVersion: 2
         x: 680
@@ -695,14 +857,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36b20ec00ff346f40800000000000000
-      internalID: 5720767726908091235
+      spriteID: 9b19390f962f47c70800000000000000
+      internalID: 8968059294823190969
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_21
+      name: hat_1_21
       rect:
         serializedVersion: 2
         x: 765
@@ -716,14 +878,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 073eb5d9adb2a5970800000000000000
-      internalID: 8744349844436149104
+      spriteID: 3259cc9ca83d5fab0800000000000000
+      internalID: -4974837620316269277
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_22
+      name: hat_1_22
       rect:
         serializedVersion: 2
         x: 850
@@ -737,14 +899,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c86a75a6f48f39a30800000000000000
-      internalID: 4220990295746520716
+      spriteID: bd0a5edd5e75c65f0800000000000000
+      internalID: -762137592150515493
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_23
+      name: hat_1_23
       rect:
         serializedVersion: 2
         x: 935
@@ -758,14 +920,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bd294bf014b853120800000000000000
-      internalID: 2392971888569914075
+      spriteID: ea8891a8617db8070800000000000000
+      internalID: 8109812045816891566
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_24
+      name: hat_1_24
       rect:
         serializedVersion: 2
         x: 0
@@ -779,14 +941,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bbba2f731b51701e0800000000000000
-      internalID: -2231791239446746181
+      spriteID: b1dfecd13d8f92ae0800000000000000
+      internalID: -1573453009167385317
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_25
+      name: hat_1_25
       rect:
         serializedVersion: 2
         x: 85
@@ -800,14 +962,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d32a2a33854b0280800000000000000
-      internalID: -9076084194116230186
+      spriteID: 46905f56cb2fe19f0800000000000000
+      internalID: -495692017985844892
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_26
+      name: hat_1_26
       rect:
         serializedVersion: 2
         x: 170
@@ -821,14 +983,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f4592451288bee3f0800000000000000
-      internalID: -869554809193982641
+      spriteID: 12006bf1aa39ca270800000000000000
+      internalID: 8263141775203762209
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_27
+      name: hat_1_27
       rect:
         serializedVersion: 2
         x: 255
@@ -842,14 +1004,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6d28abb1d1e89c820800000000000000
-      internalID: 2939036487506363094
+      spriteID: bd525739678bffee0800000000000000
+      internalID: -1225057754201905701
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_28
+      name: hat_1_28
       rect:
         serializedVersion: 2
         x: 340
@@ -863,14 +1025,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 160a62754d84e1500800000000000000
-      internalID: 368812296323375201
+      spriteID: 58b7d45bbb4dca690800000000000000
+      internalID: -7589457369360401531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_29
+      name: hat_1_29
       rect:
         serializedVersion: 2
         x: 425
@@ -884,14 +1046,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b4777ced8de92c90800000000000000
-      internalID: -7193957735934233422
+      spriteID: 2fd818a0b3a6ae030800000000000000
+      internalID: 3524746460182711794
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_30
+      name: hat_1_30
       rect:
         serializedVersion: 2
         x: 510
@@ -905,14 +1067,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 76dfaa5cca3449b40800000000000000
-      internalID: 5446052258727525735
+      spriteID: 34348616e740cbed0800000000000000
+      internalID: -2397035960821333181
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_31
+      name: hat_1_31
       rect:
         serializedVersion: 2
         x: 595
@@ -926,14 +1088,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 61c4e32cbc10705f0800000000000000
-      internalID: -790661234931381226
+      spriteID: df8b4e7a953ff71c0800000000000000
+      internalID: -4503613535952783107
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_32
+      name: hat_1_32
       rect:
         serializedVersion: 2
         x: 680
@@ -947,14 +1109,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84c36707e291e5080800000000000000
-      internalID: -9196885701797987256
+      spriteID: db768feda6482ac00800000000000000
+      internalID: 910435669224482749
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_33
+      name: hat_1_33
       rect:
         serializedVersion: 2
         x: 765
@@ -968,14 +1130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4e7ce11516e7eb520800000000000000
-      internalID: 2719750181416257508
+      spriteID: 81473b924af719290800000000000000
+      internalID: -7885381129498037224
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_34
+      name: hat_1_34
       rect:
         serializedVersion: 2
         x: 850
@@ -989,14 +1151,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7dd7be0b2ab746680800000000000000
-      internalID: -8762743036273001001
+      spriteID: 23037a9bae41a7a00800000000000000
+      internalID: 754938885907623986
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_35
+      name: hat_1_35
       rect:
         serializedVersion: 2
         x: 935
@@ -1010,14 +1172,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4022d8cdcc2df350800000000000000
-      internalID: 6052042736604946507
+      spriteID: cc7050fbef3bc5680800000000000000
+      internalID: -8764932868061984820
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_36
+      name: hat_1_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1031,14 +1193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66ac4b531960b4760800000000000000
-      internalID: 7443050029900941926
+      spriteID: f2159baf1c930a020800000000000000
+      internalID: 2350942510785319215
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_37
+      name: hat_1_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1052,14 +1214,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5cba2a34ca126fd50800000000000000
-      internalID: 6770636113550945221
+      spriteID: 597d188f8c91a8ed0800000000000000
+      internalID: -2411086299550066795
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_38
+      name: hat_1_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1073,14 +1235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe55b4b26b8db9280800000000000000
-      internalID: -9035389950466763281
+      spriteID: f679b7b0808489460800000000000000
+      internalID: 7248622799642400623
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_39
+      name: hat_1_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1094,14 +1256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1de756d53a9ed3880800000000000000
-      internalID: -8629484423116128559
+      spriteID: fac6ea27f542993e0800000000000000
+      internalID: -2046564563298653009
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_40
+      name: hat_1_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1115,14 +1277,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 96364b026a94e7150800000000000000
-      internalID: 5872211941999797097
+      spriteID: b0eece34b9062a420800000000000000
+      internalID: 2639778551568330251
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_41
+      name: hat_1_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1136,14 +1298,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5458a1ab5257d87e0800000000000000
-      internalID: -1761623074335455931
+      spriteID: c435dfa665f1ac500800000000000000
+      internalID: 417180371507827532
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_42
+      name: hat_1_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1157,14 +1319,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 52fb0ecfb320a3b60800000000000000
-      internalID: 7726490567376420645
+      spriteID: 4c8c853088e6139c0800000000000000
+      internalID: -3949253867776456508
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_43
+      name: hat_1_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1178,14 +1340,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da8d9a80520f2ce00800000000000000
-      internalID: 1063676503862663341
+      spriteID: 5432b29ec6add8250800000000000000
+      internalID: 5948650844129534789
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_44
+      name: hat_1_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1199,14 +1361,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4100ccc08b624ff90800000000000000
-      internalID: -6920864155431075820
+      spriteID: 212f53dcd27d6cca0800000000000000
+      internalID: -5996869262080871918
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_45
+      name: hat_1_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1220,14 +1382,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8e0ca65b90b39af10800000000000000
-      internalID: 2281419599124283624
+      spriteID: f024a0c86fec65620800000000000000
+      internalID: 2762622979745137167
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_46
+      name: hat_1_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1241,14 +1403,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bc2e47b03b53722b0800000000000000
-      internalID: -5609455767759035701
+      spriteID: 3aa2fb571eb27ccf0800000000000000
+      internalID: -232168608443192669
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_47
+      name: hat_1_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1262,14 +1424,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 29d7a3271fcb52740800000000000000
-      internalID: 5126711496020753810
+      spriteID: 56a7ce4ed5bd4a360800000000000000
+      internalID: 7180104902254557797
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_48
+      name: hat_1_48
       rect:
         serializedVersion: 2
         x: 0
@@ -1283,14 +1445,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ca6b6326215447b0800000000000000
-      internalID: -5240974842107565374
+      spriteID: 226ae7c56204164d0800000000000000
+      internalID: -3143160531423156702
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_49
+      name: hat_1_49
       rect:
         serializedVersion: 2
         x: 85
@@ -1304,14 +1466,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e56cf24d99f847460800000000000000
-      internalID: 7238568391943898718
+      spriteID: 7de16a0ab18e73ae0800000000000000
+      internalID: -1569530739758326057
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_50
+      name: hat_1_50
       rect:
         serializedVersion: 2
         x: 170
@@ -1325,14 +1487,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86e97b2a4dd5c39b0800000000000000
-      internalID: -5099097510245851544
+      spriteID: 94d890c66da3be280800000000000000
+      internalID: -9013045536641938103
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_51
+      name: hat_1_51
       rect:
         serializedVersion: 2
         x: 255
@@ -1346,14 +1508,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b93e4b2fff46b77e0800000000000000
-      internalID: -1766707378361408613
+      spriteID: 7d2d0973fb8735da0800000000000000
+      internalID: -5957285119414709545
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_52
+      name: hat_1_52
       rect:
         serializedVersion: 2
         x: 340
@@ -1367,14 +1529,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aed6f656d7ac00c80800000000000000
-      internalID: -8358458268478116374
+      spriteID: 6af52fb2027ee05f0800000000000000
+      internalID: -788438759380983898
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Bandana_53
+      name: hat_1_53
       rect:
         serializedVersion: 2
         x: 425
@@ -1388,8 +1550,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b37194e114ee21f30800000000000000
-      internalID: 4544956937418643259
+      spriteID: dea3e95fd5069dbb0800000000000000
+      internalID: -4910787962001802515
       vertices: []
       indices: 
       edges: []

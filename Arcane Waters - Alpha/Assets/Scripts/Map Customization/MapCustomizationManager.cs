@@ -27,6 +27,9 @@ namespace MapCustomization
       // Current area that is being customized, null if customization is not active currently
       public static Area currentArea { get; private set; }
 
+      // Biome of the current instance that is being customized
+      public static Biome.Type currentBiome { get; private set; }
+
       // Owner userId of the current area
       public static int areaOwnerId { get; private set; }
 
@@ -98,6 +101,7 @@ namespace MapCustomization
             return;
          }
 
+         currentBiome = entity.getInstance().biome;
          areaOwnerId = CustomMapManager.getUserId(areaName);
 
          // Make sure the customization UI is active
@@ -138,6 +142,7 @@ namespace MapCustomization
          Global.player.rpc.Cmd_ExitMapCustomization(currentArea.areaKey);
 
          currentArea = null;
+         currentBiome = Biome.Type.None;
          _selectedPrefab = null;
          CustomizationUI.ensureHidden();
 
@@ -160,7 +165,7 @@ namespace MapCustomization
          }
 
          if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
+            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
 
                // Increase remaining prop item that corresponds to this prefab if it was not placed in editor
@@ -242,7 +247,7 @@ namespace MapCustomization
                _newPrefab.setGameInteractionsActive(true);
                _customizablePrefabs.Add(_newPrefab.unappliedChanges.id, _newPrefab);
 
-               if (validatePrefabChanges(currentArea, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
+               if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage)) {
                   Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _newPrefab.unappliedChanges);
 
                   // Decrease remaining prop item that corresponds to this prefab
@@ -276,7 +281,7 @@ namespace MapCustomization
          if (_selectedPrefab == null) return;
 
          if (_selectedPrefab.anyUnappliedState()) {
-            if (validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
+            if (validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage)) {
                Global.player.rpc.Cmd_AddPrefabCustomization(areaOwnerId, currentArea.areaKey, _selectedPrefab.unappliedChanges);
                _selectedPrefab.submitUnappliedChanges();
             } else {
@@ -294,7 +299,7 @@ namespace MapCustomization
                _newPrefab.revertUnappliedChanges();
             }
 
-            _newPrefab = MapManager.self.createPrefab(currentArea, newPrefabState(worldPosition, serializationId), false);
+            _newPrefab = MapManager.self.createPrefab(currentArea, currentBiome, newPrefabState(worldPosition, serializationId), false);
             _newPrefab.setGameInteractionsActive(false);
          }
 
@@ -319,7 +324,7 @@ namespace MapCustomization
 
          foreach (CustomizablePrefab prefab in _customizablePrefabs.Values) {
             if (prefab == _selectedPrefab) {
-               bool valid = validatePrefabChanges(currentArea, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage);
+               bool valid = validatePrefabChanges(currentArea, currentBiome, remainingProps, _selectedPrefab.unappliedChanges, false, out string errorMessage);
                prefab.setOutline(true, prefab == hoveredPrefab, true, valid);
             } else {
                prefab.setOutline(true, prefab == hoveredPrefab, false, false);
@@ -327,7 +332,7 @@ namespace MapCustomization
          }
 
          if (_newPrefab != null) {
-            bool valid = validatePrefabChanges(currentArea, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage);
+            bool valid = validatePrefabChanges(currentArea, currentBiome, remainingProps, _newPrefab.unappliedChanges, false, out string errorMessage);
             _newPrefab.setOutline(true, true, true, valid);
          }
       }
@@ -372,10 +377,10 @@ namespace MapCustomization
          exitCustomization();
       }
 
-      public static bool validatePrefabChanges (Area area, List<ItemInstance> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
+      public static bool validatePrefabChanges (Area area, Biome.Type biome, List<ItemInstance> remainingItems, PrefabState changes, bool isServer, out string errorMessage) {
          if (changes.isLocalPositionSet()) {
 
-            CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, area.biome)?.GetComponent<CustomizablePrefab>();
+            CustomizablePrefab prefab = AssetSerializationMaps.tryGetPrefabGame(changes.serializationId, biome)?.GetComponent<CustomizablePrefab>();
 
             // Check that the prefab area type matches area's type
             EditorType? type = AreaManager.self.getAreaEditorType(area.baseAreaKey);
@@ -477,7 +482,7 @@ namespace MapCustomization
          }
       }
 
-      public static void serverAddPrefabChangeSuccess (string areaKey, PrefabState changes) {
+      public static void serverAddPrefabChangeSuccess (string areaKey, Biome.Type biome, PrefabState changes) {
          // If we are customizing this map, the customization process will handle the change
          // Just keep track of changes that were approved by the server
          if (currentArea != null && currentArea.areaKey.CompareTo(areaKey) == 0) {
@@ -500,7 +505,7 @@ namespace MapCustomization
          // Otherwise, someone else changed the map. Check if we have the map, if so, update it
          Area area = AreaManager.self.getArea(areaKey);
          if (area != null) {
-            MapManager.self.addCustomizations(area, changes);
+            MapManager.self.addCustomizations(area, biome, changes);
          }
       }
 
@@ -538,7 +543,7 @@ namespace MapCustomization
                changedPrefab.submitUnappliedChanges();
             }
          } else if (changes.deleted && currentArea != null && _serverApprovedState.TryGetValue(changes.id, out PrefabState approvedState)) {
-            CustomizablePrefab previouslyDeletedPrefab = MapManager.self.createPrefab(currentArea, approvedState, true);
+            CustomizablePrefab previouslyDeletedPrefab = MapManager.self.createPrefab(currentArea, currentBiome, approvedState, true);
             _customizablePrefabs.Add(previouslyDeletedPrefab.customizedState.id, previouslyDeletedPrefab);
          }
       }

@@ -300,6 +300,16 @@ public class Util : MonoBehaviour {
       transform.localScale = new Vector3(newScale, newScale, transform.localScale.z);
    }
 
+   public static void setAlphaInShader (GameObject gameObject, float alpha, string propertyName = "_Color") {
+      SpriteRenderer[] renderers = gameObject.GetComponentsInChildren<SpriteRenderer>(true);
+      
+      foreach (SpriteRenderer rend in renderers) {
+         Color color = rend.material.GetColor(propertyName);
+         color.a = alpha;
+         rend.material.SetColor(propertyName, color);
+      }
+   }
+
    public static void setAlpha (SpriteRenderer spriteRenderer, float alpha) {
       Color color = spriteRenderer.color;
       alpha = Mathf.Clamp(alpha, 0f, 1f);
@@ -440,6 +450,7 @@ public class Util : MonoBehaviour {
       foreach (var r in go.GetComponents<Renderer>()) {
          r.enabled = vis;
       }
+
       for (int i = 0; i < go.transform.childCount; i++) {
          var t = go.transform.GetChild(i);
          SetVisibility(t.gameObject, vis);

@@ -19,7 +19,22 @@ public class Enemy_Spawner : MonoBehaviour {
       }
    }
 
+   public void setRandomSpawner (RandomEnemySpawner randomSpawner) {
+      _randomSpawner = randomSpawner;
+   }
+
+   public Enemy.Type getEnemyType (Biome.Type biome) {
+      if (_randomSpawner != null) {
+         return _randomSpawner.getRandomEnemyType(biome);
+      }
+      return enemyType;
+   }
+
+
    #region Private Variables
+
+   // The attached random enemy spawner
+   private RandomEnemySpawner _randomSpawner = null;
 
    #endregion
 }

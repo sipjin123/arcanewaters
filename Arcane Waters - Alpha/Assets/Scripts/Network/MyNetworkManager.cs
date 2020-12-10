@@ -261,7 +261,8 @@ public class MyNetworkManager : NetworkManager
          string previousAreaKey = userInfo.areaKey;
 
          // Get information about owned map
-         string baseMapAreaKey = previousAreaKey;
+         string baseMapAreaKey = previousAreaKey; 
+         DateTime chatSuspensionEndDate = DB_Main.getPlayerChatSuspensionEndDate(authenticatedUserId);
          int mapOwnerId = CustomMapManager.isUserSpecificAreaKey(previousAreaKey) ? CustomMapManager.getUserId(previousAreaKey) : -1;
          UserInfo ownerInfo = mapOwnerId < 0 ? null : (mapOwnerId == userInfo.userId ? userInfo : JsonUtility.FromJson<UserInfo>(DB_Main.getUserInfoJSON(mapOwnerId.ToString())));
 
@@ -300,12 +301,6 @@ public class MyNetworkManager : NetworkManager
                }
             }
 
-            Biome.Type fetchedBiomeType = Biome.Type.None;
-            if (VoyageManager.self.getVoyage(voyageId) != null) {
-               fetchedBiomeType = VoyageManager.self.getVoyage(voyageId).biome;
-            }
-            Biome.Type voyageBiome = voyageId != -1 ? fetchedBiomeType : Biome.Type.None;
-
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
             if (AreaManager.self.hasArea(previousAreaKey)) {
@@ -319,7 +314,7 @@ public class MyNetworkManager : NetworkManager
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             } else {
                // If we don't have the requested area, we need to create it now
-               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey, voyageBiome);
+               MapManager.self.createLiveMap(previousAreaKey, baseMapAreaKey, InstanceManager.getBiomeForInstance(previousAreaKey, voyageId));
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);
             }
 
@@ -338,6 +333,8 @@ public class MyNetworkManager : NetworkManager
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+
+            player.chatSuspensionEndDate = chatSuspensionEndDate;
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo);
 
@@ -389,7 +386,7 @@ public class MyNetworkManager : NetworkManager
                   if (map != null) {
                      player.rpc.Target_ReceiveMapInfo(map);
                   }
-                  player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData, voyageBiome);
+                  player.rpc.Target_ReceiveAreaInfo(player.connectionToClient, previousAreaKey, baseMapAreaKey, AreaManager.self.getAreaVersion(baseMapAreaKey), mapPosition, customizationData, instance.biome);
                });
             });
 

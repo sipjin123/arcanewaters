@@ -17,7 +17,7 @@ public class PlayerBattleCollider : MonoBehaviour {
    #endregion
 
    private void OnTriggerEnter2D (Collider2D collision) {
-      if (playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
+      if (!playerBody.isInvisible && playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
          if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
             if (!enemy.isDefeated) {

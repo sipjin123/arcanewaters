@@ -164,6 +164,168 @@ TextureImporter:
   - first:
       213: -4398502582457797854
     second: PirateHat_53
+  - first:
+      213: -8636588177339189728
+    second: hat_5_0
+  - first:
+      213: 7033408299604800470
+    second: hat_5_1
+  - first:
+      213: -3814326101556768111
+    second: hat_5_2
+  - first:
+      213: 4666685150209962768
+    second: hat_5_3
+  - first:
+      213: -2353618200745364212
+    second: hat_5_4
+  - first:
+      213: 5344892714256988929
+    second: hat_5_5
+  - first:
+      213: 8974670954554607762
+    second: hat_5_6
+  - first:
+      213: 1316372366398199507
+    second: hat_5_7
+  - first:
+      213: 6447567977836227314
+    second: hat_5_8
+  - first:
+      213: 4636265883548717945
+    second: hat_5_9
+  - first:
+      213: 5829930109907883579
+    second: hat_5_10
+  - first:
+      213: -3465603842076054680
+    second: hat_5_11
+  - first:
+      213: -3685018744023996245
+    second: hat_5_12
+  - first:
+      213: 4329723216720871899
+    second: hat_5_13
+  - first:
+      213: -4696121454397561067
+    second: hat_5_14
+  - first:
+      213: -5435539391757948607
+    second: hat_5_15
+  - first:
+      213: 3070125498273152992
+    second: hat_5_16
+  - first:
+      213: -5735430672611118771
+    second: hat_5_17
+  - first:
+      213: -1283859380934356693
+    second: hat_5_18
+  - first:
+      213: -481798001395632961
+    second: hat_5_19
+  - first:
+      213: 9175293910124583002
+    second: hat_5_20
+  - first:
+      213: -5002169484121935501
+    second: hat_5_21
+  - first:
+      213: 3066174962769776227
+    second: hat_5_22
+  - first:
+      213: 295083151940582478
+    second: hat_5_23
+  - first:
+      213: 4269773359014721858
+    second: hat_5_24
+  - first:
+      213: -7992803199649520046
+    second: hat_5_25
+  - first:
+      213: -6913968604537814165
+    second: hat_5_26
+  - first:
+      213: 546150439570601003
+    second: hat_5_27
+  - first:
+      213: -4085637305891286311
+    second: hat_5_28
+  - first:
+      213: -6051186080729725598
+    second: hat_5_29
+  - first:
+      213: -5808590139283302610
+    second: hat_5_30
+  - first:
+      213: 6736596330683298566
+    second: hat_5_31
+  - first:
+      213: 2656136874425402078
+    second: hat_5_32
+  - first:
+      213: -266339297701901494
+    second: hat_5_33
+  - first:
+      213: -2103455858536736047
+    second: hat_5_34
+  - first:
+      213: 8989854861329906222
+    second: hat_5_35
+  - first:
+      213: 8096744566935946375
+    second: hat_5_36
+  - first:
+      213: 1051893310378496855
+    second: hat_5_37
+  - first:
+      213: -4328509045373227790
+    second: hat_5_38
+  - first:
+      213: 8569787571392798356
+    second: hat_5_39
+  - first:
+      213: -8249705015620674673
+    second: hat_5_40
+  - first:
+      213: -1334855612385549765
+    second: hat_5_41
+  - first:
+      213: -2994534535241861704
+    second: hat_5_42
+  - first:
+      213: -230952570256868314
+    second: hat_5_43
+  - first:
+      213: -3875144478500036170
+    second: hat_5_44
+  - first:
+      213: 4528962045106144192
+    second: hat_5_45
+  - first:
+      213: -1194293489867600478
+    second: hat_5_46
+  - first:
+      213: -1819848818942908442
+    second: hat_5_47
+  - first:
+      213: -2237629511835967554
+    second: hat_5_48
+  - first:
+      213: -4572875401668220964
+    second: hat_5_49
+  - first:
+      213: -8299934373249192266
+    second: hat_5_50
+  - first:
+      213: -8843106805055552703
+    second: hat_5_51
+  - first:
+      213: -6342934410734558838
+    second: hat_5_52
+  - first:
+      213: -2069873180563130401
+    second: hat_5_53
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -182,7 +344,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -261,7 +423,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: PirateHat_0
+      name: hat_5_0
       rect:
         serializedVersion: 2
         x: 0
@@ -275,14 +437,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7ee705fa12357aaf0800000000000000
-      internalID: -385247838976573721
+      spriteID: 026fb52bfcca42880800000000000000
+      internalID: -8636588177339189728
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_1
+      name: hat_5_1
       rect:
         serializedVersion: 2
         x: 85
@@ -296,14 +458,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 74c5ca7be2cd30f10800000000000000
-      internalID: 2234871933314030663
+      spriteID: 6d37a3a759fab9160800000000000000
+      internalID: 7033408299604800470
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_2
+      name: hat_5_2
       rect:
         serializedVersion: 2
         x: 170
@@ -317,14 +479,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd0e9b2a2e306af60800000000000000
-      internalID: 8045122056271552735
+      spriteID: 192553bae9ac01bc0800000000000000
+      internalID: -3814326101556768111
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_3
+      name: hat_5_3
       rect:
         serializedVersion: 2
         x: 255
@@ -338,14 +500,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 17658b6c9033b4cf0800000000000000
-      internalID: -267063635816720783
+      spriteID: 013fad04b6563c040800000000000000
+      internalID: 4666685150209962768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_4
+      name: hat_5_4
       rect:
         serializedVersion: 2
         x: 340
@@ -359,14 +521,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 72ef35513b2196640800000000000000
-      internalID: 5073607015575846439
+      spriteID: c05bda767b4465fd0800000000000000
+      internalID: -2353618200745364212
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_5
+      name: hat_5_5
       rect:
         serializedVersion: 2
         x: 425
@@ -380,14 +542,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 524ea911de0379da0800000000000000
-      internalID: -5938223788903963611
+      spriteID: 10b7cdbea9fdc2a40800000000000000
+      internalID: 5344892714256988929
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_6
+      name: hat_5_6
       rect:
         serializedVersion: 2
         x: 510
@@ -401,14 +563,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d63f9f1b32373db10800000000000000
-      internalID: 2005072856257000301
+      spriteID: 2984e3eeeaf6c8c70800000000000000
+      internalID: 8974670954554607762
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_7
+      name: hat_5_7
       rect:
         serializedVersion: 2
         x: 595
@@ -422,14 +584,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 351c3e643aa11e6f0800000000000000
-      internalID: -657214782048059053
+      spriteID: 3d61e4b51b1b44210800000000000000
+      internalID: 1316372366398199507
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_8
+      name: hat_5_8
       rect:
         serializedVersion: 2
         x: 680
@@ -443,14 +605,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 69d18787823f5a840800000000000000
-      internalID: 5234857497033448854
+      spriteID: 2faac184aec5a7950800000000000000
+      internalID: 6447567977836227314
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_9
+      name: hat_5_9
       rect:
         serializedVersion: 2
         x: 765
@@ -464,14 +626,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a93fcd1bc63939d30800000000000000
-      internalID: 4437052152939869082
+      spriteID: 9731f21d143575040800000000000000
+      internalID: 4636265883548717945
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_10
+      name: hat_5_10
       rect:
         serializedVersion: 2
         x: 850
@@ -485,14 +647,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 99f6c00872242d710800000000000000
-      internalID: 1716507145401036697
+      spriteID: b36d962fb8218e050800000000000000
+      internalID: 5829930109907883579
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_11
+      name: hat_5_11
       rect:
         serializedVersion: 2
         x: 935
@@ -506,14 +668,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5f8550433869ed8d0800000000000000
-      internalID: -2819650826429703947
+      spriteID: 86be3dccaa3b7efc0800000000000000
+      internalID: -3465603842076054680
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_12
+      name: hat_5_12
       rect:
         serializedVersion: 2
         x: 0
@@ -527,14 +689,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 988a5f0e7008bad70800000000000000
-      internalID: 9055472247085836425
+      spriteID: ba82bc3f9fe2cdcc0800000000000000
+      internalID: -3685018744023996245
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_13
+      name: hat_5_13
       rect:
         serializedVersion: 2
         x: 85
@@ -548,14 +710,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dedb11ba003c4ad00800000000000000
-      internalID: 983125026311093741
+      spriteID: bd1c8646354461c30800000000000000
+      internalID: 4329723216720871899
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_14
+      name: hat_5_14
       rect:
         serializedVersion: 2
         x: 170
@@ -569,14 +731,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 58c0b9c9f21b77240800000000000000
-      internalID: 4789491546780798085
+      spriteID: 517ea881b6604deb0800000000000000
+      internalID: -4696121454397561067
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_15
+      name: hat_5_15
       rect:
         serializedVersion: 2
         x: 255
@@ -590,14 +752,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8b03aa327d551aa60800000000000000
-      internalID: 7683516821775462584
+      spriteID: 149ef9fc8b51194b0800000000000000
+      internalID: -5435539391757948607
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_16
+      name: hat_5_16
       rect:
         serializedVersion: 2
         x: 340
@@ -611,14 +773,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 655c60314d56226d0800000000000000
-      internalID: -3016736838858128042
+      spriteID: 0efb07cdfd64b9a20800000000000000
+      internalID: 3070125498273152992
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_17
+      name: hat_5_17
       rect:
         serializedVersion: 2
         x: 425
@@ -632,14 +794,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3406e23585b947010800000000000000
-      internalID: 1185743405560258627
+      spriteID: d41722dd038a760b0800000000000000
+      internalID: -5735430672611118771
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_18
+      name: hat_5_18
       rect:
         serializedVersion: 2
         x: 510
@@ -653,14 +815,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cf878550dc76e61c0800000000000000
-      internalID: -4508552046695646980
+      spriteID: b21dad9f1b0de2ee0800000000000000
+      internalID: -1283859380934356693
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_19
+      name: hat_5_19
       rect:
         serializedVersion: 2
         x: 595
@@ -674,14 +836,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e9704c29b8fdcff80800000000000000
-      internalID: -8071330641599002722
+      spriteID: fb4f159354f4059f0800000000000000
+      internalID: -481798001395632961
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_20
+      name: hat_5_20
       rect:
         serializedVersion: 2
         x: 680
@@ -695,14 +857,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1dad870d00231bf0800000000000000
-      internalID: -354904705298748130
+      spriteID: a58d7cec231355f70800000000000000
+      internalID: 9175293910124583002
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_21
+      name: hat_5_21
       rect:
         serializedVersion: 2
         x: 765
@@ -716,14 +878,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0c703e7ed451ad1c0800000000000000
-      internalID: -4478243455119456320
+      spriteID: 371fc985b59b49ab0800000000000000
+      internalID: -5002169484121935501
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_22
+      name: hat_5_22
       rect:
         serializedVersion: 2
         x: 850
@@ -737,14 +899,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d6788cc9116ff11f0800000000000000
-      internalID: -1071867630785624211
+      spriteID: 36ec61322ed3d8a20800000000000000
+      internalID: 3066174962769776227
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_23
+      name: hat_5_23
       rect:
         serializedVersion: 2
         x: 935
@@ -758,14 +920,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e2f5b51d23d0d0f0800000000000000
-      internalID: -1094142518859795739
+      spriteID: e4cfe923098581400800000000000000
+      internalID: 295083151940582478
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_24
+      name: hat_5_24
       rect:
         serializedVersion: 2
         x: 0
@@ -779,14 +941,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 62a31e29e6141f350800000000000000
-      internalID: 6048687717701728806
+      spriteID: 249bf7f6f38414b30800000000000000
+      internalID: 4269773359014721858
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_25
+      name: hat_5_25
       rect:
         serializedVersion: 2
         x: 85
@@ -800,14 +962,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b3365d36a4e6f31e0800000000000000
-      internalID: -2215931225861430469
+      spriteID: 256e84d66dbd31190800000000000000
+      internalID: -7992803199649520046
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_26
+      name: hat_5_26
       rect:
         serializedVersion: 2
         x: 170
@@ -821,14 +983,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d65a22822e01ff00800000000000000
-      internalID: 1148714921331676882
+      spriteID: b63025a9f26ac00a0800000000000000
+      internalID: -6913968604537814165
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_27
+      name: hat_5_27
       rect:
         serializedVersion: 2
         x: 255
@@ -842,14 +1004,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c814e22367a5f380800000000000000
-      internalID: -8938053841217906495
+      spriteID: b2477806ee0549700800000000000000
+      internalID: 546150439570601003
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_28
+      name: hat_5_28
       rect:
         serializedVersion: 2
         x: 340
@@ -863,14 +1025,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c40de6e19b4fdd7a0800000000000000
-      internalID: -6350650823605825460
+      spriteID: 9d214455486ec47c0800000000000000
+      internalID: -4085637305891286311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_29
+      name: hat_5_29
       rect:
         serializedVersion: 2
         x: 425
@@ -884,14 +1046,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8128ee762845394c0800000000000000
-      internalID: -4281985901633043944
+      spriteID: 2650154f15ed50ca0800000000000000
+      internalID: -6051186080729725598
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_30
+      name: hat_5_30
       rect:
         serializedVersion: 2
         x: 510
@@ -905,14 +1067,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f97fe57681a1a4350800000000000000
-      internalID: 6001638145540421535
+      spriteID: e279e262b0eb36fa0800000000000000
+      internalID: -5808590139283302610
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_31
+      name: hat_5_31
       rect:
         serializedVersion: 2
         x: 595
@@ -926,14 +1088,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6261ddbc8c1315190800000000000000
-      internalID: -7975538726612953562
+      spriteID: 603f395bba23d7d50800000000000000
+      internalID: 6736596330683298566
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_32
+      name: hat_5_32
       rect:
         serializedVersion: 2
         x: 680
@@ -947,14 +1109,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f31bc3d0f38d157c0800000000000000
-      internalID: -4084245621731708609
+      spriteID: ed241fa1a6e7cd420800000000000000
+      internalID: 2656136874425402078
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_33
+      name: hat_5_33
       rect:
         serializedVersion: 2
         x: 765
@@ -968,14 +1130,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 164903e911e5cca80800000000000000
-      internalID: -8445271771465083807
+      spriteID: a4b40c2e1d5cd4cf0800000000000000
+      internalID: -266339297701901494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_34
+      name: hat_5_34
       rect:
         serializedVersion: 2
         x: 850
@@ -989,14 +1151,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e52e2e1876b5024c0800000000000000
-      internalID: -4314347942902046114
+      spriteID: 1da143f8a060fc2e0800000000000000
+      internalID: -2103455858536736047
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_35
+      name: hat_5_35
       rect:
         serializedVersion: 2
         x: 935
@@ -1010,14 +1172,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 81316aeffe715b8d0800000000000000
-      internalID: -2831330471195569384
+      spriteID: e2a33e7bd5162cc70800000000000000
+      internalID: 8989854861329906222
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_36
+      name: hat_5_36
       rect:
         serializedVersion: 2
         x: 0
@@ -1031,14 +1193,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e9dacf3e819ab4a0800000000000000
-      internalID: -6576784265679545887
+      spriteID: 7848a45094a6d5070800000000000000
+      internalID: 8096744566935946375
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_37
+      name: hat_5_37
       rect:
         serializedVersion: 2
         x: 85
@@ -1052,14 +1214,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 02efa9afbbe90fe40800000000000000
-      internalID: 5688220859569471008
+      spriteID: 75358b28463199e00800000000000000
+      internalID: 1051893310378496855
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_38
+      name: hat_5_38
       rect:
         serializedVersion: 2
         x: 170
@@ -1073,14 +1235,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 711c691ff270b0450800000000000000
-      internalID: 6055942026427810071
+      spriteID: 2fca677e4fb0ee3c0800000000000000
+      internalID: -4328509045373227790
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_39
+      name: hat_5_39
       rect:
         serializedVersion: 2
         x: 255
@@ -1094,14 +1256,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 71b0e7635526eea30800000000000000
-      internalID: 4246439616782928663
+      spriteID: 49edc6934600ee670800000000000000
+      internalID: 8569787571392798356
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_40
+      name: hat_5_40
       rect:
         serializedVersion: 2
         x: 340
@@ -1115,14 +1277,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8fb7977c1a30f9dd0800000000000000
-      internalID: -2477257276659237896
+      spriteID: f8bdb224ff8238d80800000000000000
+      internalID: -8249705015620674673
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_41
+      name: hat_5_41
       rect:
         serializedVersion: 2
         x: 425
@@ -1136,14 +1298,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3647e90ce08cf7750800000000000000
-      internalID: 6304977969028691043
+      spriteID: b32a25594e3a97de0800000000000000
+      internalID: -1334855612385549765
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_42
+      name: hat_5_42
       rect:
         serializedVersion: 2
         x: 510
@@ -1157,14 +1319,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b4d7b3eef0fa28f40800000000000000
-      internalID: 5729334158924938571
+      spriteID: 8b5f447b4b64176d0800000000000000
+      internalID: -2994534535241861704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_43
+      name: hat_5_43
       rect:
         serializedVersion: 2
         x: 595
@@ -1178,14 +1340,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 66d8e247c24b59ff0800000000000000
-      internalID: -29919719487271578
+      spriteID: 62c30e96cdd7bccf0800000000000000
+      internalID: -230952570256868314
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_44
+      name: hat_5_44
       rect:
         serializedVersion: 2
         x: 680
@@ -1199,14 +1361,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4bf70438ed69f4fb0800000000000000
-      internalID: -4661341206876225612
+      spriteID: 6b160b1d0a8b83ac0800000000000000
+      internalID: -3875144478500036170
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_45
+      name: hat_5_45
       rect:
         serializedVersion: 2
         x: 765
@@ -1220,14 +1382,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6217694c5b7cac410800000000000000
-      internalID: 1498229409555312934
+      spriteID: 0c347cb0cfa1ade30800000000000000
+      internalID: 4528962045106144192
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_46
+      name: hat_5_46
       rect:
         serializedVersion: 2
         x: 850
@@ -1241,14 +1403,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: caa4b3d4e8d918420800000000000000
-      internalID: 2630556891867728556
+      spriteID: 2ad41ea06640d6fe0800000000000000
+      internalID: -1194293489867600478
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_47
+      name: hat_5_47
       rect:
         serializedVersion: 2
         x: 935
@@ -1262,14 +1424,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e217b64571711cb50800000000000000
-      internalID: 6611591116924612910
+      spriteID: 6e76ef124299eb6e0800000000000000
+      internalID: -1819848818942908442
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_48
+      name: hat_5_48
       rect:
         serializedVersion: 2
         x: 0
@@ -1283,14 +1445,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db01fc443708b8dd0800000000000000
-      internalID: -2482749537000681283
+      spriteID: ebf161080d752f0e0800000000000000
+      internalID: -2237629511835967554
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_49
+      name: hat_5_49
       rect:
         serializedVersion: 2
         x: 85
@@ -1304,14 +1466,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 730c847abf0e4d3f0800000000000000
-      internalID: -876828655982428105
+      spriteID: cd7a171ec02e980c0800000000000000
+      internalID: -4572875401668220964
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_50
+      name: hat_5_50
       rect:
         serializedVersion: 2
         x: 170
@@ -1325,14 +1487,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0451618a57c7a8eb0800000000000000
-      internalID: -4716820814944135872
+      spriteID: 6be6d6799a5b0dc80800000000000000
+      internalID: -8299934373249192266
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_51
+      name: hat_5_51
       rect:
         serializedVersion: 2
         x: 255
@@ -1346,14 +1508,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e69150b738d0147b0800000000000000
-      internalID: -5241893632926738066
+      spriteID: 14303dda639f64580800000000000000
+      internalID: -8843106805055552703
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_52
+      name: hat_5_52
       rect:
         serializedVersion: 2
         x: 340
@@ -1367,14 +1529,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ab03d24a08e454900800000000000000
-      internalID: 668026434151592122
+      spriteID: a81a09e72ce59f7a0800000000000000
+      internalID: -6342934410734558838
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: PirateHat_53
+      name: hat_5_53
       rect:
         serializedVersion: 2
         x: 425
@@ -1388,8 +1550,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 223f6fc943165f2c0800000000000000
-      internalID: -4398502582457797854
+      spriteID: fd73d661f455643e0800000000000000
+      internalID: -2069873180563130401
       vertices: []
       indices: 
       edges: []

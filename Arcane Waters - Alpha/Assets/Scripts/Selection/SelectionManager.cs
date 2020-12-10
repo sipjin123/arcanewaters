@@ -38,10 +38,15 @@ public class SelectionManager : MonoBehaviour {
    }
 
    public void setSelectedEntity (SeaEntity entity) {
+      if (entity == null) {
+         selectedEntity = null;
+         return;
+      }
+
       if (entity.isEnemyOf(Global.player)) {
          selectedEntity = entity;
 
-         if (entity != null && entity.guildId == BotShipEntity.PIRATES_GUILD_ID) {
+         if (entity.guildId == BotShipEntity.PIRATES_GUILD_ID) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SelectPirateShip);
          }
       }

@@ -33,8 +33,9 @@ public class ArmorManager : EquipmentManager {
 
    public void Update () {
       // If we don't have anything equipped, turn off the animated sprite
-      if (armorLayer != null) {
-         Util.setAlpha(armorLayer.getRenderer().material, (hasArmor() ? bodySprite.color.a : 0f));
+      if (armorLayer != null) {         
+         armorLayer.getRenderer().enabled = hasArmor();
+         armorLayer.getSpriteSwap().enabled = hasArmor();
       }
    }
 
