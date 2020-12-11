@@ -174,6 +174,14 @@ public class InputManager : MonoBehaviour
       return false;
    }
 
+   public static bool isFireCannonMouseUp () {
+      if (isActionInputEnabled()) {
+         return Input.GetMouseButtonUp((int) MouseButton.Right);
+      }
+
+      return false;
+   }
+
    public static bool isSelectNextTargetKeyDown () {
       if (isActionInputEnabled()) {
          return getKeyActionDown(KeyAction.SelectNextSeaTarget);

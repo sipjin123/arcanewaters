@@ -36,7 +36,7 @@ public class GuildIcon : MonoBehaviour
 
    #endregion
 
-   public void Start () {
+   public void Awake () {
       // We need to manually create material instances for the recolor to work
       backgroundRecolored.setNewMaterial(MaterialManager.self.getGUIMaterial());
       sigilRecolored.setNewMaterial(MaterialManager.self.getGUIMaterial());

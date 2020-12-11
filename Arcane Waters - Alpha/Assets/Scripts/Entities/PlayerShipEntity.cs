@@ -110,6 +110,16 @@ public class PlayerShipEntity : ShipEntity
          // Disable our collider if we are not either the local player or the server
          getMainCollider().isTrigger = true;
       }
+
+      // Create targeting objects
+      GameObject targetCirclePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetCircle");
+      GameObject targetConePrefab = Resources.Load<GameObject>("Prefabs/Targeting/TargetConeDots");
+
+      _targetCircle = Instantiate(targetCirclePrefab, transform).GetComponent<TargetCircle>();
+      _targetCone = Instantiate(targetConePrefab, transform).GetComponent<TargetCone>();
+
+      _targetCircle.gameObject.SetActive(false);
+      _targetCone.gameObject.SetActive(false);
    }
 
    protected override void updateSprites () {
@@ -153,6 +163,12 @@ public class PlayerShipEntity : ShipEntity
       //   isNextShotDefined = false;
       //}
 
+      // Update targeting UI
+      if (_isChargingCannon) {
+         _cannonChargeAmount = Mathf.Clamp01(_cannonChargeAmount + Time.deltaTime);
+         updateTargeting();
+      }
+
       // Check if input is allowed
       if (!Util.isGeneralInputAllowed() || isDisabled) {
          return;
@@ -161,13 +177,20 @@ public class PlayerShipEntity : ShipEntity
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
          SeaEntity target = _targetSelector.getTarget();
          if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
-            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero);
+            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, -1.0f);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
          }
 
-         if (hasReloaded() && InputManager.isFireCannonMouseDown()) {
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos());
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+         if (InputManager.isFireCannonMouseDown()) {
+            cannonAttackPressed();
+         }
+
+         if (InputManager.isFireCannonMouseUp()) {
+            cannonAttackReleased();
+         }
+
+         if (Input.GetKeyDown(KeyCode.F10)) {
+            _cannonAttackType = (CannonAttackType)(((int)_cannonAttackType + 1) % 3);
          }
       }
 
@@ -216,6 +239,86 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   private void cannonAttackPressed () {
+      if (!hasReloaded()) {
+         return;
+      }
+
+      switch (_cannonAttackType) {
+         case CannonAttackType.Normal:
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, -1.0f);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+            break;
+         case CannonAttackType.Cone:
+            _isChargingCannon = true;
+            _targetCone.gameObject.SetActive(true);
+            updateTargeting();
+            _targetCone.updateCone();
+            break;
+         case CannonAttackType.Circle:
+            _isChargingCannon = true;
+            _targetCircle.gameObject.SetActive(true);
+            updateTargeting();
+            _targetCircle.updateCircle();
+            break;
+      }
+   }
+
+   private void cannonAttackReleased () {
+      if (!_isChargingCannon) {
+         return;
+      }
+
+      switch (_cannonAttackType) {
+         case CannonAttackType.Cone:
+            Vector2 toMouse = Util.getMousePos() - transform.position;
+            Vector2 pos = transform.position;
+            float rotAngle = (40.0f - (_cannonChargeAmount * 25.0f)) / 2.0f;
+
+            // Fire cone of cannonballs
+            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, -1.0f);
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, -1.0f);
+            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, -1.0f);
+
+            _targetCone.gameObject.SetActive(false);
+            break;
+         case CannonAttackType.Circle:
+            float circleRadius = (0.5f - (_cannonChargeAmount * 0.25f));
+            StartCoroutine(CO_CannonBarrage(Util.getMousePos(), circleRadius));
+            _targetCircle.gameObject.SetActive(false);
+            break;
+      }
+
+      _isChargingCannon = false;
+      _cannonChargeAmount = 0.0f;
+   }
+
+   private void updateTargeting () {
+      switch (_cannonAttackType) {
+         case CannonAttackType.Cone:
+            _targetCone.coneHalfAngle = (40.0f - (_cannonChargeAmount * 25.0f)) / 2.0f;
+            break;
+         case CannonAttackType.Circle:
+            _targetCircle.transform.localScale = Vector3.one * (1.0f - (_cannonChargeAmount * 0.5f));
+            break;
+      }
+   }
+
+   private IEnumerator CO_CannonBarrage (Vector3 targetPosition, float radius) {
+      for (int i = 0; i < 10; i++) {
+         Vector3 endPos = targetPosition + Random.insideUnitSphere * radius;
+
+         // Calculate lifetime to hit end point
+         Vector3 toEndPos = endPos - transform.position;
+         toEndPos.z = 0.0f;
+         float dist = toEndPos.magnitude;
+         float lifetime = dist / 1.75f;
+
+         Cmd_FireMainCannonAtTarget(null, endPos, false, lifetime);
+         yield return new WaitForSeconds(0.2f);
+      }
+   }
+
    public override bool isMoving () {
       return getVelocity().magnitude > (isLocalPlayer ? SHIP_MOVING_MAGNITUDE : NETWORK_SHIP_MOVING_MAGNITUDE);
    }
@@ -243,8 +346,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint) {
-      if (isDead() || !hasReloaded()) {
+   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, bool checkReload, float lifetime) {
+      if (isDead() || (checkReload && !hasReloaded())) {
          return;
       }
 
@@ -255,7 +358,7 @@ public class PlayerShipEntity : ShipEntity
       Vector2 startPosition = transform.position;
       Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
 
-      fireCannonBallAtTarget(startPosition, targetPosition);
+      fireCannonBallAtTarget(startPosition, targetPosition, lifetime);
    }
 
    [Command]
@@ -309,7 +412,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition) {
+   public void fireCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, float lifetime = -1.0f) {
       // Calculate the direction of the ball
       Vector2 direction = endPosition - startPosition;
       direction.Normalize();
@@ -327,7 +430,7 @@ public class PlayerShipEntity : ShipEntity
 
       Vector2 velocity = direction * Attack.getSpeedModifier(Attack.Type.Cannon);
 
-      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon));
+      netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime);
 
       NetworkServer.Spawn(netBall.gameObject);
    }
@@ -641,6 +744,24 @@ public class PlayerShipEntity : ShipEntity
 
    // A multiplier for the force added locally in order to mask delay   
    private const float CLIENT_SIDE_FORCE = 0.1f;
+
+   // Defines the possible attack types for the player's right-click attack
+   private enum CannonAttackType { Normal = 0, Cone = 1, Circle = 2 }
+
+   // Determines what type of attack will trigger when right-clicking
+   private CannonAttackType _cannonAttackType = CannonAttackType.Normal;
+
+   // How long the player has charged up their attack for
+   private float _cannonChargeAmount = 0.0f;
+
+   // Is the player currently charging up a cannon attack
+   private bool _isChargingCannon = false;
+
+   // Reference to the object used to target circular player attacks
+   private TargetCircle _targetCircle;
+
+   // Reference to the object used to target conical player attacks
+   private TargetCone _targetCone;
 
    #endregion
 }
