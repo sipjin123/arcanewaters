@@ -35,11 +35,8 @@ namespace SteamLoginSystem
       public const string PARAM_TICKET = "ticket=";
 
       // The arcane waters steam app id
-#if PLAYTEST
-      public const string GAME_APPID = "1266370";
-#else
+      public const string GAMEPLAYTEST_APPID = "1489170";
       public const string GAME_APPID = "1266340";
-#endif
 
       // Shows the fetched data logs
       public bool isLogActive;
@@ -53,11 +50,11 @@ namespace SteamLoginSystem
          self = this;
       }
 
-      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent) {
-         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent));
+      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId) {
+         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent, steamAppId));
       }
 
-      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent) {
+      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId) {
          authenticateTicketEventActiveList.Add(newTicketEvent);
          Array.Resize(ref authTicketData, (int) m_pcbTicket);
 
@@ -69,7 +66,7 @@ namespace SteamLoginSystem
 
          string webRequest = STEAM_AUTHENTICATE_TICKET +
             PARAM_KEY + STEAM_WEB_USER_API_KEY + "&" +
-            PARAM_APPID + GAME_APPID + "&" +
+            PARAM_APPID + steamAppId + "&" +
             PARAM_TICKET + ticketHexCode.ToString();
          if (isLogActive) {
             D.editorLog("Hex encoded ticket is: " + ticketHexCode.ToString(), Color.blue);
@@ -101,18 +98,18 @@ namespace SteamLoginSystem
          }
       }
 
-      public void getOwnershipInfo (string steamId, AppOwnershipEvent newOwnershipEvent) {
-         StartCoroutine(CO_ProcessAppOwnership(steamId, newOwnershipEvent));
+      public void getOwnershipInfo (string steamId, AppOwnershipEvent newOwnershipEvent, string steamAppId) {
+         StartCoroutine(CO_ProcessAppOwnership(steamId, newOwnershipEvent, steamAppId));
       }
 
-      private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent) {
+      private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent, string steamAppId) {
          appOwnershipEventActiveList.Add(newOwnershipEvent);
          if (string.IsNullOrEmpty(steamId)) {
             D.debug("Error! Steam ID is Invalid! ID:{" + steamId + "}");
          }
 
          // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
-         string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + GAME_APPID;
+         string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + steamAppId;
          if (isLogActive) {
             D.editorLog("Requesting: " + webRequest, Color.red);
          }

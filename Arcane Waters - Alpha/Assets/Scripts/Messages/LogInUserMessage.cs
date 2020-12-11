@@ -43,6 +43,9 @@ public class LogInUserMessage : NetworkMessage
    // False if the player has already logged in successfully.
    public bool isFirstLogin;
 
+   // The app id of the steam game used {game app / play test app}
+   public string steamAppId;
+
    #endregion
 
    public LogInUserMessage () { }
@@ -51,7 +54,7 @@ public class LogInUserMessage : NetworkMessage
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -64,5 +67,6 @@ public class LogInUserMessage : NetworkMessage
       this.steamTicketSize = steamTicketSize;
       this.machineIdentifier = machineIdentifier;
       this.isFirstLogin = isFirstLogin;
+      this.steamAppId = steamAppId;
    }
 }

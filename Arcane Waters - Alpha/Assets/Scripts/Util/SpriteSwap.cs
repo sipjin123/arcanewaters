@@ -46,7 +46,9 @@ public class SpriteSwap : ClientMonoBehaviour
       if (newSprite != null) {
          setNewSprite(newSprite);
       } else {
-         D.debug("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet for game object: " + gameObject.name);
+         if (!Util.isBatch()) {
+            D.debug("Sprite Frame '" + currentFrameNumber + "' did not exist in the Sheet '" + newTexture.name + "'. Please update the Sprite Sheet for game object: " + gameObject.name);
+         }
       }
    }
   

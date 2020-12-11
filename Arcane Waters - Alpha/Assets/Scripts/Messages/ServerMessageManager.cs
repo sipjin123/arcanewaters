@@ -47,6 +47,11 @@ public class ServerMessageManager : MonoBehaviour
          bool hasFailedToCreateAccount = false;
 
          if (logInUserMessage.isSteamLogin) {
+            // If the app id is the playtest id then alter the user name
+            if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
+               logInUserMessage.accountName = logInUserMessage.accountName + "@playtest";
+            }
+            
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
@@ -232,7 +237,7 @@ public class ServerMessageManager : MonoBehaviour
       });
 
       // Send ticket to be processed and fetch steam user data
-      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize, newTicketEvent);
+      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize, newTicketEvent, loginUserMsg.steamAppId);
    }
 
    [ServerOnly]
@@ -257,7 +262,7 @@ public class ServerMessageManager : MonoBehaviour
       });
 
       // Get ownership info using the fetched steamId
-      SteamLoginManagerServer.self.getOwnershipInfo(steamId, newAppOwnershipEvent);
+      SteamLoginManagerServer.self.getOwnershipInfo(steamId, newAppOwnershipEvent, loginUserMsg.steamAppId);
    }
 
 
