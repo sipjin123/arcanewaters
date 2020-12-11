@@ -3014,12 +3014,23 @@ public class RPCManager : NetworkBehaviour {
       // If the group doesn't exists, clear it from the netentity and redirect to the starting town
       if (voyageGroup == null) {
          _player.voyageGroupId = -1;
+         D.debug("Returning player to town: Voyage Group does not Exist!");
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
 
       // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
       if (voyageGroup.voyageId <= 0 || VoyageManager.self.getVoyage(voyageGroup.voyageId) == null || _player.getInstance().voyageId != voyageGroup.voyageId) {
+         if (voyageGroup.voyageId <= 0) {
+            D.debug("Returning player to town: Voyage id is Invalid!");
+         }
+         if (VoyageManager.self.getVoyage(voyageGroup.voyageId) == null) {
+            D.debug("Returning player to town: Unable to fetch Voyage!");
+         }
+         if (_player.getInstance().voyageId != voyageGroup.voyageId) {
+            D.debug("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}");
+         }
+       
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
