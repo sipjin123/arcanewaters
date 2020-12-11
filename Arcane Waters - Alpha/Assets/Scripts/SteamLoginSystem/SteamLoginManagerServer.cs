@@ -35,7 +35,11 @@ namespace SteamLoginSystem
       public const string PARAM_TICKET = "ticket=";
 
       // The arcane waters steam app id
+#if PLAYTEST
+      public const string GAME_APPID = "1266370";
+#else
       public const string GAME_APPID = "1266340";
+#endif
 
       // Shows the fetched data logs
       public bool isLogActive;
@@ -75,11 +79,15 @@ namespace SteamLoginSystem
          UnityWebRequest www = UnityWebRequest.Get(webRequest);
          yield return www.SendWebRequest();
          if (www.isNetworkError || www.isHttpError) {
-            D.debug(www.error);
+            D.debug("Network Error Has been Triggered! " + www.error);
          } else {
             string rawData = www.downloadHandler.text;
             rawData = rawData.Replace("params", "newParams");
             AuthenticateTicketResponse authTicketResponse = JsonUtility.FromJson<AuthenticateTicketResponse>(rawData);
+
+            if (string.IsNullOrEmpty(authTicketResponse.response.newParams.ownersteamid)) {
+               D.debug("Error! Steam Ticket Authentication Failed! Response:{" + rawData + "}");
+            }
 
             if (isLogActive) {
                D.editorLog("The raw data is: " + rawData, Color.magenta);
@@ -99,6 +107,9 @@ namespace SteamLoginSystem
 
       private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent) {
          appOwnershipEventActiveList.Add(newOwnershipEvent);
+         if (string.IsNullOrEmpty(steamId)) {
+            D.debug("Error! Steam ID is Invalid! ID:{" + steamId + "}");
+         }
 
          // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
          string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + GAME_APPID;

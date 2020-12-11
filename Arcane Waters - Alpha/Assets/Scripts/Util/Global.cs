@@ -106,9 +106,11 @@ public class Global
             return "localhost";
          case ServerType.AmazonVPC:
 #if FORCE_AMAZON_SERVER_PROD
-            return "arcanewaters.com"; // "18.217.126.169";
+            // TODO: Confirm if this is the appropriate ip address
+            return "18.217.126.169";//"arcanewaters.com";
 #else
-            return "dev.arcanewaters.com"; // "3.137.185.163";
+            // TODO: Confirm if this is the appropriate ip address
+            return "3.131.116.210";//"dev.arcanewaters.com" "3.137.185.163";
 #endif
          case ServerType.AmazonSydney:
             return "13.55.171.249";

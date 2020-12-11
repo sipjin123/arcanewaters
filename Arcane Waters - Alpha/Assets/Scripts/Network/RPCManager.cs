@@ -972,12 +972,10 @@ public class RPCManager : NetworkBehaviour {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
             // Only enter this process for server builds, this function accesses the background thread DB_Main
-            if (NetworkServer.active) {
-               MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome);
-               return;
-            } 
+            MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome);
+            return;
          }
-      }
+      } 
       
       // If we don't have the latest version of the map, download it
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, biome);

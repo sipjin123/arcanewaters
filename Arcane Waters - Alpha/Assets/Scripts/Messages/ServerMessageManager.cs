@@ -51,13 +51,13 @@ public class ServerMessageManager : MonoBehaviour
                // Steam user has been verified at this point, continue login using credentials
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
             } else {
-               D.editorLog("Loging in using steam But needs to be authenticated first", Color.green);
+               D.debug("Logging in using steam But needs to be authenticated first");
             }
          } else {
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
-
+            
             // Manual login system using input user name and password
             accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
          }
@@ -79,17 +79,18 @@ public class ServerMessageManager : MonoBehaviour
          } else {
             // Create an account for this new steam user after it is authorized
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
-               D.editorLog("Creating a new steam user: " + logInUserMessage.accountName, Color.green);
+               D.debug("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}");
 
                accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
                if (accountId != 0) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      On_LogInUserMessage(conn, logInUserMessage);
                   });
+                  D.debug("Successfully created account for Steam User: {" + logInUserMessage.accountName + "}");
                   return;
                } else {
                   hasFailedToCreateAccount = true;
-                  D.debug("Failed to create account for steam id: " + logInUserMessage.accountName);
+                  D.debug("Failed to create account for Steam User: {" + logInUserMessage.accountName + "}");
                }
             }
          }
@@ -104,7 +105,7 @@ public class ServerMessageManager : MonoBehaviour
 
             // Cancel process if steam user creation fails
             if (hasFailedToCreateAccount) {
-               D.debug("Failed to create an account for: " + logInUserMessage.accountName);
+               D.debug("Failed to create an account for user: {" + logInUserMessage.accountName + "}");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
             }
@@ -205,6 +206,7 @@ public class ServerMessageManager : MonoBehaviour
                CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
             } else {
+               D.debug("Error! Failed to process login for user");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
             }
          });
@@ -217,6 +219,10 @@ public class ServerMessageManager : MonoBehaviour
       newTicketEvent.AddListener(_ => {
          // Fetch steam user id from the event response
          string steamUserId = _.response.newParams.ownersteamid;
+
+         if (string.IsNullOrEmpty(steamUserId)) {
+            D.debug("Error! Will fail to process steam app ownership, failed to fetch Steam ID: {" + _.response.newParams + "}");
+         }
 
          // Proceed to next process
          processSteamAppOwnership(conn, loginUserMsg, steamUserId);
