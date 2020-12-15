@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.EventSystems;
 
-public class ChatLine : MonoBehaviour
+public class ChatLine : MonoBehaviour, IPointerClickHandler
 {
    #region Public Variables
 
@@ -44,6 +45,12 @@ public class ChatLine : MonoBehaviour
          foreach (Outline outline in _outline) {
             outline.enabled = true;
          }
+      }
+   }
+
+   public virtual void OnPointerClick (PointerEventData eventData) {
+      if (chatInfo.senderId > 0 && eventData.button == PointerEventData.InputButton.Left) {
+         PanelManager.self.contextMenuPanel.showDefaultMenuForUser(chatInfo.senderId, chatInfo.sender);
       }
    }
 

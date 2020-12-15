@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 
-public class GuildInviteChatLine : ChatLine, IPointerClickHandler {
+public class GuildInviteChatLine : ChatLine {
    #region Public Variables
 
    // The associated guild invite
@@ -13,7 +13,7 @@ public class GuildInviteChatLine : ChatLine, IPointerClickHandler {
 
    #endregion
 
-   public void OnPointerClick (PointerEventData eventData) {
+   public override void OnPointerClick (PointerEventData eventData) {
       // Associate a new function with the confirmation button
       PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
       PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => Global.player.rpc.Cmd_AcceptInvite(invite));

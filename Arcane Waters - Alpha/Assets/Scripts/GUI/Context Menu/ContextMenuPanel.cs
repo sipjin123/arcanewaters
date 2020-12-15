@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Text;
@@ -34,9 +35,9 @@ public class ContextMenuPanel : MonoBehaviour
 
    public void show (string title, Vector3 position) {
       this.gameObject.SetActive(true);
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
+      this.canvasGroup.alpha = 0f;
+      this.canvasGroup.blocksRaycasts = false;
+      this.canvasGroup.interactable = false;
 
       transform.position = position;
 
@@ -51,9 +52,34 @@ public class ContextMenuPanel : MonoBehaviour
       if (!_hasAtLeastOneButton) {
          Instantiate(emptyRowPrefab, buttonContainer.transform, false);
       }
+
+      StopAllCoroutines();
+      StartCoroutine(CO_ClampToScreenBoundsAndShow());
+   }
+
+   private IEnumerator CO_ClampToScreenBoundsAndShow () {
+      // Wait for the panel buttons to be instantiated
+      yield return null;
+
+      // Get the panel size
+      Vector2 panelSize = buttonsRectTransform.sizeDelta;
+
+      // Check if the panel is out of the screen and move it if needed
+      if (transform.position.x + panelSize.x > Screen.width) {
+         transform.position = new Vector3(transform.position.x - panelSize.x, transform.position.y, transform.position.z);
+      }
+
+      if (transform.position.y - panelSize.y < 0) {
+         transform.position = new Vector3(transform.position.x, transform.position.y + panelSize.y, transform.position.z);
+      }
+
+      this.canvasGroup.alpha = 1f;
+      this.canvasGroup.blocksRaycasts = true;
+      this.canvasGroup.interactable = true;
    }
 
    public void hide () {
+      StopAllCoroutines();
       this.canvasGroup.alpha = 0f;
       this.canvasGroup.blocksRaycasts = false;
       this.canvasGroup.interactable = false;
@@ -117,6 +143,7 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Guild Invite", () => Global.player.rpc.Cmd_InviteToGuild(userId));
          }
 
+         addButton("Whisper", () => ChatPanel.self.sendWhisperTo(userName));
          addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
       } else if (!VoyageGroupManager.isInGroup(Global.player)) {
          addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());

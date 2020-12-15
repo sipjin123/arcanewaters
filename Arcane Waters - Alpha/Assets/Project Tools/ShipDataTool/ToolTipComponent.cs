@@ -72,7 +72,7 @@ public class ToolTipComponent : MonoBehaviour {
       string dictKeySuffix = null;
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)
-      if ((this.GetComponent<ItemCellInventory>() != null) || (this.GetComponent<ItemCellIngredient>() != null) || (this.GetComponent<CreationPerkIcon>() != null)) {
+      if ((this.GetComponent<ItemCellInventory>() != null) || (this.GetComponent<ItemCellIngredient>() != null) || (this.GetComponent<CreationPerkIcon>() != null) || (this.GetComponent<PerkElementTemplate>() != null)) {
 
          // Send the message to the tooltip handler
          TooltipHandler.self.callToolTip(message, tooltipPlacement, this.transform.position, _panelRoot);

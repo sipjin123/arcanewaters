@@ -17,6 +17,7 @@ public class ChatManager : MonoBehaviour {
       Follow = 3,
       Emote = 4,
       Invite = 5,
+      Group = 6,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -36,6 +37,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Follow, new List<string> { "/follow" });
       _commands.Add(Type.Emote, new List<string> { "/emote","/em", "/e", "/emo", "/me" });
       _commands.Add(Type.Invite, new List<string> { "/invite", "/inv" });
+      _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
    }
 
    private void Start () {
@@ -76,6 +78,11 @@ public class ChatManager : MonoBehaviour {
 
       if (chatType == ChatInfo.Type.Whisper && Global.player.entityName.ToLower() == extractWhisperNameFromChat(message).ToLower()) {
          this.addChat("You cannot send a message to yourself!", ChatInfo.Type.Error);
+         return;
+      }
+
+      if (chatType == ChatInfo.Type.Group && !VoyageGroupManager.isInGroup(Global.player)) {
+         this.addChat("You are not currently in a group!", ChatInfo.Type.Error);
          return;
       }
 
@@ -186,6 +193,8 @@ public class ChatManager : MonoBehaviour {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Emote);
       } else if (type == Type.Invite) {
          VoyageGroupManager.self.handleInviteCommand(trimmedMessage);
+      } else if (type == Type.Group) {
+         sendMessageToServer(trimmedMessage, ChatInfo.Type.Group);
       }
    }
 

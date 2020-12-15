@@ -858,7 +858,6 @@ public class RPCManager : NetworkBehaviour {
       BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem);
    }
 
-   [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       if (_player.isMuted()) {
          // The player is muted and can't send messages
@@ -892,7 +891,7 @@ public class RPCManager : NetworkBehaviour {
                foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
                   if (player.entityName.ToLower() == extractedUserName.ToLower()) {
                      entityReceiver = player;
-                   }
+                  }
                }
             }
             if (entityReceiver != null) {
