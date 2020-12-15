@@ -1131,7 +1131,7 @@ public class NetEntity : NetworkBehaviour
          SoundManager.create3dSound("tutorial_step", Global.player.transform.position);
 
          // Registers the achievement of leveling up for recording
-         AchievementManager.registerUserAchievement(userId, ActionType.LevelUp);
+         AchievementManager.registerUserAchievement(this, ActionType.LevelUp);
 
          // Show the level up in chat
          string levelsMsg = string.Format("You gained {0} {1} {2}!", levelsGained, jobType, levelsGained > 1 ? "levels" : "level");

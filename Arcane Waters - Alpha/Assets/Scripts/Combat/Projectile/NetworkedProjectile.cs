@@ -217,7 +217,7 @@ public class NetworkedProjectile : MonoBehaviour {
                break;
             case Attack.Type.Venom:
                // Registers the poison action status to the achievementdata for recording
-               AchievementManager.registerUserAchievement(hitEntity.userId, ActionType.Poisoned);
+               AchievementManager.registerUserAchievement(hitEntity, ActionType.Poisoned);
 
                // Spawn Damage Per Second Residue
                hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);

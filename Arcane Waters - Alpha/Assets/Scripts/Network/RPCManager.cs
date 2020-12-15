@@ -624,7 +624,7 @@ public class RPCManager : NetworkBehaviour {
       giveItemRewardsToPlayer(_player.userId, new List<Item>() { item }, false);
 
       // Registers the interaction of loot bags to the achievement database for recording
-      AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenedLootBag);
+      AchievementManager.registerUserAchievement(_player, ActionType.OpenedLootBag);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);
@@ -1880,7 +1880,7 @@ public class RPCManager : NetworkBehaviour {
             Target_ReceiveNPCCustomDialogue(newFriendshipLevel, npcText, ClickableText.Type.YouAreWelcome, null);
 
             // Registers the npc gift action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.NPCGift);
+            AchievementManager.registerUserAchievement(_player, ActionType.NPCGift);
          });
       });
    }
@@ -2470,17 +2470,17 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Registers the purchasing of generic item action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.BuyItem);
+            AchievementManager.registerUserAchievement(_player, ActionType.BuyItem);
 
             // Registers the purchasing of equipment action to the achievement database for recording
             if (shopItem.category == Item.Category.Weapon) {
-               AchievementManager.registerUserAchievement(_player.userId, ActionType.WeaponBuy);
+               AchievementManager.registerUserAchievement(_player, ActionType.WeaponBuy);
             }
             if (shopItem.category == Item.Category.Armor) {
-               AchievementManager.registerUserAchievement(_player.userId, ActionType.ArmorBuy);
+               AchievementManager.registerUserAchievement(_player, ActionType.ArmorBuy);
             }
             if (shopItem.category == Item.Category.Hats) {
-               AchievementManager.registerUserAchievement(_player.userId, ActionType.HeadgearBuy);
+               AchievementManager.registerUserAchievement(_player, ActionType.HeadgearBuy);
             }
 
             string itemName = "";
@@ -2542,7 +2542,7 @@ public class RPCManager : NetworkBehaviour {
             requestNewFlagship(newShipInfo.shipId);
 
             // Registers the purchasing of ship action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.BuyShip);
+            AchievementManager.registerUserAchievement(_player, ActionType.BuyShip);
 
             // Show a popup panel for the player
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ShipBought, _player);
@@ -2911,7 +2911,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
             // Registers the crafting action to the achievement database
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.Craft);
+            AchievementManager.registerUserAchievement(_player, ActionType.Craft);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0, true);
@@ -3378,8 +3378,8 @@ public class RPCManager : NetworkBehaviour {
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Registers the Ore mining success action to the achievement database for recording
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.MineOre);
-            AchievementManager.registerUserAchievement(_player.userId, ActionType.OreGain, 1);
+            AchievementManager.registerUserAchievement(_player, ActionType.MineOre);
+            AchievementManager.registerUserAchievement(_player, ActionType.OreGain, 1);
 
             if (_player.voyageGroupId < 0) {
                // If any player does not belong to any group, reward them directly
@@ -3413,6 +3413,11 @@ public class RPCManager : NetworkBehaviour {
             Rpc_CollectOre(nodeId, oreEffectId);
          });
       });
+   }
+
+   [TargetRpc]
+   public void Target_GrantSteamAchievement (NetworkConnection connection, ActionType actionType, int currentCount) {
+      AchievementManager.self.processSteamAchievement(actionType, currentCount);
    }
 
    [Server]
@@ -3568,7 +3573,7 @@ public class RPCManager : NetworkBehaviour {
       });
 
       // Registers the interaction of treasure chests to the achievement database for recording
-      AchievementManager.registerUserAchievement(_player.userId, ActionType.OpenTreasureChest);
+      AchievementManager.registerUserAchievement(_player, ActionType.OpenTreasureChest);
 
       // Send it to the specific player that opened it
       Target_OpenChest(_player.connectionToClient, item, chest.id);

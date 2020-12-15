@@ -176,7 +176,7 @@ public class BattleManager : MonoBehaviour {
       player.battleId = battle.battleId;
 
       // Registers the action of combat entry to the achievement database for recording
-      AchievementManager.registerUserAchievement(player.userId, ActionType.EnterCombat);
+      AchievementManager.registerUserAchievement(player, ActionType.EnterCombat);
 
       // Update the observers associated with the Battle and the associated players
       rebuildObservers(battler, battle);
@@ -753,7 +753,7 @@ public class BattleManager : MonoBehaviour {
 
                // Registers the usage of the Offensive Skill for achievement recording
                if (source.player.userId != 0) {
-                  AchievementManager.registerUserAchievement(source.player.userId, ActionType.OffensiveSkillUse);
+                  AchievementManager.registerUserAchievement(source.player, ActionType.OffensiveSkillUse);
                }
 
                // Applies damage delay for abilities with extra animation durations such as casting and aiming
@@ -774,7 +774,7 @@ public class BattleManager : MonoBehaviour {
                BuffAction buffAction = (BuffAction) action;
 
                // Registers the usage of the Buff Skill for achievement recording
-               AchievementManager.registerUserAchievement(source.player.userId, ActionType.BuffSkillUse);
+               AchievementManager.registerUserAchievement(source.player, ActionType.BuffSkillUse);
 
                // Apply damage
                if (buffAction.buffActionType == BuffActionType.Regeneration) {
@@ -867,10 +867,10 @@ public class BattleManager : MonoBehaviour {
                   }
 
                   // Registers the kill count of the combat
-                  AchievementManager.registerUserAchievement(participant.player.userId, ActionType.KillLandMonster, defeatedBattlers.Count);
+                  AchievementManager.registerUserAchievement(participant.player, ActionType.KillLandMonster, defeatedBattlers.Count);
 
                   // Registers the gold earned for achievement recording
-                  AchievementManager.registerUserAchievement(participant.player.userId, ActionType.EarnGold, goldWon);
+                  AchievementManager.registerUserAchievement(participant.player, ActionType.EarnGold, goldWon);
 
                   if (!battler.isBossType) {
                      Vector3 targetPosition = chestPos;
@@ -888,7 +888,7 @@ public class BattleManager : MonoBehaviour {
          } else {
             if (battler.player is PlayerBodyEntity) {
                // Registers the death of the player in combat
-               AchievementManager.registerUserAchievement(battler.player.userId, ActionType.CombatDie);
+               AchievementManager.registerUserAchievement(battler.player, ActionType.CombatDie);
 
                // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
                battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);

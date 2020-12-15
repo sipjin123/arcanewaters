@@ -36,7 +36,7 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
       // Registers the bounce pad action status to the achievement data for recording
       if (puppet.entity.isServer) {
-         AchievementManager.registerUserAchievement(puppet.entity.userId, ActionType.JumpOnBouncePad);
+         AchievementManager.registerUserAchievement(puppet.entity, ActionType.JumpOnBouncePad);
       }
 
       puppet.entity.fallDirection = (int) Direction.North;

@@ -169,7 +169,7 @@ public class SeaEntity : NetEntity
                   entity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
-                  AchievementManager.registerUserAchievement(entity.userId, ActionType.Electrocuted);
+                  AchievementManager.registerUserAchievement(entity, ActionType.Electrocuted);
 
                   collidedEntities.Add(entity, collidedEntity.transform);
                   targetIDList.Add(entity.netId);
@@ -578,34 +578,34 @@ public class SeaEntity : NetEntity
                         if (targetEntity is SeaMonsterEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sea Monster Killed to the achievement database for recording
-                              AchievementManager.registerUserAchievement(userId, ActionType.KillSeaMonster);
+                              AchievementManager.registerUserAchievement(this, ActionType.KillSeaMonster);
                            }
                            // Registers the sea monster cannon hit
-                           AchievementManager.registerUserAchievement(userId, ActionType.HitSeaMonster);
+                           AchievementManager.registerUserAchievement(this, ActionType.HitSeaMonster);
                         } else if (targetEntity is BotShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the action Sunked Ships to the achievement database for recording
-                              AchievementManager.registerUserAchievement(userId, ActionType.SinkedShips);
+                              AchievementManager.registerUserAchievement(this, ActionType.SinkedShips);
                            }
                            // Registers the cannon hit action specifically for other player ship to the achievement database 
-                           AchievementManager.registerUserAchievement(userId, ActionType.HitEnemyShips);
+                           AchievementManager.registerUserAchievement(this, ActionType.HitEnemyShips);
                         } else if (targetEntity is PlayerShipEntity) {
                            if (targetHealthAfterDamage <= 0) {
                               // Registers the ship death action of the user to the achievement database for recording of death count
-                              AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
+                              AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
                            }
                            // Registers the cannon hit action specifically for other player ship to the achievement database 
-                           AchievementManager.registerUserAchievement(userId, ActionType.HitPlayerWithCannon);
+                           AchievementManager.registerUserAchievement(this, ActionType.HitPlayerWithCannon);
                         }
 
                         // Registers the cannon hit action of the user to the achievement database for recording of accuracy
-                        AchievementManager.registerUserAchievement(userId, ActionType.CannonHits);
+                        AchievementManager.registerUserAchievement(this, ActionType.CannonHits);
                      }
 
                      if (this is SeaMonsterEntity) {
                         if (targetEntity is PlayerShipEntity && targetHealthAfterDamage <= 0) {
                            // Registers the ship death action of the user to the achievement database for recording of death count
-                           AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.ShipDie);
+                           AchievementManager.registerUserAchievement(targetEntity, ActionType.ShipDie);
                         }
                      }
 
@@ -626,7 +626,7 @@ public class SeaEntity : NetEntity
                      if (this is BotShipEntity) {
                         if (targetEntity is PlayerShipEntity) {
                            // Registers the frozen action status to the achievementdata for recording
-                           AchievementManager.registerUserAchievement(targetEntity.userId, ActionType.Frozen);
+                           AchievementManager.registerUserAchievement(targetEntity, ActionType.Frozen);
                         }
                      }
 

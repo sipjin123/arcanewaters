@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System.IO;
+using Steamworks;
 
 public class AchievementManager : MonoBehaviour {
    #region Public Variables
@@ -103,11 +104,12 @@ public class AchievementManager : MonoBehaviour {
       });
    }
 
-   public static void registerUserAchievement (int userID, ActionType action, int customCount = 1, Item dependencyItem = null) {
-      self.processAchievement(userID, action, customCount, dependencyItem);
+   public static void registerUserAchievement (NetEntity player, ActionType action, int customCount = 1, Item dependencyItem = null) {
+      self.processAchievement(player, action, customCount, dependencyItem);
    }
 
-   public void processAchievement (int userID, ActionType actionType, int count, Item dependencyItem = null) {
+   public void processAchievement (NetEntity player, ActionType actionType, int count, Item dependencyItem = null) {      
+      int userID = player.userId;
       #if IS_SERVER_BUILD
       if (logAchievements) { 
          D.debug("Register Achievement: " + actionType);
@@ -151,13 +153,14 @@ public class AchievementManager : MonoBehaviour {
                   }
                   requirementCount = castData.count;
                }
-
                bool isComplete = false;
 
                // Marks the achievements as complete
                if (resultCount >= requirementCount) {
                   isComplete = true;
                }
+
+               player.rpc.Target_GrantSteamAchievement(player.connectionToClient, actionType, resultCount);
                DB_Main.updateAchievementData(rawData, userID, isComplete, count);
             }
          } else {
@@ -192,6 +195,7 @@ public class AchievementManager : MonoBehaviour {
                AchievementData newData = AchievementData.CreateAchievementData(rawData);
                newData.count = 1;
 
+               player.rpc.Target_GrantSteamAchievement(player.connectionToClient, actionType, 1);
                DB_Main.updateAchievementData(newData, userID, isComplete);
             }
          }
@@ -203,10 +207,50 @@ public class AchievementManager : MonoBehaviour {
       #endif
    }
 
+   public void processSteamAchievement (ActionType actionType, int currentCount) {
+      switch (actionType) {
+         case ActionType.OpenTreasureChest:
+            SteamUserStats.SetAchievement(STEAM_OPENED_TREASURE_CHEST + currentCount);
+            SteamUserStats.SetStat(STAT_UNLOCKED_TREASURE_CHEST, currentCount);
+            break;
+         case ActionType.KillLandMonster:
+            SteamUserStats.SetAchievement(STEAM_SLAY_LAND_MONSTERS + currentCount);
+            SteamUserStats.SetStat(STAT_ENEMY_SLAIN, currentCount);
+            break;
+         case ActionType.CombatDie:
+            SteamUserStats.SetAchievement(STEAM_DIE + currentCount);
+            SteamUserStats.SetStat(STAT_DEATH_COUNT, currentCount);
+            break;
+         case ActionType.HarvestCrop:
+            SteamUserStats.SetAchievement(STEAM_HARVEST_CROP + currentCount);
+            SteamUserStats.SetStat(STAT_HARVEST_CROP, currentCount);
+            break;
+         case ActionType.LevelUp:
+            SteamUserStats.SetAchievement(STEAM_REACH_LEVEL + currentCount);
+            SteamUserStats.SetStat(STAT_BASE_LEVEL, currentCount);
+            break;
+      }
+      SteamUserStats.StoreStats();
+   }
+
    #region Private Variables
 
    // Holds the collection of the xml translated data
    private List<AchievementGroupData> _achievementDataCollection;
+
+   // The achievements registered in steam dashboard
+   private const string STEAM_REACH_LEVEL = "REACH_LEVEL_";
+   private const string STEAM_HARVEST_CROP = "HARVEST_CROP_";
+   private const string STEAM_DIE = "DIE_";
+   private const string STEAM_SLAY_LAND_MONSTERS = "SLAY_LAND_MONSTERS_";
+   private const string STEAM_OPENED_TREASURE_CHEST = "OPENED_TREASURE_CHEST_";
+
+   // The stats registered in steam dashboard
+   private const string STAT_BASE_LEVEL = "base_level";
+   private const string STAT_HARVEST_CROP = "harvest_crop";
+   private const string STAT_ENEMY_SLAIN = "enemies_slain";
+   private const string STAT_UNLOCKED_TREASURE_CHEST = "unlocked_treasure_chest";
+   private const string STAT_DEATH_COUNT = "death_count";
 
    #endregion
 }
