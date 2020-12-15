@@ -15,6 +15,7 @@ public class UserObjects {
    public UserInfo userInfo;
    public ShipInfo shipInfo;
    public GuildInfo guildInfo;
+   public GuildRankInfo guildRankInfo;
    public Item armor;
    public Item weapon;
    public Item hat;

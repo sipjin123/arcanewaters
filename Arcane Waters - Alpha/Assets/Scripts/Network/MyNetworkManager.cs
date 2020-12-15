@@ -257,6 +257,7 @@ public class MyNetworkManager : NetworkManager
          UserInfo userInfo = userObjects.userInfo;
          ShipInfo shipInfo = userObjects.shipInfo;
          GuildInfo guildInfo = userObjects.guildInfo;
+         GuildRankInfo guildRankInfo = userObjects.guildRankInfo;
 
          string previousAreaKey = userInfo.areaKey;
 
@@ -336,7 +337,7 @@ public class MyNetworkManager : NetworkManager
 
             player.chatSuspensionEndDate = chatSuspensionEndDate;
 
-            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo);
+            player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
 
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();

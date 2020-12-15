@@ -115,6 +115,7 @@ public class PlayerBodyEntity : BodyEntity {
       base.Start();
 
       setGuildIcon();
+      hideGuildIcon();
 
       // Disable our collider if we are not the localplayer
       if (!isLocalPlayer) {
@@ -167,7 +168,19 @@ public class PlayerBodyEntity : BodyEntity {
       processActionLogic();
       processSprintLogic();
 
-      toggleGuildIcon();
+
+      // Show guild icon on mouseover.  No need to continue if all guild icons are already being displayed.
+      if (!OptionsPanel.allGuildIconsShowing) {
+         _playerBody = getClickedBody();
+         if (_playerBody != null) {
+            _previousPlayerBody = _playerBody;
+            _playerBody.showGuildIcon();
+         } else {
+            if (_previousPlayerBody != null) {
+               _previousPlayerBody.hideGuildIcon();
+            }
+         }
+      }
    }
 
    public void setGuildIcon () {
@@ -186,17 +199,6 @@ public class PlayerBodyEntity : BodyEntity {
          guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
       } else {
          guildIcon.sigil.enabled = false;
-      }
-   }
-   private void toggleGuildIcon () {
-      if (isMouseOver() && (Global.player.guildId != 0)) {
-         guildIcon.GetComponent<CanvasGroup>().alpha = 1f;
-         guildIcon.GetComponent<CanvasGroup>().interactable = true;
-         guildIcon.GetComponent<CanvasGroup>().blocksRaycasts = true;
-      } else {
-         guildIcon.GetComponent<CanvasGroup>().alpha = 0f;
-         guildIcon.GetComponent<CanvasGroup>().interactable = false;
-         guildIcon.GetComponent<CanvasGroup>().blocksRaycasts = false;
       }
    }
 
@@ -602,6 +604,10 @@ public class PlayerBodyEntity : BodyEntity {
    }
 
    #region Private Variables
+
+   // The player the mouseover occurs on
+   private PlayerBodyEntity _playerBody;
+   private PlayerBodyEntity _previousPlayerBody;
 
    #endregion
 }

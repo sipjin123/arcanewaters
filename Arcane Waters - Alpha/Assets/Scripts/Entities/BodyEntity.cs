@@ -46,8 +46,8 @@ public class BodyEntity : NetEntity
       checkFallDirection();
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo, guildRankInfo);
       this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
       this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
       this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);

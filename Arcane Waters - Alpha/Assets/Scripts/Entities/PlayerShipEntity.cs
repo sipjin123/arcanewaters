@@ -435,8 +435,8 @@ public class PlayerShipEntity : ShipEntity
       NetworkServer.Spawn(netBall.gameObject);
    }
 
-   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo) {
-      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo);
+   public override void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat, ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
+      base.setDataFromUserInfo(userInfo, armor, weapon, hat, shipInfo, guildInfo, guildRankInfo);
 
       // Ship stuff
       shipId = shipInfo.shipId;

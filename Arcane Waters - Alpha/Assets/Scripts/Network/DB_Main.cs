@@ -85,7 +85,7 @@ public class DB_Main : DB_MainStub
             string query = "SELECT * FROM global.xml_status where id = " + slot;
             using (MySqlCommand command = new MySqlCommand(query, connection)) {
                DebugQuery(command);
-               
+
                using (MySqlDataReader dataReader = command.ExecuteReader()) {
                   while (dataReader.Read()) {
                      FileSize = dataReader.GetUInt32(dataReader.GetOrdinal("dataSize"));
@@ -131,7 +131,7 @@ public class DB_Main : DB_MainStub
             " offset " + offset, connection)) {
                D.editorLog(command.CommandText);
                DebugQuery(command);
-               
+
                StringBuilder stringBuilder = new StringBuilder();
                using (MySqlDataReader reader = command.ExecuteReader()) {
                   while (reader.Read()) {
@@ -2265,7 +2265,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
-            
+
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
                   mapId = dataReader.GetInt32("id");
@@ -2296,7 +2296,7 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             DebugQuery(cmd);
-            
+
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                if (dataReader.Read()) {
                   string gameData = dataReader.GetString("gameData");
@@ -4198,10 +4198,10 @@ public class DB_Main : DB_MainStub
    #endregion
 
    #region ToolTip
-   
+
    public static new string getTooltipXmlContent () {
       string xmlContent = "";
-      
+
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.tooltips_v4", conn)) {
@@ -5537,6 +5537,7 @@ public class DB_Main : DB_MainStub
             "hat.itmId AS hatId, hat.itmType AS hatType, hat.itmPalettes AS hatPalettes, hat.itmData AS hatData " +
             "FROM users JOIN global.accounts USING(accId) LEFT JOIN ships USING(shpId) " +
             "LEFT JOIN guilds ON(users.gldId = guilds.gldId)" +
+            "LEFT JOIN guild_ranks ON(users.gldRankId = guild_ranks.id)" +
             "LEFT JOIN items AS armor ON(users.armId = armor.itmId) " +
             "LEFT JOIN items AS weapon ON(users.wpnId = weapon.itmId) " +
             "LEFT JOIN items AS hat ON(users.hatId = hat.itmId) " +
@@ -5560,6 +5561,7 @@ public class DB_Main : DB_MainStub
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.guildInfo = new GuildInfo(dataReader);
+                     userObjects.guildRankInfo = new GuildRankInfo(dataReader);
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
                      userObjects.hat = getHat(dataReader);
@@ -7063,6 +7065,176 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void assignRankGuild (int userId, int guildRankId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE users SET gldRankId=@gldRankId WHERE usrId=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            cmd.Parameters.AddWithValue("@gldRankId", guildRankId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new int getLowestRankIdGuild (int guildId) {
+      GuildRankInfo info = null;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks WHERE guildId=@guildId ORDER BY rankId DESC LIMIT 1", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  info = new GuildRankInfo(dataReader);
+                  return info.id;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return info != null ? info.id : -1;
+   }
+
+   public static new void createRankGuild (GuildRankInfo rankInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO guild_ranks (guildId, rankId, rankName, rankPriority, permissions) " +
+            "VALUES(@guildId, @rankId, @rankName, @rankPriority, @permissions) ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", rankInfo.guildId);
+            cmd.Parameters.AddWithValue("@rankId", rankInfo.rankId);
+            cmd.Parameters.AddWithValue("@rankName", rankInfo.rankName);
+            cmd.Parameters.AddWithValue("@rankPriority", rankInfo.rankPriority);
+            cmd.Parameters.AddWithValue("@permissions", rankInfo.permissions);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateRankGuild (GuildRankInfo rankInfo) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE guild_ranks SET rankName=@rankName, rankPriority=@rankPriority, permissions=@permissions WHERE guildId=@guildId AND rankId=@rankId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", rankInfo.guildId);
+            cmd.Parameters.AddWithValue("@rankId", rankInfo.rankId);
+            cmd.Parameters.AddWithValue("@rankName", rankInfo.rankName);
+            cmd.Parameters.AddWithValue("@rankPriority", rankInfo.rankPriority);
+            cmd.Parameters.AddWithValue("@permissions", rankInfo.permissions);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new List<GuildRankInfo> getGuildRankInfo (int guildId) {
+      List<GuildRankInfo> rankList = new List<GuildRankInfo>();
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks WHERE guildId=@guildId ", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  GuildRankInfo info = new GuildRankInfo(dataReader);
+                  rankList.Add(info);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return rankList;
+   }
+
+   public static new int getGuildMemberPermissions (int userId) {
+      int permissions = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks JOIN users ON guild_ranks.id=users.gldRankId WHERE users.usrId=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  permissions = dataReader.GetInt32("permissions");
+                  return permissions;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return permissions;
+   }
+
+   public static new int getGuildMemberRankId (int userId) {
+      int rankId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM guild_ranks JOIN users ON guild_ranks.id=users.gldRankId WHERE users.usrId=@userId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@userId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  rankId = dataReader.GetInt32("rankId");
+                  return rankId;
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return rankId;
+   }
+
    public static new void addJobXP (int userId, Jobs.Type jobType, int XP) {
       string columnName = Jobs.getColumnName(jobType);
 
@@ -7311,7 +7483,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters["@usrId"].Value = entries[i].userId;
                cmd.Parameters["@score"].Value = entries[i].score;
                DebugQuery(cmd);
-               
+
                // Execute the command
                cmd.ExecuteNonQuery();
             }
@@ -8101,22 +8273,22 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand("", conn)) {
-               conn.Open();
+            conn.Open();
 
-               // Delete the auction
-               cmd.CommandText = "DELETE FROM auction_table_v1 WHERE auctionId=@auctionId";
-               cmd.Prepare();
-               cmd.Parameters.AddWithValue("@auctionId", auctionId);
-               DebugQuery(cmd);
-               cmd.ExecuteNonQuery();
+            // Delete the auction
+            cmd.CommandText = "DELETE FROM auction_table_v1 WHERE auctionId=@auctionId";
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
+            cmd.ExecuteNonQuery();
 
-               // Delete the bidders
-               cmd.CommandText = "DELETE FROM auction_bidders WHERE auctionId=@auctionId";
-               cmd.Parameters.Clear();
-               cmd.Parameters.AddWithValue("@auctionId", auctionId);
-               DebugQuery(cmd);
-               cmd.ExecuteNonQuery();
-            }
+            // Delete the bidders
+            cmd.CommandText = "DELETE FROM auction_bidders WHERE auctionId=@auctionId";
+            cmd.Parameters.Clear();
+            cmd.Parameters.AddWithValue("@auctionId", auctionId);
+            DebugQuery(cmd);
+            cmd.ExecuteNonQuery();
+         }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
@@ -8733,9 +8905,12 @@ public class DB_Main : DB_MainStub
          string[] finalAddressArray = ipAddress.Split(':');
          string finalAddress = finalAddressArray[finalAddressArray.Length - 1];
 
+         // Getting the current time, in UTC
+         DateTime currTime = DateTime.UtcNow;
+
          try {
             using (MySqlConnection conn = getConnection())
-            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, accId, ipAddress, machineIdent, loginSource) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource);", conn)) {
+            using (MySqlCommand cmd = new MySqlCommand("INSERT INTO arcane.logins (usrId, accId, ipAddress, machineIdent, loginSource, loginTime) VALUES (@usrId, @accId, @ipAddress, @machineIdent, @loginSource, @loginTime);", conn)) {
                conn.Open();
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", usrId);
@@ -8743,10 +8918,26 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@ipAddress", finalAddress);
                cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
                cmd.Parameters.AddWithValue("@loginSource", "game");
+               cmd.Parameters.AddWithValue("@loginTime", currTime);
                DebugQuery(cmd);
 
                // Execute the command
                cmd.ExecuteNonQuery();
+
+               // Updating last login time for both the account and its current user
+               // Account
+               MySqlCommand lastAccLoginCmd = new MySqlCommand("UPDATE global.accounts SET lastLoginTime = @loginTime WHERE accId = @accId", conn);
+               lastAccLoginCmd.Prepare();
+               lastAccLoginCmd.Parameters.AddWithValue("@loginTime", currTime);
+               lastAccLoginCmd.Parameters.AddWithValue("@accId", accId);
+               lastAccLoginCmd.ExecuteNonQuery();
+
+               // User
+               MySqlCommand lastUsrLoginCmd = new MySqlCommand("UPDATE arcane.users SET lastLoginTime = @loginTime WHERE usrId = @usrId", conn);
+               lastUsrLoginCmd.Prepare();
+               lastUsrLoginCmd.Parameters.AddWithValue("@loginTime", currTime);
+               lastUsrLoginCmd.Parameters.AddWithValue("@usrId", usrId);
+               lastUsrLoginCmd.ExecuteNonQuery();
             }
          } catch (Exception e) {
             D.error("MySQL Error: " + e.ToString());
@@ -8756,7 +8947,7 @@ public class DB_Main : DB_MainStub
    #endregion
 
    #region Db debug
-   private static void DebugQuery(MySqlCommand cmd) {
+   private static void DebugQuery (MySqlCommand cmd) {
       if (!CommandCodes.get(CommandCodes.Type.SERVER_DB_DEBUG)) return;
       D.warning(cmd.CommandText);
    }

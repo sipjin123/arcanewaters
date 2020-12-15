@@ -141,6 +141,25 @@ public class ClientMessageManager : MonoBehaviour {
             // Add the confirmation message in the chat panel
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
             return;
+         case ConfirmMessage.Type.EditGuildRanks:
+            // Close the panel
+            ((GuildPanel) PanelManager.self.get(Panel.Type.Guild)).guildRanksPanel.hide();
+
+            // Get updated info
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+
+            // Add the confirmation message in the chat panel
+            ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
+
+            return;
+         case ConfirmMessage.Type.PromoteDemoteKickGuild:
+            // Show notice screen
+            PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            // Get updated info
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+
+            return;
          case ConfirmMessage.Type.UsedHairDye:
          case ConfirmMessage.Type.UsedShipSkin:
          case ConfirmMessage.Type.UsedHaircut:

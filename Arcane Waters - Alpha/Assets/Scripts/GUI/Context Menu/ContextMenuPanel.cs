@@ -113,7 +113,7 @@ public class ContextMenuPanel : MonoBehaviour
          addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
 
          // Only allow inviting to guild if we can locally see the invitee
-         if (Global.player.guildId > 0 && targetEntity != null && targetEntity.guildId == 0) {
+         if (Global.player.canInviteGuild(targetEntity)) {
             addButton("Guild Invite", () => Global.player.rpc.Cmd_InviteToGuild(userId));
          }
 

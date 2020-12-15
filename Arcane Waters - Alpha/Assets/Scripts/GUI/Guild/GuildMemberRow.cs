@@ -15,33 +15,94 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
    // The level of the member
    public Text memberLevel;
 
+   // The rank name of the member
+   public Text memberRankName;
+
+   // The zone location of the member
+   public Text memberZone;
+
+   // The status of the member - online or when was last active
+   public Text memberOnlineStatus;
+
+   // The group invite button
+   public Button inviteButton;
+
    // The online icon
    public GameObject onlineIcon;
 
    // The offline icon
    public GameObject offlineIcon;
 
+   // The object which highlights guild member row in Guild Panel
+   public GameObject highlightRow;
+
    #endregion
 
-   public void setRowForGuildMember (UserInfo userInfo) {
+   public void setRowForGuildMember (UserInfo userInfo, GuildRankInfo[] guildRanks) {
       _userId = userInfo.userId;
       _userName = userInfo.username;
       memberName.text = userInfo.username;
       memberLevel.text = LevelUtil.levelForXp(userInfo.XP).ToString();
+      memberZone.text = userInfo.areaKey;
+
+      if (userInfo.guildRankId == 0) {
+         memberRankName.text = "Leader";
+      } else {
+         foreach (GuildRankInfo rankInfo in guildRanks) {
+            if (rankInfo.id == userInfo.guildRankId) {
+               memberRankName.text = rankInfo.rankName;
+               break;
+            }
+         }
+      }
 
       if (userInfo.isOnline) {
          onlineIcon.SetActive(true);
          offlineIcon.SetActive(false);
+         memberOnlineStatus.text = "Online";
       } else {
          onlineIcon.SetActive(false);
          offlineIcon.SetActive(true);
+         System.TimeSpan timeDiff = System.DateTime.Now.Subtract(userInfo.lastLoginTime);
+         if (timeDiff.TotalSeconds < 119) {
+            memberOnlineStatus.text = "1 Minute";
+         } else if (timeDiff.TotalMinutes < 60) {
+            memberOnlineStatus.text = (int) timeDiff.TotalMinutes + " Minutes";
+         } else if (timeDiff.TotalHours < 2) {
+            memberOnlineStatus.text = "1 Hour";
+         } else if (timeDiff.TotalHours < 24) {
+            memberOnlineStatus.text = (int) timeDiff.TotalHours + " Hours";
+         } else if (timeDiff.TotalDays < 2) {
+            memberOnlineStatus.text = "1 Day";
+         } else {
+            memberOnlineStatus.text = (int) timeDiff.TotalDays + " Days";
+         }
       }
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
+      if (eventData.button == PointerEventData.InputButton.Left) {
+         bool newState = !highlightRow.activeSelf;
+         GuildPanel.self.getGuildMemeberRows().ForEach(row => row.highlightRow.SetActive(false));
+         highlightRow.SetActive(newState);
+
+         // Update buttons interactivity
+         GuildPanel.self.checkButtonPermissions();
+      }
+
       if (eventData.button == PointerEventData.InputButton.Right) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, _userName);
       }
+   }
+
+   public void onInviteClicked () {
+      if (Global.player) {
+         VoyageGroupManager.self.inviteUserToVoyageGroup(memberName.text);
+      }
+   }
+
+   public int getUserId () {
+      return _userId;
    }
 
    #region Private Variables

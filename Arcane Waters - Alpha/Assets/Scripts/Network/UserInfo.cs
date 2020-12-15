@@ -84,11 +84,17 @@ public class UserInfo {
    // The Guild we're in
    public int guildId;
 
+   // The user rank within guild
+   public int guildRankId;
+
    // The house layout map we've chosen
    public int customHouseBaseId;
 
    // The farm layout map we've chosen
    public int customFarmBaseId;
+
+   // The last login time
+   public System.DateTime lastLoginTime;
 
    // Gets set to true when the user is online (this is not stored in the DB)
    public bool isOnline = false;
@@ -123,8 +129,10 @@ public class UserInfo {
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.guildId = dataReader.GetInt32("gldId");
+      this.guildRankId = dataReader.GetInt32("gldRankId");
       this.customHouseBaseId = dataReader.GetInt32("customHouseBase");
       this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
+      this.lastLoginTime = dataReader.GetDateTime("lastLoginTime");
    }
 
    #endif

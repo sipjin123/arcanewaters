@@ -967,6 +967,34 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void assignRankGuild (int userId, int guildRankId) {
+
+   }
+
+   public static int getLowestRankIdGuild (int guildId) {
+      return -1;
+   }
+
+   public static void createRankGuild (GuildRankInfo rankInfo) {
+
+   }
+
+   public static void updateRankGuild (GuildRankInfo rankInfo) {
+
+   }
+
+   public static List<GuildRankInfo> getGuildRankInfo (int guildId) {
+      return null;
+   }
+
+   public static int getGuildMemberPermissions (int userId) {
+      return 0;
+   }
+
+   public static int getGuildMemberRankId (int userId) {
+      return -1;
+   }
+
    public static void addJobXP (int userId, Jobs.Type jobType, int XP) {
 
    }

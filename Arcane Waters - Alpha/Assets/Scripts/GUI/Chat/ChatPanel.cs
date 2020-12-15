@@ -337,9 +337,11 @@ public class ChatPanel : MonoBehaviour {
       // Assign guild icon parts if sender is part of a guild
       if (Global.player != null && Global.player.guildId > 0) {
          rowGuildIcon.gameObject.SetActive(true);
-         rowGuildIcon.setBorder(chatInfo.guildIconData.iconBorder);
-         rowGuildIcon.setBackground(chatInfo.guildIconData.iconBackground, chatInfo.guildIconData.iconBackPalettes);
-         rowGuildIcon.setSigil(chatInfo.guildIconData.iconSigil, chatInfo.guildIconData.iconSigilPalettes);
+         if (chatInfo.guildIconData != null) {
+            rowGuildIcon.setBorder(chatInfo.guildIconData.iconBorder);
+            rowGuildIcon.setBackground(chatInfo.guildIconData.iconBackground, chatInfo.guildIconData.iconBackPalettes);
+            rowGuildIcon.setSigil(chatInfo.guildIconData.iconSigil, chatInfo.guildIconData.iconSigilPalettes);
+         }
       } else {
          rowGuildIcon.gameObject.SetActive(false);
       }

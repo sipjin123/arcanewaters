@@ -108,7 +108,12 @@ public class GuildManager : MonoBehaviour {
       // Update the guild
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.assignGuild(recipient.userId, invite.guildId);
+         int rankId = DB_Main.getLowestRankIdGuild(invite.guildId);
+
+         DB_Main.assignRankGuild(recipient.userId, rankId);
+         List<GuildRankInfo> info = DB_Main.getGuildRankInfo(invite.guildId);
          recipient.guildId = invite.guildId;
+         recipient.guildPermissions = info.Find(x => x.id == rankId).permissions;
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {

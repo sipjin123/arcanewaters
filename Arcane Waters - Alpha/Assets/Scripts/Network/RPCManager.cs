@@ -518,7 +518,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   public void Target_ReceiveGuildInfo (NetworkConnection connection, GuildInfo info) {
+   public void Target_ReceiveGuildInfo (NetworkConnection connection, GuildInfo info, GuildRankInfo[] guildRanks) {
       // Make sure the panel is showing
       GuildPanel panel = (GuildPanel) PanelManager.self.get(Panel.Type.Guild);
 
@@ -527,7 +527,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Update the Inventory Panel with the items we received from the server
-      panel.receiveDataFromServer(info);
+      panel.receiveDataFromServer(info, guildRanks);
    }
 
    [TargetRpc]
@@ -987,10 +987,12 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          // Default to an empty guild info
          GuildInfo info = new GuildInfo();
+         List<GuildRankInfo> rankInfo = null;
 
          // Only look up info if they're in a guild
          if (_player.guildId > 0) {
             info = DB_Main.getGuildInfo(_player.guildId);
+            rankInfo = DB_Main.getGuildRankInfo(_player.guildId);
          }
 
          // Back to the Unity thread to send the results back to the client
@@ -1002,7 +1004,7 @@ public class RPCManager : NetworkBehaviour {
                }
             }
 
-            _player.rpc.Target_ReceiveGuildInfo(_player.connectionToClient, info);
+            _player.rpc.Target_ReceiveGuildInfo(_player.connectionToClient, info, rankInfo != null ? rankInfo.ToArray() : null);
          });
       });
    }
@@ -2578,6 +2580,11 @@ public class RPCManager : NetworkBehaviour {
             DB_Main.assignGuild(_player.userId, guildId);
             _player.guildId = guildId;
 
+            // Create basic ranks and assign "Guild Leader" position to player
+            DB_Main.createRankGuild(GuildRankInfo.getDefaultOfficer(guildId));
+            DB_Main.createRankGuild(GuildRankInfo.getDefaultMember(guildId));
+            DB_Main.assignRankGuild(_player.userId, 0);
+
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + guildName + "!");
@@ -2634,6 +2641,168 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_AcceptInvite (GuildInvite invite) {
       GuildManager.self.acceptInviteOnServer(_player, invite);
+   }
+
+   [Command]
+   public void Cmd_UpdateRanksGuild (GuildRankInfo[] rankInfo) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int permissions = DB_Main.getGuildMemberPermissions(_player.userId);
+
+         // Check if user has sufficient permissions to edit ranks
+         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.EditRanks)) {
+            List<GuildRankInfo> guildRanksInDB = DB_Main.getGuildRankInfo(rankInfo[0].guildId);
+
+            foreach (GuildRankInfo info in rankInfo) {
+               bool foundRank = false;
+               foreach (GuildRankInfo rankInDB in guildRanksInDB) {
+                  if (rankInDB.id == info.id) {
+                     foundRank = true;
+                     DB_Main.updateRankGuild(info);
+                     break;
+                  }
+               }
+
+               if (!foundRank) {
+                  DB_Main.createRankGuild(info);
+               }
+            }
+
+            // Let the player know
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.EditGuildRanks, _player, "You have modified guild ranks!");
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have insufficient permissions to edit ranks!");
+            });
+         }
+      });
+   }
+
+   [Command]
+   public void Cmd_PromoteGuildMember (int promoterId, int userToPromoteId, int guildId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
+         int rankId = DB_Main.getGuildMemberRankId(userToPromoteId);
+         int permissions = DB_Main.getGuildMemberPermissions(promoterId);
+         int currentRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+
+         // Check if user has permissions to promote members
+         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Promote)) {
+
+            bool success = false;
+            // Check if user to promote hasn't reached maximum rank
+            if (currentRankPriority > 1) {
+               success = true;
+               int newRankId = guildRanks.Find(rank => rank.rankPriority == currentRankPriority - 1).id;
+               DB_Main.assignRankGuild(userToPromoteId, newRankId);
+            }
+
+            // Let the player know
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (success) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have promoted guild member!");
+               } else {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "Guild member that you want to promote, has already reached maximum rank!");
+               }
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have insufficient rights to promote guild member!");
+            });
+         }
+      });
+   }
+
+   [Command]
+   public void Cmd_DemoteGuildMember (int promoterId, int userToDemoteId, int guildId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
+         int rankId = DB_Main.getGuildMemberRankId(userToDemoteId);
+         int permissions = DB_Main.getGuildMemberPermissions(promoterId);
+         int currentRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+
+         // Action on guild leader cannot be performed
+         if (rankId == 0) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot perform action on Guild Leader!");
+            });
+            return;
+         }
+
+         // Check if user has permissions to demote members
+         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Demote)) {
+
+            bool success = false;
+            int lowestRank = int.MinValue;
+            foreach (GuildRankInfo rankInfo in guildRanks) {
+               if (rankInfo.rankPriority > lowestRank) {
+                  lowestRank = rankInfo.rankPriority;
+               }
+            }
+
+            // Check if user to demote hasn't reached lowest rank
+            if (currentRankPriority < lowestRank) {
+               success = true;
+               int newRankId = guildRanks.Find(rank => rank.rankPriority == currentRankPriority + 1).id;
+               DB_Main.assignRankGuild(userToDemoteId, newRankId);
+            }
+
+            // Let the player know
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (success) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have demoted guild member!");
+               } else {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "Guild member that you want to demote, has already reached lowest rank!");
+               }
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have insufficient rights to demote guild member!");
+            });
+         }
+      });
+   }
+
+   [Command]
+   public void Cmd_KickGuildMember (int kickerId, int userToKickId, int guildId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int rankId = DB_Main.getGuildMemberRankId(userToKickId);
+         int permissions = DB_Main.getGuildMemberPermissions(kickerId);
+
+         // Check if user has permissions to demote members
+         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Kick)) {
+
+            bool success = false;
+            // Check if user to demote hasn't reached lowest rank
+            if (rankId > 0) {
+               success = true;
+               DB_Main.assignGuild(userToKickId, 0);
+               DB_Main.assignRankGuild(userToKickId, -1);
+
+               // If user is currently online - update his guildId
+               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                  if (pair.Value.userId == userToKickId) {
+                     pair.Value.guildId = 0;
+                     break;
+                  }
+               }
+            }
+
+            // Let the player know
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (success) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have kicked guild member!");
+               } else {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot kick Guild Leader!");
+               }
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have insufficient rights to kick guild member!");
+            });
+         }
+      });
    }
 
    #endregion

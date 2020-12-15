@@ -39,8 +39,14 @@ public class OptionsPanel : Panel
    // The vsync toggle
    public Toggle vsyncToggle;
 
+   // The guild icon toggle
+   public Toggle displayGuildIconsToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
+
+   // Bool to track if all icons are displayed above charater's head
+   public static bool allGuildIconsShowing;
 
    // Self
    public static OptionsPanel self;
@@ -100,6 +106,11 @@ public class OptionsPanel : Panel
       singlePlayerToggle.onValueChanged.AddListener(_ => {
          Global.isSinglePlayer = _;
       });
+
+      // Set the guild icons toggle event
+      displayGuildIconsToggle.onValueChanged.AddListener(value => {
+         showAllGuildIcons(value);
+      });
    }
 
    public void setVSync (bool vsync) {
@@ -107,6 +118,22 @@ public class OptionsPanel : Panel
 
       if (vsyncToggle.isOn != vsync) {
          vsyncToggle.SetIsOnWithoutNotify(vsync);
+      }
+   }
+
+   public void showAllGuildIcons (bool showGuildIcons) {
+      if (showGuildIcons) {
+         // Display the guild icons of all the players
+         foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+            entity.showGuildIcon();
+            allGuildIconsShowing = true;
+         }
+      } else {
+         // Do not display the guild icons of all the players
+         foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+            entity.hideGuildIcon();
+            allGuildIconsShowing = false;
+         }
       }
    }
 

@@ -133,6 +133,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildId;
 
+   // The guild permissions that this user holds
+   [SyncVar]
+   public int guildPermissions;
+
    // The ID of the Battle this Enemy is currently in, if any
    [SyncVar]
    public int battleId;
@@ -482,10 +486,11 @@ public class NetEntity : NetworkBehaviour
    }
 
    public virtual void setDataFromUserInfo (UserInfo userInfo, Item armor, Item weapon, Item hat,
-      ShipInfo shipInfo, GuildInfo guildInfo) {
+      ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;
       this.guildId = userInfo.guildId;
+      this.guildPermissions = guildRankInfo.permissions;
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
 
@@ -528,6 +533,20 @@ public class NetEntity : NetworkBehaviour
             D.debug("Hat was null! error here");
          }
       }
+   }
+
+   public void showGuildIcon () {
+      CanvasGroup guildIconCanvasGroup = GetComponent<PlayerBodyEntity>().guildIcon.canvasGroup;
+      guildIconCanvasGroup.alpha = 1f;
+      guildIconCanvasGroup.interactable = true;
+      guildIconCanvasGroup.blocksRaycasts = true;
+   }
+
+   public void hideGuildIcon () {
+      CanvasGroup guildIconCanvasGroup = GetComponent<PlayerBodyEntity>().guildIcon.canvasGroup;
+      guildIconCanvasGroup.alpha = 0f;
+      guildIconCanvasGroup.interactable = false;
+      guildIconCanvasGroup.blocksRaycasts = false;
    }
 
    public bool isMale () {
@@ -1466,6 +1485,14 @@ public class NetEntity : NetworkBehaviour
          // Signal the server
          rpc.Cmd_OnClientFinishedLoadingArea();
       }
+   }
+
+   public bool canPerformAction (GuildRankInfo.GuildPermission action) {
+      return ((this.guildPermissions & (int) action) != 0);
+   }
+
+   public bool canInviteGuild (NetEntity targetEntity) {
+      return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildRankInfo.GuildPermission.Invite);
    }
 
    protected virtual void onStartMoving () { }
