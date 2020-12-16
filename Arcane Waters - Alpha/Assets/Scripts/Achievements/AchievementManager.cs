@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.IO;
 using Steamworks;
+using UnityEngine.Networking;
 
 public class AchievementManager : MonoBehaviour {
    #region Public Variables
@@ -160,8 +161,12 @@ public class AchievementManager : MonoBehaviour {
                   isComplete = true;
                }
 
-               player.rpc.Target_GrantSteamAchievement(player.connectionToClient, actionType, resultCount);
                DB_Main.updateAchievementData(rawData, userID, isComplete, count);
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (!string.IsNullOrEmpty(player.steamId)) {
+                     StartCoroutine(CO_PublishSteamAchievements(actionType, resultCount, player.steamId));
+                  }
+               });
             }
          } else {
             // Creating new data
@@ -195,42 +200,64 @@ public class AchievementManager : MonoBehaviour {
                AchievementData newData = AchievementData.CreateAchievementData(rawData);
                newData.count = 1;
 
-               player.rpc.Target_GrantSteamAchievement(player.connectionToClient, actionType, 1);
                DB_Main.updateAchievementData(newData, userID, isComplete);
+
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (!string.IsNullOrEmpty(player.steamId)) {
+                     StartCoroutine(CO_PublishSteamAchievements(actionType, 1, player.steamId));
+                  } 
+               });
             }
          }
-
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // INSERT UNITY LOGIC HERE
-         });
       });
       #endif
    }
 
-   public void processSteamAchievement (ActionType actionType, int currentCount) {
+   private IEnumerator CO_PublishSteamAchievements (ActionType actionType, int progressCount, string steamUserId) {
+      string achievementName = "";
       switch (actionType) {
          case ActionType.OpenTreasureChest:
-            SteamUserStats.SetAchievement(STEAM_OPENED_TREASURE_CHEST + currentCount);
-            SteamUserStats.SetStat(STAT_UNLOCKED_TREASURE_CHEST, currentCount);
+            achievementName = STEAM_OPENED_TREASURE_CHEST + progressCount;
             break;
          case ActionType.KillLandMonster:
-            SteamUserStats.SetAchievement(STEAM_SLAY_LAND_MONSTERS + currentCount);
-            SteamUserStats.SetStat(STAT_ENEMY_SLAIN, currentCount);
+            achievementName = STEAM_SLAY_LAND_MONSTERS + progressCount;
             break;
          case ActionType.CombatDie:
-            SteamUserStats.SetAchievement(STEAM_DIE + currentCount);
-            SteamUserStats.SetStat(STAT_DEATH_COUNT, currentCount);
+            achievementName = STEAM_DIE + progressCount;
             break;
          case ActionType.HarvestCrop:
-            SteamUserStats.SetAchievement(STEAM_HARVEST_CROP + currentCount);
-            SteamUserStats.SetStat(STAT_HARVEST_CROP, currentCount);
+            achievementName = STEAM_HARVEST_CROP + progressCount;
             break;
          case ActionType.LevelUp:
-            SteamUserStats.SetAchievement(STEAM_REACH_LEVEL + currentCount);
-            SteamUserStats.SetStat(STAT_BASE_LEVEL, currentCount);
+            achievementName = STEAM_REACH_LEVEL + progressCount;
+            break;
+         default:
+            D.debug("Steam Achievement Error! Unable to find achievement");
+            yield return null;
             break;
       }
-      SteamUserStats.StoreStats();
+
+      if (string.IsNullOrEmpty(steamUserId)) {
+         D.debug("Steam Achievement Error! Invalid Steam Id: " + steamUserId);
+         yield return null;
+      }
+
+      WWWForm form = new WWWForm();
+      form.AddField("key", SteamLoginSystem.SteamLoginManagerServer.STEAM_WEB_PUBLISHER_API_KEY);
+      form.AddField("steamid", steamUserId);
+      form.AddField("appid", SteamLoginSystem.SteamLoginManagerServer.GAME_APPID);
+      form.AddField("count", "1");
+      form.AddField("name[0]", achievementName);
+      form.AddField("value[0]", progressCount);
+
+      if (achievementName.Length > 1) {
+         using (UnityWebRequest www = UnityWebRequest.Post(STEAMWEBAPI_SET_USER_STATS, form)) {
+            yield return www.SendWebRequest();
+            if (www.isNetworkError || www.isHttpError) {
+               Debug.Log(www.error);
+            } 
+         }
+      }
    }
 
    #region Private Variables
@@ -252,5 +279,8 @@ public class AchievementManager : MonoBehaviour {
    private const string STAT_UNLOCKED_TREASURE_CHEST = "unlocked_treasure_chest";
    private const string STAT_DEATH_COUNT = "death_count";
 
+   // The web API post command for altering achievements
+   private const string STEAMWEBAPI_SET_USER_STATS = "https://partner.steam-api.com/ISteamUserStats/SetUserStatsForGame/v1/";
+   
    #endregion
 }

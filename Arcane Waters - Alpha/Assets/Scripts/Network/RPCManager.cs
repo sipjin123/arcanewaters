@@ -3414,11 +3414,6 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
-   [TargetRpc]
-   public void Target_GrantSteamAchievement (NetworkConnection connection, ActionType actionType, int currentCount) {
-      AchievementManager.self.processSteamAchievement(actionType, currentCount);
-   }
-
    [Server]
    public void giveAbilityToPlayer (int userID, int[] abilityIds) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -3508,6 +3503,11 @@ public class RPCManager : NetworkBehaviour {
       if (showPanel) {
          Target_ReceiveItemRewardList(rewardList.ToArray());
       }
+   }
+
+   [Command]
+   public void Cmd_CacheSteamID (string steamId) {
+      _player.steamId = steamId;
    }
 
    [Command]
