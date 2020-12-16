@@ -15,11 +15,17 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
    // Button which adds new rank to edit panel
    public Button addRankButton;
 
+   // Button saving ranks permissions
+   public Button saveRanksButton;
+
    // Self reference
    public static GuildRanksPanel self;
 
    // Row gameobjects containing data about each rank within guild
    public List<GuildRankRow> guildRankRows = new List<GuildRankRow>();
+
+   // Text which informs user that rank names are not distinct
+   public GameObject rankNamesValidation;
 
    #endregion
 
@@ -45,10 +51,6 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       this.gameObject.SetActive(false);
    }
 
-   public void fillRowsWithData () {
-
-   }
-
    public void saveRanks () {
       List<GuildRankInfo> rowsToSend = new List<GuildRankInfo>();
 
@@ -67,7 +69,7 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
          GuildRankInfo info = new GuildRankInfo();
          info.rankId = row.rankId;
          info.rankPriority = row.rankPriority;
-         info.rankName = row.rankName.text;
+         info.rankName = row.rankName.text.Trim().ToLower();
          info.permissions = permissions;
          info.guildId = _initialRanksData[0].guildId;
          info.id = info.rankId - 1 < _initialRanksData.Length ? _initialRanksData[info.rankId - 1].id : -1;
@@ -115,27 +117,39 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
    }
 
    private void orderRows () {
-      Dictionary<int, int> siblingIndexToRankId = new Dictionary<int, int>();
+      List<int> rankIDs = new List<int>();
       foreach (GuildRankRow rankRow in guildRankRows) {
          if (rankRow.isActive) {
-            siblingIndexToRankId.Add(rankRow.rankId, rankRow.transform.GetSiblingIndex());
+            rankIDs.Add(rankRow.rankId);
          }
       }
 
       // Bubble sort rows order
-      for (int i = 1; i < siblingIndexToRankId.Count + 1; i++) {
-         for (int j = 1; j < siblingIndexToRankId.Count + 1 - i; j++) {
-            if (guildRankRows.Find(x=>x.rankId == j).rankPriority > guildRankRows.Find(x => x.rankId == j + 1).rankPriority) {
-               int tmp = siblingIndexToRankId[j];
-               siblingIndexToRankId[j] = siblingIndexToRankId[j + 1];
-               siblingIndexToRankId[j + 1] = tmp;
+      for (int i = 0; i < rankIDs.Count - 1; i++) {
+         for (int j = 0; j < rankIDs.Count - 1 - i; j++) {
+            GuildRankRow leftRow = guildRankRows.Find(x => x.rankId == rankIDs[j]);
+            GuildRankRow rightRow = guildRankRows.Find(x => x.rankId == rankIDs[j + 1]);
+            if (leftRow.rankPriority > rightRow.rankPriority) {
+               int tmp = rankIDs[j];
+               rankIDs[j] = rankIDs[j + 1];
+               rankIDs[j + 1] = tmp;
             }
          }
       }
 
-      // Apply rows order
-      foreach (KeyValuePair<int, int> pair in siblingIndexToRankId) {
-         guildRankRows[pair.Key - 1].transform.SetSiblingIndex(pair.Value);
+      int lowestIndex = int.MaxValue;
+      foreach (GuildRankRow rankRow in guildRankRows) {
+         if (rankRow.isActive) {
+            if (rankRow.transform.GetSiblingIndex() < lowestIndex) {
+               lowestIndex = rankRow.transform.GetSiblingIndex();
+            }
+         }
+      }
+
+      for (int i = 0; i < guildRankRows.Count; i++) {
+         if (guildRankRows[i].isActive) {
+            guildRankRows[i].transform.SetSiblingIndex(lowestIndex + rankIDs[i] - 1);
+         }
       }
    }
 
@@ -156,6 +170,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
             row.rankPriority = row.rankId;
             row.isActive = false;
             row.gameObject.SetActive(false);
+
+            addRankButton.interactable = true;
          } else {
             row.demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Demote);
             row.editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.EditRanks);
@@ -167,6 +183,9 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
             row.rankPriority = info.rankPriority;
          }
       }
+
+      orderRows();
+      guildRankRows.ForEach(row => row.updatePriorityButtons());
    }
 
    public void show () {
@@ -174,6 +193,9 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
       this.gameObject.SetActive(true);
+
+      // Initial data is always correct
+      rankNamesValidation.SetActive(false);
    }
 
    public void hide () {

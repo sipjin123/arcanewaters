@@ -23,9 +23,6 @@ public class ShaderSpriteOutline : MonoBehaviour {
    }
 
    private void Update () {
-      // We'll render the sprites in our buffer, so we tell Unity to skip them so we don't need to render them twice
-      setRenderersVisibility(!_isVisible);
-
       // Ensure the outline is being drawn
       if (_isVisible) {
          PostSpriteOutline.self.setOutlinedSprite(this);         
@@ -47,14 +44,6 @@ public class ShaderSpriteOutline : MonoBehaviour {
       }
 
       _isVisible = isVisible;
-   }
-
-   private void setRenderersVisibility (bool showRenderers) {
-      foreach (SpriteRenderer rend in _renderers) {
-         if (rend.enabled != showRenderers) {
-            rend.enabled = showRenderers;
-         }
-      }
    }
 
    public SpriteRenderer[] getRenderers () {

@@ -45,7 +45,7 @@ public class GuildRankRow : MonoBehaviour {
 
       rankPriority = info.rankPriority;
       if (rankNameInputField != null) {
-         rankNameInputField.text = info.rankName;
+         rankNameInputField.text = info.rankName.ToLower();
       }
 
       inviteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Invite) != 0;
@@ -54,6 +54,16 @@ public class GuildRankRow : MonoBehaviour {
       promoteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Promote) != 0;
       demoteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Demote) != 0;
       editRanksToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.EditRanks) != 0;
+
+      // Guild member has to have higher rank priority than ranks thay he's trying to modify
+      if (Global.player != null) {
+         bool interactable = Global.player.guildRankPriority < info.rankPriority;
+         inviteToggle.interactable = kickToggle.interactable = officerChatToggle.interactable =
+            promoteToggle.interactable = demoteToggle.interactable = editRanksToggle.interactable = interactable;
+
+         inviteToggle.graphic.color = kickToggle.graphic.color = officerChatToggle.graphic.color =
+            promoteToggle.graphic.color = demoteToggle.graphic.color = editRanksToggle.graphic.color = interactable ? _standardColor : _disabledColor;
+      }
    }
 
    public void moveRankUp () {
@@ -108,9 +118,46 @@ public class GuildRankRow : MonoBehaviour {
 
       priorityUp.interactable = rankPriority > 1;
       priorityDown.interactable = (rankPriority != lowestPriority);
+
+      if (Global.player.guildRankPriority > 0) {
+         priorityDown.interactable &= (Global.player.guildRankPriority < rankPriority);
+         priorityUp.interactable &= (Global.player.guildRankPriority + 1 < rankPriority);
+      }
+   }
+
+   public void onModifiedRankName (string newValue) {
+      HashSet<string> rankNames = new HashSet<string>();
+      int activeCount = 0;
+
+      foreach (GuildRankRow row in GuildRanksPanel.self.guildRankRows) {
+         if (row.isActive) {
+            rankNames.Add(row.rankNameInputField.text.ToLower());
+            activeCount++;
+            
+            if (row.rankNameInputField.text.Trim() == "") {
+               GuildRanksPanel.self.rankNamesValidation.SetActive(true);
+               GuildRanksPanel.self.saveRanksButton.enabled = false;
+               GuildRanksPanel.self.rankNamesValidation.GetComponentInChildren<Text>().text = "Rank names cannot be empty!";
+               return;
+            }
+         }
+      }
+
+      GuildRanksPanel.self.rankNamesValidation.SetActive(rankNames.Count != activeCount);
+      GuildRanksPanel.self.saveRanksButton.enabled = (rankNames.Count == activeCount);
+
+      if (rankNames.Count != activeCount) {
+         GuildRanksPanel.self.rankNamesValidation.GetComponentInChildren<Text>().text = "Rank names should be distinct!";
+      }
    }
 
    #region Private Variables
+
+   // Standard toggle color
+   private Color _standardColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+   // Color of toggle which is not interactable
+   private Color _disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
    #endregion
 }

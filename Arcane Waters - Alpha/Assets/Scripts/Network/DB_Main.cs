@@ -7047,6 +7047,23 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void deleteGuildRanks (int guildId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM guild_ranks WHERE guildId=@guildId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void assignGuild (int userId, int guildId) {
       try {
          using (MySqlConnection conn = getConnection())

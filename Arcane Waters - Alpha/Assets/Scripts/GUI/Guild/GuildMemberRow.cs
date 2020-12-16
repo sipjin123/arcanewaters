@@ -50,7 +50,11 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
       } else {
          foreach (GuildRankInfo rankInfo in guildRanks) {
             if (rankInfo.id == userInfo.guildRankId) {
-               memberRankName.text = rankInfo.rankName;
+               memberRankName.text = rankInfo.rankName.ToLower();
+               if (memberRankName.text.Length > 0) {
+                  string tmp = memberRankName.text;
+                  memberRankName.text = tmp[0].ToString().ToUpper() + tmp.Substring(1);
+               }
                break;
             }
          }

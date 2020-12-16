@@ -141,6 +141,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int guildPermissions;
 
+   // The guild rank priority that this user has
+   [SyncVar]
+   public int guildRankPriority;
+
    // The ID of the Battle this Enemy is currently in, if any
    [SyncVar]
    public int battleId;

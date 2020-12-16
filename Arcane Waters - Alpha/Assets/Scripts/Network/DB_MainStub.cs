@@ -963,6 +963,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void deleteGuildRanks (int guildId) {
+
+   }
+
    public static void assignGuild (int userId, int guildId) {
 
    }

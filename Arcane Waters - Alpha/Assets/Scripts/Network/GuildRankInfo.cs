@@ -63,7 +63,7 @@ public class GuildRankInfo
       GuildRankInfo info = new GuildRankInfo();
       info.guildId = guildId;
       info.rankId = 1;
-      info.rankName = "Officer";
+      info.rankName = "officer";
       info.rankPriority = 1;
       info.permissions = (int) GuildPermission.Invite +
                          (int) GuildPermission.Kick +
@@ -78,7 +78,7 @@ public class GuildRankInfo
       GuildRankInfo info = new GuildRankInfo();
       info.guildId = guildId;
       info.rankId = 2;
-      info.rankName = "Member";
+      info.rankName = "member";
       info.rankPriority = 2;
       info.permissions = 0;
 

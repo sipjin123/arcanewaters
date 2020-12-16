@@ -858,6 +858,7 @@ public class RPCManager : NetworkBehaviour {
       BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem);
    }
 
+   [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       if (_player.isMuted()) {
          // The player is muted and can't send messages
@@ -865,7 +866,11 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      GuildIconData guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+      GuildIconData guildIconData = null;
+      if (_player.guildId > 0) {
+         guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+      }
+
       ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, guildIconData);
 
       // Replace bad words
@@ -880,27 +885,34 @@ public class RPCManager : NetworkBehaviour {
          string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
          if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
             message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
-            NetEntity entityReceiver = null;
-            Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-            if (instance != null) {
-               foreach (PlayerBodyEntity player in instance.getPlayerBodyEntities()) {
-                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = player;
+            chatInfo.text = message;
+
+            // Background thread
+            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+               // Try to retrieve the destination user info
+               UserInfo destinationUserInfo = DB_Main.getUserInfo(extractedUserName);
+
+               // Back to the Unity thread
+               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                  if (destinationUserInfo == null) {
+                     string errorMsg = "Recipient does not exist!";
+                     _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
+                     return;
                   }
-               }
-               foreach (PlayerShipEntity player in instance.getPlayerShipEntities()) {
-                  if (player.entityName.ToLower() == extractedUserName.ToLower()) {
-                     entityReceiver = player;
-                  }
-               }
-            }
-            if (entityReceiver != null) {
-               entityReceiver.Target_ReceiveSpecialChat(entityReceiver.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
-            } else {
-               string errorMsg = "Recipient is either offline or does not exist!";
-               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, chatInfo.guildIconData, 0);
-            }
+
+                  ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
+               });
+            });
+         }
+      } else if (chatType == ChatInfo.Type.Group) {
+         VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+         if (voyageGroup == null) {
+            return;
+         }
+
+         foreach (int userId in voyageGroup.members) {
+            ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
       }
    }
@@ -2645,7 +2657,10 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_UpdateRanksGuild (GuildRankInfo[] rankInfo) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int permissions = DB_Main.getGuildMemberPermissions(_player.userId);
+         int rankId = DB_Main.getGuildMemberRankId(_player.userId);
+         int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
 
          // Check if user has sufficient permissions to edit ranks
          if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.EditRanks)) {
@@ -2655,8 +2670,10 @@ public class RPCManager : NetworkBehaviour {
                bool foundRank = false;
                foreach (GuildRankInfo rankInDB in guildRanksInDB) {
                   if (rankInDB.id == info.id) {
+                     if (userRankPriority < rankInDB.rankPriority) {
+                        DB_Main.updateRankGuild(info);
+                     }
                      foundRank = true;
-                     DB_Main.updateRankGuild(info);
                      break;
                   }
                }
@@ -2683,17 +2700,26 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToPromoteId);
+         int promoterRankId = DB_Main.getGuildMemberRankId(promoterId);
          int permissions = DB_Main.getGuildMemberPermissions(promoterId);
-         int currentRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int promoterRankPriority = promoterRankId == 0 ? 0 : guildRanks.Find(x => x.rankId == promoterRankId).rankPriority;
+
+         if (promoterRankPriority >= userRankPriority - 1) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot promote guild member to rank equal or higher than yours!");
+            });
+            return;
+         }
 
          // Check if user has permissions to promote members
          if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Promote)) {
 
             bool success = false;
             // Check if user to promote hasn't reached maximum rank
-            if (currentRankPriority > 1) {
+            if (userRankPriority > 1) {
                success = true;
-               int newRankId = guildRanks.Find(rank => rank.rankPriority == currentRankPriority - 1).id;
+               int newRankId = guildRanks.Find(rank => rank.rankPriority == userRankPriority - 1).id;
                DB_Main.assignRankGuild(userToPromoteId, newRankId);
             }
 
@@ -2718,13 +2744,20 @@ public class RPCManager : NetworkBehaviour {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToDemoteId);
+         int promoterRankId = DB_Main.getGuildMemberRankId(promoterId);
          int permissions = DB_Main.getGuildMemberPermissions(promoterId);
-         int currentRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int promoterRankPriority = promoterRankId == 0 ? 0 : guildRanks.Find(x => x.rankId == promoterRankId).rankPriority;
 
          // Action on guild leader cannot be performed
          if (rankId == 0) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot perform action on Guild Leader!");
+            });
+            return;
+         } else if (promoterRankPriority >= userRankPriority) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot demote guild member with higher or equal rank!");
             });
             return;
          }
@@ -2741,9 +2774,9 @@ public class RPCManager : NetworkBehaviour {
             }
 
             // Check if user to demote hasn't reached lowest rank
-            if (currentRankPriority < lowestRank) {
+            if (userRankPriority < lowestRank) {
                success = true;
-               int newRankId = guildRanks.Find(rank => rank.rankPriority == currentRankPriority + 1).id;
+               int newRankId = guildRanks.Find(rank => rank.rankPriority == userRankPriority + 1).id;
                DB_Main.assignRankGuild(userToDemoteId, newRankId);
             }
 
@@ -2766,8 +2799,19 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_KickGuildMember (int kickerId, int userToKickId, int guildId) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToKickId);
+         int kickerRankId = DB_Main.getGuildMemberRankId(kickerId);
          int permissions = DB_Main.getGuildMemberPermissions(kickerId);
+         int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int kickerRankPriority = kickerRankId == 0 ? 0 : guildRanks.Find(x => x.rankId == kickerRankId).rankPriority;
+
+         if (kickerRankPriority >= userRankPriority) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot kick guild member with higher or equal rank!");
+            });
+            return;
+         }
 
          // Check if user has permissions to demote members
          if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Kick)) {

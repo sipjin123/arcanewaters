@@ -193,6 +193,7 @@ public class GuildManager : MonoBehaviour {
          int memberCount = DB_Main.getMemberCountForGuild(guildId);
          if (memberCount == 0) {
             DB_Main.deleteGuild(guildId);
+            DB_Main.deleteGuildRanks(guildId);
          }
       });
    }

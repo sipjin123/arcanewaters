@@ -107,11 +107,6 @@ public class GuildPanel : Panel {
          }
       }
 
-      // Fill guild ranks data
-      if (guildRanks != null) {
-         guildRanksPanel.initialize(guildRanks);
-      }
-
       // Cache local player permissions for GUI purposes
       if (guildRanks != null && Global.player != null) {
          int rankId = -1;
@@ -125,14 +120,21 @@ public class GuildPanel : Panel {
          // Guild leader has all permissions
          if (rankId == 0) {
             Global.player.guildPermissions = int.MaxValue;
+            Global.player.guildRankPriority = 0;
          } else {
             foreach (GuildRankInfo rank in guildRanks) {
                if (rank.id == rankId) {
                   Global.player.guildPermissions = rank.permissions;
+                  Global.player.guildRankPriority = rank.rankPriority;
                   break;
                }
             }
          }
+      }
+
+      // Fill guild ranks data
+      if (guildRanks != null) {
+         guildRanksPanel.initialize(guildRanks);
       }
 
       // Update buttons interactivity
@@ -170,7 +172,7 @@ public class GuildPanel : Panel {
       demoteButton.interactable = isActive && Global.player.canPerformAction(GuildRankInfo.GuildPermission.Demote);
       kickButton.interactable = isActive && Global.player.canPerformAction(GuildRankInfo.GuildPermission.Kick);
 
-      ranksButton.interactable = Global.player.canPerformAction(GuildRankInfo.GuildPermission.EditRanks);
+      ranksButton.interactable &= Global.player.canPerformAction(GuildRankInfo.GuildPermission.EditRanks);
    }
 
    public List<GuildMemberRow> getGuildMemeberRows () {

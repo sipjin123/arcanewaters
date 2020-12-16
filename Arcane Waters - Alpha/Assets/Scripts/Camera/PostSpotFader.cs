@@ -36,11 +36,17 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       }
 #endif
 
+      updateScreenSize();
+
       // Make sure to update the screen size in the shader when it changes
       CameraManager.self.resolutionChanged += updateScreenSize;
    }
 
    private void updateScreenSize () {
+      // We'll update the pixel size using the new camera size
+      int pixelSize = CameraManager.getCurrentPPUScale();
+      Shader.SetGlobalInt("_PixelSize", pixelSize);
+
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
    }
 
@@ -59,7 +65,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
          _material.SetFloat("_Progress", _effectProgress);
          _material.SetVector("_SpotPosition", _spotScreenPosition);
          _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
-         _material.SetFloat("_BlockSize", _blockSize);
          _material.SetFloat("_DitherPercent", _ditherAmount);
       }
    }
@@ -82,7 +87,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
          _material = new Material(_shader);
          _material.SetFloat(_effectProgressPropertyID, _effectProgress);
          _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
-         _material.SetFloat("_BlockSize", _blockSize);
          _material.SetFloat("_DitherPercent", _ditherAmount);
       }
    }
@@ -139,10 +143,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    // The progress of the effect
    [SerializeField, Range(0, 1)]
    private float _effectProgress = 0;
-
-   // The number of screen pixels per square
-   [SerializeField, Range(1, 50)]
-   private int _blockSize;
 
    // What percentage of the spot is dithered
    [SerializeField, Range(0f, 2.0f)]
