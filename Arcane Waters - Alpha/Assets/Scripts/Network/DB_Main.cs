@@ -5561,7 +5561,19 @@ public class DB_Main : DB_MainStub
                      userObjects.userInfo = new UserInfo(dataReader);
                      userObjects.shipInfo = new ShipInfo(dataReader);
                      userObjects.guildInfo = new GuildInfo(dataReader);
-                     userObjects.guildRankInfo = new GuildRankInfo(dataReader);
+                     try {
+                        userObjects.guildRankInfo = new GuildRankInfo(dataReader);
+                     } catch {
+                        D.debug("Needs Investigation! Failed to process Guild Rank Info!");
+                        userObjects.guildRankInfo = new GuildRankInfo {
+                           guildId = -1,
+                           id = -1,
+                           permissions = -1,
+                           rankId = -1,
+                           rankName = "",
+                           rankPriority = -1
+                        };
+                     }
                      userObjects.armor = getArmor(dataReader);
                      userObjects.weapon = getWeapon(dataReader);
                      userObjects.hat = getHat(dataReader);

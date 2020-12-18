@@ -127,11 +127,17 @@ public class CharacterSpot : ClientMonoBehaviour {
       userInfo.eyesType = EyesLayer.Type.Female_Eyes_1;
       userInfo.eyesPalettes = PaletteDef.Eyes.Green;
       userInfo.bodyType = BodyLayer.Type.Female_Body_1;
+
       Weapon weapon = new Weapon();
       weapon.itemTypeId = 0;
       Armor armor = new Armor();
-      armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
-      armor.paletteNames = Item.parseItmPalette(new string[2] { PaletteDef.Armor1.Brown, PaletteDef.Armor2.Blue });
+      if (CharacterScreen.self.startingArmorData.Count < 1) {
+         D.debug("Needs Investigation! Starting armor data is empty!");
+      } else {
+         armor.itemTypeId = CharacterScreen.self.startingArmorData[0].equipmentId;
+         armor.paletteNames = Item.parseItmPalette(new string[2] { PaletteDef.Armor1.Brown, PaletteDef.Armor2.Blue });
+      }
+
       Hat hat = new Hat();
       
       offlineChar.setDataAndLayers(userInfo, weapon, armor, hat, armor.paletteNames);

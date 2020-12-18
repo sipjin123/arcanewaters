@@ -391,23 +391,15 @@ public class CharacterCreationPanel : ClientMonoBehaviour
       BodyLayer.Type bodyType = getBodyType();
 
       int bodyId = ((int) bodyType) % 10;
-      try {
-         int genderId = gender == Gender.Type.Female ? 200 : 100;
-         bodyType = (BodyLayer.Type) (genderId + bodyId);
-         setBodyType(bodyType);
-      } catch {
-         D.debug("Failed to process user body gender type in phase 1");
-      }
+      int genderId = gender == Gender.Type.Female ? 200 : 100;
+      bodyType = (BodyLayer.Type) (genderId + bodyId);
+      setBodyType(bodyType);
 
-      try {
-         int selected = bodyId - 1;
-         Toggle[] toggles = skinGroup.GetComponentsInChildren<Toggle>();
+      int selected = bodyId - 1;
+      Toggle[] toggles = skinGroup.GetComponentsInChildren<Toggle>();
 
-         for (int i = 0; i < toggles.Length; i++) {
-            toggles[bodyId - 1].SetIsOnWithoutNotify(i == selected);
-         }
-      } catch {
-         D.debug("Failed to process user body gender type in phase 2");
+      for (int i = 0; i < toggles.Length; i++) {
+         toggles[bodyId - 1].SetIsOnWithoutNotify(i == selected);
       }
    }
 

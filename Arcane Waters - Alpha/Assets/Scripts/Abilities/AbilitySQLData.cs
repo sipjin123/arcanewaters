@@ -24,6 +24,9 @@ public class AbilitySQLData
    // The level of the ability
    public int abilityLevel;
 
+   // The projectile id associated with this ability
+   public int projectileId;
+
    // The type of ability
    public AbilityType abilityType;
 

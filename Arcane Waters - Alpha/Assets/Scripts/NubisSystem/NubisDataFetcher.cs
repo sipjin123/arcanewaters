@@ -244,7 +244,9 @@ namespace NubisDataHandling {
          }
          if (inventoryBundle.equippedHat.itemTypeId != 0) {
             HatStatData xmlHatData = EquipmentXMLManager.self.getHatData(inventoryBundle.equippedHat.itemTypeId);
-            inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(xmlHatData);
+            if (xmlHatData != null) {
+               inventoryBundle.equippedHat.data = HatStatData.serializeHatStatData(xmlHatData);
+            }
          }
 
          List<Item> itemList = UserInventory.processUserInventory(inventoryBundle.inventoryData);

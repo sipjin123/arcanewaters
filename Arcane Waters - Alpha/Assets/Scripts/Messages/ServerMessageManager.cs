@@ -126,7 +126,7 @@ public class ServerMessageManager : MonoBehaviour
                      DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
                   }
                });
-
+               
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
                   userObjects.accountEmail, userObjects.accountCreationTime);
@@ -189,21 +189,21 @@ public class ServerMessageManager : MonoBehaviour
                List<int> startingEquipmentIds = new List<int>();
                List<int> startingSpriteIds = new List<int>();
 
-               if (armorList.Count < 1) {
-                  for (int i = 1; i < 4; i++) {
-                     int currentArmorId = 1;
-                     ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
+               int currentArmorId = 1;
+               for (int i = 1; i < 4; i++) {
+                  ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
+                  if (startArmorData != null) {
+                     //Only output visually unique armors
+                     startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
                      if (startArmorData != null) {
-                        //Only output visually unique armors
-                        while (startingSpriteIds.Any(spriteId => startArmorData.armorType == spriteId)) {
-                           currentArmorId++;
-                           startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
-                        }
                         startingEquipmentIds.Add(startArmorData.sqlId);
                         startingSpriteIds.Add(startArmorData.armorType);
                      } else {
-                        D.debug("Cannot process starting armor equipment: ArmorType:" + currentArmorId);
+                        D.debug("Failed to fetch the armor content of: " + currentArmorId);
                      }
+                     currentArmorId++;
+                  } else {
+                     D.debug("Cannot process starting armor equipment: ArmorType:" + currentArmorId);
                   }
                }
 

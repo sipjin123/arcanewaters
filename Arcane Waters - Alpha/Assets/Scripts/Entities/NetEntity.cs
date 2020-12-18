@@ -502,15 +502,25 @@ public class NetEntity : NetworkBehaviour
       ShipInfo shipInfo, GuildInfo guildInfo, GuildRankInfo guildRankInfo) {
       this.entityName = userInfo.username;
       this.adminFlag = userInfo.adminFlag;
-      this.guildId = userInfo.guildId;
-      this.guildPermissions = guildRankInfo.permissions;
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
+      this.guildId = userInfo.guildId;
+      if (guildRankInfo == null) {
+         // TODO: Confirm if guild rank info is intended to be null
+         D.debug("Investigate here! Guild Rank Info is Null!");
+      } else {
+         this.guildPermissions = guildRankInfo.permissions;
+      }
 
-      // Setup Guild Data
-      this.guildIconBorder = guildInfo.iconBorder;
-      this.guildIconSigil = guildInfo.iconSigil;
-      this.guildIconBackground = guildInfo.iconBackground;
+      if (guildInfo == null) {
+         // TODO: Confirm if guild info is intended to be null
+         D.debug("Investigate here! Guild Info is Null!");
+      } else {
+         // Setup Guild Data
+         this.guildIconBorder = guildInfo.iconBorder;
+         this.guildIconSigil = guildInfo.iconSigil;
+         this.guildIconBackground = guildInfo.iconBackground;
+      }
 
       // Body
       this.gender = userInfo.gender;

@@ -104,7 +104,6 @@ public class CharacterScreen : MonoBehaviour
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
          _armorArray[i].paletteNames = armorPalettes[i];
       }
-
       if (_armorArray.Length == 0) {
          Armor emptyArmor = new Armor { category = Item.Category.Armor, id = 0, itemTypeId = 0 };
          _armorArray = new Armor[3] { emptyArmor, emptyArmor, emptyArmor };
@@ -114,7 +113,7 @@ public class CharacterScreen : MonoBehaviour
       // Hat Setup
       _hatArray = new Hat[hatArray.Length];
       for (int i = 0; i < hatArray.Length; i++) {
-         _hatArray[i] = Hat.castItemToHat(armorArray[i]);
+         _hatArray[i] = Hat.castItemToHat(hatArray[i]);
 
          HatStatData hatData = EquipmentXMLManager.self.getHatData(_hatArray[i].itemTypeId);
          if (hatData != null) {
@@ -145,14 +144,22 @@ public class CharacterScreen : MonoBehaviour
 
          int charSpotNumber = userArray[i].charSpot;
 
-         // Create the offline character object
-         if (_spots.ContainsKey(charSpotNumber)) {
-            CharacterSpot spot = _spots[charSpotNumber];
-            OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-            Global.lastUserGold = userArray[i].gold;
-            Global.lastUserGems = userArray[i].gems;
-            offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
-            spot.assignCharacter(offlineChar);
+         try {
+            // Create the offline character object
+            if (_spots.ContainsKey(charSpotNumber)) {
+               CharacterSpot spot = _spots[charSpotNumber];
+               OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
+               Global.lastUserGold = userArray[i].gold;
+               Global.lastUserGems = userArray[i].gems;
+               offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
+               spot.assignCharacter(offlineChar);
+            }
+         } catch {
+            D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
+               "Weapon Count: {" + weaponArray.Length + " / 3 } " +
+               "Armor Count: {" + armorArray.Length + " / 3 } " +
+               "Hat Count: {" + hatArray + " / 3 } " +
+               "ArmorPalette Count: {" + armorPalettes.Length + " / 3 }");
          }
       }
 

@@ -44,6 +44,9 @@ public class BasicAbilityData : BattleItemData
    // The predefined position where the ability cast vfx will spawn
    public AbilityCastPosition abilityCastPosition;
 
+   // The projectile id associated with this ability
+   public int projectileId;
+
    public enum AbilityCastPosition
    {
       Self = 0,

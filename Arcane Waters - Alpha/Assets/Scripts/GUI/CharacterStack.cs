@@ -61,7 +61,12 @@ public class CharacterStack : MonoBehaviour {
             armorData = EquipmentXMLManager.self.getArmorDataBySqlId(userObjects.armor.itemTypeId);
          }
       }
-      updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
+
+      if (armorData == null) {
+         D.debug("Armor data is null!");
+      } else {
+         updateArmor(info.gender, armorData.armorType, armorData.palettes, updatePalettes);
+      }
 
       WeaponStatData weaponData = WeaponStatData.getDefaultData();
       if (userObjects.weapon.data != "" && userObjects.weapon.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
@@ -82,7 +87,12 @@ public class CharacterStack : MonoBehaviour {
             weaponData = EquipmentXMLManager.self.getWeaponData(userObjects.weapon.itemTypeId);
          }
       }
-      updateWeapon(info.gender, weaponData.weaponType, weaponData.palettes, updatePalettes);
+
+      if (weaponData == null) {
+         D.debug("Weapon data is null!");
+      } else {
+         updateWeapon(info.gender, weaponData.weaponType, weaponData.palettes, updatePalettes);
+      }
 
       HatStatData hatData = HatStatData.getDefaultData();
       if (userObjects.hat.data != "" && userObjects.hat.data.StartsWith(EquipmentXMLManager.VALID_XML_FORMAT)) {
@@ -103,7 +113,12 @@ public class CharacterStack : MonoBehaviour {
             hatData = EquipmentXMLManager.self.getHatData(userObjects.hat.itemTypeId);
          }
       }
-      updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
+      
+      if (hatData == null) {
+         D.debug("Hat data is null!");
+      } else {
+         updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
+      }
    }
 
    public void updateLayers (NetEntity entity) {

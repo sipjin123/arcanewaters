@@ -100,15 +100,19 @@ public class OfflineCharacter : ClientMonoBehaviour {
          armorData = Util.xmlLoad<ArmorStatData>(armor.data);
          armorData.palettes = armor.paletteNames;
       }
+      if (armorData != null) {
+         setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
+      } else {
+         D.debug("Armor data is null: {" + armor.itemTypeId + "}");
+      }
 
       HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
       if (hatData == null) {
          hatData = HatStatData.getDefaultData();
          hatData.palettes = hat.paletteNames;
       }
-
-      setArmor(armorData.armorType, armorData.palettes, ArmorStatData.serializeArmorStatData(armorData));
       setHat(hatData.hatType, hatData.palettes, HatStatData.serializeHatStatData(hatData));
+
       setWeapon(userInfo, weapon);
 
       Item newWeapon = new Weapon { itemTypeId = weapon.itemTypeId, id = weapon.id, paletteNames = weapon.paletteNames };
@@ -230,7 +234,11 @@ public class OfflineCharacter : ClientMonoBehaviour {
       armor.data = _armorData;
       if (_armorData.Length < 1 && armor.itemTypeId != 0) {
          ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataByType(armor.itemTypeId);
-         armor.data = ArmorStatData.serializeArmorStatData(armorData);
+         if (armorData != null) {
+            armor.data = ArmorStatData.serializeArmorStatData(armorData);
+         } else {
+            D.debug("Armor data is null: {" + armor.itemTypeId + "}");
+         }
       }
 
       return armor;
