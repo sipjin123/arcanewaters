@@ -232,7 +232,7 @@ public class DB_Main : DB_MainStub
 
    public static new DateTime getPlayerChatSuspensionEndDate (int userId) {
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             "SELECT * FROM global.user_chat_suspensions WHERE (userID=@userID)", conn)) {
 

@@ -28,10 +28,19 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       createMaterialIfNull();
    }
 
+#if UNITY_EDITOR
+   private void OnEnable () {
+      // In the editor only, don't subscribe to the CameraManager event unless we're in Play Mode
+      if (!Application.isPlaying) {
+         updatePixelSize();         
+      }
+   }
+#endif
+
    private void Start () {
 #if UNITY_EDITOR
       // In the editor only, don't subscribe to the CameraManager event unless we're in Play Mode
-      if (!Application.isPlaying) {
+      if (!Application.isPlaying) {         
          return;
       }
 #endif
@@ -42,11 +51,18 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       CameraManager.self.resolutionChanged += updateScreenSize;
    }
 
-   private void updateScreenSize () {
+   private void updatePixelSize () {
       // We'll update the pixel size using the new camera size
-      int pixelSize = CameraManager.getCurrentPPUScale();
-      Shader.SetGlobalInt("_PixelSize", pixelSize);
+      int pixelSize = CameraManager.self != null ? CameraManager.getCurrentPPUScale() : DEFAULT_PIXEL_SIZE;
 
+      // Make sure we have a valid pixelSize value
+      pixelSize = pixelSize > 0 ? pixelSize : DEFAULT_PIXEL_SIZE;
+            
+      Shader.SetGlobalInt("_PixelSize", pixelSize);
+   }
+
+   private void updateScreenSize () {
+      updatePixelSize();
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
    }
 
@@ -181,6 +197,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 
    // The property ID of the "_ScreenSize" property
    private int _screenSizePropertyID;
+
+   // The default pixel size if an invalid PPU scale is provided
+   public const int DEFAULT_PIXEL_SIZE = 4;
 
    #endregion
 }
