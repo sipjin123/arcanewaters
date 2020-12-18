@@ -106,8 +106,8 @@ public class PaletteDef : MonoBehaviour
     public class Ship
     {
         public static Subcategory hull = new Subcategory("hull", PaletteToolManager.PaletteImageType.Ship, new string[4] { "#CC4435", "#A7322E", "#822028", "#5B111C" });
-        public static Subcategory sail = new Subcategory("sail", PaletteToolManager.PaletteImageType.Armor, new string[3] { "#E1DCFF", "#B6ABED", "#6B60A2" });
-        public static Subcategory flag = new Subcategory("flag", PaletteToolManager.PaletteImageType.Armor, new string[2] { "#91BDFF", "#3888FF" });
+        public static Subcategory sail = new Subcategory("sail", PaletteToolManager.PaletteImageType.Ship, new string[3] { "#E1DCFF", "#B6ABED", "#6B60A2" });
+        public static Subcategory flag = new Subcategory("flag", PaletteToolManager.PaletteImageType.Ship, new string[2] { "#91BDFF", "#3888FF" });
     }
 
     public class ShipHull

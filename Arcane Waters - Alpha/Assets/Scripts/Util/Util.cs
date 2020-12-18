@@ -985,6 +985,20 @@ public class Util : MonoBehaviour {
       TutorialManager3.self.onUserLogOut();
    }
 
+   public static bool isWithinCone (Vector2 coneStart, Vector2 target, float coneMiddleAngle, float coneHalfAngle, float coneRadius = -1.0f) {
+      // Checks if a target is within the range of a cone, defined by a middle angle and a half angle (Both in degrees), and an optional radius check
+
+      // If we should check the cone's radius
+      if (coneRadius > 0.0f) {
+         if (Vector2.Distance(coneStart, target) > coneRadius) {
+            return false;
+         }
+      }
+
+      float angleToTarget = Util.angle(target - coneStart);
+      return (Mathf.Cos((angleToTarget - coneMiddleAngle) * Mathf.Deg2Rad) > (Mathf.Cos(coneHalfAngle * Mathf.Deg2Rad)));
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

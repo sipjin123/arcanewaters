@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using DG.Tweening;
 
 public class ServerCannonBall : NetworkBehaviour {
    #region Public Variables
@@ -46,6 +47,33 @@ public class ServerCannonBall : NetworkBehaviour {
       transform.position = startPos;
    }
 
+   [Server]
+   public void initLob (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lobHeight, float lifetime = -1, float damageMultiplier = 1) {
+      _startTime = NetworkTime.time;
+      _creatorNetId = creatorID;
+      _instanceId = instanceID;
+      _impactMagnitude = impactType;
+      _abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
+      _damageMultiplier = damageMultiplier;
+      _lobHeight = lobHeight;
+      _isLobbed = true;
+
+      this.projectileVelocity = velocity;
+
+      _rigidbody.velocity = velocity;
+      transform.position = startPos;
+
+      _ballCollider = GetComponentInChildren<CircleCollider2D>();
+      _ballCollider.enabled = false;
+      StartCoroutine(CO_SetColliderAfter(_lifetime * 0.9f, true));
+   }
+
+   private IEnumerator CO_SetColliderAfter(float seconds, bool value) {
+      yield return new WaitForSeconds(seconds);
+      _ballCollider.enabled = value;
+   }
+
    private void Update () {
       if (Util.isServer()) {
          double timeAlive = NetworkTime.time - _startTime;
@@ -56,7 +84,24 @@ public class ServerCannonBall : NetworkBehaviour {
             _lastVelocitySyncTime = NetworkTime.time;
             projectileVelocity = _rigidbody.velocity;
          }
+
+         if (_isLobbed) {
+            updateHeight();
+         }
       }
+   }
+
+   private void updateHeight () {
+      // Updates the height of the cannonball, to follow a parabolic curve
+
+      // Calculate the 'a' constant for the quadratic graph equation
+      float a = (4 * _lobHeight) / -(_lifetime * _lifetime);
+      float timeAlive = (float)(NetworkTime.time - _startTime);
+      Vector3 ballPos = _ballCollider.transform.localPosition;
+
+      // Use a quadratic graph equation to determine the height (y = a * x * (x - k))
+      ballPos.y = a * timeAlive * (timeAlive - _lifetime);
+      _ballCollider.transform.localPosition = ballPos;
    }
 
    private void FixedUpdate () {
@@ -171,6 +216,15 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // The default lifetime if none is provided
    protected const float DEFAULT_LIFETIME = 1.25f;
+
+   // A reference to the child object that contains the cannonball
+   private CircleCollider2D _ballCollider;
+
+   // If this cannonball should move with parabolic motion
+   private bool _isLobbed = false;
+
+   // How high this cannonball was lobbed
+   private float _lobHeight = 0.0f;
 
    #endregion
 

@@ -32,12 +32,6 @@ public class DottedCircle : MonoBehaviour {
       updateSegments();
    }
 
-   private void Update () {
-      if (updateCircle) {
-         updateSegments();
-      }
-   }
-
    // Creates objects for the circle segments, and stores them in a list
    private void createSegments () {
       if (numSegments <= 0) {
@@ -46,17 +40,19 @@ public class DottedCircle : MonoBehaviour {
 
       for (int i = 0; i < numSegments; i++) {
          GameObject newSegment = Instantiate(segmentPrefab, transform);
+         SpriteRenderer renderer = newSegment.GetComponent<SpriteRenderer>();
 
          // If an override is provided, override the sprites of each dot
          if (dotOverride) {
-            newSegment.GetComponent<SpriteRenderer>().sprite = dotOverride;
+            renderer.sprite = dotOverride;
          }
 
          _circleSegments.Add(newSegment);
+         _circleSegmentRenderers.Add(renderer);
       }
    }
 
-   private void updateSegments () {
+   public void updateSegments () {
       if (numSegments <= 0) {
          return;
       }
@@ -88,10 +84,19 @@ public class DottedCircle : MonoBehaviour {
       }
    }
 
+   public void setCircleColor (Color newColor) {
+      foreach(SpriteRenderer renderer in _circleSegmentRenderers) {
+         renderer.color = newColor;
+      }
+   }
+
    #region Private Variables
 
    // A list of the objects that represent each segment of this dotted circle
    private List<GameObject> _circleSegments = new List<GameObject>();
+
+   // A list of the renderers of the segments of this dotted circle
+   private List<SpriteRenderer> _circleSegmentRenderers = new List<SpriteRenderer>();
 
    #endregion
 }

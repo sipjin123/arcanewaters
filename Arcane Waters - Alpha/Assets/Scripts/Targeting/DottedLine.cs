@@ -45,13 +45,15 @@ public class DottedLine : MonoBehaviour {
    private void createSegments () {
       for (int i = 0; i < numSegments; i++) {
          GameObject newSegment = Instantiate(segmentPrefab, transform);
+         SpriteRenderer renderer = newSegment.GetComponent<SpriteRenderer>();
 
          // Override sprite if an override is provided
          if (dotOverride) {
-            newSegment.GetComponent<SpriteRenderer>().sprite = dotOverride;
+            renderer.sprite = dotOverride;
          }
 
          _lineSegments.Add(newSegment);
+         _lineSegmentRenderers.Add(renderer);
       }
 
       // Override starting dot
@@ -73,11 +75,7 @@ public class DottedLine : MonoBehaviour {
       }
    }
 
-   private void Update () {
-      updateLine();
-   }
-
-   private void updateLine () {
+   public void updateLine () {
       // Position the start dot
       if (_lineSegments.Count > 0) {
          _lineSegments[0].transform.position = lineStart.position;
@@ -103,10 +101,19 @@ public class DottedLine : MonoBehaviour {
       }
    }
 
+   public void setLineColor (Color newColor) {
+      foreach(SpriteRenderer renderer in _lineSegmentRenderers) {
+         renderer.color = newColor;
+      }
+   }
+
    #region Private Variables
 
    // A list of the objects that represent each segment of this dotted line
    private List<GameObject> _lineSegments = new List<GameObject>();
+
+   // A list of the renderers of the segments of this dotted line
+   private List<SpriteRenderer> _lineSegmentRenderers = new List<SpriteRenderer>();
 
    #endregion
 }
