@@ -242,6 +242,7 @@ public class MyNetworkManager : NetworkManager
    public override void OnServerAddPlayer (NetworkConnection conn) {
       int authenicatedAccountId = _accountsForConnections[conn];
       int authenticatedUserId = _userIdForConnection[conn];
+      string steamUserId = _steamIdForConnection[conn];
 
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -342,6 +343,7 @@ public class MyNetworkManager : NetworkManager
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
             player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
+            player.steamId = steamUserId;
 
             // Keep track
             _players[conn.connectionId] = player;
@@ -449,6 +451,9 @@ public class MyNetworkManager : NetworkManager
       if (_userIdForConnection.ContainsKey(conn)) {
          _userIdForConnection.Remove(conn);
       }
+      if (_steamIdForConnection.ContainsKey(conn)) {
+         _steamIdForConnection.Remove(conn);
+      }
 
       // Remove the player
       if (_players.ContainsKey(conn.connectionId)) {
@@ -505,9 +510,12 @@ public class MyNetworkManager : NetworkManager
       _accountsForConnections[conn] = accountId;
    }
 
-   public static void noteUserIdForConnection (int selectedUserId, NetworkConnection conn) {
+   public static void noteUserIdForConnection (int selectedUserId, string steamUserId, NetworkConnection conn) {
       // Keep track of the user ID that we're associating with this connection
       _userIdForConnection[conn] = selectedUserId;
+      if (!string.IsNullOrEmpty(steamUserId)) {
+         _steamIdForConnection[conn] = steamUserId;
+      }
    }
 
    public static int getCurrentPort () {
@@ -553,6 +561,9 @@ public class MyNetworkManager : NetworkManager
 
    // Map connections to authenticated user IDs
    protected static Dictionary<NetworkConnection, int> _userIdForConnection = new Dictionary<NetworkConnection, int>();
+
+   // Steam ID for connection
+   protected static Dictionary<NetworkConnection, string> _steamIdForConnection = new Dictionary<NetworkConnection, string>();
 
    // An id we can use for testing
    protected static int _testId = 1;

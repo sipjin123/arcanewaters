@@ -296,11 +296,6 @@ public class NetEntity : NetworkBehaviour
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
-
-      // Setup steam id syncvar so server can determine the steam user id of network clients
-      if (isLocalPlayer && SteamManager.Initialized && string.IsNullOrEmpty(steamId)) {
-         rpc.Cmd_CacheSteamID(Global.lastSteamId);
-      }
    }
 
    public override void OnStartClient () {

@@ -3550,11 +3550,6 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_CacheSteamID (string steamId) {
-      _player.steamId = steamId;
-   }
-
-   [Command]
    public void Cmd_OpenChest (int chestId) {
       TreasureChest chest = TreasureManager.self.getChest(chestId);
 

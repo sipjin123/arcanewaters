@@ -37,6 +37,9 @@ public class CharacterScreen : MonoBehaviour
    // The battleboard reference for weather simulation
    public BattleBoard battleBoard;
 
+   // The number of starting armor options
+   public const int STARTING_ARMOR_COUNT = 3;
+
    public class StartingArmorData {
       // The sql id 
       public int equipmentId;
@@ -87,6 +90,7 @@ public class CharacterScreen : MonoBehaviour
    public void initializeScreen (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes, int[] equipmentIds, int[] spriteIds) {
       // Cache the starting armor info
       startingArmorData = new List<StartingArmorData>();
+
       for (int i = 0; i < spriteIds.Length; i++) {
          StartingArmorData newData = new StartingArmorData {
             equipmentId = equipmentIds[i],
@@ -104,9 +108,21 @@ public class CharacterScreen : MonoBehaviour
          _armorArray[i] = Armor.castItemToArmor(armorArray[i]);
          _armorArray[i].paletteNames = armorPalettes[i];
       }
-      if (_armorArray.Length == 0) {
-         Armor emptyArmor = new Armor { category = Item.Category.Armor, id = 0, itemTypeId = 0 };
-         _armorArray = new Armor[3] { emptyArmor, emptyArmor, emptyArmor };
+
+      if (armorArray.Length < STARTING_ARMOR_COUNT) {
+         List<Armor> newArmorList = new List<Armor>();
+
+         // Register the valid armor to the new list
+         foreach (Item armorFetched in armorArray) {
+            newArmorList.Add(Armor.castItemToArmor(armorFetched));
+         }
+
+         // Generate a blank armor for the other character that the server failed to provide an armor to
+         while (newArmorList.Count < STARTING_ARMOR_COUNT) {
+            Armor emptyArmor = new Armor { category = Item.Category.Armor, id = 0, itemTypeId = 0 };
+            newArmorList.Add(emptyArmor);
+         }
+         _armorArray = newArmorList.ToArray();
          armorArray = _armorArray;
       }
 
@@ -136,6 +152,17 @@ public class CharacterScreen : MonoBehaviour
          Destroy(offlineChar.gameObject);
       }
 
+      // Make sure that the palette swap manager is setup before revealing the character in the scene to prevent rendering a blank or incomplete character sprite
+      if (PaletteSwapManager.self.hasInitialized) {
+         setupCharacterSpots(userArray, armorArray, weaponArray, hatArray, armorPalettes);
+      } else {
+         PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
+            setupCharacterSpots(userArray, armorArray, weaponArray, hatArray, armorPalettes);
+         });
+      }
+   }
+
+   private void setupCharacterSpots (UserInfo[] userArray, Item[] armorArray, Item[] weaponArray, Item[] hatArray, string[] armorPalettes) {
       for (int i = 0; i < 3; i++) {
          // If they don't have a character in that spot, move on
          if (i > userArray.Length - 1 || userArray[i] == null) {
@@ -143,23 +170,24 @@ public class CharacterScreen : MonoBehaviour
          }
 
          int charSpotNumber = userArray[i].charSpot;
-
-         try {
-            // Create the offline character object
-            if (_spots.ContainsKey(charSpotNumber)) {
-               CharacterSpot spot = _spots[charSpotNumber];
-               OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
-               Global.lastUserGold = userArray[i].gold;
-               Global.lastUserGems = userArray[i].gems;
+         // Create the offline character object
+         if (_spots.ContainsKey(charSpotNumber)) {
+            CharacterSpot spot = _spots[charSpotNumber];
+            OfflineCharacter offlineChar = Instantiate(offlineCharacterPrefab, spot.transform.position, Quaternion.identity);
+            Global.lastUserGold = userArray[i].gold;
+            Global.lastUserGems = userArray[i].gems;
+            try {
                offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
-               spot.assignCharacter(offlineChar);
+            } catch {
+               D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
+                  "Weapon Count: {" + weaponArray.Length + "/3} " +
+                  "Armor Count: {" + armorArray.Length + "/3} " +
+                  "Hat Count: {" + hatArray.Length + "/3 } " +
+                  "ArmorPalette Count: {" + armorPalettes.Length + "/3} :: INDEX:{" + i + "}");
+
+               offlineChar.setDataAndLayers(userArray[i], weaponArray[i], armorArray[i], hatArray[i], armorPalettes[i]);
             }
-         } catch {
-            D.debug("Investigate Here! Failed to assign data to offline character and character spot! " +
-               "Weapon Count: {" + weaponArray.Length + " / 3 } " +
-               "Armor Count: {" + armorArray.Length + " / 3 } " +
-               "Hat Count: {" + hatArray + " / 3 } " +
-               "ArmorPalette Count: {" + armorPalettes.Length + " / 3 }");
+            spot.assignCharacter(offlineChar);
          }
       }
 

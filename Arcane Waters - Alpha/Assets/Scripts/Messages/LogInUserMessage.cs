@@ -46,6 +46,9 @@ public class LogInUserMessage : NetworkMessage
    // The app id of the steam game used {game app / play test app}
    public string steamAppId;
 
+   // The steam user id of the player
+   public string steamUserId = "";
+
    #endregion
 
    public LogInUserMessage () { }
@@ -54,7 +57,9 @@ public class LogInUserMessage : NetworkMessage
       this.netId = netId;
    }
 
-   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId) {
+   public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,
+      int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, 
+      byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId, string steamUserId) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -68,5 +73,6 @@ public class LogInUserMessage : NetworkMessage
       this.machineIdentifier = machineIdentifier;
       this.isFirstLogin = isFirstLogin;
       this.steamAppId = steamAppId;
+      this.steamUserId = steamUserId;
    }
 }

@@ -70,13 +70,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalettes) {
-      if (PaletteSwapManager.self.hasInitialized) {
-         setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
-      } else {
-         PaletteSwapManager.self.paletteCompleteEvent.AddListener(() => {
-            setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
-         });
-      }
+      setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
    }
 
    private void OnDestroy () {
@@ -91,7 +85,7 @@ public class OfflineCharacter : ClientMonoBehaviour {
    private void setInternalDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalettes) {
       contentHolder.SetActive(true);
       contentLoader.SetActive(false);
-    
+
       this.userId = userInfo.userId;
       setBodyLayers(userInfo);
 

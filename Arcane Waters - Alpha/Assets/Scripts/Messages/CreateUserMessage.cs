@@ -31,6 +31,9 @@ public class CreateUserMessage : NetworkMessage
    // False if the player has already logged in successfully.
    public bool isFirstLogin;
 
+   // The steam user id of the player
+   public string steamUserId = "";
+
    #endregion
 
    public CreateUserMessage () { }
@@ -39,7 +42,7 @@ public class CreateUserMessage : NetworkMessage
       this.netId = netId;
    }
 
-   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin) {
+   public CreateUserMessage (uint netId, UserInfo userInfo, int armorType, string armorPalettes, Perk[] perks, string machineIdentifier, bool isFirstLogin, string steamUserId) {
       this.netId = netId;
       this.userInfo = userInfo;
       this.armorType = armorType;
@@ -48,5 +51,6 @@ public class CreateUserMessage : NetworkMessage
       this.perks = perks;
       this.machineIdentifier = machineIdentifier;
       this.isFirstLogin = isFirstLogin;
+      this.steamUserId = steamUserId;
    }
 }

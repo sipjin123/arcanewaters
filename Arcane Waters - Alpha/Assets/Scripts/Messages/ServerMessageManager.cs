@@ -118,7 +118,7 @@ public class ServerMessageManager : MonoBehaviour
             // If there was a valid account ID and a specified user ID, tell the client we authenticated them
             if (accountId > 0 && logInUserMessage.selectedUserId > 0 && users.Count == 1) {
                // Keep track of the user ID that's been authenticated for this connection
-               MyNetworkManager.noteUserIdForConnection(logInUserMessage.selectedUserId, conn);
+               MyNetworkManager.noteUserIdForConnection(logInUserMessage.selectedUserId, logInUserMessage.steamUserId, conn);
 
                // Storing login info
                UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -138,7 +138,7 @@ public class ServerMessageManager : MonoBehaviour
 
                // Must be casted to items because data transfer using inherited variables loses its data
                List<Item> weaponItemList = new List<Item>();
-               List<Item> amorItemList = new List<Item>();
+               List<Item> armorItemList = new List<Item>();
                List<Item> hatItemList = new List<Item>();
 
                // Assign the appropriate data for the armors using the armor type id
@@ -152,9 +152,9 @@ public class ServerMessageManager : MonoBehaviour
                         } else {
                            D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
                         }
-                        amorItemList.Add(armorList[i]);
+                        armorItemList.Add(armorList[i]);
                      } else {
-                        D.debug("Cannot process loaded armor data for armorType: " + armorList[i].itemTypeId);
+                        D.debug("Cannot process loaded armor data for armorType: {" + armorList[i].itemTypeId + "}");
                      }
                   }
                }
@@ -193,7 +193,7 @@ public class ServerMessageManager : MonoBehaviour
                for (int i = 1; i < 4; i++) {
                   ArmorStatData startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
                   if (startArmorData != null) {
-                     //Only output visually unique armors
+                     // Only output visually unique armors
                      startArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(currentArmorId);
                      if (startArmorData != null) {
                         startingEquipmentIds.Add(startArmorData.sqlId);
@@ -208,7 +208,7 @@ public class ServerMessageManager : MonoBehaviour
                }
 
                // If there was an account ID but not user ID, send the info on all of their characters for display on the Character screen
-               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), amorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
+               CharacterListMessage msg = new CharacterListMessage(Global.netId, users.ToArray(), armorItemList.ToArray(), weaponItemList.ToArray(), hatItemList.ToArray(), armorPalettes, startingEquipmentIds.ToArray(), startingSpriteIds.ToArray());
                conn.Send(msg);
             } else {
                D.debug("Error! Failed to process login for user");
@@ -323,7 +323,7 @@ public class ServerMessageManager : MonoBehaviour
                sendError(ErrorMessage.Type.NameTaken, conn.connectionId);
             });
          } else {
-            BKG_finishCreatingUser(msg, accountId, userInfo, conn, area);
+            BKG_finishCreatingUser(msg, msg.steamUserId, accountId, userInfo, conn, area);
          }
       });
    }
@@ -367,7 +367,7 @@ public class ServerMessageManager : MonoBehaviour
    }
 
    [ServerOnly]
-   protected static void BKG_finishCreatingUser (CreateUserMessage msg, int accountId, UserInfo userInfo, NetworkConnection conn, Area area) {
+   protected static void BKG_finishCreatingUser (CreateUserMessage msg, string steamUserId, int accountId, UserInfo userInfo, NetworkConnection conn, Area area) {
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
          CharacterCreationValidMessage characterValidMessage = new CharacterCreationValidMessage();
          conn.Send(characterValidMessage);
@@ -469,7 +469,7 @@ public class ServerMessageManager : MonoBehaviour
       UnityThreadHelper.UnityDispatcher.Dispatch(() => {
          if (userId > 0) {
             // Keep track of the user ID that's been authenticated for this connection
-            MyNetworkManager.noteUserIdForConnection(userId, conn);
+            MyNetworkManager.noteUserIdForConnection(userId, steamUserId, conn);
 
             // Storing login information
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
