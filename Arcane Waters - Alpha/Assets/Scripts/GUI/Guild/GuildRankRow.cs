@@ -14,6 +14,9 @@ public class GuildRankRow : MonoBehaviour {
    public Button priorityUp;
    public Button priorityDown;
 
+   // Deletes chosen rank
+   public Button deleteRankButton;
+
    // Presents rank name to user
    public Text rankName;
 
@@ -48,12 +51,12 @@ public class GuildRankRow : MonoBehaviour {
          rankNameInputField.text = info.rankName.ToLower();
       }
 
-      inviteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Invite) != 0;
-      kickToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Kick) != 0;
-      officerChatToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.OfficerChat) != 0;
-      promoteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Promote) != 0;
-      demoteToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.Demote) != 0;
-      editRanksToggle.isOn = (info.permissions & (int) GuildRankInfo.GuildPermission.EditRanks) != 0;
+      inviteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Invite);
+      kickToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Kick);
+      officerChatToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.OfficerChat);
+      promoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Promote);
+      demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Demote);
+      editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.EditRanks);
 
       // Guild member has to have higher rank priority than ranks thay he's trying to modify
       if (Global.player != null) {
@@ -84,6 +87,7 @@ public class GuildRankRow : MonoBehaviour {
          // Update buttons
          updatePriorityButtons();
          higherRow.updatePriorityButtons();
+         GuildRanksPanel.self.hideAllDeleteButtons();
       }
    }
 
@@ -105,6 +109,7 @@ public class GuildRankRow : MonoBehaviour {
          // Update buttons
          updatePriorityButtons();
          lowerRow.updatePriorityButtons();
+         GuildRanksPanel.self.hideAllDeleteButtons();
       }
    }
 
@@ -122,6 +127,17 @@ public class GuildRankRow : MonoBehaviour {
       if (Global.player.guildRankPriority > 0) {
          priorityDown.interactable &= (Global.player.guildRankPriority < rankPriority);
          priorityUp.interactable &= (Global.player.guildRankPriority + 1 < rankPriority);
+      }
+   }
+
+   public void deleteRank () {
+      if (Global.player) {
+         PanelManager.self.confirmScreen.show("Do you want to delete rank: " + rankName.text + "?");
+         PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
+         PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
+            PanelManager.self.confirmScreen.hide();
+            Global.player.rpc.Cmd_DeleteGuildRank(Global.player.userId, Global.player.guildId, rankId);
+         });
       }
    }
 
@@ -149,6 +165,8 @@ public class GuildRankRow : MonoBehaviour {
       if (rankNames.Count != activeCount) {
          GuildRanksPanel.self.rankNamesValidation.GetComponentInChildren<Text>().text = "Rank names should be distinct!";
       }
+
+      GuildRanksPanel.self.hideAllDeleteButtons();
    }
 
    #region Private Variables

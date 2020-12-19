@@ -967,6 +967,10 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static void deleteGuildRank (int guildId, int rankId) {
+
+   }
+
    public static void assignGuild (int userId, int guildId) {
 
    }
@@ -984,6 +988,10 @@ public class DB_MainStub : MonoBehaviour
    }
 
    public static void updateRankGuild (GuildRankInfo rankInfo) {
+
+   }
+
+   public static void updateRankGuildByID (GuildRankInfo rankInfo, int id) {
 
    }
 

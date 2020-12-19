@@ -107,6 +107,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       if (activeRanks + 1 == MAXIMUM_NUMBER_OF_RANKS) {
          addRankButton.interactable = false;
       }
+
+      hideAllDeleteButtons();
    }
 
    public void onCancelButtonPressed () {
@@ -114,6 +116,12 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
 
       // Reset rows data to previous state if "cancel" button was pressed
       resetRows();
+   }
+
+   public void hideAllDeleteButtons () {
+      foreach (GuildRankRow row in guildRankRows) {
+         row.deleteRankButton.interactable = false;
+      }
    }
 
    private void orderRows () {
@@ -182,6 +190,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
 
             row.rankPriority = info.rankPriority;
          }
+
+         row.deleteRankButton.interactable = row.demoteToggle.interactable || row.editRanksToggle.interactable || row.inviteToggle.interactable || row.kickToggle.interactable || row.officerChatToggle.interactable || row.promoteToggle.interactable;
       }
 
       orderRows();
@@ -196,6 +206,10 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
 
       // Initial data is always correct
       rankNamesValidation.SetActive(false);
+
+      foreach (GuildRankRow row in guildRankRows) {
+         row.deleteRankButton.interactable = row.demoteToggle.interactable || row.editRanksToggle.interactable || row.inviteToggle.interactable || row.kickToggle.interactable || row.officerChatToggle.interactable || row.promoteToggle.interactable;
+      }
    }
 
    public void hide () {

@@ -7076,6 +7076,24 @@ public class DB_Main : DB_MainStub
       }
    }
 
+   public static new void deleteGuildRank (int guildId, int rankId) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM guild_ranks WHERE guildId=@guildId AND rankId=@rankId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", guildId);
+            cmd.Parameters.AddWithValue("@rankId", rankId);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new void assignGuild (int userId, int guildId) {
       try {
          using (MySqlConnection conn = getConnection())
@@ -7176,6 +7194,29 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@rankName", rankInfo.rankName);
             cmd.Parameters.AddWithValue("@rankPriority", rankInfo.rankPriority);
             cmd.Parameters.AddWithValue("@permissions", rankInfo.permissions);
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void updateRankGuildByID (GuildRankInfo rankInfo, int id) {
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "UPDATE guild_ranks SET rankName=@rankName, rankPriority=@rankPriority, permissions=@permissions, guildId=@guildId, rankId=@rankId WHERE id=@id", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@guildId", rankInfo.guildId);
+            cmd.Parameters.AddWithValue("@rankId", rankInfo.rankId);
+            cmd.Parameters.AddWithValue("@rankName", rankInfo.rankName);
+            cmd.Parameters.AddWithValue("@rankPriority", rankInfo.rankPriority);
+            cmd.Parameters.AddWithValue("@permissions", rankInfo.permissions);
+            cmd.Parameters.AddWithValue("@id", id);
             DebugQuery(cmd);
 
             // Execute the command

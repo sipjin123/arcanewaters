@@ -2848,6 +2848,78 @@ public class RPCManager : NetworkBehaviour {
       });
    }
 
+   [Command]
+   public void Cmd_DeleteGuildRank (int deletingUserId, int guildId, int rankId) {
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(guildId);
+         int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
+         int deletingUserRankId = DB_Main.getGuildMemberRankId(deletingUserId);
+         int deletingUserPriority = deletingUserRankId == 0 ? 0 : guildRanks.Find(x => x.rankId == deletingUserRankId).rankPriority;
+
+         if (deletingUserPriority >= userRankPriority) {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You cannot delete rank higher or equal to yours!");
+            });
+            return;
+         }
+
+         int permissions = DB_Main.getGuildMemberPermissions(deletingUserId);
+         // Check if user has permissions to demote members
+         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.EditRanks)) {
+            int lowestPriority = int.MinValue;
+            foreach (GuildRankInfo info in guildRanks) {
+               if (info.rankPriority > lowestPriority) {
+                  lowestPriority = info.rankPriority;
+               }
+            }
+
+            string deletedRankName = guildRanks.Find(x => x.rankId == rankId).rankName;
+            int oldId = guildRanks.Find(x => x.rankId == rankId).id;
+            int newId = -1;
+
+            // Deleted lowest rank
+            if (userRankPriority != lowestPriority) {
+               foreach (GuildRankInfo info in guildRanks) { 
+                  if (info.rankPriority > userRankPriority) {
+                     info.rankPriority -= 1;
+                  }
+               }
+               newId = guildRanks.Find(x => x.rankPriority == userRankPriority).id;
+            } else {
+               newId = guildRanks.Find(x => x.rankPriority == lowestPriority - 1).id;
+            }
+
+            for (int i = guildRanks.Count - 1; i > rankId - 1; i--) {
+               guildRanks[i].rankId -= 1;
+            }
+
+            guildRanks.RemoveAt(rankId - 1);
+
+            GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);            
+            foreach (UserInfo userInfo in guildInfo.guildMembers) {
+               if (userInfo.guildRankId == oldId) {
+                  DB_Main.assignRankGuild(userInfo.userId, newId);
+               }
+            }
+
+            DB_Main.deleteGuildRank(guildId, rankId);
+
+            foreach (GuildRankInfo info in guildRanks) {
+               DB_Main.updateRankGuildByID(info, info.id);
+            }
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have deleted guild rank: " + deletedRankName);
+            });
+
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have insufficient rights to delete rank!");
+            });
+         }
+      });
+   }
+
    #endregion
 
    [Command]
