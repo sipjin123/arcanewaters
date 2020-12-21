@@ -20,7 +20,7 @@ public class PlayerBattleCollider : MonoBehaviour {
       if (!playerBody.isInvisible && playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
          if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
-            if (!enemy.isDefeated) {
+            if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
                   combatInitCollider.enabled = false;
                   playerBody.isWithinEnemyRadius = true;

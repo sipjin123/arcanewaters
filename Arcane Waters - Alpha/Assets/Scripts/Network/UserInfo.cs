@@ -84,6 +84,18 @@ public class UserInfo {
    // The Guild we're in
    public int guildId;
 
+      // The Guild Name
+   public string guildName;
+
+   // The guild icon layers
+   public string iconBorder;
+   public string iconBackground;
+   public string iconSigil;
+
+   // The guild icon palettes
+   public string iconBackPalettes;
+   public string iconSigilPalettes;
+
    // The user rank within guild
    public int guildRankId;
 
@@ -129,10 +141,18 @@ public class UserInfo {
       this.flagshipId = dataReader.GetInt32("shpId");
       this.charSpot = dataReader.GetInt32("charSpot");
       this.guildId = dataReader.GetInt32("gldId");
+
       this.guildRankId = dataReader.GetInt32("gldRankId");
       this.customHouseBaseId = dataReader.GetInt32("customHouseBase");
       this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
       this.lastLoginTime = dataReader.GetDateTime("lastLoginTime");
+      if (this.guildId > 0) {
+         this.iconBorder = dataReader.GetString("gldIconBorder");
+         this.iconBackground = dataReader.GetString("gldIconBackground");
+         this.iconSigil = dataReader.GetString("gldIconSigil");
+         this.iconBackPalettes = dataReader.GetString("gldIconBackPalettes");
+         this.iconSigilPalettes = dataReader.GetString("gldIconSigilPalettes");
+      }
    }
 
    #endif

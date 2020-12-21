@@ -51,12 +51,12 @@ public class GuildRankRow : MonoBehaviour {
          rankNameInputField.text = info.rankName.ToLower();
       }
 
-      inviteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Invite);
-      kickToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Kick);
-      officerChatToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.OfficerChat);
-      promoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Promote);
-      demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Demote);
-      editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.EditRanks);
+      inviteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Invite);
+      kickToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Kick);
+      officerChatToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.OfficerChat);
+      promoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Promote);
+      demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Demote);
+      editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.EditRanks);
 
       // Guild member has to have higher rank priority than ranks thay he's trying to modify
       if (Global.player != null) {

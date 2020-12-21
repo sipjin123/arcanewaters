@@ -77,6 +77,14 @@ public class PlayerShipEntity : ShipEntity
    // Reference to the sprite swap
    public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
 
+   // The different flags the ship can display
+   public enum Flag
+   {
+      None = 0,
+      White = 1,
+      Group = 2
+   }
+
    #endregion
 
    protected override bool isBot () { return false; }
@@ -131,6 +139,24 @@ public class PlayerShipEntity : ShipEntity
 
    protected override void Update () {
       base.Update();
+
+      // Recolor the ship flag if needed
+      if (isClient) {
+         Instance instance = getInstance();
+         if (VoyageGroupManager.isInGroup(this) && instance != null && instance.isVoyage) {
+            if (instance.isPvP) {
+               // In PvP instances, the flag is white until the player enters PvP
+               if (hasEnteredPvP) {
+                  setFlag(Flag.Group);
+               } else {
+                  setFlag(Flag.White);
+               }
+            } else {
+               // In PvE instances, we always set the group flag color
+               setFlag(Flag.Group);
+            }
+         }
+      }
 
       if (!isLocalPlayer) {
          // Display the ship boost meter for remote players based on velocity
@@ -415,6 +441,9 @@ public class PlayerShipEntity : ShipEntity
       Vector2 startPosition = transform.position;
       Vector2 targetPosition = (target == null) ? requestedTargetPoint : (Vector2) target.transform.position;
 
+      // Firing the cannon is considered a PvP action
+      hasEnteredPvP = true;
+	  
       fireCannonBallAtTarget(startPosition, targetPosition, isLobbed, lifetime, speedOverride);
    }
 
@@ -682,6 +711,42 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
+   public override bool canBeAttackedByPlayers () {
+      Instance instance = getInstance();
+      if (instance != null && instance.isPvP && !hasEnteredPvP) {
+         return false;
+      } else {
+         return true;
+      }
+   }
+
+   public override bool isPlayerShip () {
+      return true;
+   }
+
+   private void setFlag (Flag flag) {
+      if (_currentFlag == flag) {
+         return;
+      }
+
+      switch (flag) {
+         case Flag.None:
+            spritesContainer.GetComponent<RecoloredSprite>().recolor("");
+            break;
+         case Flag.White:
+            spritesContainer.GetComponent<RecoloredSprite>().recolor(VoyageGroupManager.WHITE_FLAG_PALETTE);
+            break;
+         case Flag.Group:
+            string flagPalette = VoyageGroupManager.getShipFlagPalette(voyageGroupId);
+            spritesContainer.GetComponent<RecoloredSprite>().recolor(flagPalette);
+            break;
+         default:
+            break;
+      }
+
+      _currentFlag = flag;
+   }
+
    protected IEnumerator CO_RequestRespawnAfterDelay (float delay) {
       yield return new WaitForSeconds(delay);
 
@@ -829,6 +894,9 @@ public class PlayerShipEntity : ShipEntity
 
    // Reference to the object used to target conical player attacks
    private TargetCone _targetCone;
+
+   // The current flag being displayed by the ship
+   private Flag _currentFlag = Flag.None;
 
    #endregion
 }

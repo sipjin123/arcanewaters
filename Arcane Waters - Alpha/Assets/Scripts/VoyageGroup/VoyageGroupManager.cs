@@ -17,6 +17,9 @@ public class VoyageGroupManager : MonoBehaviour
    // The number of seconds a user must wait before inviting the same user to a group again
    public static int GROUP_INVITE_MIN_INTERVAL = 60;
 
+   // The white flag the ships use when they are out of PvP and cannot be attacked
+   public static string WHITE_FLAG_PALETTE = "ship_flag_white";
+
    // Self
    public static VoyageGroupManager self;
 
@@ -515,6 +518,17 @@ public class VoyageGroupManager : MonoBehaviour
       }
 
       return ++_lastVoyageGroupId;
+   }
+
+   public static string getShipFlagPalette (int groupId) {
+      List<PaletteToolManager.PaletteRepresentation> flagPalettes = PaletteToolManager.getColors(PaletteToolManager.PaletteImageType.Ship, PaletteDef.Ship.flag.name, PaletteDef.Tags.PvP);
+      if (flagPalettes.Count == 0) {
+         D.error("Could not find any ship flag palettes for voyage groups!");
+         return "";
+      }
+
+      int index = groupId % flagPalettes.Count;
+      return flagPalettes[index].name;
    }
 
    #region Private Variables

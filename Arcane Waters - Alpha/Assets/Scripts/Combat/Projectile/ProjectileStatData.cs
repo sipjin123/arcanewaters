@@ -4,8 +4,8 @@
    // The primary id that is referenced by dependent objects, this is a unique id
    public int projectileId;
 
-   // The speed of the projectile
-   public float projectileSpeed;
+   // The mass of the projectile, this directly affects the speed of the projectile
+   public float projectileMass;
 
    // The scale of the projectile
    public float projectileScale;

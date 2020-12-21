@@ -564,6 +564,11 @@ public class SeaEntity : NetEntity
 
                // Make sure the target is in our same instance
                if (targetEntity.instanceId == this.instanceId) {
+                  // Prevent players from being damaged by other players if they have not entered PvP yet
+                  if (attacker.isPlayerShip() && !targetEntity.canBeAttackedByPlayers()) {
+                     continue;
+                  }
+
                   hitEnemy = true;
 
                   if (!targetEntity.invulnerable) {

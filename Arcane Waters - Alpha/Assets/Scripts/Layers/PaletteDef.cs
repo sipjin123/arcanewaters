@@ -32,6 +32,7 @@ public class PaletteDef : MonoBehaviour
     public class Tags
     {
         public static int STARTER = 4;
+        public static int PvP = 5;
     }
 
     public class Eyes

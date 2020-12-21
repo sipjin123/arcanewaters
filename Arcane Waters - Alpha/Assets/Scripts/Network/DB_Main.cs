@@ -5403,7 +5403,10 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(
+            "SELECT * FROM users JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId) " +
+            "WHERE accId=@accId " + userClause + " ORDER BY users.usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@accId", accId);

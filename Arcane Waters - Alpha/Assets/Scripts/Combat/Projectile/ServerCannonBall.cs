@@ -123,12 +123,17 @@ public class ServerCannonBall : NetworkBehaviour {
          return;
       }
 
+      SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+
+      // Prevent players from being damaged by other players if they have not entered PvP yet
+      if (sourceEntity != null && sourceEntity.isPlayerShip() && !hitEntity.canBeAttackedByPlayers()) {
+         return;
+      }
+
       _hasCollided = true;
 
       // The Server will handle applying damage
       if (Util.isServer()) {
-         SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
-
          // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
          if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
             return;

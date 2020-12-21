@@ -198,6 +198,11 @@ public class TreasureSite : NetworkBehaviour
          if (ship != null && ship.instanceId == instanceId && VoyageGroupManager.isInGroup(ship)) {
             // Add the ship to the list of capturing ships
             _capturingShips.Add(ship);
+
+            // Capturing a treasure site is considered a PvP action
+            if (!isCaptured()) {
+               ship.hasEnteredPvP = true;
+            }
          }
       }
 

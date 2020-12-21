@@ -51,11 +51,6 @@ public class ShipEntity : SeaEntity
 
    #endregion
 
-   protected override void Start () {
-      base.Start();
-      initializePalette();
-   }
-
    protected virtual void initialize (ShipData data) {
       shipType = data.shipType;
       skinType = data.skinType;
@@ -87,18 +82,6 @@ public class ShipEntity : SeaEntity
       ShipData newShipData = ShipDataManager.self.getShipData(info.shipType);
       shipSize = newShipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
-   }
-
-   private void initializePalette () {
-      PaletteSwap swap = spritesContainer.GetComponent<PaletteSwap>();
-      if (swap && swap.paletteName == PaletteDef.Flag.OnlyPalette) {
-         return;
-      }
-      if (!isBotShip()) {
-         spritesContainer.gameObject.SetActive(false);
-         spritesContainer.AddComponent<PaletteSwap>().paletteName = PaletteDef.Flag.OnlyPalette;
-         spritesContainer.gameObject.SetActive(true);
-      }
    }
 
    public override void playAttackSound () {
@@ -217,6 +200,9 @@ public class ShipEntity : SeaEntity
             break;
       }
 
+      // Casting a skill is considered a PvP action
+      hasEnteredPvP = true;
+
       Rpc_CastSkill(attackType, shipData, transform.position);
    }
 
@@ -268,6 +254,9 @@ public class ShipEntity : SeaEntity
 
       // Have the server check for collisions after the AOE projectile reaches the target
       StartCoroutine(CO_CheckCircleForCollisions(this, projectileFlightDuration, spot, attackType, false, distanceModifier, currentImpactMagnitude, primaryAbilityId));
+
+      // Firing the cannon is considered a PvP action
+      hasEnteredPvP = true;
 
       // Make note on the clients that the ship just attacked
       Rpc_NoteAttack();

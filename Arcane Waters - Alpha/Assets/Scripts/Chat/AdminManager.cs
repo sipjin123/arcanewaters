@@ -837,7 +837,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      DateTime timePoint = DateTime.Now + TimeSpan.FromMinutes(delay);
+      DateTime timePoint = DateTime.UtcNow + TimeSpan.FromMinutes(delay);
       long ticks = timePoint.Ticks;
 
       // To the database thread

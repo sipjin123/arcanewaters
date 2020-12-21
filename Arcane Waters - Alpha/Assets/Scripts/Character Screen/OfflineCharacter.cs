@@ -54,6 +54,12 @@ public class OfflineCharacter : ClientMonoBehaviour {
    // The content holder showing the character and the loading indicator
    public GameObject contentHolder, contentLoader;
 
+   // The guild icon of the user
+   public GuildIcon guildIcon;
+
+   // Guild Icon GameObject
+   public GameObject guildIconGameObject;
+
    #endregion
 
    private void Start () {
@@ -62,6 +68,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
          CharacterCreationPanel.self.setCharacterBeingCreated(this);
          setTextsVisible(false);
       }
+
+      // Turn off guild icon to start
+      guildIconGameObject.SetActive(false);
    }
 
    private void Update () {
@@ -70,7 +79,20 @@ public class OfflineCharacter : ClientMonoBehaviour {
    }
 
    public void setDataAndLayers (UserInfo userInfo, Item weapon, Item armor, Item hat, string armorPalettes) {
+      setGuildIcon(userInfo);
       setInternalDataAndLayers(userInfo, weapon, armor, hat, armorPalettes);
+   }
+
+   public void setGuildIcon (UserInfo userInfo) {
+      // Setup Guild Icon
+      if (userInfo.guildId > 0) {
+         guildIconGameObject.SetActive(true);
+         guildIcon.setBackground(userInfo.iconBackground, userInfo.iconBackPalettes);
+         guildIcon.setBorder(userInfo.iconBorder);
+         guildIcon.setSigil(userInfo.iconSigil, userInfo.iconSigilPalettes);
+      } else {
+         guildIconGameObject.SetActive(false);
+      }
    }
 
    private void OnDestroy () {

@@ -158,7 +158,7 @@ public class Minimap : ClientMonoBehaviour {
       }
 
       Instance instance = Global.player.getInstance();
-      if (instance == null) {
+      if (instance == null || !instance.isNetworkPrefabInstantiationFinished) {
          return;
       }
 

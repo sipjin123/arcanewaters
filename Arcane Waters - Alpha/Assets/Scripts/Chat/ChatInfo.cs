@@ -25,6 +25,7 @@ public class ChatInfo
       Emote = 11,
       Global = 12,
       Group = 13,
+      Officer = 14,
    };
 
    // The Chat ID from the database

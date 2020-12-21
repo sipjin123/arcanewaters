@@ -168,11 +168,11 @@ public class GuildPanel : Panel {
 
    public void checkButtonPermissions () {
       bool isActive = (_guildMemberRowsReference.Find(row => row.highlightRow.activeSelf) != null);
-      promoteButton.interactable = isActive && Global.player.canPerformAction(GuildRankInfo.GuildPermission.Promote);
-      demoteButton.interactable = isActive && Global.player.canPerformAction(GuildRankInfo.GuildPermission.Demote);
-      kickButton.interactable = isActive && Global.player.canPerformAction(GuildRankInfo.GuildPermission.Kick);
+      promoteButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Promote);
+      demoteButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Demote);
+      kickButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Kick);
 
-      ranksButton.interactable &= Global.player.canPerformAction(GuildRankInfo.GuildPermission.EditRanks);
+      ranksButton.interactable &= Global.player.canPerformAction(GuildPermission.EditRanks);
    }
 
    public List<GuildMemberRow> getGuildMemeberRows () {

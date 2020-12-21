@@ -90,6 +90,10 @@ public class Instance : NetworkBehaviour
    // The biome of this instance
    public Biome.Type biome = Biome.Type.None;
 
+   // Gets set to true when the NetworkBehaviours specific to this instance are spawned
+   [SyncVar]
+   public bool isNetworkPrefabInstantiationFinished = false;
+
    // Player that is currently customizing the area
    public NetEntity playerMakingCustomizations;
 
@@ -335,6 +339,13 @@ public class Instance : NetworkBehaviour
          }
       }
 
+      // Spawn random enemies
+      if (area.isSea) {
+         EnemyManager.self.spawnShipsOnServerForInstance(this);
+      } else {
+         EnemyManager.self.spawnEnemiesOnServerForInstance(this);
+      }
+
       if (area.npcDatafields.Count > 0 && npcCount < 1) {
          string disabledNpcLog = "";
 
@@ -436,6 +447,8 @@ public class Instance : NetworkBehaviour
       if (BotShipGenerator.shouldGenerateBotShips(areaKey)) {
          InvokeRepeating(nameof(generateBotShips), UnityEngine.Random.Range(10f, 14f), 30f);
       }
+
+      isNetworkPrefabInstantiationFinished = true;
    }
 
    private SeaMonsterEntity spawnSeaMonster (SeaMonsterEntity.Type seaMonsterType, Vector3 localPos, Area area) {

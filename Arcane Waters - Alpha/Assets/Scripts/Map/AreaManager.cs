@@ -187,14 +187,6 @@ public class AreaManager : MonoBehaviour
       }
 
       _areas.Add(area.areaKey, area);
-
-      // Spawn enemies
-      Instance instance = InstanceManager.self.getOpenInstance(area.areaKey, false);
-      if (area.isSea) {
-         EnemyManager.self.spawnShipsOnServerForInstance(instance);
-      } else {
-         EnemyManager.self.spawnEnemiesOnServerForInstance(instance);
-      }
    }
    
    public void removeArea (string areaKey) {

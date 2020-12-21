@@ -914,6 +914,27 @@ public class RPCManager : NetworkBehaviour {
          foreach (int userId in voyageGroup.members) {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
+      } else if (chatType == ChatInfo.Type.Officer) {
+         if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
+            return;
+         }
+         ServerNetworkingManager.self.sendSpecialChatMessage(_player.userId, chatInfo);
+
+         // Background thread
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);
+            List<GuildRankInfo> rankInfo = DB_Main.getGuildRankInfo(_player.guildId);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (UserInfo userInfo in guildInfo.guildMembers) {
+                  int permissions = userInfo.guildRankId == 0 ? int.MaxValue : rankInfo.Find(x => x.id == userInfo.guildRankId).permissions;
+                  if (GuildRankInfo.canPerformAction(permissions, GuildPermission.OfficerChat) && _player.userId != userInfo.userId) {
+                     ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
+                  }
+               }
+            });
+         });
       }
    }
 
@@ -2663,7 +2684,7 @@ public class RPCManager : NetworkBehaviour {
          int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
 
          // Check if user has sufficient permissions to edit ranks
-         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.EditRanks)) {
+         if (GuildRankInfo.canPerformAction(permissions, GuildPermission.EditRanks)) {
             List<GuildRankInfo> guildRanksInDB = DB_Main.getGuildRankInfo(rankInfo[0].guildId);
 
             foreach (GuildRankInfo info in rankInfo) {
@@ -2685,6 +2706,20 @@ public class RPCManager : NetworkBehaviour {
 
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // If user is currently online - update his permissions
+               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                  if (pair.Value.guildId == _player.guildId) {
+                     GuildRankInfo rank = guildRanks.Find(x => x.rankPriority == pair.Value.guildRankPriority);
+                     if (rank != null) {
+                        GuildRankInfo newRank = rankInfo.ToList().Find(x => x.id == rank.id);
+                        if (newRank != null) {
+                           pair.Value.guildRankPriority = newRank.rankPriority;
+                           pair.Value.guildPermissions = newRank.permissions;
+                        }
+                     }
+                  }
+               }
+
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.EditGuildRanks, _player, "You have modified guild ranks!");
             });
          } else {
@@ -2713,19 +2748,29 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Check if user has permissions to promote members
-         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Promote)) {
-
+         if (GuildRankInfo.canPerformAction(permissions, GuildPermission.Promote)) {
+            GuildRankInfo guildRankInfo = null;
             bool success = false;
             // Check if user to promote hasn't reached maximum rank
             if (userRankPriority > 1) {
                success = true;
-               int newRankId = guildRanks.Find(rank => rank.rankPriority == userRankPriority - 1).id;
+               guildRankInfo = guildRanks.Find(rank => rank.rankPriority == userRankPriority - 1);
+               int newRankId = guildRankInfo.id;
                DB_Main.assignRankGuild(userToPromoteId, newRankId);
             }
 
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
+                  // If user is currently online - update his permissions
+                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                     if (pair.Value.userId == userToPromoteId) {
+                        pair.Value.guildRankPriority = guildRankInfo.rankPriority;
+                        pair.Value.guildPermissions = guildRankInfo.permissions;
+                        break;
+                     }
+                  }
+
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have promoted guild member!");
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "Guild member that you want to promote, has already reached maximum rank!");
@@ -2763,8 +2808,8 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Check if user has permissions to demote members
-         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Demote)) {
-
+         if (GuildRankInfo.canPerformAction(permissions, GuildPermission.Demote)) {
+            GuildRankInfo guildRankInfo = null;
             bool success = false;
             int lowestRank = int.MinValue;
             foreach (GuildRankInfo rankInfo in guildRanks) {
@@ -2776,13 +2821,23 @@ public class RPCManager : NetworkBehaviour {
             // Check if user to demote hasn't reached lowest rank
             if (userRankPriority < lowestRank) {
                success = true;
-               int newRankId = guildRanks.Find(rank => rank.rankPriority == userRankPriority + 1).id;
+               guildRankInfo = guildRanks.Find(rank => rank.rankPriority == userRankPriority + 1);
+               int newRankId = guildRankInfo.id;
                DB_Main.assignRankGuild(userToDemoteId, newRankId);
             }
 
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
+                  // If user is currently online - update his permissions
+                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                     if (pair.Value.userId == userToDemoteId) {
+                        pair.Value.guildRankPriority = guildRankInfo.rankPriority;
+                        pair.Value.guildPermissions = guildRankInfo.permissions;
+                        break;
+                     }
+                  }
+
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have demoted guild member!");
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "Guild member that you want to demote, has already reached lowest rank!");
@@ -2814,7 +2869,7 @@ public class RPCManager : NetworkBehaviour {
          }
 
          // Check if user has permissions to demote members
-         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.Kick)) {
+         if (GuildRankInfo.canPerformAction(permissions, GuildPermission.Kick)) {
 
             bool success = false;
             // Check if user to demote hasn't reached lowest rank
@@ -2865,7 +2920,7 @@ public class RPCManager : NetworkBehaviour {
 
          int permissions = DB_Main.getGuildMemberPermissions(deletingUserId);
          // Check if user has permissions to demote members
-         if (GuildRankInfo.canPerformAction(permissions, GuildRankInfo.GuildPermission.EditRanks)) {
+         if (GuildRankInfo.canPerformAction(permissions, GuildPermission.EditRanks)) {
             int lowestPriority = int.MinValue;
             foreach (GuildRankInfo info in guildRanks) {
                if (info.rankPriority > lowestPriority) {
@@ -2884,17 +2939,20 @@ public class RPCManager : NetworkBehaviour {
                      info.rankPriority -= 1;
                   }
                }
-               newId = guildRanks.Find(x => x.rankPriority == userRankPriority).id;
-            } else {
-               newId = guildRanks.Find(x => x.rankPriority == lowestPriority - 1).id;
-            }
-
+            } 
             for (int i = guildRanks.Count - 1; i > rankId - 1; i--) {
                guildRanks[i].rankId -= 1;
             }
 
             guildRanks.RemoveAt(rankId - 1);
 
+            if (userRankPriority != lowestPriority) {
+               newId = guildRanks.Find(x => x.rankPriority == userRankPriority).id;
+            } else {
+               newId = guildRanks.Find(x => x.rankPriority == lowestPriority - 1).id;
+            }
+
+            GuildRankInfo newRank = guildRanks.Find(x => x.id == newId);
             GuildInfo guildInfo = DB_Main.getGuildInfo(guildId);            
             foreach (UserInfo userInfo in guildInfo.guildMembers) {
                if (userInfo.guildRankId == oldId) {
@@ -2909,6 +2967,14 @@ public class RPCManager : NetworkBehaviour {
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               // If user is currently online - update his permissions
+               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                  if (pair.Value.guildId == guildId && pair.Value.guildRankPriority == userRankPriority) {
+                     pair.Value.guildRankPriority = newRank.rankPriority;
+                     pair.Value.guildPermissions = newRank.permissions;
+                  }
+               }
+
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.PromoteDemoteKickGuild, _player, "You have deleted guild rank: " + deletedRankName);
             });
 

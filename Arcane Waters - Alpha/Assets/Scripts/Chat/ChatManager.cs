@@ -18,6 +18,7 @@ public class ChatManager : MonoBehaviour {
       Emote = 4,
       Invite = 5,
       Group = 6,
+      Officer = 7,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -38,6 +39,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Emote, new List<string> { "/emote","/em", "/e", "/emo", "/me" });
       _commands.Add(Type.Invite, new List<string> { "/invite", "/inv" });
       _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
+      _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
    }
 
    private void Start () {
@@ -84,6 +86,16 @@ public class ChatManager : MonoBehaviour {
       if (chatType == ChatInfo.Type.Group && !VoyageGroupManager.isInGroup(Global.player)) {
          this.addChat("You are not currently in a group!", ChatInfo.Type.Error);
          return;
+      }
+
+      if (chatType == ChatInfo.Type.Officer) {
+         if (Global.player.guildId == 0) {
+            this.addChat("You are not currently in a guild!", ChatInfo.Type.Error);
+            return;
+         } else if (!Global.player.canPerformAction(GuildPermission.OfficerChat)) {
+            this.addChat("You have insufficient permissions to access officer chat!", ChatInfo.Type.Error);
+            return;
+         }
       }
 
       // Pass the message along to the server
@@ -195,6 +207,8 @@ public class ChatManager : MonoBehaviour {
          VoyageGroupManager.self.handleInviteCommand(trimmedMessage);
       } else if (type == Type.Group) {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Group);
+      } else if (type == Type.Officer) {
+         sendMessageToServer(trimmedMessage, ChatInfo.Type.Officer);
       }
    }
 

@@ -374,6 +374,8 @@ public class ChatPanel : MonoBehaviour {
          chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatLineText);
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
          chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatLineText);
+      } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, false), chatLineText);
       } else {
          bool isLocalPlayer = true;
          if (Global.player != null) {
@@ -391,13 +393,6 @@ public class ChatPanel : MonoBehaviour {
       // In minimized mode, keep the scrollbar at the bottom
       if (_mode == Mode.Minimized) {
          scrollRect.verticalNormalizedPosition = 0f;
-      }
-
-      // Set the correct text appearance depending on the mode
-      if (_mode == Mode.Minimized && !_isMouseOverInputField) {
-         chatLine.setAppearanceWithoutBackground();
-      } else {
-         chatLine.setAppearanceWithBackground();
       }
 
       // Hide the chat line if the current tab filters it
@@ -558,17 +553,12 @@ public class ChatPanel : MonoBehaviour {
 
          // In minimized mode, only show recent messages, unless the mouse is over the input field
          if (_mode == Mode.Minimized) {
-            if (_isMouseOverInputField) {
-               chatLine.setAppearanceWithBackground();
-            } else {
+            if (!_isMouseOverInputField) {
                if (Time.time - chatLine.creationTime > CHAT_MESSAGE_DISPLAY_DURATION) {
                   chatLine.transform.parent.gameObject.SetActive(false);
-               } else {
-                  chatLine.setAppearanceWithoutBackground();
                }
             }
          } else {
-            chatLine.setAppearanceWithBackground();
             chatLine.transform.parent.gameObject.SetActive(true);
          }
       }
@@ -596,6 +586,7 @@ public class ChatPanel : MonoBehaviour {
          case ChatInfo.Type.Global:
             return string.Format("<color={0}>Global</color>", colorString);
          case ChatInfo.Type.Guild:
+         case ChatInfo.Type.Officer:
             return string.Format("<color={0}>Guild</color>", colorString);
          case ChatInfo.Type.Group:
             return string.Format("<color={0}>Group</color>", colorString);
@@ -622,6 +613,7 @@ public class ChatPanel : MonoBehaviour {
             var chatColor = isLocalPlayer ? whisperReceiverMessageColor : whisperMessageColor;
             return chatColor;
          case ChatInfo.Type.Guild:
+         case ChatInfo.Type.Officer:
             return Color.white;
          case ChatInfo.Type.Group:
             return isLocalPlayer ? groupMessageLocalColor : groupMessageOtherColor;

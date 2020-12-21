@@ -153,6 +153,10 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int voyageGroupId = -1;
 
+   // Gets set to true when the player can be attacked by other players in PvP areas
+   [SyncVar]
+   public bool hasEnteredPvP = false;
+
    // If this entity is jumping
    public bool isJumping = false;
 
@@ -987,6 +991,14 @@ public class NetEntity : NetworkBehaviour
       return false;
    }
 
+   public virtual bool canBeAttackedByPlayers () {
+      return true;
+   }
+
+   public virtual bool isPlayerShip () {
+      return false;
+   }
+
    public Vector2 getVelocity () {
       return _body.velocity;
    }
@@ -1505,12 +1517,12 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   public bool canPerformAction (GuildRankInfo.GuildPermission action) {
+   public bool canPerformAction (GuildPermission action) {
       return ((this.guildPermissions & (int) action) != 0);
    }
 
    public bool canInviteGuild (NetEntity targetEntity) {
-      return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildRankInfo.GuildPermission.Invite);
+      return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildPermission.Invite);
    }
 
    protected virtual void onStartMoving () { }

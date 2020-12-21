@@ -40,6 +40,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
    public void initialize (GuildRankInfo[] guildRanks) {
       this.gameObject.SetActive(true);
       _initialRanksData = guildRanks;
+      resetRows();
+      addRankButton.interactable = guildRanks.Length < MAXIMUM_NUMBER_OF_RANKS;
       guildRankRows.ForEach(row => row.initialize(null));
 
       foreach (GuildRankInfo info in guildRanks) {
@@ -59,12 +61,12 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
             continue;
          }
 
-         int permissions = (row.inviteToggle.isOn ? (int) GuildRankInfo.GuildPermission.Invite : 0) +
-                           (row.kickToggle.isOn ? (int) GuildRankInfo.GuildPermission.Kick : 0) +
-                           (row.officerChatToggle.isOn ? (int) GuildRankInfo.GuildPermission.OfficerChat : 0) +
-                           (row.promoteToggle.isOn ? (int) GuildRankInfo.GuildPermission.Promote : 0) +
-                           (row.demoteToggle.isOn ? (int) GuildRankInfo.GuildPermission.Demote : 0) +
-                           (row.editRanksToggle.isOn ? (int) GuildRankInfo.GuildPermission.EditRanks : 0);
+         int permissions = (row.inviteToggle.isOn ? (int) GuildPermission.Invite : 0) +
+                           (row.kickToggle.isOn ? (int) GuildPermission.Kick : 0) +
+                           (row.officerChatToggle.isOn ? (int) GuildPermission.OfficerChat : 0) +
+                           (row.promoteToggle.isOn ? (int) GuildPermission.Promote : 0) +
+                           (row.demoteToggle.isOn ? (int) GuildPermission.Demote : 0) +
+                           (row.editRanksToggle.isOn ? (int) GuildPermission.EditRanks : 0);
 
          GuildRankInfo info = new GuildRankInfo();
          info.rankId = row.rankId;
@@ -116,6 +118,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
 
       // Reset rows data to previous state if "cancel" button was pressed
       resetRows();
+      orderRows();
+      guildRankRows.ForEach(row => row.updatePriorityButtons());
    }
 
    public void hideAllDeleteButtons () {
@@ -155,8 +159,8 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       }
 
       for (int i = 0; i < guildRankRows.Count; i++) {
-         if (guildRankRows[i].isActive) {
-            guildRankRows[i].transform.SetSiblingIndex(lowestIndex + rankIDs[i] - 1);
+         if (guildRankRows[rankIDs[i] - 1].isActive) {
+            guildRankRows[rankIDs[i] - 1].transform.SetSiblingIndex(lowestIndex + i);
          }
       }
    }
@@ -178,24 +182,20 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
             row.rankPriority = row.rankId;
             row.isActive = false;
             row.gameObject.SetActive(false);
-
-            addRankButton.interactable = true;
          } else {
-            row.demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Demote);
-            row.editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.EditRanks);
-            row.inviteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Invite);
-            row.kickToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Kick);
-            row.officerChatToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.OfficerChat);
-            row.promoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildRankInfo.GuildPermission.Promote);
+            row.demoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Demote);
+            row.editRanksToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.EditRanks);
+            row.inviteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Invite);
+            row.kickToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Kick);
+            row.officerChatToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.OfficerChat);
+            row.promoteToggle.isOn = GuildRankInfo.canPerformAction(info.permissions, GuildPermission.Promote);
 
             row.rankPriority = info.rankPriority;
+            row.rankNameInputField.text = info.rankName;
          }
 
          row.deleteRankButton.interactable = row.demoteToggle.interactable || row.editRanksToggle.interactable || row.inviteToggle.interactable || row.kickToggle.interactable || row.officerChatToggle.interactable || row.promoteToggle.interactable;
       }
-
-      orderRows();
-      guildRankRows.ForEach(row => row.updatePriorityButtons());
    }
 
    public void show () {

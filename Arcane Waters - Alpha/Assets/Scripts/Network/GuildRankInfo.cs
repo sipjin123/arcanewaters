@@ -8,6 +8,17 @@ using Mirror;
 using MySql.Data.MySqlClient;
 #endif
 
+// Type of action that can be performed within guild
+public enum GuildPermission
+{
+   Invite = 1,
+   Kick = 2,
+   OfficerChat = 4,
+   Promote = 8,
+   Demote = 16,
+   EditRanks = 32
+}
+
 public class GuildRankInfo
 {
    #region Public Variables
@@ -29,16 +40,6 @@ public class GuildRankInfo
 
    // Permissions in form of integer bits
    public int permissions;
-
-   public enum GuildPermission
-   {
-      Invite = 1,
-      Kick = 2,
-      OfficerChat = 4,
-      Promote = 8,
-      Demote = 16,
-      EditRanks = 32
-   }
 
    #endregion
 

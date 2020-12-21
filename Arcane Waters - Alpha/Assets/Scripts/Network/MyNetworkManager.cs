@@ -242,7 +242,7 @@ public class MyNetworkManager : NetworkManager
    public override void OnServerAddPlayer (NetworkConnection conn) {
       int authenicatedAccountId = _accountsForConnections[conn];
       int authenticatedUserId = _userIdForConnection[conn];
-      string steamUserId = _steamIdForConnection[conn];
+      string steamUserId = _steamIdForConnection.ContainsKey(conn) ? _steamIdForConnection[conn] : "";
 
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
@@ -401,6 +401,12 @@ public class MyNetworkManager : NetworkManager
             player.rpc.sendItemShortcutList();
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();
+
+            // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
+            if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey) &&
+               Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {
+               player.hasEnteredPvP = true;
+            }
 
             // Gives the user admin features if it has an admin flag
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
