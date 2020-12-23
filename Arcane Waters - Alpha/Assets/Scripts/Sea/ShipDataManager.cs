@@ -38,11 +38,11 @@ public class ShipDataManager : MonoBehaviour {
    }
 
    public ShipData getShipData (Ship.Type shipType) {
-      if (!_shipData.ContainsKey(shipType)) {
+      if (!_shipData.Values.ToList().Exists(_=> _.shipType == shipType)) {
          D.debug("Failed to fetch ship data: " + shipType);
          return _shipData.Values.ToList()[0];
       }
-      ShipData returnData = _shipData[shipType];
+      ShipData returnData = _shipData.Values.ToList().Find(_=>_.shipType == shipType);
       return returnData;
    }
 
@@ -56,8 +56,8 @@ public class ShipDataManager : MonoBehaviour {
                   try {
                      TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                      ShipData shipData = Util.xmlLoad<ShipData>(newTextAsset);
-                     Ship.Type uniqueID = shipData.shipType;
                      shipData.shipID = xmlPair.xmlId;
+                     int uniqueID = shipData.shipID;
                      // Save the ship data in the memory cache
                      if (!_shipData.ContainsKey(uniqueID) && xmlPair.isEnabled) {
                         _shipData.Add(uniqueID, shipData);
@@ -74,11 +74,11 @@ public class ShipDataManager : MonoBehaviour {
       }
    }
 
-   public void receiveShipDataFromZipData (List<ShipData> shipDataList) {
-      foreach (ShipData shipData in shipDataList) {
-         if (!_shipData.ContainsKey(shipData.shipType)) {
-            _shipData.Add(shipData.shipType, shipData);
-            this.shipDataList.Add(shipData);
+   public void receiveShipDataFromZipData (Dictionary<int, ShipData> shipDataList) {
+      foreach (KeyValuePair<int, ShipData> shipData in shipDataList) {
+         if (!_shipData.ContainsKey(shipData.Key)) {
+            _shipData.Add(shipData.Key, shipData.Value);
+            this.shipDataList.Add(shipData.Value);
          }
       }
       hasInitialized = true;
@@ -88,7 +88,7 @@ public class ShipDataManager : MonoBehaviour {
    #region Private Variables
 
    // The cached ship data 
-   private Dictionary<Ship.Type, ShipData> _shipData = new Dictionary<Ship.Type, ShipData>();
+   private Dictionary<int, ShipData> _shipData = new Dictionary<int, ShipData>();
 
    #endregion
 }

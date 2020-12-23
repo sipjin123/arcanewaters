@@ -384,15 +384,20 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
-   public void setShipData (Ship.Type type) {
-      ShipData shipData = ShipDataManager.self.getShipData(type);
+   public void setShipData (int enemyXmlData, Ship.Type shipType) {
+      ShipData shipData = ShipDataManager.self.getShipData(shipType);
       shipType = shipData.shipType;
       if (shipData != null) {
          if (shipData.spritePath != "") {
             spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
          }
       }
-      initialize(shipData);
+      SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getMonster(enemyXmlData);
+      if (seaEnemyData == null) {
+         D.debug("Failed to get sea monster data");
+      }
+
+      initializeAsSeaEnemy(seaEnemyData, shipData);
 
       // Assign ripple sprites
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));

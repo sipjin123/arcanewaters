@@ -521,7 +521,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
          #region Group 4 (Ships/ShipAbility/Shop)
          case EditorToolType.Ship:
-            List<ShipData> shipDataList = new List<ShipData>();
+            Dictionary<int, ShipData> shipDataList = new Dictionary<int, ShipData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
 
@@ -530,7 +530,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   int dataId = int.Parse(xmlSubGroup[0]);
                   ShipData actualData = Util.xmlLoad<ShipData>(xmlSubGroup[1]);
                   actualData.shipID = dataId;
-                  shipDataList.Add(actualData);
+                  shipDataList.Add(dataId, actualData);
                   message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
                }
             }

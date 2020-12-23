@@ -150,7 +150,7 @@ public class EnemyManager : MonoBehaviour {
             botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
          }
          botShip.guildId = guildId;
-         botShip.setShipData(shipType);
+         botShip.setShipData(seaMonsterData.xmlId, shipType);
 
          InstanceManager.self.addSeaMonsterToInstance(botShip, instance);
          NetworkServer.Spawn(botShip.gameObject);

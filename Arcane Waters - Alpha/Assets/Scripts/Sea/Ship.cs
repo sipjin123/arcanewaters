@@ -50,6 +50,8 @@ public class Ship : SeaEntity {
       this.name = "Ship - " + this.shipType + " (user: " + this.userId + ")";
    }
 
+   #region Get stat by type
+
    public static int getBaseDamage (Ship.Type shipType) {
       return ShipDataManager.self.getShipData(shipType).baseDamage;
    }
@@ -81,6 +83,44 @@ public class Ship : SeaEntity {
    public static int getBasePrice (Ship.Type shipType) {
       return ShipDataManager.self.getShipData(shipType).basePrice;
    }
+
+   #endregion
+
+   #region Get stat by id
+
+   public static int getBaseDamage (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseDamage;
+   }
+
+   public static int getBaseAttackRange (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseRange;
+   }
+
+   public static int getBaseHealth (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseHealth;
+   }
+
+   public static int getBaseSailors (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseSailors;
+   }
+
+   public static int getBaseSuppliesRoom (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseSupplyRoom;
+   }
+
+   public static int getBaseSpeed (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseSpeed;
+   }
+
+   public static int getBaseCargoRoom (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).baseCargoRoom;
+   }
+
+   public static int getBasePrice (int xmlId) {
+      return ShipDataManager.self.getShipData(xmlId).basePrice;
+   }
+
+   #endregion
 
    public static string getSkinPath (Ship.Type shipType, Ship.SkinType skinType = SkinType.None, bool isPirate = false) {
       string skinName;

@@ -507,7 +507,7 @@ public class Instance : NetworkBehaviour
          botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
       }
       botShip.guildId = guildId;
-      botShip.setShipData(shipType);
+      botShip.setShipData(xmlId, shipType);
 
       botShip.setAreaParent(area, false);
 
