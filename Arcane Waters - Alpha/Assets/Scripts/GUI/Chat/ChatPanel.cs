@@ -374,7 +374,7 @@ public class ChatPanel : MonoBehaviour {
          chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatLineText);
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
          chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatLineText);
-      } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
+      } else if (chatInfo.messageType == ChatInfo.Type.Officer || chatInfo.messageType == ChatInfo.Type.Guild) {
          chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, false), chatLineText);
       } else {
          bool isLocalPlayer = true;

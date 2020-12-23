@@ -147,21 +147,17 @@ public class PlayerBodyEntity : BodyEntity {
             }
          }
          sprintRecovery();
+
+         // We want to allow shortcuts input during the customization tutorial
+         if (!isInBattle() && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.UnequipHammer) {
+            handleShortcutsInput();
+         }
+
          return;
       }
 
       if (!isInBattle()) {
-         if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(1);
-         } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(2);
-         } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(3);
-         } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(4);
-         } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
-            PanelManager.self.itemShortcutPanel.activateShortcut(5);
-         }
+         handleShortcutsInput();
       }
 
       processJumpLogic();
@@ -183,15 +179,32 @@ public class PlayerBodyEntity : BodyEntity {
       }
    }
 
+   private void handleShortcutsInput () {
+      // We should move these to the InputManager
+      if (Input.GetKeyDown(KeyCode.Alpha1)) {
+         PanelManager.self.itemShortcutPanel.activateShortcut(1);
+      } else if (Input.GetKeyDown(KeyCode.Alpha2)) {
+         PanelManager.self.itemShortcutPanel.activateShortcut(2);
+      } else if (Input.GetKeyDown(KeyCode.Alpha3)) {
+         PanelManager.self.itemShortcutPanel.activateShortcut(3);
+      } else if (Input.GetKeyDown(KeyCode.Alpha4)) {
+         PanelManager.self.itemShortcutPanel.activateShortcut(4);
+      } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
+         PanelManager.self.itemShortcutPanel.activateShortcut(5);
+      }
+   }
+
    public void setGuildIcon () {
       // Set guild icon
       if (!Util.isEmpty(guildIconBackground)) {
          guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
+         guildIcon.background.enabled = true;
       } else {
          guildIcon.background.enabled = false;
       }
       if (!Util.isEmpty(guildIconBorder)) {
          guildIcon.setBorder(guildIconBorder);
+         guildIcon.border.enabled = true;
       } else {
          guildIcon.border.enabled = false;
       }

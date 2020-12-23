@@ -122,7 +122,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 
       recalibrateSpotPosition();
 
-      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration);
+      _fadeTween = DOTween.To(() => _effectProgress, (x) => _effectProgress = x, 0, _fadeOutDuration).SetEase(Ease.OutSine);
 
       return _fadeOutDuration;
    }

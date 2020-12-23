@@ -914,6 +914,22 @@ public class RPCManager : NetworkBehaviour {
          foreach (int userId in voyageGroup.members) {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
+      } else if (chatType == ChatInfo.Type.Guild) {
+         ServerNetworkingManager.self.sendSpecialChatMessage(_player.userId, chatInfo);
+
+         // Background thread
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);
+
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               foreach (UserInfo userInfo in guildInfo.guildMembers) {
+                  if (_player.userId != userInfo.userId) {
+                     ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
+                  }
+               }
+            });
+         });
       } else if (chatType == ChatInfo.Type.Officer) {
          if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
             return;

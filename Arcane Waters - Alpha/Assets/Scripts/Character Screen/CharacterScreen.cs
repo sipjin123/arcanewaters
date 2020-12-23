@@ -74,7 +74,7 @@ public class CharacterScreen : MonoBehaviour
    }
 
    public bool isShowing () {
-      return Vector2.Distance(Camera.main.transform.position, virtualCam.transform.position) < .5f;
+      return Camera.main != null && virtualCam != null && Vector2.Distance(Camera.main.transform.position, virtualCam.transform.position) < .5f;
    }
 
    public bool isCreatingCharacter () {

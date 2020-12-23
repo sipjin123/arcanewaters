@@ -214,13 +214,13 @@ public class CharacterCreationPanel : ClientMonoBehaviour
 
       CharacterCreationSpotFader.self.fadeOutColor();
 
-      PostSpotFader.self.fadeOut();
+      float fadeOutDuration = PostSpotFader.self.fadeOut();
 
       // Show loading screen while starting map is being created
       PanelManager.self.loadingScreen.show(LoadingScreen.LoadingType.MapCreation, CameraManager.defaultCamera.getPixelFadeEffect(), PostSpotFader.self);
 
-      // Return camera to its original position
-      CharacterScreen.self.myCamera.setDefaultSettings();
+      // Return camera to its original position after the fadeout
+      CharacterScreen.self.myCamera.setDefaultSettings(fadeOutDuration + 0.5f);
    }
 
    public void onCharacterCreationFailed () {

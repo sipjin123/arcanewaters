@@ -19,6 +19,7 @@ public class ChatManager : MonoBehaviour {
       Invite = 5,
       Group = 6,
       Officer = 7,
+      Guild = 8,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -40,11 +41,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Invite, new List<string> { "/invite", "/inv" });
       _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
       _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
-   }
-
-   private void Start () {
-      // Check for guild messages every now and then
-      InvokeRepeating("checkForGuildMessages", 0f, 1f);
+      _commands.Add(Type.Guild, new List<string> { "/guild", "/gld", "/g" });
    }
 
    public void addChat (string message, ChatInfo.Type chatType) {
@@ -63,11 +60,7 @@ public class ChatManager : MonoBehaviour {
 
       // Show it in the chat panel
       if (chatPanel != null) {
-         if (chatInfo.messageType == ChatInfo.Type.Guild) {
-            chatPanel.addGuildChatInfo(chatInfo);
-         } else {
-            chatPanel.addChatInfo(chatInfo);
-         }
+         chatPanel.addChatInfo(chatInfo);
       }
    }
 
@@ -138,38 +131,6 @@ public class ChatManager : MonoBehaviour {
       Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
    }
 
-   protected void checkForGuildMessages () {
-      // Only the server does this
-      if (!NetworkServer.active) {
-         return;
-      }
-
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         // Get all of the recent guild chat
-         List<ChatInfo> list = DB_Main.getChat(ChatInfo.Type.Guild, 5, MyNetworkManager.self.networkAddress);
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Cycle through all of the chat from the database
-            foreach (ChatInfo chat in list) {
-               // If we haven't processed this chat already, do so now
-               if (chat.chatId > _lastGuildChatId) {
-                  // Note that highest chat ID that we've processed
-                  _lastGuildChatId = chat.chatId;
-
-                  // Send the chat to everyone online in that guild
-                  foreach (NetEntity player in MyNetworkManager.getPlayers().Values) {
-                     if (player != null && player.connectionToClient != null && player.guildId == chat.guildId) {
-                        player.Target_ReceiveSpecialChat(player.connectionToClient, chat.chatId, chat.text, chat.sender, chat.chatTime.ToBinary(), chat.messageType, chat.guildIconData, chat.senderId);
-                     }
-                  }
-               }
-            }
-         });
-      });
-   }
-
    protected void executeChatCommand (string message) {
       string prefix = "";
       Type type = Type.None;
@@ -209,6 +170,8 @@ public class ChatManager : MonoBehaviour {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Group);
       } else if (type == Type.Officer) {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Officer);
+      } else if (type == Type.Guild) {
+         sendMessageToServer(trimmedMessage, ChatInfo.Type.Guild);
       }
    }
 

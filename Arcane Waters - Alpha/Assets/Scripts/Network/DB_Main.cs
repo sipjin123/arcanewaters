@@ -5597,6 +5597,31 @@ public class DB_Main : DB_MainStub
       return userObjects;
    }
 
+   public static new string getUserName (int userId) {
+      string userName = "";
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT usrName FROM users WHERE usrId=@usrId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  userName = dataReader.GetString("usrName");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return userName;
+   }
+
    public static new string getUserInfoJSON (string userId) {
       UserInfo userInfo = null;
 

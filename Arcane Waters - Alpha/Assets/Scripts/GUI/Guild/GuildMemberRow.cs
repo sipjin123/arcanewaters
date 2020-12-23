@@ -36,6 +36,9 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
    // The object which highlights guild member row in Guild Panel
    public GameObject highlightRow;
 
+   // Last time that guild member was logged-in
+   public ulong lastActiveInMinutes;
+
    #endregion
 
    public void setRowForGuildMember (UserInfo userInfo, GuildRankInfo[] guildRanks) {
@@ -68,6 +71,7 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
          onlineIcon.SetActive(false);
          offlineIcon.SetActive(true);
          System.TimeSpan timeDiff = System.DateTime.Now.Subtract(userInfo.lastLoginTime);
+         lastActiveInMinutes = (ulong) timeDiff.TotalMinutes;
          if (timeDiff.TotalSeconds < 119) {
             memberOnlineStatus.text = "1 Minute";
          } else if (timeDiff.TotalMinutes < 60) {

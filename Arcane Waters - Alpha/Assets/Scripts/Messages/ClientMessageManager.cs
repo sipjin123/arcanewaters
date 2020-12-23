@@ -152,9 +152,17 @@ public class ClientMessageManager : MonoBehaviour {
             ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
 
             return;
-         case ConfirmMessage.Type.PromoteDemoteKickGuild:
+         case ConfirmMessage.Type.GuildActionLocal:
             // Show notice screen
             PanelManager.self.noticeScreen.show(msg.customMessage);
+
+            // Get updated info
+            Global.player.rpc.Cmd_RequestGuildInfoFromServer();
+
+            return;
+         case ConfirmMessage.Type.GuildActionGlobal:
+            // Add the confirmation message in the chat panel
+            Global.player.rpc.Cmd_SendChat(msg.customMessage, ChatInfo.Type.Guild);
 
             // Get updated info
             Global.player.rpc.Cmd_RequestGuildInfoFromServer();

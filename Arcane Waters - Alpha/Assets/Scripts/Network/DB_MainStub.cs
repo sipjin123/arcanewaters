@@ -773,6 +773,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static string getUserName (int userId) {
+      return "";
+   }
+
    public static int createUser (int accountId, int usrAdminFlag, UserInfo userInfo, Area area) {
       return 0;
    }

@@ -159,7 +159,7 @@ public class GuildRanksPanel : MonoBehaviour, IPointerClickHandler
       }
 
       for (int i = 0; i < guildRankRows.Count; i++) {
-         if (guildRankRows[rankIDs[i] - 1].isActive) {
+         if (rankIDs.Count > i && guildRankRows[rankIDs[i] - 1].isActive) {
             guildRankRows[rankIDs[i] - 1].transform.SetSiblingIndex(lowestIndex + i);
          }
       }

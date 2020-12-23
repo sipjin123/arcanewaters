@@ -58,6 +58,27 @@ public class GuildPanel : Panel {
    // The button for kicking guild member from guild
    public Button kickButton;
 
+   [Header("Sorting icons")]
+   // Icons near name label describing sorting order
+   public GameObject nameAsc;
+   public GameObject nameDesc;
+
+   // Icons near rank label describing sorting order
+   public GameObject rankAsc;
+   public GameObject rankDesc;
+
+   // Icons near current map label describing sorting order
+   public GameObject zoneAsc;
+   public GameObject zoneDesc;
+
+   // Icons near last logged-in date label describing sorting order
+   public GameObject dateAsc;
+   public GameObject dateDesc;
+
+   // Icons near level label describing sorting order
+   public GameObject levelAsc;
+   public GameObject levelDesc;
+
    // Self
    public static GuildPanel self;
 
@@ -209,6 +230,77 @@ public class GuildPanel : Panel {
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
          Global.player.rpc.Cmd_KickGuildMember(Global.player.userId, row.getUserId(), Global.player.guildId);
+      }
+   }
+
+   public void sortByName () {
+      toggleIcons(nameAsc, nameDesc);
+      _guildMemberRowsReference.Sort((a, b) => {
+         return nameAsc.activeSelf ? a.memberName.text.CompareTo(b.memberName.text) : b.memberName.text.CompareTo(a.memberName.text);
+      });
+      orderRows();
+   }
+
+   public void sortByRank () {
+      toggleIcons(rankAsc, rankDesc);
+      _guildMemberRowsReference.Sort((a, b) => {
+         return rankAsc.activeSelf ? a.memberRankName.text.CompareTo(b.memberRankName.text) : b.memberRankName.text.CompareTo(a.memberRankName.text);
+      });
+      orderRows();
+   }
+
+   public void sortByZone () {
+      toggleIcons(zoneAsc, zoneDesc);
+      _guildMemberRowsReference.Sort((a, b) => {
+         return zoneAsc.activeSelf ? a.memberZone.text.CompareTo(b.memberZone.text) : b.memberZone.text.CompareTo(a.memberZone.text);
+      });
+      orderRows();
+   }
+
+   public void sortByDate () {
+      toggleIcons(dateAsc, dateDesc);
+      _guildMemberRowsReference.Sort((a, b) => {
+         return dateAsc.activeSelf ? a.lastActiveInMinutes.CompareTo(b.lastActiveInMinutes) : b.lastActiveInMinutes.CompareTo(a.lastActiveInMinutes);
+      });
+      orderRows();
+   }
+
+   public void sortByLevel () {
+      toggleIcons(levelAsc, levelDesc);
+      _guildMemberRowsReference.Sort((a, b) => {
+         return levelAsc.activeSelf ? a.memberLevel.text.CompareTo(b.memberLevel.text) : b.memberLevel.text.CompareTo(a.memberLevel.text);
+      });
+      orderRows();
+   }
+
+   private void toggleIcons(GameObject asc, GameObject desc) {
+      if (!asc.activeSelf && !desc.activeSelf) {
+         disableAllSortIcons();
+         asc.SetActive(true);
+      } else {
+         bool nameAscBool = !asc.activeSelf;
+         disableAllSortIcons();
+         asc.SetActive(nameAscBool);
+         desc.SetActive(!nameAscBool);
+      }
+   }
+
+   private void disableAllSortIcons () {
+      nameAsc.SetActive(false);
+      nameDesc.SetActive(false);
+      rankAsc.SetActive(false);
+      rankDesc.SetActive(false);
+      zoneAsc.SetActive(false);
+      zoneDesc.SetActive(false);
+      levelAsc.SetActive(false);
+      levelDesc.SetActive(false);
+      dateAsc.SetActive(false);
+      dateDesc.SetActive(false);
+   }
+
+   private void orderRows () {
+      for (int i = 0; i < _guildMemberRowsReference.Count; i++) {
+         _guildMemberRowsReference[i].transform.SetSiblingIndex(i);
       }
    }
 
