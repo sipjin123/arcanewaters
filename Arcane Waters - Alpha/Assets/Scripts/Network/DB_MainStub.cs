@@ -130,6 +130,10 @@ public class DB_MainStub : MonoBehaviour
    public static void deleteNPCQuestXML (int typeID) {
    }
 
+   public static List<XMLPair> getProjectileXML () {
+      return new List<XMLPair>();
+   }
+
    public static void updateBiomeTreasureDrops (int xmlId, string rawXmlContent, Biome.Type biomeType) {
    }
 

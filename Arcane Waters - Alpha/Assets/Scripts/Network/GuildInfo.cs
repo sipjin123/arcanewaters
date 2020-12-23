@@ -41,14 +41,18 @@ public class GuildInfo
 #if IS_SERVER_BUILD
 
    public GuildInfo (MySqlDataReader dataReader) {
-      this.guildId = DataUtil.getInt(dataReader, "gldId"); ;
-      this.guildName = DataUtil.getString(dataReader, "gldName");
-      this.iconBorder = DataUtil.getString(dataReader, "gldIconBorder");
-      this.iconBackground = DataUtil.getString(dataReader, "gldIconBackground");
-      this.iconSigil = DataUtil.getString(dataReader, "gldIconSigil");
-      this.iconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
-      this.iconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
-      this.creationTime = DataUtil.getDateTime(dataReader, "gldCreationTime").ToBinary();
+      try {
+         this.guildId = DataUtil.getInt(dataReader, "gldId"); ;
+         this.guildName = DataUtil.getString(dataReader, "gldName");
+         this.iconBorder = DataUtil.getString(dataReader, "gldIconBorder");
+         this.iconBackground = DataUtil.getString(dataReader, "gldIconBackground");
+         this.iconSigil = DataUtil.getString(dataReader, "gldIconSigil");
+         this.iconBackPalettes = DataUtil.getString(dataReader, "gldIconBackPalettes");
+         this.iconSigilPalettes = DataUtil.getString(dataReader, "gldIconSigilPalettes");
+         this.creationTime = DataUtil.getDateTime(dataReader, "gldCreationTime").ToBinary();
+      } catch {
+         D.debug("Error in parsing MySqlData for GuildInfo!");
+      }
    }
 
 #endif

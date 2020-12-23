@@ -1,4 +1,7 @@
-﻿public class ProjectileStatData  {
+﻿using System;
+
+[Serializable]
+public class ProjectileStatData  {
    #region Public Variables
 
    // The primary id that is referenced by dependent objects, this is a unique id
@@ -10,8 +13,11 @@
    // The scale of the projectile
    public float projectileScale;
 
+   // The speed of the projectile animation
+   public float animationSpeed;
+
    // The path of the projectile sprite
-   public float projectileSpritePath;
+   public string projectileSpritePath;
 
    // If the projectile is a still sprite or animated
    public bool isAnimating;
@@ -20,4 +26,12 @@
    public Status.Type statusType;
 
    #endregion
+}
+
+public class ProjectileStatPair {
+   // The xml id
+   public int xmlId;
+
+   // The stat data
+   public ProjectileStatData projectileData;
 }

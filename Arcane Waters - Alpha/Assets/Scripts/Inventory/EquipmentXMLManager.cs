@@ -306,11 +306,15 @@ public class EquipmentXMLManager : MonoBehaviour {
             break;
          case Item.Category.Armor:
             ArmorStatData armorData = getArmorDataBySqlId(item.itemTypeId);
-            newName = armorData.equipmentName;
+            if (armorData != null) {
+               newName = armorData.equipmentName;
+            }
             break;
          case Item.Category.Weapon:
             WeaponStatData weaponData = getWeaponData(item.itemTypeId);
-            newName = weaponData.equipmentName;
+            if (weaponData != null) {
+               newName = weaponData.equipmentName;
+            }
             break;
          case Item.Category.CraftingIngredients:
             CraftingIngredients.Type ingredientType = (CraftingIngredients.Type) item.itemTypeId;
@@ -321,15 +325,21 @@ public class EquipmentXMLManager : MonoBehaviour {
             if (craftingItem != null) {
                if (craftingItem.resultItem.category == Item.Category.Weapon) {
                   WeaponStatData fetchedData = getWeaponData(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Design";
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
                }
                if (craftingItem.resultItem.category == Item.Category.Armor) {
                   ArmorStatData fetchedData = getArmorDataBySqlId(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Design";
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
                }
                if (craftingItem.resultItem.category == Item.Category.Hats) {
                   HatStatData fetchedData = getHatData(craftingItem.resultItem.itemTypeId);
-                  return fetchedData.equipmentName + " Design";
+                  if (fetchedData != null) {
+                     return fetchedData.equipmentName + " Design";
+                  }
                }
             } else {
                D.debug("The result is null for: " + item.category + " : " + item.itemTypeId + " : " + item.data);

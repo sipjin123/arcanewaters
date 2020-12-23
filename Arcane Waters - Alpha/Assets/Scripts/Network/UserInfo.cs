@@ -146,12 +146,17 @@ public class UserInfo {
       this.customHouseBaseId = dataReader.GetInt32("customHouseBase");
       this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
       this.lastLoginTime = dataReader.GetDateTime("lastLoginTime");
-      if (this.guildId > 0) {
-         this.iconBorder = dataReader.GetString("gldIconBorder");
-         this.iconBackground = dataReader.GetString("gldIconBackground");
-         this.iconSigil = dataReader.GetString("gldIconSigil");
-         this.iconBackPalettes = dataReader.GetString("gldIconBackPalettes");
-         this.iconSigilPalettes = dataReader.GetString("gldIconSigilPalettes");
+
+      try {
+         if (this.guildId > 0) {
+            this.iconBorder = dataReader.GetString("gldIconBorder");
+            this.iconBackground = dataReader.GetString("gldIconBackground");
+            this.iconSigil = dataReader.GetString("gldIconSigil");
+            this.iconBackPalettes = dataReader.GetString("gldIconBackPalettes");
+            this.iconSigilPalettes = dataReader.GetString("gldIconSigilPalettes");
+         }
+      } catch {
+         D.debug("Problem with loading guild information");
       }
    }
 

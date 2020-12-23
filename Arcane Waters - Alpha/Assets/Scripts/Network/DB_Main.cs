@@ -658,7 +658,7 @@ public class DB_Main : DB_MainStub
          addedFields = ", ability_type";
       } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "id, xmlContent ";
-      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
+      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest || toolType == EditorSQLManager.EditorToolType.Projectiles) {
          contentToFetch = "xmlId, xmlContent ";
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
          contentToFetch = "id, serializedData ";
@@ -688,7 +688,7 @@ public class DB_Main : DB_MainStub
                   } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("xmlContent");
-                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest) {
+                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest || toolType == EditorSQLManager.EditorToolType.Projectiles) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
@@ -806,7 +806,7 @@ public class DB_Main : DB_MainStub
    public static new string getLastUpdate (EditorSQLManager.EditorToolType editorType) {
       string updateContent = "";
       string tableName = EditorSQLManager.getSqlTable(editorType);
-      string lastUserUpdateKey = editorType == EditorSQLManager.EditorToolType.Palette ? "lastUpdate" : "lastUserUpdate";
+      string lastUserUpdateKey = (editorType == EditorSQLManager.EditorToolType.Palette || editorType == EditorSQLManager.EditorToolType.Projectiles) ? "lastUpdate" : "lastUserUpdate";
 
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
@@ -948,6 +948,34 @@ public class DB_Main : DB_MainStub
    }
 
    #endregion
+
+   public static new List<XMLPair> getProjectileXML () {
+      List<XMLPair> rawDataList = new List<XMLPair>();
+
+      using (MySqlConnection conn = getConnection())
+      using (MySqlCommand cmd = new MySqlCommand("SELECT xmlId, xmlContent FROM global.projectiles_xml_v3", conn)) {
+         conn.Open();
+         cmd.Prepare();
+         DebugQuery(cmd);
+         try {
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  var rawXmlData = dataReader.GetString("xmlContent");
+                  var xmlId = dataReader.GetInt32("xmlId");
+                  XMLPair xmlPair = new XMLPair {
+                     rawXmlData = rawXmlData,
+                     xmlId = xmlId,
+                  };
+                  rawDataList.Add(xmlPair);
+               }
+            }
+         } catch (Exception e) {
+            D.error("MySQL Error: " + e.ToString());
+         }
+      }
+      return rawDataList;
+   }
 
    #region Achievements
 

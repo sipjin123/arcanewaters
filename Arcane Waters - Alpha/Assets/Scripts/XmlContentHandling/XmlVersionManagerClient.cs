@@ -159,6 +159,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.ITEM_DEFINITIONS_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
       checkStreamingAssetFile(XmlVersionManagerServer.TOOL_TIP_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.PROJECTILES_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -243,6 +244,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Quest);
       extractXmlType(EditorToolType.ItemDefinitions);
       extractXmlType(EditorToolType.Tool_Tip);
+      extractXmlType(EditorToolType.Projectiles);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -320,6 +322,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Tool_Tip:
             path = TEXT_PATH + XmlVersionManagerServer.TOOL_TIP_FILE + ".txt";
+            break;
+         case EditorToolType.Projectiles:
+            path = TEXT_PATH + XmlVersionManagerServer.PROJECTILES_FILE + ".txt";
             break;
       }
 
@@ -718,6 +723,26 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             UIToolTipManager.self.receiveZipData(tooltipDataList);
+            break;
+
+         case EditorToolType.Projectiles:
+            List<ProjectileStatPair> projectileDataList = new List<ProjectileStatPair>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  ProjectileStatData actualData = Util.xmlLoad<ProjectileStatData>(xmlSubGroup[1]);
+                  actualData.projectileId = dataId;
+                  projectileDataList.Add(new ProjectileStatPair {
+                     projectileData = actualData,
+                     xmlId = dataId
+                  });
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            ProjectileStatManager.self.receiveZipData(projectileDataList);
             break;
       }
 

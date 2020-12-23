@@ -49,6 +49,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string QUEST_DATA_TABLE = "quest_data_xml_v1";
    public static string PALETTE_DATA_TABLE = "palette_recolors";
    public static string ITEM_DEFINITIONS_TABLE = "item_definitions";
+   public static string PROJECTILES_TABLE = "projectiles_xml_v3";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -74,6 +75,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string QUEST_DATA_FILE = "quest_data";
    public static string ITEM_DEFINITIONS_FILE = "item_definitions";
    public static string TOOL_TIP_FILE = "tool_tip";
+   public static string PROJECTILES_FILE = "projectiles_xml";
 
    // Progress indicators
    public int targetProgress;
@@ -130,6 +132,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(QUEST_DATA_FILE);
       confirmTextFile(ITEM_DEFINITIONS_FILE);
       confirmTextFile(TOOL_TIP_FILE);
+      confirmTextFile(PROJECTILES_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -175,7 +178,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Treasure_Drops);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Quest);
          compiledData += DB_Main.getLastUpdate(EditorToolType.ItemDefinitions);
-
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Projectiles);
+         
          databaseVersion = DB_Main.getLatestXmlVersion();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -283,6 +287,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string questData = DB_Main.getXmlContent(QUEST_DATA_TABLE, EditorToolType.Quest);
          string itemDefinitionsData = DB_Main.getXmlContent(ITEM_DEFINITIONS_TABLE, EditorToolType.ItemDefinitions);
          string tooltipData = DB_Main.getTooltipXmlContent();
+         string projectileData = DB_Main.getXmlContent(PROJECTILES_TABLE, EditorToolType.Projectiles);
 
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
@@ -308,6 +313,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + QUEST_DATA_FILE + ".txt", questData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ITEM_DEFINITIONS_FILE + ".txt", itemDefinitionsData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + PROJECTILES_FILE + ".txt", projectileData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;

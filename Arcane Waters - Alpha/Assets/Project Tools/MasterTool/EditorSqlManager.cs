@@ -36,7 +36,8 @@ public class EditorSQLManager {
       Treasure_Drops = 27,
       Quest = 28,
       ItemDefinitions = 29,
-      Tool_Tip = 30
+      Tool_Tip = 30,
+      Projectiles = 31
    }
 
    public static string getSqlTable (EditorToolType editorType) {
@@ -120,6 +121,8 @@ public class EditorSQLManager {
             return "quest_data_xml_v1";
          case EditorToolType.Palette:
             return "palette_recolors";
+         case EditorToolType.Projectiles:
+            return "projectiles_xml_v3";
          case EditorToolType.ItemDefinitions:
             return XmlVersionManagerServer.ITEM_DEFINITIONS_TABLE;
       }

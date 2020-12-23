@@ -228,6 +228,7 @@ public class MyNetworkManager : NetworkManager
       TreasureDropsDataManager.self.initializeServerDataCache();
       NPCQuestManager.self.initializeServerDataCache();
       ItemDefinitionManager.self.loadFromDatabase();
+      ProjectileStatManager.self.initializeDataCache();
    }
 
    public override void OnStopServer () {
