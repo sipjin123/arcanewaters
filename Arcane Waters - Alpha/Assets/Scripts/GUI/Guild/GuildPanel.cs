@@ -58,6 +58,9 @@ public class GuildPanel : Panel {
    // The button for kicking guild member from guild
    public Button kickButton;
 
+   // The button for appointing guild member to be new guild leader
+   public Button appointLeaderButton;
+
    [Header("Sorting icons")]
    // Icons near name label describing sorting order
    public GameObject nameAsc;
@@ -184,7 +187,9 @@ public class GuildPanel : Panel {
 
       // Exit all panels
       PanelManager.self.confirmScreen.hide();
-      PanelManager.self.unlinkPanel();
+      if (Global.player.guildRankPriority != 0) {
+         PanelManager.self.unlinkPanel();
+      }
    }
 
    public void checkButtonPermissions () {
@@ -192,6 +197,8 @@ public class GuildPanel : Panel {
       promoteButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Promote);
       demoteButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Demote);
       kickButton.interactable = isActive && Global.player.canPerformAction(GuildPermission.Kick);
+      appointLeaderButton.gameObject.SetActive(Global.player.guildId != 0 && Global.player.guildRankPriority == 0);
+      appointLeaderButton.interactable = isActive;
 
       ranksButton.interactable &= Global.player.canPerformAction(GuildPermission.EditRanks);
    }
@@ -207,7 +214,7 @@ public class GuildPanel : Panel {
 
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
-         Global.player.rpc.Cmd_PromoteGuildMember(Global.player.userId, row.getUserId(), Global.player.guildId);
+         Global.player.rpc.Cmd_PromoteGuildMember(Global.player.userId, row.getUserId());
       }
    }
 
@@ -218,7 +225,7 @@ public class GuildPanel : Panel {
 
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
-         Global.player.rpc.Cmd_DemoteGuildMember(Global.player.userId, row.getUserId(), Global.player.guildId);
+         Global.player.rpc.Cmd_DemoteGuildMember(Global.player.userId, row.getUserId());
       }
    }
 
@@ -229,7 +236,18 @@ public class GuildPanel : Panel {
 
       GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
       if (row != null && !checkIfActionOnSelf(row)) {
-         Global.player.rpc.Cmd_KickGuildMember(Global.player.userId, row.getUserId(), Global.player.guildId);
+         Global.player.rpc.Cmd_KickGuildMember(Global.player.userId, row.getUserId());
+      }
+   }
+
+   public void appointLeaderButtonClicked () {
+      if (Global.player == null) {
+         return;
+      }
+
+      GuildMemberRow row = _guildMemberRowsReference.Find(x => x.highlightRow.activeSelf);
+      if (row != null && !checkIfActionOnSelf(row)) {
+         Global.player.rpc.Cmd_AppointGuildLeader(Global.player.userId, row.getUserId());
       }
    }
 

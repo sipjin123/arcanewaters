@@ -62,7 +62,9 @@ public class OfflineCharacter : ClientMonoBehaviour {
 
    #endregion
 
-   private void Awake () {
+   protected override void Awake () {
+      base.Awake();
+
       // Turn off guild icon to start
       guildIconGameObject.SetActive(false);
    }

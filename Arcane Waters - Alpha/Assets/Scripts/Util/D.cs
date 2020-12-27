@@ -44,6 +44,12 @@ public class D : MonoBehaviour {
 
          // Store the path to the log file
          _logFilePath = logsDirectoryPath + appName + " " + DateTime.Now.ToString(@"yyyy-M-d HH-mm-ss tt fffffff") + ".log";
+         
+         // Log file name for AUTO_TEST
+         if (CommandCodes.get(CommandCodes.Type.AUTO_TEST)) {
+            int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
+            _logFilePath = logsDirectoryPath + appName + " " + testerNumber.ToString() + ".log";
+         }
 
          // UnityEngine.Debug.Log("Log file: " + _logFilePath);
 

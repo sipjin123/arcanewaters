@@ -17,25 +17,27 @@ public class MM_Icon : ClientMonoBehaviour {
 
    private void Start () {
       _image = GetComponent<Image>();
+      if (_image == null) {
+         gameObject.SetActive(false);
+      }
    }
 
    private void Update () {
-      try {
-         // Hide the icon if necessary
-         Util.setAlpha(_image, shouldShowIcon() ? 1f : 0f);
-
-         // Keep the icon in the right position
-         if (Global.player != null) {
-            Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
-            if (currentArea != null) {
-               // Keep the icon in the right position
-               Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(target.transform, currentArea));
-            }
-         }
-      } catch {
-         // TODO: Investigate this when encountered again (rare encounter)
-         D.debug("ERROR! Something went wrong with: " + gameObject.name);
+      if (target == null) {
          gameObject.SetActive(false);
+         return;
+      }
+
+      // Hide the icon if necessary
+      Util.setAlpha(_image, shouldShowIcon() ? 1f : 0f);
+
+      // Keep the icon in the right position
+      if (Global.player != null) {
+         Area currentArea = AreaManager.self.getArea(Global.player.areaKey);
+         if (currentArea != null) {
+            // Keep the icon in the right position
+            Util.setLocalXY(this.transform, Minimap.self.getCorrectedPosition(target.transform, currentArea));
+         }
       }
    }
 
