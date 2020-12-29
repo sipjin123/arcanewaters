@@ -136,7 +136,7 @@ public class GuildRankRow : MonoBehaviour {
          PanelManager.self.confirmScreen.confirmButton.onClick.RemoveAllListeners();
          PanelManager.self.confirmScreen.confirmButton.onClick.AddListener(() => {
             PanelManager.self.confirmScreen.hide();
-            Global.player.rpc.Cmd_DeleteGuildRank(Global.player.userId, rankId);
+            Global.player.rpc.Cmd_DeleteGuildRank(rankId);
          });
       }
    }

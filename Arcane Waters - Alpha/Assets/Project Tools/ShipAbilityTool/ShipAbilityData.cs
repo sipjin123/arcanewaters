@@ -102,6 +102,9 @@ public class ShipAbilityData
    // The duration of the status
    public float statusDuration = 1;
 
+   // The projectile id associated with this ability
+   public int projectileId;
+
    public static Attack.ImpactMagnitude getImpactType (float normalizedValue) {
       if (normalizedValue < .33f) {
          return Attack.ImpactMagnitude.Strong;

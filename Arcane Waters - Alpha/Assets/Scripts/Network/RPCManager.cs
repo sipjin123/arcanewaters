@@ -2768,7 +2768,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_PromoteGuildMember (int promoterId, int userToPromoteId) {
+   public void Cmd_PromoteGuildMember (int userToPromoteId) {
+      int promoterId = _player.userId;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToPromoteId);
@@ -2826,7 +2827,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DemoteGuildMember (int promoterId, int userToDemoteId) {
+   public void Cmd_DemoteGuildMember (int userToDemoteId) {
+      int promoterId = _player.userId;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToDemoteId);
@@ -2898,7 +2900,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_KickGuildMember (int kickerId, int userToKickId) {
+   public void Cmd_KickGuildMember (int userToKickId) {
+      int kickerId = _player.userId;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int rankId = DB_Main.getGuildMemberRankId(userToKickId);
@@ -2952,7 +2955,8 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_DeleteGuildRank (int deletingUserId, int rankId) {
+   public void Cmd_DeleteGuildRank (int rankId) {
+      int deletingUserId = _player.userId;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          List<GuildRankInfo> guildRanks = DB_Main.getGuildRankInfo(_player.guildId);
          int userRankPriority = rankId == 0 ? 0 : guildRanks.Find(rank => rank.rankId == rankId).rankPriority;
@@ -3042,9 +3046,9 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_AppointGuildLeader (int oldLeaderUserId, int newLeaderUserId) {
+   public void Cmd_AppointGuildLeader (int newLeaderUserId) {
+      int oldLeaderUserId = _player.userId;
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
          if (DB_Main.getGuildMemberRankId(oldLeaderUserId) != 0) {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "You cannot appoint new guild leader!");
