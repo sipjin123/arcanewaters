@@ -72,12 +72,15 @@ public class ShipEntity : SeaEntity
       skinType = shipData.skinType;
       currentHealth = enemyData.maxHealth;
       maxHealth = enemyData.maxHealth;
-      attackRangeModifier = (int) enemyData.detectRadius;
+      attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
 
       speed = shipData.baseSpeed;
       sailors = shipData.baseSailors;
       rarity = Rarity.Type.None;
-      damage = shipData.baseDamage;
+
+      // TODO: Confirm if damage should be based on the projectile instead of per ship type
+      // Damage multiplier does not apply for bot ships, bot ships damage is based on their abilities
+      damage = 1;
 
       shipSize = shipData.shipSize;
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);

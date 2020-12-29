@@ -16,23 +16,32 @@ public class NubisDirect
       string currentPageStr, string itemsPerPageStr) {
 
       if (int.TryParse(itemsPerPageStr, out int itemsPerPage) && itemsPerPage > 200) {
-         D.editorLog("Requesting too many items per page.");
+         D.debug("Requesting too many items per page.");
          return string.Empty;
       }
 
       // Process user info
       UserInfo newUserInfo = new UserInfo();
-      newUserInfo = JsonConvert.DeserializeObject<UserInfo>(DB_Main.getUserInfoJSON(userIdStr));
-      if (newUserInfo == null) {
-         D.editorLog("Something went wrong with Nubis Data Fetch!", Color.red);
+      try {
+         newUserInfo = JsonConvert.DeserializeObject<UserInfo>(DB_Main.getUserInfoJSON(userIdStr));
+         if (newUserInfo == null) {
+            D.debug("Something went wrong with Nubis Data Fetch!");
+         }
+      } catch {
+         D.debug("Failed to deserialize user info! {" + userIdStr + "}");
       }
 
       // Process guild info
       GuildInfo guildInfo = new GuildInfo();
       if (newUserInfo.guildId > 0) {
-         guildInfo = JsonConvert.DeserializeObject<GuildInfo>(DB_Main.getGuildInfoJSON(newUserInfo.guildId));
-         if (guildInfo == null) {
-            D.editorLog("Something went wrong with guild info data fetch for user " + userIdStr, Color.red);
+         string temp = DB_Main.getGuildInfoJSON(newUserInfo.guildId);
+         try {
+            guildInfo = JsonConvert.DeserializeObject<GuildInfo>(temp);
+            if (guildInfo == null) {
+               D.debug("Something went wrong with guild info data fetch for user {" + userIdStr + "}");
+            }
+         } catch {
+            D.debug("Failed to deserialize guild info! {" + userIdStr + "}");
          }
       }
 

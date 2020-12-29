@@ -474,13 +474,14 @@ public class Instance : NetworkBehaviour
    }
 
    public BotShipEntity spawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area) {
-      int xmlId = 0;
+      int xmlId = 17;
       int guildId = 1;
+
+      // TODO: XmlId of enemy should be randomized here based on biome for bot ships
+      SeaMonsterEntityData randomizedSeaMonster = SeaMonsterManager.self.seaMonsterDataList.FindAll(_ => _.seaMonsterType == SeaMonsterEntity.Type.PirateShip).ChooseRandom();
+      xmlId = randomizedSeaMonster.xmlId;
+
       foreach (DataField field in dataField.d) {
-         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
-            int type = int.Parse(field.v.Split(':')[0]);
-            xmlId = type;
-         }
          if (field.k.CompareTo(DataField.SHIP_GUILD_ID) == 0) {
             guildId = int.Parse(field.v.Split(':')[0]);
          }

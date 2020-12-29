@@ -370,10 +370,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    public void receiveData (DataField[] dataFields) {
       foreach (DataField field in dataFields) {
          if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
-            // Get ID from ship data field
-            // Field arrives in format <ship type>: <ship name>
-            int type = int.Parse(field.v.Split(':')[0]);
-
             Area area = GetComponentInParent<Area>();
             areaKey = area.areaKey;
 
@@ -386,11 +382,13 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    public void setShipData (int enemyXmlData, Ship.Type shipType) {
       ShipData shipData = ShipDataManager.self.getShipData(shipType);
-      shipType = shipData.shipType;
-      if (shipData != null) {
+      if (shipData != null && (int) shipType != -1) {
          if (shipData.spritePath != "") {
             spritesContainer.GetComponent<SpriteSwap>().newTexture = ImageManager.getSprite(shipData.spritePath).texture;
          }
+      } else {
+         shipData = ShipDataManager.self.shipDataList[0];
+         D.debug("Cant get ship data for: {" + shipType + "}");
       }
       SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getMonster(enemyXmlData);
       if (seaEnemyData == null) {

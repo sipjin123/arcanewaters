@@ -30,7 +30,7 @@ public class ShipDataManager : MonoBehaviour {
 
    public ShipData getShipData (int shipXmlId) {
       if (!_shipData.Values.ToList().Exists(_=>_.shipID == shipXmlId)) {
-         D.editorLog("Failed to fetch ship data using Xml Id: " + shipXmlId, Color.red);
+         D.debug("Failed to fetch ship data using Xml Id: {" + shipXmlId + "}");
          return _shipData.Values.ToList()[0];
       }
       ShipData returnData = _shipData.Values.ToList().Find(_=>_.shipID == shipXmlId);
@@ -38,8 +38,8 @@ public class ShipDataManager : MonoBehaviour {
    }
 
    public ShipData getShipData (Ship.Type shipType) {
-      if (!_shipData.Values.ToList().Exists(_=> _.shipType == shipType)) {
-         D.debug("Failed to fetch ship data: " + shipType);
+      if (!_shipData.Values.ToList().Exists(_=> _.shipType == shipType) && (int) shipType != -1) {
+         D.debug("Failed to fetch ship data: {" + shipType + " : " + (int) shipType + "}");
          return _shipData.Values.ToList()[0];
       }
       ShipData returnData = _shipData.Values.ToList().Find(_=>_.shipType == shipType);
