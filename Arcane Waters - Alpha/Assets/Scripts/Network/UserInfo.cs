@@ -156,7 +156,7 @@ public class UserInfo {
             this.iconSigilPalettes = dataReader.GetString("gldIconSigilPalettes");
          }
       } catch {
-         D.debug("Problem with loading guild information");
+         D.warning("Problem with loading guild information");
       }
    }
 

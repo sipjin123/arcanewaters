@@ -19,25 +19,7 @@ namespace MapCreationTool
       }
 
       public void dataFieldChanged (DataField field) {
-         if (field.k.CompareTo(DataField.SHIP_DATA_KEY) == 0) {
-            bool isValidCast = true;
-            try { int.Parse(field.v);
-            } catch {
-               isValidCast = false;
-            }
-
-            if (isValidCast) {
-               SeaMonsterXMLContent xmlContent = MonsterManager.instance.idToSeaMonster.Values.ToList().Find(_ => _.xmlId == int.Parse(field.v));
-               if (xmlContent == null) {
-                  ren.sprite = unassignedShipSprite;
-               } else {
-                  string spritePath = xmlContent.seaMonsterData.avatarSpritePath;
-                  ren.sprite = ImageManager.getSprite(spritePath);
-               }
-            } else {
-               ren.sprite = unassignedShipSprite;
-            }
-         }
+         // Do Nothing, ship setup is randomly generated in game per biome
       }
 
       public override void createdForPreview () {

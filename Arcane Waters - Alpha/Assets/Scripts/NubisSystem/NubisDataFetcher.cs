@@ -227,20 +227,35 @@ namespace NubisDataHandling {
          int[] categoryFilterInt = Array.ConvertAll(categoryFilter.ToArray(), x => (int) x);
          string categoryFilterJSON = JsonConvert.SerializeObject(categoryFilterInt);
 
+         InventoryBundle inventoryBundle = null;
+
          // Request the inventory to Nubis
          string inventoryBundleString = await NubisClient.callDirect("getUserInventoryPage",
             userId.ToString(), categoryFilterJSON, pageIndex.ToString(), itemsPerPage.ToString());
 
-         InventoryBundle inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
+         try {
+            inventoryBundle = JsonConvert.DeserializeObject<InventoryBundle>(inventoryBundleString);
+         } catch {
+            D.debug("Inventory bundle failed to fetch! {" + inventoryBundleString + "} :: {" + categoryFilterJSON + "} :: {" + pageIndex + "} :: {" + itemsPerPage + "}");
+         }
+
+         if (inventoryBundle == null) {
+            D.debug("Inventory bundle is not existing!");
+            return;
+         }
 
          // Update sql id of each equipment cache loaded
          if (inventoryBundle.equippedWeapon.itemTypeId != 0) {
             WeaponStatData xmlWeaponData = EquipmentXMLManager.self.getWeaponData(inventoryBundle.equippedWeapon.itemTypeId);
-            inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(xmlWeaponData);
+            if (xmlWeaponData != null) {
+               inventoryBundle.equippedWeapon.data = WeaponStatData.serializeWeaponStatData(xmlWeaponData);
+            }
          }
          if (inventoryBundle.equippedArmor.itemTypeId != 0) {
             ArmorStatData xmlArmorData = EquipmentXMLManager.self.getArmorDataBySqlId(inventoryBundle.equippedArmor.itemTypeId);
-            inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(xmlArmorData);
+            if (xmlArmorData != null) {
+               inventoryBundle.equippedArmor.data = ArmorStatData.serializeArmorStatData(xmlArmorData);
+            }
          }
          if (inventoryBundle.equippedHat.itemTypeId != 0) {
             HatStatData xmlHatData = EquipmentXMLManager.self.getHatData(inventoryBundle.equippedHat.itemTypeId);
