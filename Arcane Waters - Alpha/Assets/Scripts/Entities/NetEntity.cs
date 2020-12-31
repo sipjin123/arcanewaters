@@ -182,6 +182,9 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public string guildIconSigilPalettes;
 
+   // The guild icon of the player
+   public GuildIcon guildIcon;
+
    // Values that determines if the magnitude indicates moving
    public const float MOVING_MAGNITUDE = .2f;
    public const float SHIP_MOVING_MAGNITUDE = .005f;
@@ -284,11 +287,11 @@ public class NetEntity : NetworkBehaviour
          }
 
          // This will allow the local host in unity editor to simulate time for features such as crops
-      #if UNITY_EDITOR
+         #if UNITY_EDITOR
          if (Global.player != null && isServer) {
             InvokeRepeating("requestServerTime", 0f, 1f);
          }
-      #endif
+         #endif
 
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
@@ -300,6 +303,7 @@ public class NetEntity : NetworkBehaviour
 
       // Routinely clean the attackers set
       InvokeRepeating("cleanAttackers", 0f, 1f);
+
    }
 
    public override void OnStartClient () {
@@ -504,22 +508,9 @@ public class NetEntity : NetworkBehaviour
       this.customFarmBaseId = userInfo.customFarmBaseId;
       this.customHouseBaseId = userInfo.customHouseBaseId;
       this.guildId = userInfo.guildId;
-      if (guildRankInfo == null) {
-         // TODO: Confirm if guild rank info is intended to be null
-         D.debug("Investigate here! Guild Rank Info is Null!");
-      } else {
+      if (guildRankInfo != null) {
          this.guildPermissions = guildRankInfo.permissions;
-      }
-
-      if (guildInfo == null) {
-         // TODO: Confirm if guild info is intended to be null
-         D.debug("Investigate here! Guild Info is Null!");
-      } else {
-         // Setup Guild Data
-         this.guildIconBorder = guildInfo.iconBorder;
-         this.guildIconSigil = guildInfo.iconSigil;
-         this.guildIconBackground = guildInfo.iconBackground;
-      }
+      } 
 
       // Body
       this.gender = userInfo.gender;
@@ -557,15 +548,25 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [ClientRpc]
+   public void Rpc_UpdateGuildIconDisplay () {
+      this.guildIcon.setBackground(this.guildIconBackground, this.guildIconBackPalettes);
+      this.guildIcon.setBorder(this.guildIconBorder);
+      this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
+
+      // Hide the guild icon after setting sprites
+      hideGuildIcon();
+   }
+
    public void showGuildIcon () {
-      CanvasGroup guildIconCanvasGroup = GetComponent<PlayerBodyEntity>().guildIcon.canvasGroup;
+      CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
       guildIconCanvasGroup.alpha = 1f;
       guildIconCanvasGroup.interactable = true;
       guildIconCanvasGroup.blocksRaycasts = true;
    }
 
    public void hideGuildIcon () {
-      CanvasGroup guildIconCanvasGroup = GetComponent<PlayerBodyEntity>().guildIcon.canvasGroup;
+      CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
       guildIconCanvasGroup.alpha = 0f;
       guildIconCanvasGroup.interactable = false;
       guildIconCanvasGroup.blocksRaycasts = false;

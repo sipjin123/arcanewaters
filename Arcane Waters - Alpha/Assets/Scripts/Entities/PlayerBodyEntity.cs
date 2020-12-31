@@ -98,9 +98,6 @@ public class PlayerBodyEntity : BodyEntity {
    public float jumpCooldownTimer;
    public bool isJumpCoolingDown = false;
 
-   // Custom icon of the guild
-   public GuildIcon guildIcon;
-
    // Sprinting animator parameter name
    public const string IS_SPRINTING = "isSprinting";
 
@@ -113,9 +110,6 @@ public class PlayerBodyEntity : BodyEntity {
 
    protected override void Start () {
       base.Start();
-
-      setGuildIcon();
-      hideGuildIcon();
 
       // Disable our collider if we are not the localplayer
       if (!isLocalPlayer) {
@@ -164,13 +158,14 @@ public class PlayerBodyEntity : BodyEntity {
       processActionLogic();
       processSprintLogic();
 
-
       // Show guild icon on mouseover.  No need to continue if all guild icons are already being displayed.
       if (!OptionsPanel.allGuildIconsShowing) {
          _playerBody = getClickedBody();
          if (_playerBody != null) {
             _previousPlayerBody = _playerBody;
-            _playerBody.showGuildIcon();
+            if (_playerBody.guildId > 0) {
+               _playerBody.showGuildIcon();
+            }
          } else {
             if (_previousPlayerBody != null) {
                _previousPlayerBody.hideGuildIcon();
@@ -191,27 +186,6 @@ public class PlayerBodyEntity : BodyEntity {
          PanelManager.self.itemShortcutPanel.activateShortcut(4);
       } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
          PanelManager.self.itemShortcutPanel.activateShortcut(5);
-      }
-   }
-
-   public void setGuildIcon () {
-      // Set guild icon
-      if (!Util.isEmpty(guildIconBackground)) {
-         guildIcon.setBackground(guildIconBackground, guildIconBackPalettes);
-         guildIcon.background.enabled = true;
-      } else {
-         guildIcon.background.enabled = false;
-      }
-      if (!Util.isEmpty(guildIconBorder)) {
-         guildIcon.setBorder(guildIconBorder);
-         guildIcon.border.enabled = true;
-      } else {
-         guildIcon.border.enabled = false;
-      }
-      if (!Util.isEmpty(guildIconSigil)) {
-         guildIcon.setSigil(guildIconSigil, guildIconSigilPalettes);
-      } else {
-         guildIcon.sigil.enabled = false;
       }
    }
 

@@ -297,12 +297,12 @@ public class MyNetworkManager : NetworkManager
             GameObject playerObject = Instantiate(prefab);
             NetEntity player = playerObject.GetComponent<NetEntity>();
 
-            // If this is a custom map, get the base key
-            if (ownerInfo != null) {
-               if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
-                  baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
-               }
-            }
+            // Use the syncvars to populate the icon fields
+            player.guildIconBackground = guildInfo.iconBackground;
+            player.guildIconBackPalettes = guildInfo.iconBackPalettes;
+            player.guildIconBorder = guildInfo.iconBorder;
+            player.guildIconSigil = guildInfo.iconSigil;
+            player.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
 
             // Verify if the area is instantiated and get its position
             Vector2 mapPosition;
@@ -340,7 +340,7 @@ public class MyNetworkManager : NetworkManager
             player.chatSuspensionEndDate = chatSuspensionEndDate;
 
             player.setDataFromUserInfo(userInfo, userObjects.armor, userObjects.weapon, userObjects.hat, shipInfo, guildInfo, guildRankInfo);
-
+       
             // Send SoundEffects to the Client
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
             player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
@@ -402,6 +402,11 @@ public class MyNetworkManager : NetworkManager
             player.rpc.sendItemShortcutList();
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();
+
+            // Update the guild icon display for all players
+            foreach (KeyValuePair<int, NetEntity> entry in _players) {
+               entry.Value.Rpc_UpdateGuildIconDisplay();
+            }
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
             if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey) &&

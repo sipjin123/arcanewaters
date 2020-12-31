@@ -2638,12 +2638,12 @@ public class RPCManager : NetworkBehaviour {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + guildName + "!");
 
                // Net entity _player are where the syncvars are stored for the player's guild icon
-               _player.GetComponent<PlayerBodyEntity>().guildIconBackground = iconBackground;
-               _player.GetComponent<PlayerBodyEntity>().guildIconBorder = iconBorder;
-               _player.GetComponent<PlayerBodyEntity>().guildIconBackPalettes = iconBackPalettes;
-               _player.GetComponent<PlayerBodyEntity>().guildIconSigil = iconSigil;
-               _player.GetComponent<PlayerBodyEntity>().guildIconSigilPalettes = iconSigilPalettes;
-               _player.GetComponent<PlayerBodyEntity>().setGuildIcon();
+               _player.guildIconBackground = iconBackground;
+               _player.guildIconBorder = iconBorder;
+               _player.guildIconBackPalettes = iconBackPalettes;
+               _player.guildIconSigil = iconSigil;
+               _player.guildIconSigilPalettes = iconSigilPalettes;
+               _player.Rpc_UpdateGuildIconDisplay();
             });
 
          } else {
@@ -2679,6 +2679,14 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.assignGuild(_player.userId, 0);
          DB_Main.assignRankGuild(_player.userId, -1);
          _player.guildId = 0;
+
+         // Set the syncvars to null and then update the guild icon
+         _player.guildIconBackground = null;
+         _player.guildIconBorder = null;
+         _player.guildIconBackPalettes = null;
+         _player.guildIconSigil = null;
+         _player.guildIconSigilPalettes = null;
+         _player.Rpc_UpdateGuildIconDisplay();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Delete the guild if it has no more members

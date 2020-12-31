@@ -147,20 +147,20 @@ public class UserInfo {
       this.customFarmBaseId = dataReader.GetInt32("customFarmBase");
       this.lastLoginTime = dataReader.GetDateTime("lastLoginTime");
 
-      try {
-         if (this.guildId > 0) {
+      if (this.guildId > 0) {
+         try {
             this.iconBorder = dataReader.GetString("gldIconBorder");
             this.iconBackground = dataReader.GetString("gldIconBackground");
             this.iconSigil = dataReader.GetString("gldIconSigil");
             this.iconBackPalettes = dataReader.GetString("gldIconBackPalettes");
             this.iconSigilPalettes = dataReader.GetString("gldIconSigilPalettes");
+         } catch {
+            D.warning("Problem with loading guild information");
          }
-      } catch {
-         D.warning("Problem with loading guild information");
       }
-   }
+}
 
-   #endif
+#endif
 
    public override bool Equals (object rhs) {
       if (rhs is UserInfo) {

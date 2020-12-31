@@ -5657,7 +5657,10 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE usrId=@usrId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId)" +
+            "WHERE usrId=@usrId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", int.Parse(userId));
@@ -5682,7 +5685,10 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE usrName=@usrName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "JOIN global.accounts USING (accId) " +
+            "LEFT JOIN guilds ON (users.gldId = guilds.gldId)" +
+            "WHERE usrName=@usrName", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrName", userName);
@@ -7000,7 +7006,10 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users JOIN global.accounts USING (accId) WHERE gldId=@gldId ", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM users " +
+            "LEFT JOIN guilds ON users.gldId = guilds.gldId " +
+            "JOIN global.accounts USING (accId)" +
+            "WHERE users.gldId=@gldId", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@gldId", guildId);

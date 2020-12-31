@@ -549,13 +549,6 @@ public class PlayerShipEntity : ShipEntity
       armorType = armor.itemTypeId;
       hatType = hat.itemTypeId;
       armorColors = armor.paletteNames;
-
-      // Store the guild icon layers and colors
-      guildIconBorder = guildInfo.iconBorder;
-      guildIconBackground = guildInfo.iconBackground;
-      guildIconSigil = guildInfo.iconSigil;
-      guildIconBackPalettes = guildInfo.iconBackPalettes;
-      guildIconSigilPalettes = guildInfo.iconSigilPalettes;
    }
 
    public override Armor getArmorCharacteristics () {

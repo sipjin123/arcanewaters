@@ -50,6 +50,17 @@ public class D : MonoBehaviour {
             int testerNumber = Util.getCommandLineInt(CommandCodes.Type.AUTO_TEST + "");
             _logFilePath = logsDirectoryPath + appName + " " + testerNumber.ToString() + ".log";
          }
+         
+         // Log file name for server
+         #if IS_SERVER_BUILD
+         foreach (string arg in System.Environment.GetCommandLineArgs()) {
+            if (arg.Contains("port=")) {
+               string[] split = arg.Split('=');
+               string port = split[1];
+               _logFilePath = logsDirectoryPath + appName + " " + port + " " + DateTime.Now.ToString(@"yyyy-M-d HH-mm-ss tt fffffff") + ".log";
+            }
+         }         
+         #endif
 
          // UnityEngine.Debug.Log("Log file: " + _logFilePath);
 

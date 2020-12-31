@@ -1050,9 +1050,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   accountId: 0
+  steamId: 
   userId: 0
   instanceId: 0
   areaKey: 
+  isInvisible: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -1079,8 +1081,11 @@ MonoBehaviour:
   adminFlag: 0
   shipSpeedupFlag: 0
   guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
+  hasEnteredPvP: 0
   isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
@@ -1089,6 +1094,7 @@ MonoBehaviour:
   guildIconSigil: 
   guildIconBackPalettes: 
   guildIconSigilPalettes: 
+  guildIcon: {fileID: 2739385863978472055}
   isAboutToWarpOnServer: 0
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
@@ -6421,7 +6427,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 3156971687042551345}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 

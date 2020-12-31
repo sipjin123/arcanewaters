@@ -51,13 +51,6 @@ public class BodyEntity : NetEntity
       this.armorManager.updateArmorSyncVars(armor.itemTypeId, armor.id, armor.paletteNames);
       this.weaponManager.updateWeaponSyncVars(weapon.itemTypeId, weapon.id, weapon.paletteNames);
       this.hatsManager.updateHatSyncVars(hat.itemTypeId, hat.id);
-
-      // Store the guild icon layers and colors
-      guildIconBorder = guildInfo.iconBorder;
-      guildIconBackground = guildInfo.iconBackground;
-      guildIconSigil = guildInfo.iconSigil;
-      guildIconBackPalettes = guildInfo.iconBackPalettes;
-      guildIconSigilPalettes = guildInfo.iconSigilPalettes;
    }
 
    public override Armor getArmorCharacteristics () {
