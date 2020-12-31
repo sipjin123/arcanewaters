@@ -171,16 +171,17 @@ public class Ship : SeaEntity {
    }
 
    public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity) {
-      int speed = (int) (getBaseSpeed(shipType) * Rarity.getIncreasingModifier(rarity));
+      ShipData fetchedShipData = ShipDataManager.self.getShipData(shipType);
+      int sailors = Random.Range(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
+      int suppliesRoom = Random.Range(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
+      int cargoRoom = Random.Range(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
+      int damage = Random.Range(fetchedShipData.baseDamageMin, fetchedShipData.baseDamageMax);
+      int health = Random.Range(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
+      int price = getBasePrice(shipType);
+      int attackRange = Random.Range(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
+      int speed = Random.Range(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
       speed = Mathf.Clamp(speed, 70, 130);
-      int sailors = (int) (getBaseSailors(shipType) * Rarity.getDecreasingModifier(rarity));
-      int suppliesRoom = (int) (getBaseSuppliesRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-      int cargoRoom = (int) (getBaseCargoRoom(shipType) * Rarity.getIncreasingModifier(rarity));
-      int damage = (int) (getBaseDamage(shipType) * Rarity.getIncreasingModifier(rarity));
-      int health = (int) (getBaseHealth(shipType) * Rarity.getIncreasingModifier(rarity));
-      int price = (int) (getBasePrice(shipType) * Rarity.getIncreasingModifier(rarity));
-      int attackRange = (int) (getBaseAttackRange(shipType) * Rarity.getIncreasingModifier(rarity));
-      
+
       // Let's use nice numbers
       sailors = Util.roundToPrettyNumber(sailors);
       suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);

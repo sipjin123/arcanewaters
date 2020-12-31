@@ -500,6 +500,10 @@ public class BattleUIManager : MonoBehaviour {
          yield return null;
       }
 
+      if (playerBattler.clickBox == null) {
+         yield return null;
+      }
+      
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
       setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);

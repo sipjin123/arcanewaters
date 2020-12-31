@@ -104,7 +104,7 @@ public class BotShipGenerator
       spawnPosition = (Vector3) nodeInfo.node.position - area.transform.position;
 
       // Spawn the ship
-      BotShipEntity botShip = instance.spawnBotShip(dataField, spawnPosition, area);
+      BotShipEntity botShip = instance.spawnBotShip(dataField, spawnPosition, area, instance.biome);
    }
 
    #region Private Variables

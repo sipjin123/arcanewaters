@@ -55,8 +55,6 @@ public class ServerMessageManager : MonoBehaviour
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
-            } else {
-               D.debug("Logging in using steam But needs to be authenticated first");
             }
          } else {
             // Look up the account ID corresponding to the provided account name and password

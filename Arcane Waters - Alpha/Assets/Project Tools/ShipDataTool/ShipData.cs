@@ -39,30 +39,44 @@ public class ShipData
 
    // Base hp of the ship
    public int baseHealth = 100;
-   
+   public int baseHealthMin = 100;
+   public int baseHealthMax = 300;
+
    // Attack range of the ship
    public int baseRange = 100;
+   public int baseRangeMin = 80;
+   public int baseRangeMax = 100;
 
    // Ship Size, the wakes will depend on this variable
    public ShipSize shipSize = ShipSize.None;
 
    // Damage of the ship
    public int baseDamage = 10;
-   
+   public int baseDamageMin = 5;
+   public int baseDamageMax = 10;
+
    // Movement speed of the ship
    public int baseSpeed = 90;
-   
+   public int baseSpeedMin = 50;
+   public int baseSpeedMax = 150;
+
    // Cost of the ship in the ship yard
    public int basePrice = 5000;
    
    // Number of sailors the ship has
    public int baseSailors = 10;
-   
+   public int baseSailorsMin = 1;
+   public int baseSailorsMax = 10;
+
    // Count of cargo rooms in the ship
    public int baseCargoRoom = 18;
+   public int baseCargoRoomMin = 1;
+   public int baseCargoRoomMax = 18;
 
    // Count of supply rooms in the ship
    public int baseSupplyRoom = 10;
+   public int baseSupplyRoomMin = 1;
+   public int baseSupplyRoomMax = 10;
 
    // Type of sail the ship uses
    public Ship.SailType sailType = Ship.SailType.Type_1;

@@ -184,6 +184,53 @@ public class EnemyManager : MonoBehaviour {
       return shipType;
    }
 
+   public int randomizeShipXmlId (Biome.Type biome) {
+      int xmlId = 0;
+      List<SeaMonsterEntityData> seaEnemyList = SeaMonsterManager.self.seaMonsterDataList.FindAll(_ => _.seaMonsterType == SeaMonsterEntity.Type.PirateShip);
+
+      switch (biome) {
+         case Biome.Type.Forest:
+            xmlId = 17;
+            break;
+         case Biome.Type.Desert:
+            xmlId = new List<int> { 
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_1).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_2).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_3).xmlId
+            }.ChooseRandom();
+            break;
+         case Biome.Type.Pine:
+            xmlId = new List<int> {
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_1).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_2).xmlId
+            }.ChooseRandom();
+            break;
+         case Biome.Type.Snow:
+            xmlId = new List<int> {
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_2).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_3).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_4).xmlId
+            }.ChooseRandom();
+            break;
+         case Biome.Type.Lava:
+            xmlId = new List<int> {
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_4).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_5).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_6).xmlId
+            }.ChooseRandom();
+            break;
+         case Biome.Type.Mushroom:
+            xmlId = new List<int> {
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_6).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_7).xmlId,
+               seaEnemyList.Find(_ => _.subVarietyTypeId == (int) Ship.Type.Type_8).xmlId
+            }.ChooseRandom();
+            break;
+      }
+
+      return xmlId;
+   }
+
    #region Private Variables
 
    // Stores a list of Enemy Spawners for each type of Site

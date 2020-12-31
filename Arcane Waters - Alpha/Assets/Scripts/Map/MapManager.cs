@@ -117,7 +117,7 @@ public class MapManager : MonoBehaviour
       string mapData = await NubisClient.call(nameof(DB_Main.getMapInfo), areaKey);
       D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
       if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
-         D.debug("Error in retrieving map data from NUBIS: (" + mapData + ")");
+         D.debug("Error in retrieving map data from NUBIS: (" + areaKey+ ")");
       } else {
          MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
 
