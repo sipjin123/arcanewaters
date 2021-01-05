@@ -835,6 +835,39 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
+   public static new void saveComplain (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog) {
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand(
+            "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
+             "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
+            conn.Open();
+            cmd.Prepare();
+
+            cmd.Parameters.AddWithValue("@ticketSubject", $"Complaint about {targetUsrName}");
+            cmd.Parameters.AddWithValue("@ticketDescription", ticketDescription);
+            cmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
+            cmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
+            cmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
+            cmd.Parameters.AddWithValue("@sourceEmail", sourceEmail);
+            cmd.Parameters.AddWithValue("@sourceIPAddress", sourceIPAddress);
+            cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
+            cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
+            cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
+            cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+            cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
+            cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
+
+            DebugQuery(cmd);
+
+            // Execute the command
+            cmd.ExecuteNonQuery();            
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    #region Server Communications
 
    public static new ChatInfo getLatestChatInfo () {

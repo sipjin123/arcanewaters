@@ -23,6 +23,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The exit button
    public Button xButton;
 
+   // The prefab for the bottom of the group members column
+   public GameObject columnBottomPrefab;
+
    // Self
    public static VoyageGroupPanel self;
 
@@ -95,6 +98,8 @@ public class VoyageGroupPanel : ClientMonoBehaviour
          cell.setCellForGroupMember(memberUserId);
          _memberCells.Add(cell);
       }
+
+      Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
    public void OnLeaveGroupButtonClickedOn () {

@@ -105,6 +105,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9210462745330047370}
   - component: {fileID: 2974502942535136265}
+  - component: {fileID: 7140679644560924127}
   m_Layer: 0
   m_Name: DottedCircle
   m_TagString: Untagged
@@ -145,6 +146,19 @@ MonoBehaviour:
   dotOverride: {fileID: 21300000, guid: 2c1e923ec5f0ced44b06d12e7eb1daba, type: 3}
   updateCircle: 1
   rotateSegmentSprites: 1
+--- !u!114 &7140679644560924127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1482708440096779543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c157dbab0c2a7dd4a9f4fc06c188ea2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newZ: 6
 --- !u!1 &2963920053396966339
 GameObject:
   m_ObjectHideFlags: 0

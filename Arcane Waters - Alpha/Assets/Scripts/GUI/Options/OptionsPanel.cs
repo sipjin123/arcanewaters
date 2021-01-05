@@ -109,6 +109,7 @@ public class OptionsPanel : Panel
 
       // Set the guild icons toggle event
       displayGuildIconsToggle.onValueChanged.AddListener(value => {
+         allGuildIconsShowing = value;
          showAllGuildIcons(value);
       });
    }

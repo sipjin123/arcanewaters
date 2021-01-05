@@ -17,12 +17,6 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The frame image
    public Image frameImage;
 
-   // The frame used if the portrait is the local player's
-   public Sprite localPlayerFrame;
-
-   // The frame used if the portrait is not the local player's
-   public Sprite nonLocalPlayerFrame;
-
    // The hp bar
    public Image hpBar;
 
@@ -59,8 +53,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
          _active = false;
 
          // Initialize the portrait with a question mark
-         characterPortrait.initialize(entity);
-         frameImage.sprite = nonLocalPlayerFrame;
+         characterPortrait.initialize(entity);         
       } else {
          _active = true;
 
@@ -127,13 +120,6 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       characterPortrait.initialize(entity);
       playerNameText.text = entity.entityName;
       playerLevelText.text = "LvL " + LevelUtil.levelForXp(entity.XP).ToString();
-
-      // Set the portrait frame for local or non local entities
-      if (entity.isLocalPlayer) {
-         frameImage.sprite = localPlayerFrame;
-      } else {
-         frameImage.sprite = nonLocalPlayerFrame;
-      }
    }
 
    #region Private Variables

@@ -5,8 +5,10 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System.Threading;
+using UnityEngine.EventSystems;
 
-public class PlayerBodyEntity : BodyEntity {
+public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHandler
+{
    #region Public Variables
 
    // The farming trigger component used for detecting crops
@@ -157,20 +159,17 @@ public class PlayerBodyEntity : BodyEntity {
       processJumpLogic();
       processActionLogic();
       processSprintLogic();
+   }
 
-      // Show guild icon on mouseover.  No need to continue if all guild icons are already being displayed.
-      if (!OptionsPanel.allGuildIconsShowing) {
-         _playerBody = getClickedBody();
-         if (_playerBody != null) {
-            _previousPlayerBody = _playerBody;
-            if (_playerBody.guildId > 0) {
-               _playerBody.showGuildIcon();
-            }
-         } else {
-            if (_previousPlayerBody != null) {
-               _previousPlayerBody.hideGuildIcon();
-            }
-         }
+   public void OnPointerEnter (PointerEventData pointerEventData) {
+      if (guildIcon != null) {
+         showGuildIcon();
+      }
+   }
+
+   public void OnPointerExit (PointerEventData pointerEventData) {
+      if ((guildIcon != null) && (!OptionsPanel.allGuildIconsShowing)) {
+         GetComponent<PlayerBodyEntity>().hideGuildIcon();
       }
    }
 

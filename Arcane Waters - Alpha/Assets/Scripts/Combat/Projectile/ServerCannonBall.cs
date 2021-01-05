@@ -40,11 +40,15 @@ public class ServerCannonBall : NetworkBehaviour {
       _abilityData = ShipAbilityManager.self.getAbility(abilityId);
       _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
       _damageMultiplier = damageMultiplier;
+      _isLobbed = true;
+      _lobHeight = 0.1f;
 
       this.projectileVelocity = velocity;
 
       _rigidbody.velocity = velocity;
       transform.position = startPos;
+
+      _ballCollider = GetComponentInChildren<CircleCollider2D>();
    }
 
    [Server]
@@ -64,6 +68,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _rigidbody.velocity = velocity;
       transform.position = startPos;
 
+      // Disable collider until ball is near the ground
       _ballCollider = GetComponentInChildren<CircleCollider2D>();
       _ballCollider.enabled = false;
       StartCoroutine(CO_SetColliderAfter(_lifetime * 0.9f, true));
@@ -157,6 +162,14 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    private void processDestruction () {
+      // Detach the Trail Renderer so that it continues to show up a little while longer
+      TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
+      trail.autodestruct = true;
+      trail.transform.SetParent(null);
+
+      // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
+      Destroy(trail.gameObject, 3.0f);
+
       NetworkServer.Destroy(gameObject);
    }
 
@@ -173,17 +186,9 @@ public class ServerCannonBall : NetworkBehaviour {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(_impactMagnitude), transform.position, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Slash_Lightning, this.transform.position);
       } else {
-         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position + new Vector3(0f, -.1f), Quaternion.identity);
+         Instantiate(PrefabsManager.self.requestCannonSplashPrefab(_impactMagnitude), transform.position, Quaternion.identity);
          SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Splash_Cannon_1, this.transform.position);
       }
-
-      // Detach the Trail Renderer so that it continues to show up a little while longer
-      TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
-      trail.autodestruct = true;
-      trail.transform.SetParent(null);
-
-      // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
-      Destroy(trail.gameObject, 3.0f);
    }
 
    #region Private Variables

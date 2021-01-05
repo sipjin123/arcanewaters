@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
+using System.Text;
 
 public class ChatManager : MonoBehaviour {
    #region Public Variables
@@ -20,6 +21,7 @@ public class ChatManager : MonoBehaviour {
       Group = 6,
       Officer = 7,
       Guild = 8,
+      Complain = 9
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -42,6 +44,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
       _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
       _commands.Add(Type.Guild, new List<string> { "/guild", "/gld", "/g" });
+      _commands.Add(Type.Complain, new List<string>() { "/complain ", "/report " });
    }
 
    public void addChat (string message, ChatInfo.Type chatType) {
@@ -110,6 +113,31 @@ public class ChatManager : MonoBehaviour {
       return extractedUserName;
    }
 
+   public string extractComplainNameFromChat (string message) {
+      foreach (string command in _commands[Type.Complain]) {
+         message = message.Replace(command, "");
+      }
+
+      StringBuilder extractedName = new StringBuilder();
+      foreach (char letter in message) {
+         if (letter == ' ') {
+            break;
+         }
+
+         extractedName.Append(letter);
+      }
+
+      return extractedName.ToString();
+   }
+
+   public string extractComplainMessageFromChat (string message, string username) {
+      foreach (string command in _commands[Type.Complain]) {
+         message = message.Replace(command, "");
+      }
+
+      return message.Replace($"{username} ", "");
+   }
+
    public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
       return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
    }
@@ -172,7 +200,33 @@ public class ChatManager : MonoBehaviour {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Officer);
       } else if (type == Type.Guild) {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Guild);
+      } else if (type == Type.Complain) {
+         sendComplainToServer(message);
       }
+   }
+
+   private void sendComplainToServer (string message) {
+      string username = extractComplainNameFromChat(message);      
+      string details = extractComplainMessageFromChat(message, username);
+      
+      if (Global.player != null) {         
+         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog());
+      }
+   }
+
+   public string getChatLog (int messages = -1) {
+      string log = "";
+      int messagesToInclude = messages < 1 ? MAX_MESSAGES_IN_LOG : messages;
+
+      // Make sure we don't try to read more messages than we have
+      messagesToInclude = Mathf.Min(messagesToInclude, _chats.Count);
+
+      for (int i = _chats.Count - 1; i > _chats.Count - messagesToInclude; i--) {
+         ChatInfo chat = _chats[i];
+         log += Util.stripHTML($"{chat.sender}: {chat.text}\n");
+      }
+
+      return log;
    }
 
    public static bool isTyping () {
@@ -196,6 +250,9 @@ public class ChatManager : MonoBehaviour {
 
    // The last guild chat ID that we processed
    protected int _lastGuildChatId = 0;
+
+   // The default number of messages to include in the log when requested
+   protected const int MAX_MESSAGES_IN_LOG = 50;
 
    #endregion
 }

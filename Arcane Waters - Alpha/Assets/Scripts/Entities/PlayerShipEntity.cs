@@ -349,7 +349,7 @@ public class PlayerShipEntity : ShipEntity
             float middleAngle = Util.angle(Util.getMousePos() - transform.position);
 
             foreach (Collider2D hit in coneHits) {
-               if (hit.GetComponent<SeaEntity>()) {
+               if (hit.GetComponent<SeaEntity>() && !hit.GetComponent<PlayerShipEntity>()) {
                   if (Util.isWithinCone(transform.position, hit.transform.position, middleAngle, _targetCone.coneHalfAngle)) {
                      enemyInCone = true;
                      break;

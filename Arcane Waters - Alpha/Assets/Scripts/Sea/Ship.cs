@@ -171,15 +171,16 @@ public class Ship : SeaEntity {
    }
 
    public static ShipInfo generateNewShip (Ship.Type shipType, Rarity.Type rarity) {
+      System.Random rand = new System.Random();
       ShipData fetchedShipData = ShipDataManager.self.getShipData(shipType);
-      int sailors = Random.Range(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
-      int suppliesRoom = Random.Range(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
-      int cargoRoom = Random.Range(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
-      int damage = Random.Range(fetchedShipData.baseDamageMin, fetchedShipData.baseDamageMax);
-      int health = Random.Range(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
+      int sailors = rand.Next(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
+      int suppliesRoom = rand.Next(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
+      int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
+      int damage = rand.Next(fetchedShipData.baseDamageMin, fetchedShipData.baseDamageMax);
+      int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
       int price = getBasePrice(shipType);
-      int attackRange = Random.Range(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
-      int speed = Random.Range(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
+      int attackRange = rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
+      int speed = rand.Next(fetchedShipData.baseSpeedMin, fetchedShipData.baseSpeedMax);
       speed = Mathf.Clamp(speed, 70, 130);
 
       // Let's use nice numbers

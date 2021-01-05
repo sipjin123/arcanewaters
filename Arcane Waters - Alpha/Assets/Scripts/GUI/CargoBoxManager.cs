@@ -14,6 +14,12 @@ public class CargoBoxManager : MonoBehaviour
    // The prefab we use for creating cargo box GUI elements
    public CargoBox cargoBoxPrefab;
 
+   // The prefab of the image we show at the bottom of the list
+   public Image listBottomPrefab;
+
+   // The number of boxes being shown
+   public int boxesCount;
+
    // Self
    public static CargoBoxManager self;
 
@@ -29,7 +35,7 @@ public class CargoBoxManager : MonoBehaviour
 
    private void Update () {
       // Hide this panel in certain situations
-      bool shouldHidePanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() || Global.isInBattle();
+      bool shouldHidePanel = TitleScreen.self.isShowing() || CharacterScreen.self.isShowing() || Global.isInBattle() || boxesCount < 1;
 
       // Keep the panel hidden until we're in the game
       canvasGroup.alpha = shouldHidePanel ? 0 : 1f;
@@ -38,6 +44,8 @@ public class CargoBoxManager : MonoBehaviour
    public void updateCargoBoxes (List<SiloInfo> siloInfo) {
       // Clear out the old
       this.gameObject.DestroyChildren();
+      
+      boxesCount = 0;
 
       foreach (SiloInfo info in siloInfo) {
          // Ignore 0 counts
@@ -48,6 +56,12 @@ public class CargoBoxManager : MonoBehaviour
          CargoBox box = Instantiate(cargoBoxPrefab);
          box.transform.SetParent(this.transform, false);
          box.updateBox(info);
+
+         boxesCount++;
+      }
+
+      if (boxesCount > 0) {
+         Instantiate(listBottomPrefab, transform, false);
       }
    }
 

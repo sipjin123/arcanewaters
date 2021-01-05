@@ -554,15 +554,20 @@ public class NetEntity : NetworkBehaviour
       this.guildIcon.setBorder(this.guildIconBorder);
       this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
 
-      // Hide the guild icon after setting sprites
-      hideGuildIcon();
+      if (OptionsPanel.allGuildIconsShowing) {
+         showGuildIcon();
+      } else {
+         hideGuildIcon();
+      }
    }
 
    public void showGuildIcon () {
-      CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
-      guildIconCanvasGroup.alpha = 1f;
-      guildIconCanvasGroup.interactable = true;
-      guildIconCanvasGroup.blocksRaycasts = true;
+      if (guildId > 0) {
+         CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
+         guildIconCanvasGroup.alpha = 1f;
+         guildIconCanvasGroup.interactable = true;
+         guildIconCanvasGroup.blocksRaycasts = true;
+      }
    }
 
    public void hideGuildIcon () {

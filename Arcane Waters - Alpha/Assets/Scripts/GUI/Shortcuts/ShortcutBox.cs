@@ -31,6 +31,12 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
    // The text of the tooltip
    public TextMeshProUGUI toolTipText;
 
+   // Whether the item is selected
+   public bool isSelected;
+
+   // The sprite shown for the selected item
+   public Sprite selectedSprite;
+
    #endregion
 
    private void Start () {
@@ -47,10 +53,7 @@ public class ShortcutBox : MonoBehaviour, IPointerClickHandler
       }
 
       // Make the box highlighted if we've equipped the associated weapon
-      _containerImage.color = Color.white;
-      if (InventoryManager.isEquipped(_itemCell.getItem().id)) {
-         _containerImage.color = Util.getColor(28, 255, 0);
-      }
+      _containerImage.sprite = InventoryManager.isEquipped(_itemCell.getItem().id) ? selectedSprite : ImageManager.self.blankSprite;
    }
 
    public void onShortcutPress () {

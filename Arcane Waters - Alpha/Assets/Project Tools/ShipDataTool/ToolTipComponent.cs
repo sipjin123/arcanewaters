@@ -42,7 +42,6 @@ public class ToolTipComponent : MonoBehaviour {
       eventEntry.eventID = EventTriggerType.PointerEnter;
       eventEntry.callback.AddListener((data) => { onHoverEnter((PointerEventData)data); });
       eventTrigger.triggers.Add(eventEntry);
-      
       EventTrigger.Entry eventEntryExit = new EventTrigger.Entry();
       eventEntryExit.eventID = EventTriggerType.PointerExit;
       eventEntryExit.callback.AddListener((data) => { onHoverExit(); });
@@ -55,7 +54,7 @@ public class ToolTipComponent : MonoBehaviour {
 
    public void onHoverEnter (PointerEventData eventData) {
       // Variable to store the panel gameObject
-      _panelRoot = null;
+      _panelRoot = this.gameObject;
 
       // Traverse up the parents looking for sprite with panel image
       Transform currentParent = transform.parent;
@@ -72,7 +71,7 @@ public class ToolTipComponent : MonoBehaviour {
       string dictKeySuffix = null;
 
       // Check if the tooltip text is being created dynamically at runtime (if so, there will be no entry in the xml document)
-      if ((this.GetComponent<ItemCellInventory>() != null) || (this.GetComponent<ItemCellIngredient>() != null) || (this.GetComponent<CreationPerkIcon>() != null) || (this.GetComponent<PerkElementTemplate>() != null)) {
+      if ((this.GetComponent<ItemCellInventory>() != null) || (this.GetComponent<ItemCellIngredient>() != null) || (this.GetComponent<CreationPerkIcon>() != null) || (this.GetComponent<PerkElementTemplate>() != null) || (this.GetComponent<PingPanel>() != null)) {
 
          // Send the message to the tooltip handler
          TooltipHandler.self.callToolTip(message, tooltipPlacement, this.transform.position, _panelRoot);
@@ -94,7 +93,7 @@ public class ToolTipComponent : MonoBehaviour {
                // Send the message to the tooltip handler
                TooltipHandler.self.callToolTip(message, tooltipPlacement, this.transform.position, _panelRoot);
             }
-         } 
+         }
       }
    }
 

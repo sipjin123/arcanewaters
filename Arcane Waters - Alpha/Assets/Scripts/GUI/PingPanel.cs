@@ -21,6 +21,9 @@ public class PingPanel : ClientMonoBehaviour {
    // The container for the ping panel
    public GameObject container;
 
+   // Variable to store the tooltip
+   ToolTipComponent toolTipComponent;
+
    // Self
    public static PingPanel self;
 
@@ -30,6 +33,10 @@ public class PingPanel : ClientMonoBehaviour {
       base.Awake();
 
       self = this;
+   }
+
+   private void Start () {
+      toolTipComponent = GetComponent<ToolTipComponent>();
    }
 
    void Update () {
@@ -51,6 +58,11 @@ public class PingPanel : ClientMonoBehaviour {
          pingAnimation.setNewTexture(pingYellow);
       } else {
          pingAnimation.setNewTexture(pingRed);
+      }
+
+      // Update the dynamic tooltip message
+      if (toolTipComponent != null) {
+         toolTipComponent.message = getPingText();
       }
    }
 
