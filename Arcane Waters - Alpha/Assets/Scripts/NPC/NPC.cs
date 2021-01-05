@@ -84,6 +84,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // List of position that allows player to pet animal
    public List<GameObject> animalPettingPositions;
 
+   // If this unit is being controlled by another script
+   public bool isUnderControl;
+
    #endregion
 
    protected override void Awake () {
@@ -187,6 +190,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Use shadow as our sort point
       sortPoint.transform.localPosition = shadow.transform.localPosition;
 
+      // Add name to game object for editor preview
+      NPCData fetchedData = NPCManager.self.getNPCData(npcId);
+      gameObject.name = fetchedData == null ? gameObject.name : fetchedData.name;
+
       // Keep track of the NPC in the Manager
       NPCManager.self.storeNPC(this);
    }
@@ -197,6 +204,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInLinkedList());
+      }
+
+      if (isUnderControl) {
+         return;
       }
 
       Vector2 direction;
@@ -242,6 +253,10 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // If we're talking to the player or movement is blocked, don't move
       if (isTalkingToGlobalPlayer() || !canMove) {
+         return;
+      }
+
+      if (isUnderControl) {
          return;
       }
 
@@ -574,11 +589,24 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          puppet = gameObject.AddComponent<AnimalPuppet>();
       }
 
-      puppet.setData(animalEndPos, maxTime);
+      puppet.setData(animalEndPos, maxTime + 0.05f);
       puppet.controlGranted(this);
 
-      // Start player's petting animation
-      StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f, playerEntityId));
+      if (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
+         // Wait for destination to sync before playing animation
+         CO_WaitToReachDestination(maxTime + 0.05f, playerEntityId, animalEndPos);
+      } else {
+         // Start player's petting animation
+         StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f, playerEntityId));
+      }
+   }
+   
+   private IEnumerator CO_WaitToReachDestination (float timeToWait, uint playerEntityId, Vector2 animalEndPos) {
+      while (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
+         yield return null;
+      }
+
+      StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(timeToWait, playerEntityId));
    }
 
    private IEnumerator CO_ContinueAnimalPettingWithCorrectPos (float timeToWait, uint playerEntityId) {

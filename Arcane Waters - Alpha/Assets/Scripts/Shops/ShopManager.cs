@@ -34,7 +34,7 @@ public class ShopManager : MonoBehaviour {
 
    private void checkIfDataSetupIsFinished () {
       // Initialize random generated ships only when ship data and ship abilities data are setup
-      if (ShipDataManager.self.hasInitialized && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
+      if ((ShipDataManager.self.hasInitialized && ShipDataManager.self.shipDataList.Count > 0) && ShipAbilityManager.self.hasInitialized && ShopXMLManager.self.hasInitialized) {
          InvokeRepeating(nameof(randomlyGenerateShips), 0f, (float) TimeSpan.FromHours(1).TotalSeconds);
       }
 

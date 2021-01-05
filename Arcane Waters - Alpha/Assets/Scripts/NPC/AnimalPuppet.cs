@@ -23,7 +23,10 @@ public class AnimalPuppet : TemporaryController
    protected override void controlUpdate (ControlData puppet) {
       // Move animal linearly to the player
       float t = puppet.time / _maxTime;
-      puppet.entity.getRigidbody().MovePosition(Vector3.Lerp(puppet.startPos, puppet.endPos, t));
+
+      if (puppet.hasMovement) {
+         puppet.entity.getRigidbody().MovePosition(Vector3.Lerp(puppet.startPos, puppet.endPos, t));
+      }
 
       Vector2 dir = puppet.endPos - puppet.startPos;
       dir.Normalize();
@@ -32,8 +35,10 @@ public class AnimalPuppet : TemporaryController
          // Calculate an angle for that direction
          float angle = Util.angle(dir);
 
-         // Set our facing direction based on that angle
-         puppet.entity.facing = puppet.entity.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+         if (puppet.hasMovement) {
+            // Set our facing direction based on that angle
+            puppet.entity.facing = puppet.entity.hasDiagonals ? Util.getFacingWithDiagonals(angle) : Util.getFacing(angle);
+         }
 
          animator.SetFloat("velocityX", dir.x);
          animator.SetFloat("velocityY", dir.y);
@@ -44,7 +49,9 @@ public class AnimalPuppet : TemporaryController
 
       // End control if time has run out
       if (puppet.time >= _maxTime) {
-         puppet.entity.getRigidbody().MovePosition(puppet.endPos);
+         if (puppet.hasMovement) {
+            puppet.entity.getRigidbody().MovePosition(puppet.endPos);
+         }
          puppet.entity.fallDirection = 0;
 
          // Reset animator to idle state

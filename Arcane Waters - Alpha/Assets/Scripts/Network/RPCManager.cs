@@ -5156,8 +5156,13 @@ public class RPCManager : NetworkBehaviour {
       Vector2 animalEndPos = new Vector2(npc.transform.position.x, npc.transform.position.y) + distToMoveAnimal;
       float maxTime = Mathf.Lerp(0.0f, 0.75f, distance / NPC.ANIMAL_PET_DISTANCE);
 
-      Rpc_ContinuePettingAnimal(netEntityId, _player.netId, animalEndPos, maxTime);
-      npc.continueAnimalPetting(_player.netId, animalEndPos, maxTime);
+      // Override Begin
+      NpcControlOverride npcontroller = npc.GetComponent<NpcControlOverride>();
+      npcontroller.hasReachedDestination.AddListener(() => {
+         Rpc_ContinuePettingAnimal(netEntityId, _player.netId, animalEndPos, maxTime);
+         npcontroller.hasReachedDestination.RemoveAllListeners();
+      });
+      npcontroller.overridePosition(animalEndPos, _player.transform.position);
    }
 
    [ClientRpc]

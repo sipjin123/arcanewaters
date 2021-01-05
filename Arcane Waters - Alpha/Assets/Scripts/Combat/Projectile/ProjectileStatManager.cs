@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class ProjectileStatManager : MonoBehaviour {
    #region Public Variables
@@ -13,7 +14,7 @@ public class ProjectileStatManager : MonoBehaviour {
    // Determines if the list is generated already
    public bool hasInitialized;
 
-   // Holds the projectile data
+   // TODO: For editor/inspector preview only, remove after confirmation that this manager is working perfectly
    public List<ProjectileStatData> projectileDataList = new List<ProjectileStatData>();
 
    #endregion
@@ -48,6 +49,13 @@ public class ProjectileStatManager : MonoBehaviour {
             });
          });
       }
+   }
+
+   public ProjectileStatData getProjectileData (int projectileId) {
+      if (_projectileData.ContainsKey(projectileId)) {
+         return _projectileData[projectileId];
+      }
+      return _projectileData.Values.ToList()[0];
    }
 
    public void receiveZipData (List<ProjectileStatPair> statDataGroup) {

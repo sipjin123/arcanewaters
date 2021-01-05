@@ -502,8 +502,17 @@ public class SeaEntity : NetEntity
       float distance = Vector2.Distance(this.transform.position, spot);
       float timeToReachTarget = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
 
-      // Speed modifiers for the projectile types
       timeToReachTarget /= Attack.getSpeedModifier(attackType);
+
+      // Speed modifiers for the projectile types
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      if (abilityData.projectileId > 0) {
+         ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
+         if (projectileData != null) {
+            // The higher the mass, the slower the projectile will reach its target
+            timeToReachTarget /= projectileData.projectileMass;
+         }
+      }
 
       // Wait for the attack delay if any
       if (attackDelay > 0) {

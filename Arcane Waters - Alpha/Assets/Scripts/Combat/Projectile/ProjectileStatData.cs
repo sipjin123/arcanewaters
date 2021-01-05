@@ -5,16 +5,16 @@ public class ProjectileStatData  {
    #region Public Variables
 
    // The primary id that is referenced by dependent objects, this is a unique id
-   public int projectileId;
+   public int projectileId = -1;
 
    // The mass of the projectile, this directly affects the speed of the projectile
-   public float projectileMass;
+   public float projectileMass = .5f;
 
    // The scale of the projectile
-   public float projectileScale;
+   public float projectileScale = 1;
 
    // The speed of the projectile animation
-   public float animationSpeed;
+   public float animationSpeed = 1;
 
    // The path of the projectile sprite
    public string projectileSpritePath;

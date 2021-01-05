@@ -17,17 +17,26 @@ public abstract class TemporaryController : ClientMonoBehaviour
          return;
       }
 
+      // Check if this entity is an npc since npcs behave differently
+      bool isNpc = entity is NPC;
+
       // Register the entity as being controlled, set any data we might need for controlling it
       ControlData puppet = new ControlData {
          entity = entity,
          startTime = Time.time,
-         startPos = entity.getRigidbody().position
+         startPos = entity.getRigidbody().position,
+         hasMovement = !isNpc
       };
       _puppets.Add(puppet);
 
       // Disable collider for the entity
       if (puppet.entity.isLocalPlayer) {
          puppet.entity.getMainCollider().isTrigger = true;
+      }
+
+      // Override Controls
+      if (puppet.entity is NPC) {
+         ((NPC) puppet.entity).isUnderControl = true;
       }
 
       // Allow child class to react to the beginning of control
@@ -53,6 +62,11 @@ public abstract class TemporaryController : ClientMonoBehaviour
       // Reenable collider for entity
       if (puppet.entity.isLocalPlayer) {
          puppet.entity.getMainCollider().isTrigger = false;
+      }
+
+      // Remove override controls
+      if (puppet.entity is NPC) {
+         ((NPC) puppet.entity).isUnderControl = false;
       }
 
       puppet.entity.giveBackControl(this);
@@ -119,5 +133,8 @@ public abstract class TemporaryController : ClientMonoBehaviour
 
       // For how long are we controlling the entity
       public float time = 0;
+
+      // If this puppet has movement altering feature
+      public bool hasMovement = true;
    }
 }
