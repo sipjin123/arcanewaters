@@ -3843,8 +3843,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7434917146075523113}
   m_HandleRect: {fileID: 7326147579745517691}
   m_Direction: 2
-  m_Value: -0.000006147018
-  m_Size: 0.5837203
+  m_Value: -0.0000066621074
+  m_Size: 0.60313225
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5187,7 +5187,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7400312856274305303}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
@@ -5935,6 +5935,10 @@ MonoBehaviour:
   messagePanelHoveringZone: {fileID: 7325131181669012627}
   expandButton: {fileID: 629758436244451302}
   collapseButton: {fileID: 8101328626493637562}
+  fontMaterialWithBackground: {fileID: 2100000, guid: 49d5fa8757ed138468b0ecbd64d8383e,
+    type: 2}
+  fontMaterialNoBackground: {fileID: 2100000, guid: 4a3264cde141f2d44bf7be340594c46b,
+    type: 2}
   allTabToggle: {fileID: 706339946862645847}
   groupTabToggle: {fileID: 7190629696515962480}
   enemySpeechColor: {r: 1, g: 0.36862746, b: 0.36862746, a: 1}
@@ -8343,14 +8347,6 @@ PrefabInstance:
     - target: {fileID: 5873, guid: 84264dcc115a75a408534968dc4539e6, type: 3}
       propertyPath: m_Name
       value: Guild Invite Chat Line (2)
-      objectReference: {fileID: 0}
-    - target: {fileID: 10838, guid: 84264dcc115a75a408534968dc4539e6, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 10838, guid: 84264dcc115a75a408534968dc4539e6, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 10839, guid: 84264dcc115a75a408534968dc4539e6, type: 3}
       propertyPath: m_LocalPosition.x

@@ -50,9 +50,6 @@ public class AuctionPanel : Panel
    // When set to true, only the auctions the user has bid on will be listed
    public Toggle myBidsToggle;
 
-   // The user's gold
-   public Text goldText;
-
    // The auction info panel
    public AuctionInfoPanel auctionInfoPanel;
 
@@ -124,7 +121,6 @@ public class AuctionPanel : Panel
       }
 
       Global.lastUserGold = userGold;
-      goldText.text = string.Format("{0:n0}", userGold);
    }
 
    public void onTabButtonPress () {

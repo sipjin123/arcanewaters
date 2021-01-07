@@ -210,7 +210,7 @@ public class ChatManager : MonoBehaviour {
       string details = extractComplainMessageFromChat(message, username);
       
       if (Global.player != null) {         
-         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog());
+         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()));
       }
    }
 

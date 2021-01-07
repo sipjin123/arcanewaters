@@ -87,6 +87,10 @@ public class MyNetworkManager : NetworkManager
          } else if (arg.Contains("serverOverride=")) {
             string[] split = arg.Split('=');
             this.serverOverride = (ServerType) int.Parse(split[1]);
+         } else if (arg.Contains("ip=")) {
+            string[] split = arg.Split('=');
+            this.serverOverride = ServerType.None;
+            this.networkAddress = split[1];
          }
       }
 
@@ -248,6 +252,13 @@ public class MyNetworkManager : NetworkManager
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
+      }
+
+      // Make sure an entity gameobject for this user doesn't already exist (e.g. due to a player reconnecting before the timeout)
+      NetEntity entity = EntityManager.self.getEntity(authenticatedUserId);
+      if (entity != null) {
+         D.log($"Destroying gameObject for player with user ID = {authenticatedUserId} to avoid duplicates.");
+         NetworkServer.Destroy(entity.gameObject);
       }
 
       // Look up the info in the database

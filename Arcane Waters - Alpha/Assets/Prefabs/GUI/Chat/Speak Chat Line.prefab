@@ -95,9 +95,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Hey!  This is some example chat.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 82365751fbd7421469edc09df0069294, type: 2}
-  m_sharedMaterial: {fileID: 21451269468267556, guid: 82365751fbd7421469edc09df0069294,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 4a3264cde141f2d44bf7be340594c46b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

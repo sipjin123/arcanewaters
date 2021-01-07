@@ -45,6 +45,102 @@ public class Util : MonoBehaviour {
       }
    }
 
+   public static byte[] getTextureBytesForTransport (Texture2D texture) {      
+      byte[] screenshotBytes = texture.EncodeToPNG();
+      int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
+
+      if (screenshotBytes.Length >= maxPacketSize) {
+         // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
+         Texture2D skippedRowsTex = removeEvenRowsAndColumns(texture);
+         screenshotBytes = skippedRowsTex.EncodeToPNG();
+         if (screenshotBytes.Length >= maxPacketSize) {
+            // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
+            int quality = 100;
+            while (quality > 0 && screenshotBytes.Length >= maxPacketSize) {
+               skippedRowsTex = removeEvenRowsAndColumns(texture);
+               screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
+
+               quality -= 5;
+            }
+         }
+      }
+
+      return screenshotBytes;
+   }
+
+   public static Texture2D removeEvenRowsAndColumns (Texture2D tex) {
+      List<Color[]> listColors = new List<Color[]>();
+      List<Color> finalColors = new List<Color>();
+
+      for (int y = 0; y < tex.height; y += 2) {
+         listColors.Add(tex.GetPixels(0, y, tex.width, 1));
+      }
+
+      for (int i = 0; i < listColors.Count; i++) {
+         for (int x = 0; x < listColors[i].Length; x += 2) {
+            finalColors.Add(listColors[i][x]);
+         }
+      }
+      tex = new Texture2D(tex.width / 2, tex.height / 2);
+      tex.SetPixels(finalColors.ToArray());
+
+      return tex;
+   }
+
+   public static Texture2D getScreenshot () {
+      #if UNITY_EDITOR
+         if (!Application.isPlaying) {
+            D.error("Screenshots can only be taken in playmode.");
+         }
+      #endif
+
+      // Prepare data
+      int width = Screen.width;
+      int height = Screen.height;
+      Camera camera = Camera.main;
+      Canvas canvasGUI = CameraManager.self.guiCanvas;
+
+      // Use battle camera if player is currently in battle
+      if (BattleCamera.self.GetComponent<Camera>() && BattleCamera.self.GetComponent<Camera>().enabled) {
+         camera = BattleCamera.self.GetComponent<Camera>();
+      }
+
+      RenderTexture savedCameraRT = camera.targetTexture;
+      RenderTexture savedActiveRT = RenderTexture.active;
+      RenderMode cameraRenderMode = canvasGUI.renderMode;
+      Camera canvasWorldCamera = canvasGUI.worldCamera;
+      float planeDistance = canvasGUI.planeDistance;
+
+      // Temporary change render mode of Canvas to "Screen Space - Camera" to enable UI capture in screenshot
+      if (cameraRenderMode != RenderMode.ScreenSpaceCamera) {
+         canvasGUI.renderMode = RenderMode.ScreenSpaceCamera;
+         canvasGUI.worldCamera = camera;
+         canvasGUI.planeDistance = camera == Camera.main ? 1.0f : -2.0f;
+      }
+
+      // Create render texture, assign and render to it
+      RenderTexture rt = new RenderTexture(width, height, 24);
+      camera.targetTexture = rt;
+      Texture2D screenShot = new Texture2D(width, height, TextureFormat.RGB24, false);
+      camera.Render();
+
+      // Revert changes in Canvas
+      canvasGUI.renderMode = cameraRenderMode;
+      canvasGUI.worldCamera = canvasWorldCamera;
+      canvasGUI.planeDistance = planeDistance;
+
+      // Read pixels to Texture2D
+      RenderTexture.active = rt;
+      screenShot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
+
+      // Cleanup
+      camera.targetTexture = savedCameraRT;
+      RenderTexture.active = savedActiveRT;
+      Destroy(rt);
+
+      return screenShot;
+   }
+
    public static bool hasValidEntryName (string entryName) {
       if (entryName.ToLower() == "none" || entryName.ToLower() == "undefined") {
          return false;

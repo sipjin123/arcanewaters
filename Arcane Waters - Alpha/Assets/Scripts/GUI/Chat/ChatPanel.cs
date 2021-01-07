@@ -11,7 +11,7 @@ public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
    // The height of 1 chat line
-   public static int chatLineHeight = 25;
+   public static int chatLineHeight = 22;
 
    // The visible number of lines in each mode, which defines the panel height
    public static int CHAT_LINES_MINIMIZED = 3;
@@ -23,9 +23,6 @@ public class ChatPanel : MonoBehaviour {
 
    // The parameter for smooth movement (smaller is faster)
    public static float SMOOTH_TIME = 0.05f;
-
-   // The maximum number of characters in a single chat message, before reaching 'too many vertices' with the Text+Outline components
-   public static int CHAT_LINE_MAX_LENGTH = 700;
 
    // The input field where the whisper recipient name will be input
    public InputField nameInputField;
@@ -364,18 +361,15 @@ public class ChatPanel : MonoBehaviour {
          rowGuildIcon.gameObject.SetActive(false);
       }
 
-      // This will prevent a 'too many vertices' error with the Text and Outline components
-      string chatLineText = chatInfo.text.Substring(0, Mathf.Min(chatInfo.text.Length, CHAT_LINE_MAX_LENGTH));
-
       // We'll set the message up differently based on whether a sender was defined
       if (Util.isEmpty(chatInfo.sender)) {
-         chatLine.text.text = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), chatLineText);
+         chatLine.text.text = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Emote) {
-         chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatLineText);
+         chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
-         chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatLineText);
+         chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Officer || chatInfo.messageType == ChatInfo.Type.Guild) {
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, false), chatLineText);
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, false), chatInfo.text);
       } else {
          bool isLocalPlayer = true;
          if (Global.player != null) {
@@ -387,7 +381,7 @@ public class ChatPanel : MonoBehaviour {
             messageSource = (isLocalPlayer ? "You whispered to " : "") + messageSource + (!isLocalPlayer ? " whispers" : "");
          }
 
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatLineText);
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       }
 
       // In minimized mode, keep the scrollbar at the bottom
@@ -410,12 +404,12 @@ public class ChatPanel : MonoBehaviour {
          // If we have a Body for the specified sender, create a speech bubble
          BodyEntity body = BodyManager.self.getBody(chatInfo.senderId);
          if (body != null) {
-            SpeechManager.self.showSpeechBubble(body, chatLineText);
+            SpeechManager.self.showSpeechBubble(body, chatInfo.text);
          } else {
             // If we have a Ship for the specified sender, create a speech bubble
             SeaEntity seaEntity = SeaManager.self.getEntityByUserId(chatInfo.senderId);
             if (seaEntity != null && seaEntity is PlayerShipEntity) {
-               SpeechManager.self.showSpeechBubble((PlayerShipEntity) seaEntity, chatLineText);
+               SpeechManager.self.showSpeechBubble((PlayerShipEntity) seaEntity, chatInfo.text);
             }
          }
       }
@@ -457,19 +451,6 @@ public class ChatPanel : MonoBehaviour {
             break;
       }
       return "#" + ColorUtility.ToHtmlStringRGBA(newColor);
-   }
-
-   public void addGuildChatInfo (ChatInfo chatInfo) {
-      // Create a new Chat Line instance and assign the parent
-      GameObject chatRow = Instantiate(guildInviteChatRow, messagesContainer.transform);
-      GuildChatLine chatLine = chatRow.GetComponentInChildren<GuildChatLine>();
-      chatLine.name = "Guild Chat Message";
-      chatLine.chatInfo = chatInfo;
-
-      // This will prevent a 'too many vertices' error with the Text and Outline components
-      string chatLineText = chatInfo.text.Substring(0, Mathf.Min(chatInfo.text.Length, CHAT_LINE_MAX_LENGTH));
-
-      chatLine.text.text = string.Format("<color=yellow>[GUILD] {0}:</color> <color=white>{1}</color>", chatInfo.sender, chatLineText);
    }
 
    public void setIsScrolling () {

@@ -124,6 +124,8 @@ public class MerchantScreen : Panel {
          row.setRowForCrop(offer);
       }
 
+      Global.lastUserGold = gold;
+
       TutorialManager3.self.tryCompletingStep(TutorialTrigger.OpenMerchantScreen);
    }
 

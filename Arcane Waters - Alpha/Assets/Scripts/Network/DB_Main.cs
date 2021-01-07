@@ -835,34 +835,58 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   public static new void saveComplain (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog) {
+   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
-             "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
-            conn.Open();
-            cmd.Prepare();
+         // We'll save the ticket's ID
+         long ticketId;
 
-            cmd.Parameters.AddWithValue("@ticketSubject", $"Complaint about {targetUsrName}");
-            cmd.Parameters.AddWithValue("@ticketDescription", ticketDescription);
-            cmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
-            cmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
-            cmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
-            cmd.Parameters.AddWithValue("@sourceEmail", sourceEmail);
-            cmd.Parameters.AddWithValue("@sourceIPAddress", sourceIPAddress);
-            cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
-            cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
-            cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
-            cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
-            cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
-            cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
+         using (MySqlConnection conn = getConnectionToDevGlobal()) {
+            using (MySqlCommand cmd = new MySqlCommand(
+               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
+                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
+               conn.Open();
+               cmd.Prepare();
 
-            DebugQuery(cmd);
+               cmd.Parameters.AddWithValue("@ticketSubject", $"Complaint about {targetUsrName}");
+               cmd.Parameters.AddWithValue("@ticketDescription", ticketDescription);
+               cmd.Parameters.AddWithValue("@sourceUsrId", sourceUsrId);
+               cmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
+               cmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
+               cmd.Parameters.AddWithValue("@sourceEmail", sourceEmail);
+               cmd.Parameters.AddWithValue("@sourceIPAddress", sourceIPAddress);
+               cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
+               cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
+               cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
+               cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+               cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
+               cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
 
-            // Execute the command
-            cmd.ExecuteNonQuery();            
-         }
+               DebugQuery(cmd);
+
+               // Execute the command
+               cmd.ExecuteNonQuery();
+               ticketId = cmd.LastInsertedId;
+            }
+
+            // Saving the initial "Create" action for history purposes
+            using (MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.support_tickets_actions (ticketId, actionType, performerAccId) VALUES(@ticketId, @actionType, @performerAccId)", conn)) {
+               actionCmd.Prepare();
+               actionCmd.Parameters.AddWithValue("@ticketId", ticketId);
+               actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
+               actionCmd.Parameters.AddWithValue("@performerAccId", sourceAccId);
+               DebugQuery(actionCmd);
+               actionCmd.ExecuteNonQuery();
+            }
+
+            // Saving screenshot in support_tickets_screenshots
+            using (MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO global.support_tickets_screenshots (ticketId, image) VALUES(@ticketId, @image)", conn)) {
+               screenshotCmd.Prepare();
+               screenshotCmd.Parameters.AddWithValue("@ticketId", ticketId);               
+               screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
+               DebugQuery(screenshotCmd);
+               screenshotCmd.ExecuteNonQuery();
+            }
+         }         
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }

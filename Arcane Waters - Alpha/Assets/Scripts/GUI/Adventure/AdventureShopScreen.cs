@@ -21,9 +21,6 @@ public class AdventureShopScreen : Panel {
    // The text we want to type out
    public TextMeshProUGUI greetingText;
 
-   // Our money text
-   public Text moneyText;
-
    // Self
    public static AdventureShopScreen self;
 
@@ -131,7 +128,7 @@ public class AdventureShopScreen : Panel {
    }
 
    public void updatePanelWithItems (int gold, List<Item> itemList) {
-      moneyText.text = gold + "";
+      Global.lastUserGold = gold;
 
       if (itemList.Count < 1) {
          updateGreetingText(UNAVAILABLE_ITEMS);

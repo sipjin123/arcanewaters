@@ -59,7 +59,6 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
    public Text highestBidBid;
    public Text buyoutPriceBid;
    public InputField newBidInput;
-   public Text goldText;
    public GameObject youAreHighestBidderGO;
 
    #endregion
@@ -136,9 +135,6 @@ public class AuctionInfoPanel : MonoBehaviour, IPointerClickHandler
 
       // Set the new bid to the current highest + 1
       newBidInput.text = (auction.highestBidPrice + 1).ToString();
-
-      // Set the user gold
-      goldText.text = string.Format("{0:n0}", Global.lastUserGold);
 
       // Display a special row when the highest bidder is the local user
       if (Global.player != null && auction.highestBidUser == Global.player.userId) {

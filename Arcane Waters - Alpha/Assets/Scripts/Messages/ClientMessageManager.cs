@@ -371,6 +371,7 @@ public class ClientMessageManager : MonoBehaviour {
          return;
       }
 
+      PanelManager.self.hideAllPanels();
       PanelManager.self.noticeScreen.show("Could not connect to server.");
       Util.stopHostAndReturnToTitleScreen();
    }

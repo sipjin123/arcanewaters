@@ -20,9 +20,6 @@ public class ShipyardScreen : Panel {
    // The text we want to type out
    public TextMeshProUGUI greetingText;
 
-   // Our money text
-   public Text moneyText;
-
    // Self
    public static ShipyardScreen self;
 
@@ -88,7 +85,8 @@ public class ShipyardScreen : Panel {
 
       this.greetingText.text = greetingText;
       _greetingText = greetingText;
-      moneyText.text = gold + "";
+
+      Global.lastUserGold = gold;
 
       try {
          // Start typing out our intro text

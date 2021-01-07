@@ -27,7 +27,7 @@ public class Global
    public static UserObjects userObjects;
 
    // A reference to the player currency for display only
-   public static float lastUserGold, lastUserGems;
+   public static int lastUserGold, lastUserGems;
 
    // Gets set to true while we're redirecting a player to a new server
    public static bool isRedirecting = false;

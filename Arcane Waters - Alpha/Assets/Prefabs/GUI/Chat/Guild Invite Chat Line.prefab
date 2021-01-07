@@ -119,8 +119,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 183, y: 10}
+  m_SizeDelta: {x: 366, y: 21}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &10603
 CanvasRenderer:
@@ -151,9 +151,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: <color=yellow>Click here to view your guild invitation!</color>
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 82365751fbd7421469edc09df0069294, type: 2}
-  m_sharedMaterial: {fileID: 21451269468267556, guid: 82365751fbd7421469edc09df0069294,
-    type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f05e9c7d6fe58044a84b191658c875d5, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 4a3264cde141f2d44bf7be340594c46b, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

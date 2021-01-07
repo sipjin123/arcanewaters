@@ -207,6 +207,12 @@ public class GuildPanel : Panel {
       return _guildMemberRowsReference;
    }
 
+   public override void hide () {
+      base.hide();
+      guildRanksPanel.hide();
+      guildCreatePanel.hide();
+   }
+
    public void promoteButtonClicked () {
       if (Global.player == null) {
          return;

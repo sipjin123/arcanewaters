@@ -269,6 +269,20 @@ public class PanelManager : MonoBehaviour {
       return;
    }
 
+   public void hideAllPanels () {
+      while (hasPanelInLinkedList()) {
+         unlinkPanel();
+      }
+      tradeConfirmScreen.hide();
+      itemSelectionScreen.hide();
+      voyageInviteScreen.hide();
+      foreach (Panel panel in FindObjectsOfType<Panel>()) {
+         if (panel.isShowing()) {
+            panel.hide();
+         }
+      }
+   }
+
    public void clearAll () {
 
       // Clear the linkedList of optional panels
