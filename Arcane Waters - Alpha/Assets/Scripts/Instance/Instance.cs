@@ -457,8 +457,6 @@ public class Instance : NetworkBehaviour
          return null;
       }
 
-      SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterType);
-
       SeaMonsterEntity seaMonster = Instantiate(PrefabsManager.self.seaMonsterPrefab);
       seaMonster.monsterType = seaMonsterType;
       seaMonster.areaKey = this.areaKey;
@@ -474,7 +472,7 @@ public class Instance : NetworkBehaviour
    }
 
    public BotShipEntity spawnBotShip (ExportedPrefab001 dataField, Vector3 localPos, Area area, Biome.Type biome) {
-      int xmlId = 17;
+      int xmlId = SeaMonsterEntityData.DEFAULT_SHIP_ID;
       int guildId = 1;
 
       xmlId = EnemyManager.self.randomizeShipXmlId(biome);

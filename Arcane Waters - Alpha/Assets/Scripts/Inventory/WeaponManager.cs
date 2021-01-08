@@ -40,9 +40,16 @@ public class WeaponManager : EquipmentManager {
    // The current weapon data
    public WeaponStatData cachedWeaponData;
 
+   // If weapons are set as hidden
+   public bool isHidden;
+
    #endregion
 
    public void Update () {
+      if (isHidden) {
+         return;
+      }
+
       // If we don't have anything equipped, turn off the animated sprite
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
          Util.setAlpha(weaponLayer.getRenderer().material, (hasWeapon() ? bodySprite.color.a : 0f));
@@ -82,6 +89,16 @@ public class WeaponManager : EquipmentManager {
       }
 
       return false;
+   }
+
+   [ClientRpc]
+   public void Rpc_HideWeapons (bool isHidden) {
+      this.isHidden = isHidden;
+
+      // If we don't have anything equipped, turn off the animated sprite
+      foreach (WeaponLayer weaponLayer in weaponsLayers) {
+         Util.setAlpha(weaponLayer.getRenderer().material, isHidden ? 0f : 1f);
+      }
    }
 
    [ClientRpc]

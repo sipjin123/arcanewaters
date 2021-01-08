@@ -1044,12 +1044,11 @@ public class RPCManager : NetworkBehaviour {
          if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
-            // Only enter this process for server builds, this function accesses the background thread DB_Main
             MapManager.self.createLiveMap(areaKey, new MapInfo(baseMapAreaKey, mapData, latestVersion), mapPosition, customizations, biome);
             return;
          }
-      } 
-      
+      }
+
       // If we don't have the latest version of the map, download it
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, biome);
    }
@@ -1628,7 +1627,7 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
                }
-            } 
+            }
 
             // Clear the invalid quests
             for (int i = 0; i < removeNodeList.Count; i++) {
@@ -3494,7 +3493,7 @@ public class RPCManager : NetworkBehaviour {
          if (_player.getInstance().voyageId != voyageGroup.voyageId) {
             D.debug("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}");
          }
-       
+
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
@@ -5158,16 +5157,34 @@ public class RPCManager : NetworkBehaviour {
       // Override Begin
       NpcControlOverride npcontroller = npc.GetComponent<NpcControlOverride>();
       npcontroller.hasReachedDestination.AddListener(() => {
+         if (_player is PlayerBodyEntity) {
+            ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(true);
+         }
          Rpc_ContinuePettingAnimal(netEntityId, _player.netId, animalEndPos, maxTime);
          npcontroller.hasReachedDestination.RemoveAllListeners();
       });
       npcontroller.overridePosition(animalEndPos, _player.transform.position);
+      Rpc_ContinuePetMoveControl(netEntityId, animalEndPos, maxTime);
    }
 
+
+   [Command]
+   public void Cmd_ShowPlayerEquipment () {
+      if (_player is PlayerBodyEntity) {
+         ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(false);
+      }
+   }
+   
    [ClientRpc]
    public void Rpc_ContinuePettingAnimal (uint netEntityId, uint playerEntityId, Vector2 animalEndPos, float maxTime) {
       NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
-      npc.continueAnimalPetting(playerEntityId, animalEndPos, maxTime);
+      npc.triggerPetAnimation(playerEntityId, animalEndPos, maxTime);
+   }
+
+   [ClientRpc]
+   public void Rpc_ContinuePetMoveControl (uint netEntityId, Vector2 animalEndPos, float maxTime) {
+      NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
+      npc.triggerPetControl(animalEndPos, maxTime);
    }
 
    #region Private Variables

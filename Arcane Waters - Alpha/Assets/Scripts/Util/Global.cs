@@ -66,6 +66,10 @@ public class Global
    public static bool isSteamLogin;
    public static string lastSteamId;
 
+   // Determine if the player should sprint without holding down sprint button
+   public static bool sprintConstantly;
+   public const string PREF_SPRINT_CONSTANTLY = "SPRINT_CONSTANTLY";
+
    // Keeps track of the last account creation time, for Paymentwall
    public static System.DateTime lastAccountCreationTime;
 

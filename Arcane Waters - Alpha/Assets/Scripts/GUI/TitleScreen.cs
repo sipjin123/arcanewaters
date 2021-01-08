@@ -68,6 +68,8 @@ public class TitleScreen : MonoBehaviour {
 
       CameraManager.self.resolutionChanged += onResolutionChanged;
       battleBoardReference.setWeather(WeatherEffectType.Cloud, battleBoardReference.biomeType);
+
+      Global.sprintConstantly = PlayerPrefs.GetInt(Global.PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
    }
 
    private void OnDestroy () {

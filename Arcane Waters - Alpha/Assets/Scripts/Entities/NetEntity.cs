@@ -219,6 +219,9 @@ public class NetEntity : NetworkBehaviour
    public static float MAX_SHIP_SPEED = 150;
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
+   // If this unit is being controlled by another script
+   public bool isUnderControl;
+
    #endregion
 
    protected virtual void Awake () {

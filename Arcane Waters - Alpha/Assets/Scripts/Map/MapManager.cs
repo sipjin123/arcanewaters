@@ -396,7 +396,7 @@ public class MapManager : MonoBehaviour
       string mapData = await NubisClient.call(nameof(DB_Main.fetchMapData), baseMapAreaKey, version);
 
       if (string.IsNullOrWhiteSpace(mapData)) {
-         D.debug("Error in retrieving map data from NUBIS");
+         D.debug("Error in retrieving map data from NUBIS: {" + areaKey + "}");
       } else {
          // Store it for later reference
          MapCache.storeMapData(baseMapAreaKey, version, mapData);

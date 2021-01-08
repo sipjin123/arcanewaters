@@ -20,17 +20,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Max collision check around the player
    public static int MAX_COLLISION_COUNT = 32;
 
-   // Speedup variables
-   public float speedMeter = 10;
-   public static float SPEEDUP_METER_MAX = 10;
-   public bool isReadyToSpeedup = true;
-   public float fuelDepleteValue = 2;
-   public float fuelRecoverValue = 1.2f;
-
-   // The effect that indicates this player is speeding up
-   public Canvas speedupGUI;
-   public Image speedUpBar;
-
    // Color indications if the fuel is usable or not
    public Color recoveringColor, defaultColor;
 
@@ -107,7 +96,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    protected override void Awake () {
       base.Awake();
-      speedMeter = SPEEDUP_METER_MAX;
    }
 
    protected override void Start () {
@@ -128,13 +116,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    protected override void Update () {
       base.Update();
-      
+
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          if (getVelocity().magnitude > NETWORK_PLAYER_SPEEDUP_MAGNITUDE) {
-            foreach(Animator animator in dashAnimators) {
+            foreach (Animator animator in dashAnimators) {
                animator.SetBool(IS_SPRINTING, true);
             }
          } else {
@@ -275,14 +263,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             isSpeedingUp = false;
          }
 
-         if (speedMeter < SPEEDUP_METER_MAX) {
-            speedMeter += Time.deltaTime * fuelRecoverValue;
-         } else {
-            isReadyToSpeedup = true;
-         }
          setDustParticles(false);
       }
-      updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
    }
 
    private void processSprintLogic () {
@@ -297,22 +279,17 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // Speed sprint boost feature
       if (canSprint()) {
          isSpeedingUp = true;
-         if (speedMeter > 0 && !waterChecker.inWater()) {
-            speedMeter -= Time.deltaTime * fuelDepleteValue;
-
+         if (!waterChecker.inWater()) {
             setDustParticles(true);
             foreach (Animator dashAnimator in dashAnimators) {
                dashAnimator.SetBool(IS_SPRINTING, true);
             }
          } else {
-            isReadyToSpeedup = false;
             isSpeedingUp = false;
             foreach (Animator dashAnimator in dashAnimators) {
                dashAnimator.SetBool(IS_SPRINTING, false);
             }
          }
-
-         updateSpeedUpDisplay(speedMeter, isSpeedingUp, isReadyToSpeedup, false);
       } else {
          foreach (Animator dashAnimator in dashAnimators) {
             dashAnimator.SetBool(IS_SPRINTING, false);
@@ -322,7 +299,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private bool canSprint () {
-      return (Input.GetKey(KeyCode.LeftShift) && isReadyToSpeedup && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
+      return ((Global.sprintConstantly || Input.GetKey(KeyCode.LeftShift)) && !isWithinEnemyRadius && getVelocity().magnitude > MOVING_MAGNITUDE);
    }
 
    private void processActionLogic () {
@@ -448,18 +425,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       foreach (Animator dashAnimator in dashAnimators) {
          dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
       }
-   }
-
-   private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup, bool forceDisable) {
-      // Handle GUI
-      if (!forceDisable && (meter < SPEEDUP_METER_MAX)) {
-         speedupGUI.enabled = true;
-         speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
-      } else {
-         speedupGUI.enabled = false;
-      }
-
-      speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
    }
 
    public override void resetCombatInit () {

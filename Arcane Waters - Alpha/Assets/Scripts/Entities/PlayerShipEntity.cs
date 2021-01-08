@@ -255,8 +255,11 @@ public class PlayerShipEntity : ShipEntity
 
          if (speedMeter > 0) {
             speedMeter -= Time.deltaTime * boostDepleteValue;
-            shipBoostCooldownObj.SetActive(false);
+
+            shipBoostCooldownObj.SetActive(true);
+            shipBoostCooldownIcon.sprite = cooldownIconSprites[(int) speedMeter];
          } else {
+            shipBoostCooldownObj.SetActive(false);
             isReadyToSpeedup = false;
             isSpeedingUp = false;
             updateSpeedUpDisplay(speedMeter, false, false);
@@ -476,9 +479,7 @@ public class PlayerShipEntity : ShipEntity
          if (meter < SPEEDUP_METER_MAX) {
             speedupGUI.enabled = true;
             speedUpBar.fillAmount = meter / SPEEDUP_METER_MAX;
-         } else {
-            speedupGUI.enabled = false;
-         }
+         } 
          speedUpBar.color = isReadySpeedup ? defaultColor : recoveringColor;
       } else {
          speedupGUI.enabled = false;

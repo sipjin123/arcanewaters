@@ -297,6 +297,13 @@ public class MyNetworkManager : NetworkManager
                return;
             }
 
+            // If this is a custom map, get the base key
+            if (ownerInfo != null) {
+               if (AreaManager.self.tryGetCustomMapManager(previousAreaKey, out CustomMapManager customMapManager)) {
+                  baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(ownerInfo));
+               }
+            }
+
             // Check if the player disconnected a few seconds ago and its object is still in the server
             DisconnectionManager.self.reconnectDisconnectedUser(userInfo, shipInfo);
 

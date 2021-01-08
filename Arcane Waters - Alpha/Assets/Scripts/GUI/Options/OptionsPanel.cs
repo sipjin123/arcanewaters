@@ -42,6 +42,9 @@ public class OptionsPanel : Panel
    // The guild icon toggle
    public Toggle displayGuildIconsToggle;
 
+   // The constantly sprinting toggle
+   public Toggle sprintConstantlyToggle;
+
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
@@ -111,6 +114,12 @@ public class OptionsPanel : Panel
       displayGuildIconsToggle.onValueChanged.AddListener(value => {
          allGuildIconsShowing = value;
          showAllGuildIcons(value);
+      });
+
+      sprintConstantlyToggle.isOn = PlayerPrefs.GetInt(Global.PREF_SPRINT_CONSTANTLY) == 1 ? true : false;
+      sprintConstantlyToggle.onValueChanged.AddListener(value => {
+         PlayerPrefs.SetInt(Global.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
+         Global.sprintConstantly = value;
       });
    }
 

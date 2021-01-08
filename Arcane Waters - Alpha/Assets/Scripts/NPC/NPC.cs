@@ -84,9 +84,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // List of position that allows player to pet animal
    public List<GameObject> animalPettingPositions;
 
-   // If this unit is being controlled by another script
-   public bool isUnderControl;
-
    #endregion
 
    protected override void Awake () {
@@ -578,7 +575,17 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       gameObject.AddComponent<AnimalPettingPuppetController>().startControlOverPlayer(Global.player);
    }
 
-   public void continueAnimalPetting (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
+   public void triggerPetAnimation (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
+      if (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
+         // Wait for destination to sync before playing animation
+         CO_WaitToReachDestination(maxTime + 0.05f, playerEntityId, animalEndPos);
+      } else {
+         // Start player's petting animation
+         StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f, playerEntityId));
+      }
+   }
+
+   public void triggerPetControl (Vector2 animalEndPos, float maxTime) {
       isInteractingAnimal = true;
       interactingAnimation = true;
       canMove = false;
@@ -591,16 +598,8 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       puppet.setData(animalEndPos, maxTime + 0.05f);
       puppet.controlGranted(this);
-
-      if (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
-         // Wait for destination to sync before playing animation
-         CO_WaitToReachDestination(maxTime + 0.05f, playerEntityId, animalEndPos);
-      } else {
-         // Start player's petting animation
-         StartCoroutine(CO_ContinueAnimalPettingWithCorrectPos(maxTime + 0.05f, playerEntityId));
-      }
    }
-   
+
    private IEnumerator CO_WaitToReachDestination (float timeToWait, uint playerEntityId, Vector2 animalEndPos) {
       while (Vector2.Distance(animalEndPos, transform.position) > NpcControlOverride.CLIENT_PET_DISTANCE) {
          yield return null;
@@ -685,6 +684,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       AnimalPettingPuppetController animalPettingController = gameObject.GetComponent<AnimalPettingPuppetController>();
       if (animalPettingController != null) {
+         Global.player.rpc.Cmd_ShowPlayerEquipment();
          animalPettingController.stopAnimalPetting();
          Destroy(animalPettingController);
       }
