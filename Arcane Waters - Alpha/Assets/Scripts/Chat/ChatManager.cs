@@ -163,13 +163,16 @@ public class ChatManager : MonoBehaviour {
       string prefix = "";
       Type type = Type.None;
 
+      // Separate out just the command part
+      string messageCommand = message.Split(' ')[0];
+
       // Cycle over each of the command types
       foreach (Type t in System.Enum.GetValues(typeof(Type))) {
          // Make sure there's actually an entry for said command
          if (_commands.ContainsKey(t)) {
             // Figure out which version of the command they used, so we can strip it out
             foreach (string command in _commands[t]) {
-               if (message.StartsWith(command)) {
+               if (command == messageCommand) {
                   type = t;
                   prefix = command;
                   break;

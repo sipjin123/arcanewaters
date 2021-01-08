@@ -362,7 +362,7 @@ public class SeaEntity : NetEntity
             break;
          case Attack.Type.Venom:
             // Apply the status effect
-            StatusManager.self.create(Status.Type.Slow, 3f, attackerNetID);
+            StatusManager.self.create(Status.Type.Slowed, 3f, attackerNetID);
             ExplosionManager.createSlimeExplosion(location);
             SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Attack_Fire, location);
             break;
@@ -644,9 +644,9 @@ public class SeaEntity : NetEntity
                         }
                      }
 
-                     StatusManager.self.create(Status.Type.Freeze, 2f, targetEntity.netId);
+                     StatusManager.self.create(Status.Type.Frozen, 2f, targetEntity.netId);
                   } else if (attackType == Attack.Type.Venom) {
-                     StatusManager.self.create(Status.Type.Slow, 1f, targetEntity.netId);
+                     StatusManager.self.create(Status.Type.Slowed, 1f, targetEntity.netId);
                   }
                   enemyHitList.Add(targetEntity);
                }

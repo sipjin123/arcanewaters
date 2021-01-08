@@ -28,6 +28,10 @@ public class PlayerShipEntity : ShipEntity
    [SyncVar]
    public string weaponColors;
 
+   // The status effect that the player's cannonballs will apply to targets hit
+   [SyncVar]
+   public Status.Type cannonEffectType = Status.Type.None;
+
    // The equipped armor characteristics
    [SyncVar]
    public int armorType = 0;
@@ -112,7 +116,7 @@ public class PlayerShipEntity : ShipEntity
          Cmd_RequestAbilityList();
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
-      } else if (Util.isServer()) {
+      } else if (isServer) {
          _serverSideMoveAngle = desiredAngle;
       } else {
          // Disable our collider if we are not either the local player or the server
@@ -211,6 +215,10 @@ public class PlayerShipEntity : ShipEntity
 
          if (Input.GetKeyDown(KeyCode.F10)) {
             _cannonAttackType = (CannonAttackType)(((int)_cannonAttackType + 1) % 3);
+         }
+
+         if (Input.GetKeyDown(KeyCode.F11)) {
+            Cmd_ChangeCannonEffectType();
          }
       }
 
@@ -452,6 +460,11 @@ public class PlayerShipEntity : ShipEntity
       Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
    }
 
+   [Command]
+   private void Cmd_ChangeCannonEffectType () {
+      cannonEffectType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
+   }
+
    [TargetRpc]
    public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
       shipAbilities = new List<int>(abilityIds);
@@ -520,9 +533,9 @@ public class PlayerShipEntity : ShipEntity
 
       if (isLobbed) {
          float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
-         netBall.initLob(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, lobHeight, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime);
+         netBall.initLob(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, lobHeight, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f);
       } else {
-         netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime);
+         netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f);
       }
 
       NetworkServer.Spawn(netBall.gameObject);

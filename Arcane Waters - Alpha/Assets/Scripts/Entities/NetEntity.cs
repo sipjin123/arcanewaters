@@ -211,6 +211,9 @@ public class NetEntity : NetworkBehaviour
    // Reference to the shadow
    public SpriteRenderer shadow;
 
+   // Reference to the parent transform of status effect icons
+   public Transform statusEffectContainer;
+
    // The speed multiplied when speed boosting
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
    public static float MAX_SHIP_SPEED = 150;
@@ -678,15 +681,47 @@ public class NetEntity : NetworkBehaviour
       interactingAnimation = false;
    }
 
+   public Coroutine applyDamageOverTime (int tickDamage, float tickInterval, float duration) {
+      // Applies a damage over time effect to this net entity, dealing 'tickDamage' damage every 'tickInterval' seconds, for 'duration' seconds
+      return StartCoroutine(CO_DamageOverTime(tickDamage, tickInterval, duration));
+   }
+
+   private IEnumerator CO_DamageOverTime (int tickDamage, float tickInterval, float duration) {
+      float totalTimer = 0.0f;
+      float tickTimer = 0.0f;
+
+      while (totalTimer <= duration) {
+         totalTimer += Time.deltaTime;
+         tickTimer += Time.deltaTime;
+
+         // If enough time has passed for a damage tick, apply it
+         if (tickTimer >= tickInterval) {
+            currentHealth -= tickDamage;
+
+            Rpc_ShowDamage(Attack.Type.Fire, transform.position, tickDamage);
+
+            tickTimer -= tickInterval;
+         }
+
+         yield return null;
+      }
+   }
+
+   [ClientRpc]
+   public void Rpc_ShowDamage (Attack.Type attackType, Vector2 pos, int damage) {
+      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
+      damageText.setDamage(damage);
+   }
+
    public virtual float getMoveSpeed () {
       // Figure out our base movement speed
       float baseSpeed = (this is SeaEntity) ? 70f : 135f;
 
       // Check if we need to apply a slow modifier
       float modifier = 1.0f;
-      if (StatusManager.self.hasStatus(this.netId, Status.Type.Freeze)) {
+      if (StatusManager.self.hasStatus(this.netId, Status.Type.Frozen) || StatusManager.self.hasStatus(this.netId, Status.Type.Stunned)) {
          modifier = 0f;
-      } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slow)) {
+      } else if (StatusManager.self.hasStatus(this.netId, Status.Type.Slowed)) {
          modifier = .5f;
       } else if (_isClimbing) {
          if (Time.time - _lastBodySpriteChangetime <= .2f) {
@@ -772,6 +807,42 @@ public class NetEntity : NetworkBehaviour
 
    public virtual double getAddForceDelay () {
       return .2;
+   }
+
+   public void applyStatus (Status.Type statusType, float length) {
+      Status newStatus = StatusManager.self.create(statusType, length, netId);
+
+      if (statusType == Status.Type.Burning) {
+         if (!newStatus.isNew) {
+            StopCoroutine(_burningCoroutine);
+         }
+         _burningCoroutine = applyDamageOverTime(10, 1.0f, 3.0f);
+      }
+
+      Rpc_ApplyStatusIcon(statusType, newStatus.isNew, length);
+   }
+
+   [ClientRpc]
+   public void Rpc_ApplyStatusIcon (Status.Type statusType, bool isNew, float length) {
+      // If this net entity doesn't have its prefab set up for status icons yet, don't try to add one
+      if (statusEffectContainer) {
+
+         // If the status effect is new, create a new icon
+         if (isNew) {
+            StatusIcon statusIcon = StatusManager.self.getStatusIcon(statusType, length, statusEffectContainer).GetComponent<StatusIcon>();
+            statusIcon.setLifetime(length);
+            statusIcon.statusType = statusType;
+            statusIcon.GetComponent<RectTransform>().sizeDelta = Vector2.one * 16;
+            _statusIcons[statusType] = statusIcon;
+         } else {
+            // Otherwise, update the existing icon
+            StatusIcon existingIcon = _statusIcons[statusType];
+
+            if (existingIcon) {
+               existingIcon.setLifetime(length);
+            }
+         }
+      }
    }
 
    public Rigidbody2D getRigidbody () {
@@ -1606,6 +1677,12 @@ public class NetEntity : NetworkBehaviour
 
    // Main collider of the entity, used for collisions
    private CircleCollider2D _mainCollider;
+
+   // A dictionary of references to all the status icons currently on this net entity
+   private Dictionary<Status.Type, StatusIcon> _statusIcons = new Dictionary<Status.Type, StatusIcon>();
+
+   // A reference to a damage over time coroutine caused by burning
+   private Coroutine _burningCoroutine;
 
    #endregion
 }

@@ -671,10 +671,6 @@ public class Util : MonoBehaviour {
       return float.Parse(value.ToString(formatString));
    }
 
-   public static bool isServer () {
-      return MyNetworkManager.wasServerStarted;
-   }
-
    public static void enableCanvasGroup (CanvasGroup canvasGroup) {
       canvasGroup.alpha = 1f;
       canvasGroup.interactable = true;

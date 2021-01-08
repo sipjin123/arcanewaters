@@ -26,7 +26,7 @@ public class TimeManager : MonoBehaviour {
    }
 
    public DateTime getLastServerDateTime () {
-      return Util.isServer() ? DateTime.UtcNow : DateTime.FromBinary(_lastReceivedServerDateTime);
+      return NetworkServer.active ? DateTime.UtcNow : DateTime.FromBinary(_lastReceivedServerDateTime);
    }
 
    public long getLastServerUnixTimestamp () {

@@ -32,7 +32,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    [Server]
-   public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lifetime = -1, float damageMultiplier = 1) {      
+   public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1) {      
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
       _instanceId = instanceID;
@@ -42,6 +42,8 @@ public class ServerCannonBall : NetworkBehaviour {
       _damageMultiplier = damageMultiplier;
       _isLobbed = true;
       _lobHeight = 0.1f;
+      _statusType = statusType;
+      _statusDuration = statusDuration;
 
       this.projectileVelocity = velocity;
 
@@ -52,7 +54,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    [Server]
-   public void initLob (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lobHeight, float lifetime = -1, float damageMultiplier = 1) {
+   public void initLob (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lobHeight, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1) {
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
       _instanceId = instanceID;
@@ -62,6 +64,8 @@ public class ServerCannonBall : NetworkBehaviour {
       _damageMultiplier = damageMultiplier;
       _lobHeight = lobHeight;
       _isLobbed = true;
+      _statusType = statusType;
+      _statusDuration = statusDuration;
 
       this.projectileVelocity = velocity;
 
@@ -80,7 +84,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    private void Update () {
-      if (Util.isServer()) {
+      if (isServer) {
          double timeAlive = NetworkTime.time - _startTime;
 
          if (timeAlive > _lifetime && !_hasCollided) {
@@ -110,7 +114,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    private void FixedUpdate () {
-      if (!Util.isServer()) {
+      if (isServer) {
          _rigidbody.velocity = projectileVelocity;
       }
    }
@@ -138,7 +142,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _hasCollided = true;
 
       // The Server will handle applying damage
-      if (Util.isServer()) {
+      if (isServer) {
          // Ship process if the owner of the projectile and the collided entity has the same voyage, this prevents friendly fire
          if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
             return;
@@ -148,7 +152,9 @@ public class ServerCannonBall : NetworkBehaviour {
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect
-         StatusManager.self.create(Status.Type.Slow, 3f, hitEntity.netId);
+         if (_statusType != Status.Type.None) {
+            hitEntity.applyStatus(_statusType, _statusDuration);
+         }
 
          // Have the server tell the clients where the explosion occurred
          hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, damage, Attack.Type.Cannon);
@@ -235,6 +241,12 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // How high this cannonball was lobbed
    private float _lobHeight = 0.0f;
+
+   // The status effect that this cannonball will apply to a sea entity it hits
+   private Status.Type _statusType = Status.Type.None;
+
+   // How long the status effect applied by this cannonball will last for
+   private float _statusDuration = 0.0f;
 
    #endregion
 

@@ -258,9 +258,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   accountId: 0
+  steamId: 
   userId: 0
   instanceId: 0
   areaKey: 
+  isInvisible: 0
   gender: 1
   bodyType: 0
   eyesType: 0
@@ -287,8 +289,11 @@ MonoBehaviour:
   adminFlag: 0
   shipSpeedupFlag: 0
   guildId: 0
+  guildPermissions: 0
+  guildRankPriority: 0
   battleId: 0
   voyageGroupId: -1
+  hasEnteredPvP: 0
   isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
@@ -297,11 +302,13 @@ MonoBehaviour:
   guildIconSigil: 
   guildIconBackPalettes: 
   guildIconSigilPalettes: 
+  guildIcon: {fileID: 0}
   isAboutToWarpOnServer: 0
   isAboutToWarpOnClient: 0
   interactingAnimation: 0
   isSpeedingUp: 0
   shadow: {fileID: 0}
+  statusEffectContainer: {fileID: 766467084607350867}
   _ignoredAnimators: []
   _animators: []
   damage: 25
@@ -390,7 +397,8 @@ MonoBehaviour:
     skillIdList: 
     lootGroupId: 0
     deathSoundEffectId: -1
-    jumpSoundEffectId: -1
+    attackSoundEffectId: -1
+    hurtSoundEffectId: -1
   maxForceOverride: 0
   isDebug: 0
   patrolingWaypointsRadius: 1
@@ -740,7 +748,7 @@ RectTransform:
   m_Children:
   - {fileID: 4217077895838631771}
   m_Father: {fileID: 7657823947743580941}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -2156,6 +2164,67 @@ Transform:
   m_Father: {fileID: 5413586597943282357}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4936910049272830036
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 766467084607350867}
+  - component: {fileID: 8771954580747595116}
+  m_Layer: 0
+  m_Name: Status Effect Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &766467084607350867
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4936910049272830036}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7657823947743580941}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8771954580747595116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4936910049272830036}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &5435823129467018072
 GameObject:
   m_ObjectHideFlags: 0
@@ -2184,6 +2253,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
+  - {fileID: 766467084607350867}
   - {fileID: 8415796956167465827}
   - {fileID: 8175868463391507241}
   m_Father: {fileID: 871782914035109866}
@@ -2861,7 +2931,7 @@ RectTransform:
   m_Children:
   - {fileID: 9070225494030479986}
   m_Father: {fileID: 7657823947743580941}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

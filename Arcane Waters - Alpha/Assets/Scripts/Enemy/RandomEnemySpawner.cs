@@ -21,7 +21,7 @@ public class RandomEnemySpawner : MonoBehaviour, IMapEditorDataReceiver
    #endregion
 
    private void Awake () {
-      if (!Util.isServer()) {
+      if (!NetworkServer.active) {
          return;
       }
 

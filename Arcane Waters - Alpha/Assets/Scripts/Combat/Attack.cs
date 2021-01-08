@@ -49,7 +49,7 @@ public class Attack : MonoBehaviour {
                return 1.0f;
          }
       } else {
-         return shipData.damage;
+         return 1.0f;
       }
    }
 

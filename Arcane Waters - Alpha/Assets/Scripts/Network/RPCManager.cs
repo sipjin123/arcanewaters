@@ -223,7 +223,7 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.mutePlayer(userId, suspensionEndDate);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ChatManager.self.addChat($"Player with userId {userId} has been muted until {suspensionEndDate}", ChatInfo.Type.System);            
+            ChatManager.self.addChat($"Player with userId {userId} has been muted until {suspensionEndDate}", ChatInfo.Type.System);
          });
       });
    }
@@ -389,10 +389,10 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                bool hasAbility = DB_Main.hasAbility(userId, windSlashId);
                if (!hasAbility) {
-                  DB_Main.updateAbilitiesData(userId, new AbilitySQLData { 
+                  DB_Main.updateAbilitiesData(userId, new AbilitySQLData {
                      abilityID = windSlashId,
                      abilityLevel = 1,
-                     abilityType= AbilityType.Standard,
+                     abilityType = AbilityType.Standard,
                      description = "",
                      equipSlotIndex = -1,
                      name = attackAbilitydata.itemName
@@ -3026,12 +3026,12 @@ public class RPCManager : NetworkBehaviour {
 
             // Deleted lowest rank
             if (userRankPriority != lowestPriority) {
-               foreach (GuildRankInfo info in guildRanks) { 
+               foreach (GuildRankInfo info in guildRanks) {
                   if (info.rankPriority > userRankPriority) {
                      info.rankPriority -= 1;
                   }
                }
-            } 
+            }
             for (int i = guildRanks.Count - 1; i > rankId - 1; i--) {
                guildRanks[i].rankId -= 1;
             }
@@ -3045,7 +3045,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             GuildRankInfo newRank = guildRanks.Find(x => x.id == newId);
-            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);            
+            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);
             foreach (UserInfo userInfo in guildInfo.guildMembers) {
                if (userInfo.guildRankId == oldId) {
                   DB_Main.assignRankGuild(userInfo.userId, newId);

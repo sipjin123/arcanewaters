@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using System;
 
 public class Panel : MonoBehaviour, IPointerClickHandler
@@ -30,6 +31,12 @@ public class Panel : MonoBehaviour, IPointerClickHandler
 
    // If we want this panel to be draggable, assign the Rect transform here
    public RectTransform draggableRect;
+
+   // Event to call when a panel is opened
+   public static UnityAction OnPanelOpened;
+
+   // Event to call when a panel is closed
+   public static UnityAction OnPanelClosed;
 
    #endregion
 
@@ -59,8 +66,13 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       // Then turn on the game object so that everything gets positioned
       this.gameObject.SetActive(true);
 
-      // Make us visible after 1 frame, once everything is set up
-      StartCoroutine(CO_Show());
+      // Make visible
+      canvasGroup.alpha = 1f;
+
+      // Call event
+      if (OnPanelOpened != null) {
+         OnPanelOpened();
+      }
 
       // Throw a warning if the panel is displayed without adding it to the panel list
       if (!PanelManager.self.isFirstPanelInLinkedList(type)) {
@@ -74,6 +86,11 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       canvasGroup.interactable = false;
       canvasGroup.blocksRaycasts = false;
       this.gameObject.SetActive(false);
+
+      // Call event
+      if (OnPanelClosed != null) {
+         OnPanelClosed();
+      }
    }
 
    public bool isShowing () {
@@ -92,13 +109,6 @@ public class Panel : MonoBehaviour, IPointerClickHandler
       if (draggableRect != null) {
          draggableRect.anchoredPosition += data.delta;
       }
-   }
-
-   protected IEnumerator CO_Show () {
-      // Wait 1 frame
-      yield return null;
-
-      canvasGroup.alpha = 1f;
    }
 
    public virtual void OnPointerClick (PointerEventData eventData) {
