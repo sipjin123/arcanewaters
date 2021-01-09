@@ -344,6 +344,11 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public void addChatInfo (ChatInfo chatInfo) {
+      // If it is a whisper chat and receiver text is blank, means user does not exist and this function will be skipped
+      if (chatInfo.messageType == ChatInfo.Type.Whisper && string.IsNullOrEmpty(chatInfo.receiver)) {
+         return;
+      }
+
       // Create a new Chat Row instance and assign the parent
       GameObject chatRow = Instantiate(speakChatRow, messagesContainer.transform);
       SpeakChatLine chatLine = chatRow.GetComponentInChildren<SpeakChatLine>();
@@ -378,7 +383,7 @@ public class ChatPanel : MonoBehaviour {
 
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
-            messageSource = (isLocalPlayer ? "You whispered to " : "") + messageSource + (!isLocalPlayer ? " whispers" : "");
+            messageSource = isLocalPlayer ? ("You whispered to " + chatInfo.receiver) : (chatInfo.sender + " whispers");
          }
 
          chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);

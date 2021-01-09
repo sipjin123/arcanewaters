@@ -31,7 +31,7 @@ public class RestartManager : MonoBehaviour
 
                // Send a message to all players about the pending Restart
                ChatInfo chatInfo = new ChatInfo(0, $"The Game Server will restart at: {timePoint.ToShortTimeString()} {timePoint.ToShortTimeString()}",
-                  System.DateTime.UtcNow, ChatInfo.Type.Global, "Server", 0);
+                  System.DateTime.UtcNow, ChatInfo.Type.Global, "Server", "", 0);
                ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
             });
          });

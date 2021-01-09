@@ -40,6 +40,9 @@ public class ChatInfo
    // The name of the person who sent the message
    public string sender;
 
+   // The name of the person who will receive the message
+   public string receiver;
+
    // The user ID of the sender
    public int senderId;
 
@@ -54,18 +57,20 @@ public class ChatInfo
 
    // The data to construct the guild icon
    public GuildIconData guildIconData;
+
    #endregion
 
    public ChatInfo () {
 
    }
 
-   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", int senderId = 0, GuildIconData guildIconData = null) {
+   public ChatInfo (int chatId, string text, DateTime chatTime, Type messageType, string sender = "", string receiver = "", int senderId = 0, GuildIconData guildIconData = null) {
       this.chatId = chatId;
       this.text = text;
       this.chatTime = chatTime;
       this.messageType = messageType;
       this.sender = sender;
+      this.receiver = receiver;
       this.senderId = senderId;
       this.guildIconData = guildIconData;
 

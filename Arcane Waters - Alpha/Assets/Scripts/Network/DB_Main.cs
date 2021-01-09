@@ -5432,7 +5432,7 @@ public class DB_Main : DB_MainStub
                      int userId = dataReader.GetInt32("usrId");
                      string senderName = dataReader.GetString("userName");
                      int senderGuild = dataReader.GetInt32("gldId");
-                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
+                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, "", userId);
                      info.guildId = senderGuild;
                      list.Add(info);
                   } else {
@@ -5447,7 +5447,7 @@ public class DB_Main : DB_MainStub
                         }
                      }
                      int senderGuild = 0;
-                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, userId);
+                     ChatInfo info = new ChatInfo(chatId, message, time, chatType, senderName, "", userId);
                      info.guildId = senderGuild;
                      list.Add(info);
                   }

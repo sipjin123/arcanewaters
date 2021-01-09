@@ -896,7 +896,7 @@ public class RPCManager : NetworkBehaviour {
          guildIconData = new GuildIconData(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
       }
 
-      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, _player.userId, guildIconData);
+      ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType, _player.entityName, "", _player.userId, guildIconData);
 
       // Replace bad words
       message = BadWordManager.ReplaceAll(message);
@@ -911,6 +911,7 @@ public class RPCManager : NetworkBehaviour {
          if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
             message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
             chatInfo.text = message;
+            chatInfo.receiver = extractedUserName;
 
             // Background thread
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -921,12 +922,12 @@ public class RPCManager : NetworkBehaviour {
                UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                   if (destinationUserInfo == null) {
                      string errorMsg = "Recipient does not exist!";
-                     _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
+                     _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
                      return;
                   }
 
                   ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
                });
             });
          }

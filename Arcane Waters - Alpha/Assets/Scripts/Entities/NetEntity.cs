@@ -1303,7 +1303,7 @@ public class NetEntity : NetworkBehaviour
    public void Target_ReceiveGlobalChat (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
       // Convert Json string back into a GuildIconData object and add to chatInfo
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, senderUserId, guildIconData);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), ChatInfo.Type.Global, senderName, "", senderUserId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
@@ -1312,15 +1312,15 @@ public class NetEntity : NetworkBehaviour
    [ClientRpc]
    public void Rpc_ChatWasSent (int chatId, string message, long timestamp, ChatInfo.Type chatType, string guildIconDataString) {
       GuildIconData guildIconData = JsonUtility.FromJson<GuildIconData>(guildIconDataString);
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, userId, guildIconData);
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, entityName, "", userId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);
    }
 
    [TargetRpc]
-   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId) {
-      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, senderId, guildIconData);
+   public void Target_ReceiveSpecialChat (NetworkConnection conn, int chatId, string message, string senderName, string receiverName, long timestamp, ChatInfo.Type chatType, GuildIconData guildIconData, int senderId) {
+      ChatInfo chatInfo = new ChatInfo(chatId, message, System.DateTime.FromBinary(timestamp), chatType, senderName, receiverName, senderId, guildIconData);
 
       // Add it to the Chat Manager
       ChatManager.self.addChatInfo(chatInfo);

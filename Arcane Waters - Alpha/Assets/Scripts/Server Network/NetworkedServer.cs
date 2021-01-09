@@ -103,20 +103,20 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+   public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ReceiveSpecialChatMessage, userId, chatId, messageType, message, timestamp, senderName, senderUserId, guildIconDataString);
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveSpecialChatMessage, userId, chatId, messageType, message, timestamp, senderName, receiverName, senderUserId, guildIconDataString);
       } else {
          handleChatMessageDeliveryError(senderUserId, messageType, message);
       }
    }
 
    [ClientRPC]
-   public void Server_ReceiveSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+   public void Server_ReceiveSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString) {
       NetEntity player = EntityManager.self.getEntity(userId);
       if (player != null) {
-         player.Target_ReceiveSpecialChat(player.connectionToClient, chatId, message, senderName, timestamp, messageType, GuildIconData.guildIconDataFromString(guildIconDataString), senderUserId);
+         player.Target_ReceiveSpecialChat(player.connectionToClient, chatId, message, senderName, receiverName, timestamp, messageType, GuildIconData.guildIconDataFromString(guildIconDataString), senderUserId);
       } else {
          handleChatMessageDeliveryError(senderUserId, messageType, message);
       }
@@ -125,7 +125,8 @@ public class NetworkedServer : NetworkedBehaviour
    private void handleChatMessageDeliveryError (int senderUserId, ChatInfo.Type messageType, string originalMessage) {
       if (messageType == ChatInfo.Type.Whisper) {
          // For whispers, send a notification to the sender when the message failed to be delivered   
-         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient for message: " + originalMessage, DateTime.UtcNow, ChatInfo.Type.Error);
+         ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
+         chatInfo.receiver = "";
          ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
       }
    }
