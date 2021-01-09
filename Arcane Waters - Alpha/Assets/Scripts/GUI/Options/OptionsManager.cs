@@ -17,6 +17,9 @@ public class OptionsManager : MonoBehaviour {
    // Player Pref key for vsync
    public const string VSYNC_COUNT_KEY = "vsync_count";
 
+   // Player Pref key for constant sprint
+   public const string PREF_SPRINT_CONSTANTLY = "SPRINT_CONSTANTLY";
+
    // The reference to the UI Parent Canvas
    public Canvas mainGameCanvas;
 
@@ -42,7 +45,8 @@ public class OptionsManager : MonoBehaviour {
 
       GUIScale = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100);
       minimapScale = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 100);
-      vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);      
+      vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
+      Global.sprintConstantly = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
    }
 
    private void Start () {

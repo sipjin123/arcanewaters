@@ -116,9 +116,9 @@ public class OptionsPanel : Panel
          showAllGuildIcons(value);
       });
 
-      sprintConstantlyToggle.isOn = PlayerPrefs.GetInt(Global.PREF_SPRINT_CONSTANTLY) == 1 ? true : false;
+      sprintConstantlyToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY) == 1 ? true : false;
       sprintConstantlyToggle.onValueChanged.AddListener(value => {
-         PlayerPrefs.SetInt(Global.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
+         PlayerPrefs.SetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
          Global.sprintConstantly = value;
       });
    }
