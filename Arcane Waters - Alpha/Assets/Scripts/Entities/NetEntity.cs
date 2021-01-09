@@ -220,7 +220,7 @@ public class NetEntity : NetworkBehaviour
    public static float SPEEDUP_MULTIPLIER_LAND = 1.5f;
 
    // If this unit is being controlled by another script
-   public bool isUnderControl;
+   public bool isUnderExternalControl;
 
    #endregion
 

@@ -95,7 +95,7 @@ public class WeaponManager : EquipmentManager {
    public void Rpc_HideWeapons (bool isHidden) {
       this.isHidden = isHidden;
 
-      // If we don't have anything equipped, turn off the animated sprite
+      // Update the alpha value of the weapon layers depending if isHidden value is true or false
       foreach (WeaponLayer weaponLayer in weaponsLayers) {
          Util.setAlpha(weaponLayer.getRenderer().material, isHidden ? 0f : 1f);
       }

@@ -88,7 +88,7 @@ public class NpcControlOverride : MonoBehaviour {
       playerPosition = playerPos;
 
       isOverridingMovement = true;
-      npc.isUnderControl = true;
+      npc.isUnderExternalControl = true;
    }
 
    #region Private Variables

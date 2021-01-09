@@ -36,7 +36,7 @@ public abstract class TemporaryController : ClientMonoBehaviour
 
       // Override Controls
       if (puppet.entity is NPC) {
-         puppet.entity.isUnderControl = true;
+         puppet.entity.isUnderExternalControl = true;
       }
 
       // Allow child class to react to the beginning of control
@@ -66,7 +66,7 @@ public abstract class TemporaryController : ClientMonoBehaviour
 
       // Remove override controls
       if (puppet.entity is NPC) {
-         puppet.entity.isUnderControl = false;
+         puppet.entity.isUnderExternalControl = false;
       }
 
       puppet.entity.giveBackControl(this);

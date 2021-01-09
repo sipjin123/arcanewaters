@@ -203,7 +203,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInLinkedList());
       }
 
-      if (isUnderControl) {
+      if (isUnderExternalControl) {
          return;
       }
 
@@ -253,7 +253,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (isUnderControl) {
+      if (isUnderExternalControl) {
          return;
       }
 
