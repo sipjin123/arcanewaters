@@ -561,6 +561,10 @@ public class Util : MonoBehaviour {
       return (NetworkServer.active && !MyNetworkManager.isHost);
    }
 
+   public static bool isHost () {
+      return MyNetworkManager.isHost;
+   }
+
    public static bool isPlayer (int userId) {
       if (Global.player != null && Global.player.userId > 0 && Global.player.userId == userId) {
          return true;

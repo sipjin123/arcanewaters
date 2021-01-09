@@ -422,24 +422,6 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   public void Cmd_ModifyMoveAngle (float modifier) {
-      if (isDead() || NetworkTime.time - _lastAngleChangeTime < getAngleDelay()) {
-         return;
-      }
-
-      _lastAngleChangeTime = NetworkTime.time;
-      _serverSideMoveAngle += modifier * getAngleChangeSpeed();
-
-      // Set the new facing direction
-      Direction newFacingDirection = DirectionUtil.getDirectionForAngle(_serverSideMoveAngle);
-      if (newFacingDirection != facing) {
-         _serverSideMoveAngle = DirectionUtil.getAngle(newFacingDirection);
-         desiredAngle = _serverSideMoveAngle;
-         facing = newFacingDirection;
-      }
-   }
-
-   [Command]
    protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, bool checkReload, bool isLobbed, float lifetime, float speedOverride) {
       if (isDead() || (checkReload && !hasReloaded())) {
          return;
@@ -601,35 +583,6 @@ public class PlayerShipEntity : ShipEntity
       }
    }
 
-   protected override void handleArrowsMoveMode () {
-      // Make note of the time
-      _lastMoveChangeTime = NetworkTime.time;
-
-      // Check if enough time has passed for us to change our facing direction
-      bool canChangeDirection = (NetworkTime.time - _lastAngleChangeTime > getAngleDelay());
-
-      if (canChangeDirection) {
-         if (InputManager.getKeyAction(KeyAction.MoveLeft)) {
-            Cmd_ModifyMoveAngle(+1);
-            _lastAngleChangeTime = NetworkTime.time;
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
-         } else if (InputManager.getKeyAction(KeyAction.MoveRight)) {
-            Cmd_ModifyMoveAngle(-1);
-            _lastAngleChangeTime = NetworkTime.time;
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
-         }
-      }
-
-      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
-         _lastInputChangeTime = NetworkTime.time;
-
-         if (InputManager.getKeyAction(KeyAction.MoveUp)) {
-            Cmd_RequestMovement();
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
-         }
-      }
-   }
-
    protected override void handleServerAuthoritativeMode () {
       // Make note of the time
       _lastMoveChangeTime = NetworkTime.time;
@@ -642,7 +595,11 @@ public class PlayerShipEntity : ShipEntity
       }
 
       if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
-         _lastInputChangeTime = NetworkTime.time;
+         // In Host mode only, we want to avoid setting _lastInputChangeTime here so cooldown validation passes in Cmd_RequestServerAddForce()
+         if (!Util.isHost()) {
+            _lastInputChangeTime = NetworkTime.time;
+         }
+
          Vector2 inputVector = InputManager.getMovementInput();
 
          if (inputVector.x != 0 || inputVector.y != 0) {
@@ -824,14 +781,8 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_RequestMovement () {
-      Vector2 forceToApply = Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up;
-      Rpc_AddForce(NetworkTime.time + getAddForceDelay(), forceToApply * getMoveSpeed());
-   }
-
-   [Command]
-   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {
-      if (!Util.isServerNonHost() || NetworkTime.time - _lastInputChangeTime > getInputDelay()) {         
+   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {  
+      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {         
          Vector2 forceToApply = direction * getMoveSpeed();
 
          if (direction != Vector2.zero) {
@@ -844,11 +795,6 @@ public class PlayerShipEntity : ShipEntity
          _lastInputChangeTime = NetworkTime.time;
          this.isSpeedingUp = isSpeedingUp;
       }
-   }
-
-   [ClientRpc]
-   protected void Rpc_AddForce (double timestamp, Vector2 force) {
-      StartCoroutine(CO_AddForce(timestamp, force));
    }
 
    [Command]

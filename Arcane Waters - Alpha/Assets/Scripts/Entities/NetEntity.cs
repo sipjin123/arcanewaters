@@ -427,8 +427,6 @@ public class NetEntity : NetworkBehaviour
       // Check if we need to use the alternate delayed movement mode
       if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Delay) {
          handleDelayMoveMode();
-      } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.Arrows) {
-         handleArrowsMoveMode();
       } else if (this is SeaEntity && SeaManager.moveMode == SeaManager.MoveMode.ServerAuthoritative) {
          handleServerAuthoritativeMode();
       } else {
@@ -1160,10 +1158,6 @@ public class NetEntity : NetworkBehaviour
          // Make note of the time
          _lastMoveChangeTime = NetworkTime.time;
       }
-   }
-
-   protected virtual void handleArrowsMoveMode () {
-      // Handled by the PlayerShipEntity class
    }
 
    protected virtual void handleServerAuthoritativeMode () {

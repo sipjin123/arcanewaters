@@ -26,7 +26,7 @@ public class ArrowManager : ClientMonoBehaviour {
 
    private void Update () {
       // If we're not using this movement mode, then don't do anything
-      arrow2.gameObject.SetActive(SeaManager.moveMode == SeaManager.MoveMode.Arrows);
+      arrow2.gameObject.SetActive(SeaManager.moveMode == SeaManager.MoveMode.ServerAuthoritative);
 
       // Check the angle based on our ship's direction
       //float angle = -Util.angle(_entity.getRigidbody().velocity);

@@ -17,7 +17,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &19299
 Transform:
   m_ObjectHideFlags: 0
@@ -1101,6 +1101,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   shadow: {fileID: 0}
   statusEffectContainer: {fileID: 7884613956860877850}
+  isUnderControl: 0
   _ignoredAnimators:
   - {fileID: 3476353292930757795}
   _animators: []
@@ -1202,7 +1203,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 5
-  m_LinearDrag: 2.5
+  m_LinearDrag: 1.5
   m_AngularDrag: 10
   m_GravityScale: 0
   m_Material: {fileID: 6200000, guid: 85d5d0a47c772d24ca0b79efe93fa021, type: 2}
@@ -1396,9 +1397,9 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   target: {fileID: 20007}
-  lerpVelocityAmount: 0.5
-  lerpPositionAmount: 0.5
-  snapPositionThreshold: 5
+  lerpVelocityAmount: 0.25
+  lerpPositionAmount: 0.25
+  snapPositionThreshold: 0.5
   clientAuthority: 0
   lastVelocityTime: 0
 --- !u!1 &16792

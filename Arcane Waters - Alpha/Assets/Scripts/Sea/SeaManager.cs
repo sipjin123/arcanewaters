@@ -9,7 +9,7 @@ public class SeaManager : MonoBehaviour {
    #region Public Variables
 
    // The movement modes
-   public enum MoveMode { Instant = 1, Delay = 2, Arrows = 4, ServerAuthoritative = 5 }
+   public enum MoveMode { Instant = 1, Delay = 2, ServerAuthoritative = 5 }
 
    // The current movement mode
    public static MoveMode moveMode = MoveMode.ServerAuthoritative;
