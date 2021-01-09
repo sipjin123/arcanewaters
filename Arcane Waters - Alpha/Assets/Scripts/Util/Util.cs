@@ -945,11 +945,11 @@ public class Util : MonoBehaviour {
 
    public static bool isGeneralInputAllowed () {
       return !(PanelManager.self.hasPanelInLinkedList() ||
+         PanelManager.self.isLoading ||
          ChatPanel.self.inputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
-         !AreaManager.self.hasArea(Global.player.areaKey) ||
-         MapCustomizationManager.isCustomizing);
+         !AreaManager.self.hasArea(Global.player.areaKey));
    }
    
    // Loads an XML text asset and deserializes it into an object

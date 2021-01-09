@@ -494,12 +494,15 @@ public class RPCManager : NetworkBehaviour {
    public void Target_ReceiveShopItems (NetworkConnection connection, int gold, string[] itemArray, string greetingText) {
       List<Item> newCastedItems = Util.unserialize<Item>(itemArray);
 
+      PanelManager.self.linkIfNotShowing(Panel.Type.Adventure);
+
       AdventureShopScreen.self.updateGreetingText(greetingText);
       AdventureShopScreen.self.updatePanelWithItems(gold, newCastedItems);
    }
 
    [TargetRpc]
    public void Target_ReceiveOffers (NetworkConnection connection, int gold, CropOffer[] offerArray, string greetingText) {
+      PanelManager.self.linkIfNotShowing(Panel.Type.Merchant);
       MerchantScreen.self.updatePanelWithOffers(gold, new List<CropOffer>(offerArray), greetingText);
    }
 
@@ -513,6 +516,8 @@ public class RPCManager : NetworkBehaviour {
             info.shipAbilities = Util.xmlLoad<ShipAbilityInfo>(info.shipAbilityXML);
          }
       }
+
+      PanelManager.self.linkIfNotShowing(Panel.Type.Shipyard);
 
       ShipyardScreen.self.updatePanelWithShips(gold, newShipInfo, greetingText);
    }
@@ -1651,6 +1656,7 @@ public class RPCManager : NetworkBehaviour {
       List<QuestDataNode> questDataNodes = Util.unserialize<QuestDataNode>(rawQuestNodeList);
 
       // Pass the data to the panel
+      PanelManager.self.linkIfNotShowing(panel.type);
       panel.updatePanelWithQuestSelection(questId, questDataNodes.ToArray(), npcId, npcName, friendshipLevel, greetingText);
    }
 

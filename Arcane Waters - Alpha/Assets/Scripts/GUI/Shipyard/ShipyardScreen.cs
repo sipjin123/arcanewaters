@@ -40,23 +40,9 @@ public class ShipyardScreen : Panel {
       self = this;
    }
 
-   public override void show () {
-      base.show();
-
+   public void refreshPanel () {
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetShipsForArea(shopName);
-
-      // Clear out any old info
-      rowsContainer.DestroyChildren();
-
-      // Create a blank template showing the loading icon
-      Instantiate(loadBlocker, rowsContainer.transform);
-
-      // Update the head icon image
-      headAnim.setNewTexture(headIconSprite.texture);
-
-      // Greeting message is decided from the XML Data of the Shop
-      greetingText.text = "";
    }
 
    public void buyButtonPressed (int shipId) {
@@ -82,6 +68,9 @@ public class ShipyardScreen : Panel {
       if (greetingText.Length < 1) {
          greetingText = AdventureShopScreen.UNAVAILABLE_ITEMS;
       }
+
+      // Update the head icon image
+      headAnim.setNewTexture(headIconSprite.texture);
 
       this.greetingText.text = greetingText;
       _greetingText = greetingText;

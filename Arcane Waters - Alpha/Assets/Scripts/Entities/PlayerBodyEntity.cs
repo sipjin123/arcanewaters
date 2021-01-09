@@ -132,11 +132,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
          sprintRecovery();
 
-         // We want to allow shortcuts input during the customization tutorial
-         if (!isInBattle() && TutorialManager3.self.getCurrentTrigger() == TutorialTrigger.UnequipHammer) {
-            handleShortcutsInput();
-         }
-
          return;
       }
 
@@ -303,6 +298,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void processActionLogic () {
+      if (MapCustomization.MapCustomizationManager.isCustomizing) {
+         return;
+      }
+
       if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
          PlayerBodyEntity body = getClickedBody();
          if (body != null && !PanelManager.self.hasPanelInLinkedList()) {

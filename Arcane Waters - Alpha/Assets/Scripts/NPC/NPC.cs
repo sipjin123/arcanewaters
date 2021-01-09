@@ -204,7 +204,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
-         _graphicRaycaster.gameObject.SetActive(!PanelManager.self.hasPanelInLinkedList());
+         _graphicRaycaster.gameObject.SetActive(!(PanelManager.self.hasPanelInLinkedList() || PanelManager.self.isLoading));
       }
 
       if (isUnderExternalControl) {
@@ -367,19 +367,21 @@ public class NPC : NetEntity, IMapEditorDataReceiver
                AdventureShopScreen adventurePanel = (AdventureShopScreen) PanelManager.self.get(_shopTrigger.panelType);
                adventurePanel.shopName = shopName;
                adventurePanel.headIconSprite = getHeadIconSprite();
+               adventurePanel.refreshPanel();
                break;
             case Panel.Type.Shipyard:
                ShipyardScreen shipyardPanel = (ShipyardScreen) PanelManager.self.get(_shopTrigger.panelType);
                shipyardPanel.shopName = shopName;
                shipyardPanel.headIconSprite = getHeadIconSprite();
+               shipyardPanel.refreshPanel();
                break;
             case Panel.Type.Merchant:
                MerchantScreen merchantPanel = (MerchantScreen) PanelManager.self.get(_shopTrigger.panelType);
                merchantPanel.shopName = shopName;
                merchantPanel.headIconSprite = getHeadIconSprite();
+               merchantPanel.refreshPanel();
                break;
          }
-         PanelManager.self.linkIfNotShowing(_shopTrigger.panelType);
       } else {
          // Make sure the panel is showing
          NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
@@ -387,12 +389,15 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             NPCData npcData = NPCManager.self.getNPCData(npcId);
             panel.setNPC(npcId, npcData.name, -1);
             panel.initLoadBlockers(true);
-            PanelManager.self.linkPanel(panel.type);
          }
 
          // Send a request to the server to get the npc panel info
          Global.player.rpc.Cmd_RequestNPCQuestSelectionListFromServer(npcId);
       }
+
+      // Set a load icon above the NPC while the panel data is requested from the server
+      PanelManager.self.isLoading = true;
+      FloatingLoadIcon floatingLoadIcon = FloatingLoadIcon.instantiateAt(transform.position + new Vector3(0f, .28f));
    }
 
    public bool isCloseToGlobalPlayer () {
@@ -404,7 +409,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    public bool isTalkingToGlobalPlayer () {
-      return PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() && isCloseToGlobalPlayer();
+      return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() || PanelManager.self.isLoading) && isCloseToGlobalPlayer();
    }
 
    [Server]

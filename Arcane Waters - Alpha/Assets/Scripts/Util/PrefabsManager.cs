@@ -137,6 +137,9 @@ public class PrefabsManager : MonoBehaviour {
    // A prefab we can use for showing minor generic messages, ex. that an object is too far away
    public FloatingCanvas floatingCanvasPrefab;
 
+   // A prefab we can use for showing a load icon above objects
+   public FloatingLoadIcon floatingLoadIconPrefab;
+
    // The prefab we use to create a cancel icon
    public GameObject cancelIconPrefab;
 

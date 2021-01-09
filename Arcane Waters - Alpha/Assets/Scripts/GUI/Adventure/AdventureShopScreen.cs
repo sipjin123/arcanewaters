@@ -47,23 +47,9 @@ public class AdventureShopScreen : Panel {
       self = this;
    }
 
-   public override void show () {
-      base.show();
-      
+   public void refreshPanel() {
       // Show the correct contents based on our current area
       Global.player.rpc.Cmd_GetItemsForArea(shopName);
-
-      // Update the head icon image
-      headAnim.setNewTexture(headIconSprite.texture);
-
-      // Clear out any old info
-      rowsContainer.DestroyChildren();
-
-      // Create a blank template showing the loading icon
-      Instantiate(loadBlocker, rowsContainer.transform);
-
-      // Greeting message is decided from the XML Data of the Shop
-      greetingText.text = "";
    }
 
    public void buyButtonPressed (int itemId) {
@@ -129,6 +115,9 @@ public class AdventureShopScreen : Panel {
 
    public void updatePanelWithItems (int gold, List<Item> itemList) {
       Global.lastUserGold = gold;
+
+      // Update the head icon image
+      headAnim.setNewTexture(headIconSprite.texture);
 
       if (itemList.Count < 1) {
          updateGreetingText(UNAVAILABLE_ITEMS);

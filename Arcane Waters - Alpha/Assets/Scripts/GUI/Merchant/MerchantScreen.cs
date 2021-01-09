@@ -41,17 +41,9 @@ public class MerchantScreen : Panel {
       cropRowsContainer.DestroyChildren();
    }
 
-   public override void show () {
-      base.show();
-
+   public void refreshPanel () {
       // Show the correct offers based on our current area
       Global.player.rpc.Cmd_GetCropOffersForShop(shopName);
-
-      // Update the head icon image
-      headAnim.setNewTexture(headIconSprite.texture);
-
-      // Greeting message is decided from the XML Data of the Shop
-      greetingText.text = "";
    }
 
    public override void close () {
@@ -107,6 +99,9 @@ public class MerchantScreen : Panel {
    public void updatePanelWithOffers (int gold, List<CropOffer> offers, string greetingText) {
       // Keep track of these offers for later reference
       _offers = offers;
+
+      // Update the head icon image
+      headAnim.setNewTexture(headIconSprite.texture);
 
       this.greetingText.text = greetingText;
       _greetingText = greetingText;

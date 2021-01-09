@@ -411,8 +411,8 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      // We can only control movement for our own player, when chat isn't focused, we're not falling down or dead or warping and the area has been loaded
-      if (!isLocalPlayer || ChatPanel.self.inputField.isFocused || isFalling() || isDead() || PanelManager.self.hasPanelInLinkedList() || !AreaManager.self.hasArea(areaKey) || isAboutToWarpOnClient) {
+      // Disable movement control for our player under certain conditions
+      if (!isLocalPlayer || !Util.isGeneralInputAllowed() || isFalling() || isDead() || isAboutToWarpOnClient) {
          return;
       }
 

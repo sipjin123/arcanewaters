@@ -166,6 +166,11 @@ public class AuctionPanel : Panel
       auctionInfoPanel.displayAuction(auction.auctionId);
    }
 
+   public override void hide () {
+      base.hide();
+      auctionInfoPanel.hide();
+   }
+
    public void setLoadBlocker (bool isOn) {
       loadBlocker.SetActive(isOn);
    }

@@ -102,18 +102,6 @@ public class NPCPanel : Panel
       self = this;
    }
 
-   public override void show () {
-      base.show();
-
-      // Start with a hidden panel until receiving the data from the server
-      this.ContentCanvasGroup.alpha = 0f;
-
-      isHireableNotification.SetActive(false);
-
-      // Get the head image from the npc and update it
-      headAnim.setNewTexture(_npc.getHeadIconSprite().texture);
-   }
-
    public void initLoadBlockers (bool isActive) {
       if (isActive) {
          // Clear out the old clickable options
@@ -473,6 +461,9 @@ public class NPCPanel : Panel
    }
 
    private void setCommonPanelContent (string npcText) {
+      // Get the head image from the npc and update it
+      headAnim.setNewTexture(_npc.getHeadIconSprite().texture);
+
       // Set the current npc text line
       _npcDialogueLine = npcText;
       

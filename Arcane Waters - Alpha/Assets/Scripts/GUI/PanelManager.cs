@@ -29,6 +29,9 @@ public class PanelManager : MonoBehaviour {
    // Helps Determine which active panel requires inventory data (crafting/inventory)
    public Panel.Type selectedPanel;
 
+   // Gets set to true when panel data is being requested from the server and a panel will soon open
+   public bool isLoading = false;
+
    // Self
    public static PanelManager self;
 
@@ -54,6 +57,11 @@ public class PanelManager : MonoBehaviour {
    }
 
    private void Update () {
+      // If a panel was loading and one shows up, disable the loading status
+      if (isLoading && hasPanelInLinkedList()) {
+         isLoading = false;
+      }
+
       // Let us easily close panels with the Escape key
       if (Input.GetKeyUp(KeyCode.Escape)) {
          // Hide tooltips before closing the panel
@@ -275,7 +283,7 @@ public class PanelManager : MonoBehaviour {
       }
       tradeConfirmScreen.hide();
       itemSelectionScreen.hide();
-      voyageInviteScreen.hide();
+      VoyageGroupManager.self.hideVoyageGroupInvitation();
       foreach (Panel panel in FindObjectsOfType<Panel>()) {
          if (panel.isShowing()) {
             panel.hide();

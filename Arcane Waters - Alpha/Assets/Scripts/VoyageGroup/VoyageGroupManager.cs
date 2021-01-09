@@ -367,24 +367,25 @@ public class VoyageGroupManager : MonoBehaviour
          return;
       }
 
-      // Deactivate the invite panel
-      PanelManager.self.voyageInviteScreen.deactivate();
-
       // Send the join request to the server
       Global.player.rpc.Cmd_AcceptGroupInvitation(_invitationGroupId);
 
-      // Clear the invitation group id so that we can receive more invitations
-      _invitationGroupId = -1;
+      // Deactivate the invite panel
+      hideVoyageGroupInvitation();
    }
 
    public void refuseGroupInvitation () {
       if (_invitationGroupId != -1) {
-         // Deactivate the invite panel
-         PanelManager.self.voyageInviteScreen.deactivate();
-
-         // Clear the invitation group id so that we can receive more invitations
-         _invitationGroupId = -1;
+         hideVoyageGroupInvitation();
       }
+   }
+
+   public void hideVoyageGroupInvitation() {
+      // Deactivate the invite panel
+      PanelManager.self.voyageInviteScreen.deactivate();
+
+      // Clear the invitation group id so that we can receive more invitations
+      _invitationGroupId = -1;
    }
 
    private void updateVoyageGroupMembers () {
