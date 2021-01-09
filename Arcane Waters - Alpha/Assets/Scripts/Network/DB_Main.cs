@@ -658,7 +658,10 @@ public class DB_Main : DB_MainStub
          addedFields = ", ability_type";
       } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "id, xmlContent ";
-      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest || toolType == EditorSQLManager.EditorToolType.Projectiles) {
+      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops 
+         || toolType == EditorSQLManager.EditorToolType.Quest 
+         || toolType == EditorSQLManager.EditorToolType.Projectiles
+         || toolType == EditorSQLManager.EditorToolType.Tutorial) {
          contentToFetch = "xmlId, xmlContent ";
       } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
          contentToFetch = "id, serializedData ";
@@ -667,10 +670,10 @@ public class DB_Main : DB_MainStub
          contentToFetch = "xml_id, xmlContent, isActive ";
       }
 
+      string newQuery = "SELECT " + contentToFetch + addedFields + " FROM global." + tableName;
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT " + contentToFetch + addedFields + " FROM global." + tableName, conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -688,7 +691,10 @@ public class DB_Main : DB_MainStub
                   } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("xmlContent");
-                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops || toolType == EditorSQLManager.EditorToolType.Quest || toolType == EditorSQLManager.EditorToolType.Projectiles) {
+                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops 
+                     || toolType == EditorSQLManager.EditorToolType.Quest 
+                     || toolType == EditorSQLManager.EditorToolType.Projectiles
+                     || toolType == EditorSQLManager.EditorToolType.Tutorial) {
                      xmlId = dataReader.GetInt32("xmlId");
                      xmlContent = dataReader.GetString("xmlContent");
                   } else if (toolType == EditorSQLManager.EditorToolType.ItemDefinitions) {
@@ -735,7 +741,7 @@ public class DB_Main : DB_MainStub
             }
          }
       } catch (Exception e) {
-         D.error("MySQL Error: " + toolType + " : " + tableName + " : " + e.ToString());
+         D.error("MySQL Error: " + toolType + " : " + tableName + " : " + newQuery + " : " + e.ToString());
       }
 
       return content;
@@ -808,10 +814,10 @@ public class DB_Main : DB_MainStub
       string tableName = EditorSQLManager.getSqlTable(editorType);
       string lastUserUpdateKey = (editorType == EditorSQLManager.EditorToolType.Palette || editorType == EditorSQLManager.EditorToolType.Projectiles) ? "lastUpdate" : "lastUserUpdate";
 
+      string newQuery = "SELECT " + lastUserUpdateKey + " FROM global." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1";
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT " + lastUserUpdateKey + " FROM global." + tableName + " order by " + lastUserUpdateKey + " DESC limit 1", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand(newQuery, conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -826,7 +832,7 @@ public class DB_Main : DB_MainStub
             }
          }
       } catch (Exception e) {
-         D.error("Request Data was: " + editorType);
+         D.error("Request Data was: " + editorType + " : " + newQuery);
          D.error("MySQL Error: " + e.ToString());
       }
 

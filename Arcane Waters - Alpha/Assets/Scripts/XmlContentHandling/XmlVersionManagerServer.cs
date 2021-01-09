@@ -50,6 +50,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string PALETTE_DATA_TABLE = "palette_recolors";
    public static string ITEM_DEFINITIONS_TABLE = "item_definitions";
    public static string PROJECTILES_TABLE = "projectiles_xml_v3";
+   public static string TUTORIAL_TABLE = "tutorial_xml_v1";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -76,6 +77,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string ITEM_DEFINITIONS_FILE = "item_definitions";
    public static string TOOL_TIP_FILE = "tool_tip";
    public static string PROJECTILES_FILE = "projectiles_xml";
+   public static string TUTORIAL_FILE = "tutorial_xml";
 
    // Progress indicators
    public int targetProgress;
@@ -179,7 +181,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
          compiledData += DB_Main.getLastUpdate(EditorToolType.Quest);
          compiledData += DB_Main.getLastUpdate(EditorToolType.ItemDefinitions);
          compiledData += DB_Main.getLastUpdate(EditorToolType.Projectiles);
-         
+         compiledData += DB_Main.getLastUpdate(EditorToolType.Tutorial);
+
          databaseVersion = DB_Main.getLatestXmlVersion();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -280,6 +283,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string battleBGData = DB_Main.getXmlContent(BACKGROUND_DATA_TABLE);
 
          string perkData = DB_Main.getXmlContent(PERKS_DATA_TABLE);
+         string tutorialData = DB_Main.getXmlContent(TUTORIAL_TABLE, EditorToolType.Tutorial);
 
          // Manually assign the xml data of the perks content due to its data struct not uniformed
          string paletteData = overridePaletteDataXML();
@@ -314,6 +318,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + ITEM_DEFINITIONS_FILE + ".txt", itemDefinitionsData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + PROJECTILES_FILE + ".txt", projectileData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + TUTORIAL_FILE + ".txt", tutorialData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
@@ -361,7 +366,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Default);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            Debug.Log("Zip Upload Complete: Windows:" + zipData.Length);
+            D.log("Zip Upload Complete: Windows:" + zipData.Length);
          });
       });
    }

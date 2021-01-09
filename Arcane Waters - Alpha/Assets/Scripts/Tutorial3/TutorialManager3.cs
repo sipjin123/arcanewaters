@@ -23,6 +23,9 @@ public class TutorialManager3 : MonoBehaviour {
    // Self
    public static TutorialManager3 self;
 
+   // The list of tutorial data
+   public List<Tutorial3> tutorialDataList = new List<Tutorial3>();
+
    #endregion
 
    public void Awake () {
@@ -313,6 +316,10 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public void receiveDataFromZip (List<Tutorial3> newTutorialDataList) {
+      tutorialDataList = newTutorialDataList;
    }
 
    public bool isActive () {

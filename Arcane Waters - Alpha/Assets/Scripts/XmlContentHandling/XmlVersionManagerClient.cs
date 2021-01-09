@@ -160,6 +160,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.PALETTE_FILE, true);
       checkStreamingAssetFile(XmlVersionManagerServer.TOOL_TIP_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PROJECTILES_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -245,6 +246,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.ItemDefinitions);
       extractXmlType(EditorToolType.Tool_Tip);
       extractXmlType(EditorToolType.Projectiles);
+      extractXmlType(EditorToolType.Tutorial);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -325,6 +327,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Projectiles:
             path = TEXT_PATH + XmlVersionManagerServer.PROJECTILES_FILE + ".txt";
+            break;
+         case EditorToolType.Tutorial:
+            path = TEXT_PATH + XmlVersionManagerServer.TUTORIAL_FILE + ".txt";
             break;
       }
 
@@ -743,6 +748,22 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             ProjectileStatManager.self.receiveZipData(projectileDataList);
+            break;
+         case EditorToolType.Tutorial:
+            List<Tutorial3> tutorialDataList = new List<Tutorial3>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length == 2) {
+                  int dataId = int.Parse(xmlSubGroup[0]);
+                  Tutorial3 actualData = Util.xmlLoad<Tutorial3>(xmlSubGroup[1]);
+                  actualData.xmlId = dataId;
+                  tutorialDataList.Add(actualData);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            TutorialManager3.self.receiveDataFromZip(tutorialDataList);
             break;
       }
 

@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
+﻿using System.Collections.Generic;
+using System;
 
+[Serializable]
 public class Tutorial3
 {
     #region Public Variables
@@ -19,6 +17,9 @@ public class Tutorial3
 
     // Gets set to true when the tutorial is completed
     public bool isCompleted = false;
+
+    // The xml id
+    public int xmlId = 0;
 
     #endregion
 
