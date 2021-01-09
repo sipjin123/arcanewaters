@@ -5160,31 +5160,25 @@ public class RPCManager : NetworkBehaviour {
          if (_player is PlayerBodyEntity) {
             ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(true);
          }
-         Rpc_ContinuePettingAnimal(netEntityId, _player.netId, animalEndPos, maxTime);
+
+         // Handle pet animation on server side without altering pet movement
+         npc.triggerPetAnimation(_player.netId, animalEndPos, maxTime);
+
+         // Server will wait for the animation time to finish and un hide the weapon layers for the player
+         npc.finishedPetting.AddListener(() => {
+            if (_player is PlayerBodyEntity) {
+               ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(false);
+            }
+
+            npc.finishedPetting.RemoveAllListeners();
+         });
+
+         // Handle pet animation and animated movement on client side
+         npc.Rpc_ContinuePettingAnimal(_player.netId, animalEndPos, maxTime);
          npcontroller.hasReachedDestination.RemoveAllListeners();
       });
       npcontroller.overridePosition(animalEndPos, _player.transform.position);
-      Rpc_ContinuePetMoveControl(netEntityId, animalEndPos, maxTime);
-   }
-
-
-   [Command]
-   public void Cmd_ShowPlayerEquipment () {
-      if (_player is PlayerBodyEntity) {
-         ((PlayerBodyEntity) _player).weaponManager.Rpc_HideWeapons(false);
-      }
-   }
-   
-   [ClientRpc]
-   public void Rpc_ContinuePettingAnimal (uint netEntityId, uint playerEntityId, Vector2 animalEndPos, float maxTime) {
-      NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
-      npc.triggerPetAnimation(playerEntityId, animalEndPos, maxTime);
-   }
-
-   [ClientRpc]
-   public void Rpc_ContinuePetMoveControl (uint netEntityId, Vector2 animalEndPos, float maxTime) {
-      NPC npc = MyNetworkManager.fetchEntityFromNetId<NPC>(netEntityId);
-      npc.triggerPetControl(animalEndPos, maxTime);
+      npc.Rpc_ContinuePetMoveControl(animalEndPos, maxTime);
    }
 
    #region Private Variables

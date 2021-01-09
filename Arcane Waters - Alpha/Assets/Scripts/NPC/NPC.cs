@@ -8,6 +8,7 @@ using MapCreationTool.Serialization;
 using System;
 using Random = UnityEngine.Random;
 using Pathfinding;
+using UnityEngine.Events;
 
 public class NPC : NetEntity, IMapEditorDataReceiver
 {
@@ -83,6 +84,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
    // List of position that allows player to pet animal
    public List<GameObject> animalPettingPositions;
+
+   // Event triggered after animal petting action
+   public UnityEvent finishedPetting = new UnityEvent();
 
    #endregion
 
@@ -675,7 +679,18 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
    }
 
+   [ClientRpc]
+   public void Rpc_ContinuePetMoveControl (Vector2 animalEndPos, float maxTime) {
+      triggerPetControl(animalEndPos, maxTime);
+   }
+
+   [ClientRpc]
+   public void Rpc_ContinuePettingAnimal (uint playerEntityId, Vector2 animalEndPos, float maxTime) {
+      triggerPetAnimation(playerEntityId, animalEndPos, maxTime);
+   }
+
    public void finishAnimalReaction () {
+      finishedPetting.Invoke();
       if (isInteractingAnimal) {
          isInteractingAnimal = false;
          canMove = true;
@@ -684,7 +699,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       AnimalPettingPuppetController animalPettingController = gameObject.GetComponent<AnimalPettingPuppetController>();
       if (animalPettingController != null) {
-         Global.player.rpc.Cmd_ShowPlayerEquipment();
          animalPettingController.stopAnimalPetting();
          Destroy(animalPettingController);
       }

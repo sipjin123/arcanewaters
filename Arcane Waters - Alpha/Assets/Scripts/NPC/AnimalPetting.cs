@@ -49,6 +49,11 @@ public class AnimalPetting : MonoBehaviour {
    }
 
    private void Update () {
+      // Do not process the animation altering for server to prevent modifying client position via smooth sync
+      if (Global.player == null && NetworkServer.active) {
+         return;
+      } 
+
       if (_isAnimalAnimationPlaying) {
          transform.position = Vector3.Lerp(_currentPosition, _initialPosition + _additionalPosition, _currentTransitionTime / _maxTransitionTime);
          _currentPosition = transform.position;
