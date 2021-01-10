@@ -476,7 +476,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (targetChest != null) {
-         targetChest.sendOpenRequest(userId);
+         targetChest.sendOpenRequest();
          forceLookAt(targetChest.transform.position);
       } else {
          chestList.Clear();

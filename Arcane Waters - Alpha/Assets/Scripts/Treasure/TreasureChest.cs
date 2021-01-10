@@ -194,11 +194,6 @@ public class TreasureChest : NetworkBehaviour {
    }
 
    public void sendOpenRequest () {
-      // This function's purpose is to be triggered by the clickable box which is triggered by right clicking the treasure chest/bag
-      sendOpenRequest(Global.player.userId);
-   }
-
-   public void sendOpenRequest (int userId) {
       if (hasBeenOpened()) {
          return;
       }
@@ -211,7 +206,7 @@ public class TreasureChest : NetworkBehaviour {
       }
 
       // If the user is NOT part of the sync list of allowed user interaction, do not proceed and send out a warning
-      if (!allowedUserIds.Contains(userId) && chestType != ChestSpawnType.Site) {
+      if (!allowedUserIds.Contains(Global.player.userId) && chestType != ChestSpawnType.Site) {
          FloatingCanvas.instantiateAt(transform.position + new Vector3(0f, .24f)).asInvalidLoot();
          return;
       }
