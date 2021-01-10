@@ -204,7 +204,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
 
       // Disable our clickable canvas while a panel is showing
       if (_graphicRaycaster != null) {
-         _graphicRaycaster.gameObject.SetActive(!(PanelManager.self.hasPanelInLinkedList() || PanelManager.self.isLoading));
+         _graphicRaycaster.gameObject.SetActive(!(PanelManager.self.hasPanelInLinkedList() || PanelManager.isLoading));
       }
 
       if (isUnderExternalControl) {
@@ -396,7 +396,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       // Set a load icon above the NPC while the panel data is requested from the server
-      PanelManager.self.isLoading = true;
+      PanelManager.isLoading = true;
       FloatingLoadIcon floatingLoadIcon = FloatingLoadIcon.instantiateAt(transform.position + new Vector3(0f, .28f));
    }
 
@@ -409,7 +409,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    public bool isTalkingToGlobalPlayer () {
-      return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() || PanelManager.self.isLoading) && isCloseToGlobalPlayer();
+      return (PanelManager.self.get(Panel.Type.NPC_Panel).isShowing() || PanelManager.isLoading) && isCloseToGlobalPlayer();
    }
 
    [Server]

@@ -47,7 +47,7 @@ namespace MapCreationTool
          loadedMaps = null;
 
          try {
-            var task = DB_Main.execAsync(DB_Main.getMaps);
+            var task = DB_Main.execAsync(DB_Main.getMaps, true);
             UI.loadingPanel.display("Loading maps", task);
             loadedMaps = await task;
             updateShowedMaps();

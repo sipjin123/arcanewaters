@@ -30,7 +30,7 @@ public class PanelManager : MonoBehaviour {
    public Panel.Type selectedPanel;
 
    // Gets set to true when panel data is being requested from the server and a panel will soon open
-   public bool isLoading = false;
+   public static bool isLoading = false;
 
    // Self
    public static PanelManager self;

@@ -493,7 +493,7 @@ public class DB_Main : DB_MainStub
    public static new string fetchMapData (string mapName, string versionStr) {
       int version = int.Parse(versionStr);
       try {
-         using (MySqlConnection connection = getConnectionToDevArcane()) {
+         using (MySqlConnection connection = getConnectionToDevGlobal()) {
             connection.Open();
             using (MySqlCommand command = new MySqlCommand(
                "SELECT gameData FROM map_versions_v2 left join maps_v2 on mapid = id WHERE (name = @mapName and version=@mapVersion)",
@@ -2286,7 +2286,7 @@ public class DB_Main : DB_MainStub
 
    public static new int getMapId (string areaKey) {
       string cmdText = "SELECT id FROM maps_v2 WHERE name = @areaKey;";
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@areaKey", areaKey);
          conn.Open();
@@ -2349,7 +2349,7 @@ public class DB_Main : DB_MainStub
       int mapId = -1;
       string cmdText = "SELECT id,publishedVersion FROM maps_v2 WHERE (name=@mapName)";
       try {
-         using (MySqlConnection conn = getConnectionToDevArcane())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             cmd.Parameters.AddWithValue("@mapName", areaKey);
             conn.Open();
@@ -2379,7 +2379,7 @@ public class DB_Main : DB_MainStub
       string mapName = areaKey;
       cmdText = "SELECT gameData FROM map_versions_v2 WHERE (mapid = @mapid AND version = @version) LIMIT 1";
       try {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
             cmd.Parameters.AddWithValue("@mapid", mapId);
             cmd.Parameters.AddWithValue("@version", mapVersion);
@@ -2406,7 +2406,7 @@ public class DB_Main : DB_MainStub
       Dictionary<string, MapInfo> maps = new Dictionary<string, MapInfo>();
       string cmdText = "SELECT * FROM maps_v2 JOIN map_versions_v2 ON (maps_v2.id=map_versions_v2.mapId) WHERE (maps_v2.publishedVersion=map_versions_v2.version)";
 
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2433,7 +2433,7 @@ public class DB_Main : DB_MainStub
          "WHERE mapId = @id " +
          "ORDER BY updatedAt DESC;";
 
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          cmd.Parameters.AddWithValue("@id", map.id);
          conn.Open();
@@ -2459,7 +2459,7 @@ public class DB_Main : DB_MainStub
    public static new string getMapVersionEditorData (MapVersion version) {
       string cmdText = "SELECT editorData from map_versions_v2 WHERE mapId = @id AND version = @version;";
 
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2483,7 +2483,7 @@ public class DB_Main : DB_MainStub
       string cmdText = "SELECT version, createdAt, updatedAt, editorData " +
          "FROM map_versions_v2 WHERE mapId = @id AND version = (SELECT max(version) FROM map_versions_v2 WHERE mapId = @id);";
 
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          if (infiniteCommandTimeout) {
             cmd.CommandTimeout = 0;
@@ -2520,7 +2520,7 @@ public class DB_Main : DB_MainStub
       string cmdText = "SELECT mapid, maps_v2.name as mapName, map_spawns_v2.name as spawnName, mapVersion, posX, posY " +
          "FROM map_spawns_v2 JOIN maps_v2 ON maps_v2.id = map_spawns_v2.mapid " +
          "WHERE mapVersion = publishedVersion;";
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2544,7 +2544,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void createMap (MapVersion mapVersion) {
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2604,7 +2604,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void duplicateMapGroup (int mapId, int newCreatorId) {
-      using (MySqlConnection conn = getConnection())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2689,7 +2689,7 @@ public class DB_Main : DB_MainStub
       string cmdText = "UPDATE maps_v2 " +
          "SET name = @name, sourceMapId = @sourceId, notes = @notes, specialType = @specialType, displayName = @displayName, weatherEffectType = @weatherEffect " +
          "WHERE id = @mapId;";
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -2709,7 +2709,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new MapVersion createNewMapVersion (MapVersion mapVersion) {
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2782,7 +2782,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void updateMapVersion (MapVersion mapVersion, bool infiniteCommandTimeout = false) {
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          if (infiniteCommandTimeout) {
             cmd.CommandTimeout = 0;
@@ -2848,7 +2848,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteMap (int id) {
-      using (MySqlConnection conn = getConnection())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2867,7 +2867,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteMapGroup (int mapId) {
-      using (MySqlConnection conn = getConnection())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2914,7 +2914,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void deleteMapVersion (MapVersion version) {
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2951,7 +2951,7 @@ public class DB_Main : DB_MainStub
    #endregion
 
    public static new void publishLatestVersionForAllGroup (int mapId) {
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.Open();
          MySqlTransaction transaction = conn.BeginTransaction();
@@ -2983,7 +2983,7 @@ public class DB_Main : DB_MainStub
 
    public static new void setLiveMapVersion (MapVersion version) {
       string cmdText = "UPDATE maps_v2 SET publishedVersion = @version WHERE id = @mapId;";
-      using (MySqlConnection conn = getConnectionToDevArcane())
+      using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
          cmd.Prepare();
@@ -8911,8 +8911,8 @@ public class DB_Main : DB_MainStub
 
    #region Wrapper Call Methods
 
-   public static new T exec<T> (Func<object, T> action) {
-      using (MySqlConnection conn = getConnection())
+   public static new T exec<T> (Func<object, T> action, bool useDevGlobalDB = false) {
+      using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.OpenAsync();
          cmd.Connection = conn;
@@ -8921,8 +8921,8 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void exec (Action<object> action) {
-      using (MySqlConnection conn = getConnection())
+   public static new void exec (Action<object> action, bool useDevGlobalDB = false) {
+      using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
       using (MySqlCommand cmd = conn.CreateCommand()) {
          conn.OpenAsync();
          cmd.Connection = conn;
@@ -8931,9 +8931,9 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static async new Task<T> execAsync<T> (Func<object, T> action) {
+   public static async new Task<T> execAsync<T> (Func<object, T> action, bool useDevGlobalDB = false) {
       return await Task.Run(async () => {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
          using (MySqlCommand cmd = conn.CreateCommand()) {
             await conn.OpenAsync();
             cmd.Connection = conn;
@@ -8943,9 +8943,9 @@ public class DB_Main : DB_MainStub
       });
    }
 
-   public static async new Task execAsync (Action<object> action) {
+   public static async new Task execAsync (Action<object> action, bool useDevGlobalDB = false) {
       await Task.Run(async () => {
-         using (MySqlConnection conn = getConnection())
+         using (MySqlConnection conn = useDevGlobalDB ? getConnectionToDevGlobal() : getConnection())
          using (MySqlCommand cmd = conn.CreateCommand()) {
             await conn.OpenAsync();
             cmd.Connection = conn;

@@ -33,7 +33,7 @@ public class FloatingLoadIcon : MonoBehaviour
 
    private void Update () {
       // Destroy the loading icon as soon as the loading finishes
-      if (!PanelManager.self.isLoading) {
+      if (!PanelManager.isLoading) {
          Destroy(this.gameObject);
       }
    }

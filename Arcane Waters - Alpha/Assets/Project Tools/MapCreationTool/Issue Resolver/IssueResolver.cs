@@ -68,7 +68,7 @@ namespace MapCreationTool.IssueResolving
          UI.loadingPanel.display("Resolving Issues");
 
          try {
-            maps = (await DB_Main.execAsync(DB_Main.getMaps))
+            maps = (await DB_Main.execAsync(DB_Main.getMaps, true))
                .Where(m => m.editorType == EditorType.Interior)
                .ToList();
             receivedMaps();

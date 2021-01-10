@@ -945,7 +945,7 @@ public class Util : MonoBehaviour {
 
    public static bool isGeneralInputAllowed () {
       return !(PanelManager.self.hasPanelInLinkedList() ||
-         PanelManager.self.isLoading ||
+         PanelManager.isLoading ||
          ChatPanel.self.inputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
