@@ -126,7 +126,7 @@ public class NetworkedServer : NetworkedBehaviour
       if (messageType == ChatInfo.Type.Whisper) {
          // For whispers, send a notification to the sender when the message failed to be delivered   
          ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
-         chatInfo.receiver = "";
+         chatInfo.recipient = "";
          ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
       }
    }

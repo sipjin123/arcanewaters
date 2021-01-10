@@ -916,7 +916,7 @@ public class RPCManager : NetworkBehaviour {
          if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
             message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
             chatInfo.text = message;
-            chatInfo.receiver = extractedUserName;
+            chatInfo.recipient = extractedUserName;
 
             // Background thread
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {

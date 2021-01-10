@@ -41,7 +41,7 @@ public class ChatInfo
    public string sender;
 
    // The name of the person who will receive the message
-   public string receiver;
+   public string recipient;
 
    // The user ID of the sender
    public int senderId;
@@ -70,7 +70,7 @@ public class ChatInfo
       this.chatTime = chatTime;
       this.messageType = messageType;
       this.sender = sender;
-      this.receiver = receiver;
+      this.recipient = receiver;
       this.senderId = senderId;
       this.guildIconData = guildIconData;
 
