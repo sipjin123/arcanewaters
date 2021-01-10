@@ -193,6 +193,11 @@ public class TreasureChest : NetworkBehaviour {
       }
    }
 
+   public void sendOpenRequest () {
+      // This function's purpose is to be triggered by the clickable box which is triggered by right clicking the treasure chest/bag
+      sendOpenRequest(Global.player.userId);
+   }
+
    public void sendOpenRequest (int userId) {
       if (hasBeenOpened()) {
          return;
