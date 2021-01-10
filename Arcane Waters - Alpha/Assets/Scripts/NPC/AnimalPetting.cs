@@ -50,7 +50,7 @@ public class AnimalPetting : MonoBehaviour {
 
    private void Update () {
       // Do not process the animation altering for server to prevent modifying client position via smooth sync
-      if (Global.player == null && NetworkServer.active) {
+      if (_npc.isServer) {
          return;
       } 
 
