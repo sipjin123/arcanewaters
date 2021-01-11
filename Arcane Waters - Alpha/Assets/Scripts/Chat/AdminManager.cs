@@ -12,50 +12,49 @@ public class AdminManager : NetworkBehaviour
 {
    #region Public Variables
 
-   // The types of administration privileges
-   public enum Type { None = 0, Admin = 1, QA = 2, ContentWriter = 3, Support = 4 }
-
    // The email address we use for test accounts
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";
 
-   // The various command strings
-   protected const string ADD_GOLD = "add_gold";
-   protected const string ADD_SHIPS = "add_ships";
-   protected const string CREATE_TEST_USERS = "create_test_users";
-   protected const string DELETE_TEST_USERS = "delete_test_users";
-   protected const string SET_WEATHER = "set_weather";
-   protected const string SET_WIND = "set_wind";
-   protected const string CHECK_FPS = "check_fps";
-   protected const string CREATE_TEST_INSTANCES = "create_test_instances";
-   protected const string SHUTDOWN = "shutdown";
-   protected const string SPAWN_SHIPS = "spawn_ships";
-   protected const string SERVER_INFO = "server_info";
-   protected const string POLYNAV_TEST = "polynav_test";
-   protected const string CREATE_SHOP_SHIPS = "create_shop_ships";
-   protected const string CREATE_SHOP_ITEMS = "create_shop_items";
-   protected const string PORT_GO = "portgo";
-   protected const string SHIP_SPEED_UP = "ship_speedup";
-   protected const string SITE_GO = "sitego";
-   protected const string PLAYER_GO = "pgo";
-   protected const string BOT_WAYPOINT = "bot_waypoint";
-   protected const string WARP = "warp";
-   protected const string ENEMY = "enemy";
-   protected const string ABILITY = "all_abilities";
-   protected const string NPC = "test_npc";
-   protected const string GET_ITEM = "get_item";
-   protected const string GET_ALL_ITEMS = "get_all_items";
-   protected const string INTERACT_ANVIL = "interact_anvil";
-   protected const string SCHEDULE_SERVER_RESTART = "restart";
-   protected const string CANCEL_SERVER_RESTART = "cancel";
-   protected const string FREE_WEAPON = "free_weapon";
-   protected const string GUN_ABILITIES = "gun_abilities";
-   protected const string GET_ALL_HATS = "get_all_hats";   
-   protected const string GO_TO_PLAYER = "goto";
-   protected const string SUMMON_PLAYER = "summon";
-   protected const string TEACH_ABILITY = "learn";
-   protected const string SPAWN_ENEMY = "spawn";
-   protected const string MUTE_PLAYER = "mute";
-   protected const string TOGGLE_INVISIBILITY = "invisible";
+   public enum Type
+   {
+      AddGold = 0,
+      AddShips = 1,
+      CreateTestUsers = 2,
+      DeleteTestUsers = 3,
+      SetWeather = 4,
+      SetWind = 5,
+      CheckFps = 6,
+      CreateTestInstances = 7,
+      Shutdown = 8,
+      SpawnShips = 9,
+      ServerInfo = 10,
+      PolynavTest = 11,
+      CreateShopShips = 12,
+      CreateShopItems = 13,
+      PortGo = 14,
+      ShipSpeedUp = 15,
+      SiteGo = 16,
+      PlayerGo = 17,
+      BotWaypoint = 18,
+      Warp = 19,
+      Enemy = 20,
+      Ability = 21,
+      NPC = 22,
+      GetItem = 23,
+      GetAllItems = 24,
+      InteractAnvil = 25,
+      ScheduleServerRestart = 26,
+      CancelServerRestart = 27,
+      FreeWeapon = 28,
+      GunAbilities = 29,
+      GetAllHats = 30,
+      GoToPlayer = 31,
+      SummonPlayer = 32,
+      TeachAbility = 33,
+      SpawnEnemy = 34,
+      MutePlayer = 35,
+      ToggleInvisibility = 36,
+   }
 
    #endregion
 
@@ -71,6 +70,48 @@ public class AdminManager : NetworkBehaviour
       if (isLocalPlayer && _blueprintNames.Count == 0) {
          // TODO: Insert fetch blueprint data here
       }
+
+      addCommands();
+   }
+
+   private void addCommands () {
+      _commands[Type.AddGold] = "add_gold";
+      _commands[Type.AddShips] = "add_ships";
+      _commands[Type.CreateTestUsers] = "create_test_users";
+      _commands[Type.DeleteTestUsers] = "delete_test_users";
+      _commands[Type.SetWeather] = "set_weather";
+      _commands[Type.SetWind] = "set_wind";
+      _commands[Type.CheckFps] = "check_fps";
+      _commands[Type.CreateTestInstances] = "create_test_instances";
+      _commands[Type.Shutdown] = "shutdown";
+      _commands[Type.SpawnShips] = "spawn_ships";
+      _commands[Type.ServerInfo] = "server_info";
+      _commands[Type.PolynavTest] = "polynav_test";
+      _commands[Type.CreateShopShips] = "create_shop_ships";
+      _commands[Type.CreateShopItems] = "create_shop_items";
+      _commands[Type.PortGo] = "portgo";
+      _commands[Type.ShipSpeedUp] = "ship_speedup";
+      _commands[Type.SiteGo] = "sitego";
+      _commands[Type.PlayerGo] = "pgo";
+      _commands[Type.BotWaypoint] = "bot_waypoint";
+      _commands[Type.Warp] = "warp";
+      _commands[Type.Enemy] = "enemy";
+      _commands[Type.Ability] = "all_abilities";
+      _commands[Type.NPC] = "test_npc";
+      _commands[Type.GetItem] = "get_item";
+      _commands[Type.GetAllItems] = "get_all_items";
+      _commands[Type.InteractAnvil] = "interact_anvil";
+      _commands[Type.ScheduleServerRestart] = "restart";
+      _commands[Type.CancelServerRestart] = "cancel";
+      _commands[Type.FreeWeapon] = "free_weapon";
+      _commands[Type.GunAbilities] = "gun_abilities";
+      _commands[Type.GetAllHats] = "get_all_hats";
+      _commands[Type.GoToPlayer] = "goto";
+      _commands[Type.SummonPlayer] = "summon";
+      _commands[Type.TeachAbility] = "learn";
+      _commands[Type.SpawnEnemy] = "spawn";
+      _commands[Type.MutePlayer] = "mute";
+      _commands[Type.ToggleInvisibility] = "invisible";
    }
 
    void Update () {
@@ -83,7 +124,7 @@ public class AdminManager : NetworkBehaviour
          _historyIndex = -1;
       }
 
-      // Move play to position on ceratain key combination
+      // Move player to position on certain key combination
       if (_player.isLocalPlayer && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetMouseButtonDown(0)) {
          Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
          if (!_player.isInBattle() && area != null) {
@@ -91,6 +132,10 @@ public class AdminManager : NetworkBehaviour
             warpToPosition(area.transform.InverseTransformPoint(wPos));
          }
       }
+   }
+
+   public Dictionary<Type, string> getCommandList () {
+      return _commands;
    }
 
    public void handleAdminCommandString (string inputString) {
@@ -118,56 +163,56 @@ public class AdminManager : NetworkBehaviour
       // Keep track of it in the history list
       _history.Add("/admin " + inputString);
 
-      if (ADD_GOLD.Equals(adminCommand)) {
+      if (_commands[Type.AddGold].Equals(adminCommand)) {
          // Add to a particular user's gold amount
          requestAddGold(parameters);
-      } else if (ADD_SHIPS.Equals(adminCommand)) {
+      } else if (_commands[Type.AddShips].Equals(adminCommand)) {
          Cmd_AddShips();
-      } else if (CHECK_FPS.Equals(adminCommand)) {
+      } else if (_commands[Type.CheckFps].Equals(adminCommand)) {
          Cmd_CheckFPS();
-      } else if (SHUTDOWN.Equals(adminCommand)) {
+      } else if (_commands[Type.Shutdown].Equals(adminCommand)) {
          Cmd_Shutdown();
-      } else if (ENEMY.Equals(adminCommand)) {
+      } else if (_commands[Type.Enemy].Equals(adminCommand)) {
          Cmd_SpawnEnemy();
-      } else if (SPAWN_ENEMY.Equals(adminCommand)) {
+      } else if (_commands[Type.SpawnEnemy].Equals(adminCommand)) {
          spawnCustomEnemy(parameters);
-      } else if (SERVER_INFO.Equals(adminCommand)) {
+      } else if (_commands[Type.ServerInfo].Equals(adminCommand)) {
          Cmd_ServerInfo();
-      } else if (CREATE_SHOP_SHIPS.Equals(adminCommand)) {
+      } else if (_commands[Type.CreateShopShips].Equals(adminCommand)) {
          Cmd_CreateShopShips();
-      } else if (CREATE_SHOP_ITEMS.Equals(adminCommand)) {
+      } else if (_commands[Type.CreateShopItems].Equals(adminCommand)) {
          Cmd_CreateShopItems();
-      } else if (PLAYER_GO.Equals(adminCommand) || GO_TO_PLAYER.Equals(adminCommand)) {
+      } else if (_commands[Type.PlayerGo].Equals(adminCommand) || _commands[Type.GoToPlayer].Equals(adminCommand)) {
          requestPlayerGo(parameters);
-      } else if (SUMMON_PLAYER.Equals(adminCommand)) {
+      } else if (_commands[Type.SummonPlayer].Equals(adminCommand)) {
          requestSummonPlayer(parameters);
-      } else if (BOT_WAYPOINT.Equals(adminCommand)) {
+      } else if (_commands[Type.BotWaypoint].Equals(adminCommand)) {
          Cmd_BotWaypoint();
-      } else if (WARP.Equals(adminCommand)) {
+      } else if (_commands[Type.Warp].Equals(adminCommand)) {
          requestWarp(parameters);
-      } else if (ABILITY.Equals(adminCommand)) {
+      } else if (_commands[Type.Ability].Equals(adminCommand)) {
          requestAllAbilities(parameters);
-      } else if (GET_ITEM.Equals(adminCommand)) {
+      } else if (_commands[Type.GetItem].Equals(adminCommand)) {
          requestGetItem(parameters);
-      } else if (SHIP_SPEED_UP.Equals(adminCommand)) {
+      } else if (_commands[Type.ShipSpeedUp].Equals(adminCommand)) {
          requestShipSpeedup();
-      } else if (GET_ALL_ITEMS.Equals(adminCommand)) {
+      } else if (_commands[Type.GetAllItems].Equals(adminCommand)) {
          requestGetAllItems(parameters);
-      } else if (INTERACT_ANVIL.Equals(adminCommand)) {
+      } else if (_commands[Type.InteractAnvil].Equals(adminCommand)) {
          interactAnvil();
-      } else if (SCHEDULE_SERVER_RESTART.Equals(adminCommand)) {
+      } else if (_commands[Type.ScheduleServerRestart].Equals(adminCommand)) {
          requestScheduleServerRestart(parameters);
-      } else if (CANCEL_SERVER_RESTART.Equals(adminCommand)) {
+      } else if (_commands[Type.CancelServerRestart].Equals(adminCommand)) {
          Cmd_CancelServerRestart();
-      } else if (FREE_WEAPON.Equals(adminCommand)) {
+      } else if (_commands[Type.FreeWeapon].Equals(adminCommand)) {
          freeWeapon(parameters);
-      } else if (GET_ALL_HATS.Equals(adminCommand)) {
+      } else if (_commands[Type.GetAllHats].Equals(adminCommand)) {
          requestGetAllHats(parameters);
-      } else if (TEACH_ABILITY.Equals(adminCommand)) {
+      } else if (_commands[Type.TeachAbility].Equals(adminCommand)) {
          requestGiveAbility(parameters);
-      } else if (MUTE_PLAYER.Equals(adminCommand)) {
+      } else if (_commands[Type.MutePlayer].Equals(adminCommand)) {
          requestMutePlayer(parameters);
-      } else if (TOGGLE_INVISIBILITY.Equals(adminCommand)) {
+      } else if (_commands[Type.ToggleInvisibility].Equals(adminCommand)) {
          requestInvisibility();
       }
    }
@@ -227,7 +272,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Move the input caret to the end
-      StartCoroutine(ChatPanel.self.moveCaretToEnd());
+      StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
    }
 
    public void tryAutoCompleteForGetItemCommand (string inputString) {
@@ -618,7 +663,7 @@ public class AdminManager : NetworkBehaviour
             abilityIdStr += ability.abilityID + " ";
          }
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.editorLog("Added new abilities: " + ABILITY, Color.green);
+            D.editorLog("Added new abilities: " + _commands[Type.Ability], Color.green);
          });
       });
    }
@@ -842,7 +887,11 @@ public class AdminManager : NetworkBehaviour
 
       // To the database thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.updateDeploySchedule(ticks, build);
+         bool scheduled = DB_Main.updateDeploySchedule(ticks, build);
+         if (scheduled) {
+            string timeUnit = (delay == 1) ? "minute" : "minutes";
+            ChatManager.self?.sendMessageToServer($"Server will reboot in {delay} {timeUnit}!", ChatInfo.Type.Global);
+         }
       });
    }
 
@@ -1240,6 +1289,9 @@ public class AdminManager : NetworkBehaviour
    }
 
    #region Private Variables
+
+   // A list of the available admin commands
+   protected Dictionary<Type, string> _commands = new Dictionary<Type, string>();
 
    // A history of commands we've requested
    protected List<string> _history = new List<string>();

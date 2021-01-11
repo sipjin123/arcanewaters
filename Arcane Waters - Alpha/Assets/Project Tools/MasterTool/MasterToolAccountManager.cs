@@ -44,7 +44,7 @@ public class MasterToolAccountManager : MonoBehaviour {
    public int currentAccountID;
 
    // Current permission level of the account
-   public static AdminManager.Type PERMISSION_LEVEL = AdminManager.Type.None;
+   public static PrivilegeType PERMISSION_LEVEL = PrivilegeType.None;
 
    // Button for exiting the application
    public Button exitButton;
@@ -130,7 +130,7 @@ public class MasterToolAccountManager : MonoBehaviour {
                PlayerPrefs.SetInt(ACCOUNT_ID_PREF, accID);
 
                currentAccountID = accID;
-               PERMISSION_LEVEL = (AdminManager.Type) permissionLevel;
+               PERMISSION_LEVEL = (PrivilegeType) permissionLevel;
 
                userNameText.text = userNameField.text;
                accountIDText.text = accID.ToString();
@@ -149,7 +149,7 @@ public class MasterToolAccountManager : MonoBehaviour {
    }
 
    public static bool canAlterData () {
-      if (PERMISSION_LEVEL == AdminManager.Type.Admin || PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+      if (PERMISSION_LEVEL == PrivilegeType.Admin || PERMISSION_LEVEL == PrivilegeType.ContentWriter) {
          return true;
       }
 
@@ -162,7 +162,7 @@ public class MasterToolAccountManager : MonoBehaviour {
          return false;
       }
 
-      if (PERMISSION_LEVEL != AdminManager.Type.Admin && resourceCreatorID != self.currentAccountID) {
+      if (PERMISSION_LEVEL != PrivilegeType.Admin && resourceCreatorID != self.currentAccountID) {
          errorMessage = "You are not the creator of this resource";
          return false;
       }

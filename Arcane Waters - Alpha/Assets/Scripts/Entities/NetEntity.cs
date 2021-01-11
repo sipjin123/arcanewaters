@@ -596,7 +596,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    public bool isAdmin () {
-      return (adminFlag == (int) AdminManager.Type.Admin);
+      return (adminFlag == (int) PrivilegeType.Admin);
    }
 
    public bool isFalling () {

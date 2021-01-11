@@ -36,7 +36,7 @@ public class EquipmentDataTemplate : GenericEntryTemplate {
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+      if (MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.ContentWriter) {
          if (Util.hasValidEntryName(nameText.text) && !EquipmentToolManager.equipmentToolSelf.didUserCreateData(template_id, equipmentType)) {
             deleteButton.gameObject.SetActive(false);
             editButton.gameObject.SetActive(false);

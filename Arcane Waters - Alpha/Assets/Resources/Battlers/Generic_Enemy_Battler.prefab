@@ -552,6 +552,7 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1
 --- !u!212 &7229241381624908787
 SpriteRenderer:
@@ -675,6 +676,7 @@ MonoBehaviour:
     rarity: 1
     weaponType: 0
     weaponClass: 0
+    projectileSprite: 
     weaponBaseDamage: 0
     weaponDamageFire: 0
     weaponDamageWater: 0
@@ -682,6 +684,7 @@ MonoBehaviour:
     weaponDamageEarth: 0
     actionType: 0
     actionTypeValue: 0
+  isHidden: 0
 --- !u!114 &1812425798147013482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1151,7 +1154,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2880596188217981249}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.008, z: -0.000001}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 611476247965537122}

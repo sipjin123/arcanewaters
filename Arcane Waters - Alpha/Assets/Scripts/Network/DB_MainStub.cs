@@ -167,7 +167,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string chatLog, byte[] screenshotBytes) {
+   public static void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string chatLog, byte[] screenshotBytes, string machineIdentifier) {
 
    }
 
@@ -1209,6 +1209,9 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
+   public static bool setMetricUptime(string machineId, string processName, string PID, long uptime) {
+      return false;
+   }
 
    public static void updatePaletteXML (string rawData, string name, int xmlId, int isEnabled, string tag) {
 

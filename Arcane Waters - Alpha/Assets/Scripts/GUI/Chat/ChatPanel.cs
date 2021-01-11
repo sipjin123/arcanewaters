@@ -41,14 +41,8 @@ public class ChatPanel : MonoBehaviour {
    public enum Tab
    {
       All = 0,
-      Group = 1
+      Custom = 1
    }
-
-   // The chat types displayed in each tab
-   public static Dictionary<Tab, HashSet<ChatInfo.Type>> tabToChatType = new Dictionary<Tab, HashSet<ChatInfo.Type>>() {
-      {Tab.All, new HashSet<ChatInfo.Type>(((ChatInfo.Type[])Enum.GetValues(typeof(ChatInfo.Type))).ToList()) },
-      {Tab.Group,  new HashSet<ChatInfo.Type> {ChatInfo.Type.Group, ChatInfo.Type.Whisper, ChatInfo.Type.Error, ChatInfo.Type.System } },
-   };
 
    // The container of all of our children components
    public GameObject mainContainer;
@@ -97,7 +91,10 @@ public class ChatPanel : MonoBehaviour {
 
    // The chat tab toggles
    public Toggle allTabToggle;
-   public Toggle groupTabToggle;
+
+   // The panel which holds every chat type to choose by player
+   public GameObject choosingChatType;
+   public Toggle customTabToggle;
 
    // Self
    public static ChatPanel self;
@@ -131,6 +128,9 @@ public class ChatPanel : MonoBehaviour {
 
       // Call the autocomplete function when the user writes in chat
       inputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onChatInputValuechanged(inputString));
+
+      // Set initial chat types
+      onAllChatPressed();
    }
 
    void Update () {
@@ -140,6 +140,10 @@ public class ChatPanel : MonoBehaviour {
       }
 
       mainContainer.SetActive(true);
+      messagesContainer.SetActive(true);
+
+      // Adjust chat types panel position to current chat window size
+      choosingChatType.GetComponent<RectTransform>().position = toolbarRect.position;
 
       // Focus the chat window if the forward slash key is released
       if ((Input.GetKeyUp(KeyCode.Slash))) {
@@ -148,7 +152,7 @@ public class ChatPanel : MonoBehaviour {
             inputField.text = "/";
 
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(activateAfterDelay());
+            StartCoroutine(CO_ActivateAfterDelay());
          }
       }
 
@@ -173,6 +177,9 @@ public class ChatPanel : MonoBehaviour {
       // Handle panel animations depending on the mode
       switch (_mode) {
          case Mode.Minimized:
+            if (choosingChatType.activeSelf) {
+               choosingChatType.SetActive(false);
+            }
             if (_isMouseOverInputField) {
                // While the mouse is over the input box, switch to normal mode without toolbar
                animateToolbarAlpha(0f);
@@ -189,7 +196,12 @@ public class ChatPanel : MonoBehaviour {
             if (RectTransformUtility.RectangleContainsScreenPoint(messagePanelHoveringZone, Input.mousePosition)) {
                animateToolbarAlpha(1f);
             } else {
-               animateToolbarAlpha(0f);
+               // Keep toolbar visible when chat type panel is opened
+               if (choosingChatType.activeSelf) {
+                  toolbarCanvas.alpha = 1.0f;
+               } else {
+                  animateToolbarAlpha(0f);
+               }
             }
             animatePanelBackgroundAlpha(1f);
             animatePanelHeight(CHAT_LINES_NORMAL);
@@ -254,6 +266,15 @@ public class ChatPanel : MonoBehaviour {
    }
 
    void OnGUI () {
+      // If the input field has just gained / lost focus, call appropriate events
+      if (inputField.isFocused && !_isInputFocused) {
+         ChatManager.self.onChatGainedFocus();
+      } else if (!inputField.isFocused && _isInputFocused) {
+         ChatManager.self.onChatLostFocus();
+      }
+
+      _isInputFocused = inputField.isFocused;
+
       // Submit the field when enter is pressed and the field is focused
       if (inputField.isFocused && Input.GetKeyDown(KeyCode.Return)) {
 
@@ -287,7 +308,7 @@ public class ChatPanel : MonoBehaviour {
       if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(activateAfterDelay());
+            StartCoroutine(CO_ActivateAfterDelay());
          }
       }
    }
@@ -466,15 +487,93 @@ public class ChatPanel : MonoBehaviour {
       return _isScrolling;
    }
 
-   public void onChatTabPressed () {
-      if (allTabToggle.isOn) {
+   public void toggleChoosingChatTypes () {
+      choosingChatType.SetActive(!choosingChatType.activeSelf);
+   }
+
+   public void onLocalChatPressed () {
+      toggleChatType(ChatInfo.Type.Local);
+   }
+
+   public void onWhisperChatPressed () {
+      toggleChatType(ChatInfo.Type.Whisper);
+   }
+
+   public void onLogChatPressed () {
+      toggleChatType(ChatInfo.Type.Log);
+   }
+
+   public void onWarningChatPressed () {
+      toggleChatType(ChatInfo.Type.Warning);
+   }
+
+   public void onSystemChatPressed () {
+      toggleChatType(ChatInfo.Type.System);
+   }
+
+   public void onDebugChatPressed () {
+      toggleChatType(ChatInfo.Type.Debug);
+   }
+
+   public void onErrorChatPressed () {
+      toggleChatType(ChatInfo.Type.Error);
+   }
+
+   public void onTradeChatPressed () {
+      toggleChatType(ChatInfo.Type.Trade);
+   }
+
+   public void onPermitChatPressed () {
+      toggleChatType(ChatInfo.Type.Permit);
+   }
+
+   public void onGuildChatPressed () {
+      toggleChatType(ChatInfo.Type.Guild);
+   }
+
+   public void onEmoteChatPressed () {
+      toggleChatType(ChatInfo.Type.Emote);
+   }
+
+   public void onGlobalChatPressed () {
+      toggleChatType(ChatInfo.Type.Global);
+   }
+
+   public void onOfficerChatPressed () {
+      toggleChatType(ChatInfo.Type.Officer);
+   }
+
+   public void onAllChatPressed () {
+      if (!_tabPressed) {
+         choosingChatType.GetComponentsInChildren<Toggle>().ToList().ForEach(x => x.isOn = true);
+         _visibleChatTypes = new HashSet<ChatInfo.Type>(((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList());
+         onChatTabPressed();
+      }
+   }
+
+   private void toggleChatType (ChatInfo.Type type) {
+      if (_visibleChatTypes.Contains(type)) {
+         _visibleChatTypes.Remove(type);
+      } else {
+         _visibleChatTypes.Add(type);
+      }
+      onChatTabPressed();
+   }
+
+   private void onChatTabPressed () {
+      _tabPressed = true;
+
+      if (_visibleChatTypes.Count == ((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList().Count) {
          _tab = Tab.All;
-         setCurrentChatType(ChatInfo.Type.Global);
-      } else if (groupTabToggle.isOn) {
-         _tab = Tab.Group;
-         setCurrentChatType(ChatInfo.Type.Group);
+         allTabToggle.isOn = true;
+         customTabToggle.isOn = false;
+      } else {
+         _tab = Tab.Custom;
+         allTabToggle.isOn = false;
+         customTabToggle.isOn = true;
       }
 
+      _tabPressed = false;
       rebuildMessageList();
    }
 
@@ -505,7 +604,7 @@ public class ChatPanel : MonoBehaviour {
 
       if (!wasJustFocused()) {
          // Activate the input field in the next frame to avoid weird interactions
-         StartCoroutine(activateAfterDelay());
+         StartCoroutine(CO_ActivateAfterDelay());
       }
    }
 
@@ -520,7 +619,6 @@ public class ChatPanel : MonoBehaviour {
    protected void rebuildMessageList () {
       int num = 0;
       List<ChatLine> deleteList = new List<ChatLine>();
-      HashSet<ChatInfo.Type> visibleChatTypes = tabToChatType[_tab];
 
       // Cycle over all of the chat lines in our container
       foreach (ChatLine chatLine in messagesContainer.GetComponentsInChildren<ChatLine>(true)) {
@@ -556,7 +654,7 @@ public class ChatPanel : MonoBehaviour {
    }
 
    protected bool isChatLineVisibleInTab (ChatInfo chatInfo) {
-      if (tabToChatType[_tab].Contains(chatInfo.messageType)) {
+      if (_visibleChatTypes.Contains(chatInfo.messageType)) {
          return true;
       } else {
          return false;
@@ -610,7 +708,7 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   protected IEnumerator activateAfterDelay () {
+   protected IEnumerator CO_ActivateAfterDelay () {
       // Wait a frame
       yield return null;
 
@@ -618,10 +716,10 @@ public class ChatPanel : MonoBehaviour {
       inputField.ActivateInputField();
 
       // Have to do this in a separate Coroutine, it's ridiculous
-      StartCoroutine(moveCaretToEnd());
+      StartCoroutine(CO_MoveCaretToEnd());
    }
 
-   public IEnumerator moveCaretToEnd () {
+   public IEnumerator CO_MoveCaretToEnd () {
       // Wait a frame
       yield return null;
 
@@ -681,6 +779,9 @@ public class ChatPanel : MonoBehaviour {
    // The time at which the chat input was last focused
    protected float _lastFocusTime;
 
+   // Gets set to true when the input field is focused
+   protected bool _isInputFocused = false;
+
    // Whether we're currently clicking on the scroll bar
    protected bool _isScrolling = false;
 
@@ -695,6 +796,12 @@ public class ChatPanel : MonoBehaviour {
 
    // The selected tab
    protected Tab _tab = Tab.All;
+
+   // Currently chosen chat types that should be shown on the screen
+   protected HashSet<ChatInfo.Type> _visibleChatTypes = new HashSet<ChatInfo.Type>(((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList());
+
+   // Check whether "all" tab was pressed by player or if attached function was called by code
+   protected bool _tabPressed = false;
 
    #endregion
 }

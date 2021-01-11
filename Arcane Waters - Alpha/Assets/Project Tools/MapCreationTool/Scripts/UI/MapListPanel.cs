@@ -175,7 +175,7 @@ namespace MapCreationTool
             return;
          }
 
-         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && map.creatorID != MasterToolAccountManager.self.currentAccountID) {
+         if (MasterToolAccountManager.PERMISSION_LEVEL != PrivilegeType.Admin && map.creatorID != MasterToolAccountManager.self.currentAccountID) {
             UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }

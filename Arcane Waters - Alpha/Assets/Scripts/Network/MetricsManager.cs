@@ -11,7 +11,7 @@ namespace Assets.Scripts.Network
 {
    public class MetricsManager : MonoBehaviour
    {
-      #region "Public Variables"
+      #region Public Variables
 
       // UpdateFrequency.
       public float UpdateFrequencySecs = 10.0f;
@@ -19,7 +19,7 @@ namespace Assets.Scripts.Network
       #endregion
 
       private void Awake () {
-
+         startTime = DateTime.UtcNow;
          InvokeRepeating("updateMetrics", 0.0f, UpdateFrequencySecs);
       }
 
@@ -66,6 +66,10 @@ namespace Assets.Scripts.Network
                var ip = MyNetworkManager.self.networkAddress;
                //D.debug($"Metrics Manager: server={machineID} - areaInstances={areaInstances.Length}");
                DB_Main.setMetricIP(machineID, procName, procID, ip);
+
+               // Server.uptime (Ticks)
+               long uptime = DateTime.UtcNow.Ticks - startTime.Ticks;
+               DB_Main.setMetricUptime(machineID, procName, procID, uptime);
                
                //D.debug($"Metrics Manager: address={ip} - port={port}");
             });
@@ -73,5 +77,12 @@ namespace Assets.Scripts.Network
             D.warning("MetricsManager: Couldn't update metrics. | " + ex.Message);
          }
       }
+
+      #region Private Variables
+
+      DateTime startTime = DateTime.UtcNow;
+
+      #endregion
+
    }
 }

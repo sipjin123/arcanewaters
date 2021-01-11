@@ -113,7 +113,7 @@ namespace MapCreationTool
             UI.messagePanel.displayUnauthorized("Your account type has no permissions to alter data");
             return;
          }
-         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && mapVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
+         if (MasterToolAccountManager.PERMISSION_LEVEL != PrivilegeType.Admin && mapVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
             UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }
@@ -153,7 +153,7 @@ namespace MapCreationTool
             return;
          }
 
-         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin && version.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
+         if (MasterToolAccountManager.PERMISSION_LEVEL != PrivilegeType.Admin && version.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
             UI.messagePanel.displayUnauthorized("You are not the creator of this map");
             return;
          }

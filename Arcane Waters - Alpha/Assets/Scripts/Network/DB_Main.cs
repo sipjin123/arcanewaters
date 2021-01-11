@@ -841,15 +841,15 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes) {
+   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier) {
       try {
          // We'll save the ticket's ID
          long ticketId;
 
          using (MySqlConnection conn = getConnectionToDevGlobal()) {
             using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
-                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
+               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
+                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
                conn.Open();
                cmd.Prepare();
 
@@ -866,6 +866,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
                cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
                cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
+               cmd.Parameters.AddWithValue("@sourceMachineIdentifier", sourceMachineIdentifier);
 
                DebugQuery(cmd);
 
@@ -8136,6 +8137,10 @@ public class DB_Main : DB_MainStub
 
    public static new bool setMetricIP (string machineId, string processName, string PID, string ip) {
       return setMetric(machineId, processName, PID, "ip", ip);
+   }
+   
+   public static new bool setMetricUptime (string machineId,string processName, string PID, long uptime) {
+      return setMetric(machineId, processName, PID, "uptime", uptime.ToString());
    }
 
    #region Mail

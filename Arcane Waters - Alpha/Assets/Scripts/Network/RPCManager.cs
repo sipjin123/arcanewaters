@@ -864,7 +864,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_SubmitComplaint (string username, string details, string chatLog, byte[] screenshotBytes) {
+   public void Cmd_SubmitComplaint (string username, string details, string chatLog, byte[] screenshotBytes, string machineIdentifier) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserInfo reportedUserInfo = DB_Main.getUserInfo(username);
          UserObjects sourceObjects = DB_Main.getUserObjects(_player.userId);
@@ -879,7 +879,7 @@ public class RPCManager : NetworkBehaviour {
             });
          } else {
             DB_Main.saveComplaint(_player.userId, _player.accountId, _player.entityName, sourceObjects.accountEmail, connectionToClient.address,
-               reportedUserInfo.userId, reportedUserInfo.accountId, username, details, reportedUserInfo.localPos.ToString(), reportedUserInfo.areaKey, chatLog, screenshotBytes);
+               reportedUserInfo.userId, reportedUserInfo.accountId, username, details, reportedUserInfo.localPos.ToString(), reportedUserInfo.areaKey, chatLog, screenshotBytes, machineIdentifier);
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                _player.Target_ReceiveNormalChat("Your report was submitted successfully", ChatInfo.Type.System);

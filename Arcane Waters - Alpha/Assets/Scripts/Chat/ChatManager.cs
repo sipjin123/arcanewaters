@@ -21,7 +21,7 @@ public class ChatManager : MonoBehaviour {
       Group = 6,
       Officer = 7,
       Guild = 8,
-      Complain = 9
+      Complain = 9,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -44,7 +44,11 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
       _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
       _commands.Add(Type.Guild, new List<string> { "/guild", "/gld", "/g" });
-      _commands.Add(Type.Complain, new List<string>() { "/complain ", "/report " });
+      _commands.Add(Type.Complain, new List<string>() { "/complain", "/report" });
+
+      // Setup auto-complete panel
+      GameObject optionsPanel = Instantiate(new GameObject("AutoCompleteOptionsPanel"), chatPanel.inputField.transform.parent);
+      _autoCompletePanel = optionsPanel.AddComponent<AutoCompletePanel>();
    }
 
    public void addChat (string message, ChatInfo.Type chatType) {
@@ -115,7 +119,7 @@ public class ChatManager : MonoBehaviour {
 
    public string extractComplainNameFromChat (string message) {
       foreach (string command in _commands[Type.Complain]) {
-         message = message.Replace(command, "");
+         message = message.Replace(command + " ", "");
       }
 
       StringBuilder extractedName = new StringBuilder();
@@ -135,11 +139,38 @@ public class ChatManager : MonoBehaviour {
          message = message.Replace(command, "");
       }
 
-      return message.Replace($"{username} ", "");
+      return message.Replace($"{username} ", "").Trim();
    }
 
    public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
       return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
+   }
+
+   private void Update () {
+      // Pressing tab will auto-fill the selected auto-complete
+      if (Input.GetKeyDown(KeyCode.Tab) && _autoCompletePanel.isActive()) {
+         string autoComplete = _autoCompletePanel.getSelectedCommand();
+         chatPanel.inputField.text = autoComplete;
+         chatPanel.inputField.MoveTextEnd(false);
+      }
+
+      if (Input.GetKeyDown(KeyCode.UpArrow) && _autoCompletePanel.isActive()) {
+         _autoCompletePanel.moveSelection(moveUp: true);
+         chatPanel.inputField.MoveTextEnd(false);
+      }
+
+      if (Input.GetKeyDown(KeyCode.DownArrow) && _autoCompletePanel.isActive()) {
+         _autoCompletePanel.moveSelection(moveUp: false);
+         chatPanel.inputField.MoveTextEnd(false);
+      }
+   }
+
+   public void onChatLostFocus () {
+      _autoCompletePanel.setAutoCompletes(null);
+   }
+
+   public void onChatGainedFocus () {
+      tryAutoCompleteChatCommand(chatPanel.inputField.text);
    }
 
    public void processChatInput (string textToProcess) {
@@ -157,6 +188,7 @@ public class ChatManager : MonoBehaviour {
 
    public void onChatInputValuechanged (string inputString) {
       Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
+      tryAutoCompleteChatCommand(inputString);
    }
 
    protected void executeChatCommand (string message) {
@@ -211,9 +243,10 @@ public class ChatManager : MonoBehaviour {
    private void sendComplainToServer (string message) {
       string username = extractComplainNameFromChat(message);      
       string details = extractComplainMessageFromChat(message, username);
-      
+      string machineIdentifier = SystemInfo.deviceName;
+
       if (Global.player != null) {         
-         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()));
+         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()), machineIdentifier);
       }
    }
 
@@ -243,6 +276,38 @@ public class ChatManager : MonoBehaviour {
       return ChatPanel.self.inputField.isFocused;
    }
 
+   private void tryAutoCompleteChatCommand (string inputString) {
+      if (!inputString.StartsWith("/")) {
+         _autoCompletePanel.setAutoCompletes(null);
+         return;
+      }
+
+      string[] inputParts = inputString.Split(' ');
+
+      List<string> possibleCommands = new List<string>();
+      List<string> autoCompletes = new List<string>();
+
+      // Handle as an admin command
+      if (_commands[Type.Admin].Contains(inputParts[0]) && inputParts.Length > 1) {
+         autoCompletes = Util.getAutoCompletes(inputParts[1], new List<string>(Global.player.admin.getCommandList().Values), "/admin ");
+      
+      // Handle as a regular command
+      } else {
+         // Check each command type
+         foreach (Type t in System.Enum.GetValues(typeof(Type))) {
+            // Make sure there's actually an entry for said command
+            if (_commands.ContainsKey(t)) {
+               possibleCommands.Add(_commands[t][0]);
+            }
+         }
+
+         autoCompletes = Util.getAutoCompletes(inputString, possibleCommands);
+      }
+
+      _autoCompletePanel.resetSelection();
+      _autoCompletePanel.setAutoCompletes(autoCompletes);
+   }
+
    #region Private Variables
 
    // The commands available to the user through the chat prompt
@@ -256,6 +321,9 @@ public class ChatManager : MonoBehaviour {
 
    // The default number of messages to include in the log when requested
    protected const int MAX_MESSAGES_IN_LOG = 50;
+
+   // The panel managing the display and changing of the auto-complete options
+   private AutoCompletePanel _autoCompletePanel;
 
    #endregion
 }

@@ -215,10 +215,12 @@ public class PlayerShipEntity : ShipEntity
 
          if (Input.GetKeyDown(KeyCode.F10)) {
             _cannonAttackType = (CannonAttackType)(((int)_cannonAttackType + 1) % 3);
+            ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed ship attack type to: " + _cannonAttackType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
          }
 
          if (Input.GetKeyDown(KeyCode.F11)) {
             Cmd_ChangeCannonEffectType();
+            ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + cannonEffectType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
          }
       }
 
@@ -279,7 +281,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void cannonAttackPressed () {
-      if (!hasReloaded()) {
+      if (!hasReloaded() || isPerformingAttack()) {
          return;
       }
 
@@ -304,7 +306,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    private void cannonAttackReleased () {
-      if (!_isChargingCannon) {
+      if (!_isChargingCannon || isPerformingAttack()) {
          return;
       }
 
@@ -329,7 +331,9 @@ public class PlayerShipEntity : ShipEntity
          case CannonAttackType.Circle:
             float circleRadius = (0.625f - (_cannonChargeAmount * 0.125f));
             _shouldUpdateTargeting = false;
-            _targetCircle.targetingConfirmed(() => _shouldUpdateTargeting = true);
+            _targetCircle.targetingConfirmed(() => {
+               _shouldUpdateTargeting = true;
+            });
 
             StartCoroutine(CO_CannonBarrage(Util.getMousePos(), circleRadius));
             _targetCircle.setFillColor(Color.white);
@@ -709,6 +713,10 @@ public class PlayerShipEntity : ShipEntity
       }
 
       _currentFlag = flag;
+   }
+
+   public bool isPerformingAttack () {
+      return !_shouldUpdateTargeting;
    }
 
    protected IEnumerator CO_RequestRespawnAfterDelay (float delay) {

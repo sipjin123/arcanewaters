@@ -1095,6 +1095,29 @@ public class Util : MonoBehaviour {
       return (Mathf.Cos((angleToTarget - coneMiddleAngle) * Mathf.Deg2Rad) > (Mathf.Cos(coneHalfAngle * Mathf.Deg2Rad)));
    }
 
+   public static bool animatorHasParameter (string parameterName, Animator animator) {
+      foreach (AnimatorControllerParameter parameter in animator.parameters) {
+         if (parameter.name == parameterName) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public static List<string> getAutoCompletes (string input, List<string> possibilities, string prefix = "") {
+      List<string> autoCompletes = new List<string>();
+
+      foreach (string possibility in possibilities) {
+         // We won't accept the same string as a valid auto-complete
+         if (possibility.StartsWith(input) && possibility != input) {
+            autoCompletes.Add(prefix + possibility);
+         }
+      }
+
+      return autoCompletes;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

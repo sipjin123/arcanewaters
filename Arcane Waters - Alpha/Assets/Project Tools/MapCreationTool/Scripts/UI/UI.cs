@@ -321,7 +321,7 @@ namespace MapCreationTool
          if (DrawBoard.loadedVersion == null) {
             saveAs();
          } else {
-            if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
+            if (MasterToolAccountManager.PERMISSION_LEVEL != PrivilegeType.Admin &&
                DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
                messagePanel.displayUnauthorized("You are not the creator of this map");
                return;
@@ -395,7 +395,7 @@ namespace MapCreationTool
             return;
          }
 
-         if (MasterToolAccountManager.PERMISSION_LEVEL != AdminManager.Type.Admin &&
+         if (MasterToolAccountManager.PERMISSION_LEVEL != PrivilegeType.Admin &&
                DrawBoard.loadedVersion.map.creatorID != MasterToolAccountManager.self.currentAccountID) {
             messagePanel.displayUnauthorized("You are not the creator of this map");
             return;

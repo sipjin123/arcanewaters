@@ -60,8 +60,8 @@ namespace BackgroundTool
       #endregion
 
       private void Start () {
-         bool canSaveData = MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter 
-            || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.Admin;
+         bool canSaveData = MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.ContentWriter 
+            || MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.Admin;
 
          saveButton.interactable = canSaveData;
 
@@ -192,9 +192,9 @@ namespace BackgroundTool
                foreach (XMLPair xmlPair in backgroundData) {
 
                   if ((xmlPair.xmlOwnerId == MasterToolAccountManager.self.currentAccountID
-                  && MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter)
-                  || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.Admin
-                  || MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.QA) {
+                  && MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.ContentWriter)
+                  || MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.Admin
+                  || MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.QA) {
 
                      TextAsset newTextAsset = new TextAsset(xmlPair.rawXmlData);
                      BackgroundContentData bgContentData = Util.xmlLoad<BackgroundContentData>(newTextAsset);

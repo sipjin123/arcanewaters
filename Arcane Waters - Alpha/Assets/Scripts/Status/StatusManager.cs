@@ -46,7 +46,12 @@ public class StatusManager : MonoBehaviour {
       GameObject icon = Instantiate(Resources.Load<GameObject>("Prefabs/StatusEffectIcon"), Vector3.zero, Quaternion.identity, iconContainer);
 
       // Tell the status icon which effect to play
-      icon.GetComponent<Animator>().SetTrigger(statusType.ToString());
+      Animator iconAnimator = icon.GetComponent<Animator>();
+
+      if (Util.animatorHasParameter(statusType.ToString(), iconAnimator)) {
+         iconAnimator.SetTrigger(statusType.ToString());
+      }
+
       return icon;
    }
 

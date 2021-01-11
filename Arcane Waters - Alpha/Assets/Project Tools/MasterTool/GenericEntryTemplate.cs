@@ -48,7 +48,7 @@ public class GenericEntryTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+      if (MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.ContentWriter) {
          if (Util.hasValidEntryName(templateName) && !XmlDataToolManager.self.didUserCreateData(templateName)) {
             deleteButton.gameObject.SetActive(false);
             editButton.gameObject.SetActive(false);
@@ -62,7 +62,7 @@ public class GenericEntryTemplate : MonoBehaviour {
          duplicateButton.gameObject.SetActive(false);
       }
 
-      if (MasterToolAccountManager.PERMISSION_LEVEL == AdminManager.Type.ContentWriter) {
+      if (MasterToolAccountManager.PERMISSION_LEVEL == PrivilegeType.ContentWriter) {
          if (Util.hasValidEntryName(nameText.text) && !_xmlToolReference.didUserCreateData(xmlId)) {
             deleteButton.gameObject.SetActive(false);
             editButton.gameObject.SetActive(false);
