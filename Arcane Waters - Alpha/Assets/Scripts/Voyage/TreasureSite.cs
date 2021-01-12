@@ -207,9 +207,9 @@ public class TreasureSite : NetworkBehaviour
       }
 
       if (isClient) {
-         // Determine if the colliding object is a ship
-         ShipEntity ship = other.transform.GetComponent<ShipEntity>();
-         if (ship != null && ship.instanceId == instanceId) {
+         // Determine if the local player collided
+         PlayerShipEntity playerShip = other.transform.GetComponent<PlayerShipEntity>();
+         if (Global.player != null && playerShip != null && playerShip.instanceId == instanceId && Global.player == playerShip) {
             // Trigger the tutorial
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterTreasureSiteRange);
          }

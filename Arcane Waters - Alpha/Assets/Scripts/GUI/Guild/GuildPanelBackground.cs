@@ -13,7 +13,12 @@ public class GuildPanelBackground : MonoBehaviour, IPointerClickHandler
 
    public virtual void OnPointerClick (PointerEventData eventData) {
       if (eventData.button == PointerEventData.InputButton.Left) {
-         GuildPanel.self.getGuildMemeberRows().ForEach(row => row.highlightRow.SetActive(false));
+         foreach (GuildMemberRow row in GuildPanel.self.getGuildMemeberRows()) {
+            row.highlightRow.SetActive(false);
+            foreach (Image image in row.backgroundImages) {
+               image.sprite = row.inactiveBackgroundSprite;
+            }
+         }
 
          // Update buttons interactivity
          GuildPanel.self.checkButtonPermissions();

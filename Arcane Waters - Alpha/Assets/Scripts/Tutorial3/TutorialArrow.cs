@@ -84,12 +84,12 @@ public class TutorialArrow : MonoBehaviour
       }
    }
 
-   public void setTarget (TutorialData3.Location target) {
-      if (target != TutorialData3.Location.None) {
+   public void setTarget (string targetAreaKey) {
+      if (!string.IsNullOrEmpty(targetAreaKey)) {
          gameObject.SetActive(true);
          _targetWarp = null;
          StopAllCoroutines();
-         StartCoroutine(CO_PointTo(target));
+         StartCoroutine(CO_PointTo(targetAreaKey));
       } else {
          deactivate();
       }
@@ -122,7 +122,7 @@ public class TutorialArrow : MonoBehaviour
       }
    }
 
-   private IEnumerator CO_PointTo (TutorialData3.Location target) {
+   private IEnumerator CO_PointTo (string targetAreaKey) {
       // Wait until we have finished instantiating the area
       while (Global.player == null || AreaManager.self.getArea(Global.player.areaKey) == null) {
          yield return 0;
@@ -130,7 +130,7 @@ public class TutorialArrow : MonoBehaviour
 
       // Search for the correct warp (entrance to target)
       foreach (Warp warp in AreaManager.self.getArea(Global.player.areaKey).getWarps()) {
-         if (string.Equals(warp.targetInfo.name, TutorialData3.locationToAreaKey[target])) {
+         if (string.Equals(warp.targetInfo.name, targetAreaKey)) {
             _targetWarp = warp;
             break;
          }

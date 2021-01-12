@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System.Linq;
 
 public class TutorialManager3 : MonoBehaviour {
 
@@ -44,9 +45,9 @@ public class TutorialManager3 : MonoBehaviour {
 
       // Set the default config
       TutorialPanel3.Mode panelMode = TutorialPanel3.Mode.NPCSpeech;
-      string selectedTutorialKey = TutorialData3.tutorials[0].key;
+      string selectedTutorialKey = tutorialDataList[0].key;
       _currentStep = 0;
-      foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
+      foreach (Tutorial3 tutorial in tutorialDataList) {
          tutorial.isCompleted = false;
       }
 
@@ -57,7 +58,7 @@ public class TutorialManager3 : MonoBehaviour {
          _currentStep = PlayerPrefs.GetInt(STEP + _userId);
 
          // Read the completion state of each tutorial
-         foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
+         foreach (Tutorial3 tutorial in tutorialDataList) {
             if (PlayerPrefs.HasKey(COMPLETED + _userId + "_" + tutorial.key)) {
                tutorial.isCompleted = true;
             }
@@ -65,10 +66,10 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       // Create the tutorial rows in the panel
-      panel.initialize(panelMode, TutorialData3.tutorials);
+      panel.initialize(panelMode, tutorialDataList);
 
       // Get the selected tutorial
-      foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
+      foreach (Tutorial3 tutorial in tutorialDataList) {
          if (string.Equals(tutorial.key, selectedTutorialKey)) {
             _currentTutorial = tutorial;
          }
@@ -76,7 +77,7 @@ public class TutorialManager3 : MonoBehaviour {
 
       // If the selected tutorial was not found, find one that is not completed
       if (_currentTutorial == null) {
-         _currentTutorial = TutorialData3.tutorials[0];
+         _currentTutorial = tutorialDataList[0];
          _currentTutorial = getNextUncompletedTutorial();
          _currentStep = 0;
       } else {
@@ -106,7 +107,7 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       // Since we changed area, check if the tutorial arrow can point to something relevant
-      arrow.setTarget(_currentTutorial.steps[_currentStep].targetLocation);
+      arrow.setTarget(_currentTutorial.steps[_currentStep].targetAreaKey);
    }
 
    public void selectTutorial (Tutorial3 tutorial) {
@@ -183,8 +184,13 @@ public class TutorialManager3 : MonoBehaviour {
 
    public void tryCompletingStepByWeaponEquipped () {
       if (!isActive()
-         || _currentTutorial.steps[_currentStep].completionTrigger != TutorialTrigger.EquipWeapon
          || Global.getUserObjects().weapon == null) {
+         return;
+      }
+
+      // Either the equipWeapon trigger or a weapon action must be defined for the current tutorial step
+      if (_currentTutorial.steps[_currentStep].completionTrigger != TutorialTrigger.EquipWeapon &&
+         _currentTutorial.steps[_currentStep].weaponAction == Weapon.ActionType.None) {
          return;
       }
 
@@ -215,7 +221,7 @@ public class TutorialManager3 : MonoBehaviour {
 
       // If there are no more uncompleted tutorials, select the last one (the end notice)
       if (_currentTutorial == null) {
-         _currentTutorial = TutorialData3.tutorials[TutorialData3.tutorials.Count - 1];
+         _currentTutorial = tutorialDataList[tutorialDataList.Count - 1];
       }
 
       _currentStep = 0;
@@ -224,25 +230,23 @@ public class TutorialManager3 : MonoBehaviour {
    }
 
    private bool isUserAtTargetLocation () {
-      TutorialData3.Location targetLocation = _currentTutorial.steps[_currentStep].targetLocation;
+      string targetAreaKey = _currentTutorial.steps[_currentStep].targetAreaKey;
 
-      if (targetLocation == TutorialData3.Location.None || Global.player == null) {
+      if (string.IsNullOrEmpty(targetAreaKey)) {
          return false;
       }
 
-      switch (targetLocation) {
-         case TutorialData3.Location.Farm:
-            return AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId);
-         case TutorialData3.Location.House:
-            return AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId);
-         default:
-            if (TutorialData3.locationToAreaKey.TryGetValue(targetLocation, out string targetAreaKey)) {
-               if (string.Equals(Global.player.areaKey, targetAreaKey)) {
-                  return true;
-               }
-            }
-            return false;
+      if (string.Equals(targetAreaKey, CustomFarmManager.GROUP_AREA_KEY)) {
+         return AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId);
+      } else if (string.Equals(targetAreaKey, CustomHouseManager.GROUP_AREA_KEY)) {
+         return AreaManager.self.isHouseOfUser(Global.player.areaKey, Global.player.userId);
+      } else {
+         if (string.Equals(Global.player.areaKey, targetAreaKey)) {
+            return true;
+         }
       }
+
+      return false;
    }
 
    private void refreshUI () {
@@ -265,7 +269,7 @@ public class TutorialManager3 : MonoBehaviour {
 
       panel.refreshTutorialStep(selectedTutorialKey, npcSpeech, _currentStep + 1, _currentTutorial.steps.Count,
          isNextStepManual, _currentTutorial.isCompleted);
-      arrow.setTarget(_currentTutorial.steps[_currentStep].targetLocation);
+      arrow.setTarget(_currentTutorial.steps[_currentStep].targetAreaKey);
    }
 
    public void OnDestroy () {
@@ -281,7 +285,7 @@ public class TutorialManager3 : MonoBehaviour {
       PlayerPrefs.SetString(SELECTED + _userId, _currentTutorial.key);
       PlayerPrefs.SetInt(STEP + _userId, _currentStep);
 
-      foreach (Tutorial3 tutorial in TutorialData3.tutorials) {
+      foreach (Tutorial3 tutorial in tutorialDataList) {
          string prefsKey = COMPLETED + _userId + "_" + tutorial.key;
          if (tutorial.isCompleted) {
             PlayerPrefs.SetInt(prefsKey, 1);
@@ -294,24 +298,24 @@ public class TutorialManager3 : MonoBehaviour {
    private Tutorial3 getNextUncompletedTutorial () {
       // Get the index of the current tutorial
       int currentIndex = 0;
-      for (int i = 0; i < TutorialData3.tutorials.Count; i++) {
-         if (TutorialData3.tutorials[i] == _currentTutorial) {
+      for (int i = 0; i < tutorialDataList.Count; i++) {
+         if (tutorialDataList[i] == _currentTutorial) {
             currentIndex = i;
             break;
          }
       }
 
       // First look down in the list - but leave out the last one, which is the end notice
-      for (int i = currentIndex; i < TutorialData3.tutorials.Count - 1; i++) {
-         if (!TutorialData3.tutorials[i].isCompleted) {
-            return TutorialData3.tutorials[i];
+      for (int i = currentIndex; i < tutorialDataList.Count - 1; i++) {
+         if (!tutorialDataList[i].isCompleted) {
+            return tutorialDataList[i];
          }
       }
 
       // Then start looking from the beginning
       for (int i = 0; i < currentIndex; i++) {
-         if (!TutorialData3.tutorials[i].isCompleted) {
-            return TutorialData3.tutorials[i];
+         if (!tutorialDataList[i].isCompleted) {
+            return tutorialDataList[i];
          }
       }
 
@@ -319,7 +323,10 @@ public class TutorialManager3 : MonoBehaviour {
    }
 
    public void receiveDataFromZip (List<Tutorial3> newTutorialDataList) {
-      tutorialDataList = newTutorialDataList;
+      // Sort the tutorials by their order index
+      tutorialDataList = newTutorialDataList.OrderBy(t => t.order).ToList();
+
+      _currentTutorial = tutorialDataList[0];
    }
 
    public bool isActive () {
@@ -336,7 +343,7 @@ public class TutorialManager3 : MonoBehaviour {
    #region Private Variables
 
    // The current selected tutorial
-   private Tutorial3 _currentTutorial = TutorialData3.tutorials[0];
+   private Tutorial3 _currentTutorial;
 
    // The index of the current step in the tutorial
    private int _currentStep = 0;
@@ -349,3 +356,40 @@ public class TutorialManager3 : MonoBehaviour {
 
    #endregion
 }
+
+public enum TutorialTrigger
+{
+   None = 0,
+   Manual = 1,
+   TalkShopOwner = 2,
+   BuyWeapon = 3,
+   ExpandTutorialPanel = 5,
+   OpenInventory = 6,
+   EquipWeapon = 7,
+   ShipSpeedUp = 8,
+   FireShipCannon = 9,
+   DefeatPirateShip = 10,
+   PlantCrop = 12,
+   CropGrewToMaxLevel = 13,
+   HarvestCrop = 14,
+   OpenFarmLayoutSelectionPanel = 15,
+   OpenHouseLayoutSelectionPanel = 17,
+   OpenVoyagePanel = 19,
+   SpawnInVoyage = 20,
+   EnterBattle = 22,
+   AttackBattleTarget = 24,
+   EndBattle = 25,
+   EnterTreasureSiteRange = 26,
+   PlaceObject = 28,
+   DeleteObject = 29,
+   UnequipHammer = 30,
+   MoveShip = 33,
+   LeaveVoyageGroup = 35,
+   SelectPirateShip = 36,
+   MoveObject = 37,
+   SelectObject = 38,
+   OpenMerchantScreen = 39,
+   OpenTradeConfirmScreen = 40,
+   SellCrops = 41,
+   CloseMerchantScreen = 42,
+};

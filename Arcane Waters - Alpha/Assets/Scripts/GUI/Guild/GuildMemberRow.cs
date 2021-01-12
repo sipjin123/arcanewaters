@@ -36,6 +36,15 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
    // The object which highlights guild member row in Guild Panel
    public GameObject highlightRow;
 
+   // Background images
+   public Image[] backgroundImages;
+
+   // Sprite for currently chosen row background
+   public Sprite activeBackgroundSprite;
+
+   // Sprite for inactive row background
+   public Sprite inactiveBackgroundSprite;
+
    // Last time that guild member was logged-in
    public ulong lastActiveInMinutes;
 
@@ -63,6 +72,10 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
          }
       }
 
+      shortenText(memberName);
+      shortenText(memberRankName);
+      shortenText(memberZone);
+
       if (userInfo.isOnline) {
          onlineIcon.SetActive(true);
          offlineIcon.SetActive(false);
@@ -73,17 +86,27 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
          System.TimeSpan timeDiff = System.DateTime.Now.Subtract(userInfo.lastLoginTime);
          lastActiveInMinutes = (ulong) timeDiff.TotalMinutes;
          if (timeDiff.TotalSeconds < 119) {
-            memberOnlineStatus.text = "1 Minute";
+            memberOnlineStatus.text = "1m";
          } else if (timeDiff.TotalMinutes < 60) {
-            memberOnlineStatus.text = (int) timeDiff.TotalMinutes + " Minutes";
+            memberOnlineStatus.text = (int) timeDiff.TotalMinutes + "m";
          } else if (timeDiff.TotalHours < 2) {
-            memberOnlineStatus.text = "1 Hour";
+            memberOnlineStatus.text = "1h";
          } else if (timeDiff.TotalHours < 24) {
-            memberOnlineStatus.text = (int) timeDiff.TotalHours + " Hours";
+            memberOnlineStatus.text = (int) timeDiff.TotalHours + "h";
          } else if (timeDiff.TotalDays < 2) {
-            memberOnlineStatus.text = "1 Day";
+            memberOnlineStatus.text = "1m";
          } else {
-            memberOnlineStatus.text = (int) timeDiff.TotalDays + " Days";
+            memberOnlineStatus.text = (int) timeDiff.TotalDays + "d";
+         }
+      }
+   }
+
+   private static void shortenText (Text text) {
+      if (text.preferredWidth > text.GetComponent<LayoutElement>().preferredWidth) {
+         text.text += "...";
+         while (text.preferredWidth > text.GetComponent<LayoutElement>().preferredWidth) {
+            text.text = text.text.Substring(0, text.text.Length - 4);
+            text.text += "...";
          }
       }
    }
@@ -91,8 +114,20 @@ public class GuildMemberRow : MonoBehaviour, IPointerClickHandler
    public virtual void OnPointerClick (PointerEventData eventData) {
       if (eventData.button == PointerEventData.InputButton.Left) {
          bool newState = !highlightRow.activeSelf;
-         GuildPanel.self.getGuildMemeberRows().ForEach(row => row.highlightRow.SetActive(false));
+
+         // Disable all rows
+         foreach (GuildMemberRow row in GuildPanel.self.getGuildMemeberRows()) {
+            row.highlightRow.SetActive(false);
+            foreach (Image image in row.backgroundImages) {
+               image.sprite = inactiveBackgroundSprite;
+            }
+         }
+
+         // Change state of current row
          highlightRow.SetActive(newState);
+         foreach(Image image in backgroundImages) {
+            image.sprite = newState ? activeBackgroundSprite : inactiveBackgroundSprite;
+         }
 
          // Update buttons interactivity
          GuildPanel.self.checkButtonPermissions();

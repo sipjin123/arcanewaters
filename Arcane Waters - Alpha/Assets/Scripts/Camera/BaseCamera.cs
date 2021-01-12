@@ -95,6 +95,17 @@ public class BaseCamera : MonoBehaviour {
       return sizeFactor * typeFactor;
    }
 
+   public CinemachineFramingTransposer getFramingTransposer () {
+      if (_framingTransposer == null) {
+         if (getVirtualCamera() != null) {
+            // Cache the CinemachineFramingTransponser for future uses
+            _framingTransposer = getVirtualCamera().GetCinemachineComponent<CinemachineFramingTransposer>();
+         }
+      }
+
+      return _framingTransposer;
+   }
+
    #region Private Variables
 
    // Our associated camera
@@ -106,6 +117,9 @@ public class BaseCamera : MonoBehaviour {
 
    // Our Pixel Fade effect
    protected PixelFadeEffect _pixelFadeEffect;
+
+   // The framing transposer cinemachine component
+   protected CinemachineFramingTransposer _framingTransposer;
 
    #endregion
 }

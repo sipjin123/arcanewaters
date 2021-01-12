@@ -43,8 +43,8 @@ public class GuildPanel : Panel {
    public GuildRanksPanel guildRanksPanel;
 
    [Header("Guild actions")]
-   // Additional spacer before action buttons
-   public GameObject spacerActionContainer;
+   // Visual separator above "Ranks"
+   public GameObject horizontalSeparatorLeft;
 
    // Contains all action buttons
    public GameObject actionButtonsContainer;
@@ -82,6 +82,13 @@ public class GuildPanel : Panel {
    public GameObject levelAsc;
    public GameObject levelDesc;
 
+   [Header("Others")]
+   // Objects which are visible when player is not currently in guild
+   public GameObject[] notInGuildObjects;
+
+   // Decarations used for player who is not a leader
+   public GameObject bottomDecarationNoLeader;
+
    // Self
    public static GuildPanel self;
 
@@ -96,16 +103,20 @@ public class GuildPanel : Panel {
    public void receiveDataFromServer (GuildInfo info, GuildRankInfo[] guildRanks) {
       bool inGuild = Global.player.guildId != 0;
 
-      // Disable and enable buttons and images
-      ranksButton.interactable = inGuild;
-      createButton.interactable = !inGuild;
-      leaveButton.interactable = inGuild;
+      // Disable and enable images
       guildIcon.gameObject.SetActive(inGuild);
       flagImage.enabled = inGuild;
 
-      // Activates "Create Guild" button or action buttons depending on user being in guild
+      // Activates buttons depending on user being in guild
       createButton.gameObject.SetActive(!inGuild);
-      spacerActionContainer.gameObject.SetActive(inGuild);
+      leaveButton.gameObject.SetActive(inGuild);
+      ranksButton.gameObject.SetActive(inGuild);
+      bottomDecarationNoLeader.SetActive(inGuild);
+      foreach (GameObject obj in notInGuildObjects) {
+         obj.SetActive(!inGuild);
+      }
+
+      horizontalSeparatorLeft.gameObject.SetActive(inGuild);
       actionButtonsContainer.gameObject.SetActive(inGuild);
 
       // Fill in the texts
@@ -140,6 +151,8 @@ public class GuildPanel : Panel {
                break;
             }
          }
+
+         bottomDecarationNoLeader.SetActive(rankId != 0);
 
          // Guild leader has all permissions
          if (rankId == 0) {

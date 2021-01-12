@@ -9,9 +9,12 @@ public class CustomHouseManager : CustomMapManager
 {
    #region Public Variables
 
+   // The area key of this group of maps
+   public static string GROUP_AREA_KEY = "customhouse";
+
    #endregion
 
-   public override string mapTypeAreaKey => "customhouse";
+   public override string mapTypeAreaKey => GROUP_AREA_KEY;
    public override string typeDisplayName => "House";
 
    public override bool canUserWarpInto (NetEntity user, string areaKey, out Action<NetEntity> denyWarpHandler) {

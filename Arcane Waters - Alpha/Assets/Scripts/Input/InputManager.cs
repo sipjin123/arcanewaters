@@ -46,6 +46,9 @@ public class InputManager : MonoBehaviour
       // Set sea battle keys
       _keybindings[KeyAction.FireMainCannon].primary = KeyCode.Space;
       _keybindings[KeyAction.SelectNextSeaTarget].primary = KeyCode.Tab;
+
+      // Camera panning
+      _keybindings[KeyAction.PanCamera].primary = KeyCode.Mouse2;
    }
 
    public static bool isPressingDirection (Direction direction) {
@@ -263,6 +266,10 @@ public class InputManager : MonoBehaviour
 
       D.error($"Could not find { action } action when looking for a binding.");
       return new BoundKeyAction { action = action };
+   }
+
+   public static Vector2 getCameraPanningAxis () {
+      return new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
    }
 
    #region Private Variables

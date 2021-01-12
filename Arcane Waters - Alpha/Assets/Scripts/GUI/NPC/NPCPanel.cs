@@ -138,6 +138,8 @@ public class NPCPanel : Panel
       npcDialogueText.enabled = true;
       setCommonPanelContent(greetingText, friendshipLevel);
 
+      isHireableNotification.SetActive(false);
+
       if (questDataArray.Length > 0) {
          foreach (QuestDataNode questNode in questDataArray) {
             addDialogueOptionRow(Mode.QuestNode, ClickableText.Type.NPCDialogueOption,

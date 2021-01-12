@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using UnityEngine.EventSystems;
 using System;
+using Cinemachine;
 
 public class CameraManager : ClientMonoBehaviour {
    #region Public Variables
@@ -30,6 +31,15 @@ public class CameraManager : ClientMonoBehaviour {
    // An event that's triggered when the resolution changes
    public event Action resolutionChanged;
 
+   // The minimum values for the camera offset when panning
+   public Vector2 minCameraOffset = new Vector2(0.15f, 0.15f);
+
+   // The maximum values for the camera offset when panning
+   public Vector2 maxCameraOffset = new Vector2(0.85f, 0.85f);
+
+   // The Cinemachine brain
+   public CinemachineBrain cinemachineBrain;
+
    #endregion
 
    protected override void Awake () {
@@ -39,6 +49,10 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera = GameObject.FindObjectOfType<DefaultCamera>();
       battleCamera = GameObject.FindObjectOfType<BattleCamera>();
       _baseCameras = new List<BaseCamera>();
+
+      if (cinemachineBrain == null) {
+         cinemachineBrain = GetComponent<CinemachineBrain>();
+      }
 
       foreach (BaseCamera baseCam in GameObject.FindObjectsOfType<BaseCamera>()) {
          _baseCameras.Add(baseCam);
@@ -54,6 +68,26 @@ public class CameraManager : ClientMonoBehaviour {
       _isFullscreen = Screen.fullScreen;
 
       MyNetworkManager.self.clientStarting += onClientStarting;
+   }
+
+   private void Update () {
+      // Don't allow panning during battles
+      if (Global.player != null && !isShowingBattle()) {
+         CinemachineFramingTransposer transposer = getCurrentBaseCamera().getFramingTransposer();
+
+         if (transposer != null) {
+            // Always enable panning when sailing, require holding the pan camera button (scrollwheel by default) the rest of the time
+            if (InputManager.getKeyAction(KeyAction.PanCamera)) {
+               Vector2 offsetInput = InputManager.getCameraPanningAxis();                              
+               transposer.m_ScreenX = Mathf.Clamp(1 - offsetInput.x, minCameraOffset.x, maxCameraOffset.x);
+               transposer.m_ScreenY = Mathf.Clamp(offsetInput.y, minCameraOffset.y, maxCameraOffset.y);
+            } else {
+               // Reset the panning position if the panning key is released
+               transposer.m_ScreenX = 0.5f;
+               transposer.m_ScreenY = 0.5f;
+            }
+         }
+      }
    }
 
    private void OnDestroy () {
@@ -124,7 +158,16 @@ public class CameraManager : ClientMonoBehaviour {
       _quakeEffect.enabled = false;
    }
 
-   public static BaseCamera getCurrentBaseCamera () {
+   public static BaseCamera getCurrentBaseCamera () {      
+      // Try to find the active virtual camera in the list of registered BaseCameras
+      ICinemachineCamera activeVCam = self.cinemachineBrain.ActiveVirtualCamera;
+      foreach (BaseCamera camera in self._baseCameras) {
+         if (camera.getVirtualCamera() != null && camera.getVirtualCamera().gameObject == activeVCam.VirtualCameraGameObject) {
+            return camera;
+         }
+      }
+      
+      // If we didn't find a camera (maybe it wasn't registered), return either the defaultCamera or the battleCamera
       return defaultCamera.getDepth() > battleCamera.getDepth() ? (BaseCamera)defaultCamera : (BaseCamera)battleCamera;
    }
 
