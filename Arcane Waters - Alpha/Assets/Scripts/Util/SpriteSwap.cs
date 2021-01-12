@@ -40,10 +40,13 @@ public class SpriteSwap : ClientMonoBehaviour
 
       // Swap in the replacement sprite using our Dictionary indexed by frame number (supports up to 99 frames)
       Sprite oldSprite = getSprite();
-      string currentFrameNumber = Util.getFrameNumber(oldSprite);
+      string currentFrameNumber = "0";
+      if (oldSprite != ImageManager.self.blankSprite && oldSprite != null) {
+         currentFrameNumber = Util.getFrameNumber(oldSprite);
+      }
       Sprite newSprite = null;
       _spritesToSwapIn.TryGetValue(currentFrameNumber, out newSprite);
-      if (newSprite != null) {
+      if (newSprite != null || newSprite == ImageManager.self.blankSprite || newTexture == ImageManager.self.blankTexture) {
          setNewSprite(newSprite);
       } else {
          if (!Util.isBatch()) {
@@ -59,7 +62,7 @@ public class SpriteSwap : ClientMonoBehaviour
          // Get the array of sprites associated with the new texture
          Sprite[] newSprites = ImageManager.getSprites(newTexture);
          if (newSprites != null) {
-            if (newSprites.Length > 1) { 
+            if (newSprites.Length > 1 || ImageManager.getSprite(newTexture.name) == ImageManager.self.blankSprite) { 
                // Store the sprites associated with our Texture, indexed by their frame number
                foreach (Sprite newSprite in newSprites) {
                   if (newSprite != null) {
