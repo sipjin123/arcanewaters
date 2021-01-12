@@ -1615,6 +1615,11 @@ public class RPCManager : NetworkBehaviour {
             if (databaseQuestStatusList.Count > 0) {
                QuestStatusInfo highestQuestNodeValue = databaseQuestStatusList.OrderByDescending(_ => _.questNodeId).ToList()[0];
                foreach (QuestDataNode xmlQuestNode in xmlQuestNodeList) {
+                  // Remove node if friendship level requirement is insufficient
+                  if (xmlQuestNode.friendshipLevelRequirement > friendshipLevel) {
+                     removeNodeList.Add(xmlQuestNode);
+                  }
+
                   QuestStatusInfo databaseQuestStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questDataNodeId);
                   if (databaseQuestStatus == null) {
                      // Remove the quest that requires a certain level requirement
@@ -1787,6 +1792,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
             // Update the quest status of the npc
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
+            int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             Jobs newJobXP = DB_Main.getJobXP(_player.userId);
 
             // Deduct the items from the user id from the database
@@ -1819,7 +1825,7 @@ public class RPCManager : NetworkBehaviour {
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, 0, true, true, itemStock.ToArray(), newJobXP);
+               Target_ReceiveNPCQuestNode(_player.connectionToClient, questId, newQuestNodeId, newDialogueId, friendshipLevel, true, true, itemStock.ToArray(), newJobXP);
             });
          });
       } else {
@@ -1828,6 +1834,9 @@ public class RPCManager : NetworkBehaviour {
             // Update the quest status of the npc
             DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, newDialogueId);
 
+            int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
+            QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
+            DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + questDialogue.friendshipRewardPts);
             if (questData.questDataNodes.Length > questNodeId) {
                newQuestNodeId++;
                DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, 0);
@@ -1835,7 +1844,6 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
 
-               QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
                if (questDialogue.itemRewards != null) {
                   if (questDialogue.itemRewards.Length > 0) {
                      giveItemRewardsToPlayer(_player.userId, new List<Item>(questDialogue.itemRewards), true);

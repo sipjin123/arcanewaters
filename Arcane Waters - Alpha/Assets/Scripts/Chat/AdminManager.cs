@@ -995,12 +995,6 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-   [TargetRpc]
-   public void Target_DenyAdminCommand (NetworkConnection connection) {
-      // TODO: Confirm if it is necessary to have the admin check to be processed on the server side, client already knows if they are admin via adminFlag syncvar
-      D.warning("This account does not have Admin privileges.");
-   }
-
    [Command]
    private void Cmd_SpawnCustomEnemy (Enemy.Type enemyType) {
       if (!_player.isAdmin()) {
