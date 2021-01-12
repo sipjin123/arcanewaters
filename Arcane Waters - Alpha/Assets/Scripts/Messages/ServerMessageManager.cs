@@ -51,7 +51,10 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAMEPLAYTEST_APPID && !logInUserMessage.accountName.Contains("@playtest")) {
                logInUserMessage.accountName = logInUserMessage.accountName + "@playtest";
             }
-            
+            if (logInUserMessage.steamAppId == SteamLoginManagerServer.GAME_APPID && !logInUserMessage.accountName.Contains("@steam")) {
+               logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
+            }
+
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
                accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
@@ -84,7 +87,7 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.debug("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}");
 
-               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName + "@codecommode.com", 0);
+               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName.Replace("@", "") + "@codecommode.com", 0);
                if (accountId != 0) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      On_LogInUserMessage(conn, logInUserMessage);
