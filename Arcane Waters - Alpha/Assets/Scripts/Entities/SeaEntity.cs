@@ -97,19 +97,17 @@ public class SeaEntity : NetEntity
          } else if (!_playedDestroySound && this is ShipEntity && isClient) {
             _playedDestroySound = true;
             SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
-         }
 
-         Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
-
-         // Fade the sprites out
-         if (!Util.isBatch()) {
+            // Hide all the sprites
             foreach (SpriteRenderer renderer in _renderers) {
-               if (renderer.enabled) {
-                  float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);
-                  Util.setMaterialBlockAlpha(renderer, newAlpha);
-               }
+               renderer.enabled = false;
             }
+
+            // Play the explosion effect
+            Instantiate(isBot() ? PrefabsManager.self.pirateShipExplosionEffect : PrefabsManager.self.playerShipExplosionEffect, transform.position, Quaternion.identity);
          }
+
+         Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);                  
       }
    }
 

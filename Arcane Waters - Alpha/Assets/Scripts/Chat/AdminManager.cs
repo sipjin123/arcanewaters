@@ -756,6 +756,10 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
+      string buildVersionPrompt = buildVersion == 0 ? "latest" : buildVersion.ToString();
+      string delayMinutesPrompt = delayMinutes.ToString();
+      ChatManager.self.addChat($"Server Restart Command Sent! [delay = {delayMinutesPrompt} minutes, version = {buildVersionPrompt}]", ChatInfo.Type.Local);
+
       // Send the request to the server
       Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
    }
@@ -895,7 +899,10 @@ public class AdminManager : NetworkBehaviour
          bool scheduled = DB_Main.updateDeploySchedule(ticks, build);
          if (scheduled) {
             string timeUnit = (delay == 1) ? "minute" : "minutes";
-            ChatManager.self?.sendMessageToServer($"Server will reboot in {delay} {timeUnit}!", ChatInfo.Type.Global);
+            string message = $"Server will reboot in {delay} {timeUnit}!";
+            ChatInfo.Type chatType = ChatInfo.Type.Global;
+            ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
+            ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
          }
       });
    }

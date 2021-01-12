@@ -62,6 +62,13 @@ public class PrefabsManager : MonoBehaviour {
    // The Prefab we use for treasureChest spawning
    public GameObject treasureChestPrefab;
 
+   [Header("Ship Explosion Effects")]
+   // The prefab we use for the player ship sinking effect
+   public GameObject playerShipExplosionEffect;
+
+   // The prefab we use for the pirate ship sinking effect
+   public GameObject pirateShipExplosionEffect;
+
    [Header("Network Dependent Prefabs")]
    // The Prefab we use for creating networked cannon balls
    public GameObject networkedCannonBallPrefab;
