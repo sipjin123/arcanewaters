@@ -163,6 +163,11 @@ public class AdminManager : NetworkBehaviour
       // Keep track of it in the history list
       _history.Add("/admin " + inputString);
 
+      if (!_player.isAdmin()) {
+         D.warning("This account does not have Admin privileges.");
+         return;
+      }
+
       if (_commands[Type.AddGold].Equals(adminCommand)) {
          // Add to a particular user's gold amount
          requestAddGold(parameters);
@@ -981,6 +986,12 @@ public class AdminManager : NetworkBehaviour
       if (Enum.TryParse(parameters, out Enemy.Type enemyType)) {
          Cmd_SpawnCustomEnemy(enemyType);
       }
+   }
+
+   [TargetRpc]
+   public void Target_DenyAdminCommand (NetworkConnection connection) {
+      // TODO: Confirm if it is necessary to have the admin check to be processed on the server side, client already knows if they are admin via adminFlag syncvar
+      D.warning("This account does not have Admin privileges.");
    }
 
    [Command]
