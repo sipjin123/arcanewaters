@@ -257,7 +257,15 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    protected Texture2D getCurrentTexture () {
-      return _image != null ? _image.sprite.texture : _renderer.sprite.texture;
+      if (_image != null && _image.sprite != null) {
+         return _image.sprite.texture;
+      } else {
+         if (_renderer == null || _renderer.sprite == null) {
+            return ImageManager.self.blankTexture;
+         } else {
+            return _renderer.sprite.texture;
+         }
+      }
    }
 
    #region Private Variables
