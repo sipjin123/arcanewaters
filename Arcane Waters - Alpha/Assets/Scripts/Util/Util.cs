@@ -899,6 +899,9 @@ public class Util : MonoBehaviour {
    }
 
    public static string getFrameNumber (Sprite sprite) {
+      if (sprite == ImageManager.self.blankSprite) {
+         return "0";
+      }
       int length = sprite.name.Length;
 
       // We'll get the frame number as a string to keep this function efficient enough to call in LateUpdate()
