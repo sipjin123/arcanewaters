@@ -60,11 +60,21 @@ public class XmlVersionManagerClient : MonoBehaviour {
    // Event that notifies if streaming asset files are complete of not
    public UnityEvent initializeLoadingXmlData = new UnityEvent();
 
+   // File name of the tooltip xml
+   public const string XML_BASE_TOOLTIP = "xml_tooltip_base";
+
+   // The minimum valid file content size
+   public const int FILE_SIZE_MIN = 10;
+
    #endregion
 
    private void Awake () {
       self = this;
       webDirectory = "http://" + Global.getAddress(MyNetworkManager.ServerType.AmazonVPC) + ":7900/";
+   }
+
+   private void Start () {
+      loadBaseTooltipCache();
    }
 
    public void initializeClient () {
@@ -704,6 +714,11 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
 
          case EditorToolType.Tool_Tip:
+            // Update the cached tooltip base data
+            using (StreamWriter file = new StreamWriter(@"" + getTooltipBaseDirectory(), false)) {
+               file.WriteLine(content);
+            }
+
             List<TooltipSqlData> tooltipDataList = new List<TooltipSqlData>();
             foreach (string subGroup in xmlGroup) {
                string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
@@ -779,11 +794,91 @@ public class XmlVersionManagerClient : MonoBehaviour {
 
       if (currentProgress >= targetProgress) {
          PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.XmlExtraction);
-         isInitialized = true;
          finishedLoadingXmlData.Invoke();
-         D.debug("Finished assigning Xml Data");
+         if (!isInitialized) {
+            D.debug("Finished assigning Xml Data");
+         }
+
+         isInitialized = true;
          loadBlocker.SetActive(false);
       }
+   }
+
+   public async void downloadTooltipCache (bool assignAutomatically) {
+      string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
+      D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
+
+      StartCoroutine(processDataCreation(dataRequest, assignAutomatically));
+   }
+
+   private IEnumerator processDataCreation (string dataRequest, bool assignAutomatically) {
+      string fileDirectory = getTooltipBaseDirectory();
+      if (!File.Exists(fileDirectory)) {
+         D.debug("Missing file! Creating now");
+         File.Create(fileDirectory).Close();
+         yield return new WaitForSeconds(1);
+      }
+
+      if (dataRequest.Length > FILE_SIZE_MIN) {
+         using (StreamWriter file = new StreamWriter(@"" + getTooltipBaseDirectory(), false)) {
+            file.WriteLine(dataRequest);
+         }
+         D.debug("Successfully cached data");
+         if (assignAutomatically) {
+            yield return new WaitForSeconds(1);
+            loadBaseTooltipCache();
+         }
+      } else {
+         D.debug("Failed to retrieve data from server: " + dataRequest.Length);
+      }
+   }
+
+   public void loadBaseTooltipCache () {
+      // Download initial content when text file does not exist
+      if (!File.Exists(getTooltipBaseDirectory())) {
+         D.debug("Missing file! Failed to generate tooltip initial data, now downloading...");
+         downloadTooltipCache(true);
+         return;
+      }
+
+      // Read the content directly from the .txt file
+      StreamReader reader = new StreamReader(getTooltipBaseDirectory());
+      string content = reader.ReadToEnd();
+      reader.Close();
+
+      // Download initial content when text file is empty
+      if (content.Length < FILE_SIZE_MIN) {
+         D.debug("Missing content! Failed to generate tooltip initial data, now downloading...");
+         downloadTooltipCache(true);
+         return;
+      }
+
+      string splitter = "[next]";
+      string[] xmlGroup = content.Split(new string[] { splitter }, StringSplitOptions.None);
+
+      List<TooltipSqlData> tooltipDataList = new List<TooltipSqlData>();
+      foreach (string subGroup in xmlGroup) {
+         string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+         // Extract the segregated data and assign to the xml manager
+         if (xmlSubGroup.Length > 1) {
+            int uniqueId = int.Parse(xmlSubGroup[0]);
+            string key1 = xmlSubGroup[1];
+            string key2 = xmlSubGroup[2];
+            string value = xmlSubGroup[3];
+            int locationId = int.Parse(xmlSubGroup[4]);
+
+            TooltipSqlData newSqlData = new TooltipSqlData {
+               id = uniqueId,
+               key1 = key1,
+               key2 = key2,
+               value = value,
+               displayLocation = locationId
+            };
+            tooltipDataList.Add(newSqlData);
+         }
+      }
+      UIToolTipManager.self.receiveZipData(tooltipDataList);
    }
 
    private void updateLoadingProgress () {
@@ -794,6 +889,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
       if (includeProgressInEditorLog) {
          D.debug(message);
       }
+   }
+
+   private string getTooltipBaseDirectory () {
+      return TEXT_PATH + XML_BASE_TOOLTIP + ".txt";
    }
 
    #region Private Variables

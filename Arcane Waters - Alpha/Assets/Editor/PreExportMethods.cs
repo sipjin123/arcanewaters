@@ -27,6 +27,8 @@ public static class PreExportMethods {
       StripServerCode();
       DeleteNPCDataXML();
 
+      Debug.Log("Pre export method was called");
+      XmlVersionManagerClient.self.downloadTooltipCache(false);
       Debug.Log("Done executing client preExport methods");
    }
 
