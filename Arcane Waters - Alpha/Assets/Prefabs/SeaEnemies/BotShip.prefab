@@ -309,6 +309,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   shadow: {fileID: 0}
   statusEffectContainer: {fileID: 766467084607350867}
+  isUnderExternalControl: 0
   _ignoredAnimators: []
   _animators: []
   damage: 25
@@ -405,9 +406,10 @@ MonoBehaviour:
   attackingWaypointsRadius: 1
   secondsPatrolingUntilChoosingNewTreasureSite: 30
   secondsBetweenFindingPatrolRoutes: 5
-  secondsBetweenFindingAttackRoutes: 2
+  secondsBetweenFindingAttackRoutes: 0
+  maxSecondsOnChasePath: 2
   aggroConeDegrees: 35
-  aggroConeRadius: 1.5
+  aggroConeRadius: 2
 --- !u!50 &50644847342071564
 Rigidbody2D:
   serializedVersion: 4

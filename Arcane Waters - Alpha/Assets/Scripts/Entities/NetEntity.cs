@@ -16,7 +16,7 @@ public class NetEntity : NetworkBehaviour
    public static float MOVE_CHANGE_INTERVAL = .05f;
 
    // The number of seconds after which an attacker stops being one
-   public static float ATTACKER_STATUS_DURATION = 10f;
+   public static float ATTACKER_STATUS_DURATION = 30f;
 
    // The account ID for this entity
    [SyncVar]
@@ -254,6 +254,11 @@ public class NetEntity : NetworkBehaviour
 
       // Check command line
       _autoMove = CommandCodes.get(CommandCodes.Type.AUTO_MOVE);
+
+      if (shadow) {
+         // Store the initial scale of the shadow
+         _shadowInitialScale = shadow.transform.localScale;
+      }
    }
 
    protected virtual void Start () {
@@ -571,6 +576,11 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   [ClientRpc]
+   public void Rpc_HideGuildIconDisplay () {
+      hideGuildIcon();
+   }
+
    public void showGuildIcon () {
       if (guildId > 0) {
          CanvasGroup guildIconCanvasGroup = guildIcon.canvasGroup;
@@ -647,9 +657,8 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_South:
                SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_START_ID);
                animator.SetBool("jump", true);
-               isJumping = true;
                if (!freezeAnim) {
-                  StartCoroutine(CO_DelayExitAnim(animType, 0.2f));
+                  StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
                }
                break;
          }
@@ -674,6 +683,7 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
                isJumping = false;
+               shadow.transform.localScale = _shadowInitialScale;
                animator.SetBool("jump", false);
                SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID);
                break;
@@ -1597,6 +1607,10 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
+   public Vector3 getProjectedPosition (float afterSeconds) {
+      return _body.position + _body.velocity * afterSeconds;
+   }
+
    public bool canPerformAction (GuildPermission action) {
       return ((this.guildPermissions & (int) action) != 0);
    }
@@ -1654,6 +1668,9 @@ public class NetEntity : NetworkBehaviour
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();
 
+   // The initial scale of the entity's shadow
+   protected Vector3 _shadowInitialScale;
+
    // Did the Entity move last frame?
    private bool _movedLastFrame;
 
@@ -1663,7 +1680,7 @@ public class NetEntity : NetworkBehaviour
    // The time at which the body last changed sprites
    private float _lastBodySpriteChangetime;
 
-   // Wether the player is climbing
+   // Whether the player is climbing
    private bool _isClimbing = false;
 
    // Keep a reference to the last instance accessed with getInstance

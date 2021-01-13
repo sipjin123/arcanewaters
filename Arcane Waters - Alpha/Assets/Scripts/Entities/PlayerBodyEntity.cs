@@ -40,7 +40,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // Strength of the jump
    public float jumpUpMagnitude = 1.2f;
-   public float jumpDownMagnitude = 1.5f;
 
    // Max height of the jump
    public float jumpHeightMax = .15f;
@@ -78,16 +77,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The speed of the interpolation
    public float lerpSpeedValue = 1.4f;
 
-   // The target world location when jumpin over an obstacle
+   // The target world location when jumping over an obstacle
    public Vector2 jumpOverWorldLocation, jumpOverSourceLocation;
 
    // The dust particle when sprinting
    public ParticleSystem dustTrailParticleObj;
 
    // Cooldown variables
-   public const float jumpCooldownMax = .4f;
-   public float jumpCooldownTimer;
-   public bool isJumpCoolingDown = false;
+   public const float jumpCooldownMax = .5f;
 
    // Sprinting animator parameter name
    public const string IS_SPRINTING = "isSprinting";
@@ -101,7 +98,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    protected override void Start () {
       base.Start();
 
-      // Disable our collider if we are not the localplayer
+      // Disable our collider if we are not the local player
       if (!isLocalPlayer) {
          getMainCollider().isTrigger = true;
       }
@@ -198,23 +195,20 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      // Processes the jump height
+      // Updates the current jump height
       if (isJumping) {
-         y += y < jumpHeightMax ? Time.deltaTime * jumpUpMagnitude : 0;
-      } else {
-         y -= y > 0 ? Time.deltaTime * jumpDownMagnitude : 0;
+         float timeSinceJumpStart = (float)(NetworkTime.time - _jumpStartTime);
+         y = Util.getPointOnParabola(jumpUpMagnitude, jumpCooldownMax, timeSinceJumpStart);
+         y = Mathf.Clamp(y, 0.0f, float.MaxValue);
+
+         float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
+         shadow.transform.localScale = _shadowInitialScale * newShadowScale;
       }
+
       spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
 
-      if (isJumpCoolingDown) {
-         jumpCooldownTimer += Time.deltaTime;
-         if (jumpCooldownTimer >= jumpCooldownMax) {
-            isJumpCoolingDown = false;
-         }
-      }
-
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown && !this.waterChecker.inWater()) {
-         // Adjust the colider pivot
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater()) {
+         // Adjust the collider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
             currentAngle = -90;
@@ -246,8 +240,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             Cmd_JumpAnimation(Anim.Type.NC_Jump_South);
             //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
          }
-         isJumpCoolingDown = true;
-         jumpCooldownTimer = 0;
+         _jumpStartTime = NetworkTime.time;
+         isJumping = true;
       }
    }
 
@@ -458,7 +452,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    [ClientRpc]
    public void Rpc_JumpAnimation (Anim.Type animType) {
-      if (!isJumpCoolingDown) {
+      if (!isJumpCoolingDown()) {
          requestAnimationPlay(animType);
       }
    }
@@ -553,11 +547,19 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       this.transform.SetParent(area.userParent, worldPositionStays);
    }
 
+   public bool isJumpCoolingDown () {
+      float timeSinceLastJump = (float)(NetworkTime.time - _jumpStartTime);
+      return (timeSinceLastJump < jumpCooldownMax);
+   }
+
    #region Private Variables
 
    // The player the mouseover occurs on
    private PlayerBodyEntity _playerBody;
    private PlayerBodyEntity _previousPlayerBody;
+
+   // The time at which this entity started its jump
+   private double _jumpStartTime = 0.0f;
 
    #endregion
 }

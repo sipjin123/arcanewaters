@@ -1121,6 +1121,14 @@ public class Util : MonoBehaviour {
       return autoCompletes;
    }
 
+   public static float getPointOnParabola (float apex, float width, float t) {
+      // Parabola formula:
+      // y = kt(t - w) where k  = -4a / w^2     w = width, a = apex
+      float k = -4 * apex / (width * width);
+      float y = k * t * (t - width);
+      return y;
+   }
+
    // A Random instance we can use for generating random numbers
    private static System.Random r = new System.Random();
 

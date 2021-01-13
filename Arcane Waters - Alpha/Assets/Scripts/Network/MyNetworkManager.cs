@@ -423,7 +423,11 @@ public class MyNetworkManager : NetworkManager
 
             // Update the guild icon display for all players
             foreach (KeyValuePair<int, NetEntity> entry in _players) {
-               entry.Value.Rpc_UpdateGuildIconDisplay();
+               if (entry.Value.guildId > 0) {
+                  entry.Value.Rpc_UpdateGuildIconDisplay();
+               } else {
+                  entry.Value.Rpc_HideGuildIconDisplay();
+               }
             }
 
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP

@@ -135,7 +135,9 @@ public class OptionsPanel : Panel
       if (showGuildIcons) {
          // Display the guild icons of all the players
          foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
-            entity.showGuildIcon();
+            if (entity.guildId > 0) {
+               entity.showGuildIcon();
+            }
             allGuildIconsShowing = true;
          }
       } else {

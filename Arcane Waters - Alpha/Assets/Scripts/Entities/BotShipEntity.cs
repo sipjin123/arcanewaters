@@ -27,7 +27,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    public float patrolingWaypointsRadius = 1.0f;
 
    // The radius of which we'll pick new points to attack from
-   public float attackingWaypointsRadius = 1.0f;
+   public float attackingWaypointsRadius = 0.5f;
 
    // The seconds to patrol the current TreasureSite before choosing another one
    public float secondsPatrolingUntilChoosingNewTreasureSite;
@@ -37,6 +37,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // The seconds spent idling between finding attack routes
    public float secondsBetweenFindingAttackRoutes;
+
+   // The maximum amount of seconds chasing a target before finding a new path
+   public float maxSecondsOnChasePath = 2.0f;
 
    // How big the aggro cone is in degrees
    public float aggroConeDegrees;
@@ -109,20 +112,22 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       moveAlongCurrentPath();
 
       if (_attackers != null && _attackers.Count > 0) {
-         if (!_wasAttackedLastFrame) {
+         double chaseDuration = NetworkTime.time - _chaseStartTime;
+         if (!_isChasingEnemy || (chaseDuration > maxSecondsOnChasePath)) {
             _currentSecondsBetweenAttackRoutes = 0.0f;
             _attackingWaypointState = WaypointState.FINDING_PATH;
             if (_currentPath != null) {
                _currentPath.Clear();
             }
             findAndSetPath_Asynchronous(findAttackerVicinityPosition(true));
+            _chaseStartTime = NetworkTime.time;
          }
 
          // Update attacking state with only Minor updates
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
       } else {
-         if (_wasAttackedLastFrame) {
+         if (_isChasingEnemy) {
             _currentSecondsBetweenPatrolRoutes = 0.0f;
             _currentSecondsPatroling = 0.0f;
             _patrolingWaypointState = WaypointState.FINDING_PATH;
@@ -134,7 +139,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findTreasureSiteVicinityPosition);
       }
 
-      _wasAttackedLastFrame = _attackers != null && _attackers.Count > 0;
+      bool wasChasingLastFrame = _isChasingEnemy;
+      _isChasingEnemy = _attackers != null && _attackers.Count > 0;
+
+      if (!wasChasingLastFrame && _isChasingEnemy) {
+         _chaseStartTime = NetworkTime.time;
+      }
 
       // Update our facing direction
       if (_body.velocity.magnitude > 0.0f) {
@@ -161,7 +171,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             break;
 
          case WaypointState.MOVING_TO:
-            // If there's no nodes left in the path, continue into a patroling state
+            // If there are no nodes left in the path, change into a patrolling state
             if (_currentPathIndex >= _currentPath.Count) {
                state = WaypointState.PATROLING;
                currentSecondsBetweenMinorSearch = 0.0f;
@@ -258,8 +268,16 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          return findPositionAroundPosition(transform.position, attackingWaypointsRadius);
       }
 
+      NetEntity enemyEntity = attackerIdentity.GetComponent<NetEntity>();
+      Vector3 projectedPosition = attackerIdentity.transform.position;
+
+      if (enemyEntity) {
+         // Find a point ahead of the target to path find to
+         projectedPosition = enemyEntity.getProjectedPosition(maxSecondsOnChasePath / 2.0f);
+      }
+
       // If we have an attacker, find new position around it
-      return findPositionAroundPosition(attackerIdentity.transform.position, attackingWaypointsRadius);
+      return findPositionAroundPosition(projectedPosition, attackingWaypointsRadius);
    }
 
    [Server]
@@ -464,6 +482,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // How many seconds have passed since we last stopped on an attack route
    private float _currentSecondsBetweenAttackRoutes;
 
+   // The time at which we started chasing an enemy, on this path
+   private double _chaseStartTime = 0.0f;
+
    private enum WaypointState
    {
       NONE = 0,
@@ -478,8 +499,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // In what state the Attack Waypoint traversing is in
    private WaypointState _attackingWaypointState = WaypointState.FINDING_PATH;
 
-   // Were we attacked last frame?
-   private bool _wasAttackedLastFrame;
+   // Are we currently chasing an enemy
+   private bool _isChasingEnemy;
 
    // The TreasureSite Objects that are present in the area
    private List<TreasureSite> _treasureSitesInArea;

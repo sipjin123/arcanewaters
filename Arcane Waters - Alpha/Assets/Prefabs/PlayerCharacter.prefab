@@ -1708,7 +1708,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   shadow: {fileID: 6461678907988035178}
   statusEffectContainer: {fileID: 0}
-  isUnderControl: 0
+  isUnderExternalControl: 0
   _ignoredAnimators:
   - {fileID: 239789038689530995}
   - {fileID: 6534121069695759356}
@@ -1734,8 +1734,7 @@ MonoBehaviour:
   - {fileID: 95927211109523790}
   - {fileID: 95100819043064392}
   - {fileID: 1560188136588726768}
-  jumpUpMagnitude: 1.2
-  jumpDownMagnitude: 1.5
+  jumpUpMagnitude: 0.25
   jumpHeightMax: 0.1
   spritesTransform: {fileID: 7280967387605188078}
   windDashSprite: {fileID: 2082442709134593649}
@@ -1880,6 +1879,7 @@ MonoBehaviour:
     weaponDamageEarth: 0
     actionType: 0
     actionTypeValue: 0
+  isHidden: 0
 --- !u!114 &114356160570082682
 MonoBehaviour:
   m_ObjectHideFlags: 0
