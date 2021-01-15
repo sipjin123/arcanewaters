@@ -23,6 +23,9 @@ public class SeaMonsterEntityData
    // The xml id
    public int xmlId;
 
+   // If this unit is enabled in the database
+   public bool isXmlEnabled;
+
    // The id used when the entity is a bot ship instead of a monster
    public int subVarietyTypeId = -1;
 

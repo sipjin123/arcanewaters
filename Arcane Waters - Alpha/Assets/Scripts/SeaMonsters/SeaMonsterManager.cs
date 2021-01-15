@@ -109,7 +109,7 @@ public class SeaMonsterManager : MonoBehaviour {
          seaMonsterDataList = new List<SeaMonsterEntityData>();
          foreach (SeaMonsterEntityData seaMonsterData in seamonsterDataList) {
             seaMonsterDataList.Add(seaMonsterData);
-            if (!_seaMonsterData.ContainsKey(seaMonsterData.xmlId)) {
+            if (!_seaMonsterData.ContainsKey(seaMonsterData.xmlId) && seaMonsterData.isXmlEnabled) {
                _seaMonsterData.Add(seaMonsterData.xmlId, seaMonsterData);
             }
          }
