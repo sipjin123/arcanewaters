@@ -18,7 +18,10 @@ public class CombatCollider : MonoBehaviour {
 
    private void Start () {
       _battleCollider = GetComponent<BoxCollider2D>();
-      _spriteRenderer = spriteSwap.getSpriteRenderer();
+
+      if (spriteSwap != null) {
+         _spriteRenderer = spriteSwap.getSpriteRenderer();
+      }
    }
 
    private void Update () {
@@ -26,6 +29,12 @@ public class CombatCollider : MonoBehaviour {
    }
 
    protected void updateCollider () {
+      if (_spriteRenderer == null) {
+         // TODO: Remove this after fix
+         D.debug("Error here, sprite swap reference is missing!");
+         enabled = false;
+         return;
+      }
       Sprite sprite = _spriteRenderer.sprite;
       
       // Make sure our ship's sprite has a valid physics outline ("Generate Physics Shape" needs to be enabled in the import settings)
