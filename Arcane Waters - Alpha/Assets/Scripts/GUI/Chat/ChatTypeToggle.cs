@@ -13,6 +13,9 @@ public class ChatTypeToggle : MonoBehaviour {
    // Crossed name of an inactive chat type tab name
    public GameObject crossedName;
 
+   // Type of chat that this toggle control
+   public ChatInfo.Type type;
+
    #endregion
 
    public void onToggleValueChanged () {

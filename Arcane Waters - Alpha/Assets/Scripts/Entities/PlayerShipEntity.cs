@@ -201,7 +201,7 @@ public class PlayerShipEntity : ShipEntity
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
          SeaEntity target = _targetSelector.getTarget();
          if (target != null && hasReloaded() && InputManager.isFireCannonKeyDown()) {
-            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, false, -1.0f, -1.0f);
+            Cmd_FireMainCannonAtTarget(target.gameObject, Vector2.zero, true, false, -1.0f, -1.0f, true);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
          }
 
@@ -287,7 +287,7 @@ public class PlayerShipEntity : ShipEntity
 
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, false, -1.0f, -1.0f);
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, false, -1.0f, -1.0f, true);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
             break;
          case CannonAttackType.Cone:
@@ -320,9 +320,9 @@ public class PlayerShipEntity : ShipEntity
             float cannonballLifetime = cannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
 
             // Fire cone of cannonballs
-            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, false, cannonballLifetime, -1.0f);
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, false, cannonballLifetime, -1.0f);
-            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false, cannonballLifetime, -1.0f);
+            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, false, cannonballLifetime, -1.0f, true);
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, false, cannonballLifetime, -1.0f, false);
+            Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, -rotAngle), false, false, cannonballLifetime, -1.0f, false);
 
             _shouldUpdateTargeting = false;
             _targetCone.targetingConfirmed(() => _shouldUpdateTargeting = true);
@@ -411,7 +411,7 @@ public class PlayerShipEntity : ShipEntity
          lifetime = Mathf.Lerp(2.0f, 3.0f, dist / 5.0f);
          float speed = dist / lifetime;
 
-         Cmd_FireMainCannonAtTarget(null, endPos, false, true, lifetime, speed);
+         Cmd_FireMainCannonAtTarget(null, endPos, false, true, lifetime, speed, true);
          yield return new WaitForSeconds(0.2f);
       }
 
@@ -426,7 +426,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, bool checkReload, bool isLobbed, float lifetime, float speedOverride) {
+   protected void Cmd_FireMainCannonAtTarget (GameObject target, Vector2 requestedTargetPoint, bool checkReload, bool isLobbed, float lifetime, float speedOverride, bool playSound) {
       if (isDead() || (checkReload && !hasReloaded())) {
          return;
       }
@@ -441,7 +441,7 @@ public class PlayerShipEntity : ShipEntity
       // Firing the cannon is considered a PvP action
       hasEnteredPvP = true;
 	  
-      fireCannonBallAtTarget(startPosition, targetPosition, isLobbed, lifetime, speedOverride);
+      fireCannonBallAtTarget(startPosition, targetPosition, isLobbed, lifetime, speedOverride, playSound);
    }
 
    [Command]
@@ -498,7 +498,7 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Server]
-   public void fireCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, bool isLobbed, float lifetime = -1.0f, float speedOverride = -1.0f) {
+   public void fireCannonBallAtTarget (Vector2 startPosition, Vector2 endPosition, bool isLobbed, float lifetime = -1.0f, float speedOverride = -1.0f, bool playSound = true) {
       // Calculate the direction of the ball
       Vector2 direction = endPosition - startPosition;
       direction.Normalize();
@@ -520,9 +520,9 @@ public class PlayerShipEntity : ShipEntity
 
       if (isLobbed) {
          float lobHeight = Mathf.Clamp(1.0f / speed, 0.3f, 1.0f);
-         netBall.initLob(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, lobHeight, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f);
+         netBall.initLob(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, lobHeight, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f, playFiringSound: playSound);
       } else {
-         netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f);
+         netBall.init(this.netId, this.instanceId, Attack.ImpactMagnitude.Normal, abilityId, startPosition, velocity, damageMultiplier: Attack.getDamageModifier(Attack.Type.Cannon), lifetime: lifetime, statusType: cannonEffectType, statusDuration: 3.0f, playFiringSound: playSound);
       }
 
       NetworkServer.Spawn(netBall.gameObject);

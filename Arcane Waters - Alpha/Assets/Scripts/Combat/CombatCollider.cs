@@ -4,46 +4,73 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 
+[RequireComponent(typeof(BoxCollider2D))]
 public class CombatCollider : MonoBehaviour {
    #region Public Variables
+
+   // The sprite swap used for the renderer that will determine the size of the collider
+   public SpriteSwap spriteSwap;
+
+   // The scale of the collider in relation to the sprite size
+   public float colliderScale = 0.75f;
 
    #endregion
 
    private void Start () {
-      _entity = GetComponentInParent<NetEntity>();
+      _battleCollider = GetComponent<BoxCollider2D>();
+      _spriteRenderer = spriteSwap.getSpriteRenderer();
    }
 
    private void Update () {
-      this.transform.rotation = Quaternion.Euler(0, 0, getRotationForFacingDirection());
+      updateCollider();
    }
 
-   protected int getRotationForFacingDirection () {
-      switch (_entity.facing) {
-         case Direction.South:
-            return 0;
-         case Direction.SouthEast:
-            return 45;
-         case Direction.East:
-            return 90;
-         case Direction.NorthEast:
-            return 135;
-         case Direction.North:
-            return 180;
-         case Direction.NorthWest:
-            return 225;
-         case Direction.West:
-            return 270;
-         case Direction.SouthWest:
-            return 315;
-      }
+   protected void updateCollider () {
+      Sprite sprite = _spriteRenderer.sprite;
+      
+      // Make sure our ship's sprite has a valid physics outline ("Generate Physics Shape" needs to be enabled in the import settings)
+      int shapesCount = sprite.GetPhysicsShape(0, _spriteShapePoints);
 
-      return 0;
+      if (shapesCount > 0) {
+         // Find the minimum and maximum points of the sprite and adapt the size of the collider to it
+         Vector2 minPoint = new Vector2(_spriteShapePoints[0].x, _spriteShapePoints[0].y);
+         Vector2 maxPoint = new Vector2(_spriteShapePoints[0].x, _spriteShapePoints[0].y);
+
+         for (int i = 1; i < shapesCount; i++) {
+            minPoint.x = Mathf.Min(minPoint.x, _spriteShapePoints[i].x);
+            minPoint.y = Mathf.Min(minPoint.y, _spriteShapePoints[i].y);
+            maxPoint.x = Mathf.Max(maxPoint.x, _spriteShapePoints[i].x);
+            maxPoint.y = Mathf.Max(maxPoint.y, _spriteShapePoints[i].y);
+         }
+
+         // Find the offset (in case the sprite isn't perfectly centered)
+         Vector2 offset = (minPoint + maxPoint) * colliderScale * 0.5f;
+         
+         // Calculate the width and height of the collider
+         Vector2 size = new Vector2(Mathf.Abs(minPoint.x) + Mathf.Abs(maxPoint.x), Mathf.Abs(minPoint.y) + Mathf.Abs(maxPoint.y));
+
+         // Let's scale the collider (3/4 the size of the sprite by default) so it's not too big
+         _battleCollider.size = size * colliderScale;
+
+         // Apply the offset
+         _battleCollider.offset = offset;
+      } else {
+         // If the sprite doesn't have a valid physics shape, we'll disable the script to avoid spamming the log
+         D.error($"The ship {gameObject.name} doesn't have a properly defined outline. Make sure Generate Physics Shape is enabled in the sprite settings. The script will be disabled.");
+         this.enabled = false;         
+      }
    }
 
    #region Private Variables
 
-   // Our associated entity
-   protected NetEntity _entity;
-      
+   // Our sprite renderer
+   protected SpriteRenderer _spriteRenderer;
+
+   // A list containing the points of the sprite physics shape
+   protected List<Vector2> _spriteShapePoints = new List<Vector2>();
+
+   // Our collider used for projectile detection
+   protected BoxCollider2D _battleCollider;
+
    #endregion
 }

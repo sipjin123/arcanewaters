@@ -18,7 +18,9 @@ public class ServerCannonBall : NetworkBehaviour {
    private void Start () {
       if (!Util.isBatch()) {
          // Play an appropriate sound
-         SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
+         if (_playFiringSound) {
+            SoundManager.playEnvironmentClipAtPoint(SoundManager.Type.Ship_Cannon_1, this.transform.position);
+         }
 
          // Create a cannon smoke effect
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(Attack.ImpactMagnitude.Normal), transform.position, Quaternion.identity);
@@ -32,7 +34,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    [Server]
-   public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1) {      
+   public void init (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1, bool playFiringSound = true) {      
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
       _instanceId = instanceID;
@@ -44,6 +46,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _lobHeight = 0.1f;
       _statusType = statusType;
       _statusDuration = statusDuration;
+      _playFiringSound = playFiringSound;
 
       this.projectileVelocity = velocity;
 
@@ -54,7 +57,7 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    [Server]
-   public void initLob (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lobHeight, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1) {
+   public void initLob (uint creatorID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, Vector2 velocity, float lobHeight, Status.Type statusType = Status.Type.None, float statusDuration = 3.0f, float lifetime = -1, float damageMultiplier = 1, bool playFiringSound = true) {
       _startTime = NetworkTime.time;
       _creatorNetId = creatorID;
       _instanceId = instanceID;
@@ -66,6 +69,7 @@ public class ServerCannonBall : NetworkBehaviour {
       _isLobbed = true;
       _statusType = statusType;
       _statusDuration = statusDuration;
+      _playFiringSound = playFiringSound;
 
       this.projectileVelocity = velocity;
 
@@ -170,11 +174,13 @@ public class ServerCannonBall : NetworkBehaviour {
    private void processDestruction () {
       // Detach the Trail Renderer so that it continues to show up a little while longer
       TrailRenderer trail = this.gameObject.GetComponentInChildren<TrailRenderer>();
-      trail.autodestruct = true;
-      trail.transform.SetParent(null);
+      if (trail != null) {
+         trail.autodestruct = true;
+         trail.transform.SetParent(null);
 
-      // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
-      Destroy(trail.gameObject, 3.0f);
+         // For some reason, autodestruct doesn't always work resulting in infinite TrailRenderers being left in the scene, so we force it.
+         Destroy(trail.gameObject, 3.0f);
+      }
 
       NetworkServer.Destroy(gameObject);
    }
@@ -247,6 +253,9 @@ public class ServerCannonBall : NetworkBehaviour {
 
    // How long the status effect applied by this cannonball will last for
    private float _statusDuration = 0.0f;
+
+   // Whether this will play a firing sound effect
+   private bool _playFiringSound = true;
 
    #endregion
 

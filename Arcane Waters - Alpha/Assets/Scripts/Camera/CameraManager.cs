@@ -31,11 +31,25 @@ public class CameraManager : ClientMonoBehaviour {
    // An event that's triggered when the resolution changes
    public event Action resolutionChanged;
 
+   [Header("Panning")]
+   // The minimum distance from the center of the screen to start panning
+   [Range(0, 0.5f)]
+   public float panningDeadZoneRange = 0.25f;
+
    // The minimum values for the camera offset when panning
    public Vector2 minCameraOffset = new Vector2(0.15f, 0.15f);
 
    // The maximum values for the camera offset when panning
    public Vector2 maxCameraOffset = new Vector2(0.85f, 0.85f);
+
+   // Whether we need to hold the "panning" button for panning
+   public bool requireButtonForPanning;
+
+   // The speed at which we pan the camera
+   public float cameraPanSpeed = 1.0f;
+
+   // The speed at which the position of the camera gets reset
+   public float cameraPanResetSpeed = 2.0f;
 
    // The Cinemachine brain
    public CinemachineBrain cinemachineBrain;
@@ -73,19 +87,39 @@ public class CameraManager : ClientMonoBehaviour {
    private void Update () {
       // Don't allow panning during battles
       if (Global.player != null && !isShowingBattle()) {
-         CinemachineFramingTransposer transposer = getCurrentBaseCamera().getFramingTransposer();
+         CinemachineFramingTransposer transposer = getBaseCameraForCurrentVirtualCamera().getFramingTransposer();
 
-         if (transposer != null) {
-            // Always enable panning when sailing, require holding the pan camera button (scrollwheel by default) the rest of the time
-            if (InputManager.getKeyAction(KeyAction.PanCamera)) {
-               Vector2 offsetInput = InputManager.getCameraPanningAxis();                              
-               transposer.m_ScreenX = Mathf.Clamp(1 - offsetInput.x, minCameraOffset.x, maxCameraOffset.x);
-               transposer.m_ScreenY = Mathf.Clamp(offsetInput.y, minCameraOffset.y, maxCameraOffset.y);
-            } else {
-               // Reset the panning position if the panning key is released
-               transposer.m_ScreenX = 0.5f;
-               transposer.m_ScreenY = 0.5f;
+         if (!Global.player.isDead()) {
+            if (transposer != null) {
+               // Always enable panning when sailing, require holding the pan camera button (scrollwheel by default) the rest of the time
+               if (InputManager.getKeyAction(KeyAction.PanCamera) || !requireButtonForPanning) {
+                  Vector2 offsetInput = InputManager.getCameraPanningAxis();
+
+                  if (Mathf.Abs(offsetInput.x - 0.5f) > panningDeadZoneRange) {
+                     // Lerp smoothly towards the desired value
+                     transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, Mathf.Clamp(1 - offsetInput.x, minCameraOffset.x, maxCameraOffset.x), Time.deltaTime * cameraPanSpeed);
+                  } else {
+                     // Reset the panning position if we're in the "deadzone"
+                     transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, 0.5f, Time.deltaTime * cameraPanResetSpeed);
+                  }
+
+                  if (Mathf.Abs(offsetInput.y - 0.5f) > panningDeadZoneRange) {
+                     // Lerp smoothly towards the desired value
+                     transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, Mathf.Clamp(offsetInput.y, minCameraOffset.y, maxCameraOffset.y), Time.deltaTime * cameraPanSpeed);
+                  } else {
+                     // Reset the panning position if we're in the "deadzone"
+                     transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, 0.5f, Time.deltaTime * cameraPanResetSpeed);
+                  }
+               } else {
+                  // Reset the panning position if the panning key is released
+                  transposer.m_ScreenX = 0.5f;
+                  transposer.m_ScreenY = 0.5f;
+               }
             }
+         } else {
+            // Reset the panning position if the player dies
+            transposer.m_ScreenX = 0.5f;
+            transposer.m_ScreenY = 0.5f;
          }
       }
    }
@@ -158,7 +192,11 @@ public class CameraManager : ClientMonoBehaviour {
       _quakeEffect.enabled = false;
    }
 
-   public static BaseCamera getCurrentBaseCamera () {      
+   public static BaseCamera getCurrentBaseCamera () {
+      return defaultCamera.getDepth() > battleCamera.getDepth() ? (BaseCamera)defaultCamera : (BaseCamera)battleCamera;
+   }
+
+   public static BaseCamera getBaseCameraForCurrentVirtualCamera () {
       // Try to find the active virtual camera in the list of registered BaseCameras
       ICinemachineCamera activeVCam = self.cinemachineBrain.ActiveVirtualCamera;
       foreach (BaseCamera camera in self._baseCameras) {
@@ -166,9 +204,9 @@ public class CameraManager : ClientMonoBehaviour {
             return camera;
          }
       }
-      
+
       // If we didn't find a camera (maybe it wasn't registered), return either the defaultCamera or the battleCamera
-      return defaultCamera.getDepth() > battleCamera.getDepth() ? (BaseCamera)defaultCamera : (BaseCamera)battleCamera;
+      return getCurrentBaseCamera();
    }
 
    public static Camera getCurrentCamera () {

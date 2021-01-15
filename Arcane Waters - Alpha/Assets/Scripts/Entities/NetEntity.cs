@@ -558,15 +558,15 @@ public class NetEntity : NetworkBehaviour
    }
 
    [ClientRpc]
-   public void Rpc_UpdateGuildIconDisplay () {
-      if (!string.IsNullOrEmpty(this.guildIconBackground)) {
-         this.guildIcon.setBackground(this.guildIconBackground, this.guildIconBackPalettes);
+   public void Rpc_UpdateGuildIconDisplay (string background, string backgroundPalette, string border, string sigil, string sigilPalette) {
+      if (!string.IsNullOrEmpty(background)) {
+         this.guildIcon.setBackground(background, backgroundPalette);
       }
-      if (!string.IsNullOrEmpty(this.guildIconBorder)) {
-         this.guildIcon.setBorder(this.guildIconBorder);
+      if (!string.IsNullOrEmpty(border)) {
+         this.guildIcon.setBorder(border);
       }
-      if (!string.IsNullOrEmpty(this.guildIconSigil)) {
-         this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
+      if (!string.IsNullOrEmpty(sigil)) {
+         this.guildIcon.setSigil(sigil, sigilPalette);
       }
 
       if (OptionsPanel.allGuildIconsShowing) {

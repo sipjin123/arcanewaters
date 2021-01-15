@@ -195,7 +195,13 @@ public class TutorialManager3 : MonoBehaviour {
       }
 
       // Temporary until new item system is implemented
-      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
+      WeaponStatData weaponData;
+      if (string.IsNullOrEmpty(Global.getUserObjects().weapon.data)) {
+         weaponData = EquipmentXMLManager.self.getWeaponData(Global.getUserObjects().weapon.itemTypeId);
+      } else {
+         weaponData = WeaponStatData.getStatData(Global.getUserObjects().weapon.data, Global.getUserObjects().weapon.itemTypeId);
+      }
+
       if (weaponData != null) {
          Weapon newWeapon = WeaponStatData.translateDataToWeapon(weaponData);
 

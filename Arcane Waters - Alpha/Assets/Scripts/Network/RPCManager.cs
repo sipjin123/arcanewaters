@@ -2666,7 +2666,6 @@ public class RPCManager : NetworkBehaviour {
          if (guildId > 0) {
             DB_Main.assignGuild(_player.userId, guildId);
             DB_Main.assignRankGuild(_player.userId, 0);
-            _player.guildId = guildId;
 
             // Create basic ranks and assign "Guild Leader" position to player
             DB_Main.createRankGuild(GuildRankInfo.getDefaultOfficer(guildId));
@@ -2676,13 +2675,16 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.CreatedGuild, _player, "You have created the guild " + guildName + "!");
 
+               // Assign the guild ID to the player
+               _player.guildId = guildId;
+
                // Net entity _player are where the syncvars are stored for the player's guild icon
                _player.guildIconBackground = iconBackground;
                _player.guildIconBorder = iconBorder;
                _player.guildIconBackPalettes = iconBackPalettes;
                _player.guildIconSigil = iconSigil;
                _player.guildIconSigilPalettes = iconSigilPalettes;
-               _player.Rpc_UpdateGuildIconDisplay();
+               _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
             });
 
          } else {
@@ -2717,17 +2719,19 @@ public class RPCManager : NetworkBehaviour {
          // Remove the player from the guild
          DB_Main.assignGuild(_player.userId, 0);
          DB_Main.assignRankGuild(_player.userId, -1);
-         _player.guildId = 0;
-
-         // Set the syncvars to null and then update the guild icon
-         _player.guildIconBackground = null;
-         _player.guildIconBorder = null;
-         _player.guildIconBackPalettes = null;
-         _player.guildIconSigil = null;
-         _player.guildIconSigilPalettes = null;
-         _player.Rpc_UpdateGuildIconDisplay();
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Set player guild id as no guild
+            _player.guildId = 0;
+
+            // Set the syncvars to null and then update the guild icon
+            _player.guildIconBackground = null;
+            _player.guildIconBorder = null;
+            _player.guildIconBackPalettes = null;
+            _player.guildIconSigil = null;
+            _player.guildIconSigilPalettes = null;
+            _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+
             // Delete the guild if it has no more members
             GuildManager.self.deleteGuildIfEmpty(guildId);
 
@@ -2860,7 +2864,11 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
 
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionGlobal, _player, "has promoted " + otherName + "!");
+                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                     if (pair.Value.guildId == _player.guildId) {
+                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has promoted " + otherName + "!");
+                     }
+                  }
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Guild member that you want to promote, has already reached maximum rank!");
                }
@@ -2933,7 +2941,11 @@ public class RPCManager : NetworkBehaviour {
                      }
                   }
 
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionGlobal, _player, "has demoted " + otherName + "!");
+                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                     if (pair.Value.guildId == _player.guildId) {
+                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has demoted " + otherName + "!");
+                     }
+                  }
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Guild member that you want to demote, has already reached lowest rank!");
                }
@@ -2988,7 +3000,12 @@ public class RPCManager : NetworkBehaviour {
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionGlobal, _player, "has kicked " + otherName + " from guild!");
+                  // If user is currently online - update his guildId
+                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                     if (pair.Value.guildId == _player.guildId) {
+                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has kicked " + otherName + " from guild!");
+                     }
+                  }
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "You cannot kick Guild Leader!");
                }
@@ -3081,7 +3098,11 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
 
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionGlobal, _player, "has deleted guild rank: " + deletedRankName);
+               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+                  if (pair.Value.guildId == _player.guildId) {
+                     ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has deleted guild rank: " + deletedRankName);
+                  }
+               }
             });
 
          } else {
@@ -3109,7 +3130,11 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.assignRankGuild(oldLeaderUserId, guildRanks.Find(x => x.rankPriority == 1).id);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionGlobal, _player, "has appointed new leader: " + newLeaderName);
+            foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+               if (pair.Value.guildId == _player.guildId) {
+                  ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has appointed new leader: " + newLeaderName);
+               }
+            }
          });
       });
    }

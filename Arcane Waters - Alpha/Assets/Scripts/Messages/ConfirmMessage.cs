@@ -20,7 +20,7 @@ public class ConfirmMessage : NetworkMessage
       ShipBought = 14, FriendshipInvitationSent = 15, FriendshipInvitationAccepted = 16,
       FriendshipDeleted = 17, MailSent = 18, MailDeleted = 19, ItemsAddedToInventory = 20,
       ModifiedOwnAuction = 21, BidOnAuction = 22, EditGuildRanks = 23, GuildActionLocal = 24,
-      GuildActionGlobal = 25
+      GuildActionGlobal = 25, GuildActionGlobalWithUpdate = 26
    }
 
    // The Type of confirmation

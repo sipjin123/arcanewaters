@@ -54,6 +54,8 @@ public class AdminManager : NetworkBehaviour
       SpawnEnemy = 34,
       MutePlayer = 35,
       ToggleInvisibility = 36,
+      SpawnPirateShip = 37,
+      SpawnPrivateerShip = 38,
    }
 
    #endregion
@@ -112,6 +114,8 @@ public class AdminManager : NetworkBehaviour
       _commands[Type.SpawnEnemy] = "spawn";
       _commands[Type.MutePlayer] = "mute";
       _commands[Type.ToggleInvisibility] = "invisible";
+      _commands[Type.SpawnPirateShip] = "spawn_pirate";
+      _commands[Type.SpawnPrivateerShip] = "spawn_privateer";
    }
 
    void Update () {
@@ -219,6 +223,10 @@ public class AdminManager : NetworkBehaviour
          requestMutePlayer(parameters);
       } else if (_commands[Type.ToggleInvisibility].Equals(adminCommand)) {
          requestInvisibility();
+      } else if (_commands[Type.SpawnPirateShip].Equals(adminCommand)) {
+         spawnPirateShip();
+      } else if (_commands[Type.SpawnPrivateerShip].Equals(adminCommand)) {
+         spawnPrivateerShip();
       }
    }
 
@@ -986,6 +994,14 @@ public class AdminManager : NetworkBehaviour
       }
 
       _player.spawnInNewMap(closestAreaKey);
+   }
+
+   protected void spawnPirateShip () {
+      BotShipGenerator.spawnPirate(_player);
+   }
+
+   protected void spawnPrivateerShip () {
+      BotShipGenerator.spawnPrivateer(_player);
    }
 
    private void spawnCustomEnemy (string parameters) {

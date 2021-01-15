@@ -91,10 +91,13 @@ public class ChatPanel : MonoBehaviour {
 
    // The chat tab toggles
    public Toggle allTabToggle;
+   public Toggle customTabToggle;
 
    // The panel which holds every chat type to choose by player
    public GameObject choosingChatType;
-   public Toggle customTabToggle;
+
+   // The button used to show chat types
+   public GameObject expandChatTypesButtons;
 
    // Self
    public static ChatPanel self;
@@ -539,16 +542,74 @@ public class ChatPanel : MonoBehaviour {
       toggleChatType(ChatInfo.Type.Global);
    }
 
+   public void onGroupChatPressed () {
+      toggleChatType(ChatInfo.Type.Group);
+   }
+
    public void onOfficerChatPressed () {
       toggleChatType(ChatInfo.Type.Officer);
    }
 
    public void onAllChatPressed () {
       if (!_tabPressed) {
+         choosingChatType.SetActive(false);
+         expandChatTypesButtons.SetActive(false);
+
+         _tabPressed = true;
+         _tab = Tab.All;
+         allTabToggle.isOn = true;
+         customTabToggle.isOn = false;
+         _tabPressed = false;
+
+         _modifiedByCode = true;
          choosingChatType.GetComponentsInChildren<Toggle>().ToList().ForEach(x => x.isOn = true);
          _visibleChatTypes = new HashSet<ChatInfo.Type>(((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList());
          onChatTabPressed();
+         _modifiedByCode = false;
       }
+   }
+
+   public void onCustomChatPressed () {
+      if (!_tabPressed) {
+         choosingChatType.SetActive(true);
+         expandChatTypesButtons.SetActive(true);
+
+         _tabPressed = true;
+         _tab = Tab.Custom;
+         allTabToggle.isOn = false;
+         customTabToggle.isOn = true;
+         _tabPressed = false;
+
+         if (PlayerPrefs.HasKey("ChatPrefs")) {            
+            _modifiedByCode = true;
+            int chatPrefs = PlayerPrefs.GetInt("ChatPrefs");
+            choosingChatType.GetComponentsInChildren<Toggle>().ToList().ForEach(x => x.isOn = false);
+            _visibleChatTypes.Clear();
+
+            List<ChatTypeToggle> toggles = choosingChatType.GetComponentsInChildren<ChatTypeToggle>().ToList();
+            List<ChatInfo.Type> types = ((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList();
+            foreach (ChatInfo.Type type in types) {
+               if ((chatPrefs & (1 << ((int) type - 1))) != 0) {
+                  toggles.Find(x => x.type == type).GetComponentInChildren<Toggle>().isOn = true;
+               }
+            }
+
+            onChatTabPressed();
+            _modifiedByCode = false;
+         } else {
+            choosingChatType.GetComponentsInChildren<Toggle>().ToList().ForEach(x => x.isOn = true);
+            _visibleChatTypes = new HashSet<ChatInfo.Type>(((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList());
+            onChatTabPressed();
+         }
+      }
+   }
+
+   private void savePrefs () {
+      int chatPrefs = 0;
+      foreach (ChatInfo.Type type in _visibleChatTypes) {
+         chatPrefs += 1 << ((int) type - 1);
+      }
+      PlayerPrefs.SetInt("ChatPrefs", chatPrefs);
    }
 
    private void toggleChatType (ChatInfo.Type type) {
@@ -557,23 +618,15 @@ public class ChatPanel : MonoBehaviour {
       } else {
          _visibleChatTypes.Add(type);
       }
+
+      if (!_modifiedByCode) {
+         savePrefs();
+      }
+
       onChatTabPressed();
    }
 
    private void onChatTabPressed () {
-      _tabPressed = true;
-
-      if (_visibleChatTypes.Count == ((ChatInfo.Type[]) Enum.GetValues(typeof(ChatInfo.Type))).ToList().Count) {
-         _tab = Tab.All;
-         allTabToggle.isOn = true;
-         customTabToggle.isOn = false;
-      } else {
-         _tab = Tab.Custom;
-         allTabToggle.isOn = false;
-         customTabToggle.isOn = true;
-      }
-
-      _tabPressed = false;
       rebuildMessageList();
    }
 
@@ -802,6 +855,9 @@ public class ChatPanel : MonoBehaviour {
 
    // Check whether "all" tab was pressed by player or if attached function was called by code
    protected bool _tabPressed = false;
+
+   // Check whether toggle values were modified by player interaction or in code
+   protected bool _modifiedByCode = false;
 
    #endregion
 }

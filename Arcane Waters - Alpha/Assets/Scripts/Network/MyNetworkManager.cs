@@ -424,7 +424,7 @@ public class MyNetworkManager : NetworkManager
             // Update the guild icon display for all players
             foreach (KeyValuePair<int, NetEntity> entry in _players) {
                if (entry.Value.guildId > 0) {
-                  entry.Value.Rpc_UpdateGuildIconDisplay();
+                  entry.Value.Rpc_UpdateGuildIconDisplay(entry.Value.guildIconBackground, entry.Value.guildIconBackPalettes, entry.Value.guildIconBorder, entry.Value.guildIconSigil, entry.Value.guildIconSigilPalettes);
                } else {
                   entry.Value.Rpc_HideGuildIconDisplay();
                }

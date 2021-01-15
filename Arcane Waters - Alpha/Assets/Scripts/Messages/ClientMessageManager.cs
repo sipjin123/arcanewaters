@@ -162,7 +162,12 @@ public class ClientMessageManager : MonoBehaviour {
             return;
          case ConfirmMessage.Type.GuildActionGlobal:
             // Add the confirmation message in the chat panel
-            Global.player.rpc.Cmd_SendChat(msg.customMessage, ChatInfo.Type.Guild);
+            ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
+
+            return;
+         case ConfirmMessage.Type.GuildActionGlobalWithUpdate:
+            // Add the confirmation message in the chat panel
+            ChatManager.self.addChat(msg.customMessage, msg.timestamp, ChatInfo.Type.System);
 
             // Get updated info
             Global.player.rpc.Cmd_RequestGuildInfoFromServer();

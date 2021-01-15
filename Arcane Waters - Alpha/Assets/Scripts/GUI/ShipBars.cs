@@ -81,6 +81,9 @@ public class ShipBars : MonoBehaviour {
       // Only show the ship info when the mouse is over the entity or its member cell in the group panel
       _showShipInfo = !_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
 
+      // Hide the canvas if the ship is dead
+      _canvasGroup.alpha = _entity.isDead() ? 0 : 1;
+
       /*if (_entity.hasRecentCombat()) {
          _canvasGroup.alpha = 1f;
       } else {
