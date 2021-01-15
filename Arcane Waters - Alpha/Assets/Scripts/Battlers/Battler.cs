@@ -797,7 +797,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public void playAnim (Anim.Type animationType) {
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
-         anim.playAnimation(animationType);
+         if (anim.enabled) {
+            anim.playAnimation(animationType);
+         } 
       }
    }
 

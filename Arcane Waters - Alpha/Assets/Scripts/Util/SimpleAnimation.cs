@@ -156,6 +156,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       // Change the sprite
       if (_sprites != null) {
+         if (_index > _sprites.Length) {
+            D.debug("Index out of range for object: " + _index + " / " + _sprites.Length + " : " + gameObject.name);
+            return;
+         } 
          setSprite(_sprites[_index]);
       }
 
