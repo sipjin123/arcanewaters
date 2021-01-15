@@ -804,6 +804,21 @@ public class XmlVersionManagerClient : MonoBehaviour {
       }
    }
 
+   public static async void downloadTooltipCacheForPreExport () {
+      string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
+      D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
+
+      string fileDirectory = TEXT_PATH + XML_BASE_TOOLTIP + ".txt";
+      if (!File.Exists(fileDirectory)) {
+         D.debug("Missing file! Creating now");
+         File.Create(fileDirectory).Close();
+      }
+
+      using (StreamWriter file = new StreamWriter(@"" + fileDirectory, false)) {
+         file.WriteLine(dataRequest);
+      }
+   }
+
    public async void downloadTooltipCache (bool assignAutomatically) {
       string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
       D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
