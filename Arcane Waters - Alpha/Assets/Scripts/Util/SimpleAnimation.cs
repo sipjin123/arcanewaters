@@ -72,7 +72,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
          // Routinely change our sprite
          float delay = this.delayStart ? (getTimePerFrame() * _sprites.Length / 2f) : initialDelay;
-         InvokeRepeating("changeSprite", delay, getTimePerFrame());
+         InvokeRepeating(nameof(changeSprite), delay, getTimePerFrame());
       }
    }
 
@@ -119,6 +119,13 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    public void setNewTexture (Texture2D newTexture) {
+      if (newTexture == ImageManager.self.blankTexture || newTexture == null) {
+         setSprite(ImageManager.self.blankSprite); 
+         toggleRenderers(false);
+         return;
+      }
+      toggleRenderers(true);
+
       _lastLoadedTexture = newTexture;
 
       // We have to store the individual sprites from the new texture
@@ -127,6 +134,15 @@ public class SimpleAnimation : ClientMonoBehaviour {
       // Update the sprite renderer
       int currentIndex = getIndex();
       setSprite(_sprites[currentIndex]);
+   }
+
+   public void toggleRenderers (bool isOn) {
+      if (_renderer != null) {
+         _renderer.enabled = isOn;
+      }
+      if (_image != null) {
+         _image.enabled = isOn;
+      }
    }
 
    public Sprite getInitialSprite () {
@@ -168,6 +184,17 @@ public class SimpleAnimation : ClientMonoBehaviour {
    }
 
    protected void reloadSprites (Texture2D newTexture) {
+      if (newTexture == ImageManager.self.blankTexture) {
+         toggleRenderers(false);
+         enabled = false;
+         _sprites = new Sprite []{
+            ImageManager.self.blankSprite
+         };
+         return;
+      }
+      enabled = true;
+      toggleRenderers(true);
+
       // Load our sprites
       _sprites = ImageManager.getSprites(newTexture);
    }
