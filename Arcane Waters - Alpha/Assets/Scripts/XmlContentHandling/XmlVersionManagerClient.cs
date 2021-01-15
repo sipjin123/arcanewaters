@@ -823,10 +823,10 @@ public class XmlVersionManagerClient : MonoBehaviour {
       string dataRequest = await NubisClient.call(nameof(DB_Main.getTooltipXmlContent));
       D.debug("Tooltip data downloaded, now writing to file: " + dataRequest.Length);
 
-      StartCoroutine(processDataCreation(dataRequest, assignAutomatically));
+      StartCoroutine(CO_ProcessDataCreation(dataRequest, assignAutomatically));
    }
 
-   private IEnumerator processDataCreation (string dataRequest, bool assignAutomatically) {
+   private IEnumerator CO_ProcessDataCreation (string dataRequest, bool assignAutomatically) {
       string fileDirectory = getTooltipBaseDirectory();
       if (!File.Exists(fileDirectory)) {
          D.debug("Missing file! Creating now");
