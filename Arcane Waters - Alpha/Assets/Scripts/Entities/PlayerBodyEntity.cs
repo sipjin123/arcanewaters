@@ -128,6 +128,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          }
          sprintRecovery();
+         processJumpLogic();
 
          return;
       }
@@ -207,7 +208,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
 
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater()) {
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater() && isLocalPlayer) {
          // Adjust the collider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
@@ -453,6 +454,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    [ClientRpc]
    public void Rpc_JumpAnimation (Anim.Type animType) {
       if (!isJumpCoolingDown()) {
+         if (!isLocalPlayer) {
+            isJumping = true;
+            _jumpStartTime = NetworkTime.time;
+         }
+
          requestAnimationPlay(animType);
       }
    }
