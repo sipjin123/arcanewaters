@@ -1422,8 +1422,7 @@ public class DB_Main : DB_MainStub
    }
 
    public static new int getFriendshipLevel (int npcId, int userId) {
-
-      int friendshipLevel = -1;
+      int friendshipLevel = 0;
 
       try {
          using (MySqlConnection conn = getConnection())
