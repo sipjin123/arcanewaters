@@ -57,6 +57,8 @@ public class AdminManager : NetworkBehaviour
       SpawnPirateShip = 37,
       SpawnPrivateerShip = 38,
       CreateVoyageMap = 39,
+      ShipDamage = 40,
+      ShipHealth = 41
    }
 
    #endregion
@@ -118,6 +120,8 @@ public class AdminManager : NetworkBehaviour
       _commands[Type.SpawnPirateShip] = "spawn_pirate";
       _commands[Type.SpawnPrivateerShip] = "spawn_privateer";
       _commands[Type.CreateVoyageMap] = "create_voyage";
+      _commands[Type.ShipDamage] = "ship_damage";
+      _commands[Type.ShipHealth] = "ship_health"; 
    }
 
    void Update () {
@@ -232,6 +236,32 @@ public class AdminManager : NetworkBehaviour
          spawnPrivateerShip();
       } else if (_commands[Type.CreateVoyageMap].Equals(adminCommand)) {
          createVoyageInstance(parameters);
+      } else if (_commands[Type.ShipDamage].Equals(adminCommand)) {
+         Cmd_SetShipDamage(parameters);
+      } else if (_commands[Type.ShipHealth].Equals(adminCommand)) {
+         Cmd_SetShipHealth(parameters);
+      }
+   }
+
+   [Command]
+   protected void Cmd_SetShipDamage (string parameters) {
+      if (GetComponent<PlayerShipEntity>() != null) {
+         string[] list = parameters.Split(' ');
+         if (list.Length > 0) {
+            int shipdamage = int.Parse(list[0]);
+            GetComponent<PlayerShipEntity>().damage = shipdamage;
+         } 
+      }
+   }
+
+   [Command]
+   protected void Cmd_SetShipHealth (string parameters) {
+      if (GetComponent<PlayerShipEntity>() != null) {
+         string[] list = parameters.Split(' ');
+         if (list.Length > 0) {
+            int shipHealth = int.Parse(list[0]);
+            GetComponent<PlayerShipEntity>().currentHealth = shipHealth;
+         }
       }
    }
 
