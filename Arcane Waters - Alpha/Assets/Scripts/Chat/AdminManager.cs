@@ -170,7 +170,8 @@ public class AdminManager : NetworkBehaviour
       _history.Add("/admin " + inputString);
 
       if (!_player.isAdmin()) {
-         D.warning("This account does not have Admin privileges.");
+         string msg = string.Format("<color=red>{0}</color>!", "This account does not have Admin privileges.");
+         ChatManager.self.addChat(msg, ChatInfo.Type.System);
          return;
       }
 
@@ -1052,6 +1053,10 @@ public class AdminManager : NetworkBehaviour
       if (spawnLocalPos == Vector2.zero) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not determine the warp destination. Area Name: " + closestAreaKey);
          return;
+      }
+
+      if (Util.isAutoTesting()) {
+         D.debug("Player {" + _player.userId + "} is warping to: {" + closestAreaKey + "}");
       }
 
       _player.spawnInNewMap(closestAreaKey);
