@@ -64,13 +64,6 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       } else {
          xButton.gameObject.SetActive(false);
       }
-
-      // If the player is in combat, disable the X button
-      if (Global.player.hasAttackers()) {
-         xButton.interactable = false;
-      } else {
-         xButton.interactable = true;
-      }
    }
 
    public void updatePanelWithGroupMembers (List<int> groupMembers) {

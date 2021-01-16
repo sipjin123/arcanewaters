@@ -8,8 +8,8 @@ using Mirror;
 public class CombatCollider : MonoBehaviour {
    #region Public Variables
 
-   // The sprite swap used for the renderer that will determine the size of the collider
-   public SpriteSwap spriteSwap;
+   // The sprite renderer that will determine the size of the collider
+   public SpriteRenderer spriteRenderer;
 
    // The scale of the collider in relation to the sprite size
    public float colliderScale = 0.75f;
@@ -18,10 +18,6 @@ public class CombatCollider : MonoBehaviour {
 
    private void Start () {
       _battleCollider = GetComponent<BoxCollider2D>();
-
-      if (spriteSwap != null) {
-         _spriteRenderer = spriteSwap.getSpriteRenderer();
-      }
    }
 
    private void Update () {
@@ -29,13 +25,7 @@ public class CombatCollider : MonoBehaviour {
    }
 
    protected void updateCollider () {
-      if (_spriteRenderer == null) {
-         // TODO: Remove this after fix
-         D.debug("Error here, sprite swap reference is missing!");
-         enabled = false;
-         return;
-      }
-      Sprite sprite = _spriteRenderer.sprite;
+      Sprite sprite = spriteRenderer.sprite;
       
       // Make sure our ship's sprite has a valid physics outline ("Generate Physics Shape" needs to be enabled in the import settings)
       int shapesCount = sprite.GetPhysicsShape(0, _spriteShapePoints);
@@ -71,9 +61,6 @@ public class CombatCollider : MonoBehaviour {
    }
 
    #region Private Variables
-
-   // Our sprite renderer
-   protected SpriteRenderer _spriteRenderer;
 
    // A list containing the points of the sprite physics shape
    protected List<Vector2> _spriteShapePoints = new List<Vector2>();

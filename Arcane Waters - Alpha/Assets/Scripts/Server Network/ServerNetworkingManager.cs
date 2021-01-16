@@ -212,8 +212,12 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.InvokeServerRpc(server.MasterServer_SendGroupInvitationNotification, groupId, inviterUserId, inviterName, inviteeUserId);
    }
 
-   public void sendVoyageInstanceCreation (int serverPort, int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
-      server.InvokeServerRpc(server.MasterServer_SendVoyageInstanceCreation, serverPort, voyageId, areaKey, isPvP, biome);
+   public void createVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
+      server.InvokeServerRpc(server.MasterServer_CreateVoyageInstanceInServer, serverPort, voyageId, areaKey, isPvP, biome, difficulty);
+   }
+
+   public void requestVoyageInstanceCreation (string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
+      server.InvokeServerRpc(server.MasterServer_RequestVoyageInstanceCreation, areaKey, isPvP, biome, difficulty);
    }
 
    public void sendVoyageGroupMembersToUser (int userId) {

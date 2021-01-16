@@ -107,6 +107,14 @@ public class SpriteSwap : ClientMonoBehaviour
       return null;
    }
 
+   public SpriteRenderer getSpriteRenderer () {
+      if  (_renderer == null) {
+         _renderer = GetComponent<SpriteRenderer>();
+      }
+
+      return _renderer;
+   }
+
    #region Private Variables
 
    // Our Sprite Renderer (if any)

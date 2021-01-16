@@ -22,6 +22,7 @@ public class ChatManager : MonoBehaviour {
       Officer = 7,
       Guild = 8,
       Complain = 9,
+      Roll = 10,
    }
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -45,6 +46,7 @@ public class ChatManager : MonoBehaviour {
       _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
       _commands.Add(Type.Guild, new List<string> { "/guild", "/gld", "/g" });
       _commands.Add(Type.Complain, new List<string>() { "/complain", "/report" });
+      _commands.Add(Type.Roll, new List<string>() { "/roll", "/random" });
 
       // Setup auto-complete panel
       GameObject optionsPanel = Instantiate(new GameObject("AutoCompleteOptionsPanel"), chatPanel.inputField.transform.parent);
@@ -237,6 +239,8 @@ public class ChatManager : MonoBehaviour {
          sendMessageToServer(trimmedMessage, ChatInfo.Type.Guild);
       } else if (type == Type.Complain) {
          sendComplainToServer(message);
+      } else if (type == Type.Roll) {
+         sendRollToServer(trimmedMessage);
       }
    }
 
@@ -248,6 +252,37 @@ public class ChatManager : MonoBehaviour {
       if (Global.player != null) {         
          Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()), machineIdentifier);
       }
+   }
+
+   private void sendRollToServer (string message) {
+      int min = 1;
+      int max = 100;
+
+      message = message.Trim();
+      string[] parameters = message.Split(' ');
+      List<string> finalParameters = new List<string>();
+      foreach (string p in parameters) {
+         if (p.Trim() != "") {
+            finalParameters.Add(p.Trim());
+         }
+      }
+
+      if (finalParameters.Count == 1) {
+         if (!int.TryParse(finalParameters[0], out max)) {
+            return;
+         }
+      } else if (finalParameters.Count == 2) {
+         if (!int.TryParse(finalParameters[0], out min)) {
+            return;
+         }
+         if (!int.TryParse(finalParameters[1], out max)) {
+            return;
+         }
+      } else if (finalParameters.Count > 2) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_SendRollOutput(min, max);
    }
 
    public string getChatLog (int messages = -1) {

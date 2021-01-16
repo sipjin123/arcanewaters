@@ -32,7 +32,10 @@ public class VoyageManager : MonoBehaviour {
       InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);
    }
 
-   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
+   /// <summary>
+   /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
+   /// </summary>
+   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
@@ -47,8 +50,15 @@ public class VoyageManager : MonoBehaviour {
          areaKey = seaMaps[UnityEngine.Random.Range(0, seaMaps.Count)];
       }
 
-      // Randomize the voyage parameters
-      Voyage.Difficulty difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
+      // Randomize the biome if it is not defined
+      if (biome == Biome.Type.None) {
+         biome = Util.randomEnumStartAt<Biome.Type>(1);
+      }
+
+      // Randomize the difficulty if it is not defined
+      if (difficulty == Voyage.Difficulty.None) {
+         difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
+      }
 
       // Create the area instance
       InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty, biome);
@@ -160,14 +170,10 @@ public class VoyageManager : MonoBehaviour {
 
       // If there are missing voyages, create a new one
       if (getAllOpenVoyageInstances().Count < Voyage.OPEN_VOYAGE_INSTANCES) {
-         // Find the server with the least people
-         NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
+         // Alternate PvP and PvE instances
+         _isNewVoyagePvP = !_isNewVoyagePvP;
 
-         if (bestServer != null) {
-            // Alternate PvP and PvE instances
-            _isNewVoyagePvP = !_isNewVoyagePvP;
-            ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, ++_lastVoyageId, "", _isNewVoyagePvP, Util.randomEnumStartAt<Biome.Type>(1));
-         }
+         requestVoyageInstanceCreation("", _isNewVoyagePvP);
       }
    }
 
@@ -188,15 +194,26 @@ public class VoyageManager : MonoBehaviour {
          // Create a voyage instance for each available sea map
          List<string> seaMaps = getVoyageAreaKeys();
          foreach (string areaKey in seaMaps) {
-            // Find the server with the least people
-            NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
+            // Alternate PvP and PvE instances
+            _isNewVoyagePvP = !_isNewVoyagePvP;
 
-            if (bestServer != null) {
-               // Alternate PvP and PvE instances
-               _isNewVoyagePvP = !_isNewVoyagePvP;
-               ServerNetworkingManager.self.sendVoyageInstanceCreation(bestServer.networkedPort.Value, ++_lastVoyageId, areaKey, _isNewVoyagePvP, Util.randomEnumStartAt<Biome.Type>(1));
-            }
+            requestVoyageInstanceCreation(areaKey, _isNewVoyagePvP);
          }
+      }
+   }
+
+   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+      // Only the master server launches the creation of voyages instances
+      if (!ServerNetworkingManager.self.server.isMasterServer()) {
+         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, biome, difficulty);
+         return;
+      }
+
+      // Find the server with the least people
+      NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
+
+      if (bestServer != null) {
+         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, ++_lastVoyageId, areaKey, isPvP, biome, difficulty);
       }
    }
 

@@ -110,9 +110,9 @@ public class ContextMenuPanel : MonoBehaviour
       _hasAtLeastOneButton = false;
    }
 
-   public void addButton (string text, UnityAction action) {
+   public void addButton (string text, UnityAction action, ContextMenuButton.ContextMenuCondition enableButtonCondition = null) {
       ContextMenuButton button = Instantiate(buttonPrefab, buttonContainer.transform, false);
-      button.initForAction(text, action);
+      button.initForAction(text, action, enableButtonCondition);
       _hasAtLeastOneButton = true;
    }
 
@@ -147,6 +147,9 @@ public class ContextMenuPanel : MonoBehaviour
          addButton("Message", () => ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).composeMailTo(userName));
       } else if (!VoyageGroupManager.isInGroup(Global.player)) {
          addButton("Create Group", () => VoyageGroupManager.self.requestPrivateGroupCreation());
+      } else {
+         // If the player is in a group and clicks their own avatar, allow them to leave the group. Only make the button interactable if the player can leave the group.
+         addButton("Leave Group", () => VoyageGroupPanel.self.OnLeaveGroupButtonClickedOn(), () => !Global.player.hasAttackers() && !PanelManager.self.countdownScreen.isShowing());
       }
 
       show(userName);

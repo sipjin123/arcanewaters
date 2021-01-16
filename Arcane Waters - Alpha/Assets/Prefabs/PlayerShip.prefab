@@ -2441,7 +2441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6633da4ec98858449cf92d95520d592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spriteSwap: {fileID: 8380140302545028261}
+  spriteRenderer: {fileID: 20892}
   colliderScale: 0.75
 --- !u!1 &1286069097927019864
 GameObject:

@@ -5,6 +5,7 @@ using TMPro;
 using Mirror;
 using System.Text;
 using System.Xml.XPath;
+using System.Text.RegularExpressions;
 
 public class NPCPanel : Panel
 {
@@ -122,7 +123,7 @@ public class NPCPanel : Panel
       }
    }
 
-   public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText) {
+   public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText, string userFlagshipName) {
       initLoadBlockers(false);
 
       // Clear out the old clickable options
@@ -137,8 +138,10 @@ public class NPCPanel : Panel
       // Set the panel content common to the different modes
       npcDialogueText.enabled = true;
       setCommonPanelContent(greetingText, friendshipLevel);
-
       isHireableNotification.SetActive(false);
+
+      // Store the user flagship name
+      this.userFlagshipName = userFlagshipName;
 
       if (questDataArray.Length > 0) {
          foreach (QuestDataNode questNode in questDataArray) {
@@ -148,7 +151,7 @@ public class NPCPanel : Panel
       } else {
          // End the conversation if there are no quest titles fetched
          npcDialogueText.enabled = true;
-         _npcDialogueLine = greetingText;
+         _npcDialogueLine = getDynamicDialog(greetingText);
          if (isShowing()) {
             AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
          }
@@ -215,7 +218,7 @@ public class NPCPanel : Panel
          if (questNodeId + 1 > questData.questDataNodes.Length) {
             // End the dialogue if the quest node is greater than the quest list
             npcDialogueText.enabled = true;
-            _npcDialogueLine = npcData.greetingTextStranger;
+            _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
             if (isShowing()) {
                AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
             }
@@ -227,7 +230,7 @@ public class NPCPanel : Panel
             QuestDialogueNode dialogueNode = new List<QuestDialogueNode>(questDataNode.questDialogueNodes).Find(_ => _.dialogueIdIndex == dialogueId);
             if (dialogueNode != null) {
                npcDialogueText.enabled = true;
-               _npcDialogueLine = dialogueNode.npcDialogue;
+               _npcDialogueLine = getDynamicDialog(dialogueNode.npcDialogue);
                if (isShowing()) {
                   AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
                }
@@ -276,7 +279,7 @@ public class NPCPanel : Panel
             } else {
                // End the dialogue if the quest node is greater than the quest list
                npcDialogueText.enabled = true;
-               _npcDialogueLine = npcData.greetingTextStranger;
+               _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
                if (isShowing()) {
                   AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
                }
@@ -288,7 +291,7 @@ public class NPCPanel : Panel
       } else {
          // End dialogue of no quest was loaded
          npcDialogueText.enabled = true;
-         _npcDialogueLine = npcData.greetingTextStranger;
+         _npcDialogueLine = getDynamicDialog(npcData.greetingTextStranger);
          if (isShowing()) {
             AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
          }
@@ -570,6 +573,21 @@ public class NPCPanel : Panel
       }
    }
 
+   private string getDynamicDialog (string rawDialog) {
+      string dialog = rawDialog.Replace("[player]", Global.player.entityName);
+      dialog = dialog.Replace("[ship]", userFlagshipName);
+
+      // Finds patterns such as [boy:girl] and selects one of the words depending on the user gender
+      string pattern = "(\\[)(.*?)(:)(.*?)(\\])";
+      if (Global.player.gender == Gender.Type.Male) {
+         dialog = Regex.Replace(dialog, pattern, "$2");
+      } else {
+         dialog = Regex.Replace(dialog, pattern, "$4");
+      }
+
+      return dialog;
+   }
+
    #region Private Variables
 
    // The NPC associated with this panel
@@ -589,6 +607,9 @@ public class NPCPanel : Panel
 
    // The number of gift items
    protected int _selectedGiftItemCount = 1;
+
+   // The cached name of the user flagship
+   protected string userFlagshipName = "";
 
    #endregion
 }

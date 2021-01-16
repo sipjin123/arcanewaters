@@ -303,6 +303,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   shadow: {fileID: 0}
   statusEffectContainer: {fileID: 6472138581510055911}
+  isUnderExternalControl: 0
   _ignoredAnimators: []
   _animators: []
   damage: 10
@@ -1689,6 +1690,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6633da4ec98858449cf92d95520d592, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 212945152816631566}
+  colliderScale: 0.75
 --- !u!50 &1481618208884450300
 Rigidbody2D:
   serializedVersion: 4

@@ -769,6 +769,10 @@ public class DB_MainStub : MonoBehaviour
       return null;
    }
 
+   public static ShipInfo getShipInfoForUser (int userId) {
+      return null;
+   }
+
    public static Armor getArmor (int userId) {
       return null;
    }

@@ -24,6 +24,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _effectProgressPropertyID = Shader.PropertyToID("_Progress");
       _spotPositionPropertyID = Shader.PropertyToID("_SpotPosition");
       _screenSizePropertyID = Shader.PropertyToID("_ScreenSize");
+      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
 
       createMaterialIfNull();
    }
@@ -58,12 +59,12 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       // Make sure we have a valid pixelSize value
       pixelSize = pixelSize > 0 ? pixelSize : DEFAULT_PIXEL_SIZE;
             
-      Shader.SetGlobalInt("_PixelSize", pixelSize);
+      Shader.SetGlobalInt(_pixelSizePropertyID, pixelSize);
    }
 
    private void updateScreenSize () {
       updatePixelSize();
-      _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
+      _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));      
    }
 
    private void OnDestroy () {
@@ -88,7 +89,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 
    private void OnRenderImage (RenderTexture source, RenderTexture destination) {
       recalibrateSpotPosition();
-
+      updatePixelSize();
       _material.SetFloat(_effectProgressPropertyID, _effectProgress);
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
       Graphics.Blit(source, destination, _material);
@@ -197,6 +198,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 
    // The property ID of the "_ScreenSize" property
    private int _screenSizePropertyID;
+
+   // The property ID of the "_PixelSize" property
+   private int _pixelSizePropertyID;
 
    // The default pixel size if an invalid PPU scale is provided
    public const int DEFAULT_PIXEL_SIZE = 4;

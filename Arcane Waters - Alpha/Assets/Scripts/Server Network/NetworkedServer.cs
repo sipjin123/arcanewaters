@@ -148,16 +148,21 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendVoyageInstanceCreation (int serverPort, int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
+   public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ReceiveVoyageInstanceCreation, voyageId, areaKey, isPvP, biome);
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveVoyageInstanceCreation, voyageId, areaKey, isPvP, biome, difficulty);
       }
    }
 
    [ClientRPC]
-   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, Biome.Type biome) {
-      VoyageManager.self.createVoyageInstance(voyageId, areaKey, isPvP, biome);
+   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
+      VoyageManager.self.createVoyageInstance(voyageId, areaKey, isPvP, biome, difficulty);
+   }
+
+   [ServerRPC]
+   public void MasterServer_RequestVoyageInstanceCreation (string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
+      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, biome, difficulty);
    }
 
    [ServerRPC]

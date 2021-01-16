@@ -56,6 +56,7 @@ public class AdminManager : NetworkBehaviour
       ToggleInvisibility = 36,
       SpawnPirateShip = 37,
       SpawnPrivateerShip = 38,
+      CreateVoyageMap = 39,
    }
 
    #endregion
@@ -116,6 +117,7 @@ public class AdminManager : NetworkBehaviour
       _commands[Type.ToggleInvisibility] = "invisible";
       _commands[Type.SpawnPirateShip] = "spawn_pirate";
       _commands[Type.SpawnPrivateerShip] = "spawn_privateer";
+      _commands[Type.CreateVoyageMap] = "create_voyage";
    }
 
    void Update () {
@@ -227,6 +229,8 @@ public class AdminManager : NetworkBehaviour
          spawnPirateShip();
       } else if (_commands[Type.SpawnPrivateerShip].Equals(adminCommand)) {
          spawnPrivateerShip();
+      } else if (_commands[Type.CreateVoyageMap].Equals(adminCommand)) {
+         createVoyageInstance(parameters);
       }
    }
 
@@ -772,6 +776,70 @@ public class AdminManager : NetworkBehaviour
       Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
    }
 
+   private void createVoyageInstance (string parameters) {
+      string[] list = parameters.Split(' ');
+
+      // Default parameter values
+      Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+      Biome.Type biome = Biome.Type.None;
+      bool isPvP = UnityEngine.Random.value > 0.5f;
+      string areaKey = "";
+
+      // Parse the parameters
+      if (list.Length > 0 && !(list.Length == 1 && string.IsNullOrEmpty(list[0]))) {
+         try {
+            isPvP = int.Parse(list[0]) > 0;
+         } catch {
+            ChatManager.self.addChat("Invalid PvP parameter for command create_voyage: " + list[0], ChatInfo.Type.Error);
+            return;
+         }
+            
+         if (list.Length > 1) {
+            if (!(Enum.TryParse(list[1], out difficulty) && Enum.IsDefined(typeof(Voyage.Difficulty), difficulty))) {
+               ChatManager.self.addChat("Invalid difficulty parameter for command create_voyage: " + list[1], ChatInfo.Type.Error);
+               return;
+            }
+
+            if (list.Length > 2) {
+               if (!(Enum.TryParse(list[2], out biome) && Enum.IsDefined(typeof(Biome.Type), biome))) {
+                  ChatManager.self.addChat("Invalid biome parameter for command create_voyage: " + list[2], ChatInfo.Type.Error);
+                  return;
+               }
+
+               if (list.Length > 3) {
+                  areaKey = "";
+                  for (int i = 3; i < list.Length; i++) {
+                     areaKey += list[i] + ' ';
+                  }
+
+                  // Deletes the last space
+                  areaKey = areaKey.Substring(0, areaKey.Length - 1);
+               }
+            }
+         }
+      }
+
+      Cmd_CreateVoyageInstance(isPvP, difficulty, biome, areaKey);
+   }
+
+   [Command]
+   private void Cmd_CreateVoyageInstance (bool isPvP, Voyage.Difficulty difficulty, Biome.Type biome, string areaKey) {
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin");
+         return;
+      }
+
+      if (!string.IsNullOrEmpty(areaKey)) {
+         // Get the list of voyage sea maps
+         List<string> voyageSeaMaps = VoyageManager.self.getVoyageAreaKeys();
+
+         // Get the valid area key closest to the given key
+         areaKey = getClosestAreaKey(voyageSeaMaps, areaKey);
+      }
+
+      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, biome, difficulty);
+   }
+
    [Command]
    protected void Cmd_CreateTestUsers (int count) {
 
@@ -972,15 +1040,8 @@ public class AdminManager : NetworkBehaviour
             baseMapAreaKey = AreaManager.self.getAreaName(customMapManager.getBaseMapId(entity));
             closestAreaKey = partialAreaKey;
          } else {
-            // Try to select area keys whose beginning match exactly with the user input
-            List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            if (exactMatchKeys.Count > 0) {
-               // If there are matchs, use that sub-list instead
-               areaKeys = exactMatchKeys;
-            }
-
             // Get the area key closest to the given partial key
-            closestAreaKey = areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
+            closestAreaKey = getClosestAreaKey(areaKeys, partialAreaKey);
          }
       }
 
@@ -994,6 +1055,18 @@ public class AdminManager : NetworkBehaviour
       }
 
       _player.spawnInNewMap(closestAreaKey);
+   }
+
+   private string getClosestAreaKey (List<string> areaKeys, string partialAreaKey) {
+      // Try to select area keys whose beginning match exactly with the user input
+      List<string> exactMatchKeys = areaKeys.Where(s => s.StartsWith(partialAreaKey, StringComparison.CurrentCultureIgnoreCase)).ToList();
+      if (exactMatchKeys.Count > 0) {
+         // If there are matchs, use that sub-list instead
+         areaKeys = exactMatchKeys;
+      }
+
+      // Get the area key closest to the given partial key
+      return areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
    }
 
    protected void spawnPirateShip () {

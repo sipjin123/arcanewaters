@@ -889,6 +889,18 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_SendRollOutput (int min, int max) {
+      int random = Random.Range(min, max + 1);
+      string message = _player.entityName + " has rolled " + random + " (" + min + " - " + max + ")";
+
+      foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+         if (pair.Value.voyageGroupId == _player.voyageGroupId) {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, pair.Value, message);
+         }
+      }
+   }
+
+   [Command]
    public void Cmd_SendChat (string message, ChatInfo.Type chatType) {
       if (_player.isMuted()) {
          // The player is muted and can't send messages
@@ -1602,6 +1614,7 @@ public class RPCManager : NetworkBehaviour {
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
+         ShipInfo shipInfo = DB_Main.getShipInfoForUser(_player.userId);
          List<QuestStatusInfo> databaseQuestStatusList = DB_Main.getQuestStatuses(npcId, _player.userId);
 
          if (databaseQuestStatusList.Count < 1) {
@@ -1648,13 +1661,13 @@ public class RPCManager : NetworkBehaviour {
 
             // Retrieve other data only available server-side
             string greetingText = NPCManager.self.getGreetingText(npcId, friendshipLevel);
-            Target_ReceiveNPCQuestTitles(_player.connectionToClient, questId, Util.serialize(xmlQuestNodeList), npcId, npcData.name, friendshipLevel, greetingText);
+            Target_ReceiveNPCQuestTitles(_player.connectionToClient, questId, Util.serialize(xmlQuestNodeList), npcId, npcData.name, friendshipLevel, greetingText, shipInfo.shipName);
          });
       });
    }
 
    [TargetRpc]
-   public void Target_ReceiveNPCQuestTitles (NetworkConnection connection, int questId, string[] rawQuestNodeList, int npcId, string npcName, int friendshipLevel, string greetingText) {
+   public void Target_ReceiveNPCQuestTitles (NetworkConnection connection, int questId, string[] rawQuestNodeList, int npcId, string npcName, int friendshipLevel, string greetingText, string userFlagshipName) {
       // Get the NPC panel
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
 
@@ -1662,7 +1675,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Pass the data to the panel
       PanelManager.self.linkIfNotShowing(panel.type);
-      panel.updatePanelWithQuestSelection(questId, questDataNodes.ToArray(), npcId, npcName, friendshipLevel, greetingText);
+      panel.updatePanelWithQuestSelection(questId, questDataNodes.ToArray(), npcId, npcName, friendshipLevel, greetingText, userFlagshipName);
    }
 
    [Command]
