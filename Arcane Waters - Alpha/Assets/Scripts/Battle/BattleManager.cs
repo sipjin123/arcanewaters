@@ -891,7 +891,9 @@ public class BattleManager : MonoBehaviour {
                AchievementManager.registerUserAchievement(battler.player, ActionType.CombatDie);
 
                // TODO: Implement logic here that either warps the player to a different place or give invulnerability time so they can move away from previous enemy, otherwise its an unlimited battle until the player wins
-               battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+               if (battler.player != null) {
+                  battler.player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
+               }
             }
          }
       }
