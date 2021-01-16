@@ -1850,10 +1850,7 @@ public class RPCManager : NetworkBehaviour {
             int friendshipLevel = DB_Main.getFriendshipLevel(npcId, _player.userId);
             QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
             DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + questDialogue.friendshipRewardPts);
-            if (questData.questDataNodes.Length > questNodeId) {
-               newQuestNodeId++;
-               DB_Main.updateQuestStatus(npcId, _player.userId, questId, newQuestNodeId, 0);
-            }
+           
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
 
