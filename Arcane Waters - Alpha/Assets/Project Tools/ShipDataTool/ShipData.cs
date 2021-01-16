@@ -99,11 +99,11 @@ public class ShipData
 [Serializable]
 public class ShipAbilityPair
 {
-   // Id of the ability
-   public int abilityId;
-
    // Name of the ability
    public string abilityName;
+
+   // Id of the ability
+   public int abilityId;
 
    // The ship data
    [XmlIgnore]
