@@ -1631,8 +1631,17 @@ public class RPCManager : NetworkBehaviour {
                         removeNodeList.Add(xmlQuestNode);
                      }
                   } else {
+                     // If the quest requires a different quest to be unlocked first, remove it from the list to be provided to the player
+                     bool hasQuestNodeRequirement = xmlQuestNode.questNodeLevelRequirement > -1;
+                     if (hasQuestNodeRequirement) {
+                        QuestStatusInfo requiredNodeStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questNodeLevelRequirement);
+                        if (requiredNodeStatus.questDialogueId < xmlQuestNode.questDialogueNodes.Length) {
+                           removeNodeList.Add(xmlQuestNode);
+                        } 
+                     } 
+
                      // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
-                     if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
+                     if (databaseQuestStatus.questDialogueId > xmlQuestNode.questDialogueNodes.Length) {
                         removeNodeList.Add(xmlQuestNode);
                      }
 
