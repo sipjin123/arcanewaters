@@ -15,6 +15,10 @@ public class ServerCannonBall : NetworkBehaviour {
 
    #endregion
 
+   private void Awake () {
+      _ballCollider = GetComponentInChildren<CircleCollider2D>();
+   }
+
    private void Start () {
       if (!Util.isBatch()) {
          // Play an appropriate sound
@@ -31,6 +35,8 @@ public class ServerCannonBall : NetworkBehaviour {
       base.OnStartClient();
 
       _rigidbody.velocity = projectileVelocity;
+      _startTime = NetworkTime.time;
+
    }
 
    [Server]
@@ -42,7 +48,6 @@ public class ServerCannonBall : NetworkBehaviour {
       _abilityData = ShipAbilityManager.self.getAbility(abilityId);
       _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
       _damageMultiplier = damageMultiplier;
-      _isLobbed = true;
       _lobHeight = 0.1f;
       _statusType = statusType;
       _statusDuration = statusDuration;
@@ -52,8 +57,6 @@ public class ServerCannonBall : NetworkBehaviour {
 
       _rigidbody.velocity = velocity;
       transform.position = startPos;
-
-      _ballCollider = GetComponentInChildren<CircleCollider2D>();
    }
 
    [Server]
@@ -66,7 +69,6 @@ public class ServerCannonBall : NetworkBehaviour {
       _lifetime = lifetime > 0 ? lifetime : DEFAULT_LIFETIME;
       _damageMultiplier = damageMultiplier;
       _lobHeight = lobHeight;
-      _isLobbed = true;
       _statusType = statusType;
       _statusDuration = statusDuration;
       _playFiringSound = playFiringSound;
@@ -88,6 +90,8 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    private void Update () {
+      updateHeight();
+
       if (isServer) {
          double timeAlive = NetworkTime.time - _startTime;
 
@@ -96,11 +100,7 @@ public class ServerCannonBall : NetworkBehaviour {
          } else if (NetworkTime.time - _lastVelocitySyncTime > 0.2) {
             _lastVelocitySyncTime = NetworkTime.time;
             projectileVelocity = _rigidbody.velocity;
-         }
-
-         if (_isLobbed) {
-            updateHeight();
-         }
+         }  
       }
    }
 
@@ -213,6 +213,7 @@ public class ServerCannonBall : NetworkBehaviour {
    protected double _lastVelocitySyncTime;
 
    // Our Start Time
+   [SyncVar]
    protected double _startTime;
 
    // Blocks update func if the projectile collided
@@ -234,6 +235,7 @@ public class ServerCannonBall : NetworkBehaviour {
    protected ShipAbilityData _abilityData;
 
    // The time in seconds before the cannonball is destroyed
+   [SyncVar]
    protected float _lifetime;
 
    // The default lifetime if none is provided
@@ -242,10 +244,8 @@ public class ServerCannonBall : NetworkBehaviour {
    // A reference to the child object that contains the cannonball
    private CircleCollider2D _ballCollider;
 
-   // If this cannonball should move with parabolic motion
-   private bool _isLobbed = false;
-
    // How high this cannonball was lobbed
+   [SyncVar]
    private float _lobHeight = 0.0f;
 
    // The status effect that this cannonball will apply to a sea entity it hits

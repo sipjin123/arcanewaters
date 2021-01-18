@@ -298,8 +298,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
-         PlayerBodyEntity body = getClickedBody();
-         if (body != null && !PanelManager.self.hasPanelInLinkedList()) {
+         NetEntity body = getClickedBody();
+         if (body != null && body is PlayerBodyEntity) {
             PanelManager.self.contextMenuPanel.showDefaultMenuForUser(body.userId, body.entityName);
          }
       }
@@ -530,22 +530,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                });
             }
          });
-      }
-   }
-
-   protected PlayerBodyEntity getClickedBody () {
-      NetEntity entityHovered = null;
-      foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
-         if (entity.isMouseOver()) {
-            entityHovered = entity;
-            break;
-         }
-      }
-
-      if (entityHovered != null && entityHovered is PlayerBodyEntity) {
-         return (PlayerBodyEntity) entityHovered;
-      } else {
-         return null;
       }
    }
 

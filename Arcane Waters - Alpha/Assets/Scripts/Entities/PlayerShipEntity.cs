@@ -117,7 +117,7 @@ public class PlayerShipEntity : ShipEntity
 
          _targetSelector = GetComponentInChildren<PlayerTargetSelector>();
       } else if (isServer) {
-         _serverSideMoveAngle = desiredAngle;
+         _movementInputDirection = Vector2.zero;
       } else {
          // Disable our collider if we are not either the local player or the server
          getMainCollider().isTrigger = true;
@@ -196,6 +196,13 @@ public class PlayerShipEntity : ShipEntity
       // Check if input is allowed
       if (!Util.isGeneralInputAllowed() || isDisabled) {
          return;
+      }
+
+      if (InputManager.isLeftClickKeyPressed() && !PanelManager.self.hasPanelInLinkedList()) {
+         NetEntity ship = getClickedBody();
+         if (ship != null && ship is PlayerShipEntity) {
+            PanelManager.self.contextMenuPanel.showDefaultMenuForUser(ship.userId, ship.entityName);
+         }
       }
 
       if (!isDead() && SeaManager.getAttackType() != Attack.Type.Air) {
@@ -277,6 +284,18 @@ public class PlayerShipEntity : ShipEntity
       if (_isChargingCannon) {
          _cannonChargeAmount = Mathf.Clamp01(_cannonChargeAmount + Time.deltaTime);
          updateTargeting();
+      }
+   }
+
+   protected override void FixedUpdate () {
+      base.FixedUpdate();
+
+      if (NetworkServer.active) {
+         // If the player wants to stop the ship, we let the linear drag handle the slowdown
+         if (_movementInputDirection != Vector2.zero) {
+            Vector2 targetVelocity = _movementInputDirection * getMoveSpeed() * Time.fixedDeltaTime;
+            _body.velocity = Vector2.SmoothDamp(_body.velocity, targetVelocity, ref _shipDampVelocity, 0.5f);
+         }         
       }
    }
 
@@ -591,25 +610,42 @@ public class PlayerShipEntity : ShipEntity
       // Make note of the time
       _lastMoveChangeTime = NetworkTime.time;
 
-      if (InputManager.getKeyAction(KeyAction.MoveUp)) {
+      Vector2 inputVector = InputManager.getMovementInput();
+
+      if (inputVector != _movementInputDirection || isSpeedingUp != InputManager.isSpeedUpKeyPressed()) {
          // If the ship wasn't moving, apply a small force locally to make up for delay
-         if (_body.velocity.sqrMagnitude < 0.025f) {          
+         if (inputVector != Vector2.zero && _body.velocity.sqrMagnitude < 0.025f) {
             _body.AddForce(Quaternion.AngleAxis(this.desiredAngle, Vector3.forward) * Vector3.up * getMoveSpeed() * CLIENT_SIDE_FORCE);
          }
-      }
 
-      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
-         // In Host mode only, we want to avoid setting _lastInputChangeTime here so cooldown validation passes in Cmd_RequestServerAddForce()
-         if (!Util.isHost()) {
-            _lastInputChangeTime = NetworkTime.time;
-         }
+         if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
+            // In Host mode only, we want to avoid setting _lastInputChangeTime here so cooldown validation passes in Cmd_RequestServerAddForce()
+            if (!Util.isHost()) {
+               _lastInputChangeTime = NetworkTime.time;
+            }
 
-         Vector2 inputVector = InputManager.getMovementInput();
-
-         if (inputVector.x != 0 || inputVector.y != 0) {
+            _movementInputDirection = inputVector;
             Cmd_RequestServerAddForce(inputVector, isSpeedingUp);
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.MoveShip);
          }
+      }
+   }
+
+   [Command]
+   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {
+      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {
+         Vector2 forceToApply = direction;
+
+         if (direction != Vector2.zero) {
+            float newAngle = Util.AngleBetween(Vector2.up, direction);
+            desiredAngle = newAngle;
+            facing = DirectionUtil.getDirectionForAngle(desiredAngle);
+         }
+
+         _movementInputDirection = forceToApply.normalized;
+
+         _lastInputChangeTime = NetworkTime.time;
+         this.isSpeedingUp = isSpeedingUp;
       }
    }
 
@@ -789,23 +825,6 @@ public class PlayerShipEntity : ShipEntity
    }
 
    [Command]
-   protected void Cmd_RequestServerAddForce (Vector2 direction, bool isSpeedingUp) {  
-      if (NetworkTime.time - _lastInputChangeTime > getInputDelay()) {         
-         Vector2 forceToApply = direction * getMoveSpeed();
-
-         if (direction != Vector2.zero) {
-            float newAngle = Util.AngleBetween(Vector2.up, direction);
-            desiredAngle = newAngle;
-            facing = DirectionUtil.getDirectionForAngle(desiredAngle);
-         }
-
-         _body.AddForce(forceToApply);
-         _lastInputChangeTime = NetworkTime.time;
-         this.isSpeedingUp = isSpeedingUp;
-      }
-   }
-
-   [Command]
    private void Cmd_RequestRespawn () {
       this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
 
@@ -829,8 +848,11 @@ public class PlayerShipEntity : ShipEntity
    // The position the player is currently aiming at
    private Vector2 _currentAimPosition;
 
-   // The direction of the ship server-side
-   private float _serverSideMoveAngle;
+   // The desired direction of the ship
+   private Vector2 _movementInputDirection;
+
+   // The velocity at which we're currently damping the velocity of the ship
+   private Vector2 _shipDampVelocity;
 
    // A multiplier for the force added locally in order to mask delay   
    private const float CLIENT_SIDE_FORCE = 0.1f;

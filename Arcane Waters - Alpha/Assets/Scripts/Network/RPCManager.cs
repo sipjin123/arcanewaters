@@ -893,10 +893,15 @@ public class RPCManager : NetworkBehaviour {
       int random = Random.Range(min, max + 1);
       string message = _player.entityName + " has rolled " + random + " (" + min + " - " + max + ")";
 
-      foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-         if (pair.Value.voyageGroupId == _player.voyageGroupId) {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, pair.Value, message);
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup != null) {
+         // Send the result to all group members
+         foreach (int userId in voyageGroup.members) {
+            ServerNetworkingManager.self.sendConfirmationMessage(ConfirmMessage.Type.General, userId, message);
          }
+      } else {
+         // If the player is not in a group, the result is sent only to him
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, message);
       }
    }
 
@@ -958,21 +963,7 @@ public class RPCManager : NetworkBehaviour {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
       } else if (chatType == ChatInfo.Type.Guild) {
-         ServerNetworkingManager.self.sendSpecialChatMessage(_player.userId, chatInfo);
-
-         // Background thread
-         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-            GuildInfo guildInfo = DB_Main.getGuildInfo(_player.guildId);
-
-            // Back to the Unity thread
-            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               foreach (UserInfo userInfo in guildInfo.guildMembers) {
-                  if (_player.userId != userInfo.userId) {
-                     ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
-                  }
-               }
-            });
-         });
+         ServerNetworkingManager.self.sendGuildChatMessage(_player.guildId, chatInfo);
       } else if (chatType == ChatInfo.Type.Officer) {
          if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
             return;
@@ -2864,21 +2855,13 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
                   // If user is currently online - update his permissions
-                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                     if (pair.Value.userId == userToPromoteId) {
-                        pair.Value.guildRankPriority = guildRankInfo.rankPriority;
-                        pair.Value.guildPermissions = guildRankInfo.permissions;
+                  ServerNetworkingManager.self.updateGuildMemberPermissions(userToPromoteId, guildRankInfo.rankPriority, guildRankInfo.permissions);
 
-                        otherName = pair.Value.entityName;
-                        break;
-                     }
-                  }
+                  // Send the confirmation to all online guild members
+                  ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, _player.guildId, _player.entityName + " has promoted " + otherName + "!");
 
-                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                     if (pair.Value.guildId == _player.guildId) {
-                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has promoted " + otherName + "!");
-                     }
-                  }
+                  // Send a special confirmation to the user that performed the action
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Guild member that you want to promote, has already reached maximum rank!");
                }
@@ -2939,23 +2922,14 @@ public class RPCManager : NetworkBehaviour {
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
-
                   // If user is currently online - update his permissions
-                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                     if (pair.Value.userId == userToDemoteId) {
-                        pair.Value.guildRankPriority = guildRankInfo.rankPriority;
-                        pair.Value.guildPermissions = guildRankInfo.permissions;
+                  ServerNetworkingManager.self.updateGuildMemberPermissions(userToDemoteId, guildRankInfo.rankPriority, guildRankInfo.permissions);
 
-                        otherName = pair.Value.entityName;
-                        break;
-                     }
-                  }
+                  // Send the confirmation to all online guild members
+                  ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, _player.guildId, _player.entityName + " has demoted " + otherName + "!");
 
-                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                     if (pair.Value.guildId == _player.guildId) {
-                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has demoted " + otherName + "!");
-                     }
-                  }
+                  // Send a special confirmation to the user that performed the action
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "Guild member that you want to demote, has already reached lowest rank!");
                }
@@ -2996,13 +2970,8 @@ public class RPCManager : NetworkBehaviour {
                DB_Main.assignGuild(userToKickId, 0);
                DB_Main.assignRankGuild(userToKickId, -1);
 
-               // If user is currently online - update his guildId
-               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                  if (pair.Value.userId == userToKickId) {
-                     pair.Value.guildId = 0;
-                     break;
-                  }
-               }
+               // Remove past invite from kicked player. If he was kicked by accident, he can be invited back immediately
+               GuildManager.self.removePastInvite(_player, userToKickId, DB_Main.getGuildInfo(_player.guildId));
             }
 
             string otherName = DB_Main.getUserName(userToKickId);
@@ -3011,11 +2980,13 @@ public class RPCManager : NetworkBehaviour {
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                if (success) {
                   // If user is currently online - update his guildId
-                  foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                     if (pair.Value.guildId == _player.guildId) {
-                        ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has kicked " + otherName + " from guild!");
-                     }
-                  }
+                  ServerNetworkingManager.self.updateUserGuildId(userToKickId, 0);
+
+                  // Send the confirmation to all online guild members
+                  ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, _player.guildId, _player.entityName + " has kicked " + otherName + " from guild!");
+
+                  // Send a special confirmation to the user that performed the action
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
                } else {
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionLocal, _player, "You cannot kick Guild Leader!");
                }
@@ -3100,19 +3071,14 @@ public class RPCManager : NetworkBehaviour {
             }
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               // If user is currently online - update his permissions
-               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                  if (pair.Value.guildId == _player.guildId && pair.Value.guildRankPriority == userRankPriority) {
-                     pair.Value.guildRankPriority = newRank.rankPriority;
-                     pair.Value.guildPermissions = newRank.permissions;
-                  }
-               }
+               // Update the ranks and permissions of all online members
+               ServerNetworkingManager.self.replaceGuildMembersRankPriority(_player.guildId, userRankPriority, newRank.rankPriority, newRank.permissions);
 
-               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                  if (pair.Value.guildId == _player.guildId) {
-                     ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has deleted guild rank: " + deletedRankName);
-                  }
-               }
+               // Send the confirmation to all online guild members
+               ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, _player.guildId, _player.entityName + " has deleted guild rank: " + deletedRankName);
+
+               // Send a special confirmation to the user that performed the action
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
             });
 
          } else {
@@ -3140,11 +3106,11 @@ public class RPCManager : NetworkBehaviour {
          DB_Main.assignRankGuild(oldLeaderUserId, guildRanks.Find(x => x.rankPriority == 1).id);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-               if (pair.Value.guildId == _player.guildId) {
-                  ServerMessageManager.sendConfirmation(pair.Value.userId == _player.userId ? ConfirmMessage.Type.GuildActionGlobalWithUpdate : ConfirmMessage.Type.GuildActionGlobal, pair.Value, _player.entityName + " has appointed new leader: " + newLeaderName);
-               }
-            }
+            // Send the confirmation to all online guild members
+            ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, _player.guildId, _player.entityName + " has appointed new leader: " + newLeaderName);
+
+            // Send a special confirmation to the user that performed the action
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.GuildActionUpdate, _player, "");
          });
       });
    }

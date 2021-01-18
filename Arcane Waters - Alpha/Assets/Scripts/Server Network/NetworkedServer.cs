@@ -103,6 +103,21 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_SendGuildChatMessage (int guildId, int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+      InvokeClientRpcOnEveryone(Server_ReceiveGuildChatMessage, guildId, chatId, message, timestamp, senderName, senderUserId, guildIconDataString);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveGuildChatMessage (int guildId, int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
+      // Send the chat message to all guild members connected to this server
+      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
+         if (player.Value.guildId == guildId) {
+            player.Value.Target_ReceiveSpecialChat(player.Value.connectionToClient, chatId, message, senderName, player.Value.entityName, timestamp, ChatInfo.Type.Guild, GuildIconData.guildIconDataFromString(guildIconDataString), senderUserId);
+         }
+      }
+   }
+
+   [ServerRPC]
    public void MasterServer_SendSpecialChatMessage (int userId, int chatId, ChatInfo.Type messageType, string message, long timestamp, string senderName, string receiverName, int senderUserId, string guildIconDataString) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
       if (targetServer != null) {
@@ -128,6 +143,85 @@ public class NetworkedServer : NetworkedBehaviour
          ChatInfo chatInfo = new ChatInfo(0, "Could not find the recipient", DateTime.UtcNow, ChatInfo.Type.Error);
          chatInfo.recipient = "";
          ServerNetworkingManager.self.sendSpecialChatMessage(senderUserId, chatInfo);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_SendConfirmationMessage (ConfirmMessage.Type confirmType, int userId, string customMessage) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveConfirmationMessage, confirmType, userId, customMessage);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveConfirmationMessage (ConfirmMessage.Type confirmType, int userId, string customMessage) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         ServerMessageManager.sendConfirmation(confirmType, player, customMessage);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_SendConfirmationMessageToGuild (ConfirmMessage.Type confirmType, int guildId, string customMessage) {
+      InvokeClientRpcOnEveryone(Server_ReceiveConfirmationMessageForGuild, confirmType, guildId, customMessage);
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveConfirmationMessageForGuild (ConfirmMessage.Type confirmType, int guildId, string customMessage) {
+      // Send the confirmation to all guild members connected to this server
+      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
+         if (player.Value.guildId == guildId) {
+            ServerMessageManager.sendConfirmation(confirmType, player.Value, customMessage);
+         }
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_UpdateGuildMemberPermissions (int userId, int guildRankPriority, int guildPermissions) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_UpdateGuildMemberPermissions, userId, guildRankPriority, guildPermissions);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_UpdateGuildMemberPermissions (int userId, int guildRankPriority, int guildPermissions) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         player.guildRankPriority = guildRankPriority;
+         player.guildPermissions = guildPermissions;
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReplaceGuildMembersRankPriority (int guildId, int originalRankPriority, int newRankPriority, int newPermissions) {
+      InvokeClientRpcOnEveryone(Server_ReplaceGuildMembersRankPriority, guildId, originalRankPriority, newRankPriority, newPermissions);
+   }
+
+   [ClientRPC]
+   public void Server_ReplaceGuildMembersRankPriority (int guildId, int originalRankPriority, int newRankPriority, int newPermissions) {
+      foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
+         if (pair.Value.guildId == guildId && pair.Value.guildRankPriority == originalRankPriority) {
+            pair.Value.guildRankPriority = newRankPriority;
+            pair.Value.guildPermissions = newPermissions;
+         }
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_UpdateUserGuildId (int userId, int newGuildId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_UpdateUserGuildId, userId, newGuildId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_UpdateUserGuildId (int userId, int newGuildId) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         player.guildId = newGuildId;
       }
    }
 

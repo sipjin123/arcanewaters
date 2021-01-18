@@ -1114,7 +1114,7 @@ public class AdminManager : NetworkBehaviour
 
    private void spawnCustomEnemy (string parameters) {
       parameters = parameters.Trim(' ').Replace(" ", "_");
-      if (Enum.TryParse(parameters, out Enemy.Type enemyType)) {
+      if (Enum.TryParse(parameters, true, out Enemy.Type enemyType)) {
          Cmd_SpawnCustomEnemy(enemyType);
       }
    }

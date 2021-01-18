@@ -1619,6 +1619,22 @@ public class NetEntity : NetworkBehaviour
       return this.guildId > 0 && targetEntity != null && targetEntity.guildId == 0 && canPerformAction(GuildPermission.Invite);
    }
 
+   protected NetEntity getClickedBody () {
+      NetEntity entityHovered = null;
+      foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+         if (entity.isMouseOver()) {
+            entityHovered = entity;
+            break;
+         }
+      }
+
+      if (entityHovered != null) {
+         return entityHovered;
+      } else {
+         return null;
+      }
+   }
+
    protected virtual void onStartMoving () { }
    protected virtual void onEndMoving () { }
 

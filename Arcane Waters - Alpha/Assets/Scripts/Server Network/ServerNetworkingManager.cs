@@ -204,8 +204,32 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
    }
 
+   public void sendGuildChatMessage (int guildId, ChatInfo chatInfo) {
+      server.InvokeServerRpc(server.MasterServer_SendGuildChatMessage, guildId, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
+   }
+
    public void sendSpecialChatMessage (int userId, ChatInfo chatInfo) {
       server.InvokeServerRpc(server.MasterServer_SendSpecialChatMessage, userId, chatInfo.chatId, chatInfo.messageType, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.recipient, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
+   }
+
+   public void sendConfirmationMessage (ConfirmMessage.Type confirmType, int userId, string customMessage = "") {
+      server.InvokeServerRpc(server.MasterServer_SendConfirmationMessage, confirmType, userId, customMessage);
+   }
+
+   public void sendConfirmationMessageToGuild (ConfirmMessage.Type confirmType, int guildId, string customMessage = "") {
+      server.InvokeServerRpc(server.MasterServer_SendConfirmationMessageToGuild, confirmType, guildId, customMessage);
+   }
+
+   public void updateGuildMemberPermissions (int userId, int guildRankPriority, int guildPermissions) {
+      server.InvokeServerRpc(server.MasterServer_UpdateGuildMemberPermissions, userId, guildRankPriority, guildPermissions);
+   }
+
+   public void replaceGuildMembersRankPriority (int guildId, int originalRankPriority, int newRankPriority, int newPermissions) {
+      server.InvokeServerRpc(server.MasterServer_ReplaceGuildMembersRankPriority, guildId, originalRankPriority, newRankPriority, newPermissions);
+   }
+
+   public void updateUserGuildId (int userId, int newGuildId) {
+      server.InvokeServerRpc(server.MasterServer_UpdateUserGuildId, userId, newGuildId);
    }
 
    public void sendGroupInvitationNotification (int groupId, int inviterUserId, string inviterName, int inviteeUserId) {

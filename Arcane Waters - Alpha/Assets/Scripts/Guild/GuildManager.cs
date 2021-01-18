@@ -65,13 +65,7 @@ public class GuildManager : MonoBehaviour {
       }
 
       // Create the invite
-      GuildInvite invite = new GuildInvite();
-      invite.guildId = sender.guildId;
-      invite.senderId = sender.userId;
-      invite.senderName = sender.entityName;
-      invite.guildName = guildInfo.guildName;
-      invite.recipientId = recipientId;
-      invite.inviteTime = DateTime.Now.ToBinary();
+      GuildInvite invite = createInvite(sender, recipientId, guildInfo);
 
       // Make sure this invite doesn't already exist
       if (_pastInvites.Contains(invite)) {
@@ -84,6 +78,11 @@ public class GuildManager : MonoBehaviour {
 
       // Send the invite to the target
       recipient.rpc.Target_ReceiveGuildInvite(recipient.connectionToClient, invite);
+   }
+
+   public void removePastInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
+      GuildInvite invite = createInvite(sender, recipientId, guildInfo);
+      _pastInvites.Remove(invite);
    }
 
    public void acceptInviteOnClient (GuildInvite invite) {
@@ -120,6 +119,18 @@ public class GuildManager : MonoBehaviour {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, recipient, "You have joined the guild " + invite.guildName + "!");
          });
       });
+   }
+
+   protected GuildInvite createInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
+      GuildInvite invite = new GuildInvite();
+      invite.guildId = sender.guildId;
+      invite.senderId = sender.userId;
+      invite.senderName = sender.entityName;
+      invite.guildName = guildInfo.guildName;
+      invite.recipientId = recipientId;
+      invite.inviteTime = DateTime.Now.ToBinary();
+
+      return invite;
    }
 
    protected int getRecentInviteCount (int userId) {
