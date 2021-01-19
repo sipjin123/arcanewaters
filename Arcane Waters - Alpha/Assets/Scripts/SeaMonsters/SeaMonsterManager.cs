@@ -108,9 +108,11 @@ public class SeaMonsterManager : MonoBehaviour {
          hasInitialized = true;
          seaMonsterDataList = new List<SeaMonsterEntityData>();
          foreach (SeaMonsterEntityData seaMonsterData in seamonsterDataList) {
-            seaMonsterDataList.Add(seaMonsterData);
             if (!_seaMonsterData.ContainsKey(seaMonsterData.xmlId) && seaMonsterData.isXmlEnabled) {
+               seaMonsterDataList.Add(seaMonsterData);
                _seaMonsterData.Add(seaMonsterData.xmlId, seaMonsterData);
+            } else {
+               D.editorLog("Ignoring Disabled Entry: " + seaMonsterData.xmlId + " : " + seaMonsterData.seaMonsterType, Color.red);
             }
          }
       }
