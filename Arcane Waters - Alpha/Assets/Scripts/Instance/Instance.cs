@@ -537,6 +537,50 @@ public class Instance : NetworkBehaviour
       return childSeaMonster;
    }
 
+   public SeaEntity spawnSeaEnemy (SeaMonsterEntityData data, Vector3 position) {
+      Area area = AreaManager.self.getArea(this.areaKey);
+
+      SeaEntity seaEntity;
+
+      if (data.seaMonsterType == SeaMonsterEntity.Type.PirateShip) {
+         seaEntity = Instantiate(PrefabsManager.self.botShipPrefab);
+      } else {
+         seaEntity = Instantiate(PrefabsManager.self.seaMonsterPrefab);
+      }
+      
+      seaEntity.areaKey = this.areaKey;
+      seaEntity.facing = Direction.South;
+      seaEntity.transform.localPosition = position;
+      seaEntity.setAreaParent(area, true);
+      seaEntity.maxHealth = data.maxHealth;
+      seaEntity.currentHealth = data.maxHealth;
+
+      // Handle as ship
+      if (data.seaMonsterType == SeaMonsterEntity.Type.PirateShip) {
+         BotShipEntity botShip = seaEntity as BotShipEntity;
+         botShip.seaEntityData = data;
+         Ship.Type shipType = (Ship.Type) data.subVarietyTypeId;
+         botShip.shipType = shipType;
+         if (data.skillIdList.Count > 0) {
+            botShip.primaryAbilityId = data.skillIdList[0];
+         }
+
+         // All ships in the web tool currently are pirates
+         botShip.guildId = 2;
+         botShip.setShipData(data.xmlId, shipType);
+
+      // Handle as sea monster
+      } else {
+         SeaMonsterEntity seaMonster = seaEntity as SeaMonsterEntity;
+         seaMonster.monsterType = data.seaMonsterType;
+      }
+
+      InstanceManager.self.addSeaMonsterToInstance(seaEntity, this);
+      NetworkServer.Spawn(seaEntity.gameObject);
+
+      return seaEntity;
+   }
+
    #region Private Variables
 
    // The number of consecutive times we've checked this instance and found it empty

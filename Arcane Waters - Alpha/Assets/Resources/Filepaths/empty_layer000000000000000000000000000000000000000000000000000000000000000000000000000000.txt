@@ -1,1 +1,1 @@
-Assets/Resources/Sprites/Effects/cast FX/empty_layer
+Assets/Resources/Sprites/empty_layer

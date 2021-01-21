@@ -106,28 +106,6 @@ public class BotShipGenerator
       // Spawn the ship
       BotShipEntity botShip = instance.spawnBotShip(dataField, spawnPosition, area, instance.biome);
    }
-
-   public static void spawnPirate (NetEntity player) {
-      Instance instance = InstanceManager.self.getInstance(player.instanceId);
-
-      Area area = AreaManager.self.getArea(instance.areaKey);
-      if (area == null || instance == null) {
-         return;
-      }
-
-      spawnSingleBotShip(instance, area, area.pirateShipDataFields, Util.getMousePos());
-   }
-
-   public static void spawnPrivateer (NetEntity player) {
-      Instance instance = InstanceManager.self.getInstance(player.instanceId);
-
-      Area area = AreaManager.self.getArea(instance.areaKey);
-      if (area == null || instance == null) {
-         return;
-      }
-
-      spawnSingleBotShip(instance, area, area.privateerShipDataFields, Util.getMousePos());
-   }
    
    #region Private Variables
 

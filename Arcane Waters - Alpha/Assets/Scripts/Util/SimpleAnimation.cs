@@ -120,7 +120,8 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
    public void setNewTexture (Texture2D newTexture) {
       if (newTexture == ImageManager.self.blankTexture || newTexture == null) {
-         setSprite(ImageManager.self.blankSprite); 
+         setSprite(ImageManager.self.blankSprite);
+         reloadSprites(newTexture);
          toggleRenderers(false);
          return;
       }
@@ -157,6 +158,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
       return _index;
    }
 
+   public void setIndex (int index) {
+      _index = index;
+   }
+
    public void initialize () {
       _image = GetComponent<Image>();
       _renderer = GetComponent<SpriteRenderer>();
@@ -186,7 +191,6 @@ public class SimpleAnimation : ClientMonoBehaviour {
    protected void reloadSprites (Texture2D newTexture) {
       if (newTexture == ImageManager.self.blankTexture) {
          toggleRenderers(false);
-         enabled = false;
          _sprites = new Sprite []{
             ImageManager.self.blankSprite
          };
@@ -201,7 +205,7 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
    protected void changeSprite () {
       // If we've been temporarily paused, don't do anything
-      if (isPaused || !enabled) {
+      if (isPaused || !enabled || _sprites == null || getCurrentTexture() == null || getCurrentTexture() == ImageManager.self.blankTexture) {
          return;
       }
 
@@ -231,14 +235,16 @@ public class SimpleAnimation : ClientMonoBehaviour {
          _index = minIndex;
       }
 
-      if (_index > _sprites.Length) {
+      if (_sprites.Length == 1) {
+         setSprite(_sprites[0]);
+      } else if (_index > _sprites.Length) {
          string msg = string.Format("For animating {0}, the index {1} is greater than the sprite array length of {2}.", _lastLoadedTexture, _index, _sprites.Length);
          Debug.LogWarning(msg);
          return;
+      } else {
+         // Change the sprite
+         setSprite(_sprites[_index]);
       }
-
-      // Change the sprite
-      setSprite(_sprites[_index]);
 
       // Make note of the time
       _lastFrameChangeTime = Time.time;

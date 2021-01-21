@@ -155,7 +155,7 @@ public class ChatPanel : MonoBehaviour {
             inputField.text = "/";
 
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(CO_ActivateAfterDelay());
+            StartCoroutine(CO_FocusAfterDelay());
          }
       }
 
@@ -311,7 +311,7 @@ public class ChatPanel : MonoBehaviour {
       if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(CO_ActivateAfterDelay());
+            StartCoroutine(CO_FocusAfterDelay());
          }
       }
    }
@@ -657,7 +657,7 @@ public class ChatPanel : MonoBehaviour {
 
       if (!wasJustFocused()) {
          // Activate the input field in the next frame to avoid weird interactions
-         StartCoroutine(CO_ActivateAfterDelay());
+         StartCoroutine(CO_FocusAfterDelay());
       }
    }
 
@@ -761,7 +761,11 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   protected IEnumerator CO_ActivateAfterDelay () {
+   public void focusInputField () {
+      StartCoroutine(CO_FocusAfterDelay());
+   }
+
+   protected IEnumerator CO_FocusAfterDelay () {
       // Wait a frame
       yield return null;
 

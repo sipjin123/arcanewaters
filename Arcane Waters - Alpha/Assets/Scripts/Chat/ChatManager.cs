@@ -10,21 +10,6 @@ using System.Text;
 public class ChatManager : MonoBehaviour {
    #region Public Variables
 
-   // The types of chat commands
-   public enum Type {
-      None = 0,
-      Admin = 1,
-      Bug = 2,
-      Follow = 3,
-      Emote = 4,
-      Invite = 5,
-      Group = 6,
-      Officer = 7,
-      Guild = 8,
-      Complain = 9,
-      Roll = 10,
-   }
-
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
    public ChatPanel chatPanel;
 
@@ -36,21 +21,33 @@ public class ChatManager : MonoBehaviour {
    void Awake () {
       self = this;
 
-      // Add the various chat commands that we're going to allow
-      _commands.Add(Type.Admin, new List<string> { "/admin", "/a", "/ad", "/adm" });
-      _commands.Add(Type.Bug, new List<string> { "/bug" });
-      _commands.Add(Type.Follow, new List<string> { "/follow" });
-      _commands.Add(Type.Emote, new List<string> { "/emote","/em", "/e", "/emo", "/me" });
-      _commands.Add(Type.Invite, new List<string> { "/invite", "/inv" });
-      _commands.Add(Type.Group, new List<string> { "/group", "/party", "/gr", "/p" });
-      _commands.Add(Type.Officer, new List<string> { "/officer", "/off", "/of", "/o" });
-      _commands.Add(Type.Guild, new List<string> { "/guild", "/gld", "/g" });
-      _commands.Add(Type.Complain, new List<string>() { "/complain", "/report" });
-      _commands.Add(Type.Roll, new List<string>() { "/roll", "/random" });
-
       // Setup auto-complete panel
-      GameObject optionsPanel = Instantiate(new GameObject("AutoCompleteOptionsPanel"), chatPanel.inputField.transform.parent);
-      _autoCompletePanel = optionsPanel.AddComponent<AutoCompletePanel>();
+      GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-complete Panel"), chatPanel.inputField.transform.parent.parent.parent.parent);
+      _autoCompletePanel = optionsPanel.GetComponent<AutoCompletePanel>();
+   }
+
+   private void Start () {
+      // Add the various chat commands that we're going to allow
+      _commandData.Add(new CommandData("/bug", "Sends a bug report to the server", BugReportManager.self.sendBugReportToServer, parameterNames: new List<string>() { "bugInformation" }));
+      _commandData.Add(new CommandData("/emote", "Performs an emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
+      _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
+      _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
+      _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer priveleges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
+      _commandData.Add(new CommandData("/guild", "Executes a guild command", sendGuildMessageToServer, parameterNames: new List<string>() { "guildCommand" }));
+      _commandData.Add(new CommandData("/complain", "Sends a complaint about a user", sendComplainToServer, parameterNames: new List<string>() { "userName", "details" }));
+      _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
+   }
+
+   public void addAdminCommand (AdminManager adminManager) {
+      CommandData adminCommand = _commandData.Find((x) => x.getPrefix() == "/admin");
+      if (adminCommand == null) {
+         _commandData.Add(new CommandData("/admin", "Executes an admin command, if you have admin priveleges", noAdminCommandFound, parameterNames: new List<string>() { "adminCommand" }));
+      }
+   }
+
+   public bool hasAdminCommands () {
+      CommandData adminCommand = _commandData.Find((x) => x.getPrefix() == "/admin");
+      return (adminCommand != null);
    }
 
    public void addChat (string message, ChatInfo.Type chatType) {
@@ -63,6 +60,10 @@ public class ChatManager : MonoBehaviour {
       addChatInfo(chatInfo);
    }
 
+   private void noAdminCommandFound (string command) {
+      ChatManager.self.addChat("Couldn't find command: " + command, ChatInfo.Type.System);
+   }
+
    public void addChatInfo (ChatInfo chatInfo) {
       // Store it locally
       _chats.Add(chatInfo);
@@ -71,6 +72,22 @@ public class ChatManager : MonoBehaviour {
       if (chatPanel != null) {
          chatPanel.addChatInfo(chatInfo);
       }
+   }
+
+   public void sendEmoteMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Emote);
+   }
+
+   public void sendGroupMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Group);
+   }
+
+   public void sendOfficerMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Officer);
+   }
+
+   public void sendGuildMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Guild);
    }
 
    public void sendMessageToServer (string message, ChatInfo.Type chatType) {
@@ -120,7 +137,7 @@ public class ChatManager : MonoBehaviour {
    }
 
    public string extractComplainNameFromChat (string message) {
-      foreach (string command in _commands[Type.Complain]) {
+      foreach (string command in ChatUtil.commandTypePrefixes[CommandType.Complain]) {
          message = message.Replace(command + " ", "");
       }
 
@@ -137,7 +154,7 @@ public class ChatManager : MonoBehaviour {
    }
 
    public string extractComplainMessageFromChat (string message, string username) {
-      foreach (string command in _commands[Type.Complain]) {
+      foreach (string command in ChatUtil.commandTypePrefixes[CommandType.Complain]) {
          message = message.Replace(command, "");
       }
 
@@ -148,31 +165,14 @@ public class ChatManager : MonoBehaviour {
       return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
    }
 
-   private void Update () {
-      // Pressing tab will auto-fill the selected auto-complete
-      if (Input.GetKeyDown(KeyCode.Tab) && _autoCompletePanel.isActive()) {
-         string autoComplete = _autoCompletePanel.getSelectedCommand();
-         chatPanel.inputField.text = autoComplete;
-         chatPanel.inputField.MoveTextEnd(false);
-      }
-
-      if (Input.GetKeyDown(KeyCode.UpArrow) && _autoCompletePanel.isActive()) {
-         _autoCompletePanel.moveSelection(moveUp: true);
-         chatPanel.inputField.MoveTextEnd(false);
-      }
-
-      if (Input.GetKeyDown(KeyCode.DownArrow) && _autoCompletePanel.isActive()) {
-         _autoCompletePanel.moveSelection(moveUp: false);
-         chatPanel.inputField.MoveTextEnd(false);
-      }
-   }
-
    public void onChatLostFocus () {
-      _autoCompletePanel.setAutoCompletes(null);
+      _autoCompletePanel.inputFieldFocused = false;
+      _autoCompletePanel.updatePanel();
    }
 
    public void onChatGainedFocus () {
-      tryAutoCompleteChatCommand(chatPanel.inputField.text);
+      _autoCompletePanel.inputFieldFocused = true;
+      _autoCompletePanel.updatePanel();
    }
 
    public void processChatInput (string textToProcess) {
@@ -190,57 +190,18 @@ public class ChatManager : MonoBehaviour {
 
    public void onChatInputValuechanged (string inputString) {
       Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
-      tryAutoCompleteChatCommand(inputString);
+      tryAutoCompleteChatCommand();
    }
 
    protected void executeChatCommand (string message) {
-      string prefix = "";
-      Type type = Type.None;
-
-      // Separate out just the command part
-      string messageCommand = message.Split(' ')[0];
-
-      // Cycle over each of the command types
-      foreach (Type t in System.Enum.GetValues(typeof(Type))) {
-         // Make sure there's actually an entry for said command
-         if (_commands.ContainsKey(t)) {
-            // Figure out which version of the command they used, so we can strip it out
-            foreach (string command in _commands[t]) {
-               if (command == messageCommand) {
-                  type = t;
-                  prefix = command;
-                  break;
-               }
-            }
+      foreach (CommandData command in _commandData) {
+         if (command.matchesInput(message, mustEqual: true)) {
+            string prefix = command.getPrefix();
+            string trimmedMessage = message.Remove(0, prefix.Length);
+            trimmedMessage = trimmedMessage.Trim();
+            command.invoke(trimmedMessage);
+            return;
          }
-      }
-
-      // Check if we actually found a corresponding command type
-      if (prefix == "" || type == Type.None) {
-         D.debug("Unrecognized command.");
-         return;
-      }
-
-      string trimmedMessage = message.Remove(0, prefix.Length).Trim();
-
-      if (type == Type.Bug) {
-         BugReportManager.self.sendBugReportToServer(trimmedMessage);
-      } else if (type == Type.Admin) {
-         Global.player.admin.handleAdminCommandString(trimmedMessage);
-      } else if (type == Type.Emote) {
-         sendMessageToServer(trimmedMessage, ChatInfo.Type.Emote);
-      } else if (type == Type.Invite) {
-         VoyageGroupManager.self.handleInviteCommand(trimmedMessage);
-      } else if (type == Type.Group) {
-         sendMessageToServer(trimmedMessage, ChatInfo.Type.Group);
-      } else if (type == Type.Officer) {
-         sendMessageToServer(trimmedMessage, ChatInfo.Type.Officer);
-      } else if (type == Type.Guild) {
-         sendMessageToServer(trimmedMessage, ChatInfo.Type.Guild);
-      } else if (type == Type.Complain) {
-         sendComplainToServer(message);
-      } else if (type == Type.Roll) {
-         sendRollToServer(trimmedMessage);
       }
    }
 
@@ -311,42 +272,27 @@ public class ChatManager : MonoBehaviour {
       return ChatPanel.self.inputField.isFocused;
    }
 
-   private void tryAutoCompleteChatCommand (string inputString) {
-      if (!inputString.StartsWith("/")) {
-         _autoCompletePanel.setAutoCompletes(null);
-         return;
-      }
+   public void addCommand (CommandData newCommand) {
+      _commandData.Add(newCommand);
+   }
 
-      string[] inputParts = inputString.Split(' ');
+   public void tryAutoCompleteChatCommand () {
+      string inputString = chatPanel.inputField.text;
 
-      List<string> possibleCommands = new List<string>();
-      List<string> autoCompletes = new List<string>();
+      List<CommandData> autoCompleteCommands = new List<CommandData>();
 
-      // Handle as an admin command
-      if (_commands[Type.Admin].Contains(inputParts[0]) && inputParts.Length > 1) {
-         autoCompletes = Util.getAutoCompletes(inputParts[1], new List<string>(Global.player.admin.getCommandList().Values), "/admin ");
-      
-      // Handle as a regular command
-      } else {
-         // Check each command type
-         foreach (Type t in System.Enum.GetValues(typeof(Type))) {
-            // Make sure there's actually an entry for said command
-            if (_commands.ContainsKey(t)) {
-               possibleCommands.Add(_commands[t][0]);
-            }
+      foreach (CommandData command in _commandData) {
+         if (command.matchesInput(inputString, mustEqual: false)) {
+            autoCompleteCommands.Add(command);
          }
-
-         autoCompletes = Util.getAutoCompletes(inputString, possibleCommands);
       }
 
-      _autoCompletePanel.resetSelection();
-      _autoCompletePanel.setAutoCompletes(autoCompletes);
+      _autoCompletePanel.setAutoCompletes(autoCompleteCommands);
    }
 
    #region Private Variables
 
-   // The commands available to the user through the chat prompt
-   protected Dictionary<Type, List<string>> _commands = new Dictionary<Type, List<string>>();
+   protected List<CommandData> _commandData = new List<CommandData>();
 
    // A list of all of the messages we've received
    protected List<ChatInfo> _chats = new List<ChatInfo>();

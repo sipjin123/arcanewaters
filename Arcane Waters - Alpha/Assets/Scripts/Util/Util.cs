@@ -1112,9 +1112,13 @@ public class Util : MonoBehaviour {
       List<string> autoCompletes = new List<string>();
 
       foreach (string possibility in possibilities) {
-         // We won't accept the same string as a valid auto-complete
-         if (possibility.StartsWith(input) && possibility != input) {
-            autoCompletes.Add(prefix + possibility);
+         if (possibility.StartsWith(input)) {
+            // If the input matches the possibility, make this the bottom of the list
+            if (possibility == input) {
+               autoCompletes.Insert(0, prefix + possibility);
+            } else {
+               autoCompletes.Add(prefix + possibility);
+            }
          }
       }
 
@@ -1127,6 +1131,12 @@ public class Util : MonoBehaviour {
       float k = -4 * apex / (width * width);
       float y = k * t * (t - width);
       return y;
+   }
+
+   public static float getNormalisedScrollValue (int selectedIndex, int numItems) {
+      // Calculates the value required to position a scroll view, in order to have a specific item visible
+      float verticalPosition = 1.0f - Mathf.Clamp01((float)(selectedIndex) / (float) (numItems - 1));
+      return verticalPosition;
    }
 
    // A Random instance we can use for generating random numbers
