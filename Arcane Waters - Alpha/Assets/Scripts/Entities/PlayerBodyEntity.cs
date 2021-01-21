@@ -6,6 +6,7 @@ using Mirror;
 using System.Linq;
 using System.Threading;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHandler
 {
@@ -83,8 +84,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // The dust particle when sprinting
    public ParticleSystem dustTrailParticleObj;
 
-   // Cooldown variables
-   public const float jumpCooldownMax = .5f;
+   // How long the jump takes to execute
+   public const float JUMP_DURATION = 0.5f;
+
+   // How long the player has to wait after completing a jump, before they can jump again
+   public const float JUMP_COOLDOWN = 0.1f;
 
    // Sprinting animator parameter name
    public const string IS_SPRINTING = "isSprinting";
@@ -117,6 +121,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // Any time out sprite changes, we need to regenerate our outline
       _outline.recreateOutlineIfVisible();
 
+      updateJumpHeight();
+
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
          if (getVelocity().magnitude > NETWORK_PLAYER_SPEEDUP_MAGNITUDE) {
             foreach (Animator animator in dashAnimators) {
@@ -143,6 +149,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
+      if (entityNameGO.GetComponent<TextMeshProUGUI>().text != null) {
+         showEntityName();
+      }
       if (guildIcon != null) {
          showGuildIcon();
       }
@@ -152,6 +161,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if ((guildIcon != null) && (!OptionsPanel.allGuildIconsShowing)) {
          GetComponent<PlayerBodyEntity>().hideGuildIcon();
       }
+      hideEntityName();
    }
 
    private void handleShortcutsInput () {
@@ -169,9 +179,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void processJumpLogic () {
+   private void updateJumpHeight () {
       float y = spritesTransform.localPosition.y;
 
+      // Updates the current jump height
+      if (isJumping()) {
+         float timeSinceJumpStart = (float) (NetworkTime.time - _jumpStartTime);
+         y = Util.getPointOnParabola(jumpUpMagnitude, JUMP_DURATION, timeSinceJumpStart);
+         y = Mathf.Clamp(y, 0.0f, float.MaxValue);
+
+         float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
+         shadow.transform.localScale = _shadowInitialScale * newShadowScale;
+      }
+      else {
+         y = 0.0f;
+      }
+
+      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
+      windDashSprite.localPosition = Vector3.up * y;
+   }
+
+   private void processJumpLogic () {
       // Blocks movement when unit is jumping over an obstacle
       if (isJumpingOver) {
          // Interpolates from source location to target location
@@ -196,18 +224,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      // Updates the current jump height
-      if (isJumping) {
-         float timeSinceJumpStart = (float)(NetworkTime.time - _jumpStartTime);
-         y = Util.getPointOnParabola(jumpUpMagnitude, jumpCooldownMax, timeSinceJumpStart);
-         y = Mathf.Clamp(y, 0.0f, float.MaxValue);
-
-         float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
-         shadow.transform.localScale = _shadowInitialScale * newShadowScale;
-      }
-
-      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
-
       if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater() && isLocalPlayer) {
          // Adjust the collider pivot
          int currentAngle = 0;
@@ -227,22 +243,37 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          Collider2D[] jumpEndCollidedEntries = Physics2D.OverlapCircleAll(jumpEndCollider.transform.position, jumpEndColliderScale);
          */
 
-         if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast
-             || facing == Direction.West || facing == Direction.SouthWest || facing == Direction.NorthWest) {
-            requestAnimationPlay(Anim.Type.NC_Jump_East);
-            Cmd_JumpAnimation(Anim.Type.NC_Jump_East);
-            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
-         } else if (facing == Direction.North) {
-            requestAnimationPlay(Anim.Type.NC_Jump_North);
-            Cmd_JumpAnimation(Anim.Type.NC_Jump_North);
-            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
-         } else if (facing == Direction.South) {
-            requestAnimationPlay(Anim.Type.NC_Jump_South);
-            Cmd_JumpAnimation(Anim.Type.NC_Jump_South);
-            //jumpOver(obstacleCollidedEntries, jumpEndCollidedEntries);
+         // Jump straight away locally
+         if (isLocalPlayer) {
+            _jumpStartTime = NetworkTime.time;
+            playJumpAnimation();
          }
+
+         Cmd_NoteJump();
+      }
+   }
+
+   private void playJumpAnimation () {
+      if (facing == Direction.North) {
+         requestAnimationPlay(Anim.Type.NC_Jump_North);
+      }
+      else if (facing == Direction.South) {
+         requestAnimationPlay(Anim.Type.NC_Jump_South);
+      } else {
+         requestAnimationPlay(Anim.Type.NC_Jump_East);
+      }
+   }
+
+   [Command]
+   private void Cmd_NoteJump () {
+      Rpc_NoteJump();
+   }
+
+   [ClientRpc]
+   private void Rpc_NoteJump () {
+      if (!isLocalPlayer) {
          _jumpStartTime = NetworkTime.time;
-         isJumping = true;
+         playJumpAnimation();
       }
    }
 
@@ -396,31 +427,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
-   private void updateSprintEffects (bool isOn) {
-      // Handle sprite effects
-      if (isOn) {
-         windDashSprite.localPosition = new Vector3(0, 0, facing == Direction.South ? windDashZOffset : -windDashZOffset);
-
-         setDustParticles(true);
-
-         foreach (Animator dashAnimator in dashAnimators) {
-            dashAnimator.speed = ANIM_SPEEDUP_VALUE;
-         }
-         foreach (Animator animator in animators) {
-            animator.speed = ANIM_SPEEDUP_VALUE;
-         }
-      } else {
-         setDustParticles(false);
-      }
-
-      foreach (Animator animator in animators) {
-         animator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
-      }
-      foreach (Animator dashAnimator in dashAnimators) {
-         dashAnimator.speed = isOn ? ANIM_SPEEDUP_VALUE : 1;
-      }
-   }
-
    public override void resetCombatInit () {
       base.resetCombatInit();
       Rpc_ResetMoveDisable();
@@ -444,23 +450,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       jumpOverWorldLocation = new Vector2(worldLocation.x, worldLocation.y);
       isJumpingOver = true;
       requestAnimationPlay((Anim.Type) direction);
-   }
-
-   [Command]
-   public void Cmd_JumpAnimation (Anim.Type animType) {
-      Rpc_JumpAnimation(animType);
-   }
-
-   [ClientRpc]
-   public void Rpc_JumpAnimation (Anim.Type animType) {
-      if (!isJumpCoolingDown()) {
-         if (!isLocalPlayer) {
-            isJumping = true;
-            _jumpStartTime = NetworkTime.time;
-         }
-
-         requestAnimationPlay(animType);
-      }
    }
 
    private void interactNearestLoot (List<TreasureChest> chestList) {
@@ -539,7 +528,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    public bool isJumpCoolingDown () {
       float timeSinceLastJump = (float)(NetworkTime.time - _jumpStartTime);
-      return (timeSinceLastJump < jumpCooldownMax);
+      return (timeSinceLastJump < (JUMP_DURATION + JUMP_COOLDOWN));
+   }
+
+   public bool isJumping () {
+      float timeSinceLastJump = (float) (NetworkTime.time - _jumpStartTime);
+      return (timeSinceLastJump < JUMP_DURATION);
    }
 
    #region Private Variables

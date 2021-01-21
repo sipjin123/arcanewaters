@@ -32,6 +32,9 @@ public class AchievementData
    // The path of the icon
    public string iconPath;
 
+   // The path of the locked icon
+   public string lockedIconPath;
+
    // Dictates the level of achievement such as (Beginner Level x1 / Mid Level Achievement x5/ High level achievement 100x)
    public int tier = 1;
 
@@ -72,8 +75,9 @@ public class AchievementData
       newData.count = copy.count;
       newData.achievementUniqueID = copy.achievementUniqueID;
       newData.itemType = copy.itemType;
-      newData.itemCategory = copy.itemCategory; ;
+      newData.itemCategory = copy.itemCategory;
       newData.iconPath = copy.iconPath;
+      newData.lockedIconPath = copy.lockedIconPath;
       newData.tier = copy.tier;
       return newData;
    }

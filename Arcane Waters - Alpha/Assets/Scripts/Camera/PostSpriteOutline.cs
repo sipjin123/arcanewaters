@@ -21,6 +21,8 @@ public class PostSpriteOutline : MonoBehaviour
 
    private void Start () {
       CameraManager.self.resolutionChanged += updateQuadSize;
+      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
+
       updateQuadSize();
       cleanup();
    }
@@ -45,6 +47,16 @@ public class PostSpriteOutline : MonoBehaviour
       self = this;      
    }
 
+   private void updatePixelSize () {
+      // We'll update the pixel size using the new camera size
+      int pixelSize = CameraManager.self != null ? CameraManager.getCurrentPPUScale() : DEFAULT_PIXEL_SIZE;
+
+      // Make sure we have a valid pixelSize value
+      pixelSize = pixelSize > 0 ? pixelSize : DEFAULT_PIXEL_SIZE;
+
+      _quadRenderer.material.SetFloat(_pixelSizePropertyID, pixelSize);
+   }
+
    private void Update () {
       Camera cam = CameraManager.getCurrentCamera();
 
@@ -57,6 +69,8 @@ public class PostSpriteOutline : MonoBehaviour
       scale.x = orthographicSize * 2 * Screen.width / Screen.height;
 
       transform.localScale = scale;
+
+      updatePixelSize();
    }
 
    private void LateUpdate () {
@@ -165,10 +179,6 @@ public class PostSpriteOutline : MonoBehaviour
    [SerializeField]
    private ShaderSpriteOutline _currentOutline;
 
-   // The shader that draws the outline of objects
-   [SerializeField]
-   private Shader _outlinesShader;
-         
    // The quad we use for displaying the outline
    [SerializeField]
    private MeshRenderer _quadRenderer;
@@ -181,6 +191,12 @@ public class PostSpriteOutline : MonoBehaviour
 
    // All the cameras using the buffer
    private Dictionary<Camera, CommandBuffer> _cameras = new Dictionary<Camera, CommandBuffer>();
+
+   // The property ID of the "_PixelSize" property
+   private int _pixelSizePropertyID;
+
+   // The default pixel size if an invalid PPU scale is provided
+   public const int DEFAULT_PIXEL_SIZE = 4;
 
    #endregion
 }

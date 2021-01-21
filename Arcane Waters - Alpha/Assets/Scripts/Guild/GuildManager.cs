@@ -50,7 +50,11 @@ public class GuildManager : MonoBehaviour {
    }
 
    public void handleInvite (NetEntity sender, int recipientId, GuildInfo guildInfo) {
-      BodyEntity recipient = BodyManager.self.getBody(recipientId);
+      NetEntity recipient = EntityManager.self.getEntity(recipientId);
+      if (recipient == null) {
+         D.error("Guild invite recipient couldn't be found");
+         return;
+      }
 
       // Make sure the sender is in a guild and the recipient is not
       if (sender.guildId == 0 || recipient.guildId != 0) {

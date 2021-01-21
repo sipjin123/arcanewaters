@@ -1086,7 +1086,6 @@ MonoBehaviour:
   battleId: 0
   voyageGroupId: -1
   hasEnteredPvP: 0
-  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 
@@ -1120,6 +1119,7 @@ MonoBehaviour:
   projectileSpawnLocations: []
   colliderList:
   - {fileID: 20112}
+  entityNameGO: {fileID: 7471511516067433114}
   currentImpactMagnitude: 0
   shipType: 100
   skinType: 0
@@ -1190,6 +1190,8 @@ MonoBehaviour:
   maxBoostEffectAnimation: {fileID: 3476353292930757795}
   shipBoostSpriteSwapFront: {fileID: 8177799164720691564}
   shipBoostSpriteSwapBack: {fileID: 4726464375513170578}
+  entityNameGO: {fileID: 7471511516067433114}
+  guildIconGO: {fileID: 7314133842329601583}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -3079,7 +3081,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 7
-  m_Spacing: 0
+  m_Spacing: 1
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -6510,6 +6512,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
+--- !u!1 &7314133842329601583 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5642681577568405534, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 3156971687042551345}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7802847736162781427 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -6522,7 +6530,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 3156971687042551345}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 7314133842329601583}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}

@@ -26,7 +26,21 @@ public class SpriteLayer : RecoloredSprite {
    }
 
    public SpriteSwap getSpriteSwap () {
-      return _spriteSwap ?? (_spriteSwap = GetComponent<SpriteSwap>());
+      return _spriteSwap != null ? _spriteSwap : (_spriteSwap = GetComponent<SpriteSwap>());
+   }
+
+   public SimpleAnimation getSimpleAnimation () {
+      return _simpleAnimation != null ? _simpleAnimation : (_simpleAnimation = GetComponent<SimpleAnimation>());
+   }
+
+   public void setTexture (Texture2D newTexture) {
+      getSpriteSwap().newTexture = newTexture;
+
+      SimpleAnimation animation = getSimpleAnimation();
+      
+      if (animation != null) {
+         animation.setNewTexture(newTexture);
+      }
    }
 
    protected IEnumerator CO_SwapTexture (Texture2D newTexture) {
@@ -40,11 +54,12 @@ public class SpriteLayer : RecoloredSprite {
          Texture2D emptySprite = ImageManager.getTexture("Assets/Sprites/empty_layer");
 
          // Set the new texture and wait another frame
-         GetComponent<SpriteSwap>().newTexture = emptySprite;
+         setTexture(emptySprite);
       } else {
          // Set the new texture and wait another frame
-         GetComponent<SpriteSwap>().newTexture = newTexture;
+         setTexture(newTexture);
       }
+
       yield return new WaitForEndOfFrame();
 
       // Now we can enable the sprite again
@@ -68,6 +83,9 @@ public class SpriteLayer : RecoloredSprite {
 
    // The sprite swap used for animated sprites
    protected SpriteSwap _spriteSwap;
+
+   // The simple animation component
+   protected SimpleAnimation _simpleAnimation;
 
    // The stencil reference ID used for hiding hair behind the hat
    protected const int HAT_STENCIL_ID = 3;

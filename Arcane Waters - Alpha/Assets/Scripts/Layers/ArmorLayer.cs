@@ -20,7 +20,7 @@ public class ArmorLayer : SpriteLayer {
       Texture2D result = ImageManager.getTexture(path);
 
       if (immediate) {
-         getSpriteSwap().newTexture = result;
+         setTexture(result);
       } else {
          StartCoroutine(CO_SwapTexture(result));
       }

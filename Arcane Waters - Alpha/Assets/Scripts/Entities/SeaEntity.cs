@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DigitalRuby.LightningBolt;
 using Mirror;
 using System;
+using TMPro;
 
 public class SeaEntity : NetEntity
 {
@@ -48,6 +49,7 @@ public class SeaEntity : NetEntity
    public List<Collider2D> colliderList;
 
    // Cache the impact type of the ability
+
    public Attack.ImpactMagnitude currentImpactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
@@ -326,6 +328,17 @@ public class SeaEntity : NetEntity
    }
 
    [ClientRpc]
+   public void Rpc_ShowDamageTaken (int damage, bool shakeCamera) {
+      // Show the damage text
+      ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(Attack.Type.None), transform.position, Quaternion.identity);
+      damageText.setDamage(damage);
+
+      if (shakeCamera && isLocalPlayer) {
+         CameraManager.shakeCamera();
+      }
+   }
+
+   [ClientRpc]
    public void Rpc_ShowTerrainHit (Vector3 pos, Attack.ImpactMagnitude impactMagnitude) {
       if (Util.hasLandTile(pos)) {
          Instantiate(PrefabsManager.self.requestCannonSmokePrefab(impactMagnitude), pos, Quaternion.identity);
@@ -411,8 +424,11 @@ public class SeaEntity : NetEntity
 
       updateSprites();
 
+      // Assign the ship name
       if (!Util.isEmpty(this.entityName)) {
-         this.nameText.text = this.entityName;
+         entityNameGO.SetActive(true);
+         entityNameGO.GetComponentInChildren<TextMeshProUGUI>(true).text = this.entityName;
+         entityNameGO.SetActive(false);
       }
    }
 

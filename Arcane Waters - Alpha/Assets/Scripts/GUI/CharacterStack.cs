@@ -119,6 +119,20 @@ public class CharacterStack : MonoBehaviour {
       } else {
          updateHats(info.gender, hatData.hatType, hatData.palettes, updatePalettes);
       }
+
+      synchronizeAnimationIndexes();
+   }
+
+   public void synchronizeAnimationIndexes () {
+      int index = bodyLayer.getSimpleAnimation().getIndex();
+
+      eyesLayer.getSimpleAnimation().setIndex(index);
+      armorLayer.getSimpleAnimation().setIndex(index);
+      hairBackLayer.getSimpleAnimation().setIndex(index);
+      hairFrontLayer.getSimpleAnimation().setIndex(index);
+      weaponBackLayer.getSimpleAnimation().setIndex(index);
+      weaponFrontLayer.getSimpleAnimation().setIndex(index);
+      hatLayer.getSimpleAnimation().setIndex(index);
    }
 
    public void updateLayers (NetEntity entity) {
@@ -133,6 +147,8 @@ public class CharacterStack : MonoBehaviour {
       updateArmor(entity.gender,  armor.itemTypeId, armor.paletteNames);
       updateWeapon(entity.gender, weapon.itemTypeId, weapon.paletteNames);
       updateHats(entity.gender, hat.itemTypeId, hat.paletteNames);
+      
+      synchronizeAnimationIndexes();
    }
 
    public void updateWeapon (Gender.Type gender, int weaponType, string palettes, bool updatePalettes = true) {

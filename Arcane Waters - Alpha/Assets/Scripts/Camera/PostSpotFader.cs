@@ -25,8 +25,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _spotPositionPropertyID = Shader.PropertyToID("_SpotPosition");
       _screenSizePropertyID = Shader.PropertyToID("_ScreenSize");
       _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
-
-      createMaterialIfNull();
    }
 
 #if UNITY_EDITOR
@@ -59,7 +57,7 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       // Make sure we have a valid pixelSize value
       pixelSize = pixelSize > 0 ? pixelSize : DEFAULT_PIXEL_SIZE;
             
-      Shader.SetGlobalInt(_pixelSizePropertyID, pixelSize);
+      _material.SetFloat(_pixelSizePropertyID, pixelSize);
    }
 
    private void updateScreenSize () {
@@ -77,8 +75,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    private void Update () {
       // Update these values every frame in the Editor for easier tweaking
       if (!Application.isPlaying || _enableEditInPlaymode) {
-         createMaterialIfNull();
-
          _material.SetFloat("_Progress", _effectProgress);
          _material.SetVector("_SpotPosition", _spotScreenPosition);
          _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
@@ -93,19 +89,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       _material.SetFloat(_effectProgressPropertyID, _effectProgress);
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
       Graphics.Blit(source, destination, _material);
-   }
-
-   private void createMaterialIfNull () {
-      if (_shader == null) {
-         _shader = Shader.Find("Effects/SpotFader");
-      }
-
-      if (_material == null) {
-         _material = new Material(_shader);
-         _material.SetFloat(_effectProgressPropertyID, _effectProgress);
-         _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
-         _material.SetFloat("_DitherPercent", _ditherAmount);
-      }
    }
 
    public float fadeIn () {
@@ -152,10 +135,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    }
 
    #region Private Variables
-
-   // The shader with the post-processing effect
-   [SerializeField]
-   private Shader _shader;
 
    // The progress of the effect
    [SerializeField, Range(0, 1)]

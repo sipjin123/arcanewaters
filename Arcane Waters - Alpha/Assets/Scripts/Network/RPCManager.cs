@@ -1637,16 +1637,16 @@ public class RPCManager : NetworkBehaviour {
                         QuestStatusInfo requiredNodeStatus = databaseQuestStatusList.Find(_ => _.questNodeId == xmlQuestNode.questNodeLevelRequirement);
                         if (requiredNodeStatus.questDialogueId < xmlQuestNode.questDialogueNodes.Length) {
                            removeNodeList.Add(xmlQuestNode);
-                        } 
-                     } 
+                        }
+                     }
 
                      // Remove the quest that has a dialogue id greater than the dialogue length, meaning the quest is completed
-                     if (databaseQuestStatus.questDialogueId > xmlQuestNode.questDialogueNodes.Length) {
+                     if (databaseQuestStatus.questDialogueId >= xmlQuestNode.questDialogueNodes.Length) {
                         removeNodeList.Add(xmlQuestNode);
                      }
 
                      // Remove the quest that requires a certain level requirement
-                     if (xmlQuestNode.questNodeLevelRequirement > highestQuestNodeValue.questNodeId) {
+                     if (xmlQuestNode.questNodeLevelRequirement >= highestQuestNodeValue.questNodeId) {
                         removeNodeList.Add(xmlQuestNode);
                      }
                   }
@@ -3896,7 +3896,7 @@ public class RPCManager : NetworkBehaviour {
    #region Spawn Sea Entities
 
    [Command]
-   public void Cmd_SpawnPirateShip (Vector2 spawnPosition) {
+   public void Cmd_SpawnPirateShip (Vector2 spawnPosition, int guildID) {
       BotShipEntity bot = Instantiate(PrefabsManager.self.botShipPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -3905,7 +3905,19 @@ public class RPCManager : NetworkBehaviour {
       bot.shipType = (Ship.Type) shipTypes.GetValue(Random.Range(0, shipTypes.Length));
       bot.speed = Ship.getBaseSpeed(bot.shipType);
       bot.attackRangeModifier = Ship.getBaseAttackRange(bot.shipType);
-      bot.entityName = "Pirate";
+
+      // Assign ship size to spawned ship
+      ShipData shipData = ShipDataManager.self.getShipData(bot.shipType);
+      bot.shipSize = shipData.shipSize;
+
+      // Add ship to pirate guild or privateer guild
+      if (guildID == BotShipEntity.PIRATES_GUILD_ID) {
+         bot.entityName = "Pirate";
+         bot.guildId = BotShipEntity.PIRATES_GUILD_ID;
+      } else if (guildID == BotShipEntity.PRIVATEERS_GUILD_ID) {
+         bot.entityName = "Privateer";
+         bot.guildId = BotShipEntity.PRIVATEERS_GUILD_ID;
+      }
 
       // Set up the movement route
       // Area area = AreaManager.self.getArea(bot.areaType);
@@ -3991,6 +4003,14 @@ public class RPCManager : NetworkBehaviour {
 
       Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       instance.entities.Add(bot);
+   }
+
+   [Command]
+   public void Cmd_SpawnSeaMine (Vector2 spawnPosition) {
+      SeaMine seaMine = Instantiate(PrefabsManager.self.seaMinePrefab, spawnPosition, Quaternion.identity);
+      seaMine.instanceId = _player.instanceId;
+
+      NetworkServer.Spawn(seaMine.gameObject);
    }
 
    #endregion

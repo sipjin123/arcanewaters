@@ -157,9 +157,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public bool hasEnteredPvP = false;
 
-   // If this entity is jumping
-   public bool isJumping = false;
-
    // The house layout for this user, if chosen
    [SyncVar]
    public int customHouseBaseId;
@@ -213,6 +210,9 @@ public class NetEntity : NetworkBehaviour
 
    // Reference to the parent transform of status effect icons
    public Transform statusEffectContainer;
+
+   // GameObject that holds the name of the entity
+   public GameObject entityNameGO;
 
    // The speed multiplied when speed boosting
    public static float SPEEDUP_MULTIPLIER_SHIP = 1.5f;
@@ -596,6 +596,18 @@ public class NetEntity : NetworkBehaviour
       guildIconCanvasGroup.interactable = false;
       guildIconCanvasGroup.blocksRaycasts = false;
    }
+   
+   public void showEntityName () {
+      if (entityNameGO != null) {
+         entityNameGO.SetActive(true);
+      }
+   }
+
+   public void hideEntityName () {
+      if (entityNameGO != null) {
+         entityNameGO.SetActive(false);
+      }
+   }
 
    public bool isMale () {
       return gender == Gender.Type.Male;
@@ -682,7 +694,6 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
-               isJumping = false;
                shadow.transform.localScale = _shadowInitialScale;
                animator.SetBool("jump", false);
                SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID);

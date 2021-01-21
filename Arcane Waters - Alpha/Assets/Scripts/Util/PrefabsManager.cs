@@ -79,6 +79,9 @@ public class PrefabsManager : MonoBehaviour {
    // The prefab we use for creating server-controlled cannonballs
    public ServerCannonBall serverCannonBallPrefab;
 
+   // The prefab we use for sea mines
+   public SeaMine seaMinePrefab;
+
    [Header("Text Prefabs")]
    // The Prefab we use for creating Damage text
    public ShipDamageText shipDamageTextPrefab;

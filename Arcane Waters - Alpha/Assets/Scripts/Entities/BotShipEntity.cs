@@ -23,6 +23,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // Determines if this ship is spawned at debug mode
    public bool isDebug = false;
 
+   // The radius of which we'll pick new points to patrol to, when there is no treasure sites in the map
+   public float newWaypointsRadius = 10.0f;
+
    // The radius of which we'll pick new points to patrol to
    public float patrolingWaypointsRadius = 1.0f;
 
@@ -127,6 +130,12 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
       } else {
+         // Use treasure site only in maps with more than two treasure sites
+         System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
+         if (_treasureSitesInArea != null && _treasureSitesInArea.Count > 1) {
+            findingFunction = findTreasureSiteVicinityPosition;
+         }
+
          if (_isChasingEnemy) {
             _currentSecondsBetweenPatrolRoutes = 0.0f;
             _currentSecondsPatroling = 0.0f;
@@ -134,9 +143,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             if (_currentPath != null) {
                _currentPath.Clear();
             }
-            findAndSetPath_Asynchronous(findTreasureSiteVicinityPosition(true));
+            findAndSetPath_Asynchronous(findingFunction(true));
          }
-         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findTreasureSiteVicinityPosition);
+         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
       }
 
       bool wasChasingLastFrame = _isChasingEnemy;
@@ -221,6 +230,29 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             ++_currentPathIndex;
          }
       }
+   }
+
+   [Server]
+   private Vector3 findRandomVicinityPosition (bool placeholder) {
+      const int MAX_RETRIES = 5;
+
+      Vector3 start = _body.transform.position;
+      GraphNode nodeStart = AstarPath.active.GetNearest(start, NNConstraint.Default).node;
+
+      // If ship is near original position - try to find new distant location to move to
+      if (Vector2.Distance(start, _originalPosition) < 1.0f) {
+         for (int i = 0; i < MAX_RETRIES; i++) { 
+            Vector3 end = findPositionAroundPosition(start, newWaypointsRadius);
+            GraphNode nodeEnd = AstarPath.active.GetNearest(end, NNConstraint.Default).node;
+
+            if (PathUtilities.IsPathPossible(nodeStart, nodeEnd)) {
+               return (Vector3) nodeEnd.position;
+            }
+         }
+      } 
+
+      // Otherwise - go back to original location of the ship
+      return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
    }
 
    [Server]

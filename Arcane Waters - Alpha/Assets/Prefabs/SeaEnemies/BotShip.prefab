@@ -328,6 +328,7 @@ MonoBehaviour:
   colliderList:
   - {fileID: 58256050713667648}
   - {fileID: 6938392427603369774}
+  entityNameGO: {fileID: 1761187325245707246}
   currentImpactMagnitude: 0
   shipType: 101
   skinType: 0
@@ -362,6 +363,7 @@ MonoBehaviour:
     seaMonsterType: 0
     attackType: 0
     xmlId: 0
+    isXmlEnabled: 0
     subVarietyTypeId: -1
     showDebugGizmo: 0
     isAggressive: 0

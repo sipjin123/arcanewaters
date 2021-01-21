@@ -87,9 +87,6 @@ public class EquipmentXMLManager : MonoBehaviour {
 
    private void finishedLoading () {
       loadedAllEquipment = true;
-      if (Global.player != null) { 
-         Global.player.admin.buildItemNamesDictionary();
-      }
       finishedDataSetup.Invoke();
    }
 

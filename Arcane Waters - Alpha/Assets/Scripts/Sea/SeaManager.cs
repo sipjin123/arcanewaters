@@ -93,7 +93,12 @@ public class SeaManager : MonoBehaviour {
 
       // Allow spawning a pirate ship
       if (Input.GetKeyUp(KeyCode.F9) && Global.player is SeaEntity) {
-         Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos());
+         Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PIRATES_GUILD_ID);
+      }
+
+      // Allow spawning a privateer ship
+      if (Input.GetKeyUp(KeyCode.F10) && Global.player is SeaEntity) {
+         Global.player.rpc.Cmd_SpawnPirateShip(Util.getMousePos(), BotShipEntity.PRIVATEERS_GUILD_ID);
       }
 
       if (Input.GetKey(KeyCode.Z)) {
@@ -115,6 +120,11 @@ public class SeaManager : MonoBehaviour {
          // Allow spawning a Fishman
          if (Input.GetKeyUp(KeyCode.F4) && Global.player is SeaEntity) {
             Global.player.rpc.Cmd_SpawnSeaMonster(Util.getMousePos(), SeaMonsterEntity.Type.Fishman);
+         }
+         
+         // Allow spawning a Sea Mine
+         if (Input.GetKeyUp(KeyCode.F5) && Global.player is SeaEntity) {
+            Global.player.rpc.Cmd_SpawnSeaMine(Util.getMousePos());
          }
       }
    }

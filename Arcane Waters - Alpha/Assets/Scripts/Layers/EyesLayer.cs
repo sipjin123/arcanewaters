@@ -26,7 +26,7 @@ public class EyesLayer : SpriteLayer {
       Gender.Type gender = newType.ToString().StartsWith("Male") ? Gender.Type.Male : Gender.Type.Female;
       string path = "Eyes/" + gender + "/" + newType;
       Texture2D result = ImageManager.getTexture(path);
-      getSpriteSwap().newTexture = result;
+      setTexture(result);
    }
 
    public static List<Type> getList (Gender.Type gender) {

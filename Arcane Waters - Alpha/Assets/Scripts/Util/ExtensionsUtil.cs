@@ -258,6 +258,23 @@ public static class ExtensionsUtil {
       return (float) value;
    }
 
+   public static void AddExplosiveForce (this Rigidbody2D rb, float minForce, float maxForce, float radius, Vector2 explosionPosition, ForceMode2D mode = ForceMode2D.Force) {
+      // Calculate the raw direction of the explosion
+      Vector2 direction = rb.position - explosionPosition;
+
+      // The magnitude of the raw direction vector is the distance between the explosion and the rigidbody
+      float distance = direction.magnitude;
+
+      // Normalize the direction method
+      direction /= distance;
+
+      // Calculate the force to apply using the distance
+      float forceAmount = Mathf.InverseLerp(0, radius, distance);
+      float force = Mathf.Lerp(minForce, maxForce, forceAmount);
+            
+      rb.AddForce(Mathf.Lerp(0, force, (1 - distance)) * direction, mode);
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

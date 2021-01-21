@@ -36,7 +36,7 @@ public class HairLayer : SpriteLayer {
       _type = newType;
 
       // Update our Animated Sprite
-      getSpriteSwap().newTexture = getTexture(newType, isFront);
+      setTexture(getTexture(newType, isFront));
 
       _stencilCompPropertyId = Shader.PropertyToID("_StencilCompare");
 

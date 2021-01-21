@@ -1266,8 +1266,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8805982022199800768}
   - {fileID: 2471908811931288636}
+  - {fileID: 8805982022199800768}
   - {fileID: 224426459747468700}
   m_Father: {fileID: 224312400971317194}
   m_RootOrder: 0
@@ -1295,7 +1295,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 7
-  m_Spacing: 4
+  m_Spacing: 1
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -1693,7 +1693,6 @@ MonoBehaviour:
   battleId: 0
   voyageGroupId: -1
   hasEnteredPvP: 0
-  isJumping: 0
   customHouseBaseId: 0
   customFarmBaseId: 0
   guildIconBorder: 
@@ -1749,8 +1748,8 @@ MonoBehaviour:
   jumpOverWorldLocation: {x: 0, y: 0}
   jumpOverSourceLocation: {x: 0, y: 0}
   dustTrailParticleObj: {fileID: 881166268088869365}
-  jumpCooldownTimer: 0
-  isJumpCoolingDown: 0
+  entityNameGO: {fileID: 552798949345120264}
+  guildIconGO: {fileID: 5163849754405053174}
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2511,7 +2510,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8805982022199800768
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2524,12 +2523,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 224910053183632934}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 50, y: -9.945}
+  m_SizeDelta: {x: 23.58, y: 8.11}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7187592545396495801
 CanvasRenderer:
@@ -2568,7 +2567,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 16777215
-  m_fontColor: {r: 1, g: 1, b: 1, a: 0}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -8295,7 +8294,7 @@ RectTransform:
   m_Children:
   - {fileID: 5648042423969164330}
   m_Father: {fileID: 224910053183632934}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -10158,6 +10157,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
+--- !u!1 &5163849754405053174 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5642681577568405534, guid: 5c20705c7cd1fef48a41c790991d9d6b,
+    type: 3}
+  m_PrefabInstance: {fileID: 713672114105101032}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &5648042423969164330 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -10170,7 +10175,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 713672114105101032}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 5163849754405053174}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
