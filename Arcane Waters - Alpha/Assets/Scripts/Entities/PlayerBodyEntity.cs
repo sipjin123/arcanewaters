@@ -93,6 +93,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Sprinting animator parameter name
    public const string IS_SPRINTING = "isSprinting";
 
+   // If the user can engage in combat
+   public bool canEngageInCombat = true;
+
    #endregion
 
    protected override void Awake () {

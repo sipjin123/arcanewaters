@@ -20,11 +20,12 @@ public class PlayerBattleCollider : MonoBehaviour {
       if (!playerBody.isInvisible && playerBody.isLocalPlayer && collision.GetComponent<EnemyBattleCollider>() != null) {
          if (!playerBody.isInBattle() && combatInitCollider.enabled && !playerBody.isWithinEnemyRadius) {
             Enemy enemy = collision.GetComponent<EnemyBattleCollider>().enemy;
-            if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated) {
+            if (playerBody.instanceId == enemy.instanceId && !enemy.isDefeated && playerBody.canEngageInCombat) {
                if (playerBody.voyageGroupId == enemy.voyageGroupId || enemy.voyageGroupId == -1) {
                   combatInitCollider.enabled = false;
                   playerBody.isWithinEnemyRadius = true;
                   Global.player.rpc.Cmd_StartNewBattle(enemy.netId, Battle.TeamType.Attackers);
+                  playerBody.canEngageInCombat = false;
                   TutorialManager3.self.tryCompletingStep(TutorialTrigger.EnterBattle);
                } else {
                   Vector3 pos = this.transform.position + new Vector3(0f, .32f);
