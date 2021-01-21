@@ -132,7 +132,9 @@ public class CharacterStack : MonoBehaviour {
       hairFrontLayer.getSimpleAnimation().setIndex(index);
       weaponBackLayer.getSimpleAnimation().setIndex(index);
       weaponFrontLayer.getSimpleAnimation().setIndex(index);
-      hatLayer.getSimpleAnimation().setIndex(index);
+      if (!(hatLayer.GetComponent<SpriteRenderer>() == null && hatLayer.GetComponent<Image>() == null)) {
+         hatLayer.getSimpleAnimation().setIndex(index);
+      }
    }
 
    public void updateLayers (NetEntity entity) {
