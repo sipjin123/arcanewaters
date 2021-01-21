@@ -4,6 +4,7 @@ using System.Linq;
 using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 // Will load Battler Data and use that accordingly in all actions.
@@ -246,6 +247,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If setup is completed
    public bool hasAssignedNetId = false;
 
+   // Debug text mesh
+   public GameObject debugLogCanvas;
+   public Text debugTextLog;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -373,6 +378,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (!isLocalBattler() && BattleSelectionManager.self.selectedBattler == null && enemyType != Enemy.Type.PlayerBattler) {
          StartCoroutine(CO_SelectEnemyBattler());
       }
+
+      // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
+      /*
+      if (player is PlayerBodyEntity) {
+         debugLogCanvas.SetActive(true);
+      }*/
    }
 
    private IEnumerator CO_AssignPlayerNetId () {
@@ -414,6 +425,42 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (!hasAssignedNetId) {
          return;
       }
+
+      // Make sure non local player animation is set to death frame when it is dead
+      if (isDead() && player is PlayerBodyEntity && !player.isLocalPlayer) {
+         AnimInfo deathAnimInfo = AnimUtil.getInfo(Anim.Group.Player, Anim.Type.Death_East);
+         foreach (SimpleAnimation anim in _anims) {
+            if (anim.enabled) {
+               anim.enabled = false;
+               anim.isPaused = true;
+               SpriteRenderer spriteRender = anim.GetComponent<SpriteRenderer>();
+               if (spriteRender.sprite != null) {
+                  if (spriteRender.sprite.texture != null) {
+                     Sprite[] _sprites = ImageManager.getSprites(spriteRender.sprite.texture);
+                     spriteRender.sprite = _sprites[deathAnimInfo.maxIndex];
+                  }
+               }
+            }
+         }
+
+         // Lock combat ability to prevent user from engaging after losing combat
+         PlayerBodyEntity playerBody = ((PlayerBodyEntity) player);
+         if (playerBody.canEngageInCombat) {
+            playerBody.canEngageInCombat = false;
+         }
+      }
+
+      // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
+      /*
+      if (player is PlayerBodyEntity) {
+         string newMessage = "IsDead" + " : " + isDead() + "\nCurrentHealth: {" + health + "} : {" + displayedHealth + "}" + "\nAnim: " + _anims[0].currentAnimation;
+         if (player.isLocalPlayer) {
+            debugTextLog.color = Color.red;
+         } else {
+            debugTextLog.color = Color.yellow;
+         }
+         debugTextLog.text = newMessage;
+      }*/
 
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
@@ -779,6 +826,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
             });
+         }
+      } else {
+         if (player is PlayerBodyEntity) {
+            ((PlayerBodyEntity) player).canEngageInCombat = true;
          }
       }
    }
