@@ -13,6 +13,9 @@ public class ProjectileStatData  {
    // The scale of the projectile
    public float projectileScale = 1;
 
+   // The damage of the projectile
+   public float projectileDamage = 25;
+
    // The speed of the projectile animation
    public float animationSpeed = 1;
 

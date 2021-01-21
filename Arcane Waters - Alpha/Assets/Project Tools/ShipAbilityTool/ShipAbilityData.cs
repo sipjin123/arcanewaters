@@ -37,7 +37,7 @@ public class ShipAbilityData
    public int levelRequirement;
 
    // Damage of the ability
-   public int damage;
+   public int damageModifier;
 
    // FX per frame of the ability effect
    public float abilitySpriteFXPerFrame = 0.06f;

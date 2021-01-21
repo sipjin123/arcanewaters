@@ -52,8 +52,8 @@ public class ShipData
 
    // Damage of the ship
    public int baseDamage = 10;
-   public int baseDamageMin = 5;
-   public int baseDamageMax = 10;
+   public int baseDamageModifierMin = 5;
+   public int baseDamageModifierMax = 10;
 
    // Movement speed of the ship
    public int baseSpeed = 90;

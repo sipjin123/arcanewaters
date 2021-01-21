@@ -597,7 +597,7 @@ public class SeaEntity : NetEntity
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      if (abilityId > 0) {
-                        int baseSkillDamage = ShipAbilityManager.self.getAbility(abilityId).damage;
+                        int baseSkillDamage = ShipAbilityManager.self.getAbility(abilityId).damageModifier;
                         damage = getDamageForShot(baseSkillDamage, distanceModifier);
                      }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
