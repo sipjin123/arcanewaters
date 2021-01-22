@@ -78,6 +78,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The animation speed cached from the xml database
    public float cachedAnimSpeed = .25f;
 
+   // The attack animation speed cached from the xml database
+   public float cachedAttackAnimSpeed = .35f;
+
+   // The base damage of the seamonster
+   public const int BASE_SEAMONSTER_DAMAGE = 25;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -121,28 +127,23 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          ripplesContainer.GetComponent<SpriteSwap>().newTexture = rippleTextureSprite == null ? ImageManager.self.blankTexture : croppedTexture;
          ripplesContainer.transform.localPosition += seaMonsterData.rippleLocOffset;
 
+         // Scale Update
          ripplesContainer.transform.localScale = new Vector3(seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride, seaMonsterData.rippleScaleOverride);
          spritesContainer.transform.localScale = new Vector3(seaMonsterData.scaleOverride, seaMonsterData.scaleOverride, seaMonsterData.scaleOverride);
          spritesContainer.transform.GetChild(0).localScale = new Vector3(seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride, seaMonsterData.outlineScaleOverride);
 
+         // Update animation of the sea monster ripple sprite
          _simpleAnimRipple.group = seaMonsterData.animGroup;
          _simpleAnimRipple.frameLengthOverride = seaMonsterData.rippleAnimationSpeedOverride;
          _simpleAnimRipple.enabled = true;
 
-         _simpleAnim.group = seaMonsterData.animGroup;
-         _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+         // Cached animation speed
+         cachedAnimSpeed = seaMonsterData.animationSpeedOverride;
+         cachedAttackAnimSpeed = seaMonsterData.attackAnimationSpeed;
 
-         // TODO: Refer to xml content instead of hard code
-         if (seaMonsterData.seaMonsterType == Type.Reef_Giant) {
-            cachedAnimSpeed = .15f;
-            _simpleAnim.frameLengthOverride = cachedAnimSpeed;
-            _simpleAnimRipple.frameLengthOverride = cachedAnimSpeed;
-         } else {
-            cachedAnimSpeed = .5f;
-            _simpleAnim.frameLengthOverride = cachedAnimSpeed;
-            _simpleAnimRipple.frameLengthOverride = cachedAnimSpeed;
-         }
-         //seaMonsterData.animationSpeedOverride;
+         // Update animation of the sea monster sprite
+         _simpleAnim.group = seaMonsterData.animGroup;
+         _simpleAnim.frameLengthOverride = cachedAnimSpeed;
 
          _simpleAnim.enabled = true;
       }
@@ -325,11 +326,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public override void requestAnimationPlay (Anim.Type animType) {
       isAttacking = true;
       _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
-      if (monsterType == Type.Reef_Giant) {
-         _simpleAnim.modifyAnimSpeed(.125f);
-      } else {
-         _simpleAnim.modifyAnimSpeed(.35f);
-      }
+      _simpleAnim.modifyAnimSpeed(cachedAttackAnimSpeed);
       _simpleAnim.playAnimation(animType);
    }
 
@@ -542,21 +539,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          return;
       }
 
-      if (isAttacking) {
-         /*
-         _simpleAnim.frameLengthOverride = .5f;
-         switch (this.facing) {
-            case Direction.North:
-               _simpleAnim.playAnimation(Anim.Type.Attack_North);
-               break;
-            case Direction.South:
-               _simpleAnim.playAnimation(Anim.Type.Attack_South);
-               break;
-            default:
-               _simpleAnim.playAnimation(Anim.Type.Attack_East);
-               break;
-         }*/
-      } else {
+      if (!isAttacking) {
          if (_simpleAnim.frameLengthOverride != cachedAnimSpeed) {
             _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
          }
@@ -681,7 +664,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
 
-      // TODO: Remove this hard coded attack animation trigger on logic update
+      // Set attack animation trigger values on server side
       isAttacking = true;
       _attackStartAnimateTime = NetworkTime.time;
       _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
