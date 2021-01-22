@@ -156,6 +156,10 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    protected void Cmd_SetShipDamage (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       if (GetComponent<PlayerShipEntity>() != null) {
          string[] list = parameters.Split(' ');
          if (list.Length > 0) {
@@ -167,6 +171,10 @@ public class AdminManager : NetworkBehaviour
 
    [Command]
    protected void Cmd_SetShipHealth (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
       if (GetComponent<PlayerShipEntity>() != null) {
          string[] list = parameters.Split(' ');
          if (list.Length > 0) {
