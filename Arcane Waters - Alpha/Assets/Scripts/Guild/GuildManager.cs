@@ -118,9 +118,18 @@ public class GuildManager : MonoBehaviour {
          recipient.guildId = invite.guildId;
          recipient.guildPermissions = info.Find(x => x.id == rankId).permissions;
 
+         GuildInfo guildInfo = DB_Main.getGuildInfo(recipient.guildId);
+
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, recipient, "You have joined the guild " + invite.guildName + "!");
+            
+            recipient.guildIconBackground = guildInfo.iconBackground;
+            recipient.guildIconBorder = guildInfo.iconBorder;
+            recipient.guildIconBackPalettes = guildInfo.iconBackPalettes;
+            recipient.guildIconSigil = guildInfo.iconSigil;
+            recipient.guildIconSigilPalettes = guildInfo.iconSigilPalettes;
+            recipient.Rpc_UpdateGuildIconDisplay(recipient.guildIconBackground, recipient.guildIconBackPalettes, recipient.guildIconBorder, recipient.guildIconSigil, recipient.guildIconSigilPalettes);
          });
       });
    }

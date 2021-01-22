@@ -134,7 +134,10 @@ public class SimpleAnimation : ClientMonoBehaviour {
 
       // Update the sprite renderer
       int currentIndex = getIndex();
-      setSprite(_sprites[currentIndex]);
+
+      if (_sprites.Length > currentIndex) {
+         setSprite(_sprites[currentIndex]);
+      }
    }
 
    public void toggleRenderers (bool isOn) {
@@ -178,9 +181,13 @@ public class SimpleAnimation : ClientMonoBehaviour {
       // Change the sprite
       if (_sprites != null) {
          if (_index > _sprites.Length) {
-            D.debug("Index out of range for object: " + _index + " / " + _sprites.Length + " : " + gameObject.name);
+            // Don't print the warning if the layer isn't using a valid texture
+            if (getCurrentTexture() != null && getCurrentTexture() != ImageManager.self.blankTexture) {
+               D.debug("Index out of range for object: " + _index + " / " + _sprites.Length + " : " + gameObject.name);
+            }
             return;
-         } 
+         }
+
          setSprite(_sprites[_index]);
       }
 

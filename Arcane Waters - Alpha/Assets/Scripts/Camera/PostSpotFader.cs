@@ -1,12 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using Mirror;
 using DG.Tweening;
-using System;
 
-[ExecuteAlways]
 public class PostSpotFader : ClientMonoBehaviour, IScreenFader
 {
    #region Public Variables
@@ -19,33 +13,15 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    protected override void Awake () {
       base.Awake();
       self = this;
+   }
 
+   private void Start () {
       _effectProgress = 1;
       _effectProgressPropertyID = Shader.PropertyToID("_Progress");
       _spotPositionPropertyID = Shader.PropertyToID("_SpotPosition");
       _screenSizePropertyID = Shader.PropertyToID("_ScreenSize");
       _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
-   }
-
-#if UNITY_EDITOR
-   private void OnEnable () {
-      // In the editor only, don't subscribe to the CameraManager event unless we're in Play Mode
-      if (!Application.isPlaying) {
-         updatePixelSize();         
-      }
-   }
-#endif
-
-   private void Start () {
-#if UNITY_EDITOR
-      // In the editor only, don't subscribe to the CameraManager event unless we're in Play Mode
-      if (!Application.isPlaying) {         
-         return;
-      }
-#endif
-
-      updateScreenSize();
-
+      
       // Make sure to update the screen size in the shader when it changes
       CameraManager.self.resolutionChanged += updateScreenSize;
    }
@@ -71,21 +47,9 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
       }
    }
 
-#if UNITY_EDITOR
-   private void Update () {
-      // Update these values every frame in the Editor for easier tweaking
-      if (!Application.isPlaying || _enableEditInPlaymode) {
-         _material.SetFloat("_Progress", _effectProgress);
-         _material.SetVector("_SpotPosition", _spotScreenPosition);
-         _material.SetVector("_ScreenSize", new Vector4(Screen.width, Screen.height));
-         _material.SetFloat("_DitherPercent", _ditherAmount);
-      }
-   }
-#endif
-
    private void OnRenderImage (RenderTexture source, RenderTexture destination) {
       recalibrateSpotPosition();
-      updatePixelSize();
+      updateScreenSize();
       _material.SetFloat(_effectProgressPropertyID, _effectProgress);
       _material.SetVector(_screenSizePropertyID, new Vector4(Screen.width, Screen.height));
       Graphics.Blit(source, destination, _material);
@@ -159,12 +123,6 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    // The material used for the effect
    [SerializeField]
    private Material _material;
-
-#if UNITY_EDITOR
-   // Whether it's possible to change values within Unity in Play Mode 
-   [SerializeField]
-   private bool _enableEditInPlaymode = false;
-#endif
 
    // The fade tween
    private Tween _fadeTween;
