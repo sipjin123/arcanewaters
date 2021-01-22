@@ -212,10 +212,10 @@ public class ShipEntity : SeaEntity
       // Attributes set up by server only
       switch (attackType) {
          case Attack.Type.Heal:
-            currentHealth += shipData.damageModifier;
+            currentHealth += (int) shipData.damageModifier;
             break;
          case Attack.Type.SpeedBoost:
-            speed += shipData.damageModifier;
+            speed += (int) shipData.damageModifier;
             break;
       }
 
@@ -242,7 +242,7 @@ public class ShipEntity : SeaEntity
       ShipDamageText damageText = Instantiate(PrefabsManager.self.getTextPrefab(attackType), pos, Quaternion.identity);
       damageText.setIcon(shipData.skillIconPath);
       damageText.negativeEffect = false;
-      damageText.setDamage(shipData.damageModifier);
+      damageText.setDamage((int) shipData.damageModifier);
       damageText.notificationText.text = shipData.abilityName;
    }
 
