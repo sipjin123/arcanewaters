@@ -50,6 +50,9 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // How far the cone extends ahead of the ship
    public float aggroConeRadius;
 
+   // Log path finding log error once to prevent spamming
+   public bool hasLoggedError;
+
    #endregion
 
    protected override void Start () {
@@ -130,22 +133,30 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          float tempMajorRef = 0.0f;
          updateState(ref _attackingWaypointState, secondsBetweenFindingAttackRoutes, 9001.0f, ref _currentSecondsBetweenAttackRoutes, ref tempMajorRef, findAttackerVicinityPosition);
       } else {
-         // Use treasure site only in maps with more than two treasure sites
-         System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
-         if (_treasureSitesInArea != null && _treasureSitesInArea.Count > 1) {
-            findingFunction = findTreasureSiteVicinityPosition;
-         }
 
-         if (_isChasingEnemy) {
-            _currentSecondsBetweenPatrolRoutes = 0.0f;
-            _currentSecondsPatroling = 0.0f;
-            _patrolingWaypointState = WaypointState.FINDING_PATH;
-            if (_currentPath != null) {
-               _currentPath.Clear();
+         try {
+            // Use treasure site only in maps with more than two treasure sites
+            System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
+            if (_treasureSitesInArea != null && _treasureSitesInArea.Count > 1) {
+               findingFunction = findTreasureSiteVicinityPosition;
             }
-            findAndSetPath_Asynchronous(findingFunction(true));
+
+            if (_isChasingEnemy) {
+               _currentSecondsBetweenPatrolRoutes = 0.0f;
+               _currentSecondsPatroling = 0.0f;
+               _patrolingWaypointState = WaypointState.FINDING_PATH;
+               if (_currentPath != null) {
+                  _currentPath.Clear();
+               }
+               findAndSetPath_Asynchronous(findingFunction(true));
+            }
+            updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
+         } catch {
+            if (!hasLoggedError) {
+               hasLoggedError = true;
+               D.debug("ERROR! Path Finding Failed for treasure site! Please report or investigate");
+            }
          }
-         updateState(ref _patrolingWaypointState, secondsBetweenFindingPatrolRoutes, secondsPatrolingUntilChoosingNewTreasureSite, ref _currentSecondsBetweenPatrolRoutes, ref _currentSecondsPatroling, findingFunction);
       }
 
       bool wasChasingLastFrame = _isChasingEnemy;
