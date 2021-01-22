@@ -123,16 +123,38 @@ public class CharacterStack : MonoBehaviour {
       synchronizeAnimationIndexes();
    }
 
-   public void synchronizeAnimationIndexes () {
+   public void synchronizeAnimationIndexes () {      
+      if (bodyLayer == null || bodyLayer.getSimpleAnimation() == null) {
+         return;
+      }
+
       int index = bodyLayer.getSimpleAnimation().getIndex();
 
-      eyesLayer.getSimpleAnimation().setIndex(index);
-      armorLayer.getSimpleAnimation().setIndex(index);
-      hairBackLayer.getSimpleAnimation().setIndex(index);
-      hairFrontLayer.getSimpleAnimation().setIndex(index);
-      weaponBackLayer.getSimpleAnimation().setIndex(index);
-      weaponFrontLayer.getSimpleAnimation().setIndex(index);
-      if (!(hatLayer.GetComponent<SpriteRenderer>() == null && hatLayer.GetComponent<Image>() == null)) {
+      if (eyesLayer != null && eyesLayer.getSimpleAnimation() != null) {
+         eyesLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (armorLayer != null && armorLayer.getSimpleAnimation() != null) {
+         armorLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (hairBackLayer != null && hairBackLayer.getSimpleAnimation() != null) {
+         hairBackLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (hairFrontLayer != null && hairFrontLayer.getSimpleAnimation() != null) {
+         hairFrontLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (weaponBackLayer != null && weaponBackLayer.getSimpleAnimation() != null) {
+         weaponBackLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (weaponFrontLayer != null && weaponFrontLayer.getSimpleAnimation() != null) {
+         weaponFrontLayer.getSimpleAnimation().setIndex(index);
+      }
+
+      if (hatLayer != null && hatLayer.getSimpleAnimation() != null) {       
          hatLayer.getSimpleAnimation().setIndex(index);
       }
    }

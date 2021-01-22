@@ -2979,6 +2979,14 @@ public class RPCManager : NetworkBehaviour {
                DB_Main.assignGuild(userToKickId, 0);
                DB_Main.assignRankGuild(userToKickId, -1);
 
+               // Set the syncvars to null and then update the guild icon
+               _player.guildIconBackground = null;
+               _player.guildIconBorder = null;
+               _player.guildIconBackPalettes = null;
+               _player.guildIconSigil = null;
+               _player.guildIconSigilPalettes = null;
+               _player.Rpc_UpdateGuildIconDisplay(_player.guildIconBackground, _player.guildIconBackPalettes, _player.guildIconBorder, _player.guildIconSigil, _player.guildIconSigilPalettes);
+
                // Remove past invite from kicked player. If he was kicked by accident, he can be invited back immediately
                GuildManager.self.removePastInvite(_player, userToKickId, DB_Main.getGuildInfo(_player.guildId));
             }

@@ -9,6 +9,9 @@ using System.Linq;
 public class ShaderSpriteOutline : MonoBehaviour {
    #region Public Variables
 
+   // The renderer in charge of drawing the outline for this sprite
+   public SpriteOutlineRenderer outlineRenderer;
+
    #endregion
 
    private void Awake () {
@@ -17,15 +20,15 @@ public class ShaderSpriteOutline : MonoBehaviour {
    }
 
    private void OnWillRenderObject () {
-      if (_isVisible) {
-         PostSpriteOutline.self.onWillRenderObject(this);
+      if (_isVisible && outlineRenderer != null) {
+         outlineRenderer.onWillRenderObject(this);
       }
    }
 
    private void Update () {
       // Ensure the outline is being drawn
-      if (_isVisible) {
-         PostSpriteOutline.self.setOutlinedSprite(this);         
+      if (_isVisible && outlineRenderer != null) {
+         outlineRenderer.setOutlinedSprite(this);         
       }
 
       _wasVisible = _isVisible;
@@ -38,9 +41,9 @@ public class ShaderSpriteOutline : MonoBehaviour {
       }
 
       if (isVisible) {
-         PostSpriteOutline.self.setOutlinedSprite(this);         
+         SpriteOutlineManager.self.addOutlinedSprite(this);         
       } else {
-         PostSpriteOutline.self.removeOutlinedSprite(this);
+         SpriteOutlineManager.self.removeOutlinedSprite(this);
       }
 
       _isVisible = isVisible;

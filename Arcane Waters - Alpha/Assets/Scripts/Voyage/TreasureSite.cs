@@ -317,6 +317,16 @@ public class TreasureSite : NetworkBehaviour
       bool worldPositionStays = area.cameraBounds.bounds.Contains((Vector2) transform.position);
       setAreaParent(area, worldPositionStays);
 
+      // Disable the treasure site capture if the instance is not a voyage instance
+      if (isServer) {
+         Instance instance = InstanceManager.self.getInstance(instanceId);
+         if (instance == null || instance.voyageId <= 0) {
+            enabled = false;
+            _captureCollider.enabled = false;
+            yield break;
+         }
+      }
+
       // Get all the nearby colliders
       Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(transform.position, 0.8f);
 

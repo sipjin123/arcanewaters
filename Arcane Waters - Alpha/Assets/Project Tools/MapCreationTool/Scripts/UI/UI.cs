@@ -349,7 +349,7 @@ namespace MapCreationTool
                UnityThreading.Task dbTask = UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
                   string dbError = null;
                   try {
-                     DB_Main.updateMapVersion(mapVersion);
+                     DB_Main.updateMapVersion(mapVersion, true);
                   } catch (Exception ex) {
                      dbError = ex.Message;
                   }

@@ -2550,6 +2550,7 @@ public class DB_Main : DB_MainStub
          MySqlTransaction transaction = conn.BeginTransaction();
          cmd.Transaction = transaction;
          cmd.Connection = conn;
+         cmd.CommandTimeout = 1200;
 
          try {
             // Insert entry to maps
@@ -2652,6 +2653,7 @@ public class DB_Main : DB_MainStub
    private static int duplicateMap (MySqlCommand cmd, int mapId, int newCreatorId, int newSourceMapId) {
       int resultId = -1;
 
+      cmd.CommandTimeout = 1200;
       // Create a new map entry with a random name ending
       cmd.CommandText = "INSERT INTO maps_v2(name, createdAt, creatorUserId, publishedVersion, editorType, biome, displayName, notes, specialType, sourceMapId) " +
          "SELECT CONCAT(LEFT(name, 24), ' ', FLOOR(RAND() * (99999 - 10001)) + 10000), @nowDate, @creatorID, @publishedVersion, editorType, biome, name, notes, specialType, @sourceMapID " +
@@ -2692,6 +2694,8 @@ public class DB_Main : DB_MainStub
       using (MySqlConnection conn = getConnectionToDevGlobal())
       using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
          conn.Open();
+
+         cmd.CommandTimeout = 1200;
          cmd.Prepare();
 
          cmd.Parameters.AddWithValue("@mapId", map.id);
@@ -2715,6 +2719,7 @@ public class DB_Main : DB_MainStub
          MySqlTransaction transaction = conn.BeginTransaction();
          cmd.Transaction = transaction;
          cmd.Connection = conn;
+         cmd.CommandTimeout = 1200;
 
          try {
             // Update biome of map entry

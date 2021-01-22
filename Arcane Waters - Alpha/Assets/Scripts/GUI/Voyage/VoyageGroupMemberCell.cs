@@ -78,15 +78,27 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       // Update the portrait background
       characterPortrait.updateBackground(entity);
 
-      // Update the hp bar
-      hpBar.enabled = true;
-      hpBar.fillAmount = (float) entity.currentHealth / entity.maxHealth;
-      hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
-
       // Allow right clicking to bring up the context menu, only if no panel is opened
-      if (InputManager.isLeftClickKeyPressed() && _mouseOver && !PanelManager.self.hasPanelInLinkedList() ) {
+      if (InputManager.isLeftClickKeyPressed() && _mouseOver && !PanelManager.self.hasPanelInLinkedList()) {
          PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, entity.entityName);
       }
+
+      int currentHP = entity.currentHealth;
+      int maxHP = entity.maxHealth;
+
+      // If the user is in battle, get the battler hp values
+      if (entity.isInBattle()) {
+         Battler battler = BattleManager.self.getBattler(_userId);
+         if (battler != null) {
+            currentHP = battler.displayedHealth;
+            maxHP = battler.getStartingHealth();
+         }
+      }
+
+      // Update the hp bar
+      hpBar.enabled = true;
+      hpBar.fillAmount = (float) currentHP / maxHP;
+      hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
    }
 
    public void OnPointerEnter (PointerEventData eventData) {

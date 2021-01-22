@@ -35,6 +35,8 @@ public class AdminManager : NetworkBehaviour
       }
 
       addCommands();
+
+      StartCoroutine(CO_CreateItemNamesDictionary());
    }
 
    private void addCommands () {
@@ -323,6 +325,9 @@ public class AdminManager : NetworkBehaviour
             case "a":
                dictionary = _armorNames;
                break;
+            case "h":
+               dictionary = _hatNames;
+               break;
             case "c":
                dictionary = _craftingIngredientNames;
                break;
@@ -505,6 +510,9 @@ public class AdminManager : NetworkBehaviour
          case "a":
             category = Item.Category.Armor;
             break;
+         case "h":
+            category = Item.Category.Hats;
+            break;
          case "c":
             category = Item.Category.CraftingIngredients;
             break;
@@ -539,6 +547,14 @@ public class AdminManager : NetworkBehaviour
                itemTypeId = _self._armorNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the armor " + itemName, ChatInfo.Type.Error);
+               return;
+            }
+            break;
+         case Item.Category.Hats:
+            if (_self._hatNames.ContainsKey(itemName)) {
+               itemTypeId = _self._hatNames[itemName];
+            } else {
+               ChatManager.self.addChat("Could not find the hat " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
@@ -1149,7 +1165,7 @@ public class AdminManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation back to the player who issued the command
             int createdItemCount = databaseItem.count < count ? databaseItem.count : count;
-            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, databaseItem.getName());
+            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, EquipmentXMLManager.self.getItemName(databaseItem));
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });
@@ -1176,7 +1192,7 @@ public class AdminManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation back to the player who issued the command
             int createdItemCount = databaseItem.count < count ? databaseItem.count : count;
-            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, databaseItem.getName());
+            string message = string.Format("Added {0} {1} to the inventory.", createdItemCount, EquipmentXMLManager.self.getItemName(databaseItem));
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.ItemsAddedToInventory, _player, message);
          });
       });
@@ -1329,21 +1345,36 @@ public class AdminManager : NetworkBehaviour
       return wasItemCreated;
    }
 
+   private IEnumerator CO_CreateItemNamesDictionary () {
+      while (!EquipmentXMLManager.self.loadedAllEquipment) {
+         yield return null;
+      }
+
+      buildItemNamesDictionary();
+   }
+
+
    public void buildItemNamesDictionary () {
       // Clear all the dictionaries
       _weaponNames.Clear();
       _armorNames.Clear();
+      _hatNames.Clear();
       _usableNames.Clear();
       _craftingIngredientNames.Clear();
 
       // Set all the weapon names
       foreach (WeaponStatData weaponData in EquipmentXMLManager.self.weaponStatList) {
-         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.sqlId);
+         addToItemNameDictionary(_weaponNames, Item.Category.Weapon, weaponData.sqlId, weaponData.equipmentName);
       }
 
       // Set all the armor names
       foreach (ArmorStatData armorData in EquipmentXMLManager.self.armorStatList) {
-         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.sqlId);
+         addToItemNameDictionary(_armorNames, Item.Category.Armor, armorData.sqlId, armorData.equipmentName);
+      }
+
+      // Set all the hat names
+      foreach (HatStatData hatData in EquipmentXMLManager.self.hatStatList) {
+         addToItemNameDictionary(_hatNames, Item.Category.Hats, hatData.sqlId, hatData.equipmentName);
       }
 
       // Set all the usable items names
@@ -1362,8 +1393,12 @@ public class AdminManager : NetworkBehaviour
       Item baseItem = new Item(-1, category, itemTypeId, 1, "", "");
       baseItem = baseItem.getCastItem();
 
+      addToItemNameDictionary(dictionary, category, itemTypeId, baseItem.getName());
+   }
+
+   private void addToItemNameDictionary (Dictionary<string, int> dictionary, Item.Category category, int itemTypeId, string itemName) {
       // Get the item name in lower case
-      string itemName = baseItem.getName().ToLower();
+      itemName = itemName.ToLower();
 
       // Add the new entry in the dictionary
       if (!"undefined".Equals(itemName) && !"usable item".Equals(itemName) && !"undefined design".Equals(itemName) && !itemName.ToLower().Contains("none") && itemName != "") {
@@ -1392,6 +1427,7 @@ public class AdminManager : NetworkBehaviour
    // The dictionary of item ids accessible by in-game item name
    protected Dictionary<string, int> _weaponNames = new Dictionary<string, int>();
    protected Dictionary<string, int> _armorNames = new Dictionary<string, int>();
+   protected Dictionary<string, int> _hatNames = new Dictionary<string, int>();
    protected Dictionary<string, int> _usableNames = new Dictionary<string, int>();
    protected Dictionary<string, int> _craftingIngredientNames = new Dictionary<string, int>();
 

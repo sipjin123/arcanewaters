@@ -71,7 +71,8 @@ public class LoadingScreen : MonoBehaviour
 
       // If we have a fade out effect, display it
       if (fadeOutEffect != null) {
-         yield return new WaitForSeconds(fadeOutEffect.fadeOut());
+         float fadeTime = fadeOutEffect.fadeOut() + ADDITIONAL_WAIT_TIME;
+         yield return new WaitForSeconds(fadeTime);
       }
 
       // Blacken the screen
@@ -159,6 +160,9 @@ public class LoadingScreen : MonoBehaviour
 
    // A timeout in case the loading screen gets frozen
    private const float LOADING_TIMEOUT = 15.0f;
+
+   // Some extra time to wait after a fade transition ended
+   private const float ADDITIONAL_WAIT_TIME = 0.25f;
 
    [Serializable]
    public class LoadingProcess

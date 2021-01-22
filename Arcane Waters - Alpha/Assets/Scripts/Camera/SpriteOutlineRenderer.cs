@@ -6,28 +6,24 @@ using Mirror;
 using UnityEngine.Rendering;
 using System;
 
-public class PostSpriteOutline : MonoBehaviour
+public class SpriteOutlineRenderer : MonoBehaviour
 {
    #region Public Variables
 
-   // Self
-   public static PostSpriteOutline self;
-
    #endregion
 
-   private void Awake () {
-      self = this;
+   private void Start () {
+      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
    }
 
-   private void Start () {
+   private void OnEnable () {
       CameraManager.self.resolutionChanged += updateQuadSize;
-      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
 
       updateQuadSize();
       cleanup();
    }
 
-   private void OnDestroy () {
+   private void OnDisable () {
       if (CameraManager.self != null) {
          CameraManager.self.resolutionChanged += updateQuadSize;
       }
@@ -38,13 +34,6 @@ public class PostSpriteOutline : MonoBehaviour
       _renderTexture.filterMode = FilterMode.Point;
 
       _quadRenderer.material.SetTexture("_MainTex", _renderTexture);
-   }
-
-   public void OnDisable () {      
-   }
-
-   public void OnEnable () {
-      self = this;      
    }
 
    private void updatePixelSize () {
