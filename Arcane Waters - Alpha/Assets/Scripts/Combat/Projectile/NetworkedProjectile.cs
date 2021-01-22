@@ -202,18 +202,37 @@ public class NetworkedProjectile : MonoBehaviour {
       }
 
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
+      int baseDamage = sourceEntity.damage;
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
-         int damage = (int) ((sourceEntity.damage / 3f) * _damageMultiplier);
+         if (sourceEntity is SeaMonsterEntity) {
+            switch (((SeaMonsterEntity) sourceEntity).monsterType) {
+               case SeaMonsterEntity.Type.Tentacle:
+                  baseDamage = 25;
+                  break;
+               case SeaMonsterEntity.Type.Worm:
+                  baseDamage = 50;
+                  break;
+               case SeaMonsterEntity.Type.Fishman:
+                  baseDamage = 100;
+                  break;
+               case SeaMonsterEntity.Type.Reef_Giant:
+                  baseDamage = 150;
+                  break;
+            }
+         }
+
+         int damage = (int) ((baseDamage / 3f) * _damageMultiplier);
          hitEntity.currentHealth -= damage;
 
          switch (attackType) {
             case Attack.Type.Boulder:
                ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Mini_Boulder);
-
-               // Spawn Mini Boulders upon Collision
-               SeaManager.self.getEntity(_creatorNetId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
+               if (shipAbilityData != null) {
+                  // Spawn Mini Boulders upon Collision
+                  SeaManager.self.getEntity(_creatorNetId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
+               } 
                break;
             case Attack.Type.Venom:
                // Registers the poison action status to the achievementdata for recording

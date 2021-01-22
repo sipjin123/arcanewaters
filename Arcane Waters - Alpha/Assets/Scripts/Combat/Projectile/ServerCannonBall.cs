@@ -151,9 +151,44 @@ public class ServerCannonBall : NetworkBehaviour {
          if ((sourceEntity.voyageGroupId > 0 || hitEntity.voyageGroupId > 0) && (sourceEntity.voyageGroupId == hitEntity.voyageGroupId)) {
             return;
          }
-         
-         int damage = (int) (sourceEntity.damage * _damageMultiplier);
-         hitEntity.currentHealth -= damage;
+
+         ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(_abilityData.projectileId);
+         int projectileBaseDamage = (int) projectileData.projectileDamage;
+         int shipDamageMultiplier = (int) ((sourceEntity.damage*.001f) * projectileBaseDamage);
+         int abilityDamageMultiplier = (int) ((_abilityData.damageModifier * .001f) * projectileBaseDamage);
+         int totalDamage = projectileBaseDamage + shipDamageMultiplier + abilityDamageMultiplier;
+
+         // TODO: Remove this block after web tool variables are updated
+         if (hitEntity is BotShipEntity) {
+            switch (((BotShipEntity) hitEntity).shipType) {
+               case Ship.Type.Type_1:
+                  totalDamage = 90;
+                  break;
+               case Ship.Type.Type_2:
+                  totalDamage = 120;
+                  break;
+               case Ship.Type.Type_3:
+                  totalDamage = 200;
+                  break;
+               case Ship.Type.Type_4:
+                  totalDamage = 320;
+                  break;
+               case Ship.Type.Type_5:
+                  totalDamage = 520;
+                  break;
+               case Ship.Type.Type_6:
+                  totalDamage = 700;
+                  break;
+               case Ship.Type.Type_7:
+                  totalDamage = 900;
+                  break;
+               case Ship.Type.Type_8:
+                  totalDamage = 1000;
+                  break;
+            }
+         }
+
+         hitEntity.currentHealth -= totalDamage;
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
