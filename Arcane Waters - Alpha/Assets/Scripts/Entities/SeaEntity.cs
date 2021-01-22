@@ -141,6 +141,15 @@ public class SeaEntity : NetEntity
       }
    }
 
+   [ClientRpc]
+   private void Rpc_TriggerAttackAnim (Anim.Type animType) {
+      requestAnimationPlay(animType);
+   }
+
+   public virtual void requestAnimationPlay (Anim.Type animType) {
+
+   }
+
    [TargetRpc]
    public void Target_CreateLocalAttackCircle (NetworkConnection connection, Vector2 startPos, Vector2 endPos, double startTime, double endTime) {
       // Create a new Attack Circle object from the prefab
@@ -508,6 +517,20 @@ public class SeaEntity : NetEntity
       _lastAttackTime = NetworkTime.time;
       attackCounter++;
       Rpc_RegisterAttackTime(attackDelay);
+
+      // TODO: Remove this after animation fix
+      switch (this.facing) {
+         case Direction.North:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_North);
+            break;
+         case Direction.South:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_South);
+            break;
+         default:
+            Rpc_TriggerAttackAnim(Anim.Type.Attack_East);
+            break;
+      }
+
       Rpc_NoteAttack();
    }
 

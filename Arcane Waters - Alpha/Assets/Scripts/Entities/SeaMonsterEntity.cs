@@ -58,7 +58,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    public SeaMonsterBars seaMonsterBars;
 
    // The time an attack animation plays
-   public const float ATTACK_DURATION = .3f;
+   public const float ATTACK_DURATION = .8f;// Old Value = .3f;
 
    // Determines if a minion is planning its own behavior
    public bool isMinionPlanning = false;
@@ -74,6 +74,9 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
    // Gets set to true when the entity doesn't plan any move (or attack)
    public bool isStationary = false;
+
+   // The animation speed cached from the xml database
+   public float cachedAnimSpeed = .25f;
 
    // Seamonster Animation
    public enum SeaMonsterAnimState
@@ -128,6 +131,19 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
          _simpleAnim.group = seaMonsterData.animGroup;
          _simpleAnim.frameLengthOverride = seaMonsterData.animationSpeedOverride;
+
+         // TODO: Refer to xml content instead of hard code
+         if (seaMonsterData.seaMonsterType == Type.Reef_Giant) {
+            cachedAnimSpeed = .15f;
+            _simpleAnim.frameLengthOverride = cachedAnimSpeed;
+            _simpleAnimRipple.frameLengthOverride = cachedAnimSpeed;
+         } else {
+            cachedAnimSpeed = .5f;
+            _simpleAnim.frameLengthOverride = cachedAnimSpeed;
+            _simpleAnimRipple.frameLengthOverride = cachedAnimSpeed;
+         }
+         //seaMonsterData.animationSpeedOverride;
+
          _simpleAnim.enabled = true;
       }
 
@@ -220,6 +236,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
       } else {
          if (isAttacking && (NetworkTime.time > _attackEndAnimateTime)) {
+            _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
             _attackStartAnimateTime = NetworkTime.time + 50;
             isAttacking = false;
             _simpleAnim.stayAtLastFrame = false;
@@ -304,6 +321,17 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    #endregion
 
    #region External Entity Related Functions
+
+   public override void requestAnimationPlay (Anim.Type animType) {
+      isAttacking = true;
+      _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
+      if (monsterType == Type.Reef_Giant) {
+         _simpleAnim.modifyAnimSpeed(.125f);
+      } else {
+         _simpleAnim.modifyAnimSpeed(.35f);
+      }
+      _simpleAnim.playAnimation(animType);
+   }
 
    public override void noteAttacker (uint netId) {
       base.noteAttacker(netId);
@@ -515,6 +543,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       if (isAttacking) {
+         /*
+         _simpleAnim.frameLengthOverride = .5f;
          switch (this.facing) {
             case Direction.North:
                _simpleAnim.playAnimation(Anim.Type.Attack_North);
@@ -525,8 +555,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             default:
                _simpleAnim.playAnimation(Anim.Type.Attack_East);
                break;
-         }
+         }*/
       } else {
+         if (_simpleAnim.frameLengthOverride != cachedAnimSpeed) {
+            _simpleAnim.modifyAnimSpeed(cachedAnimSpeed);
+         }
+
          _simpleAnim.isPaused = false;
          if (getVelocity().magnitude > MIN_MOVEMENT_MAGNITUDE) {
             switch (this.facing) {
@@ -646,6 +680,12 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
             spawnPosition = _projectileSpawnLocation.position;
          }
       }
+
+      // TODO: Remove this hard coded attack animation trigger on logic update
+      isAttacking = true;
+      _attackStartAnimateTime = NetworkTime.time;
+      _attackEndAnimateTime = NetworkTime.time + ATTACK_DURATION;
+
       fireAtSpot(targetLoc, abilityId, attackDelay, launchDelay, spawnPosition);
    }
 
