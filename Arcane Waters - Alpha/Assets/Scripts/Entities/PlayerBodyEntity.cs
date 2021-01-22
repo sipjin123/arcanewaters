@@ -280,6 +280,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   [TargetRpc]
+   public void Target_EndPlayerCombat () {
+      if (isLocalPlayer) {
+         canEngageInCombat = true;
+      }
+   }
+
    private void sprintRecovery () {
       if (!canSprint()) {
          // Only notify other clients once if disabling

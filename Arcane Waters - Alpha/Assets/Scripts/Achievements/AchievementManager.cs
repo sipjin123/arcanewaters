@@ -141,6 +141,7 @@ public class AchievementManager : MonoBehaviour {
 
                   if (castData == null) {
                      D.debug("The cast data with no item is null!");
+                     return;
                   }
                   requirementCount = castData.count;
                } else {
