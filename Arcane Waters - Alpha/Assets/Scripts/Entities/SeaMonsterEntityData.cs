@@ -131,6 +131,9 @@ public class SeaMonsterEntityData
    // The reference id of the loot group data
    public int lootGroupId = 0;
 
+   // The animation speed of the attack animation
+   public float attackAnimationSpeed = .35f;
+
    // Sounds
    public int deathSoundEffectId = -1;
    public int attackSoundEffectId = -1;

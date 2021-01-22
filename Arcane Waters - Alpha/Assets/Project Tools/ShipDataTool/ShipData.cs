@@ -52,8 +52,8 @@ public class ShipData
 
    // Damage of the ship
    public int baseDamage = 10;
-   public float baseDamageModifierMin = 5;
-   public float baseDamageModifierMax = 10;
+   public float baseDamageModifierMin = .1f;// 10% damage
+   public float baseDamageModifierMax = .5f;// 50% damage
 
    // Movement speed of the ship
    public int baseSpeed = 90;
