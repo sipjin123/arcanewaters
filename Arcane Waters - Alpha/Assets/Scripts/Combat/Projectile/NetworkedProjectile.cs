@@ -202,29 +202,23 @@ public class NetworkedProjectile : MonoBehaviour {
       }
 
       SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
-      int baseDamage = sourceEntity.damage;
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
+         float baseDamage = 0;
          if (sourceEntity is SeaMonsterEntity) {
-            switch (((SeaMonsterEntity) sourceEntity).monsterType) {
-               case SeaMonsterEntity.Type.Tentacle:
-                  baseDamage = 25;
-                  break;
-               case SeaMonsterEntity.Type.Worm:
-                  baseDamage = 50;
-                  break;
-               case SeaMonsterEntity.Type.Fishman:
-                  baseDamage = 100;
-                  break;
-               case SeaMonsterEntity.Type.Reef_Giant:
-                  baseDamage = 150;
-                  break;
-            }
+            SeaMonsterEntity seaMonsterEntity = (SeaMonsterEntity) sourceEntity;
+            SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterEntity.monsterType);
+            ShipAbilityData seaMonsterAbilityData = ShipAbilityManager.self.getAbility(seaMonsterEntity.seaMonsterData.skillIdList[0]);
+            float damageModifier = seaMonsterAbilityData.damageModifier;
+            baseDamage = SeaMonsterEntity.BASE_SEAMONSTER_DAMAGE + (SeaMonsterEntity.BASE_SEAMONSTER_DAMAGE * damageModifier);
+
+            // TODO: Observe damage formula on live build
+            D.editorLog("The network projectile damage is"+ " : " +baseDamage+ " : " +damageModifier+ " Modified: " + ((baseDamage / 3f) * _damageMultiplier), Color.cyan);
          }
 
-         int damage = (int) ((baseDamage / 3f) * _damageMultiplier);
-         hitEntity.currentHealth -= damage;
+         int totalDamage = (int) ((baseDamage / 3f) * _damageMultiplier);
+         hitEntity.currentHealth -= totalDamage;
 
          switch (attackType) {
             case Attack.Type.Boulder:
@@ -239,14 +233,14 @@ public class NetworkedProjectile : MonoBehaviour {
                AchievementManager.registerUserAchievement(hitEntity, ActionType.Poisoned);
 
                // Spawn Damage Per Second Residue
-               hitEntity.Rpc_AttachEffect(damage, Attack.Type.Venom);
+               hitEntity.Rpc_AttachEffect(totalDamage, Attack.Type.Venom);
                break;
          }
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, attackType, circleCollider.transform.position);
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, damage, attackType);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, hitEntity.transform.position, totalDamage, attackType);
       }
       _hasCollided = true;
 

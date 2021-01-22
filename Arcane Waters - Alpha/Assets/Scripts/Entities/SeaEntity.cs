@@ -620,53 +620,19 @@ public class SeaEntity : NetEntity
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      if (abilityId > 0) {
-                        float baseSkillDamage = ShipAbilityManager.self.getAbility(abilityId).damageModifier;
+                        ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
+                        ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(shipAbilityData.projectileId);
+                        float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
+                        float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
 
-                        // TODO: Remove this block after web tool variables are updated
-                        if (this is BotShipEntity) {
-                           switch (((BotShipEntity) this).shipType) {
-                              case Ship.Type.Type_1:
-                                 baseSkillDamage = 90;
-                                 break;
-                              case Ship.Type.Type_2:
-                                 baseSkillDamage = 120;
-                                 break;
-                              case Ship.Type.Type_3:
-                                 baseSkillDamage = 200;
-                                 break;
-                              case Ship.Type.Type_4:
-                                 baseSkillDamage = 320;
-                                 break;
-                              case Ship.Type.Type_5:
-                                 baseSkillDamage = 520;
-                                 break;
-                              case Ship.Type.Type_6:
-                                 baseSkillDamage = 700;
-                                 break;
-                              case Ship.Type.Type_7:
-                                 baseSkillDamage = 900;
-                                 break;
-                              case Ship.Type.Type_8:
-                                 baseSkillDamage = 1000;
-                                 break;
-                           }
-                        }
-                        if (this is SeaMonsterEntity) {
-                           switch (((SeaMonsterEntity) this).monsterType) {
-                              case SeaMonsterEntity.Type.Tentacle:
-                                 baseSkillDamage = 25;
-                                 break;
-                              case SeaMonsterEntity.Type.Worm:
-                                 baseSkillDamage = 50;
-                                 break;
-                              case SeaMonsterEntity.Type.Fishman:
-                                 baseSkillDamage = 100;
-                                 break;
-                              case SeaMonsterEntity.Type.Reef_Giant:
-                                 baseSkillDamage = 150;
-                                 break;
-                           }
-                        }
+                        // TODO: Observe damage formula on live build
+                        D.editorLog("Damage fetched for sea entity logic"
+                           + " Computed: " +baseSkillDamage
+                           + " Ability: " + abilityDamageModifier 
+                           + " Name: " + ShipAbilityManager.self.getAbility(abilityId).abilityName
+                           + " ID: " + ShipAbilityManager.self.getAbility(abilityId).abilityId
+                           + " Projectile ID: " + projectileData.projectileId, Color.cyan);
+
                         damage = getDamageForShot((int)baseSkillDamage, distanceModifier);
                      }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;

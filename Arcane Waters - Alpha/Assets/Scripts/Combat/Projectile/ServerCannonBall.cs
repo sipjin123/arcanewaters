@@ -157,38 +157,10 @@ public class ServerCannonBall : NetworkBehaviour {
          int shipDamageMultiplier = (int) ((sourceEntity.damage*.001f) * projectileBaseDamage);
          int abilityDamageMultiplier = (int) ((_abilityData.damageModifier * .001f) * projectileBaseDamage);
          int totalDamage = projectileBaseDamage + shipDamageMultiplier + abilityDamageMultiplier;
-
-         // TODO: Remove this block after web tool variables are updated
-         if (hitEntity is BotShipEntity) {
-            switch (((BotShipEntity) hitEntity).shipType) {
-               case Ship.Type.Type_1:
-                  totalDamage = 90;
-                  break;
-               case Ship.Type.Type_2:
-                  totalDamage = 120;
-                  break;
-               case Ship.Type.Type_3:
-                  totalDamage = 200;
-                  break;
-               case Ship.Type.Type_4:
-                  totalDamage = 320;
-                  break;
-               case Ship.Type.Type_5:
-                  totalDamage = 520;
-                  break;
-               case Ship.Type.Type_6:
-                  totalDamage = 700;
-                  break;
-               case Ship.Type.Type_7:
-                  totalDamage = 900;
-                  break;
-               case Ship.Type.Type_8:
-                  totalDamage = 1000;
-                  break;
-            }
-         }
-
          hitEntity.currentHealth -= totalDamage;
+
+         // TODO: Observe damage formula on live build
+         D.editorLog("Total damage of network Cannonball is" + " : " + totalDamage + " Projectile: " + projectileBaseDamage + " Ship: " + shipDamageMultiplier + " Ability: " + abilityDamageMultiplier, Color.cyan);
 
          // Apply the status effect
          if (_statusType != Status.Type.None) {
@@ -196,7 +168,7 @@ public class ServerCannonBall : NetworkBehaviour {
          }
 
          // Have the server tell the clients where the explosion occurred
-         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, damage, Attack.Type.Cannon);
+         hitEntity.Rpc_ShowExplosion(sourceEntity.netId, transform.position, totalDamage, Attack.Type.Cannon);
 
          // Registers Damage throughout the clients
          hitEntity.Rpc_NetworkProjectileDamage(_creatorNetId, Attack.Type.Cannon, transform.position);
