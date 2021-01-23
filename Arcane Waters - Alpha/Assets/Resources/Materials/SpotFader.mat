@@ -80,4 +80,4 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _ScreenSize: {r: 1920, g: 1080, b: 0, a: 0}
-    - _SpotPosition: {r: 0.5539322, g: 0.37075043, b: 0, a: 0}
+    - _SpotPosition: {r: 0.44786835, g: 0.5302582, b: 0, a: 0}

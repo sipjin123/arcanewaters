@@ -12,7 +12,7 @@ public class ArmorLayer : SpriteLayer {
 
    #endregion
 
-   public void setType (Gender.Type gender, int newType, bool immediate = false) {
+   public void setType (Gender.Type gender, int newType, bool immediate = true) {
       _type = newType;
 
       // Update our Animated Sprite

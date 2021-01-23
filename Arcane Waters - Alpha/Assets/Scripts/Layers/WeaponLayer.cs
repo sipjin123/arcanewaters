@@ -19,7 +19,7 @@ public class WeaponLayer : SpriteLayer {
       return adjustedName;
    }
 
-   public void setType (Gender.Type gender, int newType) {
+   public void setType (Gender.Type gender, int newType, bool immediate = true) {
       _type = newType;
 
       // Update our Animated Sprite
@@ -27,7 +27,11 @@ public class WeaponLayer : SpriteLayer {
       string path = (newType == 0) ? "Empty_Layer" : "Weapons/Female/weapon_" + newType + suffix;
       Texture2D result = ImageManager.getTexture(path);
 
-      StartCoroutine(CO_SwapTexture(result));
+      if (immediate) {
+         setTexture(result);
+      } else {
+         StartCoroutine(CO_SwapTexture(result));
+      }
    }
 
    public int getType () {
