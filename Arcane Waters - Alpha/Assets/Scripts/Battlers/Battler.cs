@@ -251,6 +251,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public GameObject debugLogCanvas;
    public Text debugTextLog;
 
+   // The anim group
+   public Anim.Group animGroup;
+
+   // If animation frame was overridden upon death
+   public bool hasOverriddenAnimationFrame;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -379,11 +385,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          StartCoroutine(CO_SelectEnemyBattler());
       }
 
-      // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
-      /*
-      if (player is PlayerBodyEntity) {
-         debugLogCanvas.SetActive(true);
-      }*/
+      if (Global.displayLandCombatStats) {
+         // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
+         if (player is PlayerBodyEntity) {
+            debugLogCanvas.SetActive(true);
+         }
+      }
    }
 
    private IEnumerator CO_AssignPlayerNetId () {
@@ -427,44 +434,57 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Make sure non local player animation is set to death frame when it is dead
-      if (isDead() && player is PlayerBodyEntity && !player.isLocalPlayer) {
+      if (isDead() && (player is PlayerBodyEntity) && !player.isLocalPlayer) {
          AnimInfo deathAnimInfo = AnimUtil.getInfo(Anim.Group.Player, Anim.Type.Death_East);
-         foreach (SimpleAnimation anim in _anims) {
-            if (anim.enabled) {
-               anim.enabled = false;
-               anim.isPaused = true;
-               SpriteRenderer spriteRender = anim.GetComponent<SpriteRenderer>();
-               if (spriteRender.sprite != null) {
-                  if (spriteRender.sprite.texture != null) {
-                     Sprite[] _sprites = ImageManager.getSprites(spriteRender.sprite.texture);
-                     spriteRender.sprite = _sprites[deathAnimInfo.maxIndex];
-                  }
-               }
-            }
+         if (!hasOverriddenAnimationFrame) {
+            hasOverriddenAnimationFrame = true;
+            overrideAnimationFrame(deathAnimInfo);
          }
-
-         // Lock combat ability to prevent user from engaging after losing combat
-         PlayerBodyEntity playerBody = ((PlayerBodyEntity) player);
-         if (playerBody.canEngageInCombat) {
-            playerBody.canEngageInCombat = false;
-         }
+      } else if (isDead() && player is Enemy) {
+         AnimInfo deathAnimInfo = AnimUtil.getInfo(animGroup, Anim.Type.Death_East);
+         overrideAnimationFrame(deathAnimInfo);
       }
 
+      // This block is only enabled upon admin command and is double checked by the server if the user is an admin
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
-      /*
-      if (player is PlayerBodyEntity) {
-         string newMessage = "IsDead" + " : " + isDead() + "\nCurrentHealth: {" + health + "} : {" + displayedHealth + "}" + "\nAnim: " + _anims[0].currentAnimation;
-         if (player.isLocalPlayer) {
-            debugTextLog.color = Color.red;
-         } else {
-            debugTextLog.color = Color.yellow;
+      if (Global.displayLandCombatStats) {
+         if (player is PlayerBodyEntity) {
+            string newMessage = "IsDead" + " : " + isDead()
+               + "\nPlayer: " + (player is PlayerBodyEntity) + " Local: " + player.isLocalPlayer
+               + "\nCurrHealth: {" + health + "} : {" + displayedHealth + "}" 
+               + "\nAnim: " + _anims[0].currentAnimation + " : Override: " + hasOverriddenAnimationFrame;
+            if (player.isLocalPlayer) {
+               debugTextLog.color = Color.red;
+            } else {
+               debugTextLog.color = Color.yellow;
+            }
+            debugTextLog.text = newMessage;
          }
-         debugTextLog.text = newMessage;
-      }*/
+      }
 
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
          handleSpriteOutline();
+      }
+   }
+
+   private void overrideAnimationFrame (AnimInfo deathAnimInfo) {
+      foreach (SimpleAnimation anim in _anims) {
+         if (anim.enabled) {
+            anim.enabled = false;
+            anim.isPaused = true;
+            SpriteRenderer spriteRender = anim.GetComponent<SpriteRenderer>();
+            if (spriteRender.sprite != null) {
+               if (spriteRender.sprite.texture != null) {
+                  Sprite[] _sprites = ImageManager.getSprites(spriteRender.sprite.texture);
+                  if (_sprites.Length > 0 && deathAnimInfo.maxIndex < _sprites.Length) {
+                     spriteRender.sprite = _sprites[deathAnimInfo.maxIndex];
+                  } else {
+                     spriteRender.sprite = _sprites[0];
+                  }
+               }
+            }
+         }
       }
    }
 
@@ -855,6 +875,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void updateAnimGroup (Anim.Group animGroup) {
+      this.animGroup = animGroup;
       foreach (SimpleAnimation anim in _anims) {
          anim.group = animGroup;
       }
@@ -863,14 +884,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public void pauseAnim (bool isPaused) {
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
-         anim.isPaused = isPaused;
+         if (anim.enabled) {
+            anim.isPaused = isPaused;
+         }
       }
    }
 
    public void modifyAnimSpeed (float speed) {
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
-         anim.modifyAnimSpeed(speed);
+         if (anim.enabled) {
+            anim.modifyAnimSpeed(speed);
+         }
       }
    }
 
@@ -1546,25 +1571,27 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    #region Combat Effect Simulation
 
    private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action) {
-      if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
-         // If this magic ability has knockup, then start it now
-         targetBattler.StartCoroutine(targetBattler.animateKnockup());
-         yield return new WaitForSeconds(KNOCKUP_LENGTH);
-      } else if (abilityDataReference.hasShake) {
-         // If the ability magnitude will shake the screen to simulate impact
-         Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
-         yield return new WaitForSeconds(SHAKE_LENGTH);
-         targetBattler.StopCoroutine(shakeCoroutine);
-         targetBattler.playAnim(Anim.Type.Battle_East);
-      } else if (abilityDataReference.hasKnockBack) {
-         // Move the sprite back and forward to simulate knockback
-         targetBattler.playAnim(Anim.Type.Hurt_East);
-         targetBattler.StartCoroutine(targetBattler.animateKnockback());
-         yield return new WaitForSeconds(KNOCKBACK_LENGTH);
-      }
+      if (health > 0) {
+         if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
+            // If this magic ability has knockup, then start it now
+            targetBattler.StartCoroutine(targetBattler.animateKnockup());
+            yield return new WaitForSeconds(KNOCKUP_LENGTH);
+         } else if (abilityDataReference.hasShake) {
+            // If the ability magnitude will shake the screen to simulate impact
+            Coroutine shakeCoroutine = targetBattler.StartCoroutine(targetBattler.animateShake());
+            yield return new WaitForSeconds(SHAKE_LENGTH);
+            targetBattler.StopCoroutine(shakeCoroutine);
+            targetBattler.playAnim(Anim.Type.Battle_East);
+         } else if (abilityDataReference.hasKnockBack) {
+            // Move the sprite back and forward to simulate knockback
+            targetBattler.playAnim(Anim.Type.Hurt_East);
+            targetBattler.StartCoroutine(targetBattler.animateKnockback());
+            yield return new WaitForSeconds(KNOCKBACK_LENGTH);
+         }
 
-      // Note that the contact is happening right now
-      BattleUIManager.self.showDamageText(action, targetBattler);
+         // Note that the contact is happening right now
+         BattleUIManager.self.showDamageText(action, targetBattler);
+      }
    }
 
    private IEnumerator animateKnockback () {
