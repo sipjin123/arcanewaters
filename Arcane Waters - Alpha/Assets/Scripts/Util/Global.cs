@@ -84,6 +84,9 @@ public class Global
    // Gets set to false if the player has already logged in successfully.
    public static bool isFirstLogin = true;
 
+   // If stats should be displayed on land combat
+   public static bool displayLandCombatStats = false;
+
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 

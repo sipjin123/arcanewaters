@@ -158,6 +158,10 @@ public class D : MonoBehaviour {
          _lineCount++;
       }
 
+      if (ScreenLogger.self != null) {
+         ScreenLogger.self.displayLogMsg(msg);
+      }
+
       // Keep track of the log as a string, for submitting bug reports
       if (LOG_TO_STRING) {
          string logTime = (SHOW_TIME) ? "[" + DateTime.Now + "] " : "";
