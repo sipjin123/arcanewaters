@@ -76,6 +76,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ship_damage", "Sets your ship's damage", requestSetShipDamage, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "damage" }));
       cm.addCommand(new CommandData("ship_health", "Sets your ship's health", requestSetShipHealth, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "health" }));
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
+      cm.addCommand(new CommandData("screen_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("combat_log", "Allows user stats to show on land combat", requestCombatStats, requiredPrefix: CommandType.Admin));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -92,7 +94,7 @@ public class AdminManager : NetworkBehaviour
 
    */
 
-   ChatManager.self.addAdminCommand(this);
+      ChatManager.self.addAdminCommand(this);
 
    }
 
@@ -183,6 +185,36 @@ public class AdminManager : NetworkBehaviour
          }
       }
    }
+   
+  [Command]
+   protected void Cmd_RequestCombatStats () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // If the player is admin, send them an rpc allowing them to see land combat stats
+      Target_ReceiveCombatStats(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCombatStats (NetworkConnection connection) {
+      Global.displayLandCombatStats = true;
+   }
+
+   [Command]
+   protected void Cmd_RequestScreenLog () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // If the player is admin, send them an rpc allowing them to activate the GUI of the screen logger
+      Target_ReceiveScreenLog(_player.connectionToClient);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveScreenLog (NetworkConnection connection) {
+      ScreenLogger.self.adminActivateLogger();
+   }
 
    private static void requestSpawnSeaEnemy (string parameters) {
       _self.Cmd_SpawnSeaEnemy(parameters);
@@ -240,6 +272,14 @@ public class AdminManager : NetworkBehaviour
       _self.Cmd_SetShipHealth(parameter);
    }
 
+   private void requestScreenLogs () {
+      _self.Cmd_RequestScreenLog();
+   }
+
+   private void requestCombatStats () {
+      _self.Cmd_RequestCombatStats();
+   }
+   
    private static void requestMutePlayer (string parameters) {
       if (!_self._player.isAdmin()) {
          return;
