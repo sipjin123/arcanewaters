@@ -177,29 +177,33 @@ public class EffectManager : MonoBehaviour {
 
       List<Sprite> hitSprites = new List<Sprite>();
       foreach (string path in ability.hitSpritesPath) {
-         foreach (Sprite sprite in ImageManager.getSprites(path)) {
-            hitSprites.Add(sprite);
+         if (!string.IsNullOrEmpty(path)) {
+            foreach (Sprite sprite in ImageManager.getSprites(path)) {
+               hitSprites.Add(sprite);
+            }
          }
       }
 
-      // Process ability effects, skip if the ability effect was intentionally not assigned
-      CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.hitFXTimePerFrame);
-      if (effectInstance != null) {
-         // Instantiate and play the effect at that position
-         effectInstance.transform.position = new Vector3(
-             targetPos.x,
-             targetPos.y,
-             target.transform.position.z - .001f
-         );
-         effectInstance.transform.SetParent(self.transform, false);
-
-         // Flip the X scale for the defenders
-         if (!target.isAttacker()) {
-            effectInstance.transform.localScale = new Vector3(
-                effectInstance.transform.localScale.x * -1f,
-                effectInstance.transform.localScale.y,
-                effectInstance.transform.localScale.z
+      if (hitSprites.Count > 0) { 
+         // Process ability effects, skip if the ability effect was intentionally not assigned
+         CombatEffect effectInstance = self.createCombatEffect(hitSprites.ToArray(), targetPos, ability.hitFXTimePerFrame);
+         if (effectInstance != null) {
+            // Instantiate and play the effect at that position
+            effectInstance.transform.position = new Vector3(
+                targetPos.x,
+                targetPos.y,
+                target.transform.position.z - .001f
             );
+            effectInstance.transform.SetParent(self.transform, false);
+
+            // Flip the X scale for the defenders
+            if (!target.isAttacker()) {
+               effectInstance.transform.localScale = new Vector3(
+                   effectInstance.transform.localScale.x * -1f,
+                   effectInstance.transform.localScale.y,
+                   effectInstance.transform.localScale.z
+               );
+            }
          }
       }
    }
@@ -216,29 +220,33 @@ public class EffectManager : MonoBehaviour {
 
       List<Sprite> castSprites = new List<Sprite>();
       foreach (string path in ability.castSpritesPath) {
-         foreach (Sprite sprite in ImageManager.getSprites(path)) {
-            castSprites.Add(sprite);
+         if (!string.IsNullOrEmpty(path)) {
+            foreach (Sprite sprite in ImageManager.getSprites(path)) {
+               castSprites.Add(sprite);
+            }
          }
       }
+
       bool castAboveTarget = ability.abilityCastPosition == BasicAbilityData.AbilityCastPosition.AboveTarget || ability.abilityCastPosition == BasicAbilityData.AbilityCastPosition.AboveSelf;
+      if (castSprites.Count > 0) {
+         // Process ability effects, skip if the ability effect was intentionally not assigned
+         CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);
+         if (effectInstance) {
+            effectInstance.transform.position = new Vector3(
+               targetPos.x,
+               targetPos.y + (castAboveTarget ? .5f : 0),
+               source.transform.position.z - .001F
+               );
+            effectInstance.transform.SetParent(self.transform, false);
 
-      // Process ability effects, skip if the ability effect was intentionally not assigned
-      CombatEffect effectInstance = self.createCombatEffect(castSprites.ToArray(), targetPos, ability.FXTimePerFrame);
-      if (effectInstance) {
-         effectInstance.transform.position = new Vector3(
-            targetPos.x,
-            targetPos.y + (castAboveTarget ? .5f : 0),
-            source.transform.position.z - .001F
-            );
-         effectInstance.transform.SetParent(self.transform, false);
-
-         // Flip the X scale for the defenders
-         if (!source.isAttacker()) {
-            effectInstance.transform.localScale = new Vector3(
-                effectInstance.transform.localScale.x * -1f,
-                effectInstance.transform.localScale.y,
-                effectInstance.transform.localScale.z
-            );
+            // Flip the X scale for the defenders
+            if (!source.isAttacker()) {
+               effectInstance.transform.localScale = new Vector3(
+                   effectInstance.transform.localScale.x * -1f,
+                   effectInstance.transform.localScale.y,
+                   effectInstance.transform.localScale.z
+               );
+            }
          }
       }
    }
