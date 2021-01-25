@@ -3516,8 +3516,12 @@ public class RPCManager : NetworkBehaviour {
       // If the group doesn't exists, clear it from the netentity and redirect to the starting town
       if (voyageGroup == null) {
          _player.voyageGroupId = -1;
-         D.debug("Returning player to town: Voyage Group does not Exist!");
-         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+
+         // If player cant bypass restirctions, return them to town due to insufficient conditions being met
+         if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
+            D.debug("Returning player to town: Voyage Group does not Exist!");
+            _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         }
          return;
       }
 
@@ -3533,7 +3537,10 @@ public class RPCManager : NetworkBehaviour {
             D.debug("Returning player to town: Player voyage Id is incompatible with voyage group: {" + _player.getInstance().voyageId + "} : {" + voyageGroup.voyageId + "}");
          }
 
-         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         // If player cant bypass restirctions, return them to town due to insufficient conditions being met
+         if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
+            _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         }
          return;
       }
    }

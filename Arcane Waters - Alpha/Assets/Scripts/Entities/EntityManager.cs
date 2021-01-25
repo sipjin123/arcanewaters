@@ -55,10 +55,29 @@ public class EntityManager : MonoBehaviour
       return null;
    }
 
+   public bool canUserBypassWarpRestrictions (int userId) {
+      return _warpBypassingUsers.Contains(userId);
+   }
+
+   public void addBypassForUser (int userId) {
+      if (!_warpBypassingUsers.Contains(userId)) {
+         _warpBypassingUsers.Add(userId);
+      }
+   }
+
+   public void removeBypassForUser (int userId) {
+      if (_warpBypassingUsers.Contains(userId)) {
+         _warpBypassingUsers.Remove(userId);
+      }
+   }
+
    #region Private Variables
 
    // A mapping of userId to Entity object
    protected Dictionary<int, NetEntity> _entities = new Dictionary<int, NetEntity>();
+
+   // A list of user ids that can bypass warp restrictions
+   protected List<int> _warpBypassingUsers = new List<int>();
 
    #endregion
 }
