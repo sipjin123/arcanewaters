@@ -158,7 +158,7 @@ public class D : MonoBehaviour {
          _lineCount++;
       }
 
-      if (ScreenLogger.self != null) {
+      if (ScreenLogger.self != null && ScreenLogger.isEnabled) {
          ScreenLogger.self.displayLogMsg(msg);
       }
 

@@ -7,7 +7,7 @@ public class ScreenLogger : MonoBehaviour {
    #region Public Variables
 
    // If logger is enabled
-   private bool isEnabled;
+   public static bool isEnabled;
 
    // Self
    public static ScreenLogger self;
@@ -15,33 +15,36 @@ public class ScreenLogger : MonoBehaviour {
    // The text where the logs will show
    public Text textUI;
 
-   // The canvas where the logs will show
-   public Canvas canvas;
+   // The object where the logs will show
+   public GameObject canvasObj;
 
    #endregion
 
    private void Awake () {
       self = this;
       isEnabled = true;
-      canvas.enabled = false;
+      canvasObj.SetActive(false);
 
       #if CLOUD_BUILD
       isEnabled = false;
-      canvas.enabled = false;
       #endif
    }
 
    public void adminActivateLogger () {
       isEnabled = true;
-      canvas.enabled = true;
+      canvasObj.SetActive(true);
    }
 
    public void displayLogMsg (string message) {
-      if (!isEnabled || !canvas.enabled) {
+      if (!isEnabled) {
          return;
       }
 
-      textUI.text += "\n" + message;
+      try {
+         textUI.text += "\n" + message;
+      } catch { 
+         // Only process text write if possible
+      }
    }
 
    private void Update () {
@@ -52,11 +55,11 @@ public class ScreenLogger : MonoBehaviour {
       if (Input.GetKey(KeyCode.LeftAlt)) {
          // Displays log screen when holding left and Q button
          if (Input.GetKeyDown(KeyCode.Q)) {
-            canvas.enabled = !canvas.enabled;
+            canvasObj.SetActive(!canvasObj.activeSelf);
          }
 
          // Clears log screen when holding left and P button
-         if (Input.GetKeyDown(KeyCode.P) && canvas.enabled) {
+         if (Input.GetKeyDown(KeyCode.P) && canvasObj.activeSelf) {
             clearLog();
          }
       }
