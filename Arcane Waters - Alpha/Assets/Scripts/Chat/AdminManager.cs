@@ -78,6 +78,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
       cm.addCommand(new CommandData("screen_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("combat_log", "Allows user stats to show on land combat", requestCombatStats, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("one_shot", "Allows user to one shot enemies in land combat", requestOneShot, requiredPrefix: CommandType.Admin));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -185,7 +186,19 @@ public class AdminManager : NetworkBehaviour
          }
       }
    }
-   
+
+   [Command]
+   protected void Cmd_RequestOneShot () {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      // If the player is admin, allow them to one shot land monsters for quick combat iteration
+      if (_player is PlayerBodyEntity) {
+         ((PlayerBodyEntity) _player).oneShotEnemies = true;
+      }
+   }
+
   [Command]
    protected void Cmd_RequestCombatStats () {
       if (!_player.isAdmin()) {
@@ -278,6 +291,10 @@ public class AdminManager : NetworkBehaviour
 
    private void requestCombatStats () {
       _self.Cmd_RequestCombatStats();
+   }
+
+   private void requestOneShot () {
+      _self.Cmd_RequestOneShot();
    }
    
    private static void requestMutePlayer (string parameters) {

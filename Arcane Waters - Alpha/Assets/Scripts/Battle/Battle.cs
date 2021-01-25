@@ -137,9 +137,9 @@ public class Battle : NetworkBehaviour {
 
             // Handles the current and only attack a monster can do
             if (battlerData.isSupportType && lowHpAllies > 0) {
-               BattleManager.self.executeBattleAction(this, battler, battlerAllies, 0, AbilityType.BuffDebuff);
+               BattleManager.self.executeBattleAction(this, battler, battlerAllies, 0, AbilityType.BuffDebuff, false);
             } else {
-               BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
+               BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard, false);
             }
          }
       }

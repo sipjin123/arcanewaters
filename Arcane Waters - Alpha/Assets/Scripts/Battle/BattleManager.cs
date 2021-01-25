@@ -471,7 +471,7 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
+   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType, bool oneShotAttack) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
 
@@ -588,6 +588,11 @@ public class BattleManager : MonoBehaviour {
             AttackAction.ActionType currentActionType = AttackAction.ActionType.Melee;
             if (attackAbilityData.abilityActionType == AbilityActionType.Ranged) {
                currentActionType = AttackAction.ActionType.Range;
+            }
+
+            // One shot enemie if admin command is enabled
+            if (oneShotAttack) {
+               damage += 9999;
             }
 
             // Create the Action object
