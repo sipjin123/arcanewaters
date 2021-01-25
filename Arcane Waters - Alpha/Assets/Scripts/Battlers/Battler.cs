@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -257,6 +258,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If animation frame was overridden upon death
    public bool hasOverriddenAnimationFrame;
 
+   // The time that determines all animation state should stop for this battler and wait for the battle end
+   public DateTime animationStateEndTime;
+
    #endregion
 
    public void stopActionCoroutine () {
@@ -280,6 +284,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Keep track of all of our Simple Animation components
       _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>());
 
+      // Setup default time, will be overridden upon animation death is triggered
+      animationStateEndTime = DateTime.UtcNow.AddDays(1);
       AP = DEFAULT_AP;
    }
 
@@ -434,15 +440,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Make sure non local player animation is set to death frame when it is dead
-      if (isDead() && (player is PlayerBodyEntity) && !player.isLocalPlayer) {
-         AnimInfo deathAnimInfo = AnimUtil.getInfo(Anim.Group.Player, Anim.Type.Death_East);
-         if (!hasOverriddenAnimationFrame) {
-            hasOverriddenAnimationFrame = true;
+      if (isDead() && !player.isLocalPlayer && !hasOverriddenAnimationFrame && DateTime.UtcNow > animationStateEndTime) {
+         hasOverriddenAnimationFrame = true;
+         if (player is PlayerBodyEntity) {
+            AnimInfo deathAnimInfo = AnimUtil.getInfo(Anim.Group.Player, Anim.Type.Death_East);
+            overrideAnimationFrame(deathAnimInfo);
+         } else if (player is Enemy) {
+            AnimInfo deathAnimInfo = AnimUtil.getInfo(animGroup, Anim.Type.Death_East);
             overrideAnimationFrame(deathAnimInfo);
          }
-      } else if (isDead() && player is Enemy) {
-         AnimInfo deathAnimInfo = AnimUtil.getInfo(animGroup, Anim.Type.Death_East);
-         overrideAnimationFrame(deathAnimInfo);
       }
 
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
@@ -866,6 +872,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void playAnim (Anim.Type animationType) {
+      if (animationType == Anim.Type.Death_East) {
+         animationStateEndTime = DateTime.UtcNow.AddSeconds(1);
+      }
+
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
          if (anim.enabled) {
