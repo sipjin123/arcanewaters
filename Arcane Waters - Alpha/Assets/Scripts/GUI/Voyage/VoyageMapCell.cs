@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class VoyageMapCell : MonoBehaviour {
    #region Public Variables
@@ -59,9 +60,12 @@ public class VoyageMapCell : MonoBehaviour {
    public Sprite pvpIcon;
    public Sprite pveIcon;
 
+   // The click event
+   public UnityEvent buttonClickEvent;
+
    #endregion
 
-   public void setCellForVoyage (Voyage voyage) {
+   public void setCellForVoyage (Voyage voyage, UnityAction action) {
       _voyage = voyage;
 
       // Set default sprites
@@ -119,6 +123,10 @@ public class VoyageMapCell : MonoBehaviour {
             timeOutline.effectColor = Color.white;
             break;
       }
+
+      // Set the button click event
+      buttonClickEvent.RemoveAllListeners();
+      buttonClickEvent.AddListener(action);
    }
 
    public void onPointerEnterButton () {
@@ -160,7 +168,7 @@ public class VoyageMapCell : MonoBehaviour {
 
    public void onPointerClickButton () {
       if (_interactable) {
-         VoyagePanel.self.selectVoyageMap(_voyage);
+         buttonClickEvent.Invoke();
 
          // Play sound
          SoundManager.play2DClip(SoundManager.Type.Layouts_Destinations);

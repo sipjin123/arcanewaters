@@ -819,20 +819,21 @@ public class RPCManager : NetworkBehaviour {
       List<Voyage> voyageList = new List<Voyage>(voyageArray);
 
       // Make sure the panel is showing
-      PanelManager.self.selectedPanel = Panel.Type.Voyage;
-      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
-
-      if (!panel.isShowing()) {
-         PanelManager.self.linkPanel(panel.type);
-      }
+      PanelManager.self.linkIfNotShowing(Panel.Type.Voyage);
 
       // Pass the data to the panel
+      VoyagePanel panel = (VoyagePanel) PanelManager.self.get(Panel.Type.Voyage);
       panel.updatePanelWithVoyageList(voyageList);
    }
 
    [TargetRpc]
-   public void Target_ConfirmWarpToVoyageArea (NetworkConnection connection) {
-      VoyageManager.self.displayWarpToVoyageConfirmScreen();
+   public void Target_ReceiveCurrentVoyageInstance (NetworkConnection connection, Voyage voyage) {
+      // Make sure the panel is showing
+      PanelManager.self.linkIfNotShowing(Panel.Type.ReturnToCurrentVoyagePanel);
+
+      // Pass the data to the panel
+      ReturnToCurrentVoyagePanel panel = (ReturnToCurrentVoyagePanel) PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel);
+      panel.updatePanelWithCurrentVoyage(voyage);
    }
 
    [TargetRpc]
@@ -3274,10 +3275,15 @@ public class RPCManager : NetworkBehaviour {
          return;
       }
 
-      // If the user has already joined a voyage map, display a confirm screen to warp to the map
+      // If the user has already joined a voyage map, display a panel with the current map
       VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
       if (voyageGroup != null && voyageGroup.voyageId > 0) {
-         Target_ConfirmWarpToVoyageArea(_player.connectionToClient);
+         Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
+         if (voyage != null) {
+            Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
+         } else {
+            sendError("Could not find the current voyage instance!");
+         }
          return;
       }
 
@@ -3938,8 +3944,8 @@ public class RPCManager : NetworkBehaviour {
       NetworkServer.Spawn(bot.gameObject);
    }
 
-   [Command]
-   public void Cmd_SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, SeaMonsterEntity.Type enemyType) {
+   [Server]
+   public void SpawnBossChild (Vector2 spawnPosition, uint parentEntityID, int xVal, int yVal, int variety, SeaMonsterEntity.Type enemyType) {
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -3970,6 +3976,17 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_SpawnBossParent (Vector2 spawnPosition, SeaMonsterEntity.Type enemyType) {
+      Area area = AreaManager.self.getArea(_player.areaKey);
+      if (area == null) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "GraphPath is not ready on server yet!");
+         return;
+      }
+
+      if (area.getGraph() == null) {
+         ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "GraphPath is not ready on server yet!");
+         return;
+      }
+
       SeaMonsterEntity bot = Instantiate(PrefabsManager.self.seaMonsterPrefab, spawnPosition, Quaternion.identity);
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
@@ -3987,14 +4004,14 @@ public class RPCManager : NetworkBehaviour {
       float diagonalDistanceGap = .35f;
       uint parentID = bot.netIdent.netId;
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(distanceGap, -distanceGap), parentID, 1, -1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(-distanceGap, -distanceGap), parentID, -1, -1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(distanceGap, distanceGap), parentID, 1, 1, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(-distanceGap, distanceGap), parentID, -1, 1, 0, SeaMonsterEntity.Type.Horror_Tentacle);
 
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, SeaMonsterEntity.Type.Horror_Tentacle);
-      Cmd_SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(-diagonalDistanceGap, 0), parentID, -1, 0, 1, SeaMonsterEntity.Type.Horror_Tentacle);
+      SpawnBossChild(spawnPosition + new Vector2(diagonalDistanceGap, 0), parentID, 1, 0, 0, SeaMonsterEntity.Type.Horror_Tentacle);
    }
 
    [Command]

@@ -152,15 +152,6 @@ public class VoyageManager : MonoBehaviour {
       Global.player.rpc.Cmd_RequestVoyageListFromServer();
    }
 
-   public void displayWarpToVoyageConfirmScreen () {
-      PanelManager.self.showConfirmationPanel("Do you want to warp to your current voyage?",
-         () => confirmWarpToVoyageMap());
-   }
-
-   public void confirmWarpToVoyageMap () {
-      Global.player.rpc.Cmd_WarpToCurrentVoyageMap();
-   }
-
    protected void createVoyageInstanceIfNeeded () {
       // Only the master server launches the creation of voyages instances
       NetworkedServer server = ServerNetworkingManager.self.server;

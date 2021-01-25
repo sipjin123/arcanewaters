@@ -113,6 +113,11 @@ public class VoyageGroupPanel : ClientMonoBehaviour
             // Start the countdown
             PanelManager.self.countdownScreen.seconds = LEAVING_COUNTDOWN_SECONDS;
             PanelManager.self.countdownScreen.show();
+
+            // Close the current voyage panel if it is open
+            if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
+               PanelManager.self.unlinkPanel();
+            }
          });
    }
 

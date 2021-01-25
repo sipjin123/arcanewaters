@@ -1,1 +1,1 @@
-{"name":"ArcaneWaters-Server-Windows","projectName":"ArcaneWaters","buildType":"Server","branch":"Development","database":"Dev","platform":"Windows","distribution":"Standalone"}
+{"deploymentId":1,"name":"ArcaneWaters-Server-Dev-Windows-Standalone","projectName":"ArcaneWaters","buildType":"Server","branch":"Development","database":"Dev","platform":"Windows","distribution":"Standalone","createdAt":"2021-01-19T22:22:11+00:00","lastUpdate":"2021-01-22T21:21:32+00:00"}

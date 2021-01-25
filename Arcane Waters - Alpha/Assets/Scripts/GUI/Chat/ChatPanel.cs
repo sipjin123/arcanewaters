@@ -24,6 +24,10 @@ public class ChatPanel : MonoBehaviour {
    // The parameter for smooth movement (smaller is faster)
    public static float SMOOTH_TIME = 0.05f;
 
+   // The panel min and max width
+   public static float MIN_WIDTH = 415;
+   public static float MAX_WIDTH = 850;
+
    // The input field where the whisper recipient name will be input
    public InputField nameInputField;
 
@@ -62,6 +66,7 @@ public class ChatPanel : MonoBehaviour {
    public CanvasGroup toolbarCanvas;
    public InputField inputField;
    public GameObject scrollBarContainer;
+   public GameObject resizeHandle;
    public Text chatModeText;
 
    // The placeholder message
@@ -98,6 +103,9 @@ public class ChatPanel : MonoBehaviour {
 
    // The button used to show chat types
    public GameObject expandChatTypesButtons;
+
+   // The width resize handle
+   public RectTransform resizeHandleZone;
 
    // Self
    public static ChatPanel self;
@@ -175,6 +183,23 @@ public class ChatPanel : MonoBehaviour {
       // In minimized mode, switch to normal mode when clicking the input field
       if (_mode == Mode.Minimized && wasJustFocused()) {
          setMode(Mode.Normal);
+      }
+
+      // Enable resizing mode when clicking the resize handle
+      if (Input.GetMouseButtonDown(0) && _mode != Mode.Minimized && RectTransformUtility.RectangleContainsScreenPoint(resizeHandleZone, Input.mousePosition)) {
+         _isResizing = true;
+         _resizingStartDeltaX = Input.mousePosition.x - (messageBackgroundRect.anchoredPosition.x + messageBackgroundRect.sizeDelta.x);
+      }
+
+      // Maintain the resize mode while the mouse button is held
+      if (Input.GetMouseButton(0)) {
+         if (_isResizing) {
+            float targetWidth = Input.mousePosition.x - _resizingStartDeltaX - messageBackgroundRect.anchoredPosition.x;
+            targetWidth = Mathf.Clamp(targetWidth, MIN_WIDTH, MAX_WIDTH);
+            messageBackgroundRect.sizeDelta = new Vector2(targetWidth, messageBackgroundRect.sizeDelta.y);
+         }
+      } else {
+         _isResizing = false;
       }
 
       // Handle panel animations depending on the mode
@@ -796,6 +821,7 @@ public class ChatPanel : MonoBehaviour {
          case Mode.Minimized:
             toolbarCanvas.gameObject.SetActive(false);
             scrollBarContainer.SetActive(false);
+            resizeHandle.SetActive(false);
             messageBackgroundImage.raycastTarget = false;
 
             // Need to rebuild the message list since some messages may toggle their visibility
@@ -804,6 +830,7 @@ public class ChatPanel : MonoBehaviour {
          case Mode.Normal:
             toolbarCanvas.gameObject.SetActive(true);
             scrollBarContainer.SetActive(true);
+            resizeHandle.SetActive(true);
             expandButton.SetActive(true);
             collapseButton.SetActive(true);
             messageBackgroundImage.raycastTarget = true;
@@ -815,6 +842,7 @@ public class ChatPanel : MonoBehaviour {
          case Mode.Expanded:
             toolbarCanvas.gameObject.SetActive(true);
             scrollBarContainer.SetActive(true);
+            resizeHandle.SetActive(true);
             expandButton.SetActive(false);
             collapseButton.SetActive(true);
             messageBackgroundImage.raycastTarget = true;
@@ -862,6 +890,12 @@ public class ChatPanel : MonoBehaviour {
 
    // Check whether toggle values were modified by player interaction or in code
    protected bool _modifiedByCode = false;
+
+   // Gets set to true when the user is resizing the panel
+   protected bool _isResizing = false;
+
+   // The mouse x position relative to the panel border, at the start of the resizing
+   protected float _resizingStartDeltaX = 0;
 
    #endregion
 }

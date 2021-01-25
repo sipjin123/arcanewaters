@@ -36,9 +36,18 @@ public class LoggerManager : MonoBehaviour {
    }
    
    void Init() {
+      // deployment id
+      var deploymentConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string,object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string,object>;
+      deploymentId = "0";
+      
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+         deploymentId = deploymentConfig["deploymentId"].ToString();
+      }
+
       messagesDirPath = $"{Application.persistentDataPath}/{"messages"}";
       currentSendDelay = 0;
-      
+
       messagesAreSending = false;
       messagesToSend = "";
       messagesToSendDate = "";
@@ -74,6 +83,7 @@ public class LoggerManager : MonoBehaviour {
       
       Dictionary <string, string> messageData = new Dictionary<string, string>();
 
+      messageData["deploymentId"] = deploymentId;
       messageData["message"] = logString;
       messageData["stackTrace"] = stackTrace;
       messageData["messageType"] = type.ToString();
@@ -248,5 +258,7 @@ public class LoggerManager : MonoBehaviour {
    string messagesToSend;
    string messagesToSendDate;
    List <string> messagesIds;
+
+   string deploymentId;
    #endregion
 }

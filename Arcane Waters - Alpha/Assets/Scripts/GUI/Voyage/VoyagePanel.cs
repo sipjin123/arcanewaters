@@ -40,7 +40,7 @@ public class VoyagePanel : Panel
       // Instantiate the cells
       foreach (Voyage voyage in voyageList) {
          VoyageMapCell cell = Instantiate(mapCellPrefab, mapCellsContainer.transform, false);
-         cell.setCellForVoyage(voyage);
+         cell.setCellForVoyage(voyage, () => selectVoyageMap(voyage));
       }
 
       // Trigger the tutorial

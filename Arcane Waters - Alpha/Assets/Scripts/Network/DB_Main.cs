@@ -8838,6 +8838,10 @@ public class DB_Main : DB_MainStub
       _connectionString = getDefaultConnectionString(server, database, uid, password);
    }
 
+   public static void setServerForDevGlobal (string server = "") {
+      _connectionToDevGlobalString = getConnectionToDevGlobalString(server);
+   }
+
    public static new void setServerFromConfig () {
       string dbServerConfigFile = Path.Combine(Application.dataPath, "dbConfig.json");
 
@@ -9054,7 +9058,7 @@ public class DB_Main : DB_MainStub
          password == "" ? _password : password);
    }
 
-   public static string getConnectionToDevGlobalString () {
+   public static string getConnectionToDevGlobalString (string server = "") {
 
       DatabaseCredentials creds = loadDatabaseCredentials("Dev");
       if (creds != null) {
@@ -9063,7 +9067,7 @@ public class DB_Main : DB_MainStub
          _passwordDev = string.IsNullOrEmpty(creds.password) ? _passwordDev : creds.password;
       }
 
-      return buildConnectionString(_remoteServerDev, _globalDatabase, _uidDev, _passwordDev);
+      return buildConnectionString(server == "" ? _remoteServerDev : server, _globalDatabase, _uidDev, _passwordDev);
    }
 
    public static string getConnectionToDevArcaneString () {
