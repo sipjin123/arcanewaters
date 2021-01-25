@@ -37,7 +37,7 @@ public class ScreenLogger : MonoBehaviour {
    }
 
    public void displayLogMsg (string message) {
-      if (!isEnabled) {
+      if (!isEnabled || !canvas.enabled) {
          return;
       }
 
