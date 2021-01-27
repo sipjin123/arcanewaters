@@ -83,12 +83,12 @@ public class NetworkedProjectile : MonoBehaviour {
       }
    }
 
-   public void init (uint netID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, float lifetime = -1, bool usesArc = false, float damageMultiplier = 1) {
+   public void init (uint netID, int instanceID, Attack.ImpactMagnitude impactType, int abilityId, Vector2 startPos, float lifetime = -1, bool usesArc = false, float distanceDamageMultiplier = 1) {
       this.startPos = startPos;
       this.usesArc = usesArc;
       transform.position = startPos;
 
-      _damageMultiplier = damageMultiplier;
+      _distanceDamageMultiplier = distanceDamageMultiplier;
       _creatorNetId = netID;
       _instanceId = instanceID;
       _impactMagnitude = impactType;
@@ -205,19 +205,20 @@ public class NetworkedProjectile : MonoBehaviour {
 
       // The Server will handle applying damage
       if (NetworkServer.active) {
-         float baseDamage = 0;
+         float calculatedDamage = 0;
          if (sourceEntity is SeaMonsterEntity) {
             SeaMonsterEntity seaMonsterEntity = (SeaMonsterEntity) sourceEntity;
-            SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getMonster(seaMonsterEntity.monsterType);
             ShipAbilityData seaMonsterAbilityData = ShipAbilityManager.self.getAbility(seaMonsterEntity.seaMonsterData.skillIdList[0]);
+            ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(seaMonsterAbilityData.projectileId);
             float damageModifier = seaMonsterAbilityData.damageModifier;
-            baseDamage = SeaMonsterEntity.BASE_SEAMONSTER_DAMAGE + (SeaMonsterEntity.BASE_SEAMONSTER_DAMAGE * damageModifier);
+            float baseDamage = projectileData.projectileDamage;
+            calculatedDamage = baseDamage + (baseDamage * damageModifier);
 
             // TODO: Observe damage formula on live build
-            D.editorLog("The network projectile damage is"+ " : " +baseDamage+ " : " +damageModifier+ " Modified: " + ((baseDamage / 3f) * _damageMultiplier), Color.cyan);
+            D.editorLog("The network projectile damage is"+ " : " + calculatedDamage + " AbilityModif: " +damageModifier+ " DistanceModif: " + ((calculatedDamage) * _distanceDamageMultiplier), Color.cyan);
          }
 
-         int totalDamage = (int) ((baseDamage / 3f) * _damageMultiplier);
+         int totalDamage = (int) ((calculatedDamage) * _distanceDamageMultiplier);
          hitEntity.currentHealth -= totalDamage;
 
          switch (attackType) {
@@ -225,7 +226,7 @@ public class NetworkedProjectile : MonoBehaviour {
                ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(Attack.Type.Mini_Boulder);
                if (shipAbilityData != null) {
                   // Spawn Mini Boulders upon Collision
-                  SeaManager.self.getEntity(_creatorNetId).fireAtSpot(transform.position, shipAbilityData.abilityId, 0, 0, transform.position);
+                  SeaManager.self.getEntity(_creatorNetId).fireAtSpot(hitEntity.transform.position, shipAbilityData.abilityId, 0, 0, hitEntity.transform.position);
                } 
                break;
             case Attack.Type.Venom:
@@ -234,6 +235,9 @@ public class NetworkedProjectile : MonoBehaviour {
 
                // Spawn Damage Per Second Residue
                hitEntity.Rpc_AttachEffect(totalDamage, Attack.Type.Venom);
+               break;
+            default:
+               D.debug("Cant process attack");
                break;
          }
          // Registers Damage throughout the clients
@@ -276,7 +280,7 @@ public class NetworkedProjectile : MonoBehaviour {
    protected int _instanceId;
 
    // The damage multiplier of this projectile considering the current travel force
-   protected float _damageMultiplier = 1;
+   protected float _distanceDamageMultiplier = 1;
 
    // Determines the impact level of this projectile
    protected Attack.ImpactMagnitude _impactMagnitude = Attack.ImpactMagnitude.None;

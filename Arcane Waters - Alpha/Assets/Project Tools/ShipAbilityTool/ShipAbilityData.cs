@@ -45,7 +45,7 @@ public class ShipAbilityData
    // Ability Cooldown
    public float coolDown;
 
-   // Speed of the projectile
+   // Speed of the projectile, the higher the value the faster the speed
    public float projectileSpeed;
 
    // The sprite of the skill

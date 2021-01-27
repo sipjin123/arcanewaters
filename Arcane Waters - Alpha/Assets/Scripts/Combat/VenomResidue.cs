@@ -17,7 +17,7 @@ public class VenomResidue : MonoBehaviour {
    public int instanceId;
 
    // The damage to the ships per second
-   public int damagePerSec = 5;
+   public int damagePerSec = 10;
 
    // The frequency of the residue to process the damage
    public const float DAMAGE_FREQUENCY = .75f;

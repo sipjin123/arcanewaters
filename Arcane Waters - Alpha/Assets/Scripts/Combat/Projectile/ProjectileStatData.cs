@@ -7,7 +7,7 @@ public class ProjectileStatData  {
    // The primary id that is referenced by dependent objects, this is a unique id
    public int projectileId = -1;
 
-   // The mass of the projectile, this directly affects the speed of the projectile
+   // The mass of the projectile, this directly affects the speed of the projectile, the higher the value the faster to reach target
    public float projectileMass = .5f;
 
    // The scale of the projectile

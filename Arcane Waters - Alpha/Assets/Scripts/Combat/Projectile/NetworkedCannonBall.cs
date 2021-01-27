@@ -42,8 +42,7 @@ public class NetworkedCannonBall : NetworkedProjectile
       // The Server will handle applying damage
       if (NetworkServer.active) {
          SeaEntity sourceEntity = SeaManager.self.getEntity(this._creatorNetId);
-
-         int damage = (int) (sourceEntity.damage * _damageMultiplier);
+         int damage = (int) (sourceEntity.damage * _distanceDamageMultiplier);
          hitEntity.currentHealth -= damage;
 
          // Apply the status effect
