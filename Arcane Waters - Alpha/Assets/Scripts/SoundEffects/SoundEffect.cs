@@ -40,6 +40,9 @@ public class SoundEffect
    [Range(0.0f, 1.0f)]
    public float offset = 0.0f;
 
+   // Whether to play this sound in 3D
+   public bool is3D = false;
+
    public enum ValueType
    {
       VOLUME = 1,

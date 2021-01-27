@@ -110,11 +110,21 @@ public class CommandData {
       return getPrefix() + " - " + _description;
    }
 
-   public string getPrefix () {
+   public string getRequiredPrefix () {
       string prefix = "";
 
       if (_requiredPrefix != CommandType.None) {
-         prefix += ChatUtil.commandTypePrefixes[_requiredPrefix][0] + " ";
+         prefix += ChatUtil.commandTypePrefixes[_requiredPrefix][0];
+      }
+
+      return prefix;
+   }
+
+   public string getPrefix () {
+      string prefix = getRequiredPrefix();
+
+      if (prefix != "") {
+         prefix += " ";
       }
 
       prefix += _commandString;

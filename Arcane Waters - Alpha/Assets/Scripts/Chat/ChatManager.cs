@@ -13,6 +13,10 @@ public class ChatManager : MonoBehaviour {
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
    public ChatPanel chatPanel;
 
+   // The panel managing the display and changing of the auto-complete options
+   [HideInInspector]
+   public AutoCompletePanel autoCompletePanel;
+
    // Self
    public static ChatManager self;
 
@@ -22,8 +26,8 @@ public class ChatManager : MonoBehaviour {
       self = this;
 
       // Setup auto-complete panel
-      GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-complete Panel"), chatPanel.inputField.transform.parent.parent.parent.parent);
-      _autoCompletePanel = optionsPanel.GetComponent<AutoCompletePanel>();
+      GameObject optionsPanel = Instantiate(Resources.Load<GameObject>("Prefabs/Auto-completes/Auto-complete Section"), chatPanel.inputField.transform.parent.parent);
+      autoCompletePanel = optionsPanel.GetComponentInChildren<AutoCompletePanel>();
    }
 
    private void Start () {
@@ -32,22 +36,23 @@ public class ChatManager : MonoBehaviour {
       _commandData.Add(new CommandData("/emote", "Performs an emote", sendEmoteMessageToServer, parameterNames: new List<string>() { "emoteDescription" }));
       _commandData.Add(new CommandData("/invite", "Invites a user to your group", VoyageGroupManager.self.handleInviteCommand, parameterNames: new List<string>() { "userName" }));
       _commandData.Add(new CommandData("/group", "Send a message to your group", sendGroupMessageToServer, parameterNames: new List<string>() { "message" }));
-      _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer priveleges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
+      _commandData.Add(new CommandData("/officer", "Executes an officer command, if you have officer privileges", sendOfficerMessageToServer, parameterNames: new List<string>() { "officerCommand" }));
       _commandData.Add(new CommandData("/guild", "Executes a guild command", sendGuildMessageToServer, parameterNames: new List<string>() { "guildCommand" }));
       _commandData.Add(new CommandData("/complain", "Sends a complaint about a user", sendComplainToServer, parameterNames: new List<string>() { "userName", "details" }));
       _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
    }
 
-   public void addAdminCommand (AdminManager adminManager) {
-      CommandData adminCommand = _commandData.Find((x) => x.getPrefix() == "/admin");
-      if (adminCommand == null) {
-         _commandData.Add(new CommandData("/admin", "Executes an admin command, if you have admin priveleges", noAdminCommandFound, parameterNames: new List<string>() { "adminCommand" }));
+   public void removeAdminCommands () {
+      for (int i = _commandData.Count - 1; i >= 0; i--) {
+         CommandData data = _commandData[i];
+         if (data.getRequiredPrefix().Equals("/admin") || data.getPrefix().Equals("/admin")) {
+            _commandData.Remove(data);
+         }
       }
    }
 
-   public bool hasAdminCommands () {
-      CommandData adminCommand = _commandData.Find((x) => x.getPrefix() == "/admin");
-      return (adminCommand != null);
+   public void addAdminCommand (AdminManager adminManager) {
+      _commandData.Add(new CommandData("/admin", "Executes an admin command, if you have admin privileges", noAdminCommandFound, parameterNames: new List<string>() { "adminCommand" }));
    }
 
    public void addChat (string message, ChatInfo.Type chatType) {
@@ -166,13 +171,13 @@ public class ChatManager : MonoBehaviour {
    }
 
    public void onChatLostFocus () {
-      _autoCompletePanel.inputFieldFocused = false;
-      _autoCompletePanel.updatePanel();
+      autoCompletePanel.inputFieldFocused = false;
+      autoCompletePanel.updatePanel();
    }
 
    public void onChatGainedFocus () {
-      _autoCompletePanel.inputFieldFocused = true;
-      _autoCompletePanel.updatePanel();
+      autoCompletePanel.inputFieldFocused = true;
+      autoCompletePanel.updatePanel();
    }
 
    public void processChatInput (string textToProcess) {
@@ -196,9 +201,14 @@ public class ChatManager : MonoBehaviour {
    protected void executeChatCommand (string message) {
       foreach (CommandData command in _commandData) {
          if (command.matchesInput(message, mustEqual: true)) {
-            string prefix = command.getPrefix();
-            string trimmedMessage = message.Remove(0, prefix.Length);
-            trimmedMessage = trimmedMessage.Trim();
+            string[] messageParts = message.Split(' ');
+            string prefix = messageParts[0];
+
+            string trimmedMessage = message.Remove(0, prefix.Length).Trim();
+
+            if (command.getRequiredPrefix() != "") {
+               trimmedMessage = trimmedMessage.Remove(0, messageParts[1].Length).Trim();
+            }
             command.invoke(trimmedMessage);
             return;
          }
@@ -287,7 +297,7 @@ public class ChatManager : MonoBehaviour {
          }
       }
 
-      _autoCompletePanel.setAutoCompletes(autoCompleteCommands);
+      autoCompletePanel.setAutoCompletes(autoCompleteCommands);
    }
 
    #region Private Variables
@@ -302,9 +312,6 @@ public class ChatManager : MonoBehaviour {
 
    // The default number of messages to include in the log when requested
    protected const int MAX_MESSAGES_IN_LOG = 50;
-
-   // The panel managing the display and changing of the auto-complete options
-   private AutoCompletePanel _autoCompletePanel;
 
    #endregion
 }

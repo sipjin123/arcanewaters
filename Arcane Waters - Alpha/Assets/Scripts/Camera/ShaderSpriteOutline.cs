@@ -30,8 +30,6 @@ public class ShaderSpriteOutline : MonoBehaviour {
       if (_isVisible && outlineRenderer != null) {
          outlineRenderer.setOutlinedSprite(this);         
       }
-
-      _wasVisible = _isVisible;
    }
 
    public void setVisibility (bool isVisible) {
@@ -53,6 +51,15 @@ public class ShaderSpriteOutline : MonoBehaviour {
       return _renderers;
    }
 
+   public void setNewColor (Color newColor) {
+      if (outlineRenderer == null || newColor == _color) {
+         return;
+      }
+
+      outlineRenderer.setColor(newColor);
+      _color = newColor;
+   }
+
    #region Private Variables
 
    // The renderers of this sprite
@@ -62,8 +69,8 @@ public class ShaderSpriteOutline : MonoBehaviour {
    // Whether this outline is visible
    private bool _isVisible;
 
-   // Whether this outline visible last frame
-   private bool _wasVisible;
+   // The color of the outline
+   private Color _color;
 
    #endregion
 }

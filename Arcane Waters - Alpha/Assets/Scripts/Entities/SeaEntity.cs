@@ -100,6 +100,10 @@ public class SeaEntity : NetEntity
             _playedDestroySound = true;
             SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
 
+            if (_burningCoroutine != null) {
+               StopCoroutine(_burningCoroutine);
+            }
+
             // Hide all the sprites
             foreach (SpriteRenderer renderer in _renderers) {
                renderer.enabled = false;

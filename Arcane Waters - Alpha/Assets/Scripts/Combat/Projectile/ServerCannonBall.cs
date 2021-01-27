@@ -36,7 +36,6 @@ public class ServerCannonBall : NetworkBehaviour {
 
       _rigidbody.velocity = projectileVelocity;
       _startTime = NetworkTime.time;
-
    }
 
    [Server]
@@ -90,12 +89,16 @@ public class ServerCannonBall : NetworkBehaviour {
    }
 
    private void Update () {
+      if (_hasCollided) {
+         return;
+      }
+
       updateHeight();
 
       if (isServer) {
          double timeAlive = NetworkTime.time - _startTime;
 
-         if (timeAlive > _lifetime && !_hasCollided) {
+         if (timeAlive > _lifetime) {
             processDestruction();
          } else if (NetworkTime.time - _lastVelocitySyncTime > 0.2) {
             _lastVelocitySyncTime = NetworkTime.time;
@@ -109,7 +112,7 @@ public class ServerCannonBall : NetworkBehaviour {
 
       // Calculate the 'a' constant for the quadratic graph equation
       float a = (4 * _lobHeight) / -(_lifetime * _lifetime);
-      float timeAlive = (float)(NetworkTime.time - _startTime);
+      float timeAlive = Mathf.Clamp((float)(NetworkTime.time - _startTime), 0.0f, _lifetime);
       Vector3 ballPos = _ballCollider.transform.localPosition;
 
       // Use a quadratic graph equation to determine the height (y = a * x * (x - k))
@@ -220,7 +223,6 @@ public class ServerCannonBall : NetworkBehaviour {
    protected double _lastVelocitySyncTime;
 
    // Our Start Time
-   [SyncVar]
    protected double _startTime;
 
    // Blocks update func if the projectile collided

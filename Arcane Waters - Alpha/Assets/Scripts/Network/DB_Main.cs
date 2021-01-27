@@ -13,6 +13,7 @@ using SimpleJSON;
 using MapCustomization;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using MiniJSON;
 
 #if IS_SERVER_BUILD || NUBIS
 using MySql.Data.MySqlClient;
@@ -843,13 +844,22 @@ public class DB_Main : DB_MainStub
 
    public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier) {
       try {
+         // Getting deploymentId, before executing the query
+         int deploymentId = 0;
+         var deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+            deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
+         }
+
          // We'll save the ticket's ID
          long ticketId;
 
          using (MySqlConnection conn = getConnectionToDevGlobal()) {
             using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition) VALUES " +
-                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition);", conn)) {
+               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId) VALUES " +
+                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition, @deploymentId);", conn)) {
                conn.Open();
                cmd.Prepare();
 
@@ -867,6 +877,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
                cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
                cmd.Parameters.AddWithValue("@sourceMachineIdentifier", sourceMachineIdentifier);
+               cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
 
                DebugQuery(cmd);
 
@@ -1335,6 +1346,7 @@ public class DB_Main : DB_MainStub
                   newEffect.minPitch = dataReader.GetFloat("minPitch");
                   newEffect.maxPitch = dataReader.GetFloat("maxPitch");
                   newEffect.offset = dataReader.GetFloat("offset");
+                  newEffect.is3D = dataReader.GetBoolean("is3D");
                   effects.Add(newEffect);
                }
             }
@@ -5326,8 +5338,17 @@ public class DB_Main : DB_MainStub
 
    public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
       try {
+         // Getting deploymentId, before executing the query
+         int deploymentId = 0;
+         var deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if(deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+            deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
+         }
+
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -5341,6 +5362,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+            cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
+
             DebugQuery(cmd);
 
             // Execute the command

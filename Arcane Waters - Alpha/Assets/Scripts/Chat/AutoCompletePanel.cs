@@ -19,6 +19,9 @@ public class AutoCompletePanel : MonoBehaviour {
    // Whether the chat input field has the user's focus
    public bool inputFieldFocused = false;
 
+   // Where the mouse was last frame
+   public Vector3 lastMousePos = Vector3.zero;
+
    #endregion
 
    public int NumAutoCompletes {
@@ -33,17 +36,18 @@ public class AutoCompletePanel : MonoBehaviour {
    private AutoCompleteOption SelectedAutoComplete {
       get
       {
-         if (_autoCompleteOptions.Count > _selectedAutoComplete) {
-            return _autoCompleteOptions[_selectedAutoComplete];
-         } else {
+         if (_selectedAutoComplete == -1 || _selectedAutoComplete >= _autoCompleteOptions.Count) {
             return null;
+         } else {
+            return _autoCompleteOptions[_selectedAutoComplete];
          }
       }
    }
 
    private void Awake () {
       _scrollRect = GetComponentInChildren<ScrollRect>();
-      _optionPrefab = Resources.Load<GameObject>("Prefabs/AutoCompleteOption");
+      _optionPrefab = Resources.Load<GameObject>("Prefabs/Auto-completes/AutoCompleteOption");
+      _scrollRect.onValueChanged.AddListener(onScrolled);
 
       for (int i = 0; i < NUM_INITIAL_OPTIONS; i++) {
          addNewOption();
@@ -67,6 +71,38 @@ public class AutoCompletePanel : MonoBehaviour {
 
       if (Input.GetKeyDown(KeyCode.Return)) {
          onEnterPressed();
+      }
+   }
+
+   private void LateUpdate () {
+      lastMousePos = Util.getMousePos();
+   }
+
+   private void onScrolled (Vector2 pos) {
+      if (!SelectedAutoComplete) {
+         return;
+      }
+
+      if (isSelectedOptionVisible() && !inputFieldFocused) {
+         SelectedAutoComplete.tooltip.SetActive(true);
+      }  else {
+         SelectedAutoComplete.tooltip.SetActive(false);
+      }
+   }
+
+   private bool isSelectedOptionVisible () {
+      if (SelectedAutoComplete) {
+         Rect viewportRect = Util.rectTransformToScreenSpace(viewport);
+         Rect optionRect = Util.rectTransformToScreenSpace(SelectedAutoComplete.rectTransform);
+         Vector2 topMiddle = optionRect.center + Vector2.up * optionRect.height / 2.0f;
+         Vector2 bottomMiddle = optionRect.center - Vector2.up * optionRect.height / 2.0f;
+         if (viewportRect.Contains(topMiddle) && viewportRect.Contains(bottomMiddle)) {
+            return true;
+         } else {
+            return false;
+         }
+      } else {
+         return false;
       }
    }
 
@@ -142,6 +178,11 @@ public class AutoCompletePanel : MonoBehaviour {
       } else if (!_anyButtonSelected) {
          setAutoCompletes(null);
       }
+
+      if (inputFieldFocused && !_mouseOverPanel) {
+         deselectOldOption();
+      }
+
    }
 
    public bool isActive () {
@@ -161,8 +202,13 @@ public class AutoCompletePanel : MonoBehaviour {
       // If there are no auto-completes, disable all
       if (_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) {
          scrollViewContainer.SetActive(false);
+         InputManager.enableKey(KeyCode.UpArrow);
+         InputManager.enableKey(KeyCode.DownArrow);
          return;
       }
+
+      InputManager.disableKey(KeyCode.UpArrow);
+      InputManager.disableKey(KeyCode.DownArrow);
 
       scrollViewContainer.SetActive(true);
 
@@ -222,9 +268,7 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void deselectOldOption () {
-      if (_selectedAutoComplete > -1 && _selectedAutoComplete < NumAutoCompletes) {
-         _autoCompleteOptions[_selectedAutoComplete].tooltip.SetActive(false);
-      }
+      SelectedAutoComplete?.tooltip.SetActive(false);
    }
 
    #region Private Variables
@@ -236,7 +280,7 @@ public class AutoCompletePanel : MonoBehaviour {
    private List<CommandData> _autoCompleteCommands;
 
    // The index of the auto-complete option that is selected
-   private int _selectedAutoComplete = 0;
+   private int _selectedAutoComplete = -1;
 
    // A reference to the prefab for an auto-complete option
    private GameObject _optionPrefab;

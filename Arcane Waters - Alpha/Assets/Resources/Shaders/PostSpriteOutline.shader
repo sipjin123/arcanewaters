@@ -3,7 +3,6 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
-        _OutlineWidth("Outline Width", Float) = 1
         _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
     }
     SubShader
@@ -81,6 +80,7 @@
                 
                 // We only paint white colors and only in transparent areas
                 float outlineWidth = _PixelSize;
+                fixed4 outlineColor = _OutlineColor;
 
                 fixed left = tex2D(_MainTex, i.uv + float2(-_MainTex_TexelSize.x * outlineWidth, 0)).a;
 				fixed up = tex2D(_MainTex, i.uv + float2(0, _MainTex_TexelSize.y * outlineWidth)).a;
@@ -95,7 +95,7 @@
 
                 clip (-shouldClip);
                 
-                return lerp(col, fixed4(1,1,1,1), isOutline);
+                return lerp(col, outlineColor, isOutline);
             }
             ENDCG
         }

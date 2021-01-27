@@ -14,6 +14,9 @@ public class SoundEffectManager : MonoBehaviour
    // The AudioSource used to play the SoundEffects
    public AudioSource source;
 
+   // The AudioSource used to play 3D SoundEffects
+   public AudioSource source3D;
+
    // The database id of the jump start
    public const int JUMP_START_ID = 5;
 
@@ -72,21 +75,44 @@ public class SoundEffectManager : MonoBehaviour
       return _soundEffects.ContainsKey(id);
    }
 
-   public void playSoundEffect (int id) {
+   public void playSoundEffect (int id, Transform target) {
       SoundEffect effect;
-      if (_soundEffects.TryGetValue(id, out effect)) {
-         source.clip = effect.clip;
-         if (effect.clip == null) {
-            D.debug("Missing Sound Effect ID: " +id);
-            return;
-         }
-         effect.calibrateSource(source);
 
-         source.loop = false;
-         source.Play();
+      if (_soundEffects.TryGetValue(id, out effect)) {
+         if (effect.is3D) {
+            playSoundEffect3D(effect, target);
+         }  else {
+            source.clip = effect.clip;
+            if (effect.clip == null) {
+               D.debug("Missing Sound Effect ID: " + id);
+               return;
+            }
+            effect.calibrateSource(source);
+
+            source.loop = false;
+            source.Play();
+         }
+         
       } else if (id >= 0) {
          D.debug("Could not find SoundEffect with 'id' : '" + id + "'");
       }
+   }
+
+   private void playSoundEffect3D (SoundEffect effect, Transform target) {
+      // Setup audio player
+      AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
+      audioSource.transform.SetParent(target, true);
+
+      // Makes sure audio source z-position matches camera, for 3D sound
+      Vector3 audioSourcePos = audioSource.transform.position;
+      audioSourcePos.z = Camera.main.transform.position.z;
+      audioSource.transform.position = audioSourcePos;
+
+      audioSource.clip = effect.clip;
+      audioSource.Play();
+
+      // Destroy object after clip finishes playing
+      Destroy(audioSource.gameObject, audioSource.clip.length);
    }
 
    private void findAndAssignAudioClip (SoundEffect effect) {

@@ -663,7 +663,6 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.Interact_North:
             case Anim.Type.Interact_South:
                animator.SetBool("interact", true);
-               StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
                break;
             case Anim.Type.Pet_East:
             case Anim.Type.Pet_North:
@@ -673,19 +672,34 @@ public class NetEntity : NetworkBehaviour
                animator.SetBool("isMoving", false);
                animator.SetBool("inBattle", false);
                animator.SetBool("petting", true);
-
-               StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
                break;
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
-               SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_START_ID);
                animator.SetBool("jump", true);
-               if (!freezeAnim) {
-                  StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
-               }
                break;
          }
+      }
+
+      switch (animType) {
+         case Anim.Type.Interact_East:
+         case Anim.Type.Interact_North:
+         case Anim.Type.Interact_South:
+            StartCoroutine(CO_DelayExitAnim(animType, 0.4f));
+            break;
+         case Anim.Type.Pet_East:
+         case Anim.Type.Pet_North:
+         case Anim.Type.Pet_South:
+            StartCoroutine(CO_DelayExitAnim(animType, 1.4f));
+            break;
+         case Anim.Type.NC_Jump_East:
+         case Anim.Type.NC_Jump_North:
+         case Anim.Type.NC_Jump_South:
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_START_ID, transform);
+            if (!freezeAnim) {
+               StartCoroutine(CO_DelayExitAnim(animType, 0.5f));
+            }
+            break;
       }
    }
 
@@ -706,12 +720,20 @@ public class NetEntity : NetworkBehaviour
             case Anim.Type.NC_Jump_East:
             case Anim.Type.NC_Jump_North:
             case Anim.Type.NC_Jump_South:
-               shadow.transform.localScale = _shadowInitialScale;
                animator.SetBool("jump", false);
-               SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID);
                break;
          }
       }
+
+      switch (animType) {
+         case Anim.Type.NC_Jump_East:
+         case Anim.Type.NC_Jump_North:
+         case Anim.Type.NC_Jump_South:
+            shadow.transform.localScale = _shadowInitialScale;
+            SoundEffectManager.self.playSoundEffect(SoundEffectManager.JUMP_END_ID, transform);
+            break;
+      }
+
       interactingAnimation = false;
    }
 
@@ -1469,6 +1491,7 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
+      D.debug("Returning player to town: Go Home Command!");
       spawnInNewMap(Area.STARTING_TOWN);
    }
 
@@ -1659,6 +1682,7 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void onStartMoving () { }
+
    protected virtual void onEndMoving () { }
 
    public virtual bool isBotShip () { return false; }
@@ -1735,7 +1759,7 @@ public class NetEntity : NetworkBehaviour
    private Dictionary<Status.Type, StatusIcon> _statusIcons = new Dictionary<Status.Type, StatusIcon>();
 
    // A reference to a damage over time coroutine caused by burning
-   private Coroutine _burningCoroutine;
+   protected Coroutine _burningCoroutine = null;
 
    #endregion
 }

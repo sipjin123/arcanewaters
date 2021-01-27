@@ -127,9 +127,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maxOpacity: 0.3
-  opacityDelta: 0.1
+  peakOpacityBase: 0.075
+  peakOpacityVariance: 0.025
   durationBase: 8
   durationDelta: 1
-  distaceFromTheTop: 0.48
+  distanceFromTheTop: 0.96
   zPos: 2

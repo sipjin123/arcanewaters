@@ -76,7 +76,9 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyAction (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         return Input.GetKey(boundAction.primary) || Input.GetKey(boundAction.secondary);
+         bool primary = Input.GetKey(boundAction.primary) && !isKeyDisabled(boundAction.primary);
+         bool secondary = Input.GetKey(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         return primary || secondary;
       }
 
       return false;
@@ -84,7 +86,9 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionDown (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         return Input.GetKeyDown(boundAction.primary) || Input.GetKeyDown(boundAction.secondary);
+         bool primary = Input.GetKeyDown(boundAction.primary) && !isKeyDisabled(boundAction.primary);
+         bool secondary = Input.GetKeyDown(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         return primary || secondary;
       }
 
       return false;
@@ -92,7 +96,9 @@ public class InputManager : MonoBehaviour
 
    public static bool getKeyActionUp (KeyAction action) {
       if (self._keybindings.TryGetValue(action, out BoundKeyAction boundAction)) {
-         return Input.GetKeyUp(boundAction.primary) || Input.GetKeyUp(boundAction.secondary);
+         bool primary = Input.GetKeyUp(boundAction.primary) && !isKeyDisabled(boundAction.primary);
+         bool secondary = Input.GetKeyUp(boundAction.secondary) && !isKeyDisabled(boundAction.secondary);
+         return primary || secondary;
       }
 
       return false;
@@ -272,10 +278,29 @@ public class InputManager : MonoBehaviour
       return new Vector2(Input.mousePosition.x / Screen.width, Input.mousePosition.y / Screen.height);
    }
 
+   private static bool isKeyDisabled (KeyCode keyCode) {
+      return self._disabledKeys.Contains(keyCode);
+   }
+
+   public static void disableKey (KeyCode keyCode) {
+      if (!self._disabledKeys.Contains(keyCode)) {
+         self._disabledKeys.Add(keyCode);
+      }
+   }
+
+   public static void enableKey (KeyCode keyCode) {
+      if (self._disabledKeys.Contains(keyCode)) {
+         self._disabledKeys.Remove(keyCode);
+      }
+   }
+
    #region Private Variables
 
    // List of keybindings, indexed by their action
    private Dictionary<KeyAction, BoundKeyAction> _keybindings = new Dictionary<KeyAction, BoundKeyAction>();
+
+   // A list of keys that will be ignored when getting inputs
+   private List<KeyCode> _disabledKeys = new List<KeyCode>();
 
    #endregion
 }

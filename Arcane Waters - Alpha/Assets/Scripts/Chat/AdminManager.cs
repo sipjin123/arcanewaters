@@ -20,10 +20,6 @@ public class AdminManager : NetworkBehaviour
    void Start () {
       _player = GetComponent<NetEntity>();
 
-      if (isLocalPlayer) {
-         _self = this;
-      }
-
       // If we're testing clients, have them warp around repeatedly
       if (Util.isAutoTesting()) {
          InvokeRepeating("warpRandomly", 10f, 10f);
@@ -42,11 +38,13 @@ public class AdminManager : NetworkBehaviour
    private void addCommands () {
       ChatManager cm = ChatManager.self;
 
-      if (cm.hasAdminCommands() || !isLocalPlayer) {
+      if (!isLocalPlayer) {
          return;
       }
 
-      cm.addCommand(new CommandData("add_gold", "Gives an amount of gold to the user", requestAddGold, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "goldAmount" }));
+      ChatManager.self.removeAdminCommands();
+
+      cm.addCommand(new CommandData("add_gold", "Gives an amount of gold to the user", requestAddGold, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username", "goldAmount" }));
       cm.addCommand(new CommandData("add_ships", "Gives all ships to the user", requestAddShips, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("check_fps", "Checks the user's FPS (Not implemented yet)", requestCheckFPS, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("shutdown", "Shuts down the server (Not implemented yet)", requestShutdown, requiredPrefix: CommandType.Admin));
@@ -94,7 +92,7 @@ public class AdminManager : NetworkBehaviour
       _commands[Type.NPC] = "test_npc";
       _commands[Type.GunAbilities] = "gun_abilities";
 
-   */
+      */
 
       ChatManager.self.addAdminCommand(this);
 
@@ -136,7 +134,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
-   protected void Cmd_SpawnSeaEnemy (string parameters) {
+   protected void Cmd_SpawnSeaEnemy (string parameters, Vector3 spawnPosition) {
       string[] list = parameters.Split(' ');
       if (list.Length > 0) {
          int enemyId = int.Parse(list[0]);
@@ -153,7 +151,7 @@ public class AdminManager : NetworkBehaviour
          if (spawnEnemyData == null) {
             ChatManager.self.addChat("Couldn't find sea enemy with id: " + enemyId, ChatInfo.Type.System);
          } else {
-            InstanceManager.self.getInstance(Global.player.instanceId).spawnSeaEnemy(spawnEnemyData, Util.getMousePos());
+            InstanceManager.self.getInstance(_player.instanceId).spawnSeaEnemy(spawnEnemyData, spawnPosition);
          }
       }
    }
@@ -240,80 +238,80 @@ public class AdminManager : NetworkBehaviour
       ScreenLogger.self.adminActivateLogger();
    }
 
-   private static void requestSpawnSeaEnemy (string parameters) {
-      _self.Cmd_SpawnSeaEnemy(parameters);
+   private void requestSpawnSeaEnemy (string parameters) {
+      Cmd_SpawnSeaEnemy(parameters, Util.getMousePos());
    }
 
-   private static void requestInvisibility () {
-      if (!_self._player.isAdmin()) {
+   private void requestInvisibility () {
+      if (_player.isAdmin()) {
          return;
       }
 
-      _self._player.Cmd_ToggleAdminInvisibility(); 
+      _player.Cmd_ToggleAdminInvisibility(); 
    }
 
    private void requestAddShips () {
-      _self.Cmd_AddShips();
+      Cmd_AddShips();
    }
 
    private void requestCheckFPS () {
-      _self.Cmd_CheckFPS();
+      Cmd_CheckFPS();
    }
 
    private void requestShutdown () {
-      _self.Cmd_Shutdown();
+      Cmd_Shutdown();
    }
 
    private void requestSpawnEnemy () {
-      _self.Cmd_SpawnEnemy();
+      Cmd_SpawnEnemy();
    }
 
    private void requestServerInfo () {
-      _self.Cmd_ServerInfo();
+      Cmd_ServerInfo();
    }
 
    private void requestCreateShopShips () {
-      _self.Cmd_CreateShopShips();
+      Cmd_CreateShopShips();
    }
 
    private void requestCreateShopItems () {
-      _self.Cmd_CreateShopItems();
+      Cmd_CreateShopItems();
    }
 
    private void requestBotWaypoint () {
-      _self.Cmd_BotWaypoint();
+      Cmd_BotWaypoint();
    }
 
    private void requestCancelServerRestart () {
-      _self.Cmd_CancelServerRestart();
+      Cmd_CancelServerRestart();
    }
 
    private void requestSetShipDamage (string parameter) {
-      _self.Cmd_SetShipDamage(parameter);
+      Cmd_SetShipDamage(parameter);
    }
 
    private  void requestSetShipHealth (string parameter) {
-      _self.Cmd_SetShipHealth(parameter);
+      Cmd_SetShipHealth(parameter);
    }
 
    private void requestScreenLogs () {
-      _self.Cmd_RequestScreenLog();
+      Cmd_RequestScreenLog();
    }
 
    private void requestCombatStats () {
-      _self.Cmd_RequestCombatStats();
+      Cmd_RequestCombatStats();
    }
 
    private void requestOneShot () {
-      _self.Cmd_RequestOneShot();
+      Cmd_RequestOneShot();
    }
 
    private void requestWarpAnywhere () {
-      _self.Cmd_RequestWarpAnywhere();
+      Cmd_RequestWarpAnywhere();
    }
    
-   private static void requestMutePlayer (string parameters) {
-      if (!_self._player.isAdmin()) {
+   private void requestMutePlayer (string parameters) {
+      if (!_player.isAdmin()) {
          return;
       }
 
@@ -452,7 +450,7 @@ public class AdminManager : NetworkBehaviour
       }
    }
 
-   protected static void requestAddGold (string parameters) {
+   protected void requestAddGold (string parameters) {
       string[] list = parameters.Split(' ');
       int gold = 0;
       string username = "";
@@ -466,10 +464,10 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      _self.Cmd_AddGold(gold, username);
+      Cmd_AddGold(gold, username);
    }
 
-   private static void requestGiveAbility (string parameters) {
+   private void requestGiveAbility (string parameters) {
       string[] list = parameters.Split(' ');
       string ability = "";
       string username = "";
@@ -482,7 +480,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      _self.Cmd_AddAbility(username, ability);
+      Cmd_AddAbility(username, ability);
    }
 
    private void Cmd_AddAbility (string username, string ability) {
@@ -509,7 +507,7 @@ public class AdminManager : NetworkBehaviour
       Global.player.rpc.Cmd_UpdateAbilities(AbilitySQLData.TranslateBasicAbility(allAbilities).ToArray());
    }
 
-   private static void requestSummonPlayer (string parameters) {
+   private void requestSummonPlayer (string parameters) {
       string[] list = parameters.Split(' ');
       string targetPlayerName = "";
 
@@ -521,10 +519,10 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      _self.Cmd_SummonPlayer(targetPlayerName);
+      Cmd_SummonPlayer(targetPlayerName);
    }
 
-   protected static void requestPlayerGo (string parameters) {
+   protected void requestPlayerGo (string parameters) {
       string[] list = parameters.Split(' ');
       string targetPlayerName = "";
 
@@ -537,20 +535,20 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      _self.Cmd_PlayerGo(targetPlayerName);
+      Cmd_PlayerGo(targetPlayerName);
    }
 
-   protected static void requestWarp (string parameters) {
+   protected void requestWarp (string parameters) {
       // Send the request to the server
-      _self.Cmd_Warp(parameters);
+      Cmd_Warp(parameters);
    }
 
-   protected static void requestShipSpeedup () {
+   protected void requestShipSpeedup () {
       // Unlocks ship speed boost x2
-      _self._player.shipSpeedupFlag = true;
+      _player.shipSpeedupFlag = true;
    }
 
-   protected static void requestGetItem (string parameters) {
+   protected void requestGetItem (string parameters) {
       string[] sections = parameters.Split(' ');
       string categoryStr = "";
       string itemName = "";
@@ -615,40 +613,40 @@ public class AdminManager : NetworkBehaviour
       int itemTypeId;
       switch (category) {
          case Item.Category.Weapon:
-            if (_self._weaponNames.ContainsKey(itemName)) {
-               itemTypeId = _self._weaponNames[itemName];
+            if (_weaponNames.ContainsKey(itemName)) {
+               itemTypeId = _weaponNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the weapon " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Armor:
-            if (_self._armorNames.ContainsKey(itemName)) {
-               itemTypeId = _self._armorNames[itemName];
+            if (_armorNames.ContainsKey(itemName)) {
+               itemTypeId = _armorNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the armor " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Hats:
-            if (_self._hatNames.ContainsKey(itemName)) {
-               itemTypeId = _self._hatNames[itemName];
+            if (_hatNames.ContainsKey(itemName)) {
+               itemTypeId = _hatNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the hat " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.Usable:
-            if (_self._usableNames.ContainsKey(itemName)) {
-               itemTypeId = _self._usableNames[itemName];
+            if (_usableNames.ContainsKey(itemName)) {
+               itemTypeId = _usableNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the usable item " + itemName, ChatInfo.Type.Error);
                return;
             }
             break;
          case Item.Category.CraftingIngredients:
-            if (_self._craftingIngredientNames.ContainsKey(itemName)) {
-               itemTypeId = _self._craftingIngredientNames[itemName];
+            if (_craftingIngredientNames.ContainsKey(itemName)) {
+               itemTypeId = _craftingIngredientNames[itemName];
             } else {
                ChatManager.self.addChat("Could not find the crafting ingredient " + itemName, ChatInfo.Type.Error);
                return;
@@ -668,11 +666,11 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      _self.Cmd_CreateItem(category, itemTypeId, count);
+      Cmd_CreateItem(category, itemTypeId, count);
    }
 
-   private static void requestGetAllHats (string parameters) {
-      _self.Cmd_RequestAllHats();
+   private void requestGetAllHats (string parameters) {
+      Cmd_RequestAllHats();
    }
 
    [Command]
@@ -700,7 +698,7 @@ public class AdminManager : NetworkBehaviour
       });
    }
 
-   protected static void requestGetAllItems (string parameters) {
+   protected void requestGetAllItems (string parameters) {
       string[] list = parameters.Split(' ');
       int count = 100;
 
@@ -710,10 +708,10 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      _self.Cmd_CreateAllItems(count);
+      Cmd_CreateAllItems(count);
    }
 
-   protected static void freeWeapon (string parameters) {
+   protected void freeWeapon (string parameters) {
       string[] sections = parameters.Split(' ');
       string itemName = "";
       const int count = 1;
@@ -750,7 +748,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Send the request to the server
-      _self.Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
+      Cmd_CreateItemWithPalettes(category, itemTypeId, count, Item.parseItmPalette(paletteNames.ToArray()));
    }
 
    [Command]
@@ -821,7 +819,7 @@ public class AdminManager : NetworkBehaviour
       });
    }
 
-   protected static void requestScheduleServerRestart (string parameters) {
+   protected void requestScheduleServerRestart (string parameters) {
       string[] list = parameters.Split(' ');
       int buildVersion = 0; // 0 means 'latest'
       int delayMinutes = 5; // Default delay 5 minutes
@@ -857,10 +855,10 @@ public class AdminManager : NetworkBehaviour
       ChatManager.self.addChat($"Server Restart Command Sent! [delay = {delayMinutesPrompt} minutes, version = {buildVersionPrompt}]", ChatInfo.Type.Local);
 
       // Send the request to the server
-      _self.Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
+      Cmd_ScheduleServerRestart(delayMinutes, buildVersion);
    }
 
-   private static void createVoyageInstance (string parameters) {
+   private void createVoyageInstance (string parameters) {
       string[] list = parameters.Split(' ');
 
       // Default parameter values
@@ -903,7 +901,7 @@ public class AdminManager : NetworkBehaviour
          }
       }
 
-      _self.Cmd_CreateVoyageInstance(isPvP, difficulty, biome, areaKey);
+      Cmd_CreateVoyageInstance(isPvP, difficulty, biome, areaKey);
    }
 
    [Command]
@@ -995,10 +993,10 @@ public class AdminManager : NetworkBehaviour
          
          // Set up the Ship Info
          ShipInfo ship = Ship.generateNewShip(shipType, rarity);
-         ship.userId = _self._player.userId;
+         ship.userId = _player.userId;
 
          // Create the ship in the database
-         DB_Main.createShipFromShipyard(_self._player.userId, ship);
+         DB_Main.createShipFromShipyard(_player.userId, ship);
       }
    }
 
@@ -1157,10 +1155,10 @@ public class AdminManager : NetworkBehaviour
       return areaKeys.OrderBy(s => Util.compare(s, partialAreaKey)).First();
    }
 
-   private static void spawnCustomEnemy (string parameters) {
+   private void spawnCustomEnemy (string parameters) {
       parameters = parameters.Trim(' ').Replace(" ", "_");
       if (Enum.TryParse(parameters, true, out Enemy.Type enemyType)) {
-         _self.Cmd_SpawnCustomEnemy(enemyType);
+         Cmd_SpawnCustomEnemy(enemyType);
       }
    }
 
@@ -1186,10 +1184,10 @@ public class AdminManager : NetworkBehaviour
       enemy.enemyType = Enemy.Type.Lizard;
 
       // Add it to the Instance
-      Instance instance = InstanceManager.self.getInstance(_self._player.instanceId);
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
       InstanceManager.self.addEnemyToInstance(enemy, instance);
 
-      enemy.transform.position = _self._player.transform.position;
+      enemy.transform.position = _player.transform.position;
       NetworkServer.Spawn(enemy.gameObject);
    }
 
@@ -1491,9 +1489,6 @@ public class AdminManager : NetworkBehaviour
    }
 
    #region Private Variables
-
-   // A reference to the instance AdminManager
-   private static AdminManager _self;
 
    // A history of commands we've requested
    protected List<string> _history = new List<string>();

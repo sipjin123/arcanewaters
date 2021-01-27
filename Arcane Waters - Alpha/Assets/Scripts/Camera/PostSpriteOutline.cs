@@ -6,25 +6,28 @@ using Mirror;
 using UnityEngine.Rendering;
 using System;
 
-public class SpriteOutlineRenderer : MonoBehaviour
+public class PostSpriteOutline : MonoBehaviour
 {
    #region Public Variables
 
+   // Self
+   public static PostSpriteOutline self;
+
    #endregion
 
-   private void Start () {
-      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
-      _outlineColorPropertyID = Shader.PropertyToID("_OutlineColor");
+   private void Awake () {
+      self = this;
    }
 
-   private void OnEnable () {
+   private void Start () {
       CameraManager.self.resolutionChanged += updateQuadSize;
+      _pixelSizePropertyID = Shader.PropertyToID("_PixelSize");
 
       updateQuadSize();
       cleanup();
    }
 
-   private void OnDisable () {
+   private void OnDestroy () {
       if (CameraManager.self != null) {
          CameraManager.self.resolutionChanged += updateQuadSize;
       }
@@ -35,6 +38,13 @@ public class SpriteOutlineRenderer : MonoBehaviour
       _renderTexture.filterMode = FilterMode.Point;
 
       _quadRenderer.material.SetTexture("_MainTex", _renderTexture);
+   }
+
+   public void OnDisable () {      
+   }
+
+   public void OnEnable () {
+      self = this;      
    }
 
    private void updatePixelSize () {
@@ -61,10 +71,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
       transform.localScale = scale;
 
       updatePixelSize();
-   }
-
-   public void setColor (Color newColor) {
-      _quadRenderer.material.SetColor(_outlineColorPropertyID, newColor);
    }
 
    private void LateUpdate () {
@@ -188,9 +194,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
    // The property ID of the "_PixelSize" property
    private int _pixelSizePropertyID;
-
-   // The property ID of the "_OutlineColor" property
-   private int _outlineColorPropertyID;
 
    // The default pixel size if an invalid PPU scale is provided
    public const int DEFAULT_PIXEL_SIZE = 4;
