@@ -151,7 +151,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       }
 
       if (spriteSwap.newTexture.name.Contains("empty")) {
-         D.debug("Invalid NPC Path, please complete details in NPC Editor");
+         D.debug("Invalid NPC sprite, please complete details in NPC Editor" + " : " + npcData.npcId + " : " + npcData.name);
          spriteSwap.newTexture = NPCManager.self.defaultNpcBodySprite.texture;
       }
 

@@ -4541,7 +4541,6 @@ public class RPCManager : NetworkBehaviour {
 
       // An admin command that allows one shot damage for players againt enemy in land combat for quick tests
       if (playerBody.isAdmin() && playerBody.oneShotEnemies) {
-         D.debug("Enable one shot for player: " + playerBody.userId);
          oneShotEnemies = true;
       }
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
