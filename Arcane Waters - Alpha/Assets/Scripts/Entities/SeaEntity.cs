@@ -174,18 +174,20 @@ public class SeaEntity : NetEntity
       foreach (Collider2D collidedEntity in hits) {
          if (collidedEntity != null) {
             if (collidedEntity.GetComponent<PlayerShipEntity>() != null) {
-               if (!collidedEntities.ContainsKey(collidedEntity.GetComponent<SeaEntity>())) {
-                  int damage = (int) (this.damage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
+               SeaEntity seaEntity = collidedEntity.GetComponent<SeaEntity>();
+               if (!collidedEntities.ContainsKey(seaEntity) && seaEntity.currentHealth > 0) {
+                  ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Shock_Ball);
+                  ProjectileStatData projectilData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
 
-                  SeaEntity entity = collidedEntity.GetComponent<SeaEntity>();
-                  entity.currentHealth -= damage;
-                  entity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None);
+                  int damage = (int) (projectilData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
+                  seaEntity.currentHealth -= damage;
+                  seaEntity.Rpc_ShowExplosion(attackerNetId, collidedEntity.transform.position, damage, Attack.Type.None);
 
                   // Registers the action electrocuted to the userID to the achievement database for recording
-                  AchievementManager.registerUserAchievement(entity, ActionType.Electrocuted);
+                  AchievementManager.registerUserAchievement(seaEntity, ActionType.Electrocuted);
 
-                  collidedEntities.Add(entity, collidedEntity.transform);
-                  targetIDList.Add(entity.netId);
+                  collidedEntities.Add(seaEntity, collidedEntity.transform);
+                  targetIDList.Add(seaEntity.netId);
                }
             }
          }
@@ -426,7 +428,7 @@ public class SeaEntity : NetEntity
    }
 
    public int getDamageForShot (int baseDamage, float distanceModifier) {
-      return (int) (this.damage * baseDamage * distanceModifier);
+      return (int) (baseDamage * distanceModifier);
    }
 
    protected IEnumerator CO_UpdateAllSprites () {
@@ -472,12 +474,16 @@ public class SeaEntity : NetEntity
 
    [Server]
    public void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
-      if (isDead() || !hasReloaded()) {
+      // Get the ability data
+      ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+
+      if (shipAbility == null) {
          return;
       }
 
-      // Get the ability data
-      ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+      if (isDead() || !hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder) {
+         return;
+      }
 
       switch (shipAbility.selectedAttackType) {
          case Attack.Type.Venom:
@@ -492,7 +498,7 @@ public class SeaEntity : NetEntity
             float target = .5f;
             float diagonalValue = offset;
             float diagonalTargetValue = target;
-            Vector2 sourcePos = transform.position;
+            Vector2 sourcePos = spawnPosition;
 
             if (attackCounter % 2 == 0) {
                // North East West South Attack Pattern
@@ -514,6 +520,7 @@ public class SeaEntity : NetEntity
             }
             break;
          default:
+            D.debug("Cant process attack" + " : " + abilityId + " : " + shipAbility.selectedAttackType);
             StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
       }
@@ -629,15 +636,18 @@ public class SeaEntity : NetEntity
                         float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
                         float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
 
+                        damage = getDamageForShot((int)baseSkillDamage, distanceModifier);
+
                         // TODO: Observe damage formula on live build
                         D.editorLog("Damage fetched for sea entity logic"
-                           + " Computed: " +baseSkillDamage
-                           + " Ability: " + abilityDamageModifier 
+                           + " DistanceDamage: " + damage
+                           + " Computed: " + baseSkillDamage
+                           + " Ability: " + abilityDamageModifier
+                           + " Dist Modifier: " + distanceModifier
                            + " Name: " + ShipAbilityManager.self.getAbility(abilityId).abilityName
                            + " ID: " + ShipAbilityManager.self.getAbility(abilityId).abilityId
                            + " Projectile ID: " + projectileData.projectileId, Color.cyan);
 
-                        damage = getDamageForShot((int)baseSkillDamage, distanceModifier);
                      }
                      int targetHealthAfterDamage = targetEntity.currentHealth - damage;
 
