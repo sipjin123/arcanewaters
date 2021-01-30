@@ -258,9 +258,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // If animation frame was overridden upon death
    public bool hasOverriddenAnimationFrame;
 
-   // The time that determines all animation state should stop for this battler and wait for the battle end
-   public DateTime animationStateEndTime;
-
    #endregion
 
    public void stopActionCoroutine () {
@@ -284,8 +281,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Keep track of all of our Simple Animation components
       _anims = new List<SimpleAnimation>(GetComponentsInChildren<SimpleAnimation>());
 
-      // Setup default time, will be overridden upon animation death is triggered
-      animationStateEndTime = DateTime.UtcNow.AddDays(1);
       AP = DEFAULT_AP;
    }
 
@@ -440,15 +435,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       // Make sure non local player animation is set to death frame when it is dead
-      if (isDead() && !player.isLocalPlayer && !hasOverriddenAnimationFrame && DateTime.UtcNow > animationStateEndTime) {
+      if (isDead() && !player.isLocalPlayer && !hasOverriddenAnimationFrame) {
          hasOverriddenAnimationFrame = true;
-         if (player is PlayerBodyEntity) {
-            AnimInfo deathAnimInfo = AnimUtil.getInfo(Anim.Group.Player, Anim.Type.Death_East);
-            overrideAnimationFrame(deathAnimInfo);
-         } else if (player is Enemy) {
-            AnimInfo deathAnimInfo = AnimUtil.getInfo(animGroup, Anim.Type.Death_East);
-            overrideAnimationFrame(deathAnimInfo);
-         }
+         playAnim(Anim.Type.Death_East);
       }
 
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
@@ -471,26 +460,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Handle the drawing or hiding of our outline
       if (!Util.isBatch()) {
          handleSpriteOutline();
-      }
-   }
-
-   private void overrideAnimationFrame (AnimInfo deathAnimInfo) {
-      foreach (SimpleAnimation anim in _anims) {
-         if (anim.enabled) {
-            anim.enabled = false;
-            anim.isPaused = true;
-            SpriteRenderer spriteRender = anim.GetComponent<SpriteRenderer>();
-            if (spriteRender.sprite != null) {
-               if (spriteRender.sprite.texture != null) {
-                  Sprite[] _sprites = ImageManager.getSprites(spriteRender.sprite.texture);
-                  if (_sprites.Length > 0 && deathAnimInfo.maxIndex < _sprites.Length) {
-                     spriteRender.sprite = _sprites[deathAnimInfo.maxIndex];
-                  } else {
-                     spriteRender.sprite = _sprites[0];
-                  }
-               }
-            }
-         }
       }
    }
 
@@ -872,10 +841,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void playAnim (Anim.Type animationType) {
-      if (animationType == Anim.Type.Death_East) {
-         animationStateEndTime = DateTime.UtcNow.AddSeconds(1);
-      }
-
       // Make all of our Simple Animation components play the animation
       foreach (SimpleAnimation anim in _anims) {
          if (anim.enabled) {
