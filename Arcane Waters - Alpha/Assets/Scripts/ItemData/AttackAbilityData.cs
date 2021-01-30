@@ -154,6 +154,10 @@ public class AttackAbilityData : BasicAbilityData
 
    public float getJumpDuration (Battler source, Battler target) {
       // The animation length depends on the distance between attacker and target
+      if (source == null || target == null || source.battleSpot == null || target.battleSpot == null) {
+         return Battler.JUMP_LENGTH;
+      }
+
       float distance = Battle.getDistance(source, target);
       float jumpDuration = distance * Battler.JUMP_LENGTH;
 

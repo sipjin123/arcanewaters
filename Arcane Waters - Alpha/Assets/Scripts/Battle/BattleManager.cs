@@ -453,8 +453,6 @@ public class BattleManager : MonoBehaviour {
       }
       
       if (abilityType == AbilityType.Standard) {
-         AttackAbilityData attackAbilityData = abilityData as AttackAbilityData;
-         
          CancelAction cancelAction = new CancelAction(battle.battleId, source.userId, 0, 0, 0);
          cancelAction.abilityGlobalID = abilityData.itemID;
          actions.Add(cancelAction);

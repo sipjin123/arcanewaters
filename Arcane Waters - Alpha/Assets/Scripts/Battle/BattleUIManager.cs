@@ -496,46 +496,47 @@ public class BattleUIManager : MonoBehaviour {
       Battler playerBattler = BattleManager.self.getPlayerBattler();
       mainPlayerRectCG.Show();
 
-      if (playerBattler == null) {
-         yield return null;
+      if (playerBattler != null) {
+         if (playerBattler.clickBox != null) {
+            // TODO: Remove try catch after confirmation that no issue occurs below
+            try {
+               Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
+               setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
+               setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
+
+               playerBattler.onBattlerAttackStart.AddListener(() => {
+                  playerMainUIHolder.Hide();
+                  mainPlayerRectCG.Hide();
+               });
+
+               playerBattler.onBattlerAttackEnd.AddListener(() => {
+                  playerMainUIHolder.Show();
+                  mainPlayerRectCG.Show();
+
+                  playerBattler.pauseAnim(false);
+               });
+
+               // Whenever we select our local battler, we prepare UI positioning of the ring
+               playerBattler.onBattlerSelect.AddListener(() => {
+                  stanceChangeButton.gameObject.SetActive(true);
+                  highlightLocalBattler();
+               });
+
+               playerHealthBar.maxValue = playerBattler.getStartingHealth();
+
+               playerBattler.onBattlerDeselect.AddListener(() => {
+                  playerStanceFrame.SetActive(false);
+                  playerMainUIHolder.gameObject.SetActive(false);
+                  playerBattleCG.Hide();
+                  playerBattler.selectedBattleBar.gameObject.SetActive(false);
+               });
+
+               _playerLocalBattler = playerBattler;
+            } catch {
+               D.debug("Something went wrong with battle ui setup for player");
+            }
+         }
       }
-
-      if (playerBattler.clickBox == null) {
-         yield return null;
-      }
-      
-      Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
-      setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
-      setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
-
-      playerBattler.onBattlerAttackStart.AddListener(() => {
-         playerMainUIHolder.Hide();
-         mainPlayerRectCG.Hide();
-      });
-
-      playerBattler.onBattlerAttackEnd.AddListener(() => {
-         playerMainUIHolder.Show();
-         mainPlayerRectCG.Show();
-
-         playerBattler.pauseAnim(false);
-      });
-
-      // Whenever we select our local battler, we prepare UI positioning of the ring
-      playerBattler.onBattlerSelect.AddListener(() => {
-         stanceChangeButton.gameObject.SetActive(true);
-         highlightLocalBattler();
-      });
-
-      playerHealthBar.maxValue = playerBattler.getStartingHealth();
-
-      playerBattler.onBattlerDeselect.AddListener(() => {
-         playerStanceFrame.SetActive(false);
-         playerMainUIHolder.gameObject.SetActive(false);
-         playerBattleCG.Hide();
-         playerBattler.selectedBattleBar.gameObject.SetActive(false);
-      });
-
-      _playerLocalBattler = playerBattler;
    }
 
    public void highlightLocalBattler (bool showAbilities = true) {
