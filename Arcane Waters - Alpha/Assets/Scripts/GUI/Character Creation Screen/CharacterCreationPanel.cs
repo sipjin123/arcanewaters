@@ -64,6 +64,15 @@ public class CharacterCreationPanel : ClientMonoBehaviour
    // The hair styles to choose randomly from when the character starts being created
    public List<HairLayer.Type> initialMaleHair;
 
+   // Perk Name
+   public Text perkName;
+
+   // Perk description
+   public Text perkDescription;
+
+   // Points assigned to the perk
+   public Text perkAssignedPoints;
+
    // Self
    public static CharacterCreationPanel self;
 

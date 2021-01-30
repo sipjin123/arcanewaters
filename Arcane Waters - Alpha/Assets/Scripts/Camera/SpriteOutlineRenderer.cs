@@ -21,13 +21,15 @@ public class SpriteOutlineRenderer : MonoBehaviour
       CameraManager.self.resolutionChanged += updateQuadSize;
 
       updateQuadSize();
-      cleanup();
+      updateRenderBuffer();
    }
 
    private void OnDisable () {
       if (CameraManager.self != null) {
-         CameraManager.self.resolutionChanged += updateQuadSize;
+         CameraManager.self.resolutionChanged -= updateQuadSize;
       }
+
+      removeCommandBuffer();
    }
 
    private void updateQuadSize () {
@@ -76,16 +78,14 @@ public class SpriteOutlineRenderer : MonoBehaviour
       }
    }
 
-   private void cleanup () {
+   private void removeCommandBuffer () {
       foreach (KeyValuePair<Camera, CommandBuffer> cam in _cameras) {
          if (cam.Key) {
             cam.Key.RemoveCommandBuffer(CameraEvent.BeforeForwardAlpha, cam.Value);
          }
       }
 
-      _cameras.Clear();
-
-      updateRenderBuffer();
+      _cameras.Clear();      
    }
 
    public void onWillRenderObject (ShaderSpriteOutline outline) {
@@ -149,22 +149,9 @@ public class SpriteOutlineRenderer : MonoBehaviour
          }
 
          _currentOutline = sprite;
-         cleanup();
+         removeCommandBuffer();
+         updateRenderBuffer();
       }
-   }
-
-   public void removeOutlinedSprite (ShaderSpriteOutline sprite) {
-      // Only remove the sprite if it's the one we're currently outlining
-      if (sprite == _currentOutline) {
-         StartCoroutine(CO_removeOutlinedSpriteDelayed());
-      }      
-   }
-
-   private IEnumerator CO_removeOutlinedSpriteDelayed () {
-      yield return null;
-
-      _currentOutline = null;
-      cleanup();
    }
 
    #region Private Variables

@@ -63,7 +63,7 @@ public class ClientMessageManager : MonoBehaviour {
          return;
       }
 
-      if (!Util.isEmpty(msg.customMessage)) {
+      if (!Util.isEmpty(msg.customMessage) && msg.errorType != ErrorMessage.Type.Banned && msg.errorType != ErrorMessage.Type.Kicked) {
          PanelManager.self.noticeScreen.show(msg.customMessage);
          return;
       }
@@ -73,8 +73,9 @@ public class ClientMessageManager : MonoBehaviour {
          case ErrorMessage.Type.AlreadyOnline:
          case ErrorMessage.Type.Banned:
          case ErrorMessage.Type.ClientOutdated:
+         case ErrorMessage.Type.Kicked:
             PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login, LoadingScreen.LoadingType.CharacterCreation);
-            TitleScreen.self.displayError(msg.errorType);
+            TitleScreen.self.displayError(msg.errorType, msg);
             return;
          case ErrorMessage.Type.NameTaken:
             PanelManager.self.noticeScreen.show("The selected username is already taken.");

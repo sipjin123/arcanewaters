@@ -10,7 +10,7 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    #region Public Variables
 
    // The color of UI elements in selected/unselected states
-   public Color backgroundUnselected, backgroundSelected, textUnselected, textSelected;
+   public Color commandColorInactive, commandColorActive, parameterColorInactive, parameterColorActive;
 
    // A reference to the rect transform of this object
    [HideInInspector]
@@ -34,14 +34,16 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    public GameObject tooltip;
 
    // A reference to the button component on this object
+   [HideInInspector]
    public Button button;
+
+   // The text field that will show the value of this autoComplete
+   public TextMeshProUGUI autoCompleteText;
 
    #endregion
 
    private void Awake () {
-      _autoCompleteText = GetComponentInChildren<Text>();
-      _autoCompleteText.text = "";
-      _background = GetComponent<Image>();
+      autoCompleteText.text = "";
       rectTransform = GetComponent<RectTransform>();
       button = GetComponent<Button>();
    }
@@ -49,7 +51,8 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    public void updateOption (CommandData newCommand) {
       _commandData = newCommand;
 
-      setText(_commandData.getCommandInfo());
+      // setText(_commandData.getCommandInfo());
+      updateColors();
       tooltipText.text = _commandData.getDescription();
    }
 
@@ -62,18 +65,26 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    }
 
    public void onSelected () {
-      onSelectedAction?.Invoke(indexInList);
+      _isSelected = true;
+      updateColors();
    }
 
-   public void setSelected (bool selected) {
-      _isSelected = selected;
+   public void onDeselected () {
+      _isSelected = false;
+      updateColors();
+   }
 
-      _autoCompleteText.color = (_isSelected) ? textSelected : textUnselected;
-      _background.color = (_isSelected) ? backgroundSelected : backgroundUnselected;
+   private void updateColors () {
+      Color commandColor = (_isSelected) ? commandColorActive : commandColorInactive;
+      Color parameterColor = (_isSelected) ? parameterColorActive : parameterColorInactive;
+      string commandColorString = "#" + ColorUtility.ToHtmlStringRGBA(commandColor);
+      string parameterColorString = "#" + ColorUtility.ToHtmlStringRGBA(parameterColor);
+
+      autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix(), parameterColorString, _commandData.getParameters());
    }
 
    private void setText (string newText) {
-      _autoCompleteText.text = newText;
+      autoCompleteText.text = newText;
    }
 
    public string getText () {
@@ -88,19 +99,15 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
       tooltip.SetActive(true);
       onSelected();
+      onSelectedAction?.Invoke(indexInList);
    }
 
    public void OnPointerExit (UnityEngine.EventSystems.PointerEventData eventData) {
       tooltip.SetActive(false);
+      onDeselected();
    }
 
    #region Private Variables
-
-   // The text field that will show the value of this autoComplete
-   private Text _autoCompleteText;
-
-   // The image that is the background for this autoComplete
-   private Image _background;
 
    // Whether this autoComplete is currently selected, and should change its appearance to look selected 
    private bool _isSelected = false;

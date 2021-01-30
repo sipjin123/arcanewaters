@@ -34,27 +34,15 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       _borderImage.material = material;
 
       _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
-      gameObject.AddComponent<ToolTipComponent>();
-      gameObject.GetComponent<ToolTipComponent>().tooltipPlacement = ToolTipComponent.TooltipPlacement.LeftSideOfPanel;
-      gameObject.GetComponent<ToolTipComponent>().message = _tooltipText + _tooltipAssignedPointsText;
    }
 
    public void initialize (PerkData data) {
       perkData = data;
 
       _iconImage.sprite = ImageManager.getSprite(data.iconPath);
-
-      // Initialize the tooltip
-      StringBuilder builder = new StringBuilder();
-      builder.AppendLine($"<b>{perkData.name}</b>");
-      builder.AppendLine();
-      builder.AppendLine(perkData.description);
-      builder.AppendLine();
-      _tooltipText = builder.ToString();
-      _tooltipAssignedPointsText = $"\nAssigned Points: 0";
    }
 
-   public void setAssignedPoints (int points, bool updateTooltip) {
+   public void setAssignedPoints (int points) {
       _borderImage.sprite = CreationPerksGrid.self.getBorderForLevel(points);
       _hasAssignedPoints = points > 0;
 
@@ -63,11 +51,6 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       } else {
          // Make the icons grayscale
          _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
-      }
-
-      _tooltipAssignedPointsText = $"\nAssigned Points: {points}";
-      if (updateTooltip) {
-         gameObject.GetComponent<ToolTipComponent>().message = _tooltipText + _tooltipAssignedPointsText;
       }
 
       _assignedPointsText.text = points.ToString();
@@ -83,6 +66,18 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
       _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 0);
 
+      // Update perk name
+      CharacterCreationPanel.self.perkName.enabled = true;
+      CharacterCreationPanel.self.perkName.text = perkData.name;
+
+      // Update perk description
+      CharacterCreationPanel.self.perkDescription.enabled = true;
+      CharacterCreationPanel.self.perkDescription.text = perkData.description;
+
+      // Update assigned points
+      CharacterCreationPanel.self.perkAssignedPoints.enabled = true;
+      CharacterCreationPanel.self.perkAssignedPoints.text = $"Assigned Points: " + _assignedPointsText.text;
+
       SoundManager.play2DClip(SoundManager.Type.GUI_Hover);
    }
 
@@ -92,6 +87,11 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       if (!_hasAssignedPoints) {
          _iconImage.materialForRendering.SetFloat(_grayscaleIntensityID, 1);
       }
+
+      // Turn off the perk text when not hovering over it
+      CharacterCreationPanel.self.perkName.enabled = false;
+      CharacterCreationPanel.self.perkDescription.enabled = false;
+      CharacterCreationPanel.self.perkAssignedPoints.enabled = false;
    }
 
    public void OnPointerClick (PointerEventData eventData) {
@@ -100,6 +100,7 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
       } else if (eventData.button == PointerEventData.InputButton.Right) {
          CreationPerksGrid.self.unassignPoint(this);
       }
+      CharacterCreationPanel.self.perkAssignedPoints.text = $"Assigned Points: " + _assignedPointsText.text;
    }
 
    #endregion
@@ -125,12 +126,6 @@ public class CreationPerkIcon : MonoBehaviour, IPointerEnterHandler, IPointerExi
    // The growth factor of the icon when hovering over
    [SerializeField]
    private float _iconScaleOnHover = 1.25f;
-
-   // The tooltip text
-   private string _tooltipText;
-
-   // The tooltip text showing how many points have been assigned
-   private string _tooltipAssignedPointsText;
 
    // Whether this is the chosen icon for its group
    private bool _hasAssignedPoints;

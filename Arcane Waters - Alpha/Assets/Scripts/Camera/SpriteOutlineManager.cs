@@ -24,7 +24,9 @@ public class SpriteOutlineManager : MonoBehaviour {
 
    public void addOutlinedSprite (ShaderSpriteOutline shaderSpriteOutline) {
       SpriteOutlineRenderer outlineQuad = _quadPool.get();
-      shaderSpriteOutline.outlineRenderer = outlineQuad;      
+      shaderSpriteOutline.outlineRenderer = outlineQuad;
+
+      outlineQuad.setOutlinedSprite(shaderSpriteOutline);
    }
 
    public void removeOutlinedSprite (ShaderSpriteOutline shaderSpriteOutline) {

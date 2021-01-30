@@ -92,18 +92,22 @@ public class CommandData {
       return true;
    }
 
-   public string getCommandInfo () {
-      StringBuilder info = new StringBuilder(getPrefix());
+   public string getParameters () {
+      StringBuilder parameters = new StringBuilder();
 
       if (_parameterNames != null) {
          foreach (string param in _parameterNames) {
-            info.Append(" [");
-            info.Append(param);
-            info.Append("],");
+            parameters.Append(" [");
+            parameters.Append(param);
+            parameters.Append("],");
          }
       }
 
-      return info.ToString();
+      return parameters.ToString();
+   }
+
+   public string getCommandInfo () {
+      return getPrefix() + getParameters();
    }
 
    public string getDescription () {

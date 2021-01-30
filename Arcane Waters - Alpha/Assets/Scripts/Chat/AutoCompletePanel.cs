@@ -156,8 +156,9 @@ public class AutoCompletePanel : MonoBehaviour {
          StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
          _anyButtonSelected = false;
       } else {
-         _autoCompleteOptions[_selectedAutoComplete].button.Select();
-         _autoCompleteOptions[_selectedAutoComplete].tooltip.SetActive(true);
+         SelectedAutoComplete?.button.Select();
+         SelectedAutoComplete?.tooltip.SetActive(true);
+         SelectedAutoComplete?.onSelected();
          _anyButtonSelected = true;
       }
    }
@@ -220,7 +221,6 @@ public class AutoCompletePanel : MonoBehaviour {
          option.gameObject.SetActive(true);
          // option.setText(_autoCompletes[i]);
          option.updateOption(_autoCompleteCommands[i]);
-         option.setSelected(false);
          option.indexInList = i;
       }
 
@@ -268,6 +268,7 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void deselectOldOption () {
+      SelectedAutoComplete?.onDeselected();
       SelectedAutoComplete?.tooltip.SetActive(false);
    }
 

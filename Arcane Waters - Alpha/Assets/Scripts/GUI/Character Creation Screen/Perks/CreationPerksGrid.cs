@@ -25,7 +25,7 @@ public class CreationPerksGrid : MonoBehaviour {
       self = this;
 
       _assignedPerkPoints = new Dictionary<int, int>();
-      _icons.ForEach(icon => icon.setAssignedPoints(0, false));
+      _icons.ForEach(icon => icon.setAssignedPoints(0));
       _availablePoints = AVAILABLE_POINTS;
       _availablePointsText.text = _availablePoints.ToString();
 
@@ -65,7 +65,7 @@ public class CreationPerksGrid : MonoBehaviour {
 
          _availablePoints--;
          _availablePointsText.text = _availablePoints.ToString();
-         icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
+         icon.setAssignedPoints(_assignedPerkPoints[perkId]);
 
          SoundManager.play2DClip(SoundManager.Type.Perk_Point_Assigned);
       } else {
@@ -80,7 +80,7 @@ public class CreationPerksGrid : MonoBehaviour {
          _assignedPerkPoints[perkId]--;
          _availablePoints++;
          _availablePointsText.text = _availablePoints.ToString();
-         icon.setAssignedPoints(_assignedPerkPoints[perkId], true);
+         icon.setAssignedPoints(_assignedPerkPoints[perkId]);
 
          SoundManager.play2DClip(SoundManager.Type.Perk_Point_Unassigned);
       } else {

@@ -68,6 +68,24 @@ public class ServerMessageManager : MonoBehaviour
             accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
          }
 
+         // Prevent banned accounts from signing in
+         if (accountId > 0) {
+            BanInfo banInfo = DB_Main.getBanInfoForAccount(accountId);
+
+            if (banInfo != null && banInfo.isBanned()) {
+               // If the current date is later than the end date of the ban, remove the ban from the DB and let the user in
+               if (banInfo.hasBanExpired()) {
+                  DB_Main.liftBanForAccount(accountId);
+               } else {
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     sendError(ErrorMessage.Type.Banned, conn.connectionId, getBannedMessage(banInfo));
+                  });
+
+                  return;
+               }
+            }
+         }
+
          // Get the user objects for the selected user ID
          UserObjects userObjects = null;
          if (selectedUserId > 0) {
@@ -219,6 +237,28 @@ public class ServerMessageManager : MonoBehaviour
       });
    }
 
+   public static string getBannedMessage (BanInfo banInfo) {
+      if (!banInfo.isBanned()) {
+         return "";
+      }
+
+      string message = "";
+
+      switch (banInfo.banType) {
+         case BanInfo.Type.Temporary:
+            message = $"Your account has been suspended until {banInfo.banEndDate}";
+            break;
+
+         case BanInfo.Type.Indefinite:
+            message = $"Your account has been suspended indefinitely";
+            break;
+      }
+
+      message += $"\n\nReason: {banInfo.reason}";
+
+      return message;
+   }
+
    [ServerOnly]
    private static void processSteamUserAuth (NetworkConnection conn, LogInUserMessage loginUserMsg) {
       AuthenticateTicketEvent newTicketEvent = new AuthenticateTicketEvent();
@@ -284,6 +324,11 @@ public class ServerMessageManager : MonoBehaviour
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId) {
       ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType);
+      NetworkServer.connections[connectionId].Send(errorMessage);
+   }
+
+   public static void sendError (ErrorMessage.Type errorType, int connectionId, string customMessage = "") {
+      ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType, customMessage);
       NetworkServer.connections[connectionId].Send(errorMessage);
    }
 

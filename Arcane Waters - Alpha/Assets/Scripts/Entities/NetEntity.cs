@@ -413,11 +413,13 @@ public class NetEntity : NetworkBehaviour
       if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) {
          if ((this is PlayerBodyEntity) || (this is PlayerShipEntity)) {
             entityNameGO.SetActive(true);
+            showGuildIcon();
          }
       }
       if (Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.RightAlt)) {
          if ((this is PlayerBodyEntity) || (this is PlayerShipEntity)) {
             entityNameGO.SetActive(false);
+            hideGuildIcon();
          }
       }
    }

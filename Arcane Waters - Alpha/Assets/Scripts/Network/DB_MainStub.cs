@@ -652,7 +652,22 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
+   public static BanInfo getBanInfoForAccount (int accountId) {
+      return new BanInfo();
+   }
+
+   public static void liftBanForAccount (int accountId) {
+
+   }
+
+   public static void banAccountWithId (int accId, BanInfo banInfo) {
+   }
+
    public static int getAccountId (string accountName, string accountPassword) {
+      return -1;
+   }
+   
+   public static int getAccountId (string username) {
       return -1;
    }
 

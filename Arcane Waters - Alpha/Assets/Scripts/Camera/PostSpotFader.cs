@@ -13,6 +13,8 @@ public class PostSpotFader : ClientMonoBehaviour, IScreenFader
    protected override void Awake () {
       base.Awake();
       self = this;
+
+      _material = new Material(_material);
    }
 
    private void Start () {

@@ -153,7 +153,7 @@ public class TitleScreen : MonoBehaviour {
       return !NetworkClient.active && !NetworkServer.active && !Global.isRedirecting && !CharacterScreen.self.isShowing();
    }
 
-   public void displayError (ErrorMessage.Type errorType) {
+   public void displayError (ErrorMessage.Type errorType, ErrorMessage message = null) {
       // We didn't log in, so stop the client and restart the login process
       MyNetworkManager.self.StopHost();
 
@@ -163,6 +163,15 @@ public class TitleScreen : MonoBehaviour {
             break;
          case ErrorMessage.Type.FailedUserOrPass:
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");
+            break;
+         case ErrorMessage.Type.Banned:
+            string panelMessage = message != null ? message.customMessage : "Your account has been suspended.";
+            PanelManager.self.noticeScreen.show(panelMessage);
+            break;
+         default:
+            if (message != null) {
+               PanelManager.self.noticeScreen.show(message.customMessage);
+            }
             break;
       }
    }

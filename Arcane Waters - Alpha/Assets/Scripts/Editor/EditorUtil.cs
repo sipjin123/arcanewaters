@@ -122,6 +122,30 @@ public class EditorUtil : EditorWindow {
       AssetDatabase.Refresh();
    }
 
+   [MenuItem("Util/Update Resources - enable generate physics shape")]
+   public static void enableGeneratePhysicsShapeForAllSprites () {
+      string[] spriteGUIDs = AssetDatabase.FindAssets("t:Texture");
+      int updatedCount = 0;
+
+      foreach(string guid in spriteGUIDs) {
+         string path = AssetDatabase.GUIDToAssetPath(guid);
+         TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+         if (importer != null && importer.textureType == TextureImporterType.Sprite) {
+            TextureImporterSettings importSettings = new TextureImporterSettings();
+            importer.ReadTextureSettings(importSettings);
+
+            if (!importSettings.spriteGenerateFallbackPhysicsShape) {
+               importSettings.spriteGenerateFallbackPhysicsShape = true;
+               importer.SetTextureSettings(importSettings);
+               updatedCount++;
+            }
+         }
+      }
+
+      Debug.Log($"Enabled \"Generate Physics Shape\" for {updatedCount} assets");
+   }
+
    private static List<ImageManager.ImageData> findAllImagesInProject () {
       // Create new image list
       List<ImageManager.ImageData> imageList = new List<ImageManager.ImageData>();

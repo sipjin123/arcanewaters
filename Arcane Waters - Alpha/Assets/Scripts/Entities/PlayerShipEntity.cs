@@ -244,8 +244,8 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
          }
 
          if (Input.GetKeyDown(KeyCode.F11)) {
+            Status.Type newStatusType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
             Cmd_ChangeCannonEffectType();
-            ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + cannonEffectType.ToString(), System.DateTime.Now, ChatInfo.Type.System));
          }
       }
 
@@ -486,14 +486,20 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       Target_ReceiveAbilityList(connectionToClient, shipAbilities.ToArray());
    }
 
-   [Command]
-   private void Cmd_ChangeCannonEffectType () {
-      cannonEffectType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
-   }
-
    [TargetRpc]
    public void Target_ReceiveAbilityList (NetworkConnection connection, int[] abilityIds) {
       shipAbilities = new List<int>(abilityIds);
+   }
+
+   [Command]
+   private void Cmd_ChangeCannonEffectType () {
+      cannonEffectType = (Status.Type) (((int) cannonEffectType + 1) % System.Enum.GetValues(typeof(Status.Type)).Length);
+      Target_NotifyCannonEffectChange(connectionToClient, (int) cannonEffectType);
+   }
+
+   [TargetRpc]
+   public void Target_NotifyCannonEffectChange (NetworkConnection connection, int newStatusEffect) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, "Changed status type to: " + ((Status.Type)newStatusEffect).ToString(), System.DateTime.Now, ChatInfo.Type.System));
    }
 
    private void updateSpeedUpDisplay (float meter, bool isOn, bool isReadySpeedup) {

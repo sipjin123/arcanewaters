@@ -89,6 +89,10 @@ public class SeaEntity : NetEntity
          _outline.Hide();
          disableCollisions();
 
+         if (_burningCoroutine != null) {
+            StopCoroutine(_burningCoroutine);
+         }
+
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
             if (monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
@@ -99,10 +103,6 @@ public class SeaEntity : NetEntity
          } else if (!_playedDestroySound && this is ShipEntity && isClient) {
             _playedDestroySound = true;
             SoundManager.play2DClip(SoundManager.Type.Ship_Destroyed);
-
-            if (_burningCoroutine != null) {
-               StopCoroutine(_burningCoroutine);
-            }
 
             // Hide all the sprites
             foreach (SpriteRenderer renderer in _renderers) {

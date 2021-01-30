@@ -834,7 +834,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
 
-      SoundEffectManager.self.playSoundEffect(deathSoundEffect.id);
+      SoundEffectManager.self.playSoundEffect(deathSoundEffect.id, transform);
    }
 
    public void handleEndOfBattle (Battle.TeamType winningTeam) {
@@ -868,7 +868,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
 
-      SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id);
+      SoundEffectManager.self.playSoundEffect(jumpSoundEffect.id, transform);
    }
 
    public void playAnim (Anim.Type animationType) {
@@ -976,7 +976,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Play any sounds that go along with the ability casting
-            abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
+            abilityDataReference.playCastClipAtTarget(targetBattler.transform);
 
             // Play The effect of the buff
             Vector3 castPosition = targetBattler.getMagicGroundPosition();
@@ -1005,7 +1005,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, buffAction, effectPosition, BattleActionType.BuffDebuff);
 
             // Play any sounds that go along with the ability taking effect
-            abilityDataReference.playHitClipAtTarget(targetBattler.transform.position);
+            abilityDataReference.playHitClipAtTarget(targetBattler.transform);
 
             // Shows how much health is being restored
             BattleUIManager.self.showHealText(buffAction, targetBattler);
@@ -1046,7 +1046,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                }
 
                // Play any sounds that go along with the ability being cast
-               abilityDataReference.playCastClipAtTarget(targetBattler.transform.position);
+               abilityDataReference.playCastClipAtTarget(targetBattler.transform);
 
                // Play The effect of the buff
                castPosition = targetBattler.getMagicGroundPosition();
@@ -1071,7 +1071,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return new WaitForSeconds(sourceBattler.getPreContactLength());
 
                // Play any sounds that go along with the ability taking effect
-               abilityDataReference.playHitClipAtTarget(targetBattler.transform.position);
+               abilityDataReference.playHitClipAtTarget(targetBattler.transform);
 
                // Play the magic vfx such as (VFX for Heal, VFX for Attack Boost, etc etc)
                effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1219,7 +1219,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Play any sounds that go along with the ability being cast
-            attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
+            attackerAbility.playCastClipAtTarget(targetBattler.transform);
 
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
@@ -1233,7 +1233,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             #region Display Block
 
             // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
+            attackerAbility.playHitClipAtTarget(targetBattler.transform);
 
             // Simulate the collision effect of the attack towards the target battler
             yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
@@ -1332,7 +1332,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return new WaitForSeconds(PRE_AIM_DELAY);
 
                // Play the sound associated for casting
-               attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
+               attackerAbility.playCastClipAtTarget(targetBattler.transform);
 
                yield return new WaitForSeconds(AIM_DURATION);
             }
@@ -1382,7 +1382,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourceBattler.modifyAnimSpeed(-1);
 
             // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
+            attackerAbility.playHitClipAtTarget(targetBattler.transform);
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
@@ -1452,7 +1452,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
 
                // Play any sounds that go along with the ability being cast
-               attackerAbility.playCastClipAtTarget(targetBattler.transform.position);
+               attackerAbility.playCastClipAtTarget(targetBattler.transform);
 
                Vector3 castPosition = sourcePos;
                switch (abilityDataReference.abilityCastPosition) {
@@ -1499,7 +1499,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             sourceBattler.modifyAnimSpeed(-1);
 
             // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform.position);
+            attackerAbility.playHitClipAtTarget(targetBattler.transform);
 
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;

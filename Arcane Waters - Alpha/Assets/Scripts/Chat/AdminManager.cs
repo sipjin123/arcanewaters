@@ -78,6 +78,9 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("combat_log", "Allows user stats to show on land combat", requestCombatStats, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("one_shot", "Allows user to one shot enemies in land combat", requestOneShot, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp_anywhere", "Allows user warp anywhere without getting returned to town", requestWarpAnywhere, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("kick", "Disconnects a player from the name", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
+      cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
+      cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -131,6 +134,113 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void kickPlayer (string parameters) {
+      Cmd_KickPlayer(parameters);
+   }
+
+   [Command]
+   protected void Cmd_KickPlayer(string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         NetEntity player = EntityManager.self.getEntityWithName(list[0]);
+         string reason = parameters.Replace(list[0] + " ", "");
+
+         if (player != null) {
+            player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were kicked.\n\n Reason: {reason}"));
+            player.connectionToClient.Disconnect();
+         }
+      }
+   }
+
+   private void banPlayerIndefinite (string parameters) {
+      Cmd_RequestPermanentPlayerBan(parameters);
+   }
+
+   private void banPlayerTemporary (string parameters) {
+      Cmd_RequestTemporaryPlayerBan(parameters);
+   }
+
+   [Command]
+   private void Cmd_RequestPermanentPlayerBan (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+            
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         string playerName = list[0];
+         string reason = parameters.Replace(list[0] + " ", "");
+
+         BanInfo banInfo = new BanInfo(BanInfo.Type.Indefinite, DateTime.Now, reason);
+         banPlayer(playerName, banInfo);
+      }
+   }
+
+   [ServerOnly]
+   protected void banPlayer (string playerName, BanInfo banInfo) {
+      if (banInfo.banType == BanInfo.Type.None) {
+         D.error("Invalid BanType: None");
+         return;
+      }
+
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         int accId = DB_Main.getAccountId(playerName);
+
+         if (accId > 0) {
+            DB_Main.banAccountWithId(accId, banInfo);
+
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (banInfo.banType == BanInfo.Type.Temporary) {
+                  _player.Target_ReceiveNormalChat($"Account for player {playerName} has been temporarily banned until {banInfo.banEndDate}", ChatInfo.Type.System);
+               } else if (banInfo.banType == BanInfo.Type.Indefinite) {
+                  _player.Target_ReceiveNormalChat($"Account for player {playerName} has been indefinitely banned", ChatInfo.Type.System);
+               }
+
+               NetEntity player = EntityManager.self.getEntityWithName(playerName);
+               if (player != null) {
+                  player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
+                  player.connectionToClient.Disconnect();
+               }
+            });
+         } else {
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               _player.Target_ReceiveNormalChat($"No account was found for player {playerName}.", ChatInfo.Type.System);
+            });
+         }
+      });
+   }
+
+   [Command]
+   private void Cmd_RequestTemporaryPlayerBan (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+      
+      // Make sure we have at least 2 parameters: name and duration. Reason is optional.
+      if (list.Length >= 2) {
+         string playerName = list[0];         
+         
+         if (!int.TryParse(list[1], out int minutes)) {
+            D.log($"Invalid parameters for /admin ban command: cannot parse {list[1]} to int.");
+            return;
+         }
+
+         string reason = parameters.Replace($"{list[0]} {list[1]} ", "");         
+         DateTime banEndDate = DateTime.Now.AddMinutes(minutes);
+         BanInfo banInfo = new BanInfo(BanInfo.Type.Temporary, banEndDate, reason);
+
+         banPlayer(playerName, banInfo);
+      }
    }
 
    [Command]

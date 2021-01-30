@@ -78,8 +78,8 @@ public class ShipBars : MonoBehaviour {
          barBackgroundImage.sprite = barsBackgroundAlt;
       }
 
-      // Only show the ship info when the mouse is over the entity or its member cell in the group panel
-      _showShipInfo = !_entity.isDead() && (_entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
+      // Only show the ship info when the mouse is over the entity or its member cell in the group panel or ALT is pressed
+      _showShipInfo = !_entity.isDead() && (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || _entity.isMouseOver() || _entity.isAttackCursorOver() || VoyageGroupPanel.self.isMouseOverMemberCell(_entity.userId));
 
       // Hide the canvas if the ship is dead
       _canvasGroup.alpha = _entity.isDead() ? 0 : 1;

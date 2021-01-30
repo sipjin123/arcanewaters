@@ -659,8 +659,8 @@ public class DB_Main : DB_MainStub
          addedFields = ", ability_type";
       } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
          contentToFetch = "id, xmlContent ";
-      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops 
-         || toolType == EditorSQLManager.EditorToolType.Quest 
+      } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
+         || toolType == EditorSQLManager.EditorToolType.Quest
          || toolType == EditorSQLManager.EditorToolType.Projectiles
          || toolType == EditorSQLManager.EditorToolType.Tutorial) {
          contentToFetch = "xmlId, xmlContent ";
@@ -692,8 +692,8 @@ public class DB_Main : DB_MainStub
                   } else if (toolType == EditorSQLManager.EditorToolType.Palette) {
                      xmlId = dataReader.GetInt32("id");
                      xmlContent = dataReader.GetString("xmlContent");
-                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops 
-                     || toolType == EditorSQLManager.EditorToolType.Quest 
+                  } else if (toolType == EditorSQLManager.EditorToolType.Treasure_Drops
+                     || toolType == EditorSQLManager.EditorToolType.Quest
                      || toolType == EditorSQLManager.EditorToolType.Projectiles
                      || toolType == EditorSQLManager.EditorToolType.Tutorial) {
                      xmlId = dataReader.GetInt32("xmlId");
@@ -858,8 +858,8 @@ public class DB_Main : DB_MainStub
 
          using (MySqlConnection conn = getConnectionToDevGlobal()) {
             using (MySqlCommand cmd = new MySqlCommand(
-               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId) VALUES " +
-                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition, @deploymentId);", conn)) {
+               "INSERT INTO support_tickets (ticketSubject, ticketDescription, sourceUsrId, sourceAccId, sourceUsrName, sourceEmail, sourceIPAddress, sourceMachineIdentifier, targetUsrId, targetAccId, targetUsrName, ticketLog, status, playerPosition, deploymentId, sourceType) VALUES " +
+                "(@ticketSubject, @ticketDescription, @sourceUsrId, @sourceAccId, @sourceUsrName, @sourceEmail, @sourceIPAddress, @sourceMachineIdentifier, @targetUsrId, @targetAccId, @targetUsrName, @ticketLog, @status, @playerPosition, @deploymentId, @sourceType);", conn)) {
                conn.Open();
                cmd.Prepare();
 
@@ -873,11 +873,12 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
                cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
                cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
-               cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+               cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
                cmd.Parameters.AddWithValue("@playerPosition", $"{playerArea} : {playerPosition}");
                cmd.Parameters.AddWithValue("@ticketLog", ticketLog);
                cmd.Parameters.AddWithValue("@sourceMachineIdentifier", sourceMachineIdentifier);
                cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
+               cmd.Parameters.AddWithValue("@sourceType", (int) TicketSourceType.Game);
 
                DebugQuery(cmd);
 
@@ -890,7 +891,7 @@ public class DB_Main : DB_MainStub
             using (MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.support_tickets_actions (ticketId, actionType, performerAccId) VALUES(@ticketId, @actionType, @performerAccId)", conn)) {
                actionCmd.Prepare();
                actionCmd.Parameters.AddWithValue("@ticketId", ticketId);
-               actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
+               actionCmd.Parameters.AddWithValue("@actionType", WebToolsUtil.CREATE);
                actionCmd.Parameters.AddWithValue("@performerAccId", sourceAccId);
                DebugQuery(actionCmd);
                actionCmd.ExecuteNonQuery();
@@ -899,12 +900,12 @@ public class DB_Main : DB_MainStub
             // Saving screenshot in support_tickets_screenshots
             using (MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO global.support_tickets_screenshots (ticketId, image) VALUES(@ticketId, @image)", conn)) {
                screenshotCmd.Prepare();
-               screenshotCmd.Parameters.AddWithValue("@ticketId", ticketId);               
+               screenshotCmd.Parameters.AddWithValue("@ticketId", ticketId);
                screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
                DebugQuery(screenshotCmd);
                screenshotCmd.ExecuteNonQuery();
             }
-         }         
+         }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
       }
@@ -5343,7 +5344,7 @@ public class DB_Main : DB_MainStub
          var deploymentConfigAsset = Resources.Load<TextAsset>("config");
          Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
 
-         if(deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
             deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
          }
 
@@ -5361,7 +5362,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@playerPosition", playerPosition);
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
-            cmd.Parameters.AddWithValue("@status", ToolsUtil.UNASSIGNED);
+            cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
             cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
 
             DebugQuery(cmd);
@@ -5376,7 +5377,7 @@ public class DB_Main : DB_MainStub
             MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_actions (taskId, actionType, performerAccId) VALUES(@taskId, @actionType, @performerAccId)", conn);
             actionCmd.Prepare();
             actionCmd.Parameters.AddWithValue("@taskId", bugId);
-            actionCmd.Parameters.AddWithValue("@actionType", ToolsUtil.CREATE);
+            actionCmd.Parameters.AddWithValue("@actionType", WebToolsUtil.CREATE);
             actionCmd.Parameters.AddWithValue("@performerAccId", player.accountId);
             DebugQuery(cmd);
             actionCmd.ExecuteNonQuery();
@@ -5519,6 +5520,74 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
+   public static new BanInfo getBanInfoForAccount (int accId) {
+      BanInfo banInfo = null;
+
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_bans WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+
+            DebugQuery(cmd);
+
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  banInfo = new BanInfo(dataReader);
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return banInfo;
+   }
+
+   public static new void liftBanForAccount (int accId) {
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.account_bans WHERE accId=@accId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+
+            DebugQuery(cmd);
+
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
+   public static new void banAccountWithId (int accId, BanInfo banInfo) {
+      if (accId < 0) {
+         D.error("Tried to ban an account with invalid accountId " + accId);
+         return;
+      }
+
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans (accId, banType, banReason, banEndDate) VALUES" +
+            "(@accId, @banType, @banReason, @banEndDate)", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@banType", (int) banInfo.banType);
+            cmd.Parameters.AddWithValue("@banReason", banInfo.reason);
+            cmd.Parameters.AddWithValue("@banEndDate", banInfo.banEndDate);
+
+            DebugQuery(cmd);
+
+            cmd.ExecuteNonQuery();
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+   }
+
    public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {
       List<UserInfo> userList = new List<UserInfo>();
       string userClause = (userId == 0) ? " AND users.usrId != @usrId" : " AND users.usrId = @usrId";
@@ -5609,6 +5678,31 @@ public class DB_Main : DB_MainStub
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", userId);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountId = dataReader.GetInt32("accId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountId;
+   }
+
+   public static new int getAccountId (string username) {
+      int accountId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM users WHERE usrName=@usrName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@usrName", username);
             DebugQuery(cmd);
 
             // Create a data reader and Execute the command
@@ -8190,8 +8284,8 @@ public class DB_Main : DB_MainStub
    public static new bool setMetricIP (string machineId, string processName, string PID, string ip) {
       return setMetric(machineId, processName, PID, "ip", ip);
    }
-   
-   public static new bool setMetricUptime (string machineId,string processName, string PID, long uptime) {
+
+   public static new bool setMetricUptime (string machineId, string processName, string PID, long uptime) {
       return setMetric(machineId, processName, PID, "uptime", uptime.ToString());
    }
 
