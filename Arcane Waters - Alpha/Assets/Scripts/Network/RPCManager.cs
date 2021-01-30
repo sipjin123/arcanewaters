@@ -4170,7 +4170,11 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // This block will handle the randomizing of the enemy count 
-      int maximumEnemyCount = (attackerCount * 2) - 1;
+      int maximumEnemyCount = (attackerCount * 2);
+      if (maximumEnemyCount > Battle.MAX_ENEMY_COUNT) {
+         maximumEnemyCount = Battle.MAX_ENEMY_COUNT;
+      }
+      
       int combatantCount = 0;
       bool forceCombatantEntry = false;
       if (!enemy.isBossType && enemy.enemyType != Enemy.Type.Skelly_Captain_Tutorial) {

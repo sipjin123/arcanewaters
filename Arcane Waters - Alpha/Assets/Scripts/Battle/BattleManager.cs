@@ -97,7 +97,7 @@ public class BattleManager : MonoBehaviour {
 
       // Spawn an appropriate number of enemies based on the number of players in the instance
       foreach (BattlerInfo battlerInfo in defendersData) {
-         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
+         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < 6) {
             enemy.enemyType = battlerInfo.enemyType;
             enemyTypes.Add(battlerInfo.enemyType);
             this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
@@ -373,8 +373,12 @@ public class BattleManager : MonoBehaviour {
       // Figure out which Battle Spot we should be placed in
       battler.boardPosition = battle.getTeam(teamType).Count + 1;
       BattleSpot battleSpot = battle.battleBoard.getSpot(teamType, battler.boardPosition);
-      battler.battleSpot = battleSpot;
-      battler.transform.position = battleSpot.transform.position;
+      if (battleSpot == null) {
+         D.debug("Error here! Failed to fetch battle spot: " + " TeamCount: " + battle.getTeam(teamType).Count);
+      } else {
+         battler.battleSpot = battleSpot;
+         battler.transform.position = battleSpot.transform.position;
+      }
 
       // Actually spawn the Battler as a Network object now
       NetworkServer.Spawn(battler.gameObject);

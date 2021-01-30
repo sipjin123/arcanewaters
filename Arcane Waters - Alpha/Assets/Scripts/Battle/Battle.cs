@@ -41,6 +41,9 @@ public class Battle : NetworkBehaviour {
    // Local events to execute whenever we finish a battle. (hiding battle UI for example)
    [HideInInspector] public UnityEvent onBattleEnded = new UnityEvent();
 
+   // The max number of enemies
+   public const int MAX_ENEMY_COUNT = 6;
+
    #endregion
 
    public void Start () {
