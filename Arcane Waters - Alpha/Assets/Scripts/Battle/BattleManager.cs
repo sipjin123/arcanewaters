@@ -590,11 +590,6 @@ public class BattleManager : MonoBehaviour {
                currentActionType = AttackAction.ActionType.Range;
             }
 
-            // One shot enemie if admin command is enabled
-            if (oneShotAttack) {
-               damage += 9999;
-            }
-
             // Create the Action object
             AttackAction action = new AttackAction(battle.battleId, currentActionType, source.userId, target.userId,
                 (int) damage, timeAttackEnds, abilityInventoryIndex, wasCritical, wasBlocked, cooldownDuration, sourceApChange,

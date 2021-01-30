@@ -4529,7 +4529,6 @@ public class RPCManager : NetworkBehaviour {
    public void Cmd_RequestAbility (int abilityTypeInt, uint netId, int abilityInventoryIndex, bool cancelAction) {
       AbilityType abilityType = (AbilityType) abilityTypeInt;
 
-      bool oneShotEnemies = false;
       if (_player == null || !(_player is PlayerBodyEntity)) {
          D.editorLog("Invalid Source!");
          Target_ReceiveRefreshCasting(connectionToClient, false);
@@ -4538,11 +4537,6 @@ public class RPCManager : NetworkBehaviour {
 
       // Look up the player's Battle object
       PlayerBodyEntity playerBody = (PlayerBodyEntity) _player;
-
-      // An admin command that allows one shot damage for players againt enemy in land combat for quick tests
-      if (playerBody.isAdmin() && playerBody.oneShotEnemies) {
-         oneShotEnemies = true;
-      }
       Battle battle = BattleManager.self.getBattle(playerBody.battleId);
       Battler sourceBattler = battle.getBattler(_player.userId);
       Battler targetBattler = null;
@@ -4599,7 +4593,7 @@ public class RPCManager : NetworkBehaviour {
             Target_ReceiveRefreshCasting(connectionToClient, true);
             return;
          }
-         BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType, oneShotEnemies);
+         BattleManager.self.executeBattleAction(battle, sourceBattler, targetBattlers, abilityInventoryIndex, abilityType);
       }
    }
 
