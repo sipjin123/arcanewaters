@@ -96,9 +96,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // If the user can engage in combat
    public bool canEngageInCombat = true;
 
-   // If players can one shot land enemies on combat
-   public bool oneShotEnemies = false;
-
    #endregion
 
    protected override void Awake () {

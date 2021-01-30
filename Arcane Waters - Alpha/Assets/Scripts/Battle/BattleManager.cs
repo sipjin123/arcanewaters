@@ -471,7 +471,7 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType, bool oneShotAttack) {
+   public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
 
