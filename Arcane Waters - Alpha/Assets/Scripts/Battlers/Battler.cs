@@ -1095,6 +1095,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       Battle battle = BattleManager.self.getBattle(battleAction.battleId);
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
+      modifyAnimSpeed(-1);
 
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;

@@ -4219,8 +4219,11 @@ public class RPCManager : NetworkBehaviour {
          }
       }
 
+      // If this is a new team battle
+      bool isNewBattle = (enemy.battleId > 0);
+
       // Get or create the Battle instance
-      Battle battle = (enemy.battleId > 0) ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
+      Battle battle = isNewBattle ? BattleManager.self.getBattle(enemy.battleId) : BattleManager.self.createTeamBattle(area, instance, enemy, attackers, localBattler, modifiedDefenderList.ToArray());
 
       // If the Battle is full, we can't proceed
       if (!battle.hasRoomLeft(Battle.TeamType.Attackers)) {
@@ -4237,6 +4240,11 @@ public class RPCManager : NetworkBehaviour {
       // Send Battle Bg data
       int bgXmlID = battle.battleBoard.xmlID;
       Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+
+      // If enemy is a boss, trigger the shout/intimidate animation
+      if (enemy.isBossType) {
+         battle.Rpc_TriggerBossAnimation(battle.getDefenders()[0].playerNetId);
+      }
    }
 
    [Server]

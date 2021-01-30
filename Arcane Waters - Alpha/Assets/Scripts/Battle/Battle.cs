@@ -317,6 +317,27 @@ public class Battle : NetworkBehaviour {
    }
 
    [ClientRpc]
+   public void Rpc_TriggerBossAnimation (uint netId) {
+      StartCoroutine(CO_TriggerBossAnimation(netId));
+   }
+
+   private IEnumerator CO_TriggerBossAnimation (uint netId) {
+      yield return new WaitForSeconds(1.5f);
+      Battler battler = getDefenders().Find(_ => _.playerNetId == netId);
+
+      if (battler != null) {
+         battler.modifyAnimSpeed(.15f);
+         battler.playAnim(Anim.Type.BossAnimation);
+         yield return new WaitForSeconds(3f);
+         battler.modifyAnimSpeed(-1);
+         battler.pauseAnim(false);
+         battler.playAnim(Anim.Type.Idle_East);
+      } else {
+         D.debug("Failed to get battler for anim");
+      }
+   }
+
+   [ClientRpc]
    public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
