@@ -481,7 +481,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      if (isDead() || !hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder) {
+      if (isDead() || (!hasReloaded() && shipAbility.selectedAttackType != Attack.Type.Mini_Boulder)) {
          return;
       }
 

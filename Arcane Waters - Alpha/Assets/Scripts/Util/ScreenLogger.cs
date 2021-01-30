@@ -22,11 +22,9 @@ public class ScreenLogger : MonoBehaviour {
 
    private void Awake () {
       self = this;
-      isEnabled = true;
-      canvasObj.SetActive(false);
-
-      #if CLOUD_BUILD
       isEnabled = false;
+      canvasObj.SetActive(false);
+      
       #endif
    }
 
