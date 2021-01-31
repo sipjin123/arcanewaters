@@ -1555,6 +1555,27 @@ public class NetEntity : NetworkBehaviour
       // Check which server we're likely to redirect to
       NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
+      // If the destination is a voyage map and the user is an admin, make sure that he joined the voyage and force it if not
+      if (isAdmin()) {
+         if (VoyageManager.self.isVoyageArea(newArea)) {
+            // Find an active voyage in this area
+            Voyage voyage = VoyageManager.self.getVoyage(newArea);
+            if (voyage != null) {
+               VoyageGroupManager.self.forceAdminJoinVoyage(this, voyage);
+            } else {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "No active voyage found in area " + newArea + ". Use '/admin create_voyage' first.");
+               return;
+            }
+
+            // Warp the admin to the voyage instance
+            spawnInNewMap(voyage.voyageId, newArea, Direction.South);
+            return;
+         } else if (VoyageManager.isTreasureSiteArea(newArea)) {
+            // Throw a warning if the destination is a treasure site map
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "Warning: could not determine the instance. You might encounter bugs. Use '/admin goto' when possible with treasure site maps.");
+         }
+      }
+
       // Now that we know the target server, redirect them there
       spawnOnSpecificServer(bestServer, newArea, newLocalPosition, newFacingDirection);
    }
@@ -1566,16 +1587,21 @@ public class NetEntity : NetworkBehaviour
 
    [Server]
    public void spawnInNewMap (int voyageId, string newArea, string spawn, Direction newFacingDirection) {
-      // Find the server hosting the voyage
-      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
-
       // Get the spawn position for the given spawn
       Vector2 spawnLocalPosition = spawn == ""
             ? SpawnManager.self.getDefaultLocalPosition(newArea)
             : SpawnManager.self.getLocalPosition(newArea, spawn);
 
+      spawnInNewMap(voyageId, newArea, spawnLocalPosition, newFacingDirection);
+   }
+
+   [Server]
+   public void spawnInNewMap (int voyageId, string newArea, Vector2 localPosition, Direction newFacingDirection) {
+      // Find the server hosting the voyage
+      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
+
       // Now that we know the target server, redirect them there
-      spawnOnSpecificServer(voyageServer, newArea, spawnLocalPosition, newFacingDirection);
+      spawnOnSpecificServer(voyageServer, newArea, localPosition, newFacingDirection);
    }
 
    [Server]
@@ -1598,6 +1624,11 @@ public class NetEntity : NetworkBehaviour
          DB_Main.setNewLocalPosition(this.userId, newLocalPosition, newFacingDirection, newArea);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // If the current area is a treasure site, we must unregister this user from being inside
+            if (VoyageManager.isTreasureSiteArea(areaKey)) {
+               VoyageManager.self.unregisterUserFromTreasureSite(userId, instanceId);
+            }
+
             // Remove the player from the current instance
             InstanceManager.self.removeEntityFromInstance(this);
 

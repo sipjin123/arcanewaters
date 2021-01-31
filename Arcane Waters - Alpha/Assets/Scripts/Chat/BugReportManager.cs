@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using MiniJSON;
 
 public class BugReportManager : MonoBehaviour {
    #region Public Variables
@@ -42,9 +43,11 @@ public class BugReportManager : MonoBehaviour {
 
       string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
 
+      int deploymentId = Util.getDeploymentId();
+
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem);
+         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -242,7 +245,7 @@ public class BugReportManager : MonoBehaviour {
    #region Private Variables
 
    // The amount of time to wait between consecutive bug reports
-   protected static float BUG_REPORT_INTERVAL = 30f;
+   protected static float BUG_REPORT_INTERVAL = 5f;
 
    // The minimum subject length for bugs
    protected static int MIN_SUBJECT_LENGTH = 3;

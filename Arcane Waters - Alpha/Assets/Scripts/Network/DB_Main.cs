@@ -5337,17 +5337,8 @@ public class DB_Main : DB_MainStub
 
    #region Chat System Features / Bug Reporting Features
 
-   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
+   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId) {
       try {
-         // Getting deploymentId, before executing the query
-         int deploymentId = 0;
-         var deploymentConfigAsset = Resources.Load<TextAsset>("config");
-         Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
-
-         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
-            deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
-         }
-
          using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId)", conn)) {
             conn.Open();

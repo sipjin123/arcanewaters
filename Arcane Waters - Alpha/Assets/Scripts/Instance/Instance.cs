@@ -227,8 +227,8 @@ public class Instance : NetworkBehaviour
          }
       }
 
-      // Treasure site instances exist as long as the main sea voyage exists
-      if (VoyageManager.isTreasureSiteArea(areaKey) && VoyageManager.self.doesVoyageExists(voyageId)) {
+      // Sea voyage and treasure site instances exist as long as there is a group linked to them
+      if ((VoyageManager.self.isVoyageArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
          return;
       }
 

@@ -29,7 +29,7 @@ public class InstanceManager : MonoBehaviour {
          if (VoyageManager.self.isVoyageArea(areaKey)) {
             instance = getVoyageInstance(voyageId);
             if (instance == null) {
-               D.error("Could not find the voyage instance for voyage id " + voyageId);
+               D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
             // Search for the treasure site the player is registered in, in the sea voyage instance
@@ -379,7 +379,7 @@ public class InstanceManager : MonoBehaviour {
          return;
       }
 
-      // Destroy any bot entities
+      // Destroy any instance-specific entities
       foreach (NetworkBehaviour entity in instance.entities) {
          NetworkServer.Destroy(entity.gameObject);
       }

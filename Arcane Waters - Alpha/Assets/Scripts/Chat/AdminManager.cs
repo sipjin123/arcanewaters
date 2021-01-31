@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using MapCreationTool.Serialization;
 using NubisDataHandling;
+using MLAPI.Messaging;
 
 public class AdminManager : NetworkBehaviour
 {
@@ -1118,17 +1119,67 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      NetEntity targetEntity = EntityManager.self.getEntityWithName(targetPlayerName);
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Try to retrieve the target info
+         UserInfo targetUserInfo = DB_Main.getUserInfo(targetPlayerName);
 
-      if (targetEntity == null) {
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (targetUserInfo == null) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetPlayerName + " doesn't exists!");
+               return;
+            }
+
+            if (!ServerNetworkingManager.self.isUserOnline(targetUserInfo.userId)) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "The player " + targetPlayerName + " is offline!");
+               return;
+            }
+
+            if (targetUserInfo.userId == _player.userId) {
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "You cannot warp to yourself!");
+               return;
+            }
+
+            // Redirect to the master server to find the location of the target user
+            ServerNetworkingManager.self.findUserLocationForAdminGoTo(_player.userId, targetUserInfo.userId);
+         });
+      });
+   }
+
+   [Server]
+   public void returnUserLocationForAdminGoto (UserLocationBundle targetLocation) {
+      // If the admin is in the same area and instance than the target user, simply teleport him
+      if (_player.areaKey == targetLocation.areaKey && _player.instanceId == targetLocation.instanceId) {
+         _player.moveToPosition(targetLocation.getLocalPosition());
          return;
       }
 
-      if (_player.areaKey != targetEntity.areaKey || _player.instanceId != targetEntity.instanceId) {
-         _player.spawnInNewMap(targetEntity.areaKey, targetEntity.transform.localPosition, Direction.South);
-      } else {
-         _player.moveToPosition(targetEntity.transform.position);
-      }      
+      // Handle warping to a sea voyage instance or land treasure site instance
+      if (VoyageManager.self.isVoyageArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
+         // Make the admin join the voyage the target user is in
+         Voyage voyage;
+         try {
+            VoyageGroupInfo targetVoyageGroup = VoyageGroupManager.self.getGroupById(targetLocation.voyageGroupId);
+            voyage = VoyageManager.self.getVoyage(targetVoyageGroup.voyageId);
+            VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage);
+         } catch (Exception e) {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not join the voyage in area " + targetLocation.areaKey);
+            D.error("Inconsistency in voyage instance during '/admin goto' command: " + e.ToString());
+            return;
+         }
+
+         // For treasure sites, the admin must be registered in the treasure site object that warps to the instance
+         if (VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
+            ServerNetworkingManager.self.registerUserInTreasureSite(_player.userId, voyage.voyageId, targetLocation.instanceId);
+         }
+
+         // Warp the admin to the voyage instance
+         _player.spawnInNewMap(voyage.voyageId, targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South);
+         return;
+      }
+
+      _player.spawnInNewMap(targetLocation.areaKey, targetLocation.getLocalPosition(), Direction.South);
    }
 
    [Command]

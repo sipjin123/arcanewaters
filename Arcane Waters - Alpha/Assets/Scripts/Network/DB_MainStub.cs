@@ -752,7 +752,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
+   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId) {
 
    }
 

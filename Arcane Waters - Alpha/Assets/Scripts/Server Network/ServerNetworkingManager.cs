@@ -33,6 +33,7 @@ public class ServerNetworkingManager : MonoBehaviour {
       // This is where we register any classes that we want to serialize between the Server processes
       RegisterSerializableClass<VoyageGroupInfo>();
       RegisterSerializableClass<Voyage>();
+      RegisterSerializableClass<UserLocationBundle>();
    }
 
    public static NetworkingManager get () {
@@ -200,6 +201,14 @@ public class ServerNetworkingManager : MonoBehaviour {
       return server.InvokeServerRpc(server.MasterServer_GetNewVoyageGroupId);
    }
 
+   public void findUserLocationForAdminGoTo (int adminUserId, int userId) {
+      server.InvokeServerRpc(server.MasterServer_FindUserLocationForAdminGoTo, adminUserId, userId);
+   }
+
+   public void registerUserInTreasureSite (int userId, int voyageId, int treasureSiteInstanceId) {
+      server.InvokeServerRpc(server.MasterServer_RegisterUserInTreasureSite, userId, voyageId, treasureSiteInstanceId);
+   }
+
    public void sendGlobalChatMessage (ChatInfo chatInfo) {
       server.InvokeServerRpc(server.MasterServer_SendGlobalMessage, chatInfo.chatId, chatInfo.text, chatInfo.chatTime.ToBinary(), chatInfo.sender, chatInfo.senderId, GuildIconData.guildIconDataToString(chatInfo.guildIconData));
    }
@@ -251,4 +260,30 @@ public class ServerNetworkingManager : MonoBehaviour {
    #region Private Variables
 
    #endregion
+}
+
+public class UserLocationBundle
+{
+   #region Public Variables
+   // The user id
+   public int userId;
+
+   // The area where the user is located
+   public string areaKey;
+
+   // The instance where the user is located
+   public int instanceId;
+
+   // The user local position in the area
+   public float localPositionX;
+   public float localPositionY;
+
+   // The group the user belongs to
+   public int voyageGroupId;
+
+   #endregion
+
+   public Vector2 getLocalPosition () {
+      return new Vector2(localPositionX, localPositionY);
+   }
 }

@@ -104,6 +104,11 @@ public class CropManager : NetworkBehaviour {
          }
       }
 
+      // Make sure that it is farm map and this particular farm belongs to the user
+      if (!AreaManager.self.isFarmOfUser(areaKey, userId)) {
+         return;
+      }
+
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          long now = DateTime.UtcNow.ToBinary();

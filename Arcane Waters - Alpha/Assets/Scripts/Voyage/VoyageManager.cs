@@ -77,6 +77,19 @@ public class VoyageManager : MonoBehaviour {
       return null;
    }
 
+   public Voyage getVoyage (string areaKey) {
+      // Search the first active voyage in the given area
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (Voyage voyage in server.voyages) {
+            if (string.Equals(voyage.areaKey, areaKey, StringComparison.InvariantCultureIgnoreCase)) {
+               return voyage;
+            }
+         }
+      }
+
+      return null;
+   }
+
    public List<Voyage> getAllVoyages () {
       List<Voyage> voyages = new List<Voyage>();
 
@@ -140,6 +153,45 @@ public class VoyageManager : MonoBehaviour {
             return false;
          } else {
             return true;
+         }
+      }
+   }
+
+   public void registerUserInTreasureSite (int userId, int voyageId, int instanceId) {
+      Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(voyageId);
+      if (seaVoyageInstance == null) {
+         D.error(string.Format("Could not find the sea voyage instance to register a user in a treasure site. userId: {0}", userId));
+         return;
+      }
+
+      // Search for the treasure site object that warps to the given instance
+      foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+         if (treasureSite.destinationInstanceId == instanceId) {
+            // Register the user as being inside the treasure site
+            treasureSite.playerListInSite.Add(userId);
+            break;
+         }
+      }
+   }
+
+   [Server]
+   public void unregisterUserFromTreasureSite (int userId, int instanceId) {
+      // Find the instance
+      Instance instance = InstanceManager.self.getInstance(instanceId);
+      if (instance == null) {
+         return;
+      }
+
+      // Try to find the treasure site entrance (spawn) where the user is registered
+      Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(instance.voyageId);
+      if (seaVoyageInstance == null) {
+         return;
+      }
+
+      foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+         if (treasureSite.playerListInSite.Contains(userId)) {
+            treasureSite.playerListInSite.Remove(userId);
+            break;
          }
       }
    }

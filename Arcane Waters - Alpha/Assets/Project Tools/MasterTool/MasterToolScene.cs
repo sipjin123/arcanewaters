@@ -81,6 +81,10 @@ public class MasterToolScene : MonoBehaviour {
    #endregion
 
    private void Awake () {
+      // Limit CPU usage in tools build
+      QualitySettings.vSyncCount = 0;
+      Application.targetFrameRate = 60;
+
       childList = new List<Transform>();
       foreach (Transform child in toolTemplateHolder) {
          childList.Add(child);

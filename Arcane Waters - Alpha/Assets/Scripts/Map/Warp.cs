@@ -83,14 +83,24 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          // Try to find the treasure site entrance (spawn) where the user is registered
          int voyageId = player.getInstance().voyageId;
          Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(voyageId);
-         string spawnTarget = "";
 
+         // If the voyage instance cannot be found, warp the player to the starting town
+         if (seaVoyageInstance == null) {
+            D.error(string.Format("Could not find the sea voyage instace when leaving a treasure site. userId: {0}, treasure site areaKey: {1}", player.userId, player.areaKey));
+            player.spawnInNewMap(Area.STARTING_TOWN);
+            yield break;
+         }
+
+         string spawnTarget = "";
          foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
             if (treasureSite.playerListInSite.Contains(player.userId)) {
-               treasureSite.playerListInSite.Remove(player.userId);
                spawnTarget = treasureSite.spawnTarget;
                break;
             }
+         }
+
+         if ("".Equals(spawnTarget)) {
+            D.error(string.Format("Could not find the treasure site where the user is registered. userId: {0}, voyage areaKey: {1}, treasure site areaKey: {2}", player.userId, seaVoyageInstance.areaKey, player.areaKey));
          }
 
          player.spawnInNewMap(voyageId, seaVoyageInstance.areaKey, spawnTarget, newFacingDirection);

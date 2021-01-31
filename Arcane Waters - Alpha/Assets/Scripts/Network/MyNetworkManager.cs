@@ -258,7 +258,7 @@ public class MyNetworkManager : NetworkManager
       NetEntity entity = EntityManager.self.getEntity(authenticatedUserId);
       if (entity != null) {
          D.log($"Destroying gameObject for player with user ID = {authenticatedUserId} to avoid duplicates.");
-         NetworkServer.Destroy(entity.gameObject);
+         destroyPlayer(entity);
       }
 
       // Look up the info in the database
@@ -513,17 +513,30 @@ public class MyNetworkManager : NetworkManager
          return;
       }
 
+      if (player.netIdent == null) {
+         D.error($"Player {player.entityName} has a null NetworkIdentity and cannot be disconnected.");
+         return;
+      }
+
       // Get the connection
       NetworkConnection conn = player.netIdent.connectionToClient;
 
       // Remove the player from the instance
-      InstanceManager.self.removeEntityFromInstance(player);
+      if (InstanceManager.self != null) {
+         InstanceManager.self.removeEntityFromInstance(player);
+      } else {
+         D.error($"Cannot remove player {player.entityName} from instance because InstanceManager is null.");
+      }
+
+      // Remove the player from the list of disconnected players
+      if (DisconnectionManager.self != null) {
+         DisconnectionManager.self.removeFromDisconnectedUsers(player);
+      } else {
+         D.error($"Cannot remove player {player.entityName} from list of players to disconnect because DisconnectionManager is null.");
+      }
 
       // Remove the player from our internal list
       _players.Remove(conn.connectionId);
-
-      // Remove the player from the list of disconnected players
-      DisconnectionManager.self.removeFromDisconnectedUsers(player);
 
       // Destroy the player object
       NetworkServer.DestroyPlayerForConnection(conn);

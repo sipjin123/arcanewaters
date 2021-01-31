@@ -233,6 +233,36 @@ public class VoyageGroupManager : MonoBehaviour
       return bestGroup;
    }
 
+   [Server]
+   public void forceAdminJoinVoyage (NetEntity admin, Voyage voyage) {
+      // Check if the admin is already in a voyage group
+      if (isInGroup(admin)) {
+         VoyageGroupInfo voyageGroup = getGroupById(admin.voyageGroupId);
+         if (voyageGroup == null) {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, admin, "Error when retrieving the voyage group!");
+            return;
+         }
+
+         // If the admin group is already linked to this voyage, do nothing
+         if (voyageGroup.voyageId == voyage.voyageId) {
+            return;
+         }
+
+         if (voyageGroup.voyageId > 0) {
+            // If the group is already linked to a voyage, make the admin leave and join a new one
+            removeUserFromGroup(voyageGroup, admin.userId);
+            createGroup(admin, voyage.voyageId, true);
+         } else {
+            // If the group has not joined a voyage, make it join this one
+            voyageGroup.voyageId = voyage.voyageId;
+            updateGroup(voyageGroup);
+         }
+      } else {
+         // If the admin is not in a group, create a new one
+         createGroup(admin, voyage.voyageId, true);
+      }
+   }
+
    public int getGroupCountInVoyage (int voyageId) {
       int count = 0;
 
@@ -245,6 +275,18 @@ public class VoyageGroupManager : MonoBehaviour
       }
 
       return count;
+   }
+
+   public bool isAtLeastOneGroupInVoyage (int voyageId) {
+      foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
+         foreach (VoyageGroupInfo voyageGroup in server.voyageGroups.Values) {
+            if (voyageGroup.voyageId == voyageId) {
+               return true;
+            }
+         }
+      }
+
+      return false;
    }
 
    public Dictionary<int, int> getGroupCountInAllVoyages () {

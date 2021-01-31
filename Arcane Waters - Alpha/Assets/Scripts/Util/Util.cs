@@ -1051,6 +1051,18 @@ public class Util : MonoBehaviour {
       return gameVersion;
    }
 
+   public static int getDeploymentId () {
+      int deploymentId = 0;
+      TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+      if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+         deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
+      }
+
+      return deploymentId;
+   }
+
    public static bool isSameIpAddress (string addressA, string addressB) {
       if ((addressA == "localhost" || addressA == "127.0.0.1") &&
           (addressB == "localhost" || addressB == "127.0.0.1")) {

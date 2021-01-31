@@ -280,6 +280,58 @@ public class NetworkedServer : NetworkedBehaviour
       return VoyageGroupManager.self.getNewGroupId();
    }
 
+   [ServerRPC]
+   public void MasterServer_FindUserLocationForAdminGoTo (int adminUserId, int userId) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_FindUserLocationForAdminGoTo, adminUserId, userId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_FindUserLocationForAdminGoTo (int adminUserId, int userId) {
+      NetEntity player = EntityManager.self.getEntity(userId);
+      if (player != null) {
+         UserLocationBundle location = new UserLocationBundle();
+         location.userId = player.userId;
+         location.areaKey = player.areaKey;
+         location.instanceId = player.instanceId;
+         location.localPositionX = player.transform.localPosition.x;
+         location.localPositionY = player.transform.localPosition.y;
+         location.voyageGroupId = player.voyageGroupId;
+         InvokeServerRpc(MasterServer_ReturnUserLocationForAdminGoTo, adminUserId, location);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_ReturnUserLocationForAdminGoTo (int adminUserId, UserLocationBundle location) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(adminUserId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_ReturnUserLocationForAdminGoTo, adminUserId, location);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReturnUserLocationForAdminGoTo (int adminUserId, UserLocationBundle location) {
+      NetEntity adminEntity = EntityManager.self.getEntity(adminUserId);
+      if (adminEntity != null) {
+         adminEntity.admin.returnUserLocationForAdminGoto(location);
+      }
+   }
+
+   [ServerRPC]
+   public void MasterServer_RegisterUserInTreasureSite (int userId, int voyageId, int instanceId) {
+      NetworkedServer voyageServer = ServerNetworkingManager.self.getServerHostingVoyage(voyageId);
+      if (voyageServer != null) {
+         voyageServer.InvokeClientRpcOnOwner(Server_RegisterUserInTreasureSite, userId, voyageId, instanceId);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_RegisterUserInTreasureSite (int userId, int voyageId, int instanceId) {
+      VoyageManager.self.registerUserInTreasureSite(userId, voyageId, instanceId);
+   }
+
    #region Private Variables
 
    #endregion
