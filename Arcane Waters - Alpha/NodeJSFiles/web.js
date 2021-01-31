@@ -12,73 +12,80 @@ const versionsFilePath = './buildVersions.json';
 
 // Event Requirements
 var events = require('events');
-var eventFinishedWritingData = new events.EventEmitter();
-var eventFinishedReadingData = new events.EventEmitter();
+var eventFinishedReadingSteamBuildData = new events.EventEmitter();
+var eventFinishedReadingJenkinsData = new events.EventEmitter();
+var eventFinishedUpdatingSteamData = new events.EventEmitter();
 
 var newCloudBuildData = [];
-var latestBuildId = 0;
+var latestSteamBuild = 0;
 //========================================================
-//Create an event handler:
-var dataWriteEventHandler = function (result) {
-  	console.log('Json Data writing is finished! Result: ' + result);
-}
-var dataReadEventHandler = function (result) {
-  	console.log('Json Data reading is finished! Result: Fetched Entries: ' + result.length);
+//Create event handlers:
+
+// This function fetches the steam build id of the latest build uploaded in the patch notes 
+var dataReadSteamBuildEventHandler = function (result) {
+	console.log('Steam build complete: '+result.length);
 	try {
-		var localJsonData = jsonFileHandler.readLocalData();
-		var arrayOfObjects = localJsonData;
-		console.log('Reading local JSON data success!');
-
-		var newEntryCount = 0;
-		console.log('-----------------------------------');
 		for (var i = 0 ; i < result.length ; i ++){
-			var filterData = localJsonData.filter(x => x.buildId == result[i].buildId);
-
-			// If result is less than 1, it means data is not existing locally yet
-			if (filterData.length < 1) {
-				console.log("This is a new entry, registering locally: ID: " + result[i].buildId + " : " + filterData.length);
-				
-				var dataEntry = {
-					buildId: result[i].buildId,
-					message: result[i].message
-				};
-				var newArrayOfObjects = (localJsonData)
-				newArrayOfObjects.push(dataEntry)
-				newCloudBuildData.push(dataEntry)
-				newEntryCount++;
-			}
+			latestSteamBuild =  result[i].buildId;
+			console.log('write complete: '+ latestSteamBuild);
 		}
-		console.log('-----------------------------------');
-		console.log("Finished updating local data, total added entries: " + newEntryCount);
+		jsonFileHandler.getUpdateLogsFromJenkins(eventFinishedReadingJenkinsData, latestSteamBuild);
+	} catch {
+		console.log('Failed to fetch json data');
+	}
+}	
+
+// This function extracts all the changelogs from the database which was from jenkins changelogs
+var dataReadJenkinsEventHandler = function (result) {
+	console.log('Jenkins build complete: '+result.length);
+	try {
+		for (var i = 0 ; i < result.length ; i ++){
+			console.log('write complete: '+ result[i].buildId+ " : " +result[i].message);
+
+			var dataEntry = {
+				buildId: result[i].buildId,
+				message: result[i].message
+			};
+			newCloudBuildData.push(dataEntry);
+		}
+
 		if (newCloudBuildData.length > 0) {
-			postUpdates(newCloudBuildData, arrayOfObjects);
+			postUpdates(newCloudBuildData);
 		} else {
 			console.log('no new updates');
     		process.exit();
 		}
 	} catch {
 		console.log('Failed to fetch json data');
-		jsonFileHandler.writeJsonData(eventFinishedWritingData, result);
 	}
-}
+}	
+
+// This function updates the database table build number for future reference
+var dataWriteSteamBuildEventHandler = function (result) {
+	console.log('Steam build number was successfully modified');
+}	
+
+//========================================================
 
 // Assign the event handler to an event
-eventFinishedWritingData.on('finishedWriting', dataWriteEventHandler);
-eventFinishedReadingData.on('finishedReading', dataReadEventHandler);
+eventFinishedReadingSteamBuildData.on('finishedCheckingSteamBuild', dataReadSteamBuildEventHandler);
+eventFinishedReadingJenkinsData.on('finishedCheckingJenkins', dataReadJenkinsEventHandler);
+eventFinishedUpdatingSteamData.on('finishedUpdatingSteamBuild', dataWriteSteamBuildEventHandler);
 
-// Begin to read the MySQL Data
-jsonFileHandler.readJsonData(eventFinishedReadingData);
+// Read the latest build id published on steam
+jsonFileHandler.getLatestSteamBuild(eventFinishedReadingSteamBuildData);
 
-const postUpdates = async (newCloudObjects, arrayOfObjects) => {
-	latestBuildId = newCloudObjects.length-1;
+//========================================================
+
+const postUpdates = async (newCloudObjects) => {
 	const options = {
-		path: 'images/Build_' + newCloudObjects[latestBuildId].buildId + '.png',
+		path: 'images/Build_' + newCloudObjects[newCloudObjects.length-1].buildId + '.png',
 		fullPage: true,
 		omitBackground: true,
 		type: 'jpeg'
 	}
 	let steamUrl = 'https://steamcommunity.com/login/home/?goto=';
-	let browser = await puppeteer.launch({ headless : true });
+	let browser = await puppeteer.launch({ headless : false });
 	let page = await browser.newPage();
 	var actionInterval = 3000;
 	var typingInterval = 1000;
@@ -97,8 +104,8 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 
 		    // Login Credentials
 			console.log("Entering Credentials");
-	      	await page.type('#steamAccountName', config.userName, {delay:100});
-			await page.type('#steamPassword', config.password, {delay: 100});
+	      	await page.type('#input_username', config.userName, {delay: 100});//#steamAccountName
+			await page.type('#input_password', config.password, {delay: 100});//steamPassword
 			await page.waitFor(actionInterval);
 			await page.keyboard.press('Enter');
 			console.log("Pressed Enter");
@@ -132,7 +139,7 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 			await page2.type('.partnereventeditor_EventEditorTitleInput_ZAOXn', 'Patch Notes!');
 
 			await page2.waitFor(typingInterval);
-			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Build #' + newCloudObjects[latestBuildId].buildId);
+			await page2.type('.partnereventeditor_Subtitle_32XZf', 'Build #' + newCloudObjects[newCloudObjects.length-1].buildId);
 
 			await page2.waitFor(typingInterval);
 			await page2.type('.partnereventeditor_Summary_2eQap', 'Development Updates');
@@ -195,16 +202,17 @@ const postUpdates = async (newCloudObjects, arrayOfObjects) => {
 
 			// Finishing notification
 			await page2.waitFor(actionInterval);
-			jsonFileHandler.writeJsonData(eventFinishedWritingData, arrayOfObjects);
 			await page2.waitFor(actionInterval);
 		    console.log('Session has been loaded in the browser');
+
+			jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId);
 		} else {
 		  console.log('Cookies length is: ' + cookiesArr.length);
 		}
     } else {
         console.log('The file does not exist.');
-        await page.type('#steamAccountName', config.userName, {delay:100});
-		await page.type('#steamPassword', config.password, {delay: 100});
+        await page.type('#input_username', config.userName, {delay: 100});//steamAccountName
+		await page.type('#input_password', config.password, {delay: 100});//steamPassword
 		await page.waitFor(2000);
 		await page.keyboard.press('Enter');
 		await page.waitForNavigation()
