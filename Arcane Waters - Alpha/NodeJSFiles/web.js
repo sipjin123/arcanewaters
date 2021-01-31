@@ -7,8 +7,8 @@ const opn = require('opn');
 const fs = require('fs');
 const jsonfile = require('jsonfile')
 var jsonFileHandler = require('./jsonFileHandler.js');
-const cookiesFilePath = 'E:/Desktop/WebBotSteamCommunity/data.json'
-const versionsFilePath = 'E:/Desktop/WebBotSteamCommunity/buildVersions.json';
+const cookiesFilePath = './data.json'
+const versionsFilePath = './buildVersions.json';
 
 // Event Requirements
 var events = require('events');
