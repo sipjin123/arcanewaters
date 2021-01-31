@@ -2,7 +2,7 @@
 var jsonFileHandler = {};
 const fs = require('fs');
 const jsonfile = require('jsonfile')
-const versionsFilePath = 'E:/Desktop/WebBotSteamCommunity/buildVersions.json';
+const versionsFilePath = './buildVersions.json';
 const config = require ('./config.json');
 
 // Database Requirements
@@ -21,33 +21,42 @@ var events = require('events');
 var eventEmitter = new events.EventEmitter();
 //========================================================
 
-readLocalData = function (){
-    let rawdata = fs.readFileSync(versionsFilePath);
-    let jsonData = JSON.parse(rawdata)
-    return jsonData;
-};
-
-readJsonData = function(eventToEmit) {
-    connection.query('select buildId, message from cloud_changesets', function(err,result){
+getLatestSteamBuild = function(eventToEmit) {
+    connection.query('select buildId from steam_patch_status', function(err,result){
         if (err) {
             console.error(err);
-            eventToEmit.emit('finishedReading', result);
+            eventToEmit.emit('finishedCheckingSteamBuild', result);
         } else {
-            console.log('Read Sql Data Complete');
-            eventToEmit.emit('finishedReading', result);
+            console.log('Read Steam Build Complete');
+            eventToEmit.emit('finishedCheckingSteamBuild', result);
         }
     });
 }
 
-writeJsonData = function(eventToEmit, result) {
-    jsonfile.writeFile(versionsFilePath, result, { spaces: 2 }, function(err) { 
+updateLatestSteamBuild = function(eventToEmit, buildValue) {
+    connection.query('UPDATE steam_patch_status SET buildId = '+buildValue, function(err,result){
         if (err) {
             console.error(err);
-            eventToEmit.emit('finishedWriting', 'Fail!');
+            eventToEmit.emit('finishedUpdatingSteamBuild', result);
         } else {
-            eventToEmit.emit('finishedWriting', 'Success!');
+            console.log('Write Steam Build Complete');
+            eventToEmit.emit('finishedUpdatingSteamBuild', result);
         }
-    })
+    });
+}
+
+getUpdateLogsFromJenkins = function(eventToEmit, buildValue) {
+    console.log('Jenkins Build Value is: '+ buildValue);
+
+    connection.query('select buildId, message from cloud_changesets where buildId > ' + buildValue, function(err,result){
+        if (err) {
+            console.error(err);
+            eventToEmit.emit('finishedCheckingJenkins', result);
+        } else {
+            console.log('Read Jenkins Sql Data Complete');
+            eventToEmit.emit('finishedCheckingJenkins', result);
+        }
+    });
 }
 
 connectionTest = function(eventToEmit) {
@@ -62,7 +71,7 @@ connectionTest = function(eventToEmit) {
 
 module.exports = {
     connectionTest,
-    writeJsonData,
-    readLocalData,
-    readJsonData
+    getLatestSteamBuild,
+    getUpdateLogsFromJenkins,
+    updateLatestSteamBuild
 };
