@@ -40,12 +40,16 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    // The text field that will show the value of this autoComplete
    public TextMeshProUGUI autoCompleteText;
 
+   // A reference to the layout element for our tooltip
+   public LayoutElement tooltipLayout;
+
    #endregion
 
    private void Awake () {
       autoCompleteText.text = "";
       rectTransform = GetComponent<RectTransform>();
       button = GetComponent<Button>();
+      _tooltipPreferredWidth = tooltipLayout.preferredWidth;
    }
 
    public void updateOption (CommandData newCommand) {
@@ -56,8 +60,23 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
       tooltipText.text = _commandData.getDescription();
    }
 
+   public void setTooltip (bool isEnabled) {
+      tooltip.SetActive(isEnabled);
+
+      // If the tooltip  will go off screen, stop  it from  going off screen
+      if (isEnabled) {
+         Rect screenRect = Util.rectTransformToScreenSpace(tooltipLayout.GetComponent<RectTransform>());
+         float distanceToRightEdge = Screen.width - screenRect.xMin;
+         if  (distanceToRightEdge < _tooltipPreferredWidth) {
+            tooltipLayout.preferredWidth = distanceToRightEdge;
+         } else {
+            tooltipLayout.preferredWidth = _tooltipPreferredWidth;
+         }
+      }
+   }
+
    private void OnDisable () {
-      tooltip.SetActive(false);
+      setTooltip(false);
    }
 
    public void onClicked () {
@@ -97,13 +116,13 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
          return;
       }
 
-      tooltip.SetActive(true);
+      setTooltip(true);
       onSelected();
       onSelectedAction?.Invoke(indexInList);
    }
 
    public void OnPointerExit (UnityEngine.EventSystems.PointerEventData eventData) {
-      tooltip.SetActive(false);
+      setTooltip(false);
       onDeselected();
    }
 
@@ -114,6 +133,9 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
    // A reference to the command data that this autocomplete represents
    private CommandData _commandData;
+
+   // The starting preferred width of a tooltip
+   private float _tooltipPreferredWidth;
 
    #endregion
 }

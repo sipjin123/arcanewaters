@@ -99,7 +99,7 @@ public class CropManager : NetworkBehaviour {
       // Make sure there's not already a Crop in that spot
       foreach (CropInfo crop in _crops) {
          if (crop.cropNumber == cropNumber && crop.areaKey == areaKey) {
-            D.error("Already a crop in spot number: " + cropNumber);
+            // Do not print any error; Getting to this point means that crop is being currently registered in database in background thread
             return;
          }
       }
@@ -109,13 +109,17 @@ public class CropManager : NetworkBehaviour {
          return;
       }
 
+      // Prepare crop data
+      long now = DateTime.UtcNow.ToBinary();
+      CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), waterInterval);
+      cropInfo.areaKey = areaKey;
+
+      // Store the result
+      _crops.Add(cropInfo);
+
       // Insert it into the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         long now = DateTime.UtcNow.ToBinary();
-
-         CropInfo cropInfo = new CropInfo(cropType, userId, cropNumber, now, DateTimeOffset.UtcNow.ToUnixTimeSeconds(), waterInterval);
          int newCropId = DB_Main.insertCrop(cropInfo, areaKey);
-         cropInfo.areaKey = areaKey;
 
          // Add the farming XP
          int xp = Crop.getXP(cropType);
@@ -126,14 +130,14 @@ public class CropManager : NetworkBehaviour {
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (newCropId > 0) {
-               // Store the result
-               _crops.Add(cropInfo);
-
                // Registers the planting action to the achievement database for recording
                AchievementManager.registerUserAchievement(_player, ActionType.PlantCrop);
 
                sendCropsToPlayer(cropInfo, harvestCropAchievements, false);
-            } 
+            } else {
+               // In case that adding row to database failed
+               _crops.Remove(cropInfo);
+            }
          });
       });
    }

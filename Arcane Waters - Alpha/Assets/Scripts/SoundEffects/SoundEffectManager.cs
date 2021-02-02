@@ -102,12 +102,6 @@ public class SoundEffectManager : MonoBehaviour
       // Setup audio player
       AudioSource audioSource = Instantiate(PrefabsManager.self.sound3dPrefab, target.position, Quaternion.identity);
       audioSource.transform.SetParent(target, true);
-
-      // Makes sure audio source z-position matches camera, for 3D sound
-      Vector3 audioSourcePos = audioSource.transform.position;
-      audioSourcePos.z = Camera.main.transform.position.z;
-      audioSource.transform.position = audioSourcePos;
-
       audioSource.clip = effect.clip;
       audioSource.Play();
 

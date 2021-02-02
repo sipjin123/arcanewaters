@@ -122,8 +122,8 @@ public class GuildManager : MonoBehaviour {
 
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, recipient, "You have joined the guild " + invite.guildName + "!");
-            
+            ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, recipient.guildId, recipient.entityName + " has joined the guild!");
+
             recipient.guildIconBackground = guildInfo.iconBackground;
             recipient.guildIconBorder = guildInfo.iconBorder;
             recipient.guildIconBackPalettes = guildInfo.iconBackPalettes;

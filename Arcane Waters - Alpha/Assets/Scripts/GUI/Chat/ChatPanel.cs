@@ -283,7 +283,7 @@ public class ChatPanel : MonoBehaviour {
       }
 
       // In minimized mode, move the scrollbar to the bottom
-      if (_mode == Mode.Minimized) {
+      if (_mode == Mode.Minimized || _mode == Mode.Normal) {
          scrollRect.verticalNormalizedPosition = 0f;
       }
 
@@ -731,6 +731,11 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
+   public void clearChat () {
+      messagesContainer.DestroyChildren();
+      nameInputField.text = "";
+   }
+
    protected bool isChatLineVisibleInTab (ChatInfo chatInfo) {
       if (_visibleChatTypes.Contains(chatInfo.messageType)) {
          return true;
@@ -856,7 +861,7 @@ public class ChatPanel : MonoBehaviour {
    #region Private Variables
 
    // How long we show messages for before they disappear
-   protected static float CHAT_MESSAGE_DISPLAY_DURATION = 12f;
+   protected static float CHAT_MESSAGE_DISPLAY_DURATION = 20f;
 
    // The maximum number of messages that we'll keep in our chat log
    protected static int MAX_MESSAGE_COUNT = 50;

@@ -109,6 +109,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isLocalPlayer) {
          getMainCollider().isTrigger = true;
       }
+
+      // If we are the local player, assign us the audio listener
+      if (isLocalPlayer && AudioListenerManager.self) {
+         _audioListener = GetComponent<AudioListener>();
+         AudioListenerManager.self.setActiveListener(_audioListener);
+      }
+   }
+   
+   private void OnDisable () {
+      // If we are the local player, activate the camera's audio listener
+      if (isLocalPlayer) {
+         if (!_audioListener) {
+            _audioListener = GetComponent<AudioListener>();
+         }
+
+         AudioListenerManager.self.setActiveListener(Camera.main.GetComponent<AudioListener>());
+      }
    }
 
    protected override void FixedUpdate () {
@@ -554,6 +571,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // The time at which this entity started its jump
    private double _jumpStartTime = 0.0f;
+
+   // A reference to the audiolistener attached to the player
+   private AudioListener _audioListener;
 
    #endregion
 }

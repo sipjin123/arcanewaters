@@ -194,12 +194,6 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       // Adjust the volume on our movement audio source
       adjustMovementAudio();
 
-      // If we're dead, ask the server to respawn
-      if (isDead() && !_hasSentRespawnRequest) {
-         StartCoroutine(CO_RequestRespawnAfterDelay(3f));
-         _hasSentRespawnRequest = true;
-      }
-
       // If the reload is finished and a shot was scheduled, fire it
       //if (isNextShotDefined && hasReloaded()) {
       //   // Fire the scheduled shot
@@ -779,9 +773,7 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       return !_shouldUpdateTargeting;
    }
 
-   protected IEnumerator CO_RequestRespawnAfterDelay (float delay) {
-      yield return new WaitForSeconds(delay);
-
+   public void requestRespawn () {
       Cmd_RequestRespawn();
    }
 
@@ -827,16 +819,18 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       invulnerable = false;
       _clickableBox.gameObject.SetActive(true);
 
-      foreach (Collider2D c in GetComponents<Collider2D>()) {
-         c.enabled = true;
-      }
+      if (!isDead()) {
+         foreach (Collider2D c in GetComponents<Collider2D>()) {
+            c.enabled = true;
+         }
 
-      foreach (SpriteRenderer renderer in _renderers) {
-         renderer.enabled = true;
-      }
+         foreach (SpriteRenderer renderer in _renderers) {
+            renderer.enabled = true;
+         }
 
-      foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
-         spriteRender.enabled = false;
+         foreach (SpriteRenderer spriteRender in speedUpEffectHolders) {
+            spriteRender.enabled = false;
+         }
       }
    }
 
@@ -859,9 +853,6 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    #region Private Variables
-
-   // Gets set to true after we ask the server to respawn
-   protected bool _hasSentRespawnRequest = false;
 
    // Our ship movement sound
    protected AudioSource _movementAudioSource;

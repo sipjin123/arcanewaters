@@ -84,9 +84,9 @@ public class AutoCompletePanel : MonoBehaviour {
       }
 
       if (isSelectedOptionVisible() && !inputFieldFocused) {
-         SelectedAutoComplete.tooltip.SetActive(true);
+         SelectedAutoComplete.setTooltip(true);
       }  else {
-         SelectedAutoComplete.tooltip.SetActive(false);
+         SelectedAutoComplete.setTooltip(false);
       }
    }
 
@@ -157,7 +157,7 @@ public class AutoCompletePanel : MonoBehaviour {
          _anyButtonSelected = false;
       } else {
          SelectedAutoComplete?.button.Select();
-         SelectedAutoComplete?.tooltip.SetActive(true);
+         SelectedAutoComplete?.setTooltip(true); ;
          SelectedAutoComplete?.onSelected();
          _anyButtonSelected = true;
       }
@@ -269,7 +269,7 @@ public class AutoCompletePanel : MonoBehaviour {
 
    private void deselectOldOption () {
       SelectedAutoComplete?.onDeselected();
-      SelectedAutoComplete?.tooltip.SetActive(false);
+      SelectedAutoComplete?.setTooltip(false);
    }
 
    #region Private Variables

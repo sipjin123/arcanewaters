@@ -38,7 +38,7 @@ public class CountdownScreen : MonoBehaviour
 
       // Check if the player is moving or in combat
       if (_timePassed > DELAY_BEFORE_INPUT_INTERRUPTION &&
-         (Global.player.isMoving() || Global.player.hasAnyCombat())) {
+         (Global.player.isMoving() || (!Global.player.isDead() && Global.player.hasAnyCombat()))) {
          // Stop the countdown
          hide();
       }

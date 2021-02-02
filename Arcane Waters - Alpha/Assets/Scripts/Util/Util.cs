@@ -1153,7 +1153,9 @@ public class Util : MonoBehaviour {
 
    public static Rect rectTransformToScreenSpace (RectTransform transform) {
       Vector2 size = Vector2.Scale(transform.rect.size, transform.lossyScale);
-      return new Rect((Vector2) transform.position - (size * 0.5f), size);
+      float x = transform.position.x + transform.anchoredPosition.x;
+      float y = Screen.height - transform.position.y - transform.anchoredPosition.y;
+      return new Rect(x, y, size.x, size.y);
    }
 
    // A Random instance we can use for generating random numbers

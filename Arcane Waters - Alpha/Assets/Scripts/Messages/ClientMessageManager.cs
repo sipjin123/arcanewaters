@@ -344,6 +344,9 @@ public class ClientMessageManager : MonoBehaviour {
       // Delete local map files if user has too many
       MapCache.pruneExcessMaps();
 
+      // Clear the chat
+      ChatPanel.self.clearChat();
+
       // Activate the Character screen camera
       Util.activateVirtualCamera(CharacterScreen.self.virtualCam);
 
