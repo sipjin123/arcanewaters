@@ -794,7 +794,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    #region Battle Callers
-   
+
+   public void inflictBossDamage (int damage) {
+      StartCoroutine(CO_ProcessBossDamage(damage));
+   }
+
+   private IEnumerator CO_ProcessBossDamage (int damage) {
+      yield return new WaitForSeconds(2);
+      EffectManager.self.create(Effect.Type.Blunt_Physical, getCorePosition());
+      playAnim(Anim.Type.Hurt_East);
+      yield return new WaitForSeconds(.5f);
+      playAnim(Anim.Type.Battle_East);
+   }
+
    public void playDeathSound () {
       SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
 
@@ -2093,6 +2105,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public Vector2 getMagicGroundPosition () {
       return new Vector2(transform.position.x, transform.position.y - (mainSpriteRenderer.bounds.extents.y / 2));
+   }
+
+   public Vector2 getCorePosition () {
+      float spawnOffsetX = this.isAttacker() ? .14f : -.14f;
+      float spawnOffsetY = .28f;
+      Vector2 sourcePos = getMagicGroundPosition() + new Vector2(spawnOffsetX, spawnOffsetY);
+      return sourcePos;
    }
 
    public Vector2 getMeleeStandPosition (bool hasWeapon = true) {

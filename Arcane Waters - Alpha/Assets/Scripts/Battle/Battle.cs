@@ -316,6 +316,25 @@ public class Battle : NetworkBehaviour {
       return Vector2.Distance(sourcePosition, targetPosition);
    }
 
+   public void inflictBossDamageToTeam (int damage) {
+      foreach (Battler attackerEntity in getAttackers()) {
+         StartCoroutine(CO_TriggerBattlerBossDamageReaction(attackerEntity.playerNetId, damage));
+      }
+   }
+
+   private IEnumerator CO_TriggerBattlerBossDamageReaction (uint netId, int damage) {
+      yield return new WaitForSeconds(.5f);
+      Rpc_TriggerBattlerBossDamageReaction(netId, damage);
+   }
+
+   [ClientRpc]
+   public void Rpc_TriggerBattlerBossDamageReaction (uint netId, int damage) {
+      Battler battler = getAttackers().Find(_ => _.playerNetId == netId);
+      if (battler != null) {
+         battler.inflictBossDamage(damage);
+      }
+   }
+
    [ClientRpc]
    public void Rpc_TriggerBossAnimation (uint netId) {
       StartCoroutine(CO_TriggerBossAnimation(netId));

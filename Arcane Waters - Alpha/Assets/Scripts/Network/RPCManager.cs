@@ -4268,6 +4268,7 @@ public class RPCManager : NetworkBehaviour {
       // If enemy is a boss, trigger the shout/intimidate animation
       if (enemy.isBossType) {
          battle.Rpc_TriggerBossAnimation(battle.getDefenders()[0].playerNetId);
+         battle.inflictBossDamageToTeam(10);
       }
    }
 
