@@ -255,9 +255,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    // The anim group
    public Anim.Group animGroup;
 
-   // If animation frame was overridden upon death
-   public bool hasOverriddenAnimationFrame;
-
    #endregion
 
    public void stopActionCoroutine () {
@@ -434,12 +431,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
 
-      // Make sure non local player animation is set to death frame when it is dead
-      if (isDead() && !player.isLocalPlayer && !hasOverriddenAnimationFrame) {
-         hasOverriddenAnimationFrame = true;
-         playAnim(Anim.Type.Death_East);
-      }
-
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
       if (Global.displayLandCombatStats) {
@@ -447,7 +438,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             string newMessage = "IsDead" + " : " + isDead()
                + "\nPlayer: " + (player is PlayerBodyEntity) + " Local: " + player.isLocalPlayer
                + "\nCurrHealth: {" + health + "} : {" + displayedHealth + "}" 
-               + "\nAnim: " + _anims[0].currentAnimation + " : Override: " + hasOverriddenAnimationFrame;
+               + "\nAnim: " + _anims[0].currentAnimation;
             if (player.isLocalPlayer) {
                debugTextLog.color = Color.red;
             } else {
@@ -1271,7 +1262,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             targetBattler.displayedAP = Util.clamp<int>(targetBattler.displayedAP + action.targetApChange, 0, MAX_AP);
 
             // If the target died, animate that death now
-            if (targetBattler.displayedHealth <= 0) {
+            if (targetBattler.isDead()) {
                BattleSelectionManager.self.deselectTarget();
                targetBattler.StartCoroutine(targetBattler.animateDeath());
             }
@@ -2032,7 +2023,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public bool isDead () {
-      return (health <= 0);
+      return (health <= 0 || displayedHealth <= 0);
    }
 
    public bool isAttacker () {

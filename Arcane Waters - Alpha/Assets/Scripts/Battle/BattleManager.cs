@@ -97,7 +97,7 @@ public class BattleManager : MonoBehaviour {
 
       // Spawn an appropriate number of enemies based on the number of players in the instance
       foreach (BattlerInfo battlerInfo in defendersData) {
-         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < 6) {
+         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
             enemy.enemyType = battlerInfo.enemyType;
             enemyTypes.Add(battlerInfo.enemyType);
             this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
