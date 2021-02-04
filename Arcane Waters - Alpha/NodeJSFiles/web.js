@@ -18,6 +18,7 @@ var eventFinishedUpdatingSteamData = new events.EventEmitter();
 
 var newCloudBuildData = [];
 var latestSteamBuild = 0;
+var buildType = "main";
 //========================================================
 //Create event handlers:
 
@@ -40,11 +41,11 @@ var dataReadJenkinsEventHandler = function (result) {
 	console.log('Jenkins build complete: '+result.length);
 	try {
 		for (var i = 0 ; i < result.length ; i ++){
-			console.log('write complete: '+ result[i].buildId+ " : " +result[i].message);
+			console.log('write complete: '+ result[i].buildId+ " : " +result[i].dhStatusReason);
 
 			var dataEntry = {
 				buildId: result[i].buildId,
-				message: result[i].message
+				message: result[i].dhStatusReason
 			};
 			newCloudBuildData.push(dataEntry);
 		}
@@ -67,13 +68,30 @@ var dataWriteSteamBuildEventHandler = function (result) {
 
 //========================================================
 
+if (process.argv.length === 2) {
+  console.error('Expected at least one argument!');
+  process.exit(1);
+}
+
+if (process.argv[2] && process.argv[2] === '-a') {
+  console.log('This is the Main Build!');
+  buildType = "main";
+} 
+
+if (process.argv[2] && process.argv[2] === '-b') {
+  console.log('This is a Playtest Build!');
+  buildType = "playtest";
+} 
+
+//========================================================
+
 // Assign the event handler to an event
 eventFinishedReadingSteamBuildData.on('finishedCheckingSteamBuild', dataReadSteamBuildEventHandler);
 eventFinishedReadingJenkinsData.on('finishedCheckingJenkins', dataReadJenkinsEventHandler);
 eventFinishedUpdatingSteamData.on('finishedUpdatingSteamBuild', dataWriteSteamBuildEventHandler);
 
 // Read the latest build id published on steam
-jsonFileHandler.getLatestSteamBuild(eventFinishedReadingSteamBuildData);
+jsonFileHandler.getLatestSteamBuild(eventFinishedReadingSteamBuildData, buildType);
 
 //========================================================
 
@@ -115,7 +133,13 @@ const postUpdates = async (newCloudObjects) => {
 			// Navigate to Steam Community
 			console.log("Go to announcement page");
 			let page2 = await browser.newPage();
-			let link2Uril = 'https://steamcommunity.com/games/1266340/partnerevents/category/';
+			let link2Uril = '';
+			if (buildType == "main") {
+				link2Uril = 'https://steamcommunity.com/games/1266340/partnerevents/category/';
+			} else {
+				link2Uril = 'https://steamcommunity.com/games/1489170/partnerevents/category/';
+			}
+			
 			await page2.goto(link2Uril, { waitUntil: 'networkidle2'});
 		
 			// Select Main Category
@@ -146,7 +170,7 @@ const postUpdates = async (newCloudObjects) => {
 
 			await page2.waitFor(typingInterval);
 			for (var messageIndex = 0 ; messageIndex < newCloudBuildData.length ; messageIndex ++) {
-				const sentences = newCloudBuildData[messageIndex].message.split('\n');
+				const sentences = newCloudBuildData[messageIndex].dhStatusReason.split('\n');
 				var sentenceList = [];
 
 				for (var index = 0 ; index < sentences.length -1 ; index++) {
@@ -205,7 +229,7 @@ const postUpdates = async (newCloudObjects) => {
 			await page2.waitFor(actionInterval);
 		    console.log('Session has been loaded in the browser');
 
-			jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId);
+			jsonFileHandler.updateLatestSteamBuild(eventFinishedUpdatingSteamData, newCloudObjects[newCloudObjects.length-1].buildId, buildType);
 		} else {
 		  console.log('Cookies length is: ' + cookiesArr.length);
 		}
