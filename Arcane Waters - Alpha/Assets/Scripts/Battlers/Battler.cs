@@ -827,7 +827,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          }
       } else {
          if (player is PlayerBodyEntity) {
-            ((PlayerBodyEntity) player).Target_EndPlayerCombat();
+            ((PlayerBodyEntity) player).Target_AllowPlayerCombat();
          }
       }
    }

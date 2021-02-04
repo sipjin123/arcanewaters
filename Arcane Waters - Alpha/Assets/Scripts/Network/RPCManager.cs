@@ -3531,6 +3531,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+         grantPlayerCombat();
          return;
       }
 
@@ -3566,6 +3567,16 @@ public class RPCManager : NetworkBehaviour {
             _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          }
          return;
+      }
+
+      grantPlayerCombat();
+   }
+
+   public void grantPlayerCombat () {
+      // Allow the player to engage in combat if conditions are valid
+      PlayerBodyEntity playerBodyEntity = _player.GetComponent<PlayerBodyEntity>();
+      if (playerBodyEntity != null) {
+         playerBodyEntity.Target_AllowPlayerCombat();
       }
    }
 

@@ -94,7 +94,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    public const string IS_SPRINTING = "isSprinting";
 
    // If the user can engage in combat
-   public bool canEngageInCombat = true;
+   public bool canEngageInCombat = false;
+
    // If players can one shot land enemies on combat
    public bool oneShotEnemies = false;
 
@@ -320,7 +321,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    [TargetRpc]
-   public void Target_EndPlayerCombat () {
+   public void Target_AllowPlayerCombat () {
       if (isLocalPlayer) {
          canEngageInCombat = true;
       }
