@@ -14,6 +14,9 @@ public class CombatCollider : MonoBehaviour {
    // The scale of the collider in relation to the sprite size
    public float colliderScale = 0.75f;
 
+   // If the collider adjusts dynamically
+   public bool dynamicCollider = true;
+
    #endregion
 
    private void Start () {
@@ -21,7 +24,9 @@ public class CombatCollider : MonoBehaviour {
    }
 
    private void Update () {
-      updateCollider();
+      if (dynamicCollider) {
+         updateCollider();
+      } 
    }
 
    protected void updateCollider () {

@@ -141,4 +141,11 @@ public class SeaMonsterEntityData
 
    // The default id of the sea entity bot ship
    public const int DEFAULT_SHIP_ID = 17;
+   // Battle collider scale
+   public float battleColliderScaleX = .5f;
+   public float battleColliderScaleY = .5f;
+
+   // Battle collider offset
+   public float battleColliderOffsetX = .5f;
+   public float battleColliderOffsetY = .5f;
 }
