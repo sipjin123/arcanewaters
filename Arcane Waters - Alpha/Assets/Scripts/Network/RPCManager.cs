@@ -3672,7 +3672,7 @@ public class RPCManager : NetworkBehaviour {
    public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
-      GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab);
+      GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
       OreMineEffect oreMine = oreBounce.GetComponent<OreMineEffect>();
 
       // Modify object transform

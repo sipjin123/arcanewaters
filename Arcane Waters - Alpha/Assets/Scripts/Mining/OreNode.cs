@@ -74,8 +74,10 @@ public class OreNode : NetworkBehaviour
       }
 
       // Update the sprite shown if we've already mined this node
-      if (hasBeenMined()) {
+      if (hasBeenMined() || finishedMining()) {
          spriteRenderer.sprite = oreSprites.Last();
+         _outline.enabled = false;
+         _clickableBox.enabled = false;
       } else {
          spriteRenderer.sprite = oreSprites.First();
       }
@@ -85,6 +87,11 @@ public class OreNode : NetworkBehaviour
 
    public void updateSprite (int spriteId) {
       spriteRenderer.sprite = oreSprites[spriteId];
+
+      if (hasBeenMined() || finishedMining()) {
+         _outline.enabled = false;
+         _clickableBox.enabled = false;
+      }
    }
 
    public void Update () {
@@ -111,7 +118,9 @@ public class OreNode : NetworkBehaviour
       }
 
       // Only show our outline when the mouse is over us
-      _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
+      if (_outline.isActiveAndEnabled) {
+         _outline.setVisibility(MouseManager.self.isHoveringOver(_clickableBox));
+      } 
    }
 
    public bool hasBeenMined () {

@@ -59,7 +59,7 @@ public class OreMineEffect : MonoBehaviour {
    }
 
    public void endAnim () {
-      GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab);
+      GameObject spawnedObj = Instantiate(PrefabsManager.self.orePickupPrefab, oreNode.transform);
       OrePickup orePickup = spawnedObj.GetComponent<OrePickup>();
       orePickup.initData(ownerId, voyageGroupId, oreEffectId, oreNode, spriteRender.sprite, animatingObj.rotation);
       oreNode.orePickupCollection.Add(oreEffectId, orePickup);
