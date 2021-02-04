@@ -84,6 +84,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
    // The base damage of the seamonster
    public const int BASE_SEAMONSTER_DAMAGE = 25;
 
+   // TODO: Setup sea monster web tool to have variable that can be edited so these dont have to be hard coded
+   // Sort points that will be adjusted depending if the seamonster is a standalone or a boss
+   public const float MINION_SORT_POINT = -0.132f;
+   public const float BOSS_SORT_POINT = -0.218f;
+
    // Seamonster Animation
    public enum SeaMonsterAnimState
    {
@@ -146,6 +151,13 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          _simpleAnim.frameLengthOverride = cachedAnimSpeed;
 
          _simpleAnim.enabled = true;
+
+         gameObject.name = "SeaMonster_" + monsterType;
+
+         // Alter the sort point if this is a large boss monster
+         if (monsterType == Type.Horror) {
+            sortPoint.transform.localPosition = new Vector3(sortPoint.transform.localPosition.x, BOSS_SORT_POINT, sortPoint.transform.localPosition.z);
+         }
       }
 
       reloadDelay = seaMonsterData.reloadDelay;
@@ -279,7 +291,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       }
 
       // Only change our movement if enough time has passed
-      if (NetworkTime.time - _lastMoveChangeTime < MOVE_CHANGE_INTERVAL) {
+      if (NetworkTime.time - _lastMoveChangeTime < (seaMonsterData.roleType != RoleType.Minion ? MOVE_CHANGE_INTERVAL : MOVE_CHANGE_INTERVAL/2)) {
          return;
       }
 
@@ -289,7 +301,7 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
 
       // If this entity is a Minion, snap to its parent
       if (seaMonsterData.roleType == RoleType.Minion && seaMonsterParentEntity != null) {
-         Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.transform.position, distanceFromSpawnPoint);
+         Vector2 targetLocation = SeaMonsterUtility.getFixedPositionAroundPosition(seaMonsterParentEntity.sortPoint.transform.position, distanceFromSpawnPoint);
          Vector2 waypointDirection = (targetLocation - (Vector2) sortPoint.transform.position).normalized;
 
          // Teleports the Minions if too far away from Parent

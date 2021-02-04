@@ -78,15 +78,20 @@ public static class SeaMonsterUtility
    }
 
    public static Vector2 getFixedPositionAroundPosition (Vector2 position, Vector2 locationSetup) {
-      float newX = (locationSetup.x != 0 && locationSetup.y != 0) ? .25f : .45f;
-      float newY = (locationSetup.x != 0 && locationSetup.y != 0) ? .25f : .45f;
+      float newX = (locationSetup.x != 0 && locationSetup.y != 0) ? .4f : .45f;
+      float newY = (locationSetup.x != 0 && locationSetup.y != 0) ? .25f : .35f;
       if (locationSetup.y == -1) {
-         newX = .2f;
-         newY = .3f;
+         newX = .25f;
+         newY = .35f;
+      } else if (locationSetup.y == 0) {
+         newX = .55f;
+         newY = -.1f;
       }
 
       newX *= locationSetup.x;
-      newY *= locationSetup.y;
+      if (locationSetup.y != 0) {
+         newY *= locationSetup.y;
+      }
 
       Vector2 newSpot = new Vector2(position.x, position.y) + new Vector2(newX, newY);
       return newSpot;
