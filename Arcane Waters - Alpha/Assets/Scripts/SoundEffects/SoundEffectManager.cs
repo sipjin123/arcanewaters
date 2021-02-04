@@ -23,6 +23,12 @@ public class SoundEffectManager : MonoBehaviour
    // The database id of the jump end
    public const int JUMP_END_ID = 6;
 
+   // The database id of the sound effect
+   public const int HARVESTING_PITCHFORK_HIT = 43;
+
+   // The database id of the sound effect
+   public const int HARVESTING_FLYING = 44;
+
    #endregion
 
    private void Awake () {

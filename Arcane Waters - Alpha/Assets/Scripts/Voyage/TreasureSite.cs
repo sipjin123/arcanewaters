@@ -59,6 +59,10 @@ public class TreasureSite : NetworkBehaviour
    [SyncVar]
    public float capturePoints = 0f;
 
+   // Gets set to true when the destination instance is cleared of enemies
+   [SyncVar]
+   public bool isClearedOfEnemies = false;
+
    // The difficulty of the voyage where this site is
    [SyncVar]
    public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
@@ -81,7 +85,7 @@ public class TreasureSite : NetworkBehaviour
       _animator = GetComponent<Animator>();
    }
 
-   public void Start () {
+   public virtual void Start () {
       // Choose the random destination of this site
       chooseRandomDestinationArea();
 
@@ -89,7 +93,7 @@ public class TreasureSite : NetworkBehaviour
       StartCoroutine(CO_SetAreaParent());
    }
 
-   public void Update () {
+   public virtual void Update () {
       if (isCaptured()) {
          // Play the captured animation
          _animator.SetBool("captured", true);
@@ -191,7 +195,7 @@ public class TreasureSite : NetworkBehaviour
       }
    }
 
-   public void OnTriggerEnter2D (Collider2D other) {
+   public virtual void OnTriggerEnter2D (Collider2D other) {
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
@@ -216,7 +220,7 @@ public class TreasureSite : NetworkBehaviour
       }
    }
 
-   public void OnTriggerExit2D (Collider2D other) {
+   public virtual void OnTriggerExit2D (Collider2D other) {
       if (isServer) {
          // Determine if the colliding object is a ship
          ShipEntity ship = other.transform.GetComponent<ShipEntity>();
@@ -379,19 +383,27 @@ public class TreasureSite : NetworkBehaviour
       });
    }
 
+   public virtual bool isOwnedByGroup (int voyageGroupId) {
+      return voyageGroupId == this.voyageGroupId;
+   }
+
+   public virtual bool isActive () {
+      return true;
+   }
+
    #region Private Variables
 
    // The list of ships currently capturing the site
    private HashSet<ShipEntity> _capturingShips = new HashSet<ShipEntity>();
 
    // The sprite renderer component
-   private SpriteRenderer _spriteRenderer;
+   protected SpriteRenderer _spriteRenderer;
 
    // The collider, which will detect capturing ships
    private CircleCollider2D _captureCollider;
 
    // The animator component
-   private Animator _animator;
+   protected Animator _animator;
 
    // The associated warp
    private Warp _warp = null;

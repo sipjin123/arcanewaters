@@ -95,6 +95,15 @@ public class SeaEntity : NetEntity
 
          if (this is SeaMonsterEntity) {
             SeaMonsterEntity monsterEntity = GetComponent<SeaMonsterEntity>();
+
+            foreach(SpriteRenderer renderer in _renderers) {
+               Util.setLocalY(spritesContainer.transform, spritesContainer.transform.localPosition.y - .03f * Time.smoothDeltaTime);
+               if (renderer.enabled) {
+                  float newAlpha = Mathf.Lerp(1f, 0f, spritesContainer.transform.localPosition.y * -10f);
+                  Util.setMaterialBlockAlpha(renderer, newAlpha);
+               }
+            }
+
             if (monsterEntity.seaMonsterData.roleType == RoleType.Minion) {
                monsterEntity.corpseHolder.SetActive(true);
                spritesContainer.SetActive(false);

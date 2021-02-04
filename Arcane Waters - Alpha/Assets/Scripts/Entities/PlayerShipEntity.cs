@@ -162,6 +162,11 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
    protected override void Update () {
       base.Update();
 
+      if (isDead()) {
+         _targetCone.gameObject.SetActive(false);
+         _targetCircle.gameObject.SetActive(false);
+      }
+
       // Recolor the ship flag if needed
       if (isClient) {
          Instance instance = getInstance();
@@ -378,7 +383,7 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    private void updateTargeting () {
-      if (!_shouldUpdateTargeting) {
+      if (!_shouldUpdateTargeting || isDead()) {
          return;
       }
 
@@ -516,6 +521,14 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
    protected override void OnDestroy () {
       base.OnDestroy();
+
+      if (_targetCone.gameObject) {
+         Destroy(_targetCone.gameObject);
+      }
+
+      if (_targetCircle.gameObject) {
+         Destroy(_targetCircle.gameObject);
+      }
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
       onBeingDestroyedServer();
@@ -840,6 +853,10 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       _body.AddForce(force);
+   }
+
+   public void clearMovementInput () {
+      _movementInputDirection = Vector2.zero;
    }
 
    [Command]

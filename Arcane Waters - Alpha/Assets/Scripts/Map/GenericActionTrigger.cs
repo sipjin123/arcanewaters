@@ -17,7 +17,8 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    // The list of actions that can be defined and triggered
    public static Dictionary<string, Action<NetEntity>> actions = new Dictionary<string, Action<NetEntity>> {
-      { "Voyage Panel", showVoyagePanel }
+      { "Voyage Panel", showVoyagePanel },
+      { "Warp To League", warpToLeague }
    };
 
    // The type of interaction that is needed to trigger the action
@@ -33,6 +34,10 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
 
    private static void showVoyagePanel (NetEntity entity) {
       VoyageManager.self.showVoyagePanel(entity);
+   }
+
+   private static void warpToLeague (NetEntity entity) {
+      VoyageManager.self.warpToLeague(entity);
    }
 
    private void Awake () {
@@ -59,7 +64,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
          }
       }
 
-      voyageArrow.SetActive(actionName.ToLower().Contains("voyage"));
+      voyageArrow.SetActive(actionName.ToLower().Contains("voyage") || actionName.ToLower().Contains("league"));
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {

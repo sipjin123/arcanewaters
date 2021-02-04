@@ -34,7 +34,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string WEAPON_TABLE = "equipment_weapon_xml_v3";
    public static string HAT_TABLE = "equipment_hat_xml_v1";
    public static string LAND_MONSTER_TABLE = "land_monster_xml_v3";
-   public static string NPC_TABLE = "npc_xml";
+   public static string NPC_TABLE = "npc_xml_v2";
 
    public static string SEA_MONSTER_TABLE = "sea_monster_xml_v2";
    public static string CRAFTING_TABLE = "crafting_xml_v2";

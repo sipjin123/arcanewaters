@@ -32,6 +32,15 @@ public class CropManager : NetworkBehaviour {
    [Client]
    public void createCrop (CropInfo cropInfo, bool justGrew, bool showEffects) {
       CropSpot cropSpot = CropSpotManager.self.getCropSpot(cropInfo.cropNumber, cropInfo.areaKey);
+
+      // Make sure that crop will be spawned in player's personal area
+      if (Global.player != null) {
+         if (!AreaManager.self.isFarmOfUser(cropInfo.areaKey, Global.player.userId)) {
+            D.error("Trying to spawn crops in wrong area in client session!");
+            return;
+         }
+      }
+
       Crop crop = Instantiate(cropPrefab);
       if (cropSpot != null) {
          // If there was already a Crop here, delete it

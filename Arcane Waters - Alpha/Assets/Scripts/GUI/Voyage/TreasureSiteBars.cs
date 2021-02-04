@@ -47,7 +47,7 @@ public class TreasureSiteBars : MonoBehaviour
          barContainer.SetActive(false);
 
          // Display the correct ownership icon
-         if (_treasureSite.voyageGroupId == Global.player.voyageGroupId) {
+         if (_treasureSite.isOwnedByGroup(Global.player.voyageGroupId)) {
             alliedIcon.SetActive(true);
             enemyIcon.SetActive(false);
          } else {
@@ -68,7 +68,7 @@ public class TreasureSiteBars : MonoBehaviour
             captureBarImage.fillAmount = _treasureSite.capturePoints;
 
             // Set the correct bar color
-            if (_treasureSite.voyageGroupId == Global.player.voyageGroupId) {
+            if (_treasureSite.isOwnedByGroup(Global.player.voyageGroupId)) {
                captureBarImage.color = alliedCaptureBarColor;
             } else {
                captureBarImage.color = enemyCaptureBarColor;

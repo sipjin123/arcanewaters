@@ -15,36 +15,42 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 		[Toggle(USE_HAT_STENCIL)]
 		_UseHatStencil("Is Hat", Float) = 0
 		
-		_StencilRef ("Stencil Ref", Int) = 3
-		[Enum(StencilOp)] _StencilPass ("Stencil Pass", Int) = 0
-		[Enum(CompareFunction)] _StencilCompare ("Stencil Comp", Int) = 0
+		_Stencil("Stencil Ref", Int) = 3
+		[Enum(StencilOp)] _StencilOp ("Stencil Pass", Int) = 0
+		[Enum(StencilOp)] _StencilFail ("Stencil Fail", Int) = 0
+
+		[Enum(CompareFunction)] _StencilComp("Stencil Comp", Int) = 0
 
 		[Toggle(SHOW_HAT_CLIPPING)]
 		_ShowHatClipping("Show Hat Clipping", Int) = 0
+
+		[Toggle(CLEAR_STENCIL)]
+		_UseHatStencil("Clear Stencil", Float) = 0
 	}
 
-	SubShader 
-	{			
-		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-		LOD 100
-	
-		Cull Off 
-		ZWrite Off
-		Blend SrcAlpha OneMinusSrcAlpha 
-				
+		SubShader
+		{
+			Tags {"Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent"}
+			LOD 100
+
+			Cull Off
+			Blend SrcAlpha OneMinusSrcAlpha
+			ZWrite Off
+
 		Pass 
 		{
 			Stencil 
 			{
-				Ref [_StencilRef]
-				Comp [_StencilCompare]
-				Pass [_StencilPass]
+				Ref [_Stencil]
+				Comp [_StencilComp]
+				Pass [_StencilOp]
+				Fail [_StencilFail]
 			}
 
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag	
-			#pragma multi_compile _ USE_HAT_STENCIL	
+			#pragma multi_compile _ USE_HAT_STENCIL
 			#pragma multi_compile _ SHOW_HAT_CLIPPING
 
 			#include "UnityCG.cginc"
@@ -78,18 +84,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 			uniform float _WaterAlpha;
 			
 			uniform float _Threshold;
-
-			v2f vert (appdata_t v)
-			{
-				v2f o;
-				
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
-				
-				return o; 
-			}
-			
-
+						
 			fixed isTransparent(fixed alpha) {
 				return max(sign(0.5 - alpha), 0);
 			}
@@ -100,7 +95,7 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 
 			fixed hasPixelsUp (float2 coord, int minPix) {			
 				// Clip transparent pixels below the hat line that have non-transparent pixels above them								
-				const int vpix = 20;
+				const int vpix = 16;
 				int count = 0;
 
 				[unroll(vpix)]
@@ -135,6 +130,16 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 				return shouldClip;
 			}
 
+			v2f vert(appdata_t v)
+			{
+				v2f o;
+
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+
+				return o;
+			}
+
 			fixed4 frag (v2f i) : SV_Target
 			{
 				sampler2D mainTex = _MainTex;
@@ -155,15 +160,6 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 					#endif
 
 					clip(-shouldClip * isTransparent(c.a));
-
-					// This is the magenta masking approach
-					/*
-					float dist = distance(c.rgb, fixed3(1,0,1));
-					clip((c.a - 0.8) * max(sign(dist - 0.001), 0));
-					c.a = dist;
-					*/
-				#else				
-					clip(c.a - 0.8);
 				#endif
 				
 				// Apply alpha and color changes if we're partially underwater
@@ -187,5 +183,4 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 			ENDCG
 		}		
 	}
-
 }

@@ -2155,7 +2155,7 @@ public class DB_Main : DB_MainStub
          using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO global.npc_xml (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
+            "INSERT INTO global.npc_xml_v2 (xml_id, xmlContent, creator_userID, lastUserUpdate) " +
             "VALUES(@xml_id, @xmlContent, @creator_userID, lastUserUpdate = NOW()) " +
             "ON DUPLICATE KEY UPDATE xmlContent = @xmlContent, lastUserUpdate = NOW()", conn)) {
 
@@ -2180,7 +2180,7 @@ public class DB_Main : DB_MainStub
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM global.npc_xml", conn)) {
+            "SELECT * FROM global.npc_xml_v2", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -2202,7 +2202,7 @@ public class DB_Main : DB_MainStub
    public static new void deleteNPCXML (int typeID) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.npc_xml WHERE xml_id=@xml_id", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.npc_xml_v2 WHERE xml_id=@xml_id", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@xml_id", typeID);

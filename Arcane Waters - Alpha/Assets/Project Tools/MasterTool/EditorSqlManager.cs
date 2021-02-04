@@ -109,7 +109,7 @@ public class EditorSQLManager {
          case EditorToolType.LandMonster:
             return "land_monster_xml_v3";
          case EditorToolType.NPC:
-            return "npc_xml";
+            return "npc_xml_v2";
          case EditorToolType.SeaMonster:
             return "sea_monster_xml_v2";
          case EditorToolType.Ship:

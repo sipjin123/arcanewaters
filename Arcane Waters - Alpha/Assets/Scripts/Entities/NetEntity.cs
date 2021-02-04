@@ -627,7 +627,7 @@ public class NetEntity : NetworkBehaviour
       return gender == Gender.Type.Male;
    }
 
-   public bool isDead () {
+   public virtual bool isDead () {
       return currentHealth <= 0;
    }
 
@@ -1136,10 +1136,6 @@ public class NetEntity : NetworkBehaviour
       return true;
    }
 
-   public virtual bool isPlayerShip () {
-      return false;
-   }
-
    public Vector2 getVelocity () {
       return _body.velocity;
    }
@@ -1313,7 +1309,13 @@ public class NetEntity : NetworkBehaviour
       }
 
       _temporaryControllers.Add(controller);
-      Cmd_TemporaryControlRequested(controller.transform.localPosition);
+      if (hasAuthority) {
+         Cmd_TemporaryControlRequested(controller.transform.localPosition);
+      }
+
+      if (isServer) {
+         Rpc_TemporaryControlRequested(controller.transform.localPosition);
+      }
 
       if (_temporaryControllers.Count == 1) {
          controller.controlGranted(this);
@@ -1345,14 +1347,37 @@ public class NetEntity : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
+      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+
+      noteWebBounce(con);
+
       // If we are the local player, we don't do anything, the control was handled locally
       if (isLocalPlayer) {
          return;
       }
 
-      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
       if (con != null && !hasScheduledController(con)) {
          requestControl(con);
+      }
+   }
+
+   private void noteWebBounce (TemporaryController con) {
+      if (con != null) {
+         if (con is SpiderWeb) {
+            SpiderWeb web = con as SpiderWeb;
+            _activeWeb = web;
+            _webBounceStartTime = (float) NetworkTime.time;
+
+            // Figure out whether we are jumping up or down
+            _isGoingUpWeb = (transform.position.y < con.transform.position.y);
+
+            // If we're continuing a bounce
+            if ((_isGoingUpWeb && web.hasWebBelow()) || (!_isGoingUpWeb && web.hasWebAbove())) {
+               _isDoingHalfBounce = true;
+            } else {
+               _isDoingHalfBounce = false;
+            }
+         }
       }
    }
 
@@ -1670,7 +1695,11 @@ public class NetEntity : NetworkBehaviour
          SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
 
          // Show the Area name
-         LocationBanner.self.setText(Area.getName(this.areaKey));
+         if (VoyageManager.self.isLeagueArea(this.areaKey)) {
+            LocationBanner.self.setText("League " + (getInstance().leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE);
+         } else {
+            LocationBanner.self.setText(Area.getName(this.areaKey));
+         }
 
          // Update the tutorial
          TutorialManager3.self.onUserSpawns(this.userId);
@@ -1713,12 +1742,33 @@ public class NetEntity : NetworkBehaviour
          return null;
       }
    }
+   
+   public bool isBouncingOnWeb () {
+      if (!_activeWeb) {
+         return false;
+      }
+
+      float timeSinceLastBounced = (float) (NetworkTime.time - _webBounceStartTime);
+      return (timeSinceLastBounced < getWebBounceDuration());
+   }
+
+   protected float getWebBounceDuration () {
+      return (_isDoingHalfBounce) ? _activeWeb.getBounceDuration() / 2.0f : _activeWeb.getBounceDuration();
+   }
+
+   protected virtual void webBounceUpdate () { }
 
    protected virtual void onStartMoving () { }
 
    protected virtual void onEndMoving () { }
 
+   public virtual bool isPlayerShip () { return false; }
+
    public virtual bool isBotShip () { return false; }
+
+   public virtual bool isSeaMonster () { return false; }
+
+   public virtual bool isLandEnemy () { return false; }
 
    #region Private Variables
 
@@ -1793,6 +1843,18 @@ public class NetEntity : NetworkBehaviour
 
    // A reference to a damage over time coroutine caused by burning
    protected Coroutine _burningCoroutine = null;
+
+   // The timestamp of our last web bounce start
+   protected float _webBounceStartTime = 0.0f;
+
+   // Whether the player is bouncing up on a web, or falling down onto a web
+   protected bool _isGoingUpWeb = false;
+
+   // Whether the player is doing a half bounce on a web, or a full bounce
+   protected bool _isDoingHalfBounce = false;
+
+   // The web that we are currently bouncing on, if we have one
+   protected SpiderWeb _activeWeb = null;
 
    #endregion
 }

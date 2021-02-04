@@ -1750,7 +1750,7 @@ MonoBehaviour:
   jumpOverWorldLocation: {x: 0, y: 0}
   jumpOverSourceLocation: {x: 0, y: 0}
   dustTrailParticleObj: {fileID: 881166268088869365}
-  canEngageInCombat: 1
+  canEngageInCombat: 0
 --- !u!58 &58574232978621698
 CircleCollider2D:
   m_ObjectHideFlags: 0

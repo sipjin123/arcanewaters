@@ -43,6 +43,7 @@ public class InventoryPanel : Panel {
    public Text goldText;
    public Text gemsText;
    public Text levelText;
+   public Text hpText;
    public Text xpText;
 
    // The common object used to display any grabbed item
@@ -236,6 +237,19 @@ public class InventoryPanel : Panel {
       levelProgressBar.fillAmount = (float) LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) / (float) LevelUtil.xpForLevel(currentLevel + 1);
       levelText.text = "LVL " + currentLevel;
       xpText.text = "EXP: " + LevelUtil.getProgressTowardsCurrentLevel(userObjects.userInfo.XP) + " / " + LevelUtil.xpForLevel(currentLevel + 1);
+
+      // Update the HP bar
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
+
+      if (playerBattler != null) {
+         hpText.text = playerBattler.health.ToString();
+      } else if (Global.player != null) {
+         BattlerData battData = MonsterManager.self.getBattlerData(Enemy.Type.PlayerBattler);
+         int level = LevelUtil.levelForXp(Global.player.XP);
+         int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
+
+         hpText.text = health.ToString();
+      }
 
       // Initialize the guild icon
       guildIcon.initialize(guildInfo);

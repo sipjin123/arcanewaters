@@ -47,6 +47,28 @@ public static class ExtensionsUtil {
       children.ForEach(child => GameObject.Destroy(child));
    }
 
+   public static void DestroyAllChildrenExcept (this GameObject go, GameObject dontDestroy) {
+      List<GameObject> children = new List<GameObject>();
+      foreach (Transform transform in go.transform) {
+         if (transform != dontDestroy.transform) {
+            children.Add(transform.gameObject);
+         }
+      }
+            
+      children.ForEach(child => GameObject.Destroy(child));
+   }
+
+   public static void DestroyAllChildrenExcept (this GameObject go, GameObject[] dontDestroy) {
+      List<GameObject> children = new List<GameObject>();
+      foreach (Transform transform in go.transform) {
+         if (!dontDestroy.Any(x => x.transform == transform)) {
+            children.Add(transform.gameObject);
+         }
+      }
+
+      children.ForEach(child => GameObject.Destroy(child));
+   }
+
    public static void DestroyChildrenInPrefabs (this GameObject go) {
       List<GameObject> children = new List<GameObject>();
       foreach (Transform tran in go.transform) {

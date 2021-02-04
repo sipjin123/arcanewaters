@@ -38,12 +38,13 @@ public class HairLayer : SpriteLayer {
       // Update our Animated Sprite
       setTexture(getTexture(newType, isFront));
 
-      _stencilCompPropertyId = Shader.PropertyToID("_StencilCompare");
+      _stencilCompPropertyId = Shader.PropertyToID("_StencilComp");
 
       Material mat = getMaterial();
-      mat.SetInt("_StencilPass", (int)StencilOp.Keep);
-      mat.SetInt("_StencilCompare", (int) CompareFunction.NotEqual);
-      mat.SetInt("_StencilRef", HAT_STENCIL_ID);
+      mat.SetInt("_StencilOp", (int)StencilOp.Zero);
+      mat.SetInt("_StencilFail", (int) StencilOp.Zero);
+      mat.SetInt("_StencilComp", (int) CompareFunction.NotEqual);
+      mat.SetInt("_Stencil", HAT_STENCIL_ID);
    }
 
    private void Update () {

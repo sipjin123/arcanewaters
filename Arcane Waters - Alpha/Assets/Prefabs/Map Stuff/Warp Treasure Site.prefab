@@ -172,8 +172,7 @@ MonoBehaviour:
     creatorName: 
   newFacingDirection: 1
   arrow: {fileID: 2079641380548157803}
-  treasureSitesToChoose:
-  - Snow Treasure Site Lite
+  circle: {fileID: 6599133977375204295}
 --- !u!114 &2829931948103811206
 MonoBehaviour:
   m_ObjectHideFlags: 0

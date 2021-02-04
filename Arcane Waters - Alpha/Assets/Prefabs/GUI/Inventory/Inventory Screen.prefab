@@ -1272,6 +1272,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
 --- !u!1 &2636299302920780439
 GameObject:
   m_ObjectHideFlags: 0
@@ -2326,6 +2327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
 --- !u!1 &4076247208951374784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2477,11 +2479,11 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4425262315501971676}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000003}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8151950768841175756}
-  m_RootOrder: 7
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5117,11 +5119,11 @@ RectTransform:
   - {fileID: 8151950770424719634}
   - {fileID: 8151950770517381392}
   - {fileID: 8151950768954664012}
+  - {fileID: 9029021181722309848}
   - {fileID: 8151950769625998609}
   - {fileID: 8151950769639113471}
   - {fileID: 8151950769045223016}
   - {fileID: 8151950769592995245}
-  - {fileID: 9029021181722309848}
   m_Father: {fileID: 8151950769521967810}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5782,7 +5784,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8151950768841175756}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8161,7 +8163,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8151950768841175756}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8599,6 +8601,7 @@ MonoBehaviour:
   goldText: {fileID: 8151950769428343881}
   gemsText: {fileID: 8151950768982306809}
   levelText: {fileID: 6358839220479157831}
+  hpText: {fileID: 8115200305409101170}
   xpText: {fileID: 6173542471366165892}
   grabbedItem: {fileID: 2694668050900231927}
   inventoryDropZone: {fileID: 6804825008761364732}
@@ -8739,7 +8742,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8151950768841175756}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9056,7 +9059,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8151950768841175756}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9761,6 +9764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 1
   message: 
+  maxWidth: 0
 --- !u!1 &8151950770075910061
 GameObject:
   m_ObjectHideFlags: 0
@@ -10226,6 +10230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 1
   message: 
+  maxWidth: 0
 --- !u!1 &8151950770251447591
 GameObject:
   m_ObjectHideFlags: 0
@@ -14008,7 +14013,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 629155457731399371}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}
   m_Name: 

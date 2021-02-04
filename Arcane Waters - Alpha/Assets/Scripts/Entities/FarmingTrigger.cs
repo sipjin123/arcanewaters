@@ -138,14 +138,14 @@ public class FarmingTrigger : MonoBehaviour {
                   cropProjectile.init(hit.collider.transform.position, dir, cropSpot);
 
                   // Play 2D clip instead of attached to avoid layering multiple sounds (sounds like single one with higher volume because of timing)
-                  SoundManager.play2DClip(SoundManager.Type.Harvesting_Flying);
+                  SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_FLYING, transform);
                }
             }
          }
 
          if (currentActionType == Weapon.ActionType.HarvestCrop) {
             if (anyCropHarvested) {
-               SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Hit);
+               SoundEffectManager.self.playSoundEffect(SoundEffectManager.HARVESTING_PITCHFORK_HIT, transform);
             } else {
                SoundManager.play2DClip(SoundManager.Type.Harvesting_Pitchfork_Miss);
             }

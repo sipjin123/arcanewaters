@@ -3420,6 +3420,30 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_WarpToLeague () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // If the user has already joined a voyage map, display a panel with the current map
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
+      if (voyageGroup != null && voyageGroup.voyageId > 0) {
+         Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
+         if (voyage != null) {
+            Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
+         } else {
+            sendError("Could not find the current voyage instance!");
+         }
+         return;
+      }
+
+      // Create a new league with the same biome than the player's current instance (usually the town)
+      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
+      VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, 0, instance.biome);
+   }
+
+   [Command]
    public void Cmd_SendVoyageGroupInvitationToUser (string inviteeName) {
       if (_player == null) {
          D.warning("No player object found.");

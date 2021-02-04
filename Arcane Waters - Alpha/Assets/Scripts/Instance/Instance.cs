@@ -46,6 +46,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int npcCount;
 
+   // The number of alive npc enemies in the instance (sea or land enemies)
+   [SyncVar]
+   public int aliveNPCEnemiesCount = 0;
+
    // For the number of treasure sites in the instance
    [SyncVar]
    public int treasureSiteCount = 0;
@@ -73,6 +77,14 @@ public class Instance : NetworkBehaviour
    // Gets set to true when the instance holds a voyage area
    [SyncVar]
    public bool isVoyage = false;
+
+   // Gets set to true when the instance holds a voyage area that is part of a league (series of voyage maps)
+   [SyncVar]
+   public bool isLeague = false;
+
+   // The index of this voyage instance in the league series
+   [SyncVar]
+   public int leagueIndex = 0;
 
    // The unique identifier of the voyage
    [SyncVar]
@@ -131,6 +143,11 @@ public class Instance : NetworkBehaviour
 
       // Routinely check if the instance is empty
       InvokeRepeating(nameof(checkIfInstanceIsEmpty), 10f, 30f);
+
+      // Routinely count the number of enemies that are still alive
+      if (voyageId > 0) {
+         InvokeRepeating(nameof(countAliveEnemies), 0f, 1f);
+      }
    }
 
    public void resetActiveTimer () {
@@ -270,6 +287,20 @@ public class Instance : NetworkBehaviour
       BotShipGenerator.generateBotShips(this);
    }
 
+   private void countAliveEnemies () {
+      if (!NetworkServer.active) {
+         return;
+      }
+
+      aliveNPCEnemiesCount = 0;
+      foreach (NetworkBehaviour networkBehaviour in getEntities()) {
+         NetEntity entity = networkBehaviour as NetEntity;
+         if (entity != null && (entity.isBotShip() || entity.isSeaMonster() || entity.isLandEnemy()) && !entity.isDead()) {
+            aliveNPCEnemiesCount++;
+         }
+      }
+   }
+
    protected IEnumerator CO_SpawnInstanceSpecificPrefabs () {
       // Wait until the area has been instantiated
       while (AreaManager.self.getArea(this.areaKey) == null) {
@@ -387,8 +418,15 @@ public class Instance : NetworkBehaviour
          foreach (ExportedPrefab001 dataField in area.treasureSiteDataFields) {
             Vector3 targetLocalPos = new Vector3(dataField.x, dataField.y, 0) * 0.16f + Vector3.forward * 10;
 
-            // Instantiate the treasure site
-            TreasureSite site = Instantiate(PrefabsManager.self.treasureSitePrefab);
+            // League treasure sites have a custom behavior (TreasureSiteLeague.cs)
+            TreasureSite site;
+            if (this.isLeague) {
+               site = Instantiate(PrefabsManager.self.treasureSiteLeaguePrefab);
+               ((TreasureSiteLeague) site).leagueIndex = this.leagueIndex;
+            } else {
+               site = Instantiate(PrefabsManager.self.treasureSitePrefab);
+            }
+
             site.instanceId = this.id;
             site.areaKey = area.areaKey;
             site.instanceBiome = this.biome;

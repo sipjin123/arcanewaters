@@ -258,7 +258,12 @@ public class MyNetworkManager : NetworkManager
       NetEntity entity = EntityManager.self.getEntity(authenticatedUserId);
       if (entity != null) {
          D.log($"Destroying gameObject for player with user ID = {authenticatedUserId} to avoid duplicates.");
-         destroyPlayer(entity);
+         if (entity.connectionToClient != null) {
+            entity.connectionToClient.Disconnect();
+            NetworkServer.DestroyPlayerForConnection(entity.connectionToClient);
+         } else {
+            NetworkServer.Destroy(entity.gameObject);
+         }
       }
 
       // Look up the info in the database
@@ -520,7 +525,7 @@ public class MyNetworkManager : NetworkManager
 
       // Get the connection
       NetworkConnection conn = player.netIdent.connectionToClient;
-
+            
       // Remove the player from the instance
       if (InstanceManager.self != null) {
          InstanceManager.self.removeEntityFromInstance(player);
@@ -535,11 +540,21 @@ public class MyNetworkManager : NetworkManager
          D.error($"Cannot remove player {player.entityName} from list of players to disconnect because DisconnectionManager is null.");
       }
 
-      // Remove the player from our internal list
-      _players.Remove(conn.connectionId);
+      // If the connection is null, just destroy the player's gameObject
+      if (conn == null) {
+         D.error($"Connection to player {player.entityName} is null. Destroying player gameObject.");
+         NetworkServer.Destroy(player.gameObject);
+      } else {
+         // Remove the player from our internal list
+         if (_players != null && _players.ContainsKey(conn.connectionId)) {
+            _players.Remove(conn.connectionId);
+         } else {
+            D.error("Players dictionary hasn't been initialized yet or the player's connection hasn't been added to it yet.");
+         }
 
-      // Destroy the player object
-      NetworkServer.DestroyPlayerForConnection(conn);
+         // Destroy the player object
+         NetworkServer.DestroyPlayerForConnection(conn);
+      }
    }
 
    #endregion

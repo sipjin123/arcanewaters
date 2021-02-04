@@ -24,11 +24,11 @@ public class Voyage
    public static int MAX_PLAYERS_PER_GROUP_MEDIUM = 4;
    public static int MAX_PLAYERS_PER_GROUP_HARD = 6;
 
+   // The total number of maps in a league (series of voyages maps)
+   public static int MAPS_PER_LEAGUE = 5;
+
    // The voyage difficulty
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
-
-   // The voyage mode chosen by the player
-   public enum Mode { Quickmatch = 1, Private = 2 }
 
    // The unique id of the voyage
    public int voyageId;
@@ -44,6 +44,12 @@ public class Voyage
 
    // Gets set to true when the voyage is PvP - Otherwise, the voyage is PvE
    public bool isPvP = false;
+
+   // Gets set to true when the map is part of a league (series of connected voyages)
+   public bool isLeague = false;
+
+   // The index of this voyage in the league series
+   public int leagueIndex = 0;
 
    // The creation time of the voyage instance
    public long creationDate;
@@ -67,13 +73,15 @@ public class Voyage
    }
 
    public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, Biome.Type biome, bool isPvP,
-      long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int groupCount) {
+      bool isLeague, int leagueIndex, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int groupCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
       this.areaName = areaName;
       this.difficulty = difficulty;
       this.biome = biome;
       this.isPvP = isPvP;
+      this.isLeague = isLeague;
+      this.leagueIndex = leagueIndex;
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;
@@ -101,6 +109,10 @@ public class Voyage
       int maxGroups = Mathf.FloorToInt(((float) MAX_PLAYERS_PER_INSTANCE) / groupSize);
 
       return maxGroups;
+   }
+
+   public static bool isLastLeagueMap (int leagueIndex) {
+      return leagueIndex >= MAPS_PER_LEAGUE - 1;
    }
 
    #region Private Variables

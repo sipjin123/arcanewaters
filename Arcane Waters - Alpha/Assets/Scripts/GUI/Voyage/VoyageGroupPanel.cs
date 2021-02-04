@@ -44,7 +44,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       xButton.gameObject.SetActive(false);
 
       // Clear out any info
-      memberContainer.DestroyChildren();
+      memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
    }
 
@@ -70,7 +70,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // If the player does not belong to a group, or there are no group members, hide the panel
       if (!VoyageGroupManager.isInGroup(Global.player) || groupMembers.Count <= 0) {
          // Clear out any old info
-         memberContainer.DestroyChildren();
+         memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
          _memberCells.Clear();
 
          // Hide the panel
@@ -82,7 +82,7 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       show();
 
       // Clear out any old info
-      memberContainer.DestroyChildren();
+      memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
 
       // Instantiate the cells

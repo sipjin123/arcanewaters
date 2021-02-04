@@ -29,9 +29,9 @@ public class HatLayer : SpriteLayer
 
       _material = getMaterial();
             
-      _material.SetInt("_StencilPass", newType != 0 ? (int) StencilOp.Replace : (int) StencilOp.Keep);
-      _material.SetInt("_StencilCompare", (int) CompareFunction.Always);
-      _material.SetInt("_StencilRef", HAT_STENCIL_ID);
+      _material.SetInt("_StencilOp", newType != 0 ? (int) StencilOp.Replace : (int) StencilOp.Keep);
+      _material.SetInt("_StencilComp", (int) CompareFunction.Always);
+      _material.SetInt("_Stencil", HAT_STENCIL_ID);
       _material.SetFloat("_UseHatStencil", 1);
 
       if (newType != 0) {

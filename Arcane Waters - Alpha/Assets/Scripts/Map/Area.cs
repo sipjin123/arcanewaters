@@ -15,10 +15,25 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // The special type of the area
-   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4 }
+   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5 }
 
    // Hardcoded area keys
    public static string STARTING_TOWN = "Tutorial Town";
+   public static string DESERT_TOWN = "Desert Town Lite";
+   public static string PINE_TOWN = "Pine Biome Town";
+   public static string SNOW_TOWN = "Snow Town Lite";
+   public static string LAVA_TOWN = "Tutorial Town";
+   public static string MUSHROOM_TOWN = "Shroom Bay";
+
+   // The main towns in each biome
+   public static Dictionary<Biome.Type, string> homeTownForBiome = new Dictionary<Biome.Type, string>() {
+      {Biome.Type.Forest, STARTING_TOWN },
+      {Biome.Type.Desert, DESERT_TOWN },
+      {Biome.Type.Pine, PINE_TOWN },
+      {Biome.Type.Snow, SNOW_TOWN },
+      {Biome.Type.Lava, LAVA_TOWN },
+      {Biome.Type.Mushroom, MUSHROOM_TOWN }
+   };
 
    // The key determining the type of area this is
    public string areaKey;

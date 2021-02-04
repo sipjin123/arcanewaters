@@ -316,10 +316,15 @@ public class VoyageGroupManager : MonoBehaviour
             return true;
          }
       } else {
-         // If the group has joined a voyage, we enforce the limit set by the voyage difficulty
+         // If the group has joined a voyage, we enforce the limit set by its parameters
          Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
-         if (voyage != null && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
-            return true;
+         if (voyage != null) {
+            // Once a league is joined, the group cannot accept more players
+            if (voyage.isLeague) {
+               return true;
+            } else if (voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+               return true;
+            }
          }
       }
       return false;

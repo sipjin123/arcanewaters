@@ -134,11 +134,6 @@ public class InstanceManager : MonoBehaviour {
       instance.npcCount++;
    }
 
-   public void addBotShipToInstance (BotShipEntity botShip, Instance instance) {
-      instance.entities.Add(botShip);
-      botShip.instanceId = instance.id;
-   }
-
    public void addSeaMonsterToInstance (SeaEntity seaMonster, Instance instance) {
       instance.entities.Add(seaMonster);
       seaMonster.instanceId = instance.id;
@@ -166,11 +161,11 @@ public class InstanceManager : MonoBehaviour {
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
       Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, Voyage.Difficulty.None, biome);
+      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, Voyage.Difficulty.None, biome);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
-      Voyage.Difficulty difficulty, Biome.Type biome) {
+      bool isLeague, int leagueIndex, Voyage.Difficulty difficulty, Biome.Type biome) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -180,6 +175,8 @@ public class InstanceManager : MonoBehaviour {
       instance.mapSeed = UnityEngine.Random.Range(0, 1000000);
       instance.creationDate = DateTime.UtcNow.ToBinary();
       instance.isVoyage = isVoyage;
+      instance.isLeague = isLeague;
+      instance.leagueIndex = leagueIndex;
       instance.voyageId = voyageId;
       instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;

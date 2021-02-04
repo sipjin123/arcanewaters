@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using System.Linq;
 using System;
+using MLAPI.Messaging;
 
 public class VoyageManager : MonoBehaviour {
 
@@ -35,11 +36,16 @@ public class VoyageManager : MonoBehaviour {
    /// <summary>
    /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
    /// </summary>
-   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, Biome.Type biome, Voyage.Difficulty difficulty) {
+   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, Voyage.Difficulty difficulty) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
-         List<string> seaMaps = getVoyageAreaKeys();
+         List<string> seaMaps;
+         if (isLeague) {
+            seaMaps = getLeagueAreaKeys();
+         } else {
+            seaMaps = getVoyageAreaKeys();
+         }
 
          // If there are no available areas, do nothing
          if (seaMaps.Count == 0) {
@@ -61,7 +67,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Create the area instance
-      InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, difficulty, biome);
+      InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, difficulty, biome);
    }
 
    public Voyage getVoyage (int voyageId) {
@@ -88,6 +94,15 @@ public class VoyageManager : MonoBehaviour {
       }
 
       return null;
+   }
+
+   public Voyage getVoyageForGroup (int voyageGroupId) {
+      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(voyageGroupId);
+      if (voyageGroup == null) {
+         return null;
+      } else {
+         return getVoyage(voyageGroup.voyageId);
+      }
    }
 
    public List<Voyage> getAllVoyages () {
@@ -124,7 +139,11 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public bool isVoyageArea (string areaKey) {
-      return getVoyageAreaKeys().Contains(areaKey);
+      return getVoyageAreaKeys().Contains(areaKey) || getLeagueAreaKeys().Contains(areaKey);
+   }
+
+   public bool isLeagueArea (string areaKey) {
+      return getLeagueAreaKeys().Contains(areaKey);
    }
 
    public static bool isTreasureSiteArea (string areaKey) {
@@ -133,6 +152,10 @@ public class VoyageManager : MonoBehaviour {
 
    public List<string> getVoyageAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.Voyage).ToList();
+   }
+
+   public List<string> getLeagueAreaKeys () {
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.League).ToList();
    }
 
    public static bool isVoyageOpenToNewGroups (Voyage voyage) {
@@ -196,12 +219,22 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   [Client]
    public void showVoyagePanel (NetEntity entity) {
       if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
       }
 
       Global.player.rpc.Cmd_RequestVoyageListFromServer();
+   }
+
+   [Client]
+   public void warpToLeague (NetEntity entity) {
+      if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_WarpToLeague();
    }
 
    protected void createVoyageInstanceIfNeeded () {
@@ -245,19 +278,86 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
-   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
-      // Only the master server launches the creation of voyages instances
+   [Server]
+   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+      // Only the master server can generate new voyage ids
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
-         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, biome, difficulty);
+         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
          return;
       }
 
+      int voyageId = getNewVoyageId();
+      requestVoyageInstanceCreation(voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+   }
+
+   [Server]
+   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
       // Find the server with the least people
       NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
       if (bestServer != null) {
-         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, ++_lastVoyageId, areaKey, isPvP, biome, difficulty);
+         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
       }
+   }
+
+   [Server]
+   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome) {
+      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome));
+   }
+
+   [Server]
+   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome) {
+      // Get a new voyage id from the master server
+      RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
+      while (!response.IsDone) {
+         yield return null;
+      }
+      int voyageId = response.Value;
+
+      // Randomly choose an area among league maps
+      List<string> leagueMaps = getLeagueAreaKeys();
+      if (leagueMaps.Count == 0) {
+         D.error("No league maps available!");
+         yield break;
+      }
+      string areaKey = leagueMaps[UnityEngine.Random.Range(0, leagueMaps.Count)];
+
+      // Launch the creation of the new voyage instance
+      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, biome, Voyage.Difficulty.Hard);
+
+      if (!VoyageGroupManager.isInGroup(player)) {
+         // Create a new group for the player
+         VoyageGroupManager.self.createGroup(player, voyageId, true);
+      } else {
+         // Get the group the player belongs to
+         VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(player.voyageGroupId);
+         if (voyageGroup == null) {
+            D.error("Error when retrieving the voyage group during league instance creation.");
+            yield break;
+         }
+
+         // Link the group to the voyage instance
+         voyageGroup.voyageId = voyageId;
+         VoyageGroupManager.self.updateGroup(voyageGroup);
+      }
+
+      // Wait until the voyage instance has been created
+      while (getVoyage(voyageId) == null) {
+         yield return null;
+      }
+
+      // Warp the player to the instance
+      player.spawnInNewMap(voyageId, areaKey, Direction.South);
+   }
+
+   [Server]
+   public int getNewVoyageId () {
+      if (!ServerNetworkingManager.self.server.isMasterServer()) {
+         D.error("Only the master server can generate new voyage ids.");
+         return -1;
+      }
+
+      return ++_lastVoyageId;
    }
 
    #region Private Variables

@@ -107,6 +107,10 @@ namespace MapCreationTool
                throw new ArgumentException("Only sea maps can be voyage maps");
             }
 
+            if (newMap.specialType == Area.SpecialType.League && targetMap.editorType != EditorType.Sea) {
+               throw new ArgumentException("Only sea maps can be league maps");
+            }
+
             if (newMap.specialType == Area.SpecialType.TreasureSite && targetMap.editorType != EditorType.Area) {
                throw new ArgumentException("Only outside area maps can be treasure site maps");
             }

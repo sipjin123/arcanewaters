@@ -1013,7 +1013,7 @@ public class AdminManager : NetworkBehaviour
          areaKey = getClosestAreaKey(voyageSeaMaps, areaKey);
       }
 
-      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, biome, difficulty);
+      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, false, 0, biome, difficulty);
    }
 
    [Command]

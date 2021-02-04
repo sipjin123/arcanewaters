@@ -2,6 +2,8 @@
 using MapCreationTool.Serialization;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
+using System;
 
 public class Warp : MonoBehaviour, IMapEditorDataReceiver
 {
@@ -22,6 +24,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
    // The animated arrow
    public GameObject arrow;
 
+   // The circle
+   public GameObject circle;
+
    // Hard coded quest index
    public const int GET_DRESSED_QUEST_INDEX = 1;
    public const int HEAD_TO_DOCKS_QUEST_INDEX = 8;
@@ -35,7 +40,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
    void Start () {
       try {
-         InvokeRepeating("showOrHideArrow", Random.Range(0f, 1f), 0.5f);
+         InvokeRepeating(nameof(showOrHideArrow), UnityEngine.Random.Range(0f, 1f), 0.5f);
       } catch {
          CancelInvoke();
       }
@@ -48,7 +53,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          return;
       }
 
-      if (player.isLocalPlayer && canPlayerUseWarp(player)) {
+      if (player.isLocalPlayer && canPlayerUseWarp(player) && !player.isAboutToWarpOnClient) {
          // If a player is client, show loading screen and stop the player         
          // If it's a custom map, we have to own it, otherwise let server prompt us with map selection panel
          if (!string.IsNullOrEmpty(areaTarget) && AreaManager.self.tryGetCustomMapManager(areaTarget, out CustomMapManager customMapManager)) {
@@ -114,6 +119,46 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
          int voyageId = player.getInstance().voyageId;
          player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
+      }
+      // Any warp inside a league voyage map is considered an exit towards the next map
+      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.self.isLeagueArea(player.areaKey)) {
+         Instance instance = InstanceManager.self.getInstance(player.instanceId);
+
+         // If the instance is not a voyage, warp the player to the starting town
+         if (instance == null || instance.voyageId <= 0) {
+            D.error(string.Format("An instance in a league area is not a voyage. userId: {0}, league areaKey: {1}", player.userId, player.areaKey));
+            player.spawnInNewMap(Area.STARTING_TOWN);
+            yield break;
+         }
+
+         if (Voyage.isLastLeagueMap(instance.leagueIndex)) {
+            // At the end of a league, warp to the town in the next biome
+            Biome.Type nextBiome = (Biome.Type)(((int) instance.biome) + 1);
+
+            if (Area.homeTownForBiome.TryGetValue(nextBiome, out string nextBiomeTownAreaKey)) {
+               player.spawnInNewMap(nextBiomeTownAreaKey);
+            } else if (Area.homeTownForBiome.TryGetValue(instance.biome, out string currentBiomeTownAreaKey)){
+               // If the next town is not defined, return to the one of the current biome
+               player.spawnInNewMap(currentBiomeTownAreaKey);
+            } else {
+               player.spawnInNewMap(Area.STARTING_TOWN);
+            }
+         } else {
+            Voyage voyage = VoyageManager.self.getVoyageForGroup(player.voyageGroupId);
+            if (voyage == null) {
+               D.error("Error when retrieving the voyage during warp to next league instance.");
+               player.spawnInNewMap(Area.STARTING_TOWN);
+               yield break;
+            }
+
+            // If the group is already assigned to another voyage map, the next instance has already been created and we simply warp the player to it
+            if (voyage.voyageId != instance.voyageId) {
+               player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
+            } else {
+               // Create the next league map and warp the player to it
+               VoyageManager.self.createLeagueInstanceAndWarpPlayer(player, instance.leagueIndex + 1, instance.biome);
+            }
+         }
       } else {
          player.spawnInNewMap(areaTarget, spawnTarget, newFacingDirection);
       }
@@ -209,6 +254,15 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             if (arrow.activeSelf) {
                arrow.SetActive(false);
             }
+
+            // In leagues, warps to inactive treasure sites are completely invisible
+            if (_treasureSites.TryGetValue(Global.player.instanceId, out TreasureSite site)) {
+               if (site != null && !site.isActive()) {
+                  if (circle.activeSelf) {
+                     circle.SetActive(false);
+                  }
+               }
+            }
          }
       } catch {
          CancelInvoke();
@@ -251,8 +305,24 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
 
       // Check if a treasure site is controlling the warp in this instance
       if (_treasureSites.TryGetValue(player.instanceId, out TreasureSite site)) {
-         if (site != null && VoyageGroupManager.isInGroup(player) && site.isCaptured() && site.voyageGroupId == player.voyageGroupId) {
+         if (site != null && site.isActive() && VoyageGroupManager.isInGroup(player) && site.isCaptured() && site.isOwnedByGroup(player.voyageGroupId)) {
             return true;
+         }
+      }
+
+      // In league maps, warps are only active when all enemies are defeated
+      Instance instance = player.getInstance();
+      if (instance != null && instance.isLeague) {
+         // Check that all sea enemies in the instance are defeated
+         if (instance.aliveNPCEnemiesCount > 0) {
+            return false;
+         }
+
+         // Check that all enemies inside treasure sites have also been defeated
+         foreach (TreasureSite treasureSite in instance.treasureSites) {
+            if (treasureSite.isActive() && !treasureSite.isClearedOfEnemies) {
+               return false;
+            }
          }
       }
 

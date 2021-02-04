@@ -95,6 +95,12 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // If the user can engage in combat
    public bool canEngageInCombat = true;
+   // If players can one shot land enemies on combat
+   public bool oneShotEnemies = false;
+
+   // A reference to the spider web trigger we are inside, if any
+   [HideInInspector]
+   public SpiderWebTrigger collidingSpiderWebTrigger = null;
 
    #endregion
 
@@ -154,6 +160,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
             }
          }
          sprintRecovery();
+         webBounceUpdate();
          processJumpLogic();
 
          return;
@@ -163,6 +170,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          handleShortcutsInput();
       }
 
+      webBounceUpdate();
       processJumpLogic();
       processActionLogic();
       processSprintLogic();
@@ -199,6 +207,10 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
    }
 
+   public void setDropShadowScale (float newScale) {
+      shadow.transform.localScale = _shadowInitialScale * newScale;
+   }
+
    private void updateJumpHeight () {
       float y = spritesTransform.localPosition.y;
 
@@ -211,12 +223,16 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
          shadow.transform.localScale = _shadowInitialScale * newShadowScale;
       }
-      else {
+      else if (!isBouncingOnWeb()) {
          y = 0.0f;
       }
 
-      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, y, spritesTransform.localPosition.z);
+      setSpritesHeight(y);
       windDashSprite.localPosition = Vector3.up * y;
+   }
+
+   public void setSpritesHeight (float newHeight) {
+      spritesTransform.localPosition = new Vector3(spritesTransform.localPosition.x, newHeight, spritesTransform.localPosition.z);
    }
 
    private void processJumpLogic () {
@@ -244,7 +260,13 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater() && isLocalPlayer) {
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater() && isLocalPlayer && !isBouncingOnWeb()) {
+         // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
+         if (collidingSpiderWebTrigger != null && collidingSpiderWebTrigger.isFacingWeb(facing)) {
+            collidingSpiderWebTrigger.onPlayerJumped(this);
+            return;
+         }
+
          // Adjust the collider pivot
          int currentAngle = 0;
          if (facing == Direction.East || facing == Direction.SouthEast || facing == Direction.NorthEast) {
@@ -561,6 +583,27 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    public bool isJumping () {
       float timeSinceLastJump = (float) (NetworkTime.time - _jumpStartTime);
       return (timeSinceLastJump < JUMP_DURATION);
+   }
+
+   protected override void webBounceUpdate () {
+      if (!isBouncingOnWeb()) {
+         return;
+      }
+
+      float timeSinceBounce = (float) NetworkTime.time - _webBounceStartTime;
+      
+      // If we're falling down, reverse t
+      if (!_isGoingUpWeb) {
+         timeSinceBounce = getWebBounceDuration() - timeSinceBounce;
+      }
+
+      // Update sprite height
+      float tSprites = _activeWeb.getSpriteHeightCurve(_isDoingHalfBounce).Evaluate(timeSinceBounce);
+      setSpritesHeight(tSprites);
+
+      // Update drop shadow scale
+      float tShadow = _activeWeb.getShadowCurve(_isDoingHalfBounce).Evaluate(timeSinceBounce);
+      setDropShadowScale(tShadow);
    }
 
    #region Private Variables

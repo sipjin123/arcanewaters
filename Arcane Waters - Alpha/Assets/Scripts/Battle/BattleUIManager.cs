@@ -298,29 +298,7 @@ public class BattleUIManager : MonoBehaviour {
          } else if (Input.GetKeyDown(KeyCode.Alpha5)) {
             triggerAbilityByKey(4);
          } else if (Input.GetKeyDown(KeyCode.Tab)) {
-            // Select the list of opponents
-            List<Battler> battlerList = BattleManager.self.getPlayerBattler().isAttacker() 
-               ? BattleManager.self.getBattle(BattleManager.self.getPlayerBattler().battleId).getDefenders() 
-               : BattleManager.self.getBattle(BattleManager.self.getPlayerBattler().battleId).getAttackers();
-
-            if (battlerList.Count > 1) {
-               if (BattleSelectionManager.self.selectedBattler != null) {
-                  // Check if the selected battler is an opponent
-                   if (BattleManager.self.getPlayerBattler().isAttacker() != BattleSelectionManager.self.selectedBattler.isAttacker()) {
-                     // Select the current index of the selected battler
-                     selectionId = battlerList.IndexOf(BattleSelectionManager.self.selectedBattler);
-                  }
-               }
-
-               // Iterate to the next opponent
-               selectionId++;
-               if (selectionId >= battlerList.Count) {
-                  selectionId = 0;
-               }
-
-               // Simulate battle selection
-               BattleSelectionManager.self.clickBattler(battlerList[selectionId]);
-            }
+            selectNextTarget();
          }
 
          // Display the health of the ally
@@ -333,7 +311,7 @@ public class BattleUIManager : MonoBehaviour {
             playerHealthBar.maxValue = _playerLocalBattler.getStartingHealth();
             playerHealthBar.value = _playerLocalBattler.displayedHealth;
          }
-         
+
          if (_playerLocalBattler.stanceCurrentCooldown > 0) {
             _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
             stanceChangeButton.interactable = false;
@@ -343,7 +321,36 @@ public class BattleUIManager : MonoBehaviour {
             stanceChangeButton.interactable = true;
             stanceButtonFrameText.text = "change stance";
          }
-      } 
+      }
+   }
+
+   public void selectNextTarget () {
+      // Store a references
+      Battler playerBattler = BattleManager.self.getPlayerBattler();
+      Battler selectedBattler = BattleSelectionManager.self.selectedBattler;
+
+      List<Battler> enemyBattlersAlive = BattleSelectionManager.self.getLiveTargets();
+
+      if (enemyBattlersAlive.Count() > 1) {
+         if (selectedBattler != null) {
+            // Check if the selected battler is an opponent
+            if (playerBattler.isAttacker() != selectedBattler.isAttacker()) {
+               // Select the current index of the selected battler
+               selectionId = enemyBattlersAlive.IndexOf(selectedBattler);
+            }
+         }
+
+         // Iterate to the next opponent
+         selectionId++;
+         if (selectionId >= enemyBattlersAlive.Count()) {
+            selectionId = 0;
+         }
+
+         // Simulate battle selection
+         BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(selectionId));
+      } else if (enemyBattlersAlive.Count() == 1) {
+            BattleSelectionManager.self.clickBattler(enemyBattlersAlive.ElementAt<Battler>(0));
+      }
    }
 
    public void prepareBattleUI () {

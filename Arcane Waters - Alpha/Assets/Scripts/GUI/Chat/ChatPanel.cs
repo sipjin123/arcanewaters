@@ -335,6 +335,12 @@ public class ChatPanel : MonoBehaviour {
       // player is writing a mail      
       if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
+
+            PlayerShipEntity playerShip = Global.player?.GetComponent<PlayerShipEntity>();
+            if (playerShip) {
+               playerShip.clearMovementInput();
+            }
+
             // Activate the input field in the next frame to avoid weird interactions
             StartCoroutine(CO_FocusAfterDelay());
          }

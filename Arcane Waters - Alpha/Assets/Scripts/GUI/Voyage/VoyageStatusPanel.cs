@@ -39,6 +39,12 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The treasure site count text
    public Text treasureSiteCountText;
 
+   // The alive enemies count
+   public Text aliveEnemiesCountText;
+
+   // The index of the current league
+   public Text leagueIndexText;
+
    // The text outlines
    public Outline[] outlines;
 
@@ -50,6 +56,10 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The icons for PvP and PvE modes
    public Sprite pvpIcon;
    public Sprite pveIcon;
+
+   // The statuses that are only relevant in voyage instances or league instances (common statuses should not be set here)
+   public GameObject[] voyageStatuses = new GameObject[0];
+   public GameObject[] leagueStatuses = new GameObject[0];
 
    // Self
    public static VoyageStatusPanel self;
@@ -92,13 +102,41 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          return;
       }
 
-      // Set the treasure site count
+      // Show different relevant statuses for voyage and league instances
+      if (instance.isLeague) {
+         foreach (GameObject gO in voyageStatuses) {
+            if (gO.activeSelf) {
+               gO.SetActive(false);
+            }
+         }
+
+         foreach (GameObject gO in leagueStatuses) {
+            if (!gO.activeSelf) {
+               gO.SetActive(true);
+            }
+         }
+      } else {
+         foreach (GameObject gO in leagueStatuses) {
+            if (gO.activeSelf) {
+               gO.SetActive(false);
+            }
+         }
+
+         foreach (GameObject gO in voyageStatuses) {
+            if (!gO.activeSelf) {
+               gO.SetActive(true);
+            }
+         }
+      }
+
+      // Set the status that are always visible
       if (instance.treasureSiteCount == 0) {
          // If the number of sites is 0, the area has not yet been instantiated on the server
          treasureSiteCountText.text = "?/?";
       } else {
          treasureSiteCountText.text = (instance.treasureSiteCount - instance.capturedTreasureSiteCount).ToString() + "/" + instance.treasureSiteCount;
       }
+      aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.seaMonsterCount + instance.enemyCount).ToString();
 
       // Set the plaque labels outline color
       switch (instance.difficulty) {
@@ -137,6 +175,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
       playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
       timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
+      leagueIndexText.text = (instance.leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE;
    }
 
    private void setDefaultStatus () {
@@ -144,6 +183,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       playerCountText.text = "?/?";
       treasureSiteCountText.text = "?/?";
       timeText.text = "?";
+      aliveEnemiesCountText.text = "?/?";
+      leagueIndexText.text = "? of ?";
    }
 
    public void show () {

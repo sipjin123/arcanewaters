@@ -172,6 +172,7 @@ MonoBehaviour:
     creatorName: 
   newFacingDirection: 1
   arrow: {fileID: 114106990}
+  circle: {fileID: 5136508974717427906}
 --- !u!114 &4294655918593426307
 MonoBehaviour:
   m_ObjectHideFlags: 0

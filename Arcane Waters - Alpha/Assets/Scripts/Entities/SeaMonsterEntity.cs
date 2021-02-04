@@ -750,6 +750,8 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
       return sqrDistance < seaMonsterData.maxMeleeDistanceGap * seaMonsterData.maxMeleeDistanceGap;
    }
 
+   public override bool isSeaMonster () { return true; }
+
    #endregion
 
    #region Private Variables
