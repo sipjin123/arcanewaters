@@ -21,8 +21,8 @@ var events = require('events');
 var eventEmitter = new events.EventEmitter();
 //========================================================
 
-getLatestSteamBuild = function(eventToEmit) {
-    connection.query('select buildId from steam_patch_status', function(err,result){
+getLatestSteamBuild = function(eventToEmit, buildType) {
+    connection.query('select buildId from steam_patch_status where steamAppId="'+buildType+'"', function(err,result){
         if (err) {
             console.error(err);
             eventToEmit.emit('finishedCheckingSteamBuild', result);
@@ -33,8 +33,8 @@ getLatestSteamBuild = function(eventToEmit) {
     });
 }
 
-updateLatestSteamBuild = function(eventToEmit, buildValue) {
-    connection.query('UPDATE steam_patch_status SET buildId = '+buildValue, function(err,result){
+updateLatestSteamBuild = function(eventToEmit, buildValue, buildType) {
+    connection.query('UPDATE steam_patch_status SET buildId = '+buildValue+ ' where steamAppId="'+buildType+'"', function(err,result){
         if (err) {
             console.error(err);
             eventToEmit.emit('finishedUpdatingSteamBuild', result);
@@ -48,7 +48,21 @@ updateLatestSteamBuild = function(eventToEmit, buildValue) {
 getUpdateLogsFromJenkins = function(eventToEmit, buildValue) {
     console.log('Jenkins Build Value is: '+ buildValue);
 
-    connection.query('select buildId, message from cloud_changesets where buildId > ' + buildValue, function(err,result){
+    connection.query('select dhBuildVersion, dhStatusReason from deploy_history where dhBuildTarget = "arcanewaters-WindowsServer" and dhBuildVersion > ' + buildValue, function(err,result){
+        if (err) {
+            console.error(err);
+            getCommentsFromPlastic('finishedCheckingJenkins', result);
+        } else {
+            console.log('Read Jenkins Sql Data Complete');
+            eventToEmit.emit('finishedCheckingJenkins', result);
+        }
+    });
+}
+
+getCommentsFromPlastic = function(eventToEmit, plasticId) {
+    console.log('Jenkins Build Value is: '+ buildValue);
+
+    connection.query('select dhBuildVersion, message from deploy_history where dhBuildTarget = "arcanewaters-WindowsServer" and dhBuildVersion > ' + buildValue, function(err,result){
         if (err) {
             console.error(err);
             eventToEmit.emit('finishedCheckingJenkins', result);
