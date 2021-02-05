@@ -59,6 +59,7 @@ public class CropProjectile : MonoBehaviour {
          processDestruction();
       }
 
+      // This prevents the crop from bounding over obstructed areas
       Collider2D[] colliders = new Collider2D[8];
       ContactFilter2D contactFilter = new ContactFilter2D();
       int colliderCount = colliderComponent.OverlapCollider(contactFilter, colliders);

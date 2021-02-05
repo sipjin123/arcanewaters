@@ -151,7 +151,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    }
 
    private void getXmlData () {
-      debugLog("Preparing to Process Files...", Color.cyan);
+      D.debug("Preparing to Process Files...");
       string compiledData = "";
       int databaseVersion = 0;
 
@@ -229,7 +229,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
                      if (serverDate > savedDate) {
                         shouldZipNewFiles = true;
                         PlayerPrefs.SetString(xmlTableName, serverDate.ToString());
-                        debugLog("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
+                        D.debug("Server updated recently updates: " + (index + "/" + (xmlGroup.Length - 1)));
                      } else {
                         debugLog("NO updates: " + (index + "/" + (xmlGroup.Length - 1)), Color.blue);
                      }
@@ -251,7 +251,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
                targetProgress = 0;
                currentProgress = 0;
 
-               Debug.Log("Zipping Process has begun");
+               D.debug("Zipping Process has begun");
                beginZipProcess();
             } else {
                serverMessage = "No new version, set as cached version: " + databaseVersion;
@@ -366,7 +366,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          DB_Main.writeZipData(zipData, (int) XmlSlotIndex.Default);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            D.log("Zip Upload Complete: Windows:" + zipData.Length);
+            D.debug("Zip Upload Complete: Windows:" + zipData.Length);
          });
       });
    }
