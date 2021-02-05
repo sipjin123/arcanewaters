@@ -41,11 +41,11 @@ var dataReadJenkinsEventHandler = function (result) {
 	console.log('Jenkins build complete: '+result.length);
 	try {
 		for (var i = 0 ; i < result.length ; i ++){
-			console.log('write complete: '+ result[i].buildId+ " : " +result[i].dhStatusReason);
+			console.log('write complete: '+ result[i].buildId+ " : " +result[i].buildComment);
 
 			var dataEntry = {
 				buildId: result[i].buildId,
-				message: result[i].dhStatusReason
+				message: result[i].buildComment
 			};
 			newCloudBuildData.push(dataEntry);
 		}
@@ -170,7 +170,7 @@ const postUpdates = async (newCloudObjects) => {
 
 			await page2.waitFor(typingInterval);
 			for (var messageIndex = 0 ; messageIndex < newCloudBuildData.length ; messageIndex ++) {
-				const sentences = newCloudBuildData[messageIndex].dhStatusReason.split('\n');
+				const sentences = newCloudBuildData[messageIndex].message.split('\n');
 				var sentenceList = [];
 
 				for (var index = 0 ; index < sentences.length -1 ; index++) {
