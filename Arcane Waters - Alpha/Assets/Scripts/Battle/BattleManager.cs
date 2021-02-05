@@ -844,6 +844,7 @@ public class BattleManager : MonoBehaviour {
       foreach (Battler battler in defeatedBattlers) {
          if (battler.isMonster()) {
             int battlerEnemyID = (int) battler.getBattlerData().enemyType;
+            
             foreach (Battler participant in winningBattlers) {
                if (!participant.isMonster()) {
                   participant.player.rpc.endBattle();
@@ -873,19 +874,20 @@ public class BattleManager : MonoBehaviour {
 
                   // Registers the gold earned for achievement recording
                   AchievementManager.registerUserAchievement(participant.player, ActionType.EarnGold, goldWon);
-
-                  if (!battler.isBossType) {
-                     Vector3 targetPosition = chestPos;
-                     if (spawnPositions.Count > 0) {
-                        int randomIndex = Random.Range(0, spawnPositions.Count - 1);
-                        targetPosition = new Vector3(spawnPositions[randomIndex].x, spawnPositions[randomIndex].y, spawnPositions[randomIndex].z);
-                        spawnPositions.RemoveAt(randomIndex);
-                     }
-                     participant.player.rpc.spawnBattlerMonsterChest(participant.player.instanceId, targetPosition, battlerEnemyID);
-                  } else {
-                     // TODO: Add reward logic here for boss enemies
-                  }
                } 
+            }
+
+            // Spawn loot bags multiplied by the number of enemies defeated
+            if (!battler.isBossType && winningBattlers.Count >= 1) {
+               Vector3 targetPosition = battler.player.transform.position;
+               if (spawnPositions.Count > 0) {
+                  int randomIndex = Random.Range(0, spawnPositions.Count - 1);
+                  targetPosition = new Vector3(spawnPositions[randomIndex].x, spawnPositions[randomIndex].y, spawnPositions[randomIndex].z);
+                  spawnPositions.RemoveAt(randomIndex);
+               }
+               winningBattlers[0].player.rpc.spawnBattlerMonsterChest(winningBattlers[0].player.instanceId, targetPosition, battlerEnemyID);
+            } else {
+               // TODO: Add reward logic here for boss enemies
             }
          } else {
             if (battler.player is PlayerBodyEntity) {
