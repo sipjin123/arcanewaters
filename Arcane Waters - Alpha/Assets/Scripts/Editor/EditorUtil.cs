@@ -35,6 +35,15 @@ public class EditorUtil : EditorWindow {
       PlayerPrefs.DeleteAll();
    }
 
+   [MenuItem("Util/Clear Console (CMD + SHIFT + W) %#w")]
+   public static void ClearConsole () {
+      // CMD + SHIFT + W
+      System.Reflection.Assembly assembly = System.Reflection.Assembly.GetAssembly(typeof(Editor));
+      System.Type type = assembly.GetType("UnityEditor.LogEntries");
+      System.Reflection.MethodInfo method = type.GetMethod("Clear");
+      method.Invoke(new object(), null);
+   }
+
    [MenuItem("Util/Launch: Main Scene (Ctrl+J) %j")]
    public static void PlayMainScene () {
       if (EditorApplication.isPlaying == true) {
