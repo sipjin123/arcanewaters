@@ -905,6 +905,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          // Play a "Poof" effect on our head
          EffectManager.playPoofEffect(this);
+
+         BattleSelectionManager.self.autoTargetNextOpponent();
       }
    }
 
@@ -1752,7 +1754,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * LevelUtil.levelForXp(XP));
+      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
 
       return (int) health;
    }

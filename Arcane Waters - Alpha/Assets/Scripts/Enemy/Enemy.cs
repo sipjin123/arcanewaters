@@ -356,6 +356,12 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       return SoundManager.Type.None;
    }
 
+   public override bool isDead () {
+      return isDefeated;
+   }
+
+   public override bool isLandEnemy () { return true; }
+
    #region Private Variables
 
    // Our zSnap component

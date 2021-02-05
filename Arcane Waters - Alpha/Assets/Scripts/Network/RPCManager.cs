@@ -3984,8 +3984,7 @@ public class RPCManager : NetworkBehaviour {
       // Area area = AreaManager.self.getArea(bot.areaType);
       // bot.route = Instantiate(PrefabsManager.self.figureEightRoutePrefab, spawnPosition, Quaternion.identity, area.transform);
 
-      Instance instance = InstanceManager.self.getInstance(_player.instanceId);
-      instance.entities.Add(bot);
+      InstanceManager.self.addSeaMonsterToInstance(bot, InstanceManager.self.getInstance(_player.instanceId));
 
       // Spawn the bot on the Clients
       NetworkServer.Spawn(bot.gameObject);
@@ -5219,7 +5218,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [TargetRpc]
-   private void Target_OnWarpFailed () {
+   public void Target_OnWarpFailed () {
       D.debug("Warp failed");
       _player.onWarpFailed();
       PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
