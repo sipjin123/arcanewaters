@@ -15,16 +15,6 @@ public class EnemyManager : MonoBehaviour {
 
    public void Awake () {
       self = this;
-
-      if (_shipTypes == null) {
-         _shipTypes = new Dictionary<Ship.Type, string>();
-         foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
-            if (type == Ship.Type.None) {
-               continue;
-            }
-            _shipTypes.Add(type, type.ToString().ToLower() + "_random_pirate");
-         }
-      }
    }
 
    public void Start () {
@@ -32,6 +22,20 @@ public class EnemyManager : MonoBehaviour {
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          _spawners[areaKey] = new List<Enemy_Spawner>();
       }
+
+      ShipDataManager.self.finishedDataSetup.AddListener(()=> {
+         if (_shipTypes == null) {
+            _shipTypes = new Dictionary<Ship.Type, string>();
+            foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
+               if (type == Ship.Type.None) {
+                  continue;
+               }
+
+               string shipName = type.ToString().ToLower() + "_pirate";
+               _shipTypes.Add(type, shipName);
+            }
+         }
+      });
    }
 
    public void storeSpawner (Enemy_Spawner spawner, string areaKey) {
@@ -128,7 +132,7 @@ public class EnemyManager : MonoBehaviour {
          }
 
          string shipName = _shipTypes[shipType];
-         SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.monsterName == shipName);
+         SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
 
          if (seaMonsterData == null) {
             D.debug("Sea monster data is null! Name: " + shipName);
