@@ -3546,6 +3546,8 @@ public class RPCManager : NetworkBehaviour {
          if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
             D.debug("Returning player to town: Voyage Group does not Exist!");
             _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         } else {
+            grantPlayerCombat();
          }
          return;
       }
@@ -3565,6 +3567,8 @@ public class RPCManager : NetworkBehaviour {
          // If player cant bypass restirctions, return them to town due to insufficient conditions being met
          if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
             _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         } else {
+            grantPlayerCombat();
          }
          return;
       }
@@ -3576,6 +3580,7 @@ public class RPCManager : NetworkBehaviour {
       // Allow the player to engage in combat if conditions are valid
       PlayerBodyEntity playerBodyEntity = _player.GetComponent<PlayerBodyEntity>();
       if (playerBodyEntity != null) {
+         D.editorLog("Granting Player Combat Capability", Color.green);
          playerBodyEntity.Target_AllowPlayerCombat();
       }
    }
