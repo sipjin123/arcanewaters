@@ -529,7 +529,9 @@ public class SeaEntity : NetEntity
             }
             break;
          default:
-            D.debug("Cant process attack" + " : " + abilityId + " : " + shipAbility.selectedAttackType);
+            if (this is SeaMonsterEntity) { 
+               D.debug("Cant process attack" + " : " + abilityId + " : " + shipAbility.selectedAttackType);
+            }
             StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
       }
