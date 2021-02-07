@@ -174,6 +174,10 @@ public class Instance : NetworkBehaviour
       return entities;
    }
 
+   public List<NetworkBehaviour> getOreEntities () {
+      return entities.FindAll(_=>_ is OreNode);
+   }
+
    public List<PlayerBodyEntity> getPlayerBodyEntities () {
       List<PlayerBodyEntity> newEntityList = new List<PlayerBodyEntity>();
       

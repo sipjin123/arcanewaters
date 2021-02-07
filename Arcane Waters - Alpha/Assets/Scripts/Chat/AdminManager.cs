@@ -82,7 +82,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
       cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
-
+      cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -157,6 +157,37 @@ public class AdminManager : NetworkBehaviour
          if (player != null) {
             player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Kicked, $"You were kicked.\n\n Reason: {reason}"));
             player.connectionToClient.Disconnect();
+         }
+      }
+   }
+
+   private void requestOre (string parameters) {
+      Cmd_RequestOreVoyage(parameters);
+   }
+
+   [Command]
+   private void Cmd_RequestOreVoyage (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         int voyageId = -1;
+         try {
+            voyageId = int.Parse(list[0]);
+         } catch {
+            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Voyage ID" + " : " + parameters);
+         }
+
+         _player.voyageGroupId = voyageId;
+         Instance playersInstance = InstanceManager.self.getInstance(_player.instanceId);
+         if (playersInstance) {
+            D.debug("Total Ores in instance is"+ " : " + playersInstance.getOreEntities().Count);
+            foreach (NetworkBehaviour temp in playersInstance.getOreEntities()) {
+               ((OreNode) temp).voyageId = voyageId;
+            }
          }
       }
    }
