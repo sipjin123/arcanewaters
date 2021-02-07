@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using System;
 using static UnityEngine.UI.Dropdown;
+using System.Text;
 
 public class OptionsPanel : Panel
 {
@@ -53,6 +54,12 @@ public class OptionsPanel : Panel
 
    // Self
    public static OptionsPanel self;
+
+   // Version number gameObject
+   public GameObject versionGameObject;
+
+   // Version Number text field
+   public Text versionNumberText;
 
    // The objects that only appears when a user is logged in
    public GameObject[] loggedInObjects;
@@ -121,6 +128,10 @@ public class OptionsPanel : Panel
          PlayerPrefs.SetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
          Global.sprintConstantly = value;
       });
+
+      // Build string and show version number
+      versionGameObject.SetActive(true);
+      versionNumberText.text = Util.getFormattedGameVersion();
    }
 
    public void setVSync (bool vsync) {

@@ -522,11 +522,11 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
    protected override void OnDestroy () {
       base.OnDestroy();
 
-      if (_targetCone.gameObject) {
+      if (_targetCone != null && _targetCone.gameObject != null) {
          Destroy(_targetCone.gameObject);
       }
 
-      if (_targetCircle.gameObject) {
+      if (_targetCircle != null && _targetCircle.gameObject != null) {
          Destroy(_targetCircle.gameObject);
       }
 
@@ -853,6 +853,11 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       _body.AddForce(force);
+   }
+
+   [Command]
+   public void Cmd_ClearMovementInput () {
+      clearMovementInput();
    }
 
    public void clearMovementInput () {

@@ -338,7 +338,12 @@ public class ChatPanel : MonoBehaviour {
 
             PlayerShipEntity playerShip = Global.player?.GetComponent<PlayerShipEntity>();
             if (playerShip) {
-               playerShip.clearMovementInput();
+               if (!NetworkServer.active) {
+                  playerShip.Cmd_ClearMovementInput();
+               } else {
+                  playerShip.clearMovementInput();
+               }
+               
             }
 
             // Activate the input field in the next frame to avoid weird interactions

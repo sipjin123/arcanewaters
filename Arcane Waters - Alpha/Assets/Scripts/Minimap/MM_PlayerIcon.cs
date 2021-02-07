@@ -44,7 +44,11 @@ public class MM_PlayerIcon : ClientMonoBehaviour {
          float minimapTranslationScale = (minimapSpriteWidth - 64.0f) / 64.0f;
 
          // It is more suited for Minimap class but to avoid race condition and ensure correct calling sequence, it is used here
-         Minimap.self.backgroundImage.rectTransform.localPosition = new Vector2(-relativePosition.x * minimapTranslationScale, -relativePosition.y * minimapTranslationScale);
+         if (minimapTranslationScale < 0.0f) {
+            Minimap.self.backgroundImage.rectTransform.localPosition = Vector2.zero;
+         } else {
+            Minimap.self.backgroundImage.rectTransform.localPosition = new Vector2(-relativePosition.x * minimapTranslationScale, -relativePosition.y * minimapTranslationScale);
+         }
          Util.setLocalXY(this.transform, relativePosition);
 
          // Rotate the player arrow based on our facing direction

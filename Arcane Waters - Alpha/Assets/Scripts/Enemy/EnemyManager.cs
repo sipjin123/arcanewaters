@@ -121,7 +121,7 @@ public class EnemyManager : MonoBehaviour {
          return;
       }
 
-      int guildId = 1;
+      int guildId = BotShipEntity.PIRATES_GUILD_ID;
       Area area = AreaManager.self.getArea(instance.areaKey);
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {

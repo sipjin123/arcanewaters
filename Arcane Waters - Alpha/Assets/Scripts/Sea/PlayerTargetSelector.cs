@@ -11,6 +11,11 @@ public class PlayerTargetSelector : MonoBehaviour {
       // Get our current target from SelectionManager 
       _currentTarget = SelectionManager.self.selectedEntity;
 
+      // If our target has died, select a new target
+      if (_currentTarget != null && _currentTarget.isDead()) {
+         selectNextTarget();
+      }
+
       // Check if our target changed 
       if (_currentTarget != _lastTarget) {
          updateCurrentTargetIndex();
@@ -21,6 +26,8 @@ public class PlayerTargetSelector : MonoBehaviour {
          selectNextTarget();
       }
 
+      /*
+      // Disabling the auto deselecting of enemy ships
       if (_currentTarget != null) {
          float distance = Vector2.Distance(transform.position, _currentTarget.transform.position);
 
@@ -39,6 +46,7 @@ public class PlayerTargetSelector : MonoBehaviour {
             _selectedTargetTimeOutOfArea = 0.0f;
          }
       }
+      */
 
       // Keep track of our current target in case it changes
       _lastTarget = _currentTarget;

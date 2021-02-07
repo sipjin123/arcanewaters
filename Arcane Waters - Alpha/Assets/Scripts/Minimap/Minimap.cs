@@ -614,8 +614,14 @@ public class Minimap : ClientMonoBehaviour {
       _seaRandomSprite.texture.filterMode = FilterMode.Point;
       backgroundImage.sprite = _seaRandomSprite;
 
-      // Background image is twice the size of texture - update size after changing texture size
-      backgroundImage.rectTransform.sizeDelta = new Vector2(texture.width * 2.0f, texture.height * 2.0f);
+      Vector2 minimapMaskSize = backgroundImage.GetComponentInParent<Mask>().rectTransform.sizeDelta;
+
+      if (texture.width * 2.0f + Mathf.Epsilon >= minimapMaskSize.x) {
+         // Background image is twice the size of texture - update size after changing texture size
+         backgroundImage.rectTransform.sizeDelta = new Vector2(texture.width * 2.0f, texture.height * 2.0f);
+      } else {
+         backgroundImage.rectTransform.sizeDelta = minimapMaskSize;
+      }
    }
 
    Color AlphaBlend (Color destination, Color source) {

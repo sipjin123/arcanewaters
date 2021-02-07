@@ -81,6 +81,8 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("kick", "Disconnects a player from the name", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
       cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
+      cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
+
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -157,6 +159,11 @@ public class AdminManager : NetworkBehaviour
             player.connectionToClient.Disconnect();
          }
       }
+   }
+
+   private void requestGod () {
+      Cmd_SetShipDamage("100000");
+      Cmd_SetShipHealth("100000");
    }
 
    private void banPlayerIndefinite (string parameters) {

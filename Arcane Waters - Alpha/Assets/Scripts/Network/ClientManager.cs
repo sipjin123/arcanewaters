@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Mirror;
 using Steamworks;
 using SteamLoginSystem;
+using System.Text;
 
 public class ClientManager : MonoBehaviour
 {
@@ -15,6 +16,12 @@ public class ClientManager : MonoBehaviour
 
    // A reference to the Message Manager
    public MessageManager messageManager;
+
+   // Version number gameObject
+   public GameObject versionGameObject;
+
+   // Version Number text field
+   public Text versionNumberText;
 
    // Self
    public static ClientManager self;
@@ -73,10 +80,19 @@ public class ClientManager : MonoBehaviour
             QuickLaunchPanel.self.startWithFastLogin();
          }
       }
+
+      // Display client version info on screen
+      displayClientVersionInfo();
    }
 
    void OnApplicationQuit () {
       isApplicationQuitting = true;
+   }
+
+   public void displayClientVersionInfo () {
+      // Get the client version number from the cloud build manifest
+      versionNumberText.text = Util.getFormattedGameVersion();
+      versionGameObject.SetActive(true);
    }
 
    public static void sendAccountNameAndUserId () {
