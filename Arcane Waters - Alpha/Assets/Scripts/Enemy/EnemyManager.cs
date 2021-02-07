@@ -23,19 +23,17 @@ public class EnemyManager : MonoBehaviour {
          _spawners[areaKey] = new List<Enemy_Spawner>();
       }
 
-      ShipDataManager.self.finishedDataSetup.AddListener(()=> {
-         if (_shipTypes == null) {
-            _shipTypes = new Dictionary<Ship.Type, string>();
-            foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
-               if (type == Ship.Type.None) {
-                  continue;
-               }
-
-               string shipName = type.ToString().ToLower() + "_pirate";
-               _shipTypes.Add(type, shipName);
+      if (_shipTypes == null) {
+         _shipTypes = new Dictionary<Ship.Type, string>();
+         foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
+            if (type == Ship.Type.None) {
+               continue;
             }
+
+            string shipName = type.ToString().ToLower() + "_pirate";
+            _shipTypes.Add(type, shipName);
          }
-      });
+      }
    }
 
    public void storeSpawner (Enemy_Spawner spawner, string areaKey) {
