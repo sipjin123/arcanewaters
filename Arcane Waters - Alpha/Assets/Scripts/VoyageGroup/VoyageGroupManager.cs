@@ -483,7 +483,11 @@ public class VoyageGroupManager : MonoBehaviour
 
       // Send the data to the client
       VoyageGroupInfo voyageGroup = getGroupById(player.voyageGroupId);
-      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, voyageGroup.members.ToArray());
+      if (voyageGroup != null) {
+         player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, voyageGroup.members.ToArray());
+      } else {
+         player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new int[0]);
+      }
    }
 
    public void logGroupInvitation (int inviterUserId, string inviteeName) {
