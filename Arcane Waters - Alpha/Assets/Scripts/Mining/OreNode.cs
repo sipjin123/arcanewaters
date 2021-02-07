@@ -26,8 +26,7 @@ public class OreNode : NetworkBehaviour
    public int instanceId;
 
    // The number of times this ore node is interacted
-   [SyncVar]
-   public int interactCount;
+   public int interactCount = 0;
 
    // The area key assigned to this ore
    [SyncVar]
@@ -51,6 +50,10 @@ public class OreNode : NetworkBehaviour
 
    // The total interact count for each ore node
    public static int MAX_INTERACT_COUNT = 2;
+
+   // The voyage id
+   [SyncVar]
+   public int voyageId = -1;
 
    #endregion
 

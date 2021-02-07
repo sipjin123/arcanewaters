@@ -75,8 +75,15 @@ public class MiningTrigger : MonoBehaviour
                if (hit.collider.GetComponent<OreNode>() != null) {
                   OreNode oreNode = hit.collider.GetComponent<OreNode>();
                   if (!oreNode.hasBeenMined() && !oreIdsInteracted.Exists(_ => _ == oreNode.id) && !oreNode.finishedMining()) {
-                     bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
-                     oreIdsInteracted.Add(oreNode.id);
+                     if (oreNode.voyageId > 0) {
+                        bodyEntity.rpc.Cmd_InteractOre(oreNode.id, transform.position, oreNode.transform.position);
+                        oreIdsInteracted.Add(oreNode.id);
+                     } else {
+                        Vector3 pos = this.transform.position + new Vector3(0f, .32f);
+                        GameObject messageCanvas = Instantiate(PrefabsManager.self.warningTextPrefab);
+                        messageCanvas.transform.position = pos;
+                        messageCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Cannot mine outside voyage maps!";
+                     }
                   } 
                }
             } 
