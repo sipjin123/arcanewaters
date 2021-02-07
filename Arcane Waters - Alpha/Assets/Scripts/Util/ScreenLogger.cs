@@ -56,8 +56,8 @@ public class ScreenLogger : MonoBehaviour {
             canvasObj.SetActive(!canvasObj.activeSelf);
          }
 
-         // Clears log screen when holding left and P button
-         if (Input.GetKeyDown(KeyCode.P) && canvasObj.activeSelf) {
+         // Clears log screen when holding left and T button
+         if (Input.GetKeyDown(KeyCode.T) && canvasObj.activeSelf) {
             clearLog();
          }
       }

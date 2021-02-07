@@ -11,6 +11,10 @@ public class ServerMessageManager : MonoBehaviour
 {
    #region Public Variables
 
+   // TODO: Remove this feature after account creation is perfected
+   // This is used for tracking logs of steam generated password
+   public static string lastEncryptedPassword;
+
    #endregion
 
    [ServerOnly]
@@ -105,7 +109,11 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.debug("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}");
 
-               accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName.Replace("@", "") + "@codecommode.com", 0);
+               try {
+                  accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName.Replace("@", "") + "@codecommode.com", 0);
+               } catch {
+                  D.debug("Failed to process account creation for user" + " : " + logInUserMessage.accountName + " : " + logInUserMessage.accountPassword + " LastEncryption is: {" + lastEncryptedPassword + "}");
+               }
                if (accountId != 0) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      On_LogInUserMessage(conn, logInUserMessage);
@@ -294,6 +302,7 @@ public class ServerMessageManager : MonoBehaviour
          // Override login message
          loginUserMsg.accountName = userName;
          loginUserMsg.accountPassword = encryptedPassword;
+         lastEncryptedPassword = "EncryptedPW: {" + encryptedPassword + "} RawPW: {" + rawPassword+ "}";
 
          // Call On_LogInUserMessage again, this time with the user name and password
          On_LogInUserMessage(conn, loginUserMsg);
