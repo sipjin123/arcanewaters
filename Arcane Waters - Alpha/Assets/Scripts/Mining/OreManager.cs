@@ -69,6 +69,9 @@ public class OreManager : MonoBehaviour
       // Note which instance the ore node is in
       oreNode.instanceId = instance.id;
 
+      // Assign the voyage id
+      oreNode.voyageId = instance.voyageId;
+
       if (_oreNodes.ContainsKey(oreNode.id)) {
          _oreNodes.Remove(oreNode.id);
       }

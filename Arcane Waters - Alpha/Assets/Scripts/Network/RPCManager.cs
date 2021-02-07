@@ -3628,18 +3628,12 @@ public class RPCManager : NetworkBehaviour {
       ((InventoryPanel) PanelManager.self.get(Panel.Type.Inventory)).refreshPanel();
    }
 
-   [ClientRpc]
-   public void Rpc_CollectOre (int oreId, int effectId) {
+   [TargetRpc]
+   public void Target_CollectOre (NetworkConnection connection, int oreId, int effectId) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       if (oreNode.orePickupCollection.Count > 0) {
          if (oreNode.orePickupCollection.ContainsKey(effectId)) {
-            Vector3 position = oreNode.orePickupCollection[effectId].transform.position;
             oreNode.tryToMineNodeOnClient();
-
-            // TODO: Create sprite effects for ore collect
-            EffectManager.self.create(Effect.Type.Crop_Harvest, position);
-            EffectManager.self.create(Effect.Type.Crop_Shine, position);
-            EffectManager.self.create(Effect.Type.Crop_Dirt_Large, position);
 
             Destroy(oreNode.orePickupCollection[effectId].gameObject);
             oreNode.orePickupCollection.Remove(effectId);
@@ -3650,31 +3644,28 @@ public class RPCManager : NetworkBehaviour {
    [Command]
    public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
-      if (!oreNode.finishedMining()) {
-         oreNode.interactCount++;
-         Rpc_MineOre(oreId, oreNode.interactCount);
+      Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
+   }
 
-         if (oreNode.finishedMining()) {
-            int randomCount = Random.Range(1, 3);
+   [TargetRpc]
+   public void Target_MineOre (NetworkConnection connection, int oreId, Vector2 startingPosition, Vector2 endPosition) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      oreNode.interactCount++;
+      oreNode.updateSprite(oreNode.interactCount);
+      ExplosionManager.createMiningParticle(oreNode.transform.position);
 
-            for (int i = 0; i < randomCount; i++) {
-               float randomSpeed = Random.Range(.8f, 1.2f);
-               float angleOffset = Random.Range(-25, 25);
-               Rpc_SpawnMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
-            }
+      if (oreNode.finishedMining()) {
+         int randomCount = Random.Range(1, 3);
+
+         for (int i = 0; i < randomCount; i++) {
+            float randomSpeed = Random.Range(.8f, 1.2f);
+            float angleOffset = Random.Range(-25, 25);
+            processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
          }
       }
    }
 
-   [ClientRpc]
-   public void Rpc_MineOre (int oreId, int interactCount) {
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
-      oreNode.updateSprite(interactCount);
-      ExplosionManager.createMiningParticle(oreNode.transform.position);
-   }
-
-   [ClientRpc]
-   public void Rpc_SpawnMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
+   public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
       // Create object
       OreNode oreNode = OreManager.self.getOreNode(oreId);
       GameObject oreBounce = Instantiate(PrefabsManager.self.oreDropPrefab, oreNode.transform);
@@ -3788,9 +3779,9 @@ public class RPCManager : NetworkBehaviour {
                   }
                }
             }
-
+            
             // Let them know they gained experience
-            Rpc_CollectOre(nodeId, oreEffectId);
+            Target_CollectOre(_player.connectionToClient, nodeId, oreEffectId);
          });
       });
    }
