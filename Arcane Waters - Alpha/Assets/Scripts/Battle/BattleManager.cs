@@ -81,6 +81,7 @@ public class BattleManager : MonoBehaviour {
       battle.biomeType = biomeType;
       battle.battleBoard = battleBoard;
       battle.transform.SetParent(this.transform);
+      battle.difficultyLevel = instance.difficulty;
       Util.setXY(battle.transform, battleBoard.transform.position);
 
       // Actually spawn the Battle as a Network object now
@@ -509,25 +510,28 @@ public class BattleManager : MonoBehaviour {
          source.addAP(sourceApChange);
 
          foreach (Battler target in targets) {
-            // For now, players have a 50% chance of blocking monsters
+            // For now, players have a 25% chance of blocking monsters
             if (target.canBlock() && attackAbilityData.canBeBlocked) {
-               wasBlocked = Random.Range(0f, 1f) > .50f;
+               float blockRandomizer = Random.Range(0.0f, 1.0f);
+               wasBlocked = blockRandomizer > .75f;
             }
 
-            // If the attack wasn't blocked, it can be a critical
+            // If the attack wasn't blocked, 25% chance to be a critical attack
             if (!wasBlocked) {
-               wasCritical = Random.Range(0f, 1f) > .50f;
+               wasCritical = Random.Range(0.0f, 1.0f) > .75f;
             }
-
-            // TODO: Temporary remove critical and block possibilities
-            wasCritical = false;
-            wasBlocked = false;
 
             // Adjust the damage amount based on element, ability, and the target's armor
             Element element = abilityData.elementType;
 
             float sourceDamageElement = source.getDamage(element);
             float damage = sourceDamageElement + attackAbilityData.baseDamage * attackAbilityData.getModifier;
+
+            if (source.enemyType != Enemy.Type.PlayerBattler && source.battlerType == BattlerType.AIEnemyControlled) {
+               // Setup damage multiplier based on difficulty, additional damage {Easy: Dmg+20% / Medium: Dmg+40% / Hard: Dmg+60%} 
+               float addedDamageForDifficulty = (damage * (battle.difficultyLevel * .2f));
+               damage += addedDamageForDifficulty;
+            }
 
             float targetDefenseElement = target.getDefense(element);
 

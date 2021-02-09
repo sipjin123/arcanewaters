@@ -19,6 +19,10 @@ public class Battle : NetworkBehaviour {
    [SyncVar]
    public int battleId;
 
+   // The difficulty level set for this battle
+   [SyncVar]
+   public int difficultyLevel;
+
    // The Biome Type this Battle is in
    [SyncVar]
    public Biome.Type biomeType;
