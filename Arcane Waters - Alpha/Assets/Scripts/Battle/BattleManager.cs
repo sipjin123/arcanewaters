@@ -89,9 +89,6 @@ public class BattleManager : MonoBehaviour {
       // Keep track of the Battles we create
       _battles[battle.battleId] = battle;
 
-      // Check how many players are in the Instance
-      int playersInInstance = instance.getPlayerCount();
-
       // Hashset for enemy types in the battle sequence
       HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
 
@@ -100,7 +97,7 @@ public class BattleManager : MonoBehaviour {
          if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
             enemy.enemyType = battlerInfo.enemyType;
             enemyTypes.Add(battlerInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
          }
       }
 
@@ -108,7 +105,7 @@ public class BattleManager : MonoBehaviour {
          if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
             enemy.enemyType = battlerInfo.enemyType;
             enemyTypes.Add(battlerInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp);
+            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
          }
       }
 
@@ -182,9 +179,9 @@ public class BattleManager : MonoBehaviour {
       rebuildObservers(battler, battle);
    }
    
-   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp) {
+   public void addEnemyToBattle (Battle battle, Enemy enemy, Battle.TeamType teamType, PlayerBodyEntity aggressor, int companionId, int battlerXp, int difficultyLevel) {
       // Create a Battler for this Enemy
-      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp);
+      Battler battler = createBattlerForEnemy(battle, enemy, teamType, companionId, battlerXp, difficultyLevel);
       self.storeBattler(battler);
 
       // Add the Battler to the Battle
@@ -345,7 +342,7 @@ public class BattleManager : MonoBehaviour {
       }
    }
 
-   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp) {
+   private Battler createBattlerForEnemy (Battle battle, Enemy enemy, Battle.TeamType teamType, int companionId, int battlerXp, int difficultyLevel) {
       Enemy.Type overrideType = enemy.enemyType;
       Battler enemyPrefab = prefabTypes.Find(_ => _.enemyType == Enemy.Type.Lizard).enemyPrefab;
 
@@ -359,7 +356,7 @@ public class BattleManager : MonoBehaviour {
       battler.XP = battlerXp;
 
       // Set starting stats
-      battler.health = battler.getStartingHealth(overrideType);
+      battler.health = battler.getStartingHealth(overrideType) * difficultyLevel;
 
       // Set up our initial data and position
       battler.playerNetId = enemy.netId;
