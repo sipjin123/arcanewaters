@@ -4382,7 +4382,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
-      if (!canPlayerStayInVoyage()) {
+      if (VoyageManager.self.isVoyageArea(_player.areaKey) && VoyageManager.isTreasureSiteArea(_player.areaKey) && !canPlayerStayInVoyage()) {
          D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town");
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
