@@ -93,9 +93,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Sprinting animator parameter name
    public const string IS_SPRINTING = "isSprinting";
 
-   // If the user can engage in combat
-   public bool canEngageInCombat = false;
-
    // If players can one shot land enemies on combat
    public bool oneShotEnemies = false;
 
@@ -317,13 +314,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if (!isLocalPlayer) {
          _jumpStartTime = NetworkTime.time;
          playJumpAnimation();
-      }
-   }
-
-   [TargetRpc]
-   public void Target_AllowPlayerCombat () {
-      if (isLocalPlayer) {
-         canEngageInCombat = true;
       }
    }
 

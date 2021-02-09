@@ -3531,10 +3531,17 @@ public class RPCManager : NetworkBehaviour {
 
       // Verify the voyage consistency only if the user is in a voyage group or voyage area
       if (!VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
-         grantPlayerCombat();
          return;
       }
 
+      // If the player does not meet the voyage requirements, warp the player back to town
+      if (!canPlayerStayInVoyage()) { 
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+      }
+   }
+
+   [ServerOnly]
+   private bool canPlayerStayInVoyage() {
       // Retrieve the group info
       VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
 
@@ -3545,11 +3552,8 @@ public class RPCManager : NetworkBehaviour {
          // If player cant bypass restirctions, return them to town due to insufficient conditions being met
          if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
             D.debug("Returning player to town: Voyage Group does not Exist!");
-            _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-         } else {
-            grantPlayerCombat();
+            return false;
          }
-         return;
       }
 
       // If the voyage is not defined or doesn't exists, or the group is not linked to this instance, redirect to the starting town
@@ -3566,23 +3570,11 @@ public class RPCManager : NetworkBehaviour {
 
          // If player cant bypass restirctions, return them to town due to insufficient conditions being met
          if (!EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
-            _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-         } else {
-            grantPlayerCombat();
+            return false;
          }
-         return;
       }
 
-      grantPlayerCombat();
-   }
-
-   public void grantPlayerCombat () {
-      // Allow the player to engage in combat if conditions are valid
-      PlayerBodyEntity playerBodyEntity = _player.GetComponent<PlayerBodyEntity>();
-      if (playerBodyEntity != null) {
-         D.editorLog("Granting Player Combat Capability", Color.green);
-         playerBodyEntity.Target_AllowPlayerCombat();
-      }
+      return true;
    }
 
    [TargetRpc]
@@ -4382,6 +4374,12 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
+      if (!canPlayerStayInVoyage()) {
+         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town");
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         return;
+      }
+
       // We need a Player Body object to proceed
       if (!(_player is PlayerBodyEntity)) {
          D.warning("Player object is not a Player Body, so can't start a Battle: " + _player);

@@ -825,11 +825,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                DB_Main.setNewLocalPosition(userId, pos, Direction.North, Area.STARTING_TOWN);
             });
          }
-      } else {
-         if (player is PlayerBodyEntity) {
-            ((PlayerBodyEntity) player).Target_AllowPlayerCombat();
-         }
-      }
+      } 
    }
 
    public void playJumpSound () {
