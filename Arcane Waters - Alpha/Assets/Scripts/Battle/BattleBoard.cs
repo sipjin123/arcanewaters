@@ -42,6 +42,9 @@ public class BattleBoard : MonoBehaviour {
    // The object reference for the particle based weather system
    public GameObject rainObjectHolder, snowObjectHolder;
 
+   // The z axis position where the player battler should snap in order to render between key battle positions
+   public static float PLAYER_BATTLE_Z_POS = -.12f;
+
    #endregion
 
    public void Start () {
@@ -113,10 +116,13 @@ public class BattleBoard : MonoBehaviour {
    public void recalibrateBattleSpots (List<GameObject> defenderSpots, List<GameObject> attackerSpots, int newXmlId) {
       xmlID = newXmlId;
       int boardIndex = 0;
+
       foreach (GameObject attackerSpot in attackerSpots) {
-         if (attackersSpotHolder.childCount < boardIndex) {
+         // If the attacker battle spot objects are equal or less than the spots assigned in the battle xml, proceed with the position recalibration
+         if (attackersSpotHolder.childCount <= attackerSpots.Count) {
             Transform attackSpot = attackersSpotHolder.GetChild(boardIndex);
             attackSpot.transform.position = attackerSpot.transform.position;
+            attackSpot.transform.localPosition = new Vector3(attackSpot.transform.localPosition.x, attackSpot.transform.localPosition.y, PLAYER_BATTLE_Z_POS);
          } else {
             break;
          }
@@ -125,9 +131,11 @@ public class BattleBoard : MonoBehaviour {
 
       boardIndex = 0;
       foreach (GameObject defendersSpot in defenderSpots) {
-         if (defendersSpotHolder.childCount < boardIndex) {
+         // If the defender battle spot objects are equal or less than the spots assigned in the battle xml, proceed with the position recalibration
+         if (defendersSpotHolder.childCount <= defenderSpots.Count) {
             Transform defenderSpot = defendersSpotHolder.GetChild(boardIndex);
             defenderSpot.transform.position = defendersSpot.transform.position;
+            defenderSpot.transform.localPosition = new Vector3(defenderSpot.transform.localPosition.x, defenderSpot.transform.localPosition.y, PLAYER_BATTLE_Z_POS);
          } else {
             break;
          }

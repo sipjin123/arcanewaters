@@ -1708,6 +1708,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             transform.SetParent(battle.transform);
             transform.position = battleSpot.transform.position;
          }
+      } else {
+         transform.SetParent(battle.transform);
+         transform.position = battleSpot.transform.position;
       }
 
       yield return new WaitUntil(() => basicAbilityIDList.Count > 0);
