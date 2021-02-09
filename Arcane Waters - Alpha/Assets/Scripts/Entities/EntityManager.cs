@@ -61,6 +61,7 @@ public class EntityManager : MonoBehaviour
 
    public void addBypassForUser (int userId) {
       if (!_warpBypassingUsers.Contains(userId)) {
+         D.debug("User{" + userId + "} can warp anywhere without restriction for 1 instance");
          _warpBypassingUsers.Add(userId);
       }
    }

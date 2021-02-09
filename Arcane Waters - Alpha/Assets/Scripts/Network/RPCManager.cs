@@ -3542,6 +3542,14 @@ public class RPCManager : NetworkBehaviour {
 
    [ServerOnly]
    private bool canPlayerStayInVoyage() {
+      // TODO: Setup a better solution for allowing users to bypass warping back to town
+      // If player cant bypass restirctions, return them to town due to insufficient conditions being met
+      if (EntityManager.self.canUserBypassWarpRestrictions(_player.userId)) {
+         // Make sure the bypass warp can only be used once, admin command warp_anywhere must be triggered again for the bypass to be repeated
+         EntityManager.self.removeBypassForUser(_player.userId);
+         return true;
+      }
+
       // Retrieve the group info
       VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(_player.voyageGroupId);
 
