@@ -136,10 +136,10 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       } else {
          treasureSiteCountText.text = (instance.treasureSiteCount - instance.capturedTreasureSiteCount).ToString() + "/" + instance.treasureSiteCount;
       }
-      aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.seaMonsterCount + instance.enemyCount).ToString();
+      aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.getTotalNPCEnemyCount()).ToString();
 
       // Set the plaque labels outline color
-      switch (instance.difficulty) {
+      switch (Voyage.getDifficultyEnum(instance.difficulty)) {
          case Voyage.Difficulty.Easy:
             foreach (Outline outline in outlines) {
                outline.effectColor = bronzeOutlineColor;

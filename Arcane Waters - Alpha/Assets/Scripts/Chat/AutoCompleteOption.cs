@@ -43,6 +43,9 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
    // A reference to the layout element for our tooltip
    public LayoutElement tooltipLayout;
 
+   // An auto-completed parameter for this auto-complete option to display
+   public string autocompleteParameter = "";
+
    #endregion
 
    private void Awake () {
@@ -99,20 +102,16 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
       string commandColorString = "#" + ColorUtility.ToHtmlStringRGBA(commandColor);
       string parameterColorString = "#" + ColorUtility.ToHtmlStringRGBA(parameterColor);
 
-      autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix(), parameterColorString, _commandData.getParameters());
-   }
-
-   private void setText (string newText) {
-      autoCompleteText.text = newText;
+      autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix() + " " + autocompleteParameter, parameterColorString, _commandData.getParameters());
    }
 
    public string getText () {
-      return _commandData.getPrefix();
+      return _commandData.getPrefix() + " " + autocompleteParameter;
    }
 
    public void OnPointerEnter (UnityEngine.EventSystems.PointerEventData eventData) {
       // Don't trigger PointerEnter events if the mouse hasn't moved, to avoid triggering on objects enabled under the mouse
-      if (Util.getMousePos() == ChatManager.self.autoCompletePanel.lastMousePos) {
+      if (Input.mousePosition == ChatManager.self.autoCompletePanel.lastMousePos) {
          return;
       }
 

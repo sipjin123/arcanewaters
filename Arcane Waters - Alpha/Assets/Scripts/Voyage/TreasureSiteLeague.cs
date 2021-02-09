@@ -15,15 +15,11 @@ public class TreasureSiteLeague : TreasureSite
 
    #endregion
 
-   public override void Start() {
-      base.Start();
-
-      if (!Voyage.isLastLeagueMap(leagueIndex)) {
+   public override void Update () {
+      if (!isActive() && _spriteRenderer.enabled) {
          _spriteRenderer.enabled = false;
       }
-   }
 
-   public override void Update () {
       if (isServer && isActive()) {
          Instance instance = InstanceManager.self.getInstance(instanceId);
 

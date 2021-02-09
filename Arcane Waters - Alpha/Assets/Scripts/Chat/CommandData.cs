@@ -10,19 +10,21 @@ public class CommandData {
 
    #endregion
 
-   public CommandData (string commandString, string description, System.Action<string> command, CommandType requiredPrefix = CommandType.None, List<string> parameterNames = null) {
+   public CommandData (string commandString, string description, System.Action<string> command, CommandType requiredPrefix = CommandType.None, List<string> parameterNames = null, List<string> parameterAutocompletes = null) {
       _commandString = commandString;
       _description = description;
       _requiredPrefix = requiredPrefix;
       _parameterNames = parameterNames;
+      _parameterAutoCompletes = parameterAutocompletes;
       _stringCommand += command;
    }
 
-   public CommandData (string commandString, string description, System.Action command, CommandType requiredPrefix = CommandType.None, List<string> parameterNames = null) {
+   public CommandData (string commandString, string description, System.Action command, CommandType requiredPrefix = CommandType.None, List<string> parameterNames = null, List<string> parameterAutocompletes = null) {
       _commandString = commandString;
       _description = description;
       _requiredPrefix = requiredPrefix;
       _parameterNames = parameterNames;
+      _parameterAutoCompletes = parameterAutocompletes;
       _command += command;
    }
 
@@ -65,7 +67,7 @@ public class CommandData {
 
          bool matchesPrefix = false;
          foreach (string prefix in ChatUtil.commandTypePrefixes[_requiredPrefix]) {
-            if (inputParts[0] == prefix) {
+            if (inputParts[0].ToUpper() == prefix.ToUpper()) {
                matchesPrefix = true;
             }
          }
@@ -79,17 +81,21 @@ public class CommandData {
 
       // If the strings must be equal
       if (mustEqual) {
-         if (!_commandString.Equals(inputParts[inputIndex])) {
+         if (!_commandString.ToLower().Equals(inputParts[inputIndex].ToLower())) {
             return false;
          }
       // If it just needs to start with the string
       } else {
-         if (!_commandString.StartsWith(inputParts[inputIndex])) {
+         if (!_commandString.ToLower().StartsWith(inputParts[inputIndex].ToLower())) {
             return false;
          }      
       }
 
       return true;
+   }
+
+   public bool containsWholePrefix (string input) {
+      return (input.ToLower().Contains(getPrefix().ToLower()));
    }
 
    public string getParameters () {
@@ -104,6 +110,30 @@ public class CommandData {
       }
 
       return parameters.ToString();
+   }
+
+   public List<string> getParameterAutoCompletes () {
+      if (_parameterAutoCompletes == null) {
+         return new List<string>();
+      }
+
+      return _parameterAutoCompletes;
+   }
+
+   public List<string> getParameterAutoCompletes (string input) {
+      List<string> autoCompletes = new List<string>();
+
+      if (_parameterAutoCompletes == null) {
+         return autoCompletes;
+      }
+
+      foreach (string autoComplete in _parameterAutoCompletes) {
+         if (autoComplete.ToLower().StartsWith(input.ToLower())) {
+            autoCompletes.Add(autoComplete);
+         }
+      }
+
+      return autoCompletes;
    }
 
    public string getCommandInfo () {
@@ -155,6 +185,9 @@ public class CommandData {
 
    // The names of all parameters for this command
    protected List<string> _parameterNames;
+
+   // Autocompletes to display for the parameters of this command
+   protected List<string> _parameterAutoCompletes = new List<string>();
 
    #endregion
 }

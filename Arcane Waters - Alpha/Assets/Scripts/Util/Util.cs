@@ -1051,6 +1051,16 @@ public class Util : MonoBehaviour {
       return gameVersion;
    }
 
+   public static string getFormattedGameVersion () {
+      StringBuilder formattedVersion = new StringBuilder();
+      formattedVersion.Append(getGameVersion());
+      formattedVersion.Insert(9, '.');
+      formattedVersion.Insert(6, '.');
+      formattedVersion.Insert(3, '.');
+      formattedVersion.Insert(0, 'v');
+      return formattedVersion.ToString();
+   }
+
    public static int getDeploymentId () {
       int deploymentId = 0;
       TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
@@ -1061,6 +1071,32 @@ public class Util : MonoBehaviour {
       }
 
       return deploymentId;
+   }
+
+   public static string getJenkinsBuildId () {
+      // Declare local variables
+      string jenkinsBuildId = null;
+      string buildName;
+      int index = -1;
+
+      // Get data from config file
+      TextAsset jenkinsBuildConfigAsset = Resources.Load<TextAsset>("config");
+      Dictionary<string, object> jenkinsBuildConfig = MiniJSON.Json.Deserialize(jenkinsBuildConfigAsset.text) as Dictionary<string, object>;
+      buildName = jenkinsBuildConfig["name"].ToString();
+
+      if (jenkinsBuildConfig != null && jenkinsBuildConfig.ContainsKey("name")) {
+         // Remove leading text until the first hyphen is encountered (i.e. "ArcaneWaters-")
+         if (buildName.Contains("-")) {
+            index = buildName.IndexOf("-");
+         }
+      }
+
+      if (jenkinsBuildConfig.ContainsKey("buildId")) {
+         jenkinsBuildId = buildName.Substring(index + 1) + "-" + jenkinsBuildConfig["buildId"].ToString();
+      } else {
+         jenkinsBuildId = buildName.Substring(index + 1);
+      }
+      return jenkinsBuildId;
    }
 
    public static bool isSameIpAddress (string addressA, string addressB) {

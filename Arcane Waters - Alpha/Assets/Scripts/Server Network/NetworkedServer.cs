@@ -76,7 +76,8 @@ public class NetworkedServer : NetworkedBehaviour
       foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
          allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
          Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
-            instance.isLeague, instance.leagueIndex, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, groupCount);
+            instance.isLeague, instance.leagueIndex, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
+            instance.getTotalNPCEnemyCount(), groupCount);
          voyages.Add(voyage);
       }
    }
@@ -242,7 +243,7 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, Voyage.Difficulty difficulty) {
+   public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
       if (targetServer != null) {
          targetServer.InvokeClientRpcOnOwner(Server_ReceiveVoyageInstanceCreation, voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
@@ -250,12 +251,12 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ClientRPC]
-   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, Voyage.Difficulty difficulty) {
+   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
       VoyageManager.self.createVoyageInstance(voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
    }
 
    [ServerRPC]
-   public void MasterServer_RequestVoyageInstanceCreation (string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, Voyage.Difficulty difficulty) {
+   public void MasterServer_RequestVoyageInstanceCreation (string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
       VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
    }
 

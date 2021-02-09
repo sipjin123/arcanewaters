@@ -3239,7 +3239,7 @@ public class RPCManager : NetworkBehaviour {
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
 
             // Registers the crafting action to the achievement database
-            AchievementManager.registerUserAchievement(_player, ActionType.Craft);
+            // AchievementManager.registerUserAchievement(_player, ActionType.Craft);
 
             // Let them know they gained experience
             _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Crafter, 0, true);
@@ -3953,8 +3953,12 @@ public class RPCManager : NetworkBehaviour {
       bot.instanceId = _player.instanceId;
       bot.facing = Util.randomEnum<Direction>();
       bot.areaKey = _player.areaKey;
-      Array shipTypes = Enum.GetValues(typeof(Ship.Type));
-      bot.shipType = (Ship.Type) shipTypes.GetValue(Random.Range(0, shipTypes.Length));
+
+      // Choose ship type at random
+      List<Ship.Type> shipTypes = Enum.GetValues(typeof(Ship.Type)).Cast<Ship.Type>().ToList();
+      shipTypes.Remove(Ship.Type.None);
+      bot.shipType = shipTypes[Random.Range(0, shipTypes.Count)];
+
       bot.speed = Ship.getBaseSpeed(bot.shipType);
       bot.attackRangeModifier = Ship.getBaseAttackRange(bot.shipType);
 

@@ -165,6 +165,8 @@ public class Minimap : ClientMonoBehaviour {
       // Dynamically generate minimap for base map player entered
       if (instance.biome != Biome.Type.None) {
          TilemapToTextureColorsStatic(area, instance.biome, false);
+      } else if (AreaManager.self.isFarmOfUser(Global.player.areaKey, Global.player.userId)) {
+         TilemapToTextureColorsStatic(area, Biome.Type.Forest, false);
       } else {
          // Change the background image
          backgroundImage.sprite = ImageManager.getSprite("Minimaps/" + area.areaKey);
@@ -719,52 +721,83 @@ public class Minimap : ClientMonoBehaviour {
                      int layerOriginDiffX = tilemap.origin.x - layerOriginX;
                      int layerOriginDiffY = tilemap.origin.y - layerOriginY;
 
-                     // Cycle over all the Tile positions in this Tilemap layer
-                     for (int y = 0; y <= layerSizeY; y++) {
-                        for (int x = 0; x <= layerSizeX; x++) {
-                           // Check which Tile is at the cell position
-                           Vector3Int cellPos = new Vector3Int(x + tilemap.origin.x, layerSizeY - y + tilemap.origin.y, 0);
-                           int mapPixelToSetX = x + layerOriginDiffX;
-                           int mapPixelToSetY = layerSizeY - y + layerOriginDiffY;
+                     if (!layer.useHorizontalAlternatingColor && !layer.useVerticalAlternatingColor) {
+                        // Cycle over all the Tile positions in this Tilemap layer
+                        for (int y = 0; y <= layerSizeY; y++) {
+                           for (int x = 0; x <= layerSizeX; x++) {
+                              // Check which Tile is at the cell position
+                              Vector3Int cellPos = new Vector3Int(x + tilemap.origin.x, layerSizeY - y + tilemap.origin.y, 0);
+                              int mapPixelToSetX = x + layerOriginDiffX;
+                              int mapPixelToSetY = layerSizeY - y + layerOriginDiffY;
 
-                           var tileSprite = tilemap.GetSprite(cellPos);
+                              var tileSprite = tilemap.GetSprite(cellPos);
 
-                           if (tileSprite) {
-                              //checks if are using a sprite to compare
-                              if (!layer.isSubLayer) {
-                                 //set base color
-                                 map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+                              if (tileSprite) {
+                                 //checks if are using a sprite to compare
+                                 if (!layer.isSubLayer) {
+                                    //set base color
+                                    map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
 
-                                 //set random color
-                                 if (layer.useRandomColor) {
-                                    if (Random.Range(0, 2) == 0) {
-                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
-                                    } else {
-                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.randomColor);
+                                    //set random color
+                                    if (layer.useRandomColor) {
+                                       if (Random.Range(0, 2) == 0) {
+                                          map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+                                       } else {
+                                          map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.randomColor);
+                                       }
                                     }
-                                 }
 
-                                 //set alternating color
-                                 if (layer.useVerticalAlternatingColor) {
-                                    if (flipflop) {
-                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
-                                       flipflop = false;
-                                    } else {
-                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
-                                       flipflop = true;
+                                    //set alternating color
+                                    if (layer.useAlternatingColor) {
+                                       if (flipflop) {
+                                          map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+                                          flipflop = false;
+                                       } else {
+                                          map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.alternatingColor);
+                                          flipflop = true;
+                                       }
                                     }
-                                 }
-                              } else {
-                                 //sublayer with name and sprite to compare
-                                 if (layer.subLayerSpriteSuffixNames.Length > 0 && layer.sprites.Length > 0) {
-                                    foreach (var subLayerSpriteSuffixName in layer.subLayerSpriteSuffixNames) {
-                                       foreach (var sprites in layer.sprites) {
-                                          if (tileSprite == sprites) {
-                                             if (subLayerSpriteSuffixName != "") {
-                                                if (!tileSprite.name.EndsWith(subLayerSpriteSuffixName)) {
-                                                   continue;
+                                 } else {
+                                    //sublayer with name and sprite to compare
+                                    if (layer.subLayerSpriteSuffixNames.Length > 0 && layer.sprites.Length > 0) {
+                                       foreach (var subLayerSpriteSuffixName in layer.subLayerSpriteSuffixNames) {
+                                          foreach (var sprites in layer.sprites) {
+                                             if (tileSprite == sprites) {
+                                                if (subLayerSpriteSuffixName != "") {
+                                                   if (!tileSprite.name.EndsWith(subLayerSpriteSuffixName)) {
+                                                      continue;
+                                                   }
+                                                }
+                                                //set base color
+                                                map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+
+                                                //set random color
+                                                if (layer.useRandomColor) {
+                                                   if (Random.Range(0, 2) == 0) {
+                                                      map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+                                                   } else {
+                                                      map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.randomColor);
+                                                   }
+                                                }
+
+                                                //set alternating color
+                                                if (layer.useVerticalAlternatingColor) {
+                                                   if (flipflop) {
+                                                      map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
+                                                      flipflop = false;
+                                                   } else {
+                                                      map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
+                                                      flipflop = true;
+                                                   }
                                                 }
                                              }
+                                          }
+                                       }
+                                    }
+                                    //sublayer with sprite to compare
+                                    else if (layer.sprites.Length > 0) {
+                                       foreach (var sprites in layer.sprites) {
+                                          if (tileSprite == sprites) {
                                              //set base color
                                              map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
 
@@ -790,11 +823,14 @@ public class Minimap : ClientMonoBehaviour {
                                           }
                                        }
                                     }
-                                 }
-                                 //sublayer with sprite to compare
-                                 else if (layer.sprites.Length > 0) {
-                                    foreach (var sprites in layer.sprites) {
-                                       if (tileSprite == sprites) {
+                                    //sublayer with name to compare
+                                    else if (layer.subLayerSpriteSuffixNames.Length > 0) {
+                                       foreach (var subLayerSpriteSuffixName in layer.subLayerSpriteSuffixNames) {
+                                          if (subLayerSpriteSuffixName != "") {
+                                             if (!tileSprite.name.EndsWith(subLayerSpriteSuffixName)) {
+                                                continue;
+                                             }
+                                          }
                                           //set base color
                                           map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
 
@@ -819,40 +855,8 @@ public class Minimap : ClientMonoBehaviour {
                                           }
                                        }
                                     }
+
                                  }
-                                 //sublayer with name to compare
-                                 else if (layer.subLayerSpriteSuffixNames.Length > 0) {
-                                    foreach (var subLayerSpriteSuffixName in layer.subLayerSpriteSuffixNames) {
-                                       if (subLayerSpriteSuffixName != "") {
-                                          if (!tileSprite.name.EndsWith(subLayerSpriteSuffixName)) {
-                                             continue;
-                                          }
-                                       }
-                                       //set base color
-                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
-
-                                       //set random color
-                                       if (layer.useRandomColor) {
-                                          if (Random.Range(0, 2) == 0) {
-                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
-                                          } else {
-                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.randomColor);
-                                          }
-                                       }
-
-                                       //set alternating color
-                                       if (layer.useVerticalAlternatingColor) {
-                                          if (flipflop) {
-                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
-                                             flipflop = false;
-                                          } else {
-                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
-                                             flipflop = true;
-                                          }
-                                       }
-                                    }
-                                 }
-
                               }
                            }
                         }
@@ -864,7 +868,9 @@ public class Minimap : ClientMonoBehaviour {
                            flipflop = true;
                            for (int y = 0; y <= layerSizeY; y++) {
                               // Check which Tile is at the cell position
-                              Vector3Int cellPos = new Vector3Int(x, -y, 0);
+                              Vector3Int cellPos = new Vector3Int(x + tilemap.origin.x, layerSizeY - y + tilemap.origin.y, 0);
+                              int mapPixelToSetX = x + layerOriginDiffX;
+                              int mapPixelToSetY = layerSizeY - y + layerOriginDiffY;
 
                               var tileSprite = tilemap.GetSprite(cellPos);
 
@@ -872,10 +878,10 @@ public class Minimap : ClientMonoBehaviour {
                                  //checks if are using a sprite to compare
                                  if (!layer.isSubLayer) {
                                     if (flipflop) {
-                                       map.SetPixel(x, layerSizeY - y, layer.color);
+                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                        flipflop = false;
                                     } else {
-                                       map.SetPixel(x, layerSizeY - y, layer.horizontalAlternatingColor);
+                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.horizontalAlternatingColor);
                                        flipflop = true;
                                     }
 
@@ -892,10 +898,10 @@ public class Minimap : ClientMonoBehaviour {
                                                 }
 
                                                 if (flipflop) {
-                                                   map.SetPixel(x, layerSizeY - y, layer.color);
+                                                   map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                                    flipflop = false;
                                                 } else {
-                                                   map.SetPixel(x, layerSizeY - y, layer.horizontalAlternatingColor);
+                                                   map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.horizontalAlternatingColor);
                                                    flipflop = true;
                                                 }
                                              }
@@ -908,10 +914,10 @@ public class Minimap : ClientMonoBehaviour {
                                           if (tileSprite == sprites) {
 
                                              if (flipflop) {
-                                                map.SetPixel(x, layerSizeY - y, layer.color);
+                                                map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                                 flipflop = false;
                                              } else {
-                                                map.SetPixel(x, layerSizeY - y, layer.horizontalAlternatingColor);
+                                                map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.horizontalAlternatingColor);
                                                 flipflop = true;
                                              }
                                           }
@@ -927,10 +933,10 @@ public class Minimap : ClientMonoBehaviour {
                                           }
 
                                           if (flipflop) {
-                                             map.SetPixel(x, layerSizeY - y, layer.color);
+                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                              flipflop = false;
                                           } else {
-                                             map.SetPixel(x, layerSizeY - y, layer.horizontalAlternatingColor);
+                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.horizontalAlternatingColor);
                                              flipflop = true;
                                           }
                                        }
@@ -942,24 +948,26 @@ public class Minimap : ClientMonoBehaviour {
                         }
                      }
 
-                     if (layer.useAlternatingColor) {
+                     else if (layer.useVerticalAlternatingColor) {
                         // Cycle over all the Tile positions in this Tilemap layer
-                        for (int x = 0; x <= layerSizeX; x++) {
-                           for (int y = 0; y <= layerSizeY; y++) {
+                        for (int y = 0; y <= layerSizeY; y++) {
+                           flipflop = true;
+                           for (int x = 0; x <= layerSizeX; x++) {
                               // Check which Tile is at the cell position
-                              Vector3Int cellPos = new Vector3Int(x, -y, 0);
+                              Vector3Int cellPos = new Vector3Int(x + tilemap.origin.x, layerSizeY - y + tilemap.origin.y, 0);
+                              int mapPixelToSetX = x + layerOriginDiffX;
+                              int mapPixelToSetY = layerSizeY - y + layerOriginDiffY;
 
                               var tileSprite = tilemap.GetSprite(cellPos);
 
                               if (tileSprite) {
                                  //checks if are using a sprite to compare
                                  if (!layer.isSubLayer) {
-
                                     if (flipflop) {
-                                       map.SetPixel(x, layerSizeY - y, layer.color);
+                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                        flipflop = false;
                                     } else {
-                                       map.SetPixel(x, layerSizeY - y, layer.alternatingColor);
+                                       map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
                                        flipflop = true;
                                     }
 
@@ -976,10 +984,10 @@ public class Minimap : ClientMonoBehaviour {
                                                 }
 
                                                 if (flipflop) {
-                                                   map.SetPixel(x, layerSizeY - y, layer.color);
+                                                   map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                                    flipflop = false;
                                                 } else {
-                                                   map.SetPixel(x, layerSizeY - y, layer.alternatingColor);
+                                                   map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
                                                    flipflop = true;
                                                 }
                                              }
@@ -992,10 +1000,10 @@ public class Minimap : ClientMonoBehaviour {
                                        foreach (var sprites in layer.sprites) {
                                           if (tileSprite == sprites) {
                                              if (flipflop) {
-                                                map.SetPixel(x, layerSizeY - y, layer.color);
+                                                map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                                 flipflop = false;
                                              } else {
-                                                map.SetPixel(x, layerSizeY - y, layer.alternatingColor);
+                                                map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
                                                 flipflop = true;
                                              }
                                           }
@@ -1012,10 +1020,10 @@ public class Minimap : ClientMonoBehaviour {
                                           }
 
                                           if (flipflop) {
-                                             map.SetPixel(x, layerSizeY - y, layer.color);
+                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.color);
                                              flipflop = false;
                                           } else {
-                                             map.SetPixel(x, layerSizeY - y, layer.alternatingColor);
+                                             map.SetPixel(mapPixelToSetX, mapPixelToSetY, layer.verticalAlternatingColor);
                                              flipflop = true;
                                           }
                                        }

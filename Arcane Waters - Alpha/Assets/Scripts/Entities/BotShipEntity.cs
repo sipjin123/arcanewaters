@@ -62,19 +62,32 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             D.debug("There has to be a Seeker Script attached to the BotShipEntity Prefab");
          }
 
+         Area area = AreaManager.self.getArea(areaKey);
+
          // Only use the graph in this area to calculate paths
-         GridGraph graph = AreaManager.self.getArea(areaKey).getGraph();
+         GridGraph graph = area.getGraph();
          _seeker.graphMask = GraphMask.FromGraph(graph);
 
          _seeker.pathCallback = setPath_Asynchronous;
 
-         _treasureSitesInArea = new List<TreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<TreasureSite>());
-
-         if (_treasureSitesInArea.Count > 0) {
-            _currentSite = _treasureSitesInArea[Random.Range(0, _treasureSitesInArea.Count)];
-         }
-
          _originalPosition = transform.position;
+
+         List<WarpTreasureSite> treasureSites = new List<WarpTreasureSite>(AreaManager.self.getArea(areaKey).GetComponentsInChildren<WarpTreasureSite>());
+
+         Spawn[] playerSpawns = area.GetComponentsInChildren<Spawn>();
+         foreach (Spawn spawn in playerSpawns) {
+            bool add = true;
+            foreach (WarpTreasureSite treasureSite in treasureSites) {
+               if (Vector2.Distance(spawn.transform.position, treasureSite.transform.position) < 1.0f) {
+                  add = false;
+               }
+            }
+            if (add) {
+               _playerSpawnPoints.Add(spawn.transform.position);
+            }
+         }
+         _minDistanceToSpawn = area.getAreaSizeWorld().x * MIN_DISTANCE_TO_SPAWN_PERCENT;
+         _minDistanceToSpawnPath = area.getAreaSizeWorld().x * MIN_DISTANCE_TO_SPAWN_PATH_PERCENT;
 
          InvokeRepeating(nameof(checkEnemiesToAggro), 0.0f, 0.5f);
          StartCoroutine(CO_attackEnemiesInRange(0.25f));
@@ -132,11 +145,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       } else {
          // Use treasure site only in maps with more than two treasure sites
          System.Func<bool, Vector3> findingFunction = findRandomVicinityPosition;
-
-         /*
-         if (_treasureSitesInArea != null && _treasureSitesInArea.Count > 1) {
-            findingFunction = findTreasureSiteVicinityPosition;
-         }*/
 
          if (_isChasingEnemy) {
             _currentSecondsBetweenPatrolRoutes = 0.0f;
@@ -226,6 +234,19 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
             _lastMoveChangeTime = NetworkTime.time;
          }
 
+         // If ship got too close to spawn point - change path
+         if (!_isChasingEnemy && !_disableSpawnDistanceTmp) {
+            foreach (Vector3 spawn in _playerSpawnPoints) {
+               float dist = Vector2.Distance(spawn, _currentPath[_currentPathIndex]);
+               if (dist < _minDistanceToSpawn) {
+                  _currentPathIndex = int.MaxValue - 1;
+                  _disableSpawnDistanceTmp = true;
+                  _lastSpawnPosition = spawn;
+                  return;
+               }
+            }
+         }
+
          // Advance along the path as the unit comes close enough to the current waypoint
          float distanceToWaypoint = Vector2.Distance(_currentPath[_currentPathIndex], transform.position);
          if (distanceToWaypoint < .1f) {
@@ -240,6 +261,28 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
       // If ship is near original position - try to find new distant location to move to
       if (Vector2.Distance(start, _originalPosition) < 1.0f) {
+         const int MAX_RETRIES = 50;
+         int retries = 0;
+         bool retry = true;
+
+         Vector3 dir = start - _lastSpawnPosition;
+         dir.Normalize();
+         while (retry && retries < MAX_RETRIES) {
+            retry = false;
+            Vector3 end = _disableSpawnDistanceTmp ? findPositionAroundPosition(start + dir * newWaypointsRadius, newWaypointsRadius) : findPositionAroundPosition(start, newWaypointsRadius);
+            foreach (Vector3 spawn in _playerSpawnPoints) {
+               if (Vector2.Distance(spawn, end) < _minDistanceToSpawnPath) {
+                  retry = true;
+                  retries++;
+                  break;
+               }
+            }
+
+            if (!retry) {
+               return end;
+            }
+         }
+
          return findPositionAroundPosition(start, newWaypointsRadius);
       }
 
@@ -247,23 +290,8 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
    }
 
-   [Server]
-   private Vector3 findTreasureSiteVicinityPosition (bool newSite) {
-      // If we should choose a new site, and we have a selection available, pick a unique one randomly, favoring a new target if possible
-      if (newSite && _treasureSitesInArea != null && _treasureSitesInArea.Count > 0) {
-         int foundSiteIndex = Random.Range(0, _treasureSitesInArea.Count);
-         TreasureSite foundSite = _treasureSitesInArea[foundSiteIndex];
-         if (foundSite == _currentSite) {
-            foundSite = _treasureSitesInArea[++foundSiteIndex % _treasureSitesInArea.Count];
-         }
-         _currentSite = foundSite;
-      }
-
-      if (_currentSite != null) {
-         return findPositionAroundPosition(_currentSite.transform.position, patrolingWaypointsRadius);
-      } else {
-         return findPositionAroundPosition(_originalPosition, patrolingWaypointsRadius);
-      }
+   private void enableSpawnDistance () {
+      _disableSpawnDistanceTmp = false;
    }
 
    [Server]
@@ -315,6 +343,10 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          _seeker.CancelCurrentPathRequest();
       }
       _seeker.StartPath(transform.position, targetPosition);
+
+      if (_disableSpawnDistanceTmp) {
+         Invoke("enableSpawnDistance", 3.5f);
+      }
    }
 
    [Server]
@@ -422,7 +454,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       }
    }
 
-   public void setShipData (int enemyXmlData, Ship.Type shipType) {
+   public void setShipData (int enemyXmlData, Ship.Type shipType, int instanceDifficulty) {
       ShipData shipData = ShipDataManager.self.getShipData(shipType);
       if (shipData != null && (int) shipType != -1) {
          if (shipData.spritePath != "") {
@@ -437,7 +469,7 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          D.debug("Failed to get sea monster data");
       }
 
-      initializeAsSeaEnemy(seaEnemyData, shipData);
+      initializeAsSeaEnemy(seaEnemyData, shipData, instanceDifficulty);
 
       // Assign ripple sprites
       _ripplesStillSprites = ImageManager.getTexture(Ship.getRipplesPath(shipType));
@@ -526,12 +558,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
    // Are we currently chasing an enemy
    private bool _isChasingEnemy;
 
-   // The TreasureSite Objects that are present in the area
-   private List<TreasureSite> _treasureSitesInArea;
-
-   // The current targeted TreasureSite
-   private TreasureSite _currentSite;
-
    // The current path to the destination
    private List<Vector3> _currentPath;
 
@@ -546,6 +572,23 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
 
    // The current Point Index of the path
    private int _currentPathIndex;
+
+   // Spawn points placed in the area that bot ships should avoid
+   private List<Vector3> _playerSpawnPoints = new List<Vector3>();
+
+   // Const values to calculate distance to spawn points
+   private static float MIN_DISTANCE_TO_SPAWN_PERCENT = 0.3f;
+   private static float MIN_DISTANCE_TO_SPAWN_PATH_PERCENT = 0.4f;
+
+   // Distance values that bot ship should keep from the spawn points, calculated for current area
+   private float _minDistanceToSpawn;
+   private float _minDistanceToSpawnPath;
+
+   // The flag which temporarily disables avoiding spawn points
+   private bool _disableSpawnDistanceTmp = false;
+
+   // The last spawn point that bot ship was nearby and had to change its path
+   private Vector3 _lastSpawnPosition = Vector3.zero;
 
    #endregion
 }

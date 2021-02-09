@@ -13557,7 +13557,7 @@ MonoBehaviour:
   serverChatColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
   systemChatColor: {r: 0.7137255, g: 0.3764706, b: 1, a: 1}
   globalChatLocalColor: {r: 0, g: 1, b: 0.34509805, a: 1}
-  globalChatOtherColor: {r: 0.21804914, g: 0.42326927, b: 0.9433962, a: 1}
+  globalChatOtherColor: {r: 1, g: 1, b: 1, a: 1}
   enemyNameColor: {r: 0.9098039, g: 0.015686275, b: 0.015686275, a: 1}
   playerNameColor: {r: 1, g: 0.8784314, b: 0.2, a: 1}
   otherPlayerNameColor: {r: 0.29411766, g: 0.85882354, b: 1, a: 1}

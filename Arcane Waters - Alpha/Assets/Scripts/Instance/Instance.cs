@@ -96,7 +96,7 @@ public class Instance : NetworkBehaviour
 
    // The voyage difficulty
    [SyncVar]
-   public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+   public int difficulty = 1;
 
    [SyncVar]
    // The biome of this instance
@@ -164,6 +164,10 @@ public class Instance : NetworkBehaviour
       }
 
       return count;
+   }
+
+   public int getTotalNPCEnemyCount () {
+      return seaMonsterCount + enemyCount;
    }
 
    public void registerClientPlayerBody (NetworkBehaviour entity) {
@@ -546,7 +550,7 @@ public class Instance : NetworkBehaviour
          botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
       }
       botShip.guildId = guildId;
-      botShip.setShipData(xmlId, shipType);
+      botShip.setShipData(xmlId, shipType, this.difficulty);
 
       botShip.setAreaParent(area, false);
 
@@ -609,7 +613,7 @@ public class Instance : NetworkBehaviour
 
          // All ships in the web tool currently are pirates
          botShip.guildId = 2;
-         botShip.setShipData(data.xmlId, shipType);
+         botShip.setShipData(data.xmlId, shipType, this.difficulty);
 
       // Handle as sea monster
       } else {

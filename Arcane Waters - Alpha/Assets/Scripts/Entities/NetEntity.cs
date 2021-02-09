@@ -1347,21 +1347,20 @@ public class NetEntity : NetworkBehaviour
 
    [ClientRpc]
    public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
-      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
-
-      noteWebBounce(con);
-
       // If we are the local player, we don't do anything, the control was handled locally
       if (isLocalPlayer) {
          return;
       }
+
+      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+      noteWebBounce(con);
 
       if (con != null && !hasScheduledController(con)) {
          requestControl(con);
       }
    }
 
-   private void noteWebBounce (TemporaryController con) {
+   public void noteWebBounce (TemporaryController con) {
       if (con != null) {
          if (con is SpiderWeb) {
             SpiderWeb web = con as SpiderWeb;

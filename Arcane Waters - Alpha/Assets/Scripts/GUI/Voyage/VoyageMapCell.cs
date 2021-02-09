@@ -36,8 +36,17 @@ public class VoyageMapCell : MonoBehaviour {
    // The time since the voyage started
    public Text timeText;
 
+   // The time since the league started
+   public Text timeLeagueText;
+
    // The treasure site count text
    public Text treasureSiteCountText;
+
+   // The number of alive enemies
+   public Text aliveEnemyCountText;
+
+   // The index of the current league
+   public Text leagueIndexText;
 
    // The PvP-PvE text outline
    public Outline pvpPveOutline;
@@ -60,6 +69,10 @@ public class VoyageMapCell : MonoBehaviour {
    public Sprite pvpIcon;
    public Sprite pveIcon;
 
+   // The statuses rows displayed in voyage and league instances
+   public GameObject[] voyageStatusRows = new GameObject[0];
+   public GameObject[] leagueStatusRows = new GameObject[0];
+
    // The click event
    public UnityEvent buttonClickEvent;
 
@@ -76,6 +89,33 @@ public class VoyageMapCell : MonoBehaviour {
 
       // Set the plaque images
       statsPlaqueImage.sprite = ImageManager.getSprite(SEA_MAP_PATH + "plaque_" + getFrameName(_voyage.difficulty));
+
+      // Show different relevant statuses for voyage and league instances
+      if (voyage.isLeague) {
+         foreach (GameObject gO in voyageStatusRows) {
+            if (gO.activeSelf) {
+               gO.SetActive(false);
+            }
+         }
+
+         foreach (GameObject gO in leagueStatusRows) {
+            if (!gO.activeSelf) {
+               gO.SetActive(true);
+            }
+         }
+      } else {
+         foreach (GameObject gO in leagueStatusRows) {
+            if (gO.activeSelf) {
+               gO.SetActive(false);
+            }
+         }
+
+         foreach (GameObject gO in voyageStatusRows) {
+            if (!gO.activeSelf) {
+               gO.SetActive(true);
+            }
+         }
+      }
 
       // Set the PvP-PvE label
       pvpPveText.text = voyage.isPvP ? "PvP" : "PvE";
@@ -95,9 +135,16 @@ public class VoyageMapCell : MonoBehaviour {
 
       // Set the time since the voyage started
       timeText.text = DateTime.UtcNow.Subtract(DateTime.FromBinary(voyage.creationDate)).ToString(@"mm\:ss");
+      timeLeagueText.text = timeText.text;
+
+      // Set the enemy count
+      aliveEnemyCountText.text = voyage.aliveNPCEnemyCount.ToString() + "/" + (voyage.totalNPCEnemyCount).ToString();
+
+      // Set the league index
+      leagueIndexText.text = (voyage.leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE;
 
       // Set the plaque labels outline color
-      switch (voyage.difficulty) {
+      switch (Voyage.getDifficultyEnum(voyage.difficulty)) {
          case Voyage.Difficulty.Easy:
             playerCountOutline.effectColor = bronzeOutlineColor;
             pvpPveOutline.effectColor = bronzeOutlineColor;
@@ -179,8 +226,8 @@ public class VoyageMapCell : MonoBehaviour {
       _interactable = false;
    }
 
-   public static string getFrameName (Voyage.Difficulty voyageDifficulty) {
-      switch (voyageDifficulty) {
+   public static string getFrameName (int voyageDifficulty) {
+      switch (Voyage.getDifficultyEnum(voyageDifficulty)) {
          case Voyage.Difficulty.Easy:
             return "bronze";
          case Voyage.Difficulty.Medium:

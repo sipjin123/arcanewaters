@@ -36,7 +36,7 @@ public class VoyageManager : MonoBehaviour {
    /// <summary>
    /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
    /// </summary>
-   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, Voyage.Difficulty difficulty) {
+   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
@@ -62,8 +62,8 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Randomize the difficulty if it is not defined
-      if (difficulty == Voyage.Difficulty.None) {
-         difficulty = Util.randomEnumStartAt<Voyage.Difficulty>(1);
+      if (difficulty == 0) {
+         difficulty = UnityEngine.Random.Range(1, Voyage.getMaxDifficulty() + 1);
       }
 
       // Create the area instance
@@ -126,7 +126,7 @@ public class VoyageManager : MonoBehaviour {
       List<Voyage> allOpenVoyages = new List<Voyage>();
       foreach (Voyage voyage in getAllVoyages()) {
          allGroupCount.TryGetValue(voyage.voyageId, out int groupCount);
-         if (isVoyageOpenToNewGroups(voyage, groupCount)) {
+         if (isVoyageOpenToNewGroups(voyage, groupCount) && !voyage.isLeague) {
             allOpenVoyages.Add(voyage);
          }
       }
@@ -279,7 +279,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
       // Only the master server can generate new voyage ids
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
          ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
@@ -291,7 +291,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, Voyage.Difficulty difficulty = Voyage.Difficulty.None) {
+   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
       // Find the server with the least people
       NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
@@ -322,12 +322,12 @@ public class VoyageManager : MonoBehaviour {
       }
       string areaKey = leagueMaps[UnityEngine.Random.Range(0, leagueMaps.Count)];
 
-      // Launch the creation of the new voyage instance
-      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, biome, Voyage.Difficulty.Hard);
-
+      int difficulty;
       if (!VoyageGroupManager.isInGroup(player)) {
          // Create a new group for the player
          VoyageGroupManager.self.createGroup(player, voyageId, true);
+
+         difficulty = 1;
       } else {
          // Get the group the player belongs to
          VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(player.voyageGroupId);
@@ -339,7 +339,12 @@ public class VoyageManager : MonoBehaviour {
          // Link the group to the voyage instance
          voyageGroup.voyageId = voyageId;
          VoyageGroupManager.self.updateGroup(voyageGroup);
+
+         difficulty = voyageGroup.members.Count;
       }
+
+      // Launch the creation of the new voyage instance
+      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, biome, difficulty);
 
       // Wait until the voyage instance has been created
       while (getVoyage(voyageId) == null) {

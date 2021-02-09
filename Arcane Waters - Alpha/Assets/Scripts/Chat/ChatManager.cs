@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.EventSystems;
 using TMPro;
 using System.Text;
+using System;
 
 public class ChatManager : MonoBehaviour {
    #region Public Variables
@@ -290,14 +291,51 @@ public class ChatManager : MonoBehaviour {
       string inputString = chatPanel.inputField.text;
 
       List<CommandData> autoCompleteCommands = new List<CommandData>();
+      List<Tuple<CommandData, string>> autoCompleteParameters = new List<Tuple<CommandData, string>>();
 
       foreach (CommandData command in _commandData) {
          if (command.matchesInput(inputString, mustEqual: false)) {
             autoCompleteCommands.Add(command);
+
+            // If the whole command has been written, try to offer parameter autocompletes
+            if (command.containsWholePrefix(inputString)) {
+               string[] inputParts = inputString.Split(' ');
+
+               List<string> parameterAutoCompletes;
+
+               // If the user has started typing a parameter, try to get auto-completes for it
+               if (inputParts.Length >= 3) {
+                  string parameters = "";
+                  for (int i = 2; i < inputParts.Length; i++) {
+                     if (inputParts[i] == "") {
+                        break;
+                     }
+
+                     parameters += inputParts[i];
+                     parameters += ' ';
+                  }
+
+                  // Remove space at the end
+                  if (parameters.Length > 0) {
+                     parameters = parameters.Remove(parameters.Length - 1);
+                  }
+            
+                  parameterAutoCompletes = command.getParameterAutoCompletes(parameters);
+
+               // Otherwise, offer all parameter auto-completes
+               } else {
+                  parameterAutoCompletes = command.getParameterAutoCompletes();
+               }
+
+               foreach (string autoComplete in parameterAutoCompletes) {
+                  autoCompleteParameters.Add(new Tuple<CommandData, string>(command, autoComplete));
+               }
+            }
          }
       }
 
       autoCompletePanel.setAutoCompletes(autoCompleteCommands);
+      autoCompletePanel.setAutoCompletesWithParameters(autoCompleteParameters);
    }
 
    #region Private Variables

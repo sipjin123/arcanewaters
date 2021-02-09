@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using System;
 
 public class AutoCompletePanel : MonoBehaviour {
    #region Public Variables
@@ -23,26 +24,6 @@ public class AutoCompletePanel : MonoBehaviour {
    public Vector3 lastMousePos = Vector3.zero;
 
    #endregion
-
-   public int NumAutoCompletes {
-      get {
-         if (_autoCompleteCommands == null || _autoCompleteCommands.Count < 1) {
-            return 0;
-         }
-         return _autoCompleteCommands.Count;
-      }
-   }
-
-   private AutoCompleteOption SelectedAutoComplete {
-      get
-      {
-         if (_selectedAutoComplete == -1 || _selectedAutoComplete >= _autoCompleteOptions.Count) {
-            return null;
-         } else {
-            return _autoCompleteOptions[_selectedAutoComplete];
-         }
-      }
-   }
 
    private void Awake () {
       _scrollRect = GetComponentInChildren<ScrollRect>();
@@ -75,25 +56,28 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void LateUpdate () {
-      lastMousePos = Util.getMousePos();
+      lastMousePos = Input.mousePosition;
    }
 
    private void onScrolled (Vector2 pos) {
-      if (!SelectedAutoComplete) {
+      AutoCompleteOption selectedOption = getSelectedAutoComplete();
+      if (!selectedOption) {
          return;
       }
 
       if (isSelectedOptionVisible() && !inputFieldFocused) {
-         SelectedAutoComplete.setTooltip(true);
+         selectedOption.setTooltip(true);
       }  else {
-         SelectedAutoComplete.setTooltip(false);
+         selectedOption.setTooltip(false);
       }
    }
 
    private bool isSelectedOptionVisible () {
-      if (SelectedAutoComplete) {
+      AutoCompleteOption selectedOption = getSelectedAutoComplete();
+
+      if (selectedOption) {
          Rect viewportRect = Util.rectTransformToScreenSpace(viewport);
-         Rect optionRect = Util.rectTransformToScreenSpace(SelectedAutoComplete.rectTransform);
+         Rect optionRect = Util.rectTransformToScreenSpace(selectedOption.rectTransform);
          Vector2 topMiddle = optionRect.center + Vector2.up * optionRect.height / 2.0f;
          Vector2 bottomMiddle = optionRect.center - Vector2.up * optionRect.height / 2.0f;
          if (viewportRect.Contains(topMiddle) && viewportRect.Contains(bottomMiddle)) {
@@ -119,7 +103,7 @@ public class AutoCompletePanel : MonoBehaviour {
       }
 
       updateSelectedButton();
-      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, NumAutoCompletes);
+      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, getNumAutoCompletes());
    }
 
    private void onUpPressed () {
@@ -131,11 +115,11 @@ public class AutoCompletePanel : MonoBehaviour {
          deselectOldOption();
          _selectedAutoComplete = _selectedAutoComplete - 1;
       } else if (inputFieldFocused) {
-         _selectedAutoComplete = NumAutoCompletes - 1;
+         _selectedAutoComplete = getNumAutoCompletes() - 1;
       }
 
       updateSelectedButton();
-      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, NumAutoCompletes);
+      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, getNumAutoCompletes());
    }
 
    private void onEnterPressed () {
@@ -147,7 +131,7 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void updateSelectedButton () {
-      if (_selectedAutoComplete >= NumAutoCompletes) {
+      if (_selectedAutoComplete >= getNumAutoCompletes()) {
          ChatPanel.self.inputField.Select();
          StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
          _anyButtonSelected = false;
@@ -156,9 +140,10 @@ public class AutoCompletePanel : MonoBehaviour {
          StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
          _anyButtonSelected = false;
       } else {
-         SelectedAutoComplete?.button.Select();
-         SelectedAutoComplete?.setTooltip(true); ;
-         SelectedAutoComplete?.onSelected();
+         AutoCompleteOption selectedOption = getSelectedAutoComplete();
+         selectedOption?.button.Select();
+         selectedOption?.setTooltip(true); ;
+         selectedOption?.onSelected();
          _anyButtonSelected = true;
       }
    }
@@ -199,6 +184,11 @@ public class AutoCompletePanel : MonoBehaviour {
       updateAutoCompletes();
    }
 
+   public void setAutoCompletesWithParameters (List<Tuple<CommandData, string>> autoCompletes) {
+      _autoCompleteCommandsWithParameters = autoCompletes;
+      updateAutoCompletes();
+   }
+
    public void updateAutoCompletes () {
       // If there are no auto-completes, disable all
       if (_autoCompleteCommands == null || _autoCompleteCommands.Count == 0) {
@@ -215,17 +205,27 @@ public class AutoCompletePanel : MonoBehaviour {
 
       resizeAutocompletes();
 
-      // Enable and set up the auto-completes that are needed
-      for (int i = 0; i < _autoCompleteCommands.Count; i++) {
-         AutoCompleteOption option = _autoCompleteOptions[i];
+      int optionCount = 0;
+
+      foreach (CommandData data in _autoCompleteCommands) {
+         AutoCompleteOption option = _autoCompleteOptions[optionCount];
          option.gameObject.SetActive(true);
-         // option.setText(_autoCompletes[i]);
-         option.updateOption(_autoCompleteCommands[i]);
-         option.indexInList = i;
+         option.updateOption(data);
+         option.indexInList = optionCount;
+         optionCount++;
+      }
+
+      foreach (Tuple<CommandData, string> parameterData in _autoCompleteCommandsWithParameters) {
+         AutoCompleteOption option = _autoCompleteOptions[optionCount];
+         option.autocompleteParameter = parameterData.Item2;
+         option.gameObject.SetActive(true);
+         option.updateOption(parameterData.Item1);
+         option.indexInList = optionCount;
+         optionCount++;
       }
 
       // Disable any auto-completes not being used
-      for (int i = _autoCompleteCommands.Count; i < _autoCompleteOptions.Count; i++) {
+      for (int i = getNumAutoCompletes(); i < _autoCompleteOptions.Count; i++) {
          _autoCompleteOptions[i].gameObject.SetActive(false);
       }
    }
@@ -240,7 +240,7 @@ public class AutoCompletePanel : MonoBehaviour {
 
    public void resizeAutocompletes () {
       // Find out how many new auto-completes we need
-      int newAutoCompletesNeeded = _autoCompleteCommands.Count - _autoCompleteOptions.Count;
+      int newAutoCompletesNeeded = getNumAutoCompletes() - _autoCompleteOptions.Count;
 
       // We have too many options, and need to disable some
       if (newAutoCompletesNeeded < 0) {
@@ -268,8 +268,29 @@ public class AutoCompletePanel : MonoBehaviour {
    }
 
    private void deselectOldOption () {
-      SelectedAutoComplete?.onDeselected();
-      SelectedAutoComplete?.setTooltip(false);
+      AutoCompleteOption selectedOption = getSelectedAutoComplete();
+      selectedOption?.onDeselected();
+      selectedOption?.setTooltip(false);
+   }
+   
+   private int getNumAutoCompletes () {
+      if (_autoCompleteCommands == null || _autoCompleteCommands.Count < 1) {
+         return 0;
+      }
+
+      if (_autoCompleteCommandsWithParameters == null || _autoCompleteCommandsWithParameters.Count < 1) {
+         return _autoCompleteCommands.Count;
+      }
+
+      return _autoCompleteCommands.Count + _autoCompleteCommandsWithParameters.Count;
+   }
+
+   private AutoCompleteOption getSelectedAutoComplete () {
+      if (_selectedAutoComplete == -1 || _selectedAutoComplete >= _autoCompleteOptions.Count) {
+         return null;
+      } else {
+         return _autoCompleteOptions[_selectedAutoComplete];
+      }
    }
 
    #region Private Variables
@@ -277,8 +298,11 @@ public class AutoCompletePanel : MonoBehaviour {
    // A list of references to the auto-complete options for the chat
    private List<AutoCompleteOption> _autoCompleteOptions = new List<AutoCompleteOption>();
 
-   // A copy of the command  data passed on to  us last
+   // A copy of the command data passed on to us last
    private List<CommandData> _autoCompleteCommands;
+
+   // A copy of the auto-complete parameter command data pairs passed on to us last
+   private List<Tuple<CommandData, string>> _autoCompleteCommandsWithParameters;
 
    // The index of the auto-complete option that is selected
    private int _selectedAutoComplete = -1;

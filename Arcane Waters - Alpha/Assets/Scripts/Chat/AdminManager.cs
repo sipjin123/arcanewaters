@@ -58,7 +58,6 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("goto", "Warps you to a user", requestPlayerGo, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
       cm.addCommand(new CommandData("summon", "Summons a user to you", requestSummonPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
       cm.addCommand(new CommandData("bot_waypoint", "Sets a bot waypoint (Not implemented yet)", requestBotWaypoint, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }));
       cm.addCommand(new CommandData("all_abilities", "Gives you access to all abilities", requestAllAbilities, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("get_item", "Gives you an amount of a specified item", requestGetItem, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "category",  "itemName",  "quantity" }));
       cm.addCommand(new CommandData("ship_speedup", "Speeds up your ship", requestShipSpeedup, requiredPrefix: CommandType.Admin));
@@ -83,6 +82,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
+      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAreaKeys()));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -994,7 +994,7 @@ public class AdminManager : NetworkBehaviour
       string[] list = parameters.Split(' ');
 
       // Default parameter values
-      Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+      int difficulty = 0;
       Biome.Type biome = Biome.Type.None;
       bool isPvP = UnityEngine.Random.value > 0.5f;
       string areaKey = "";
@@ -1009,7 +1009,9 @@ public class AdminManager : NetworkBehaviour
          }
             
          if (list.Length > 1) {
-            if (!(Enum.TryParse(list[1], out difficulty) && Enum.IsDefined(typeof(Voyage.Difficulty), difficulty))) {
+            try {
+               difficulty = int.Parse(list[1]);
+            } catch {
                ChatManager.self.addChat("Invalid difficulty parameter for command create_voyage: " + list[1], ChatInfo.Type.Error);
                return;
             }
@@ -1037,7 +1039,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    [Command]
-   private void Cmd_CreateVoyageInstance (bool isPvP, Voyage.Difficulty difficulty, Biome.Type biome, string areaKey) {
+   private void Cmd_CreateVoyageInstance (bool isPvP, int difficulty, Biome.Type biome, string areaKey) {
       if (!_player.isAdmin()) {
          D.warning("Received admin command from non-admin");
          return;

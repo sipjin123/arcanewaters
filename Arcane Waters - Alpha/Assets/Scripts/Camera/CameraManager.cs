@@ -116,6 +116,15 @@ public class CameraManager : ClientMonoBehaviour {
                   transposer.m_ScreenY = 0.5f;
                }
             }
+
+            if (_previousAreaKey != Global.player.areaKey) {
+               if (AreaManager.self.getArea(Global.player.areaKey) != null) {
+                  foreach (BaseCamera baseCamera in _baseCameras) {
+                     baseCamera.updateCameraDamping();
+                  }
+                  _previousAreaKey = Global.player.areaKey;
+               }
+            }
          } else {
             // Reset the panning position if the player dies
             transposer.m_ScreenX = 0.5f;
@@ -328,6 +337,9 @@ public class CameraManager : ClientMonoBehaviour {
    // All the BaseCameras
    [SerializeField]
    protected List<BaseCamera> _baseCameras;
+
+   // The previous area we were in
+   protected string _previousAreaKey = "";
 
    #endregion
 }

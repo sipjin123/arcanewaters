@@ -67,11 +67,11 @@ public class ShipEntity : SeaEntity
       shipSizeSpriteCache = shipSizeSpriteList.Find(_ => _.shipSize == shipSize);
    }
 
-   protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData) {
+   protected virtual void initializeAsSeaEnemy (SeaMonsterEntityData enemyData, ShipData shipData, int instanceDifficulty) {
       shipType = shipData.shipType;
       skinType = shipData.skinType;
-      currentHealth = enemyData.maxHealth;
-      maxHealth = enemyData.maxHealth;
+      currentHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
+      maxHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
       attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
 
       speed = shipData.baseSpeed;

@@ -91,7 +91,7 @@ public class ClientManager : MonoBehaviour
 
    public void displayClientVersionInfo () {
       // Get the client version number from the cloud build manifest
-      versionNumberText.text = Util.getFormattedGameVersion();
+      versionNumberText.text = Util.getJenkinsBuildId();
       versionGameObject.SetActive(true);
    }
 

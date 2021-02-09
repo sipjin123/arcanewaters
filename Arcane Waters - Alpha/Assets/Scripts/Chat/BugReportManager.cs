@@ -110,6 +110,11 @@ public class BugReportManager : MonoBehaviour {
       int height = Screen.height;
       int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
+      int currentMsgSize = System.Text.Encoding.Unicode.GetByteCount(subjectString) + /* bugReport = MAX_BYTES */ + 4 + 4 + /* screenshotBytes */ +
+         System.Text.Encoding.Unicode.GetByteCount(screenResolution) + System.Text.Encoding.Unicode.GetByteCount(operatingSystem);
+      maxPacketSize -= currentMsgSize;
+      maxPacketSize -= MAX_BYTES;
+
       // Find image quality of size small enough to send through Mirror Networking      
       Texture2D standardTex = takeScreenshot(width, height);
       byte[] screenshotBytes = standardTex.EncodeToPNG();
@@ -129,7 +134,8 @@ public class BugReportManager : MonoBehaviour {
          } else {
             // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
             int quality = 100;
-            while (quality > 0) {
+            while (quality >= 0) {
+               quality = Mathf.Max(1, quality);
                skippedRowsTex = removeEvenRowsAndColumns(standardTex);
                screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
                if (screenshotBytes.Length < maxPacketSize) {
@@ -137,6 +143,10 @@ public class BugReportManager : MonoBehaviour {
                   addMetaDataToBugReport(ref bugReport, screenshotBytes);
                   Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
                   break;
+               }
+
+               if (quality <= 1) {
+                  D.error("Something went wrong. Bug report system need to be investigated!");
                }
                quality -= 5;
             }
@@ -252,12 +262,6 @@ public class BugReportManager : MonoBehaviour {
 
    // The max length of bug report subject lines
    protected static int MAX_SUBJECT_LENGTH = 256;
-
-   // The max length of bug reports
-   protected static int MAX_BUG_REPORT_LENGTH = 1600;
-
-   // The number of bytes in a megabyte
-   protected static int ONE_MEGABYTE_IN_BYTES = 1000000;
 
    // The maximum number of bytes we'll allow a submitted bug report to have
    protected static int MAX_BYTES = 12288;

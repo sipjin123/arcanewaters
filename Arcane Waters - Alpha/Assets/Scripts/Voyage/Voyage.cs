@@ -27,7 +27,7 @@ public class Voyage
    // The total number of maps in a league (series of voyages maps)
    public static int MAPS_PER_LEAGUE = 5;
 
-   // The voyage difficulty
+   // The voyage difficulty as enum, mostly used for the UI
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
 
    // The unique id of the voyage
@@ -40,7 +40,7 @@ public class Voyage
    public string areaName;
 
    // The voyage difficulty
-   public Difficulty difficulty = Difficulty.None;
+   public int difficulty = 0;
 
    // Gets set to true when the voyage is PvP - Otherwise, the voyage is PvE
    public bool isPvP = false;
@@ -60,6 +60,12 @@ public class Voyage
    // The number of captured treasure sites
    public int capturedTreasureSiteCount = 0;
 
+   // The number of alive enemies in the instance
+   public int aliveNPCEnemyCount = 0;
+
+   // The total number of enemies in the instance
+   public int totalNPCEnemyCount = 0;
+
    // The number of groups in the voyage instance
    public int groupCount = 0;
 
@@ -72,8 +78,9 @@ public class Voyage
 
    }
 
-   public Voyage (int voyageId, string areaKey, string areaName, Difficulty difficulty, Biome.Type biome, bool isPvP,
-      bool isLeague, int leagueIndex, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int groupCount) {
+   public Voyage (int voyageId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
+      bool isLeague, int leagueIndex, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
+      int totalNPCEnemyCount, int groupCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
       this.areaName = areaName;
@@ -85,11 +92,29 @@ public class Voyage
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;
+      this.aliveNPCEnemyCount = aliveNPCEnemyCount;
+      this.totalNPCEnemyCount = totalNPCEnemyCount;
       this.groupCount = groupCount;
    }
 
-   public static int getMaxGroupSize (Difficulty voyageDifficulty) {
-      switch (voyageDifficulty) {
+   public static Difficulty getDifficultyEnum (int difficulty) {
+      if (difficulty > 4) {
+         return Difficulty.Hard;
+      } else if (difficulty > 2) {
+         return Difficulty.Medium;
+      } else if (difficulty > 0) {
+         return Difficulty.Easy;
+      } else {
+         return Difficulty.None;
+      }
+   }
+
+   public static int getMaxDifficulty () {
+      return MAX_PLAYERS_PER_GROUP_HARD;
+   }
+
+   public static int getMaxGroupSize (int voyageDifficulty) {
+      switch (getDifficultyEnum(voyageDifficulty)) {
          case Difficulty.Easy:
             return MAX_PLAYERS_PER_GROUP_EASY;
          case Difficulty.Medium:
@@ -101,7 +126,7 @@ public class Voyage
       }
    }
 
-   public static int getMaxGroupsPerInstance (Difficulty voyageDifficulty) {
+   public static int getMaxGroupsPerInstance (int voyageDifficulty) {
       // Get the number of players per group
       int groupSize = getMaxGroupSize(voyageDifficulty);
 

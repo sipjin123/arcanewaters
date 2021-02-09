@@ -191,13 +191,17 @@ public class SpiderWeb : TemporaryController, IMapEditorDataReceiver
 
       if (isDroppingPuppet(puppet)) {
          anim.delayStart = true;
-         anim.initialDelay = 0.8f;
+         anim.initialDelay = 0.5f;
       }
 
       // Determine what direction the player should be facing in while they bounce / fall
       Direction fallDir = isDroppingPuppet(puppet) ? Direction.South : Direction.North;
       puppet.entity.fallDirection = (int) fallDir;
       puppet.entity.facing = fallDir;
+
+      if (puppet.entity.isLocalPlayer) {
+         getPlayer(puppet).noteWebBounce(this);
+      }
    }
 
    protected override void controlUpdate (ControlData puppet) {

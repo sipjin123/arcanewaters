@@ -65,7 +65,7 @@ public class TreasureSite : NetworkBehaviour
 
    // The difficulty of the voyage where this site is
    [SyncVar]
-   public Voyage.Difficulty difficulty = Voyage.Difficulty.None;
+   public int difficulty = 0;
 
    // The status of the site
    [SyncVar]

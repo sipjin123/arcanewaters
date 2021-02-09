@@ -74,6 +74,21 @@ public class BaseCamera : MonoBehaviour {
       } else if (_cam != null) {
          _cam.orthographicSize = (Screen.height / 2) / getPPUScale();
       }
+
+      updateCameraDamping();
+   }
+
+   public virtual void updateCameraDamping () {
+      if (Global.player) {
+         CinemachineConfiner confiner = GetComponent<CinemachineConfiner>();
+         Area area = AreaManager.self.getArea(Global.player.areaKey);
+         if (confiner && area) {
+            float screenHeightToAreaHeightRatio = (float) Screen.height / (area.getAreaSizeWorld().y / 0.16f);
+
+            // If screen to area height ratio is below certain value, use damping in vcam to avoid 'camera jumping'
+            confiner.m_Damping = screenHeightToAreaHeightRatio > 32.0f ? 1.5f : 0.0f;
+         }
+      }
    }
 
    public virtual float getPPUScale () {
