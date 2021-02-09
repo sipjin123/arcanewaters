@@ -148,7 +148,7 @@ MonoBehaviour:
   positionStep: {x: 0, y: 0}
   dataFields:
   - name: guild id
-    defaultValue: 0
+    defaultValue: 1
     toolTip: The guild id of the ship
     type: 0
   selectDataFields: []
@@ -312,4 +312,5 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1

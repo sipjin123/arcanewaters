@@ -132,7 +132,17 @@ namespace MapCreationTool
 
       private void setData (PlacedPrefab placedPrefab, PrefabDataDefinition data) {
          foreach (var f in fields) {
-            f.Value.setValue(placedPrefab.getData(f.Key));
+            if (f.Key == DataField.SHIP_DATA_KEY) {
+               // Overwrite default ship value into the first entry upon selecting object in the drawing board
+               if (placedPrefab.getData(f.Key) == "None") {
+                  D.debug("Value set to" + " : " + SeaMonsterEntityData.DEFAULT_SHIP_ID);
+                  f.Value.setValue(SeaMonsterEntityData.DEFAULT_SHIP_ID.ToString());
+               } else {
+                  f.Value.setValue(placedPrefab.getData(f.Key));
+               }
+            } else {
+               f.Value.setValue(placedPrefab.getData(f.Key));
+            }
          }
 
          if (hasWarpLogic) {
