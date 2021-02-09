@@ -22,18 +22,6 @@ public class EnemyManager : MonoBehaviour {
       foreach (string areaKey in AreaManager.self.getAreaKeys()) {
          _spawners[areaKey] = new List<Enemy_Spawner>();
       }
-
-      if (_shipTypes == null) {
-         _shipTypes = new Dictionary<Ship.Type, string>();
-         foreach (Ship.Type type in (Ship.Type[]) Enum.GetValues(typeof(Ship.Type))) {
-            if (type == Ship.Type.None) {
-               continue;
-            }
-
-            string shipName = type.ToString().ToLower() + "_pirate";
-            _shipTypes.Add(type, shipName);
-         }
-      }
    }
 
    public void storeSpawner (Enemy_Spawner spawner, string areaKey) {
@@ -53,8 +41,7 @@ public class EnemyManager : MonoBehaviour {
       }
    }
 
-    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location)
-    {
+    public void spawnEnemyAtLocation(Enemy.Type enemyType, Instance instance, Vector2 location) {
         // If we don't have any spawners defined for this Area, then we're done
         if (instance == null)
         {
@@ -124,16 +111,10 @@ public class EnemyManager : MonoBehaviour {
 
       foreach (Enemy_Spawner spawner in _spawners[instance.areaKey]) {
          Ship.Type shipType = randomizeShipType(instance.biome);
-         if (!_shipTypes.ContainsKey(shipType)) {
-            D.debug("Dictionary does not contain this ship type: " + shipType);
-            continue;
-         }
+         SeaMonsterEntityData seaEnemyData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
 
-         string shipName = _shipTypes[shipType];
-         SeaMonsterEntityData seaMonsterData = SeaMonsterManager.self.getAllSeaMonsterData().Find(ent => ent.subVarietyTypeId == (int)shipType);
-
-         if (seaMonsterData == null) {
-            D.debug("Sea monster data is null! Name: " + shipName);
+         if (seaEnemyData == null) {
+            D.debug("Ship type {" + shipType + "} does not have matching data registered in sea enemy manager!");
             continue;
          }
 
@@ -143,16 +124,16 @@ public class EnemyManager : MonoBehaviour {
          botShip.setAreaParent(area, false);
          botShip.transform.localPosition = spawner.transform.localPosition;
 
-         botShip.seaEntityData = seaMonsterData;
-         botShip.maxHealth = seaMonsterData.maxHealth;
-         botShip.currentHealth = seaMonsterData.maxHealth;
+         botShip.seaEntityData = seaEnemyData;
+         botShip.maxHealth = seaEnemyData.maxHealth;
+         botShip.currentHealth = seaEnemyData.maxHealth;
 
          botShip.shipType = shipType;
-         if (seaMonsterData.skillIdList.Count > 0) {
-            botShip.primaryAbilityId = seaMonsterData.skillIdList[0];
+         if (seaEnemyData.skillIdList.Count > 0) {
+            botShip.primaryAbilityId = seaEnemyData.skillIdList[0];
          }
          botShip.guildId = guildId;
-         botShip.setShipData(seaMonsterData.xmlId, shipType, instance.difficulty);
+         botShip.setShipData(seaEnemyData.xmlId, shipType, instance.difficulty);
 
          InstanceManager.self.addSeaMonsterToInstance(botShip, instance);
          NetworkServer.Spawn(botShip.gameObject);
@@ -237,9 +218,6 @@ public class EnemyManager : MonoBehaviour {
 
    // Stores a list of Enemy Spawners for each type of Site
    protected Dictionary<string, List<Enemy_Spawner>> _spawners = new Dictionary<string, List<Enemy_Spawner>>();
-
-   // Stores translation from Ship.Type enum to name of ship bot in database
-   protected static Dictionary<Ship.Type, string> _shipTypes = null;
 
    #endregion
 }
