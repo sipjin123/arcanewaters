@@ -185,7 +185,7 @@ public class SeaEntity : NetEntity
             if (collidedEntity.GetComponent<PlayerShipEntity>() != null) {
                SeaEntity seaEntity = collidedEntity.GetComponent<SeaEntity>();
                if (!collidedEntities.ContainsKey(seaEntity) && seaEntity.currentHealth > 0) {
-                  ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(Attack.Type.Shock_Ball);
+                  ShipAbilityData abilityData = getSeaAbility(Attack.Type.Shock_Ball);
                   ProjectileStatData projectilData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
 
                   int damage = (int) (projectilData.projectileDamage * Attack.getDamageModifier(Attack.Type.Shock_Ball));
@@ -243,7 +243,7 @@ public class SeaEntity : NetEntity
 
    [ClientRpc]
    public void Rpc_CreateAttackCircle (Vector2 startPos, Vector2 endPos, double startTime, double endTime, int abilityId, bool showCircle) {
-      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      ShipAbilityData abilityData = getSeaAbility(abilityId);
 
       if (showCircle) {
          // Create a new Attack Circle object from the prefab
@@ -322,7 +322,7 @@ public class SeaEntity : NetEntity
          } else if (attackType == Attack.Type.Ice) {
             // TODO: Add ice effect logic here
          } else {
-            ShipAbilityData shipData = ShipAbilityManager.self.getAbility(attackType);
+            ShipAbilityData shipData = getSeaAbility(attackType);
             if (shipData == null) {
                // Show generic explosion
                Instantiate(PrefabsManager.self.requestCannonExplosionPrefab(currentImpactMagnitude), pos, Quaternion.identity);
@@ -484,7 +484,7 @@ public class SeaEntity : NetEntity
    [Server]
    public void fireAtSpot (Vector2 spot, int abilityId, float attackDelay, float launchDelay, Vector2 spawnPosition = new Vector2()) {
       // Get the ability data
-      ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+      ShipAbilityData shipAbility = getSeaAbility(abilityId);
 
       if (shipAbility == null) {
          return;
@@ -564,9 +564,9 @@ public class SeaEntity : NetEntity
       timeToReachTarget /= Attack.getSpeedModifier(attackType);
 
       // Speed modifiers for the projectile types
-      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      ShipAbilityData abilityData = getSeaAbility(abilityId);
       if (abilityData.projectileId > 0) {
-         ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
+         ProjectileStatData projectileData = getProjectileDataFromAbility(abilityData.projectileId);
          if (projectileData != null) {
             // The higher the mass, the slower the projectile will reach its target
             timeToReachTarget /= projectileData.projectileMass;
@@ -642,8 +642,8 @@ public class SeaEntity : NetEntity
                   if (!targetEntity.invulnerable) {
                      int damage = getDamageForShot(attackType, distanceModifier);
                      if (abilityId > 0) {
-                        ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
-                        ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(shipAbilityData.projectileId);
+                        ShipAbilityData shipAbilityData = getSeaAbility(abilityId);
+                        ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
                         float abilityDamageModifier = projectileData.projectileDamage * shipAbilityData.damageModifier;
                         float baseSkillDamage = projectileData.projectileDamage + abilityDamageModifier;
 
@@ -655,8 +655,8 @@ public class SeaEntity : NetEntity
                            + " Computed: " + baseSkillDamage
                            + " Ability: " + abilityDamageModifier
                            + " Dist Modifier: " + distanceModifier
-                           + " Name: " + ShipAbilityManager.self.getAbility(abilityId).abilityName
-                           + " ID: " + ShipAbilityManager.self.getAbility(abilityId).abilityId
+                           + " Name: " + getSeaAbility(abilityId).abilityName
+                           + " ID: " + getSeaAbility(abilityId).abilityId
                            + " Projectile ID: " + projectileData.projectileId, Color.cyan);
 
                      }
@@ -748,8 +748,7 @@ public class SeaEntity : NetEntity
          return;
       }
 
-      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
-
+      ShipAbilityData abilityData = getSeaAbility(abilityId);
       int attackCount = 1;
       if (abilityData.splitsAfterAttackCap) {
          // Shoots 3 projectiles each 3 attacks
@@ -799,8 +798,6 @@ public class SeaEntity : NetEntity
          yield return null;
       }
 
-      ShipAbilityData shipAbilityData = ShipAbilityManager.self.getAbility(abilityId);
-
       // Create the projectile object from the prefab
       GameObject projectileObj = Instantiate(PrefabsManager.self.networkProjectilePrefab, startPos, Quaternion.identity);
       NetworkedProjectile networkProjectile = projectileObj.GetComponent<NetworkedProjectile>();
@@ -811,7 +808,7 @@ public class SeaEntity : NetEntity
       networkProjectile.body.velocity = velocity;
 
       // Destroy the projectile after a couple seconds
-      Destroy(projectileObj, shipAbilityData.lifeTime);
+      Destroy(projectileObj, getSeaAbility(abilityId).lifeTime);
    }
 
    [ClientRpc]
@@ -822,7 +819,46 @@ public class SeaEntity : NetEntity
 
    protected virtual void updateSprites () { }
 
+   private ShipAbilityData getSeaAbility (int abilityId) {
+      if (_cachedSeaAbilityList.Exists(_ => _.abilityId == abilityId)) {
+         return _cachedSeaAbilityList.Find(_ => _.abilityId == abilityId);
+      }
+
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
+      _cachedSeaAbilityList.Add(abilityData);
+      return abilityData;
+   }
+
+   private ShipAbilityData getSeaAbility (Attack.Type attackType) {
+      if (_cachedSeaAbilityList.Exists(_ => _.selectedAttackType == attackType)) {
+         return _cachedSeaAbilityList.Find(_ => _.selectedAttackType == attackType);
+      }
+
+      ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(attackType);
+      _cachedSeaAbilityList.Add(abilityData);
+      return abilityData;
+   }
+
+   private ProjectileStatData getProjectileDataFromAbility (int abilityId) {
+      ShipAbilityData ability = getSeaAbility(abilityId);
+      int projectileId = ability.projectileId;
+
+      if (_cachedProjectileList.Exists(_ => _.projectileId == projectileId)) {
+         return _cachedProjectileList.Find(_ => _.projectileId == projectileId);
+      }
+
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(projectileId);
+      _cachedProjectileList.Add(projectileData);
+      return projectileData;
+   }
+
    #region Private Variables
+
+   // The cached sea ability list
+   private List<ShipAbilityData> _cachedSeaAbilityList = new List<ShipAbilityData>();
+
+   // The cached sea projectile list
+   private List<ProjectileStatData> _cachedProjectileList = new List<ProjectileStatData>();
 
    // Current Spawn Transform
    protected Transform _projectileSpawnLocation;
