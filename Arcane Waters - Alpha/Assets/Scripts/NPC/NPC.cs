@@ -76,6 +76,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    public AnimalPettingConfig animalPettingConfig;
 
    // Determines if this npc is staying still or moving around
+   [SyncVar]
    public bool isStationary;
 
    [SyncVar]
@@ -132,8 +133,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    public void finishInitialization (NPCData npcData) {
-      isStationary = npcData.isStationary;
-
       // Set npc name
       _npcName = npcData.name;
       if (nameText != null) {
@@ -505,6 +504,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    }
 
    public void receiveData (DataField[] dataFields) {
+      // This map data setup is processed on the server side only
       string shopName = "";
       string panelName = "None";
       int id = 0;
@@ -541,6 +541,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
             } catch {
                facing = Direction.South;
             }
+         } else if (field.k.CompareTo(DataField.NPC_STATIONARY_KEY) == 0) {
+            string isStationaryData = field.v.Split(':')[0];
+            isStationary = isStationaryData.ToLower() == "true" ? true : false;
          }
       }
 

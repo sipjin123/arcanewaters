@@ -144,7 +144,12 @@ MonoBehaviour:
   title: NPC
   canInheritPosition: 0
   canControlPosition: 0
-  dataFields: []
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: isStationary
+    defaultValue: False
+    toolTip: If this npc can move around or just stay put
+    type: 3
   selectDataFields: []
   customDataFields:
   - name: npc data
@@ -366,6 +371,7 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1
 --- !u!95 &1536587282
 Animator:
