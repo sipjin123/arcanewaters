@@ -75,6 +75,10 @@ public class DB_MainStub : MonoBehaviour
 
    #endregion
 
+   public static string getMapContents () {
+      return "";
+   }
+
    public static TreasureStateData getTreasureStateForChest (int userId, int chestId, string areaId) {
       return new TreasureStateData();
    }

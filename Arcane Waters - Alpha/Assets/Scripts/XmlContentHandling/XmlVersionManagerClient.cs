@@ -11,6 +11,7 @@ using static ShopDataToolManager;
 using UnityEngine.Events;
 using NubisDataHandling;
 using BackgroundTool;
+using MapCreationTool.Serialization;
 
 public class XmlVersionManagerClient : MonoBehaviour {
    #region Public Variables
@@ -171,6 +172,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       checkStreamingAssetFile(XmlVersionManagerServer.TOOL_TIP_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.PROJECTILES_FILE);
       checkStreamingAssetFile(XmlVersionManagerServer.TUTORIAL_FILE);
+      checkStreamingAssetFile(XmlVersionManagerServer.MAP_FILE);
    }
 
    private void checkStreamingAssetFile (string fileName, bool isLastEntry = false) {
@@ -257,6 +259,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
       extractXmlType(EditorToolType.Tool_Tip);
       extractXmlType(EditorToolType.Projectiles);
       extractXmlType(EditorToolType.Tutorial);
+      extractXmlType(EditorToolType.Map_Keys);
 
       initializeLoadingXmlData.Invoke();
    }
@@ -340,6 +343,9 @@ public class XmlVersionManagerClient : MonoBehaviour {
             break;
          case EditorToolType.Tutorial:
             path = TEXT_PATH + XmlVersionManagerServer.TUTORIAL_FILE + ".txt";
+            break;
+         case EditorToolType.Map_Keys:
+            path = TEXT_PATH + XmlVersionManagerServer.MAP_FILE + ".txt";
             break;
       }
 
@@ -779,6 +785,37 @@ public class XmlVersionManagerClient : MonoBehaviour {
                }
             }
             TutorialManager3.self.receiveDataFromZip(tutorialDataList);
+            break;
+
+         case EditorToolType.Map_Keys:
+            List<Map> mapKeyDataList = new List<Map>();
+            foreach (string subGroup in xmlGroup) {
+               string[] xmlSubGroup = subGroup.Split(new string[] { SPACE_KEY }, StringSplitOptions.None);
+
+               // Extract the segregated data and assign to the xml manager
+               if (xmlSubGroup.Length >= 6) {
+                  int id = int.Parse(xmlSubGroup[0]);
+                  string name = xmlSubGroup[1];
+                  string displayName = xmlSubGroup[2];
+                  int specialType = int.Parse(xmlSubGroup[3]);
+                  int sourceMapId = int.Parse(xmlSubGroup[4]);
+                  int weatherEffectType = int.Parse(xmlSubGroup[5]);
+                  int biome = int.Parse(xmlSubGroup[6]);
+
+                  Map newMapEntry = new Map {
+                     id = id,
+                     name = name,
+                     displayName = displayName,
+                     specialType = (Area.SpecialType) specialType,
+                     sourceMapId = sourceMapId,
+                     weatherEffectType = (WeatherEffectType) weatherEffectType,
+                     biome = (Biome.Type) biome
+                  };
+                  mapKeyDataList.Add(newMapEntry);
+                  message = xmlType + " Success! " + xmlSubGroup[0] + " - " + xmlSubGroup[1];
+               }
+            }
+            MapManager.self.receiveMapDataFromServerZip(mapKeyDataList);
             break;
       }
 

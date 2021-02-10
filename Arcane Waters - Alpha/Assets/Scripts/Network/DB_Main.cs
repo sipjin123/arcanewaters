@@ -2316,6 +2316,43 @@ public class DB_Main : DB_MainStub
       return -1;
    }
 
+   public static new string getMapContents () {
+      string content = "";
+      string cmdText = "SELECT * FROM maps_v2";
+      using (MySqlConnection conn = getConnectionToDevGlobal())
+      using (MySqlCommand cmd = new MySqlCommand(cmdText, conn)) {
+         conn.Open();
+         cmd.Prepare();
+         DebugQuery(cmd);
+
+         using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+            while (dataReader.Read()) {
+               if (dataReader.Read()) {
+                  int publishedversion = dataReader.GetInt32("publishedversion");
+                  if (publishedversion >= 0) {
+                     int id = dataReader.GetInt32("id");
+                     string name = dataReader.GetString("name");
+                     string displayName = dataReader.GetString("displayName");
+                     int specialType = dataReader.GetInt32("specialType");
+                     int sourceMapId = dataReader.GetInt32("sourceMapId");
+                     int weatherEffectType = dataReader.GetInt32("weatherEffectType");
+                     int biome = dataReader.GetInt32("biome");
+
+                     content += id + "[space]" +
+                        name + "[space]" +
+                        displayName + "[space]" +
+                        specialType + "[space]" +
+                        sourceMapId + "[space]" +
+                        weatherEffectType + "[space]" +
+                        biome + "[next]\n";
+                  }
+               }
+            }
+            return content;
+         }
+      }
+   }
+
    public static new List<Map> getMaps (object command) {
       MySqlCommand cmd = command as MySqlCommand;
 

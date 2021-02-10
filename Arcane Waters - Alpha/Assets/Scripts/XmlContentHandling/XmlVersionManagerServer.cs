@@ -51,6 +51,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string ITEM_DEFINITIONS_TABLE = "item_definitions";
    public static string PROJECTILES_TABLE = "projectiles_xml_v3";
    public static string TUTORIAL_TABLE = "tutorial_xml_v1";
+   public static string MAP_TABLE = "maps_v2";
 
    // TEXT FILE NAMES (Do not Modify)
    public static string CROPS_FILE = "crops";
@@ -78,6 +79,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    public static string TOOL_TIP_FILE = "tool_tip";
    public static string PROJECTILES_FILE = "projectiles_xml";
    public static string TUTORIAL_FILE = "tutorial_xml";
+   public static string MAP_FILE = "map_xml";
 
    // Progress indicators
    public int targetProgress;
@@ -97,6 +99,10 @@ public class XmlVersionManagerServer : MonoBehaviour {
    private void Awake () {
       #if IS_SERVER_BUILD && CLOUD_BUILD
       forceDisable = false;
+      #endif
+      
+      #if IS_SERVER_BUILD && !CLOUD_BUILD
+      D.debug("This is a Server build but NOT a Cloud build, cannot process xml zip setup");
       #endif
       
       // Make sure this directory exists
@@ -135,6 +141,8 @@ public class XmlVersionManagerServer : MonoBehaviour {
       confirmTextFile(ITEM_DEFINITIONS_FILE);
       confirmTextFile(TOOL_TIP_FILE);
       confirmTextFile(PROJECTILES_FILE);
+
+      confirmTextFile(MAP_FILE);
    }
 
    private void confirmTextFile (string fileName) {
@@ -292,6 +300,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          string itemDefinitionsData = DB_Main.getXmlContent(ITEM_DEFINITIONS_TABLE, EditorToolType.ItemDefinitions);
          string tooltipData = DB_Main.getTooltipXmlContent();
          string projectileData = DB_Main.getXmlContent(PROJECTILES_TABLE, EditorToolType.Projectiles);
+         string mapData = DB_Main.getMapContents();
 
          // Write data to text files
          writeAndCache(XML_TEXT_DIRECTORY + "/" + LAND_MONSTER_FILE + ".txt", landMonsterData);
@@ -319,6 +328,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TOOL_TIP_FILE + ".txt", tooltipData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + PROJECTILES_FILE + ".txt", projectileData);
          writeAndCache(XML_TEXT_DIRECTORY + "/" + TUTORIAL_FILE + ".txt", tutorialData);
+         writeAndCache(XML_TEXT_DIRECTORY + "/" + MAP_FILE + ".txt", mapData);
 
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             string zipDirectory = SERVER_ZIP_DIRECTORY + "/" + SERVER_ZIP_FILE;
