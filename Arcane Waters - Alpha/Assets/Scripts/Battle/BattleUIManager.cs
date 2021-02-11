@@ -556,9 +556,13 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private void onStanceChanged (Battler.Stance newStance) {
+      try {
          stanceButtons[(int) newStance].interactable = true;
          stanceCooldownImages[(int) newStance].fillAmount = 0.0f;
          stanceButtons[(int) newStance].Select();
+      } catch {
+         D.debug("Error here! Stance change is bugged!");
+      }
    }
 
    private Button getActiveStanceButton () {
