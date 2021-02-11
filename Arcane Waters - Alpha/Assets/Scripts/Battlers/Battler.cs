@@ -310,7 +310,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Monster battlers are selectable
             onBattlerSelect.AddListener(() => {
                // Enable all offensive abilities
-               BattleUIManager.self.updateAbilityStates(AbilityType.Standard);
+               BattleUIManager.self.setAbilityType(AbilityType.Standard);
             });
          }
       }
@@ -331,6 +331,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          CameraManager.enableBattleDisplay();
 
          BattleUIManager.self.usernameText.text = Global.player.entityName;
+         BattleUIManager.self.setLocalBattler(this);
          BattleUIManager.self.prepareBattleUI();
       } else {
          // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
@@ -340,24 +341,19 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
                Vector3 pointOffset = new Vector3(allyBattler.clickBox.bounds.size.x / 4, allyBattler.clickBox.bounds.size.y * 1.75f);
                BattleUIManager.self.setRectToScreenPosition(BattleUIManager.self.mainPlayerRect, allyBattler.battleSpot.transform.position, pointOffset);
-               BattleUIManager.self.setRectToScreenPosition(BattleUIManager.self.playerMainUIHolder.GetComponent<RectTransform>(), allyBattler.battleSpot.transform.position, pointOffset);
 
-               BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(true);
                BattleUIManager.self.playerBattleCG.Show();
-               BattleUIManager.self.stanceChangeButton.gameObject.SetActive(false);
                BattleUIManager.self.usernameText.gameObject.SetActive(true);
                BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
                selectedBattleBar.gameObject.SetActive(false);
 
                // Enable all buff abilities
-               BattleUIManager.self.updateAbilityStates(AbilityType.BuffDebuff);
+               BattleUIManager.self.setAbilityType(AbilityType.BuffDebuff);
             });
 
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
                selectedBattleBar.gameObject.SetActive(false);
-               BattleUIManager.self.playerStanceFrame.SetActive(false);
-               BattleUIManager.self.playerMainUIHolder.gameObject.SetActive(false);
             });
          } 
       }
@@ -404,7 +400,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    private IEnumerator CO_SelectEnemyBattler () {
       // Simulate battle selection upon entering combat
-      yield return new WaitForSeconds(1);
+      yield return new WaitForSeconds(2);
 
       if (BattleSelectionManager.self.selectedBattler != this) {
          BattleSelectionManager.self.clickedArea(transform.position);

@@ -12,6 +12,7 @@ using BackgroundTool;
 using MapCustomization;
 using System;
 using MLAPI;
+using System.Linq;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -245,25 +246,26 @@ public class MyNetworkManager : NetworkManager
 
    [ServerOnly]
    public override void OnServerAddPlayer (NetworkConnection conn) {
-      int authenicatedAccountId = _accountsForConnections[conn];
-      int authenticatedUserId = _userIdForConnection[conn];
-      string steamUserId = _steamIdForConnection.ContainsKey(conn) ? _steamIdForConnection[conn] : "";
+      int authenicatedAccountId = -1;
+      int authenticatedUserId = -1;
+      string steamUserId = "";
 
+      if (_players.TryGetValue(conn.connectionId, out ConnectedClientData data)) {
+         authenicatedAccountId = data.accountId;
+         authenticatedUserId = data.userId;
+         steamUserId = data.steamId;
+      }
+      
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
       }
 
       // Make sure an entity gameobject for this user doesn't already exist (e.g. due to a player reconnecting before the timeout)
-      NetEntity entity = EntityManager.self.getEntity(authenticatedUserId);
-      if (entity != null) {
-         D.log($"Destroying gameObject for player with user ID = {authenticatedUserId} to avoid duplicates.");
-         if (entity.connectionToClient != null) {
-            entity.connectionToClient.Disconnect();
-            NetworkServer.DestroyPlayerForConnection(entity.connectionToClient);
-         } else {
-            NetworkServer.Destroy(entity.gameObject);
-         }
+      NetworkConnection existingConnection = getConnectionForAccount(authenicatedAccountId);
+      if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
+         ServerMessageManager.sendError(ErrorMessage.Type.AlreadyOnline, existingConnection.connectionId);
+         disconnectClient(existingConnection);
       }
 
       // Look up the info in the database
@@ -369,8 +371,7 @@ public class MyNetworkManager : NetworkManager
             player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
             player.steamId = steamUserId;
 
-            // Keep track
-            _players[conn.connectionId] = player;
+            _players[conn.connectionId].netEntity = player;
 
             // Update the observers associated with the instance and the associated players
             Instance instance = InstanceManager.self.getInstance(player.instanceId);
@@ -427,11 +428,15 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForPendingFriendshipRequests();
 
             // Update the guild icon display for all players
-            foreach (KeyValuePair<int, NetEntity> entry in _players) {
-               if (entry.Value.guildId > 0) {
-                  entry.Value.Rpc_UpdateGuildIconDisplay(entry.Value.guildIconBackground, entry.Value.guildIconBackPalettes, entry.Value.guildIconBorder, entry.Value.guildIconSigil, entry.Value.guildIconSigilPalettes);
-               } else {
-                  entry.Value.Rpc_HideGuildIconDisplay();
+            foreach (KeyValuePair<int, ConnectedClientData> playerConnection in _players) {
+               NetEntity entity = playerConnection.Value.netEntity;
+
+               if (entity != null) {
+                  if (entity.guildId > 0) {
+                     entity.Rpc_UpdateGuildIconDisplay(entity.guildIconBackground, entity.guildIconBackPalettes, entity.guildIconBorder, entity.guildIconSigil, entity.guildIconSigilPalettes);
+                  } else {
+                     entity.Rpc_HideGuildIconDisplay();
+                  }
                }
             }
 
@@ -445,6 +450,30 @@ public class MyNetworkManager : NetworkManager
             player.rpc.Target_GrantAdminAccess(player.connectionToClient, player.isAdmin());
          });
       });
+   }
+
+   public NetworkConnection getConnectionForAccount (int accountId) {
+      return _players.Values.FirstOrDefault(x => x.accountId == accountId).connection;
+   }
+
+   public void destroyPlayer (NetEntity player) {
+      if (player == null) {
+         return;
+      }
+
+      destroyPlayerObjectForAccountId(player.accountId);
+   }
+
+   public void destroyPlayerObjectForAccountId (int accountId) {
+      foreach (ConnectedClientData data in _players.Values) {
+         if (data.accountId == accountId) {
+            if (data.netEntity != null) {
+               NetworkServer.Destroy(data.netEntity.gameObject);
+            }
+
+            return;
+         }
+      }
    }
 
    public string[] serializedNPCData (List<NPCData> referenceNPCData) {
@@ -480,52 +509,43 @@ public class MyNetworkManager : NetworkManager
       InstanceManager.self.reset();
    }
 
-   public override void OnServerDisconnect (NetworkConnection conn) {
-      // Called on the server when a client disconnects
+   public override void OnServerConnect (NetworkConnection conn) {
+      base.OnServerConnect(conn);
 
-      // Clear out these references so we don't leak memory
-      if (_accountsForConnections.ContainsKey(conn)) {
-         _accountsForConnections.Remove(conn);
-      }
-      if (_userIdForConnection.ContainsKey(conn)) {
-         _userIdForConnection.Remove(conn);
-      }
-      if (_steamIdForConnection.ContainsKey(conn)) {
-         _steamIdForConnection.Remove(conn);
-      }
+      ConnectedClientData connectionData = new ConnectedClientData();
+      connectionData.connection = conn;
+      connectionData.connectionId = conn.connectionId;
+      connectionData.address = conn.address;
 
-      // Remove the player
-      if (_players.ContainsKey(conn.connectionId)) {
-         NetEntity player = _players[conn.connectionId];
-
-         // Remove the player from our internal list
-         _players.Remove(conn.connectionId);
-
-         // Manage the voyage groups on user disconnection
-         VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
-
-         if (player is ShipEntity) {
-            // If the player is a ship, keep it in the server for a few seconds
-            DisconnectionManager.self.addToDisconnectedUsers(player);
-         } else {
-            destroyPlayer(player);
-         }
-      }
+      _players.Add(conn.connectionId, connectionData);
    }
 
-   public void destroyPlayer (NetEntity player) {
-      if (player == null) {
+   public override void OnServerDisconnect (NetworkConnection conn) {
+      // Called on the server when a client disconnects
+      disconnectClient(conn);      
+   }
+
+   public void disconnectClient (int accountId) {
+      NetworkConnection connection = getConnectionForAccount(accountId);
+      disconnectClient(connection);
+   }
+
+   public void disconnectClient (NetworkConnection conn) {
+      if (conn == null) {
          return;
       }
 
-      if (player.netIdent == null) {
-         D.error($"Player {player.entityName} has a null NetworkIdentity and cannot be disconnected.");
+      if (!_players.ContainsKey(conn.connectionId)) {
+         NetworkServer.DestroyPlayerForConnection(conn);
+         conn.Disconnect();
          return;
       }
 
-      // Get the connection
-      NetworkConnection conn = player.netIdent.connectionToClient;
-            
+      ConnectedClientData data = _players[conn.connectionId];
+      NetEntity player = data.netEntity;
+
+      _players.Remove(conn.connectionId);
+
       // Remove the player from the instance
       if (InstanceManager.self != null) {
          InstanceManager.self.removeEntityFromInstance(player);
@@ -540,44 +560,39 @@ public class MyNetworkManager : NetworkManager
          D.error($"Cannot remove player {player.entityName} from list of players to disconnect because DisconnectionManager is null.");
       }
 
-      // If the connection is null, just destroy the player's gameObject
-      if (conn == null) {
-         D.error($"Connection to player {player.entityName} is null. Destroying player gameObject.");
-         NetworkServer.Destroy(player.gameObject);
+      if (player is ShipEntity) {
+         // If the player is a ship, keep it in the server for a few seconds
+         DisconnectionManager.self.addToDisconnectedUsers(player);
       } else {
-         // Remove the player from our internal list
-         if (_players != null && _players.ContainsKey(conn.connectionId)) {
-            _players.Remove(conn.connectionId);
-         } else {
-            D.error("Players dictionary hasn't been initialized yet or the player's connection hasn't been added to it yet.");
-         }
-
-         // Destroy the player object
          NetworkServer.DestroyPlayerForConnection(conn);
+         conn.Disconnect();
       }
    }
 
    #endregion
 
    public static int getAccountId (NetworkConnection conn) {
-      if (_accountsForConnections.ContainsKey(conn)) {
-         return _accountsForConnections[conn];
+      if (conn == null || !_players.TryGetValue(conn.connectionId, out ConnectedClientData connData)) {
+         return -1;
+      } else {
+         return connData.accountId;
       }
-
-      return -1;
    }
 
    public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
       // Keep track of the account ID that we're associating with this connection
-      _accountsForConnections[conn] = accountId;
+      _players[conn.connectionId].accountId = accountId;
    }
 
    public static void noteUserIdForConnection (int selectedUserId, string steamUserId, NetworkConnection conn) {
-      // Keep track of the user ID that we're associating with this connection
-      _userIdForConnection[conn] = selectedUserId;
-      if (!string.IsNullOrEmpty(steamUserId)) {
-         _steamIdForConnection[conn] = steamUserId;
+      if (conn == null) {
+         return;
       }
+
+      // Keep track of the user ID that we're associating with this connection
+      ConnectedClientData connData = _players[conn.connectionId];
+      connData.userId = selectedUserId;
+      connData.steamId = steamUserId;
    }
 
    public static int getCurrentPort () {
@@ -588,8 +603,16 @@ public class MyNetworkManager : NetworkManager
       return 0;
    }
 
-   public static Dictionary<int, NetEntity> getPlayers () {
-      return _players;
+   public static HashSet<NetEntity> getPlayers () {
+      HashSet<NetEntity> list = new HashSet<NetEntity>();
+
+      foreach (ConnectedClientData connData in _players.Values) {
+         if (connData.netEntity != null) {
+            list.Add(connData.netEntity);
+         }
+      }
+
+      return list;
    }
 
    public static T fetchEntityFromNetId<T> (uint netId) where T : NetEntity {
@@ -616,16 +639,7 @@ public class MyNetworkManager : NetworkManager
    #region Private Variables
 
    // Keep track of players when they connect
-   protected static Dictionary<int, NetEntity> _players = new Dictionary<int, NetEntity>();
-
-   // Map connections to authenticated account IDs
-   protected static Dictionary<NetworkConnection, int> _accountsForConnections = new Dictionary<NetworkConnection, int>();
-
-   // Map connections to authenticated user IDs
-   protected static Dictionary<NetworkConnection, int> _userIdForConnection = new Dictionary<NetworkConnection, int>();
-
-   // Steam ID for connection
-   protected static Dictionary<NetworkConnection, string> _steamIdForConnection = new Dictionary<NetworkConnection, string>();
+   protected static Dictionary<int, ConnectedClientData> _players = new Dictionary<int, ConnectedClientData>();
 
    // An id we can use for testing
    protected static int _testId = 1;

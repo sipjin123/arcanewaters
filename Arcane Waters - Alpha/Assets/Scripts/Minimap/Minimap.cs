@@ -1296,9 +1296,9 @@ public class Minimap : ClientMonoBehaviour {
 
             foreach (var icon in _tileIconLayers) {
                if (area.isSea && icon.iconLayerName == _treasureSiteIconName) {
-                  Transform[] treasureSites = area.gameObject.transform.Find("Treasure Sites") ? area.gameObject.transform.Find("Treasure Sites").GetComponentsInChildren<Transform>() : new Transform[0];
+                  TreasureSite[] treasureSites = area.gameObject.transform.Find("Treasure Sites") ? area.gameObject.transform.Find("Treasure Sites").GetComponentsInChildren<TreasureSite>() : new TreasureSite[0];
                   foreach (var treasureSite in treasureSites) {
-                     if (treasureSite.GetComponent<SpriteRenderer>() && treasureSite.GetComponent<SpriteRenderer>().enabled) {
+                     if (treasureSite.isActive() && treasureSite.GetComponent<SpriteRenderer>() && treasureSite.GetComponent<SpriteRenderer>().enabled) {
                         addIconToTexture(layerSizeY, layerSizeX, area, treasureSite.transform, icon, ref textureList);
                      }
                   }

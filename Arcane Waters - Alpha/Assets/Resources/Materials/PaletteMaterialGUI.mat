@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PaletteMaterialGUI
   m_Shader: {fileID: 4800000, guid: e97d79f9f6c392a4a87ab5559718097d, type: 3}
-  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
+  m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -97,7 +97,6 @@ Material:
     - _StencilWriteMask: 255
     - _Threshold: 0.05
     - _UVSec: 0
-    - _UseHatStencil: 0
     - _UseUIAlphaClip: 0
     - _ZWrite: 1
     m_Colors:

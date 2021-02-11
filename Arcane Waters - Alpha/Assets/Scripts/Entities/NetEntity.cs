@@ -1311,9 +1311,10 @@ public class NetEntity : NetworkBehaviour
       _temporaryControllers.Add(controller);
       if (hasAuthority) {
          Cmd_TemporaryControlRequested(controller.transform.localPosition);
+         D.debug("Sending command to request control of entity: " + userId);
       }
 
-      if (isServer) {
+      if (isServer && isClient) {
          Rpc_TemporaryControlRequested(controller.transform.localPosition);
       }
 
@@ -1339,7 +1340,9 @@ public class NetEntity : NetworkBehaviour
    [Command]
    public void Cmd_TemporaryControlRequested (Vector2 controllerLocalPosition) {
       TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+      D.debug("Server received command for temporary control");
       if (con != null && !hasScheduledController(con)) {
+         D.debug("Server also passed along Rpc for temp control");
          requestControl(con);
          Rpc_TemporaryControlRequested(controllerLocalPosition);
       }
@@ -1354,10 +1357,7 @@ public class NetEntity : NetworkBehaviour
 
       TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
       noteWebBounce(con);
-
-      if (con != null && !hasScheduledController(con)) {
-         requestControl(con);
-      }
+      D.debug(string.Format("Client: {0} noted bounce time of client: {1}", Global.player.userId, userId));
    }
 
    public void noteWebBounce (TemporaryController con) {
@@ -1581,9 +1581,27 @@ public class NetEntity : NetworkBehaviour
 
       // If the destination is a voyage map and the user is an admin, make sure that he joined the voyage and force it if not
       if (isAdmin()) {
-         if (VoyageManager.self.isVoyageArea(newArea)) {
+         if (VoyageManager.isVoyageOrLeagueArea(newArea)) {
+            // Try to warp the admin to his current voyage if the area parameter fits
+            Voyage voyage = VoyageManager.self.getVoyageForGroup(this.voyageGroupId);
+            if (voyage != null && voyage.areaKey.Equals(newArea)) {
+               spawnInNewMap(voyage.voyageId, newArea, Direction.South);
+               return;
+            }
+
+            // If the destination is a league map, always create a new instance
+            if (VoyageManager.isLeagueArea(newArea)) {
+               VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(this.voyageGroupId);
+               if (voyageGroup != null) {
+                  VoyageGroupManager.self.removeUserFromGroup(voyageGroup, this);
+               }
+               Instance instance = InstanceManager.self.getInstance(this.instanceId);
+               VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 0, instance.biome, newArea);
+               return;
+            }
+
             // Find an active voyage in this area
-            Voyage voyage = VoyageManager.self.getVoyage(newArea);
+            voyage = VoyageManager.self.getVoyage(newArea);
             if (voyage != null) {
                VoyageGroupManager.self.forceAdminJoinVoyage(this, voyage);
             } else {
@@ -1643,6 +1661,16 @@ public class NetEntity : NetworkBehaviour
       // Store the connection reference so that we don't lose it while on the background thread
       NetworkConnection connectionToClient = this.connectionToClient;
 
+      if (isPlayerShip() && VoyageManager.isLeagueArea(areaKey)) {
+         if (VoyageManager.isLeagueArea(newArea)) {
+            // When warping between league maps, the hp is persistent
+            ((PlayerShipEntity) this).storeCurrentShipHealth();
+         } else {
+            // When leaving league maps, the hp is restored
+            ((PlayerShipEntity) this).restoreMaxShipHealth();
+         }
+      }
+
       // Update the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          DB_Main.setNewLocalPosition(this.userId, newLocalPosition, newFacingDirection, newArea);
@@ -1694,7 +1722,7 @@ public class NetEntity : NetworkBehaviour
          SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
 
          // Show the Area name
-         if (VoyageManager.self.isLeagueArea(this.areaKey)) {
+         if (VoyageManager.isLeagueArea(this.areaKey)) {
             LocationBanner.self.setText("League " + (getInstance().leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE);
          } else {
             LocationBanner.self.setText(Area.getName(this.areaKey));
@@ -1704,7 +1732,7 @@ public class NetEntity : NetworkBehaviour
          TutorialManager3.self.onUserSpawns(this.userId);
 
          // Trigger the tutorial
-         if (VoyageManager.self.isVoyageArea(this.areaKey)) {
+         if (VoyageManager.isVoyageOrLeagueArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
          }
          TutorialManager3.self.tryCompletingStepByLocation();

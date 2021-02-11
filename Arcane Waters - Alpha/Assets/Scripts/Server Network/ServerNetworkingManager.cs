@@ -61,7 +61,7 @@ public class ServerNetworkingManager : MonoBehaviour {
       bool isSinglePlayer, int voyageId) {
       // If the player is in a voyage group and warping to a voyage area or treasure site, get the unique server hosting it
       if (voyageId != -1 &&
-         (VoyageManager.self.isVoyageArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
+         (VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey))) {
          NetworkedServer server = getServerHostingVoyage(voyageId);
          if (server == null) {
             D.error("Couldn't find the server hosting the voyage " + voyageId);

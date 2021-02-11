@@ -33,10 +33,6 @@ public class BattleUIManager : MonoBehaviour {
    // Main gameobject that will hold all of the player UI inside the battle
    public CanvasGroup playerBattleCG;
 
-   // Gameobject that holds the buffs, name, and all the other bars
-   public CanvasGroup playerMainUIHolder;
-
-   // Main rect transform that holds all the player battle UI
    // Used for adjusting it itself at runtime depending on player spot position
    public RectTransform mainPlayerRect;
 
@@ -56,50 +52,20 @@ public class BattleUIManager : MonoBehaviour {
    // UI element that shows the username in the battle UI
    public TextMeshProUGUI usernameText;
 
-   [Header("Stance")]
-   // All UI objects related to the player stance UI, starting with the main frame
-   public GameObject playerStanceFrame;
-
    // Used for showing features that are not in place.
    public GameObject debugWIPFrame;
 
-   // Stance main icon that appears at the right side of the player
-   public Image stanceMainIcon;
-
-   // Different sprites to change whenever we have changed out battle stance
-   public Sprite balancedSprite, offenseSprite, defenseSprite;
-
-   [Space(8)]
-
-   // Reference to the stance change button
-   public Button stanceChangeButton;
-
-   // Window that appears whenever we hover on the stance change button
-   public GameObject stanceButtonFrame;
-
-   // Content that appears in the stance change window (cooldown or that if we are ready)
-   public Text stanceButtonFrameText;
-
-   // Icon that appears at the top of the stance change frame
-   public Image stanceButtonFrameIcon;
-
-   [Space(4)]
-   [Header("Stance Action Tooltip")]
-
-   // Main frame window that appears whenever we hover on a stance action button
-   public GameObject stanceActionFrame;
-
-   // The cooldown that will be shown depending on the stance
-   public Text stanceUICooldown;
-
-   // The description of the stance action frame.
-   public Text stanceActionDescription;
-
-   // Top icon that will appear at the top of the stance action frame
-   public Image stanceActionIcon;
-
    // Subscribe to this event to have something done whenever we hover on an ability in battle
    [HideInInspector] public BattleTooltipEvent onAbilityHover = new BattleTooltipEvent();
+
+   [Header("Stance")]
+   [Space(2)]
+
+   // Buttons that allow the player to change stances
+   public Button[] stanceButtons;
+
+   // The images that radially fill to represent the cooldown of changing stances
+   public Image[] stanceCooldownImages;   
 
    [Header("Ability Description")]
    [Space(4)]
@@ -137,9 +103,16 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
-   public void updateAbilityStates (AbilityType abilityType) {
+   public void updateButtons (AbilityType abilityType, int newStance = -1) {
+      Battler.Stance playerStance;
+      if (newStance == -1) {
+         playerStance = _playerLocalBattler.stance;
+      } else {
+         playerStance = (Battler.Stance) newStance;
+      }
+
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (abilityButton.abilityType == abilityType) {
+         if (abilityButton.abilityType == abilityType && doesAttackMatchStance(abilityButton, playerStance)) {
             abilityButton.enableButton();
          } else {
             abilityButton.disableButton();
@@ -175,7 +148,7 @@ public class BattleUIManager : MonoBehaviour {
       }
    }
 
-   public void SetupAbilityUI (AbilitySQLData[] abilitydata, int weaponCategoryInt, bool hasValidAbilities) {
+   public void setupAbilityUI (AbilitySQLData[] abilitydata, int weaponCategoryInt, bool hasValidAbilities) {
       Weapon.Class weaponClass = (Weapon.Class) weaponCategoryInt;
       int indexCounter = 0;
       int attackAbilityIndex = 0;
@@ -274,7 +247,7 @@ public class BattleUIManager : MonoBehaviour {
          abilityIndex = abilitydata.Length - 1;
       }
 
-      updateAbilityStates(AbilityType.Undefined);
+      updateButtons(AbilityType.Undefined);
    }
 
    public void deselectOtherAbilities () {
@@ -301,6 +274,14 @@ public class BattleUIManager : MonoBehaviour {
             selectNextTarget();
          }
 
+         if (Input.GetKeyDown(KeyCode.F1)) {
+            changeBattleStance((int) Battler.Stance.Defense);
+         } else if (Input.GetKeyDown(KeyCode.F2)) {
+            changeBattleStance((int) Battler.Stance.Balanced);
+         } else if (Input.GetKeyDown(KeyCode.F3)) {
+            changeBattleStance((int) Battler.Stance.Attack);
+         }
+
          // Display the health of the ally
          if (BattleSelectionManager.self.selectedBattler != null && BattleSelectionManager.self.selectedBattler != _playerLocalBattler && BattleSelectionManager.self.selectedBattler.battlerType == BattlerType.PlayerControlled) {
             playerHealthBar.maxValue = BattleSelectionManager.self.selectedBattler.getStartingHealth();
@@ -312,14 +293,41 @@ public class BattleUIManager : MonoBehaviour {
             playerHealthBar.value = _playerLocalBattler.displayedHealth;
          }
 
-         if (_playerLocalBattler.stanceCurrentCooldown > 0) {
-            _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
-            stanceChangeButton.interactable = false;
-            stanceButtonFrameText.text = "cooldown " + _playerLocalBattler.stanceCurrentCooldown.ToString("F0") + " s";
-         } else {
-            _playerLocalBattler.stanceCurrentCooldown = 0;
-            stanceChangeButton.interactable = true;
-            stanceButtonFrameText.text = "change stance";
+         updateStanceGUI();
+      }
+   }
+
+   private void updateStanceGUI () {
+      // If our stance change is on cooldown
+      if (_playerLocalBattler.stanceCurrentCooldown > 0.0f) {
+         _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
+
+         // Update the radial fills of cooldown bars
+         List<Image> inactiveStanceImages = getInactiveStanceImages();
+         float stanceCooldown = getStanceAbilityData(_playerLocalBattler.stance).abilityCooldown;
+         float fillAmount = 1.0f - Mathf.Clamp01((float)_playerLocalBattler.stanceCurrentCooldown / stanceCooldown);
+
+         foreach (Image image in inactiveStanceImages) {
+            image.fillAmount = fillAmount;
+         }
+
+         List<Button> inactiveStanceButtons = getInactiveStanceButtons();
+
+         foreach (Button button in inactiveStanceButtons) {
+            button.interactable = false;
+         }
+
+         stanceButtons[(int) _playerLocalBattler.stance].interactable = true;
+         stanceCooldownImages[(int) _playerLocalBattler.stance].fillAmount = 0.0f;
+
+      // If our stance change is not on cooldown
+      } else {
+         foreach (Button button in stanceButtons) {
+            button.interactable = true;
+         }
+
+         foreach (Image image in stanceCooldownImages) {
+            image.fillAmount = 0.0f;
          }
       }
    }
@@ -359,7 +367,7 @@ public class BattleUIManager : MonoBehaviour {
       abilitiesCG.gameObject.SetActive(true);
 
       // Battler stances are always reset to balanced when a new battle begins, so we reset the UI too.
-      setStanceGraphics(Battler.Stance.Balanced);
+      onStanceChanged(_playerLocalBattler.stance);
 
       StartCoroutine(setPlayerBattlerUIEvents());
 
@@ -369,20 +377,18 @@ public class BattleUIManager : MonoBehaviour {
    public void disableBattleUI () {
       mainPlayerRectCG.Hide();
       abilitiesCG.gameObject.SetActive(false);
-
-      // If any of these are null, then we do not call anything.
-      if (playerStanceFrame != null) {
-         playerStanceFrame.SetActive(false);
-         playerMainUIHolder.gameObject.SetActive(false);
-         setStanceFrameActiveState(false);
-      }
-
-      hideActionStanceFrame();
    }
 
    // Changes the icon that is at the right side of the player battle ring UI
    public void changeBattleStance (int newStance) {
-      switch ((Battler.Stance) newStance) {
+      Battler.Stance stance = (Battler.Stance) newStance;
+
+      // Don't allow the player to change stance if it's on cooldown, or to change to the stance they're already in
+      if (_playerLocalBattler.stanceCurrentCooldown > 0.0f || stance == _playerLocalBattler.stance) {
+         return;
+      }
+
+      switch (stance) {
          case Battler.Stance.Balanced:
             _playerLocalBattler.stanceCurrentCooldown = AbilityInventory.self.balancedStance.abilityCooldown;
             break;
@@ -394,13 +400,31 @@ public class BattleUIManager : MonoBehaviour {
             break;
       }
 
-      setStanceGraphics((Battler.Stance) newStance);
-      
+      onStanceChanged((Battler.Stance) newStance);
       Global.player.rpc.Cmd_RequestStanceChange((Battler.Stance) newStance);
 
       // Whenever we have finished setting the new stance, we hide the frames
-      hideActionStanceFrame();
-      toggleStanceFrame();
+      updateButtons(_currentAbilityType, newStance);
+   }
+
+   private bool doesAttackMatchStance (AbilityButton button, Battler.Stance stance) {
+      AbilityType abilityType = button.abilityType;
+      int abilityTypeIndex = button.abilityTypeIndex;
+      BasicAbilityData abilityData = null;
+
+      if (abilityType == AbilityType.Standard) {
+         abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
+      } else if (abilityType == AbilityType.BuffDebuff) {
+         abilityData = _playerLocalBattler.getBuffAbilities()[abilityTypeIndex];
+      }
+
+      if (abilityData != null) {
+         if (abilityData.allowedStances.Contains(stance)) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    #region Tooltips
@@ -434,47 +458,6 @@ public class BattleUIManager : MonoBehaviour {
       descriptionPanel.SetActive(enabled);
    }
 
-   // Enable/Disable the stance main button frame window
-   public void setStanceFrameActiveState (bool enabled, string frameDescription = "") {
-      stanceButtonFrame.SetActive(enabled);
-      stanceButtonFrameText.text = frameDescription;
-   }
-
-   // Toggles the stance frame
-   public void toggleStanceFrame () {
-      playerStanceFrame.SetActive(!playerStanceFrame.activeSelf);
-
-      if (playerStanceFrame.activeSelf) {
-         setStanceFrameActiveState(false, "");
-      }
-   }
-
-   public void showActionStanceFrame (int cooldown, Sprite stanceIcon, string stanceDescription) {
-      stanceActionFrame.SetActive(true);
-      stanceActionDescription.text = stanceDescription;
-      stanceUICooldown.text = "cooldown " + cooldown + " s";
-      stanceActionIcon.sprite = stanceIcon;
-   }
-
-   public void hideActionStanceFrame () {
-      if (stanceActionFrame != null) {
-         stanceActionFrame.SetActive(false);
-      }
-   }
-
-   public Sprite getStanceIcon (Battler.Stance stance) {
-      switch (stance) {
-         case Battler.Stance.Balanced:
-            return balancedSprite;
-         case Battler.Stance.Attack:
-            return offenseSprite;
-         case Battler.Stance.Defense:
-            return defenseSprite;
-         default:
-            return null;
-      }
-   }
-
    #endregion
 
    public void hidePlayerGameobjectUI () {
@@ -491,7 +474,6 @@ public class BattleUIManager : MonoBehaviour {
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
 
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
-      setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
    }
 
    // Sets combat UI events for the local player battler
@@ -509,15 +491,12 @@ public class BattleUIManager : MonoBehaviour {
             try {
                Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
                setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
-               setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
 
                playerBattler.onBattlerAttackStart.AddListener(() => {
-                  playerMainUIHolder.Hide();
                   mainPlayerRectCG.Hide();
                });
 
                playerBattler.onBattlerAttackEnd.AddListener(() => {
-                  playerMainUIHolder.Show();
                   mainPlayerRectCG.Show();
 
                   playerBattler.pauseAnim(false);
@@ -525,15 +504,12 @@ public class BattleUIManager : MonoBehaviour {
 
                // Whenever we select our local battler, we prepare UI positioning of the ring
                playerBattler.onBattlerSelect.AddListener(() => {
-                  stanceChangeButton.gameObject.SetActive(true);
                   highlightLocalBattler();
                });
 
                playerHealthBar.maxValue = playerBattler.getStartingHealth();
 
                playerBattler.onBattlerDeselect.AddListener(() => {
-                  playerStanceFrame.SetActive(false);
-                  playerMainUIHolder.gameObject.SetActive(false);
                   playerBattleCG.Hide();
                   playerBattler.selectedBattleBar.gameObject.SetActive(false);
                });
@@ -555,9 +531,6 @@ public class BattleUIManager : MonoBehaviour {
 
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
-      setRectToScreenPosition(playerMainUIHolder.GetComponent<RectTransform>(), playerBattler.battleSpot.transform.position, pointOffset);
-
-      playerMainUIHolder.gameObject.SetActive(true);
 
       playerBattler.selectedBattleBar.gameObject.SetActive(false);
       usernameText.text = Global.player.entityName;
@@ -566,7 +539,7 @@ public class BattleUIManager : MonoBehaviour {
          playerBattleCG.Show();
 
          // Enable all buff abilities
-         updateAbilityStates(AbilityType.BuffDebuff);
+         setAbilityType(AbilityType.BuffDebuff);
       } else {
          playerBattleCG.Hide();
       }
@@ -582,25 +555,63 @@ public class BattleUIManager : MonoBehaviour {
       originRect.anchoredPosition = objectScreenPos;
    }
 
-   public void setStanceGraphics (Battler.Stance stance) {
+   private void onStanceChanged (Battler.Stance newStance) {
+         stanceButtons[(int) newStance].interactable = true;
+         stanceCooldownImages[(int) newStance].fillAmount = 0.0f;
+         stanceButtons[(int) newStance].Select();
+   }
+
+   private Button getActiveStanceButton () {
+      return stanceButtons[(int)_playerLocalBattler.stance];
+   }
+
+   private Image getActiveStanceImage () {
+      return stanceCooldownImages[(int) _playerLocalBattler.stance];
+   }
+
+   private List<Button> getInactiveStanceButtons () {
+      List<Button> buttons = new List<Button>();
+
+      // Get all buttons that aren't the active stance button
+      for (int i = 0; i < stanceButtons.Length; i++) {
+         if (i == (int)(_playerLocalBattler.stance)) {
+            continue;
+         }
+         buttons.Add(stanceButtons[i]);
+      }
+
+      return buttons;
+   }
+
+   private List<Image> getInactiveStanceImages () {
+      List<Image> images = new List<Image>();
+
+      // Get all buttons that aren't the active stance button
+      for (int i = 0; i < stanceCooldownImages.Length; i++) {
+         if (i == (int) (_playerLocalBattler.stance)) {
+            continue;
+         }
+         images.Add(stanceCooldownImages[i]);
+      }
+
+      return images;
+   }
+
+   private BasicAbilityData getStanceAbilityData (Battler.Stance stance) {
       switch (stance) {
-         case Battler.Stance.Balanced:
-            stanceMainIcon.sprite = balancedSprite;
-            stanceButtonFrameIcon.sprite = balancedSprite;
-            break;
          case Battler.Stance.Attack:
-            stanceMainIcon.sprite = offenseSprite;
-            stanceButtonFrameIcon.sprite = offenseSprite;
-            break;
+            return AbilityInventory.self.offenseStance;
+         case Battler.Stance.Balanced:
+            return AbilityInventory.self.balancedStance;
          case Battler.Stance.Defense:
-            stanceMainIcon.sprite = defenseSprite;
-            stanceButtonFrameIcon.sprite = defenseSprite;
-            break;
+            return AbilityInventory.self.defenseStance;
+         default:
+            return null;
       }
    }
 
    #region DamageText
-   
+
    public void showDamageText (AttackAction action, Battler damagedBattler) {
       BattleSpot spot = damagedBattler.battleSpot;
 
@@ -679,10 +690,22 @@ public class BattleUIManager : MonoBehaviour {
       return _playerLocalBattler;
    }
 
+   public void setLocalBattler (Battler localBattler) {
+      _playerLocalBattler = localBattler;
+   }
+
+   public void setAbilityType (AbilityType abilityType) {
+      _currentAbilityType = abilityType;
+      updateButtons(_currentAbilityType);
+   }
+
    #region Private Variables
 
    // Reference for the local player battler, used for setting the bars information only
    private Battler _playerLocalBattler;
+
+   // The types of abilities allowed for use by the player, used to update which abilites are enabled / disabled
+   private AbilityType _currentAbilityType = AbilityType.Standard;
 
    #endregion
 }

@@ -67,7 +67,10 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Create the area instance
-      InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, difficulty, biome);
+      Instance instance = InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, difficulty, biome);
+
+      // Immediately make the new voyage info accessible to other servers
+      ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
    }
 
    public Voyage getVoyage (int voyageId) {
@@ -138,12 +141,12 @@ public class VoyageManager : MonoBehaviour {
       return getVoyage(voyageId) != null;
    }
 
-   public bool isVoyageArea (string areaKey) {
-      return getVoyageAreaKeys().Contains(areaKey) || getLeagueAreaKeys().Contains(areaKey);
+   public static bool isVoyageOrLeagueArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League;
    }
 
-   public bool isLeagueArea (string areaKey) {
-      return getLeagueAreaKeys().Contains(areaKey);
+   public static bool isLeagueArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League;
    }
 
    public static bool isTreasureSiteArea (string areaKey) {
@@ -301,12 +304,49 @@ public class VoyageManager : MonoBehaviour {
    }
 
    [Server]
-   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome) {
-      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome));
+   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, string areaKey = "") {
+      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome, areaKey));
    }
 
    [Server]
-   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome) {
+   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, string areaKey = "") {
+      VoyageGroupInfo voyageGroup = null;
+      if (VoyageGroupManager.isInGroup(player)) {
+         // Get the group the player belongs to
+         voyageGroup = VoyageGroupManager.self.getGroupById(player.voyageGroupId);
+         if (voyageGroup == null) {
+            D.error("Error when retrieving the voyage group during league instance creation.");
+            yield break;
+         }
+
+         // At the creation of the league, all the group members must be nearby
+         if (leagueIndex == 0) {
+            List<string> missingMembersNames = new List<string>();
+            foreach (int memberUserId in voyageGroup.members) {
+               // Try to find the entity
+               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+               if (memberEntity == null) {
+                  missingMembersNames.Add("?");
+               } else {
+                  if (Vector3.Distance(memberEntity.transform.position, player.transform.position) > 3) {
+                     missingMembersNames.Add(memberEntity.entityName);
+                  }
+               }
+            }
+
+            if (missingMembersNames.Count > 0) {
+               string allNames = "";
+               foreach (string name in missingMembersNames) {
+                  allNames = allNames + name + ", ";
+               }
+               allNames = allNames.Substring(0, allNames.Length - 2);
+
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "Some group members are missing: " + allNames);
+               yield break;
+            }
+         }
+      }
+
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -314,28 +354,23 @@ public class VoyageManager : MonoBehaviour {
       }
       int voyageId = response.Value;
 
-      // Randomly choose an area among league maps
-      List<string> leagueMaps = getLeagueAreaKeys();
-      if (leagueMaps.Count == 0) {
-         D.error("No league maps available!");
-         yield break;
+      if (string.IsNullOrEmpty(areaKey)) {
+         // Randomly choose an area among league maps
+         List<string> leagueMaps = getLeagueAreaKeys();
+         if (leagueMaps.Count == 0) {
+            D.error("No league maps available!");
+            yield break;
+         }
+         areaKey = leagueMaps[UnityEngine.Random.Range(0, leagueMaps.Count)];
       }
-      string areaKey = leagueMaps[UnityEngine.Random.Range(0, leagueMaps.Count)];
 
       int difficulty;
-      if (!VoyageGroupManager.isInGroup(player)) {
+      if (voyageGroup == null) {
          // Create a new group for the player
          VoyageGroupManager.self.createGroup(player, voyageId, true);
 
          difficulty = 1;
       } else {
-         // Get the group the player belongs to
-         VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(player.voyageGroupId);
-         if (voyageGroup == null) {
-            D.error("Error when retrieving the voyage group during league instance creation.");
-            yield break;
-         }
-
          // Link the group to the voyage instance
          voyageGroup.voyageId = voyageId;
          VoyageGroupManager.self.updateGroup(voyageGroup);
@@ -351,8 +386,17 @@ public class VoyageManager : MonoBehaviour {
          yield return null;
       }
 
-      // Warp the player to the instance
-      player.spawnInNewMap(voyageId, areaKey, Direction.South);
+      if (leagueIndex == 0 && voyageGroup != null) {
+         // At the creation of the league, warp all the group members to the instance together
+         foreach (int memberUserId in voyageGroup.members) {
+            NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
+            if (memberEntity != null) {
+               memberEntity.spawnInNewMap(voyageId, areaKey, Direction.South);
+            }
+         }
+      } else {
+         player.spawnInNewMap(voyageId, areaKey, Direction.South);
+      }
    }
 
    [Server]

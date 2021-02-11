@@ -62,8 +62,9 @@ public class NetworkedServer : NetworkedBehaviour
 
    private void updateConnectedPlayers () {
       connectedUserIds.Clear();
-      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
-         connectedUserIds.Add(player.Value.userId);
+      
+      foreach(NetEntity player in MyNetworkManager.getPlayers()) {         
+         connectedUserIds.Add(player.userId);         
       }
    }
 
@@ -75,11 +76,15 @@ public class NetworkedServer : NetworkedBehaviour
 
       foreach (Instance instance in InstanceManager.self.getVoyageInstances()) {
          allGroupCount.TryGetValue(instance.voyageId, out int groupCount);
-         Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
+         addNewVoyageInstance(instance, groupCount);
+      }
+   }
+
+   public void addNewVoyageInstance (Instance instance, int groupCount) {
+      Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
             instance.isLeague, instance.leagueIndex, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
             instance.getTotalNPCEnemyCount(), groupCount);
-         voyages.Add(voyage);
-      }
+      voyages.Add(voyage);
    }
 
    public bool isMasterServer () {
@@ -98,8 +103,8 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_ReceiveGlobalChatMessage (int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
       // Send the chat message to all users connected to this server
-      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
-         player.Value.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString);
+      foreach (NetEntity netEntity in MyNetworkManager.getPlayers()) {
+         netEntity.Target_ReceiveGlobalChat(chatId, message, timestamp, senderName, senderUserId, guildIconDataString);
       }
    }
 
@@ -111,9 +116,9 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_ReceiveGuildChatMessage (int guildId, int chatId, string message, long timestamp, string senderName, int senderUserId, string guildIconDataString) {
       // Send the chat message to all guild members connected to this server
-      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
-         if (player.Value.guildId == guildId) {
-            player.Value.Target_ReceiveSpecialChat(player.Value.connectionToClient, chatId, message, senderName, player.Value.entityName, timestamp, ChatInfo.Type.Guild, GuildIconData.guildIconDataFromString(guildIconDataString), senderUserId);
+      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
+         if (player.guildId == guildId) {
+            player.Target_ReceiveSpecialChat(player.connectionToClient, chatId, message, senderName, player.entityName, timestamp, ChatInfo.Type.Guild, GuildIconData.guildIconDataFromString(guildIconDataString), senderUserId);
          }
       }
    }
@@ -171,9 +176,9 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_ReceiveConfirmationMessageForGuild (ConfirmMessage.Type confirmType, int guildId, string customMessage) {
       // Send the confirmation to all guild members connected to this server
-      foreach (KeyValuePair<int, NetEntity> player in MyNetworkManager.getPlayers()) {
-         if (player.Value.guildId == guildId) {
-            ServerMessageManager.sendConfirmation(confirmType, player.Value, customMessage);
+      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
+         if (player.guildId == guildId) {
+            ServerMessageManager.sendConfirmation(confirmType, player, customMessage);
          }
       }
    }
@@ -202,10 +207,10 @@ public class NetworkedServer : NetworkedBehaviour
 
    [ClientRPC]
    public void Server_ReplaceGuildMembersRankPriority (int guildId, int originalRankPriority, int newRankPriority, int newPermissions) {
-      foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-         if (pair.Value.guildId == guildId && pair.Value.guildRankPriority == originalRankPriority) {
-            pair.Value.guildRankPriority = newRankPriority;
-            pair.Value.guildPermissions = newPermissions;
+      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
+         if (player.guildId == guildId && player.guildRankPriority == originalRankPriority) {
+            player.guildRankPriority = newRankPriority;
+            player.guildPermissions = newPermissions;
          }
       }
    }

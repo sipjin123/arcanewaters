@@ -143,7 +143,7 @@ public class BattleSelectionManager : MonoBehaviour {
    public void deselectTarget () {
       enemySelection.SetActive(false);
       allySelection.SetActive(false);
-      BattleUIManager.self.updateAbilityStates(AbilityType.Undefined);
+      BattleUIManager.self.setAbilityType(AbilityType.Undefined);
    }
 
    public void autoTargetNextOpponent () {

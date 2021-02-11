@@ -1196,7 +1196,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Handle warping to a sea voyage instance or land treasure site instance
-      if (VoyageManager.self.isVoyageArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
+      if (VoyageManager.isVoyageOrLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
          // Make the admin join the voyage the target user is in
          Voyage voyage;
          try {

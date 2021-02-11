@@ -26,7 +26,7 @@ public class InstanceManager : MonoBehaviour {
 
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
-         if (VoyageManager.self.isVoyageArea(areaKey)) {
+         if (VoyageManager.isVoyageOrLeagueArea(areaKey)) {
             instance = getVoyageInstance(voyageId);
             if (instance == null) {
                D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
@@ -321,9 +321,11 @@ public class InstanceManager : MonoBehaviour {
 
    public static Biome.Type getBiomeForInstance (string areaKey, int voyageId) {
       // Voyages can have a biome different than the default for the area
-      Voyage voyage = VoyageManager.self.getVoyage(voyageId);
-      if (voyage != null) {
-         return voyage.biome;
+      if (VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
+         Voyage voyage = VoyageManager.self.getVoyage(voyageId);
+         if (voyage != null) {
+            return voyage.biome;
+         }
       }
 
       return AreaManager.self.getDefaultBiome(areaKey);

@@ -245,7 +245,7 @@ public class Instance : NetworkBehaviour
       }
 
       // Voyage instances always exist for at least their starting 'open' duration
-      if (isVoyage) {
+      if (isVoyage && !isLeague) {
          TimeSpan timeSinceStart = DateTime.UtcNow.Subtract(DateTime.FromBinary(creationDate));
          if (timeSinceStart.TotalSeconds < Voyage.INSTANCE_OPEN_DURATION) {
             return;
@@ -253,7 +253,7 @@ public class Instance : NetworkBehaviour
       }
 
       // Sea voyage and treasure site instances exist as long as there is a group linked to them
-      if ((VoyageManager.self.isVoyageArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
+      if ((VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) && VoyageGroupManager.self.isAtLeastOneGroupInVoyage(voyageId)) {
          return;
       }
 

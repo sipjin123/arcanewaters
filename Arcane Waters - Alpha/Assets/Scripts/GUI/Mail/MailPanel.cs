@@ -68,6 +68,9 @@ public class MailPanel : Panel
    // The button used to attach an item to a mail
    public Button addAttachedItemButton;
 
+   // The button used to retrieve all the attached items from a mail
+   public Button retrieveAttachedItemsButton;
+
    // The button used to delete the displayed mail
    public Button deleteMailButton;
 
@@ -165,6 +168,14 @@ public class MailPanel : Panel
       deleteMailButton.onClick.RemoveAllListeners();
       deleteMailButton.onClick.AddListener(() => deleteMail(mailIdForDeleteButton));
 
+      // Configure the retrieve all items button
+      retrieveAttachedItemsButton.onClick.RemoveAllListeners();
+      if (attachedItems.Count <= 0) {
+         retrieveAttachedItemsButton.interactable = false;
+      } else {
+         retrieveAttachedItemsButton.interactable = true;
+      }
+
       // Clear existing attached items
       readAttachedItemContainer.DestroyChildren();
 
@@ -186,6 +197,7 @@ public class MailPanel : Panel
          cell.doubleClickEvent.RemoveAllListeners();
          cell.leftClickEvent.AddListener(() => pickUpAttachedItem(mailIdForCell, cell.getItem()));
          cell.rightClickEvent.AddListener(() => pickUpAttachedItem(mailIdForCell, cell.getItem()));
+         retrieveAttachedItemsButton.onClick.AddListener(() => pickUpAttachedItem(mailIdForCell, cell.getItem()));
       }
 
       // Refresh the mail list

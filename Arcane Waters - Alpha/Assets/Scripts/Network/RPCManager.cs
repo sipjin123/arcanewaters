@@ -1109,7 +1109,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Destroy the player object right away
-      MyNetworkManager.self.destroyPlayer(_player);
+      MyNetworkManager.self.disconnectClient(_player.accountId);
    }
 
    [Command]
@@ -2292,11 +2292,11 @@ public class RPCManager : NetworkBehaviour {
             return;
          }
 
+         // Create the mail
+         int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount);
+
          // Back to Unity
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            // Create the mail
-            int mailId = createMailCommon(recipientUserInfo.userId, mailSubject, message, attachedItemsIds, attachedItemsCount);
-
             if (mailId >= 0) {
                // Let the player know that the mail was sent
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.MailSent, _player, "The mail has been successfully sent to " + recipientName + "!");
@@ -2806,14 +2806,14 @@ public class RPCManager : NetworkBehaviour {
             // Let the player know
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                // If user is currently online - update his permissions
-               foreach (KeyValuePair<int, NetEntity> pair in MyNetworkManager.getPlayers()) {
-                  if (pair.Value.guildId == _player.guildId) {
-                     GuildRankInfo rank = guildRanks.Find(x => x.rankPriority == pair.Value.guildRankPriority);
+               foreach (NetEntity player in MyNetworkManager.getPlayers()) {                  
+                  if (player.guildId == _player.guildId) {
+                     GuildRankInfo rank = guildRanks.Find(x => x.rankPriority == player.guildRankPriority);
                      if (rank != null) {
                         GuildRankInfo newRank = rankInfo.ToList().Find(x => x.id == rank.id);
                         if (newRank != null) {
-                           pair.Value.guildRankPriority = newRank.rankPriority;
-                           pair.Value.guildPermissions = newRank.permissions;
+                           player.guildRankPriority = newRank.rankPriority;
+                           player.guildPermissions = newRank.permissions;
                         }
                      }
                   }
@@ -3501,7 +3501,7 @@ public class RPCManager : NetworkBehaviour {
       VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
 
       // If the player is in a voyage area, warp him to the starting town
-      if (VoyageManager.self.isVoyageArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
       }
    }
@@ -3514,30 +3514,6 @@ public class RPCManager : NetworkBehaviour {
       }
 
       VoyageGroupManager.self.sendVoyageGroupMembersToClient(_player);
-   }
-
-   [Command]
-   public void Cmd_OnClientFinishedLoadingArea () {
-      if (_player == null) {
-         D.warning("No player object found.");
-         return;
-      }
-
-      // Now that the area is loaded in the client, enable the player ship
-      PlayerShipEntity playerShipEntity = _player.GetComponent<PlayerShipEntity>();
-      if (playerShipEntity != null) {
-         playerShipEntity.isDisabled = false;
-      }
-
-      // Verify the voyage consistency only if the user is in a voyage group or voyage area
-      if (!VoyageManager.self.isVoyageArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
-         return;
-      }
-
-      // If the player does not meet the voyage requirements, warp the player back to town
-      if (!canPlayerStayInVoyage()) { 
-         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
-      }
    }
 
    [ServerOnly]
@@ -3583,6 +3559,30 @@ public class RPCManager : NetworkBehaviour {
       }
 
       return true;
+   }
+
+   [Command]
+   public void Cmd_OnClientFinishedLoadingArea () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Now that the area is loaded in the client, enable the player ship
+      PlayerShipEntity playerShipEntity = _player.GetComponent<PlayerShipEntity>();
+      if (playerShipEntity != null) {
+         playerShipEntity.isDisabled = false;
+      }
+
+      // Verify the voyage consistency only if the user is in a voyage group or voyage area
+      if (!VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && !VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+         return;
+      }
+
+      // If the player does not meet the voyage requirements, warp the player back to town
+      if (!canPlayerStayInVoyage()) { 
+         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+      }
    }
 
    [TargetRpc]
@@ -3641,12 +3641,6 @@ public class RPCManager : NetworkBehaviour {
       }
    }
 
-   [Command]
-   public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
-      OreNode oreNode = OreManager.self.getOreNode(oreId);
-      Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
-   }
-
    [TargetRpc]
    public void Target_MineOre (NetworkConnection connection, int oreId, Vector2 startingPosition, Vector2 endPosition) {
       OreNode oreNode = OreManager.self.getOreNode(oreId);
@@ -3663,6 +3657,12 @@ public class RPCManager : NetworkBehaviour {
             processClientMineEffect(oreId, oreNode.transform.position, DirectionUtil.getDirectionFromPoint(startingPosition, endPosition), angleOffset, randomSpeed, i, _player.userId, _player.voyageGroupId);
          }
       }
+   }
+
+   [Command]
+   public void Cmd_InteractOre (int oreId, Vector2 startingPosition, Vector2 endPosition) {
+      OreNode oreNode = OreManager.self.getOreNode(oreId);
+      Target_MineOre(_player.connectionToClient, oreId, startingPosition, endPosition);
    }
 
    public void processClientMineEffect (int oreId, Vector3 position, Direction direction, float angleOffset, float randomSpeed, int effectId, int ownerId, int voyageGroupId) {
@@ -3932,7 +3932,7 @@ public class RPCManager : NetworkBehaviour {
 
       // Add it to their inventory
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         item = DB_Main.createNewItem(_player.userId, item);
+         item = DB_Main.createItemOrUpdateItemCount(_player.userId, item);
 
          // Update the treasure chest status if is opened
          DB_Main.updateTreasureStatus(_player.userId, chest.chestSpawnId, _player.areaKey);
@@ -4382,7 +4382,7 @@ public class RPCManager : NetworkBehaviour {
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
-      if (VoyageManager.self.isVoyageArea(_player.areaKey) && VoyageManager.isTreasureSiteArea(_player.areaKey) && !canPlayerStayInVoyage()) {
+      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && VoyageManager.isTreasureSiteArea(_player.areaKey) && !canPlayerStayInVoyage()) {
          D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town");
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
@@ -4564,7 +4564,7 @@ public class RPCManager : NetworkBehaviour {
       List<AbilitySQLData> attackAbilityDataList = Util.unserialize<AbilitySQLData>(rawAttackAbilities);
 
       // Updates the combat UI 
-      BattleUIManager.self.SetupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray(), weaponClass, hasValidAbilities);
+      BattleUIManager.self.setupAbilityUI(attackAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToArray(), weaponClass, hasValidAbilities);
    }
 
    #endregion
@@ -4907,7 +4907,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   private void sendError (string message) {
+   public void sendError (string message) {
       if (UnityThreadHelper.IsMainThread) {
          ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, message);
       } else {

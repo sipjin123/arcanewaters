@@ -543,7 +543,7 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
       // Make sure the server saves our position and health when a player is disconnected (by any means other than a warp)
       if (MyNetworkManager.wasServerStarted) {
-         Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, this.currentHealth));
+         storeCurrentShipHealth();
       }
    }
 
@@ -869,9 +869,17 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
       this.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.North);
 
       // Set the ship health back to max
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.storeShipHealth(this.shipId, this.maxHealth);
-      });
+      restoreMaxShipHealth();
+   }
+
+   [Server]
+   public void storeCurrentShipHealth () {
+      Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, Mathf.Min(this.currentHealth, this.maxHealth)));
+   }
+
+   [Server]
+   public void restoreMaxShipHealth () {
+      Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, this.maxHealth));
    }
 
    #region Private Variables

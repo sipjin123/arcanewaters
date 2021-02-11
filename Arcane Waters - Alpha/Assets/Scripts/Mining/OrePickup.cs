@@ -8,6 +8,9 @@ using TMPro;
 public class OrePickup : MonoBehaviour {
    #region Public Variables
 
+   // The max distance at which this pickup will gravitate towards the player
+   public const float MAX_GRAVITATE_DISTANCE = 1f;
+
    // The sprite renderer reference
    public SpriteRenderer spriteRender;
 
@@ -32,6 +35,26 @@ public class OrePickup : MonoBehaviour {
       this.oreNode = oreNode;
       spriteRender.sprite = sprite;
       spriteRender.transform.rotation = spawnRotation;
+   }
+
+   private void Start () {
+      _creationTime = NetworkTime.time;
+   }
+
+   private void Update () {
+      // Slowly move towards the player after a little while
+      if (Global.player != null && NetworkTime.time - _creationTime > 1.5f) {
+         float distance = Vector2.Distance(this.transform.position, Global.player.transform.position);
+
+         // Make sure we're not too far away
+         if (distance < MAX_GRAVITATE_DISTANCE) {
+            Vector2 direction = Global.player.transform.position - this.transform.position;
+            float speed = MAX_GRAVITATE_DISTANCE - distance;
+            Vector3 offset = (Time.deltaTime * speed * direction.normalized);
+            Vector2 newPosition = this.transform.position + offset;
+            Util.setXY(this.transform, newPosition);
+         }
+      }
    }
 
    private void OnTriggerEnter2D (Collider2D collision) {
@@ -64,6 +87,9 @@ public class OrePickup : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // The time at which we were created
+   private double _creationTime;
 
    #endregion
 }
