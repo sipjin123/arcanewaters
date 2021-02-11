@@ -46,6 +46,10 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    [SyncVar]
    public bool isSupportType;
 
+   // Determines if this battler can walk aroynd
+   [SyncVar]
+   public bool isStationary;
+
    // Our body animator
    public SimpleAnimation bodyAnim;
 
@@ -173,6 +177,11 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
 
       // If we're in a battle, don't move / Boss entities dont move
       if (isInBattle() || isBossType) {
+         return;
+      }
+
+      // Do not process path finding if stationary
+      if (isStationary) {
          return;
       }
 
@@ -328,18 +337,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
             int id = int.Parse(field.v.Split(':')[0]);
          }
       }
-   }
-
-   public static int fetchReceivedData (DataField[] dataFields) {
-      foreach (DataField field in dataFields) {
-         if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
-            // Get ID from npc data field
-            if (field.tryGetIntValue(out int id)) {
-               return id;
-            }
-         }
-      }
-      return 0;
    }
 
    public override void setAreaParent (Area area, bool worldPositionStays) {

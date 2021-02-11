@@ -45,6 +45,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -128,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isSea: 0
+  ren: {fileID: 0}
 --- !u!114 &6365227793956512391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +143,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   title: Enemy
-  dataFields: []
+  canInheritPosition: 0
+  canControlPosition: 0
+  positionStep: {x: 0, y: 0}
+  dataFields:
+  - name: isStationary
+    defaultValue: False
+    toolTip: If this monster can move around
+    type: 3
   selectDataFields: []
   customDataFields:
   - name: enemy data
@@ -160,6 +169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offsetZ: 0
+  inheritedOffsetZ: 0
   isActive: 0
   sortPoint: {fileID: 0}
 --- !u!61 &4981775756384856444
@@ -235,6 +245,7 @@ SpriteRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -300,4 +311,5 @@ MonoBehaviour:
   useExportedFrame: 0
   customFrameName: 
   generatesOnStart: 0
+  isShaderBased: 0
   generatesOnValidate: 1

@@ -112,14 +112,16 @@ namespace MapCreationTool
 
             foreach (XMLPair data in landMonsterData) {
                BattlerData battler = Util.xmlLoad<BattlerData>(new TextAsset(data.rawXmlData));
-               int enemyTypeID = (int) battler.enemyType;
+               if (battler.enemyType != Enemy.Type.PlayerBattler) {
+                  int enemyTypeID = (int) battler.enemyType;
 
-               if (!idToLandMonster.ContainsKey(enemyTypeID) && data.isEnabled) {
-                  idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
-                     xmlId = data.xmlId,
-                     battler = battler,
-                     isEnabled = data.isEnabled
-                  });
+                  if (!idToLandMonster.ContainsKey(enemyTypeID) && data.isEnabled) {
+                     idToLandMonster.Add(enemyTypeID, new BattlerXMLContent {
+                        xmlId = data.xmlId,
+                        battler = battler,
+                        isEnabled = data.isEnabled
+                     });
+                  }
                }
             }
 

@@ -358,11 +358,21 @@ public class Instance : NetworkBehaviour
 
             // Add it to the Instance
             Enemy enemy = Instantiate(PrefabsManager.self.enemyPrefab);
-            enemy.enemyType = (Enemy.Type) Enemy.fetchReceivedData(dataField.d);
+            foreach (DataField field in dataField.d) {
+               if (field.k.CompareTo(DataField.LAND_ENEMY_DATA_KEY) == 0) {
+                  // Get ID from npc data field
+                  if (field.tryGetIntValue(out int id)) {
+                     enemy.enemyType = (Enemy.Type) id;
+                  }
+               }
+               if (field.k.CompareTo(DataField.NPC_STATIONARY_KEY) == 0) {
+                  string isStationaryData = field.v.Split(':')[0];
+                  enemy.isStationary = isStationaryData.ToLower() == "true" ? true : false;
+               }
+            }
             enemy.areaKey = area.areaKey;
             enemy.transform.localPosition = targetLocalPos;
             enemy.setAreaParent(area, false);
-                  
             BattlerData battlerData = MonsterManager.self.getBattlerData(enemy.enemyType);
             if (battlerData != null) {
                enemy.isBossType = battlerData.isBossType;
