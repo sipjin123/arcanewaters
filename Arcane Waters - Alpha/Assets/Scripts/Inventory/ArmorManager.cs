@@ -76,7 +76,13 @@ public class ArmorManager : EquipmentManager {
 
       // Update the sprites for the new armor type
       int newType = armorData == null ? 0 : armorData.armorType;
-      updateSprites(newType, palettes);
+
+      if (newType == 0) {
+         armorLayer.gameObject.SetActive(false);
+      } else {
+         armorLayer.gameObject.SetActive(true);
+         updateSprites(newType, palettes);
+      }
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);

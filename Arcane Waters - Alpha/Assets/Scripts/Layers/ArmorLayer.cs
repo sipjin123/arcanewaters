@@ -16,8 +16,8 @@ public class ArmorLayer : SpriteLayer {
       _type = newType;
 
       // Update our Animated Sprite
-      string path = (newType == 0) ? "Empty_Layer" : "Armor/" + gender + "/" + gender + "_armor_" + (int)newType;
-      Texture2D result = ImageManager.getTexture(path);
+      string path = "Armor/" + gender + "/" + gender + "_armor_" + (int)newType;
+      Texture2D result = newType == 0 ? ImageManager.self.blankTexture : ImageManager.getTexture(path);
 
       if (immediate) {
          setTexture(result);
