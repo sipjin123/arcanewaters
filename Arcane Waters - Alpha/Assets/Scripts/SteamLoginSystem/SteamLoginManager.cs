@@ -64,6 +64,20 @@ namespace SteamLoginSystem
          });
       }
 
+      public string getSteamState () {
+         string steamState = "";
+         if (SteamAPI.IsSteamRunning() && SteamManager.Initialized) {
+            steamState += "Steam : ";
+            if (SteamUtils.GetAppID().ToString() == SteamLoginManagerServer.GAMEPLAYTEST_APPID) {
+               steamState += "Playtest";
+            } else {
+               steamState += "Main";
+            }
+         }
+
+         return (String.IsNullOrEmpty(steamState) ? "Non-Steam" : steamState);
+      }
+
       #region Private Variables
 
       // The authentication data

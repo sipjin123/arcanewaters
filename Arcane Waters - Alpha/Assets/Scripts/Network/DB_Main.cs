@@ -5374,10 +5374,10 @@ public class DB_Main : DB_MainStub
 
    #region Chat System Features / Bug Reporting Features
 
-   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId) {
+   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
@@ -5391,7 +5391,8 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
-            cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
+            cmd.Parameters.AddWithValue("@deploymentId", deploymentId); 
+            cmd.Parameters.AddWithValue("@steamState", steamState);
 
             DebugQuery(cmd);
 

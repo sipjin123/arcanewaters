@@ -853,7 +853,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
-   public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
+   public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState) {
       // We need a player object
       if (_player == null) {
          D.warning("Received bug report from sender with no PlayerController.");
@@ -861,7 +861,7 @@ public class RPCManager : NetworkBehaviour {
       }
 
       // Pass things along to the Bug Report Manager to handle
-      BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+      BugReportManager.self.storeBugReportOnServer(_player, subject, message, ping, fps, screenshotBytes, screenResolution, operatingSystem, steamState);
    }
 
    [Command]

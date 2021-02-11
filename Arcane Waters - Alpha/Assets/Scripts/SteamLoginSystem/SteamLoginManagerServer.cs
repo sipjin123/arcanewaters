@@ -6,7 +6,6 @@ using Mirror;
 using System;
 using System.Text;
 using UnityEngine.Networking;
-using SteamLoginSystem;
 
 namespace SteamLoginSystem
 {

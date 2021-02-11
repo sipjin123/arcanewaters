@@ -7,9 +7,14 @@ using Cinemachine;
 using System;
 using System.Globalization;
 using System.Threading;
+using Steamworks;
+using SteamLoginSystem;
 
 public class ClientMessageManager : MonoBehaviour {
    #region Public Variables
+
+   // If the steam state has been logged in the playerlogs
+   public static bool steamStateLogged = false;
 
    #endregion
 
@@ -367,6 +372,11 @@ public class ClientMessageManager : MonoBehaviour {
          Global.lastUsedAccountName + ":" + Global.lastUserAccountPassword + ":" +
          Global.currentlySelectedUserId + ":" + Global.GAME_VERSION
       );*/
+
+      if (!steamStateLogged) {
+         steamStateLogged = true;
+         D.debug("---> Build Type" + " : " + SteamLoginManager.self.getSteamState());
+      }
 
       ClientScene.AddPlayer(conn);
    }

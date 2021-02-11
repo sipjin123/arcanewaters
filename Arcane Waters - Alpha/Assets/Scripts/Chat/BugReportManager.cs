@@ -21,7 +21,7 @@ public class BugReportManager : MonoBehaviour {
    }
 
    [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem) {
+   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState) {
       // Check when they last submitted a bug report
       if (_lastBugReportTime.ContainsKey(player.userId)) {
          float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
@@ -47,7 +47,7 @@ public class BugReportManager : MonoBehaviour {
 
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId);
+         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -122,7 +122,7 @@ public class BugReportManager : MonoBehaviour {
          // Full quality image
          bugReport += "\nScreenshot resolution: " + standardTex.width + "x" + standardTex.height;
          addMetaDataToBugReport(ref bugReport, screenshotBytes);
-         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
       } else {
          // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
          Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
@@ -130,7 +130,7 @@ public class BugReportManager : MonoBehaviour {
          if (screenshotBytes.Length < maxPacketSize) {
             bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
             addMetaDataToBugReport(ref bugReport, screenshotBytes);
-            Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+            Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
          } else {
             // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
             int quality = 100;
@@ -141,7 +141,7 @@ public class BugReportManager : MonoBehaviour {
                if (screenshotBytes.Length < maxPacketSize) {
                   bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
                   addMetaDataToBugReport(ref bugReport, screenshotBytes);
-                  Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem);
+                  Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
                   break;
                }
 
