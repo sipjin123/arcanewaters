@@ -21,6 +21,11 @@ using UnityEngine.Events;
 using MapCustomization;
 
 public class Util : MonoBehaviour {
+   // Build name that matches the jenkins build
+   public const string PRODUCTION_BUILD = "Windows-";
+   public const string STANDALONE_BUILD = "Server-Dev-Windows-Standalone";
+   public const string DEVELOPMENT_BUILD = "Client-Dev-Windows-Standalone-";
+   
    public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
       if (category != Item.Category.None && itemType != 0) {
          string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
@@ -1052,13 +1057,7 @@ public class Util : MonoBehaviour {
    }
 
    public static string getFormattedGameVersion () {
-      StringBuilder formattedVersion = new StringBuilder();
-      formattedVersion.Append(getGameVersion());
-      formattedVersion.Insert(9, '.');
-      formattedVersion.Insert(6, '.');
-      formattedVersion.Insert(3, '.');
-      formattedVersion.Insert(0, 'v');
-      return formattedVersion.ToString();
+      return getJenkinsBuildId();
    }
 
    public static int getDeploymentId () {
@@ -1071,6 +1070,38 @@ public class Util : MonoBehaviour {
       }
 
       return deploymentId;
+   }
+
+   public static string getBranchType () {
+      string branchType = "";
+      try {
+         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("branch")) {
+            branchType = deploymentConfig["branch"].ToString();
+         }
+      } catch {
+         D.debug("Failed to get branch type");
+      }
+
+      return branchType; 
+   }
+
+   public static string getDistributionType () {
+      string branchType = "";
+      try {
+         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("distribution")) {
+            branchType = deploymentConfig["distribution"].ToString();
+         }
+      } catch {
+         D.debug("Failed to get distribution type");
+      }
+
+      return branchType; 
    }
 
    public static string getJenkinsBuildId () {

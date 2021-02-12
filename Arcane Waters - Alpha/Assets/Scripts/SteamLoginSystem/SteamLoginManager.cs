@@ -66,16 +66,30 @@ namespace SteamLoginSystem
 
       public string getSteamState () {
          string steamState = "";
+         string clientBuildState = "";
+
+         // Check build state
+         if (Util.getJenkinsBuildId().StartsWith(Util.DEVELOPMENT_BUILD)) {
+            clientBuildState = "Development";
+         } else if (Util.getJenkinsBuildId().StartsWith(Util.PRODUCTION_BUILD)) {
+            clientBuildState = "Production";
+         } else if (Util.getJenkinsBuildId().StartsWith(Util.STANDALONE_BUILD)) {
+            clientBuildState = "Standalone";
+         } else {
+            clientBuildState = "Undefined {" + Util.getJenkinsBuildId() + "}";
+         }
+
+         // Check steam state
          if (SteamAPI.IsSteamRunning() && SteamManager.Initialized) {
             steamState += "Steam : ";
             if (SteamUtils.GetAppID().ToString() == SteamLoginManagerServer.GAMEPLAYTEST_APPID) {
-               steamState += "Playtest";
+               steamState += "Playtest : Production";
             } else {
-               steamState += "Main";
+               steamState += "Main : " + clientBuildState;
             }
          }
 
-         return (String.IsNullOrEmpty(steamState) ? "Non-Steam" : steamState);
+         return (String.IsNullOrEmpty(steamState) ? "Non-Steam : " + clientBuildState: steamState);
       }
 
       #region Private Variables
