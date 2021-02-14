@@ -789,8 +789,30 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    private IEnumerator CO_ProcessBossDamage (int damage) {
       yield return new WaitForSeconds(2);
       EffectManager.self.create(Effect.Type.Blunt_Physical, getCorePosition());
+      displayedHealth -= damage;
+
+      // Note that the contact is happening right now
+
+      // Create the Text instance from the prefab
+      GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
+      DamageText damageText = damageTextObject.GetComponent<DamageText>();
+
+      // Place the damage numbers just above where the impact occurred for the given ability
+      Vector3 damageSpawnPosition = new Vector3(transform.position.x, transform.position.y + .45f, -3f);
+
+      damageText.setDamageAmount(damage, false, false);
+      damageText.transform.position = damageSpawnPosition;
+      damageText.transform.SetParent(EffectManager.self.transform, false);
+      damageText.name = "DamageText_" + Element.Physical;
+
+      // The damage text should be on the same layer as the target's Battle Spot
+      damageText.gameObject.layer = gameObject.layer;
+
+      // Color the text color and icon based on the damage type
+      damageText.customizeForAction(Element.Physical, false, DamageMagnitude.Default);
+
       playAnim(Anim.Type.Hurt_East);
-      yield return new WaitForSeconds(.5f);
+      yield return new WaitForSeconds(.75f);
       playAnim(Anim.Type.Battle_East);
    }
 
@@ -1094,13 +1116,34 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
       modifyAnimSpeed(-1);
 
+      // Process special action here
+      if (battleAction.battleActionType == BattleActionType.Special) {
+         if (battle == null) {
+            battle = BattleManager.self.getBattle(battleAction.battleId);
+         }
+
+         if (battle != null) {
+            // The player to be attacked by the boss
+            BattlerData newBattleData = MonsterManager.self.getBattlerData(sourceBattler.enemyType);
+
+            // The boss and its attack data
+            Battler targetBattler = battle.getBattler(battleAction.targetId);
+
+            targetBattler.inflictBossDamage(newBattleData.baseDamage * battle.difficultyLevel);
+         } else {
+            D.debug("Battle has not yet been initialized");
+         }
+
+         yield break;
+      }
+
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;
 
       AttackAbilityData abilityDataReference = (AttackAbilityData) AbilityManager.getAbility(battleAction.abilityGlobalID, AbilityType.Standard);
       AttackAbilityData globalAbilityData = AttackAbilityData.CreateInstance(abilityDataReference);
       WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponManager.equipmentDataId);
-      
+
       // Highlight ability to be casted
       if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
          BattleUIManager.self.initializeAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex);
