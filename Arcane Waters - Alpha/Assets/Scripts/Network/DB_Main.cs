@@ -208,10 +208,10 @@ public class DB_Main : DB_MainStub
 
    public static new void mutePlayer (int userId, DateTime suspensionEnd) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
             // Declaration of table elements
-            "INSERT INTO global.user_chat_suspensions (userId, suspensionEnd) " +
+            "INSERT INTO arcane.user_chat_suspensions (userId, suspensionEnd) " +
             "VALUES(@userId, @suspensionEnd) " +
             "ON DUPLICATE KEY UPDATE suspensionEnd = @suspensionEnd", conn)) {
 
@@ -233,9 +233,9 @@ public class DB_Main : DB_MainStub
 
    public static new DateTime getPlayerChatSuspensionEndDate (int userId) {
       try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlConnection conn = getConnection())
          using (MySqlCommand cmd = new MySqlCommand(
-            "SELECT * FROM global.user_chat_suspensions WHERE (userID=@userID)", conn)) {
+            "SELECT * FROM arcane.user_chat_suspensions WHERE (userID=@userID)", conn)) {
 
             conn.Open();
             cmd.Prepare();
@@ -846,12 +846,12 @@ public class DB_Main : DB_MainStub
       try {
          // Getting deploymentId, before executing the query
          int deploymentId = 0;
-         var deploymentConfigAsset = Resources.Load<TextAsset>("config");
-         Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+         //var deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         //Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
 
-         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
-            deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
-         }
+         //if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+         //   deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
+         //}
 
          // We'll save the ticket's ID
          long ticketId;
@@ -5374,7 +5374,7 @@ public class DB_Main : DB_MainStub
 
    #region Chat System Features / Bug Reporting Features
 
-   public static new void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
+   public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
          using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
@@ -5411,13 +5411,42 @@ public class DB_Main : DB_MainStub
             DebugQuery(cmd);
             actionCmd.ExecuteNonQuery();
 
-            // Saving screenshot in bug_reports_screenshots
-            MySqlCommand screenshotCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
-            screenshotCmd.Prepare();
-            screenshotCmd.Parameters.AddWithValue("@taskId", bugId);
-            screenshotCmd.Parameters.AddWithValue("@image", screenshotBytes);
+            return bugId;
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return -1;
+   }
+
+   public static new void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
+      try {
+         using (MySqlConnection conn = getConnectionToDevGlobal())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.bug_reports WHERE bugId=@bugId", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@bugId", bugId);
             DebugQuery(cmd);
-            screenshotCmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();
+
+            int accId = -1;
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accId = dataReader.GetInt32("accId");
+               }
+            }
+
+            if (accId != -1 && player.accountId == accId) {
+               // Saving screenshot in bug_reports_screenshots
+               MySqlCommand actionCmd = new MySqlCommand("INSERT INTO global.bug_reports_screenshots (taskId, image) VALUES(@taskId, @image)", conn);
+               actionCmd.Prepare();
+               actionCmd.Parameters.AddWithValue("@taskId", bugId);
+               actionCmd.Parameters.AddWithValue("@image", screenshotBytes);
+               DebugQuery(actionCmd);
+               actionCmd.ExecuteNonQuery();
+            }
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
@@ -9301,11 +9330,15 @@ public class DB_Main : DB_MainStub
    }
 
    public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
-      // Storing Login info, excluding both localhost (IPv4) and ::1 (IPv6), and only when usrId > 0
-      if (ipAddress != "localhost" && ipAddress != "::1" && ipAddress.Contains("::ffff:") && usrId > 0 && accId > 0) {
-         // We need to split the IP Address because its format, ::ffff:0.0.0.0, for example
-         string[] finalAddressArray = ipAddress.Split(':');
-         string finalAddress = finalAddressArray[finalAddressArray.Length - 1];
+      // Storing Login info, only when usrId > 0 and accId > 0
+      if (usrId > 0 && accId > 0) {
+         // We need to split the IP Address due its format, ::ffff:0.0.0.0, for example
+         string finalAddress = ipAddress;
+
+         if (finalAddress.StartsWith("::ffff:")) {
+            string[] finalAddressArray = ipAddress.Split(':');
+            finalAddress = finalAddressArray[finalAddressArray.Length - 1];
+         }
 
          // Getting the current time, in UTC
          DateTime currTime = DateTime.UtcNow;

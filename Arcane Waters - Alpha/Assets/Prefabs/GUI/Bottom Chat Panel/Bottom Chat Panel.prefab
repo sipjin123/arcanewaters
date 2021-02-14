@@ -1421,6 +1421,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &749233296748240749
 GameObject:
   m_ObjectHideFlags: 0
@@ -2132,6 +2133,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &1193486356538647130
 GameObject:
   m_ObjectHideFlags: 0
@@ -5896,6 +5898,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &4245130800870495892
 GameObject:
   m_ObjectHideFlags: 0
@@ -7400,6 +7403,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &5126870323470671304
 GameObject:
   m_ObjectHideFlags: 0
@@ -11034,6 +11038,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7399467277472569823
 GameObject:
   m_ObjectHideFlags: 0
@@ -11667,6 +11672,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7399637695244799769
 GameObject:
   m_ObjectHideFlags: 0
@@ -12243,6 +12249,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7400080721921479427
 GameObject:
   m_ObjectHideFlags: 0
@@ -13003,6 +13010,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7400426979802703145
 GameObject:
   m_ObjectHideFlags: 0
@@ -13321,6 +13329,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7400982558880692279
 GameObject:
   m_ObjectHideFlags: 0
@@ -13759,6 +13768,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &7401189714509245946
 GameObject:
   m_ObjectHideFlags: 0
@@ -14078,6 +14088,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1 &7502676018110042980
 GameObject:
   m_ObjectHideFlags: 0
@@ -16273,6 +16284,7 @@ MonoBehaviour:
   tooltipPlacement: 1
   message: 
   maxWidth: 0
+  forceFitOnScreen: 1
 --- !u!1001 &310537983090910848
 PrefabInstance:
   m_ObjectHideFlags: 0

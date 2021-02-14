@@ -865,6 +865,18 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Command]
+   public void Cmd_BugReportScreenshot (long bugId, byte[] screenshotBytes) {
+      // We need a player object
+      if (_player == null) {
+         D.warning("Received bug report from sender with no PlayerController.");
+         return;
+      }
+
+      // Pass things along to the Bug Report Manager to handle
+      BugReportManager.self.storeBugReportOnServerScreenshot(_player, bugId, screenshotBytes);
+   }
+
+   [Command]
    public void Cmd_SubmitComplaint (string username, string details, string chatLog, byte[] screenshotBytes, string machineIdentifier) {
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          UserInfo reportedUserInfo = DB_Main.getUserInfo(username);
@@ -5309,6 +5321,20 @@ public class RPCManager : NetworkBehaviour {
       });
       npcontroller.overridePosition(animalEndPos, _player.transform.position);
       npc.Rpc_ContinuePetMoveControl(animalEndPos, maxTime);
+   }
+
+
+   [ClientRpc]
+   public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
+      D.debug(string.Format("Client: {0} noted bounce time of client: {1}, isLocalPlayer = {2}", Global.player.userId, _player.userId, isLocalPlayer));
+
+      // If we are the local player, we don't do anything, the control was handled locally
+      if (isLocalPlayer) {
+         return;
+      }
+      
+      TemporaryController con = AreaManager.self.getArea(_player.areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
+      _player.noteWebBounce(con);
    }
 
    #region Private Variables

@@ -25,7 +25,7 @@ public class MM_ShipEntityIcon : MonoBehaviour {
    }
 
    public void setCorrectPosition () {
-      if (shipEntity == null || shipEntity.isDead() || shipEntity.areaKey != currentArea.areaKey) {
+      if (shipEntity == null || shipEntity.isDead() || shipEntity.areaKey != currentArea.areaKey || shipEntity.areaKey != Global.player?.areaKey) {
          Destroy(this.gameObject);
          return;
       }

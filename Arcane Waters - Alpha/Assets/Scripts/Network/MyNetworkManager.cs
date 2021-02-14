@@ -427,19 +427,6 @@ public class MyNetworkManager : NetworkManager
             player.rpc.checkForUnreadMails();
             player.rpc.checkForPendingFriendshipRequests();
 
-            // Update the guild icon display for all players
-            foreach (KeyValuePair<int, ConnectedClientData> playerConnection in _players) {
-               NetEntity entity = playerConnection.Value.netEntity;
-
-               if (entity != null) {
-                  if (entity.guildId > 0) {
-                     entity.Rpc_UpdateGuildIconDisplay(entity.guildIconBackground, entity.guildIconBackPalettes, entity.guildIconBorder, entity.guildIconSigil, entity.guildIconSigilPalettes);
-                  } else {
-                     entity.Rpc_HideGuildIconDisplay();
-                  }
-               }
-            }
-
             // In sea voyages, if the player is spawning in a different position than the default spawn, we conclude he is returning from a treasure site and has already entered PvP
             if (instance.isVoyage && AreaManager.self.isSeaArea(player.areaKey) &&
                Vector3.Distance(userInfo.localPos, SpawnManager.self.getDefaultLocalPosition(player.areaKey)) > 2f) {

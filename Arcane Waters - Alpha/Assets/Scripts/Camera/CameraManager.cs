@@ -42,9 +42,6 @@ public class CameraManager : ClientMonoBehaviour {
    // The maximum values for the camera offset when panning
    public Vector2 maxCameraOffset = new Vector2(0.85f, 0.85f);
 
-   // Whether we need to hold the "panning" button for panning
-   public bool requireButtonForPanning;
-
    // The speed at which we pan the camera
    public float cameraPanSpeed = 1.0f;
 
@@ -85,38 +82,10 @@ public class CameraManager : ClientMonoBehaviour {
    }
 
    private void Update () {
-      // Don't allow panning during battles
+      handlePanning();
+
       if (Global.player != null && !isShowingBattle()) {
-         CinemachineFramingTransposer transposer = getBaseCameraForCurrentVirtualCamera().getFramingTransposer();
-
          if (!Global.player.isDead()) {
-            if (transposer != null) {
-               // Always enable panning when sailing, require holding the pan camera button (scrollwheel by default) the rest of the time
-               if (InputManager.getKeyAction(KeyAction.PanCamera) || !requireButtonForPanning) {
-                  Vector2 offsetInput = InputManager.getCameraPanningAxis();
-
-                  if (Mathf.Abs(offsetInput.x - 0.5f) > panningDeadZoneRange) {
-                     // Lerp smoothly towards the desired value
-                     transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, Mathf.Clamp(1 - offsetInput.x, minCameraOffset.x, maxCameraOffset.x), Time.deltaTime * cameraPanSpeed);
-                  } else {
-                     // Reset the panning position if we're in the "deadzone"
-                     transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, 0.5f, Time.deltaTime * cameraPanResetSpeed);
-                  }
-
-                  if (Mathf.Abs(offsetInput.y - 0.5f) > panningDeadZoneRange) {
-                     // Lerp smoothly towards the desired value
-                     transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, Mathf.Clamp(offsetInput.y, minCameraOffset.y, maxCameraOffset.y), Time.deltaTime * cameraPanSpeed);
-                  } else {
-                     // Reset the panning position if we're in the "deadzone"
-                     transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, 0.5f, Time.deltaTime * cameraPanResetSpeed);
-                  }
-               } else {
-                  // Reset the panning position if the panning key is released
-                  transposer.m_ScreenX = 0.5f;
-                  transposer.m_ScreenY = 0.5f;
-               }
-            }
-
             if (_previousAreaKey != Global.player.areaKey) {
                if (AreaManager.self.getArea(Global.player.areaKey) != null) {
                   foreach (BaseCamera baseCamera in _baseCameras) {
@@ -125,12 +94,59 @@ public class CameraManager : ClientMonoBehaviour {
                   _previousAreaKey = Global.player.areaKey;
                }
             }
+         }
+      }
+   }
+
+   private void handlePanning () {
+      CinemachineFramingTransposer transposer = getBaseCameraForCurrentVirtualCamera().getFramingTransposer();
+
+      if (transposer != null) {
+         if (isPanningEnabled() && (isAutomaticPanningEnabled() || InputManager.getKeyAction(KeyAction.PanCamera))) {
+            Vector2 offsetInput = InputManager.getCameraPanningAxis();
+
+            if (Mathf.Abs(offsetInput.x - 0.5f) > panningDeadZoneRange) {
+               // Lerp smoothly towards the desired value
+               transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, Mathf.Clamp(1 - offsetInput.x, minCameraOffset.x, maxCameraOffset.x), Time.deltaTime * cameraPanSpeed);
+            } else {
+               // Reset the panning position if we're in the "deadzone"
+               transposer.m_ScreenX = Mathf.Lerp(transposer.m_ScreenX, 0.5f, Time.deltaTime * cameraPanResetSpeed);
+            }
+
+            if (Mathf.Abs(offsetInput.y - 0.5f) > panningDeadZoneRange) {
+               // Lerp smoothly towards the desired value
+               transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, Mathf.Clamp(offsetInput.y, minCameraOffset.y, maxCameraOffset.y), Time.deltaTime * cameraPanSpeed);
+            } else {
+               // Reset the panning position if we're in the "deadzone"
+               transposer.m_ScreenY = Mathf.Lerp(transposer.m_ScreenY, 0.5f, Time.deltaTime * cameraPanResetSpeed);
+            }
          } else {
-            // Reset the panning position if the player dies
+            // Reset the panning position if panning is disabled
             transposer.m_ScreenX = 0.5f;
             transposer.m_ScreenY = 0.5f;
          }
       }
+   }
+
+   private bool isPanningEnabled () {
+      return Global.player != null && !Global.player.isDead() && !isShowingBattle();
+   }
+
+   private bool isAutomaticPanningEnabled () {
+      if (Global.player == null) { 
+         return false; 
+      }
+
+      if (Global.player.getPlayerBodyEntity() != null) {
+         return false;
+      }
+
+      PlayerShipEntity shipEntity = Global.player.getPlayerShipEntity();
+      if (shipEntity != null) {
+         return shipEntity.isAiming();
+      }
+
+      return false;
    }
 
    private void OnDestroy () {

@@ -168,6 +168,9 @@ public class TitleScreen : MonoBehaviour {
             string panelMessage = message != null ? message.customMessage : "Your account has been suspended.";
             PanelManager.self.noticeScreen.show(panelMessage);
             break;
+         case ErrorMessage.Type.AlreadyOnline:
+            PanelManager.self.noticeScreen.show("Your account has been disconnected because you logged in somewhere else.");
+            break;
          default:
             if (message != null) {
                PanelManager.self.noticeScreen.show(message.customMessage);

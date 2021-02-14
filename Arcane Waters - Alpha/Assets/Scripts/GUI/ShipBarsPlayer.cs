@@ -38,6 +38,10 @@ public class ShipBarsPlayer : ShipBars
       }
 
       StartCoroutine(CO_InitializeUserInfo());
+
+      // Ship portrait and guild icon will be shown at all times
+      guildIcon.show();
+      showCharacterPortrait();
    }
 
    protected override void Update () {
@@ -45,14 +49,6 @@ public class ShipBarsPlayer : ShipBars
 
       if (_entity == null) {
          return;
-      }
-
-      if (_showShipInfo) {
-         guildIcon.show();
-         showCharacterPortrait();
-      } else {
-         guildIcon.hide();
-         hideCharacterPortrait();
       }
 
       // Enable the empty column to correctly align the character portrait when there is no guild icon
@@ -101,12 +97,6 @@ public class ShipBarsPlayer : ShipBars
       if (portrait != null && portraitCanvasGroup.alpha < 1) {
          portraitCanvasGroup.alpha = 1;
          portrait.updateBackground(_entity);
-      }
-   }
-
-   private void hideCharacterPortrait () {
-      if (portrait != null && portraitCanvasGroup.alpha > 0) {
-         portraitCanvasGroup.alpha = 0;
       }
    }
 

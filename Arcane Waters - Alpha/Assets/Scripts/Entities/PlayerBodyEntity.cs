@@ -120,7 +120,11 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          AudioListenerManager.self.setActiveListener(_audioListener);
       }
    }
-   
+
+   public override PlayerBodyEntity getPlayerBodyEntity () {
+      return this;
+   }
+
    private void OnDisable () {
       // If we are the local player, activate the camera's audio listener
       if (isLocalPlayer) {
@@ -187,7 +191,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       if ((guildIcon != null) && (!OptionsPanel.allGuildIconsShowing)) {
          GetComponent<PlayerBodyEntity>().hideGuildIcon();
       }
-      hideEntityName();
+      if ((entityName != null) && (!OptionsPanel.allPlayersNameShowing)) {
+         hideEntityName();
+      }
    }
 
    private void handleShortcutsInput () {

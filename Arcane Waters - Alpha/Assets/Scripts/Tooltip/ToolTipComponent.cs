@@ -38,6 +38,9 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
    // Maxium Width of the tooltip.  A value of zero allows the tooltip to be sized automatically or to be set in the tooltip web tool.
    public float maxWidth;
 
+   // Set to true if an offscreen tooltip should be shifted back onto screen instead of automatically being placed above the object.
+   public bool forceFitOnScreen = false;
+
    #endregion
 
    public void OnPointerExit (PointerEventData pointerEventData) {

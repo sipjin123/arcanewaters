@@ -32,12 +32,6 @@ public class BugReportManager : MonoBehaviour {
          }
       }
 
-      // Confirm it's not too large, these values were already checked on the client
-      if (subject.Length > MAX_SUBJECT_LENGTH || System.Text.Encoding.Unicode.GetByteCount(message) > MAX_BYTES) {
-         D.warning("Bug report too large/long to store in the database! Subject: " + subject);
-         return;
-      }
-
       // Keep track of the time they last submitted a bug report
       _lastBugReportTime[player.userId] = Time.time;
 
@@ -47,13 +41,27 @@ public class BugReportManager : MonoBehaviour {
 
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState);
+         long bugId = DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.BugReport, player);
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.BugReport, player, bugId.ToString());
          });
       });
+   }
+
+   [ServerOnly]
+   public void storeBugReportOnServerScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
+      if (bugId != -1) {
+         // Save the screenshot in the database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.saveBugReportScreenshot(player, bugId, screenshotBytes);
+         });
+      }
+   }
+
+   public void sendBugReportScreenshotToServer (long bugId) {
+      Global.player.rpc.Cmd_BugReportScreenshot(bugId, _screenshotBytes);
    }
 
    public void sendBugReportToServer (string subjectString) {
@@ -105,43 +113,34 @@ public class BugReportManager : MonoBehaviour {
 
       string screenResolution = Screen.currentResolution.ToString();
       string operatingSystem = SystemInfo.operatingSystem;
+      string steamState = SteamLoginSystem.SteamLoginManager.self.getSteamState();
 
       int width = Screen.width;
       int height = Screen.height;
       int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
-      int currentMsgSize = System.Text.Encoding.Unicode.GetByteCount(subjectString) + /* bugReport = MAX_BYTES */ + 4 + 4 + /* screenshotBytes */ +
-         System.Text.Encoding.Unicode.GetByteCount(screenResolution) + System.Text.Encoding.Unicode.GetByteCount(operatingSystem);
-      maxPacketSize -= currentMsgSize;
-      maxPacketSize -= MAX_BYTES;
+      addMetaDataToBugReport(ref bugReport);
+      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState);
 
       // Find image quality of size small enough to send through Mirror Networking      
       Texture2D standardTex = takeScreenshot(width, height);
-      byte[] screenshotBytes = standardTex.EncodeToPNG();
-      if (screenshotBytes.Length < maxPacketSize) {
+      _screenshotBytes = standardTex.EncodeToPNG();
+      if (_screenshotBytes.Length < maxPacketSize) {
          // Full quality image
-         bugReport += "\nScreenshot resolution: " + standardTex.width + "x" + standardTex.height;
-         addMetaDataToBugReport(ref bugReport, screenshotBytes);
-         Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
       } else {
          // Skip every other row and column (no quality loss except minimap and fonts, because assets are using 200% scale)
          Texture2D skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-         screenshotBytes = skippedRowsTex.EncodeToPNG();
-         if (screenshotBytes.Length < maxPacketSize) {
-            bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
-            addMetaDataToBugReport(ref bugReport, screenshotBytes);
-            Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
+         _screenshotBytes = skippedRowsTex.EncodeToPNG();
+         if (_screenshotBytes.Length < maxPacketSize) {
+            // Full quality with removed rows and columns
          } else {
             // Try to use texture with skipped rows/columns with lower resolution and quality (JPG)
             int quality = 100;
             while (quality >= 0) {
                quality = Mathf.Max(1, quality);
                skippedRowsTex = removeEvenRowsAndColumns(standardTex);
-               screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
-               if (screenshotBytes.Length < maxPacketSize) {
-                  bugReport += "\nScreenshot resolution: " + skippedRowsTex.width + "x" + skippedRowsTex.height;
-                  addMetaDataToBugReport(ref bugReport, screenshotBytes);
-                  Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, screenshotBytes, screenResolution, operatingSystem, SteamLoginSystem.SteamLoginManager.self.getSteamState());
+               _screenshotBytes = skippedRowsTex.EncodeToJPG(quality);
+               if (_screenshotBytes.Length < maxPacketSize) {
                   break;
                }
 
@@ -156,24 +155,7 @@ public class BugReportManager : MonoBehaviour {
       _lastBugReportTime[Global.player.userId] = Time.time;
    }
 
-   private bool addMetaDataToBugReport(ref string bugReport, byte[] screenshotBytes) {
-      // Add information about screenshot size
-      bugReport += "\nScreenshot size in bytes: " + screenshotBytes.Length;
-
-      string bugReportLenthString = "\nBug report length: ";
-      string bugReportSizeString = "\nBug report size in bytes: ";
-      int reservedCharsForNumbers = 20;
-
-      // Make sure the bug report file hasn't grown too large
-      if (bugReport.Length + bugReportLenthString.Length + bugReportSizeString.Length + reservedCharsForNumbers > MAX_LOG_LENGTH) {
-         int diff = (bugReport.Length + bugReportLenthString.Length + bugReportSizeString.Length + reservedCharsForNumbers - MAX_LOG_LENGTH) + 1;
-         bugReport = bugReport.Remove(0, diff);
-      }
-
-      // Add information about bug report length
-      bugReport += bugReportLenthString + bugReport.Length;
-      bugReport += bugReportSizeString + System.Text.Encoding.Unicode.GetByteCount(bugReport);
-
+   private bool addMetaDataToBugReport(ref string bugReport) {
       // Make sure the bug report file hasn't grown too large
       if (System.Text.Encoding.Unicode.GetByteCount(bugReport) > MAX_BYTES) {
          int diff = (System.Text.Encoding.Unicode.GetByteCount(bugReport) - MAX_BYTES) / 2 + 1;
@@ -264,7 +246,7 @@ public class BugReportManager : MonoBehaviour {
    protected static int MAX_SUBJECT_LENGTH = 256;
 
    // The maximum number of bytes we'll allow a submitted bug report to have
-   protected static int MAX_BYTES = 12288;
+   protected static int MAX_BYTES = 64 * 1024;
 
    // The maximum number of string length we'll allow a submitted bug report to have
    protected static int MAX_LOG_LENGTH = 1024 * 6;
@@ -274,6 +256,9 @@ public class BugReportManager : MonoBehaviour {
 
    // Stores the time at which a bug report was last submitted, indexed by user ID for the server's sake
    protected Dictionary<int, float> _lastBugReportTime = new Dictionary<int, float>();
+
+   // Stored screenshot to send after confirmation of bug report
+   protected byte[] _screenshotBytes;
 
    #endregion
 }

@@ -317,10 +317,20 @@ public class NetEntity : NetworkBehaviour
 
    }
 
+   public virtual PlayerBodyEntity getPlayerBodyEntity () {
+      return null;
+   }
+
+   public virtual PlayerShipEntity getPlayerShipEntity () {
+      return null;
+   }
+
    public override void OnStartClient () {
       base.OnStartClient();
 
       updateInvisibilityAlpha(isInvisible);
+      updatePlayerNameDisplay();
+      updateGuildIconDisplay();
    }
 
    private IEnumerator CO_LoadWeather () {
@@ -411,15 +421,19 @@ public class NetEntity : NetworkBehaviour
 
       // Display players' name when ALT key is pressed
       if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt)) {
-         if ((this is PlayerBodyEntity) || (this is PlayerShipEntity)) {
-            entityNameGO.SetActive(true);
+         if (this is PlayerBodyEntity) {
+            showEntityName();
             showGuildIcon();
          }
       }
       if (Input.GetKeyUp(KeyCode.LeftAlt) || Input.GetKeyUp(KeyCode.RightAlt)) {
-         if ((this is PlayerBodyEntity) || (this is PlayerShipEntity)) {
-            entityNameGO.SetActive(false);
-            hideGuildIcon();
+         if (this is PlayerBodyEntity) {
+            if (!OptionsPanel.allPlayersNameShowing) {
+               hideEntityName();
+            }
+            if (!OptionsPanel.allGuildIconsShowing) {
+               hideGuildIcon();
+            }
          }
       }
    }
@@ -571,28 +585,63 @@ public class NetEntity : NetworkBehaviour
       }
    }
 
-   [ClientRpc]
-   public void Rpc_UpdateGuildIconDisplay (string background, string backgroundPalette, string border, string sigil, string sigilPalette) {
-      if (!string.IsNullOrEmpty(background)) {
-         this.guildIcon.setBackground(background, backgroundPalette);
+   public void updatePlayerNameDisplay () {
+      if (this is PlayerBodyEntity) {
+         if (OptionsPanel.allPlayersNameShowing) {
+            showEntityName();
+         } else {
+            hideEntityName();
+         }
       }
-      if (!string.IsNullOrEmpty(border)) {
-         this.guildIcon.setBorder(border);
+   }
+
+   public void updateGuildIconDisplay () {
+      if (!string.IsNullOrEmpty(this.guildIconBackground)) {
+         this.guildIcon.setBackground(this.guildIconBackground, this.guildIconBackPalettes);
       }
-      if (!string.IsNullOrEmpty(sigil)) {
-         this.guildIcon.setSigil(sigil, sigilPalette);
+      if (!string.IsNullOrEmpty(this.guildIconBorder)) {
+         this.guildIcon.setBorder(this.guildIconBorder);
+      }
+      if (!string.IsNullOrEmpty(this.guildIconSigil)) {
+         this.guildIcon.setSigil(this.guildIconSigil, this.guildIconSigilPalettes);
       }
 
-      if (OptionsPanel.allGuildIconsShowing) {
-         showGuildIcon();
-      } else {
-         hideGuildIcon();
+      // Turn guild icon on/off for land character
+      if (this is PlayerBodyEntity) {
+         if (OptionsPanel.allGuildIconsShowing) {
+            showGuildIcon();
+         } else {
+            hideGuildIcon();
+         }
       }
    }
 
    [ClientRpc]
-   public void Rpc_HideGuildIconDisplay () {
-      hideGuildIcon();
+   public void Rpc_UpdateGuildIconDisplay (string background, string backgroundPalette, string border, string sigil, string sigilPalette) {
+      if (!string.IsNullOrEmpty(background)) {
+         this.guildIcon.setBackground(background, backgroundPalette);
+      } else {
+         this.guildIcon.setBackground(null, null);
+      }
+      if (!string.IsNullOrEmpty(border)) {
+         this.guildIcon.setBorder(border);
+      } else {
+         this.guildIcon.setBorder(null);
+      }
+      if (!string.IsNullOrEmpty(sigil)) {
+         this.guildIcon.setSigil(sigil, sigilPalette);
+      } else {
+         this.guildIcon.setSigil(null, null);
+      }
+
+      // Turn guild icon on/off for land character
+      if (this is PlayerBodyEntity) {
+         if (OptionsPanel.allGuildIconsShowing) {
+            showGuildIcon();
+         } else {
+            hideGuildIcon();
+         }
+      }
    }
 
    public void showGuildIcon () {
@@ -610,7 +659,7 @@ public class NetEntity : NetworkBehaviour
       guildIconCanvasGroup.interactable = false;
       guildIconCanvasGroup.blocksRaycasts = false;
    }
-   
+
    public void showEntityName () {
       if (entityNameGO != null) {
          entityNameGO.SetActive(true);
@@ -1315,7 +1364,7 @@ public class NetEntity : NetworkBehaviour
       }
 
       if (isServer && isClient) {
-         Rpc_TemporaryControlRequested(controller.transform.localPosition);
+         rpc.Rpc_TemporaryControlRequested(controller.transform.localPosition);
       }
 
       if (_temporaryControllers.Count == 1) {
@@ -1344,21 +1393,10 @@ public class NetEntity : NetworkBehaviour
       if (con != null && !hasScheduledController(con)) {
          D.debug("Server also passed along Rpc for temp control");
          requestControl(con);
-         Rpc_TemporaryControlRequested(controllerLocalPosition);
+         rpc.Rpc_TemporaryControlRequested(controllerLocalPosition);
       }
    }
 
-   [ClientRpc]
-   public void Rpc_TemporaryControlRequested (Vector2 controllerLocalPosition) {
-      // If we are the local player, we don't do anything, the control was handled locally
-      if (isLocalPlayer) {
-         return;
-      }
-
-      TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
-      noteWebBounce(con);
-      D.debug(string.Format("Client: {0} noted bounce time of client: {1}", Global.player.userId, userId));
-   }
 
    public void noteWebBounce (TemporaryController con) {
       if (con != null) {

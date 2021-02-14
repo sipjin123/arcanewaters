@@ -56,7 +56,7 @@ public class AttackManager : ClientMonoBehaviour {
       _playerShipEntity = _playerShipEntity == null ? (PlayerShipEntity) Global.player : _playerShipEntity;
 
       // Check if the player is aiming a shot
-      isAiming = _playerShipEntity.isAiming;
+      isAiming = _playerShipEntity.isAiming();
 
       // Get the mouse position
       Vector2 aimPosition = _playerShipEntity.getAimPosition();

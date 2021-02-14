@@ -1100,6 +1100,7 @@ MonoBehaviour:
   isSpeedingUp: 0
   shadow: {fileID: 0}
   statusEffectContainer: {fileID: 7884613956860877850}
+  entityNameGO: {fileID: 7471511516067433114}
   isUnderExternalControl: 0
   _ignoredAnimators:
   - {fileID: 3476353292930757795}
@@ -1119,7 +1120,6 @@ MonoBehaviour:
   projectileSpawnLocations: []
   colliderList:
   - {fileID: 20112}
-  entityNameGO: {fileID: 7471511516067433114}
   currentImpactMagnitude: 0
   shipType: 100
   skinType: 0
@@ -1160,7 +1160,6 @@ MonoBehaviour:
   armorColors: 
   hatType: 0
   hatColors: 
-  isAiming: 0
   speedUpEffectHolders:
   - {fileID: 2603686803726275137}
   - {fileID: 5374690085957716438}
@@ -1190,8 +1189,6 @@ MonoBehaviour:
   maxBoostEffectAnimation: {fileID: 3476353292930757795}
   shipBoostSpriteSwapFront: {fileID: 8177799164720691564}
   shipBoostSpriteSwapBack: {fileID: 4726464375513170578}
-  entityNameGO: {fileID: 7471511516067433114}
-  guildIconGO: {fileID: 7314133842329601583}
 --- !u!50 &20007
 Rigidbody2D:
   serializedVersion: 4
@@ -2445,6 +2442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 20892}
   colliderScale: 0.75
+  dynamicCollider: 1
 --- !u!1 &1286069097927019864
 GameObject:
   m_ObjectHideFlags: 0
@@ -4918,7 +4916,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &903105868386762667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4933,10 +4931,10 @@ RectTransform:
   m_Father: {fileID: 9049018039227709535}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -45.945}
-  m_SizeDelta: {x: 23.58, y: 8.11}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8733818110207762602
 CanvasRenderer:
@@ -6512,12 +6510,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c20705c7cd1fef48a41c790991d9d6b, type: 3}
---- !u!1 &7314133842329601583 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5642681577568405534, guid: 5c20705c7cd1fef48a41c790991d9d6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 3156971687042551345}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &7802847736162781427 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5153975776215992002, guid: 5c20705c7cd1fef48a41c790991d9d6b,
@@ -6530,7 +6522,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 3156971687042551345}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7314133842329601583}
+  m_GameObject: {fileID: 0}
   m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d57bd3865ece73142a8e669afaf93059, type: 3}

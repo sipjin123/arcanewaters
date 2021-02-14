@@ -43,14 +43,20 @@ public class OptionsPanel : Panel
    // The guild icon toggle
    public Toggle displayGuildIconsToggle;
 
+   // Player Name Display
+   public Toggle displayPlayersNameToggle;
+
    // The constantly sprinting toggle
    public Toggle sprintConstantlyToggle;
 
    // The screen mode toggle
    public Dropdown screenModeDropdown;
 
-   // Bool to track if all icons are displayed above charater's head
+   // Bool to track if all players should continuously display their guild icon
    public static bool allGuildIconsShowing;
+
+   // Bool to track if all players should continuously display their name
+   public static bool allPlayersNameShowing;
 
    // Self
    public static OptionsPanel self;
@@ -123,6 +129,12 @@ public class OptionsPanel : Panel
          showAllGuildIcons(value);
       });
 
+      // Set the player name toggle event
+      displayPlayersNameToggle.onValueChanged.AddListener(value => {
+         allPlayersNameShowing = value;
+         showPlayersName(value);
+      });
+
       sprintConstantlyToggle.isOn = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY) == 1 ? true : false;
       sprintConstantlyToggle.onValueChanged.AddListener(value => {
          PlayerPrefs.SetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, value ? 1 : 0);
@@ -146,7 +158,7 @@ public class OptionsPanel : Panel
       if (showGuildIcons) {
          // Display the guild icons of all the players
          foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
-            if (entity.guildId > 0) {
+            if ((entity.guildId > 0) && (entity is PlayerBodyEntity)) {
                entity.showGuildIcon();
             }
             allGuildIconsShowing = true;
@@ -154,8 +166,28 @@ public class OptionsPanel : Panel
       } else {
          // Do not display the guild icons of all the players
          foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
-            entity.hideGuildIcon();
+            if (entity is PlayerBodyEntity) {
+               entity.hideGuildIcon();
+            }
             allGuildIconsShowing = false;
+         }
+      }
+   }
+
+   public void showPlayersName (bool displayPlayersName) {
+      if (displayPlayersName) {
+         foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+            if (entity is PlayerBodyEntity) {
+               entity.showEntityName();
+            }
+            allPlayersNameShowing = true;
+         }
+      } else {
+         foreach (NetEntity entity in EntityManager.self.getAllEntities()) {
+            if (entity is PlayerBodyEntity) {
+               entity.hideEntityName();
+            }
+            allPlayersNameShowing = false;
          }
       }
    }

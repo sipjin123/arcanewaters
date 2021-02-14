@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHandler
+public class PlayerShipEntity : ShipEntity
 {
    #region Public Variables
 
@@ -45,9 +45,6 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
    public int hatType = 0;
    [SyncVar]
    public string hatColors;
-
-   // True when the local player is aiming   
-   public bool isAiming;
 
    // The effect that indicates this ship is speeding up
    public SpriteRenderer[] speedUpEffectHolders;
@@ -93,23 +90,11 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
    #endregion
 
-   public void OnPointerEnter (PointerEventData pointerEventData) {
-      if (entityNameGO.GetComponent<TextMeshProUGUI>().text != null) {
-         showEntityName();
-      }
-      if (guildIcon != null) {
-         showGuildIcon();
-      }
-   }
-
-   public void OnPointerExit (PointerEventData pointerEventData) {
-      if ((guildIcon != null) && (!OptionsPanel.allGuildIconsShowing)) {
-         GetComponent<PlayerShipEntity>().hideGuildIcon();
-      }
-      hideEntityName();
-   }
-
    protected override bool isBot () { return false; }
+
+   public override PlayerShipEntity getPlayerShipEntity () {
+      return this;
+   }
 
    protected override void Start () {
       base.Start();
@@ -150,6 +135,9 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
       _targetCircle.gameObject.SetActive(false);
       _targetCone.gameObject.SetActive(false);
+
+      // Ship names will be on display at all times
+      showEntityName();
    }
 
    protected override void updateSprites () {
@@ -377,7 +365,7 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
             break;
       }
-
+            
       _isChargingCannon = false;
       _cannonChargeAmount = 0.0f;
    }
@@ -532,6 +520,10 @@ public class PlayerShipEntity : ShipEntity, IPointerEnterHandler, IPointerExitHa
 
       // Handle OnDestroy logic in a separate method so it can be correctly stripped
       onBeingDestroyedServer();
+   }
+
+   public bool isAiming () {
+      return _isChargingCannon;
    }
 
    [ServerOnly]

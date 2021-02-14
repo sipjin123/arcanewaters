@@ -18,6 +18,8 @@ public class GuildIcon : MonoBehaviour
    public static string BACKGROUND_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Backgrounds/";
    public static string SIGIL_SMALL_PATH = "Assets/Resources/Sprites/GUI/Guild/Icons Small/Sigils/";
 
+   public static string BLANK_SPRITE_PATH = "Assets/Resources/Sprites/";
+
    // The icon layer images
    public Image border;
    public Image mask;
@@ -92,18 +94,30 @@ public class GuildIcon : MonoBehaviour
    }
 
    protected virtual Sprite getBorderSprite (string borderName) {
+      if (borderName == null) {
+         return ImageManager.getSprite(BLANK_SPRITE_PATH + "empty_layer");
+      }
       return ImageManager.getSprite(BORDER_PATH + borderName);
    }
 
    protected virtual Sprite getMaskSprite (string borderName) {
+      if (borderName == null) {
+         return ImageManager.getSprite(BLANK_SPRITE_PATH + "empty_layer");
+      }
       return ImageManager.getSprite(MASK_PATH + borderName + "_mask");
    }
 
    protected virtual Sprite getBackgroundSprite (string backgroundName) {
+      if (backgroundName == null) {
+         return ImageManager.getSprite(BLANK_SPRITE_PATH + "empty_layer");
+      }
       return background.sprite = ImageManager.getSprite(BACKGROUND_PATH + backgroundName);
    }
 
    protected virtual Sprite getSigilSprite (string sigilName) {
+      if (sigilName == null) {
+         return ImageManager.getSprite(BLANK_SPRITE_PATH + "empty_layer");
+      }
       return ImageManager.getSprite(SIGIL_PATH + sigilName);
    }
 

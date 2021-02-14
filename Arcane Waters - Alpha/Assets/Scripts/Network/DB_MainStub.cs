@@ -756,7 +756,11 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
+   public static long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
+      return -1;
+   }
+
+   public static void saveBugReportScreenshot (NetEntity player, long bugId, byte[] screenshotBytes) {
 
    }
 

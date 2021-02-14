@@ -102,15 +102,28 @@ public class TooltipHandler : MonoBehaviour
             break;
       }
 
-      // If tooltip does not fit in the desired loaction, place it above the element.
-      if ((_rightEdge + _tooltipDimensions.x + _offSetX > Screen.width)  ||
-         (_leftEdge - _tooltipDimensions.x  - _offSetX < 0)) {
-         placeAboveUIELement(elementPosition);
+      // If tooltip does not fit in the desired loaction, place it above the element or shift it back on screen.
+      if (isTooltipOffScreen()) {
+         if (tooltipOwner.GetComponent<ToolTipComponent>().forceFitOnScreen == false) {
+            placeAboveUIELement(elementPosition);
+         } else {
+            // If tooltip is off the right edge of screen
+            if (_rightEdge + _tooltipDimensions.x + _offSetX > Screen.width) {
+               toolTipPanel.transform.position = new Vector3(_rightEdge - _tooltipDimensions.x / 2, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
+            } else {
+               // If tooltip is off the left edge of screen
+               toolTipPanel.transform.position = new Vector3(_rightEdge - _tooltipDimensions.x / 2, tooltipOwnerTopEdge + _tooltipDimensions.y / 2 + _offSetY, 0);
+            }
+         }
       }
 
       // Turn the tooltip visible
       toolTipPanel.GetComponent<CanvasGroup>().alpha = 1;
       toolTipPanel.GetComponent<CanvasGroup>().blocksRaycasts = false;
+   }
+
+   public bool isTooltipOffScreen () {
+      return (toolTipPanel.transform.position.x + _tooltipDimensions.x/2 + _offSetX > Screen.width) || (toolTipPanel.transform.position.x - _tooltipDimensions.x - _offSetX < 0);
    }
 
    public void setTooltipToSizeAutomatically () {
