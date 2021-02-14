@@ -57,11 +57,16 @@ public class ArmorManager : EquipmentManager {
    public void updateSprites (int armorType, string palettes) {
       Gender.Type gender = getGender();
 
-      // Set the correct sheet for our gender and armor type
-      armorLayer.setType(gender, armorType);
+      if (armorType == 0) {
+         armorLayer.gameObject.SetActive(false);
+      } else {
+         // Set the correct sheet for our gender and armor type
+         armorLayer.gameObject.SetActive(true);
+         armorLayer.setType(gender, armorType);
 
-      // Update our Material
-      armorLayer.recolor(palettes);
+         // Update our Material
+         armorLayer.recolor(palettes);
+      }
 
       // Sync up all our animations
       if (_body != null) {
@@ -77,12 +82,7 @@ public class ArmorManager : EquipmentManager {
       // Update the sprites for the new armor type
       int newType = armorData == null ? 0 : armorData.armorType;
 
-      if (newType == 0) {
-         armorLayer.gameObject.SetActive(false);
-      } else {
-         armorLayer.gameObject.SetActive(true);
-         updateSprites(newType, palettes);
-      }
+      updateSprites(newType, palettes);
 
       // Play a sound
       SoundManager.create3dSound("equip_", this.transform.position, 2);
