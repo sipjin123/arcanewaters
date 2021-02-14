@@ -1026,38 +1026,36 @@ public class Util : MonoBehaviour {
    }
 
    public static int getGameVersion () {
-      int gameVersion;
+      // If the manifest does not exist, set the game version to a high value to allow the connection to the server
+      int gameVersion = int.MaxValue;
 
-      // Load the cloud build manifest json file
-      TextAsset manifestJSON = (TextAsset) Resources.Load("UnityCloudBuildManifest.json");
-      
-      if (manifestJSON != null) {
-         // Deserialize the manifest
-         CloudBuildManifest manifest = JsonUtility.FromJson<CloudBuildManifest>(manifestJSON.text);
-
-         // Get the game version number from the manifest
-         try {
-            gameVersion = int.Parse(manifest.buildNumber);
-         } catch (Exception e) {
-            D.error("Could not parse the build number. Exception: " + e);
-            gameVersion = 0;
-         }
-      } else {
-         // If the manifest does not exist, set the game version to a high value to allow the connection to the server
-         gameVersion = int.MaxValue;
-
-         // If this is a cloud build, then the manifest cannot be missing
-#if CLOUD_BUILD
-         D.error("Could not find the cloud build manifest.");
-         gameVersion = 0;
-#endif
-      }
+      // If this is a cloud build, then the manifest cannot be missing
+      #if CLOUD_BUILD
+      gameVersion = getGameVersionFromConfig();
+      #endif
 
       return gameVersion;
    }
 
    public static string getFormattedGameVersion () {
       return getJenkinsBuildId();
+   }
+
+   public static int getGameVersionFromConfig () {
+      int gameVersion = 0;
+
+      try {
+         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
+            gameVersion = int.Parse(deploymentConfig["deploymentId"].ToString());
+         }
+      } catch {
+         D.debug("Failed to fetch deploymentId from Config File");
+      }
+
+      return gameVersion;
    }
 
    public static int getDeploymentId () {
