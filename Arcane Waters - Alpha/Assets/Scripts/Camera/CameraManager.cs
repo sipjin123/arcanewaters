@@ -306,7 +306,9 @@ public class CameraManager : ClientMonoBehaviour {
       battleCamera.getCamera().enabled = false;
 
       // Switch the audio listener
-      AudioListenerManager.self.setActiveListener(Global.player.GetComponent<AudioListener>());
+      if (Global.player != null) {
+         AudioListenerManager.self.setActiveListener(Global.player.GetComponent<AudioListener>());
+      }
 
       // Start the fade in effect
       defaultCamera.getPixelFadeEffect().fadeIn();

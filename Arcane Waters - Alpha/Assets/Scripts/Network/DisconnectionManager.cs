@@ -30,7 +30,11 @@ public class DisconnectionManager : MonoBehaviour
    }
 
    public void removeFromDisconnectedUsers (NetEntity player) {
-      _disconnectedPlayers.Remove(player);
+      try {
+         _disconnectedPlayers.Remove(player);
+      } catch {
+         D.debug("Cannot disconnect user! Please fix this BUG");
+      }
    }
 
    public void clearDisconnectedUsers () {

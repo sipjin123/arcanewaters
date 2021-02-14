@@ -707,7 +707,7 @@ public class XmlVersionManagerClient : MonoBehaviour {
                   CraftableItemRequirements craftData = Util.xmlLoad<CraftableItemRequirements>(xmlSubGroup[1]);
                   string keyName = CraftingManager.getKey(craftData.resultItem.category, craftData.resultItem.itemTypeId);
                   if (_craftingData.ContainsKey(keyName)) {
-                     D.debug("Duplicate Crafting Key: " + keyName);
+                     D.editorLog("Duplicate Crafting Key: " + keyName, Color.red);
                   } else {
                      craftData.xmlId = uniqueId;
                      _craftingData.Add(keyName, craftData);

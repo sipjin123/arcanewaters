@@ -2328,8 +2328,7 @@ public class DB_Main : DB_MainStub
          using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
             while (dataReader.Read()) {
                if (dataReader.Read()) {
-                  int publishedversion = dataReader.GetInt32("publishedversion");
-                  if (publishedversion >= 0) {
+                  try {
                      int id = dataReader.GetInt32("id");
                      string name = dataReader.GetString("name");
                      string displayName = dataReader.GetString("displayName");
@@ -2345,6 +2344,8 @@ public class DB_Main : DB_MainStub
                         sourceMapId + "[space]" +
                         weatherEffectType + "[space]" +
                         biome + "[next]\n";
+                  } catch {
+                     D.debug("Skipping map data due to invalid entry");
                   }
                }
             }

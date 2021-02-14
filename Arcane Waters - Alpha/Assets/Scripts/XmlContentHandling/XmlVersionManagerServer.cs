@@ -99,6 +99,7 @@ public class XmlVersionManagerServer : MonoBehaviour {
    private void Awake () {
       #if IS_SERVER_BUILD && CLOUD_BUILD
       forceDisable = false;
+      D.debug("This is a Server build and a Cloud build, proceed to process xml zip setup");
       #endif
       
       #if IS_SERVER_BUILD && !CLOUD_BUILD
