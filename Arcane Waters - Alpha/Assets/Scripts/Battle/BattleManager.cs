@@ -472,6 +472,39 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
+      BattleActionType actionType = BattleActionType.UNDEFINED;
+
+      if (abilityType == AbilityType.Special) {
+         List<string> specialAction = new List<string>();
+         foreach (Battler target in targets) {
+            double newtimeToWait = battle.getTimeToWait(source, targets);
+            AttackAbilityData newAttackData = new AttackAbilityData();
+            newAttackData.abilityType = AbilityType.Special;
+            newAttackData.abilityActionType = AbilityActionType.Special;
+
+            // Make note of the time that this battle action is going to be fully completed, considering animation times
+            double timeAttackEnds = NetworkTime.time + newtimeToWait + newAttackData.getTotalAnimLength(source, target);
+
+            float cooldownDuration = newAttackData.abilityCooldown * source.getCooldownModifier();
+            source.cooldownEndTime = timeAttackEnds + cooldownDuration;
+
+            AttackAction newAction = new AttackAction(battle.battleId, AttackAction.ActionType.Melee, source.userId, target.userId,
+                (int) 10, 3, abilityInventoryIndex, false, false, 7, 1,
+                5, 0, DamageMagnitude.Default);
+            newAction.battleActionType = BattleActionType.Special;
+
+            // Make note how long the two Battler objects need in order to execute the attack/hit animations
+            source.animatingUntil = timeAttackEnds;
+            target.animatingUntil = timeAttackEnds;
+            
+            // Wait to apply the effects of the action here on the server until the appointed time
+            StartCoroutine(applyActionAfterDelay(newtimeToWait, newAction, true));
+            specialAction.Add(newAction.serialize());
+         }
+         battle.Rpc_SendCombatAction(specialAction.ToArray(), BattleActionType.Special, false);
+         return;
+      }
+
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
       BasicAbilityData abilityData = new BasicAbilityData();
 
@@ -485,8 +518,6 @@ public class BattleManager : MonoBehaviour {
          }
          abilityData = AbilityManager.self.punchAbility();
       }
-
-      BattleActionType actionType = BattleActionType.UNDEFINED;
 
       bool wasBlocked = false;
       bool wasCritical = false;
@@ -602,7 +633,7 @@ public class BattleManager : MonoBehaviour {
             // Make note how long the two Battler objects need in order to execute the attack/hit animations
             source.animatingUntil = timeAttackEnds;
             target.animatingUntil = timeAttackEnds;
-
+            
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
 
@@ -751,7 +782,13 @@ public class BattleManager : MonoBehaviour {
             }
 
          } else {
+            // TODO: Add special action class for unique abilities
             if (action is AttackAction) {
+               // TODO: Remove this and revise special behavior when special action class is created
+               if (action.battleActionType == BattleActionType.Special) {
+                  yield break;
+               }
+
                AttackAction attackAction = (AttackAction) action;
 
                // Registers the usage of the Offensive Skill for achievement recording

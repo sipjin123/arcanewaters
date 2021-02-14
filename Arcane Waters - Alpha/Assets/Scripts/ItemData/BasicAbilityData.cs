@@ -24,7 +24,7 @@ public class BasicAbilityData : BattleItemData
    public AbilityType abilityType;
 
    // The cooldown of the skill
-   public float abilityCooldown;
+   public float abilityCooldown = 2;
 
    // The action point change value
    public int apChange;
@@ -167,7 +167,8 @@ public enum AbilityType
    Undefined = 0,
    Standard = 1,
    BuffDebuff = 2,
-   Stance = 3
+   Stance = 3,
+   Special = 4
 }
 
 [Serializable]

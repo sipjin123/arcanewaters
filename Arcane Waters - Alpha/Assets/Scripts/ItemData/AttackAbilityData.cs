@@ -146,6 +146,10 @@ public class AttackAbilityData : BasicAbilityData
             // Add up the amount of time it takes to animate an entire action
             return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
 
+         case AbilityActionType.Special:
+            // Add up the amount of time it takes to animate an entire action
+            return attacker.getPreMagicLength() + shakeLength + knockupLength + knockBackLength + getPreDamageLength + getPostDamageLength + Battler.POST_CAST_DELAY + Battler.PRE_CAST_DELAY;
+
          default:
             Debug.LogWarning("Ability type is not defined for getting anim length");
             return 0;
@@ -199,7 +203,8 @@ public enum AbilityActionType
    Projectile = 3,       // Created just in case, replace if ranged can do anything projectile does
    Cancel = 4,
    StanceChange = 5,
-   CastToTarget = 6
+   CastToTarget = 6,
+   Special = 7
 }
 
 public enum WeaponCategory {

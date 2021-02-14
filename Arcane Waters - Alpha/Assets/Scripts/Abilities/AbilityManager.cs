@@ -143,6 +143,23 @@ public class AbilityManager : MonoBehaviour
       bool isFirst = true;
 
       foreach (BattleAction action in actions) {
+         // TODO: COMBAT: Setup a dynamic way of handling special actions using web tool
+         if (action.battleActionType == BattleActionType.Special) {
+            Battle newBattle = BattleManager.self.getBattle(action.battleId);
+            if (newBattle != null) {
+               Battler newSourceBattler = newBattle.getBattler(action.sourceId);
+               Battler newTargetBattler = newBattle.getBattler(action.targetId);
+               float newAnimationLength = .6f;
+               BattleAction newActionToExecute = null;
+               newActionToExecute = action as AttackAction;
+               double newtimeToWait = newActionToExecute.actionEndTime - NetworkTime.time - newAnimationLength;
+               newTargetBattler.registerNewActionCoroutine(newTargetBattler.attackDisplay(newtimeToWait, action, isFirst), BattleActionType.Special);
+            } else {
+               D.debug("Battle has not been initialized yet");
+            }
+            continue;
+         }
+
          BattleAction actionToExecute = null;
          Battle battle = BattleManager.self.getBattle(action.battleId);
          if (battle == null) {
