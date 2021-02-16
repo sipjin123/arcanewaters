@@ -49,7 +49,6 @@ public class SeaEntity : NetEntity
    public List<Collider2D> colliderList;
 
    // Cache the impact type of the ability
-
    public Attack.ImpactMagnitude currentImpactMagnitude = Attack.ImpactMagnitude.None;
 
    #endregion
@@ -529,9 +528,6 @@ public class SeaEntity : NetEntity
             }
             break;
          default:
-            if (this is SeaMonsterEntity) { 
-               D.debug("Cant process attack" + " : " + abilityId + " : " + shipAbility.selectedAttackType);
-            }
             StartCoroutine(CO_FireAtSpotSingle(spot, abilityId, shipAbility.selectedAttackType, attackDelay, launchDelay, spawnPosition));
             break;
       }
@@ -561,16 +557,14 @@ public class SeaEntity : NetEntity
       float distance = Vector2.Distance(this.transform.position, spot);
       float timeToReachTarget = Mathf.Clamp(distance, .5f, 1.5f) * 1.1f;
 
+      // Modify projectile speed based on attack type
       timeToReachTarget /= Attack.getSpeedModifier(attackType);
 
       // Speed modifiers for the projectile types
-      ShipAbilityData abilityData = getSeaAbility(abilityId);
-      if (abilityData.projectileId > 0) {
-         ProjectileStatData projectileData = getProjectileDataFromAbility(abilityData.projectileId);
-         if (projectileData != null) {
-            // The higher the mass, the slower the projectile will reach its target
-            timeToReachTarget /= projectileData.projectileMass;
-         }
+      ProjectileStatData projectileData = getProjectileDataFromAbility(abilityId);
+      if (projectileData != null) {
+         // The higher the mass, the slower the projectile will reach its target
+         timeToReachTarget /= projectileData.projectileMass;
       }
 
       // Wait for the attack delay if any

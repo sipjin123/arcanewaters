@@ -73,6 +73,7 @@ public class ShipEntity : SeaEntity
       currentHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
       maxHealth = enemyData.maxHealth * (instanceDifficulty > 0 ? instanceDifficulty : 1);
       attackRangeModifier = (int) enemyData.maxProjectileDistanceGap;
+      reloadDelay = enemyData.reloadDelay;
 
       speed = shipData.baseSpeed;
       sailors = shipData.baseSailors;
