@@ -123,6 +123,24 @@ public class BasicAbilityData : BattleItemData
 
    #region Helper Methods
 
+   public void playCastClipAtTarget (Transform targetTransform) {
+      if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
+         SoundEffectManager.self.playSoundEffect(castSoundEffectId, targetTransform);
+      } else {
+         AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
+         SoundManager.playClipAtPoint(castClip, targetTransform.position);
+      }
+   }
+
+   public void playHitClipAtTarget (Transform targetTransform) {
+      if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
+         SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
+      } else {
+         AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
+         SoundManager.playClipAtPoint(hitclip, targetTransform.position);
+      }
+   }
+
    public bool isReadyForUseBy (Battler sourceBattler) {
       if (abilityType == AbilityType.Standard) {
 
@@ -194,8 +212,17 @@ public class AbilityDataRecord
          buffList.Add(buffDataId);
          basicList.Add(buffDataId);
       }
-      foreach (int basicDataId in record.buffAbilityDataList) {
+      foreach (int basicDataId in record.basicAbilityDataList) {
          basicList.Add(basicDataId);
+
+         BasicAbilityData abilityData = AbilityManager.self.allGameAbilities.Find(_=>_.itemID == basicDataId);
+         if (abilityData != null) {
+            if (abilityData.abilityType == AbilityType.Standard) {
+               attackList.Add(basicDataId);
+            } else if (abilityData.abilityType == AbilityType.BuffDebuff) {
+               buffList.Add(basicDataId);
+            }
+         }
       }
 
       newRecord.attackAbilityDataList = attackList.ToArray();

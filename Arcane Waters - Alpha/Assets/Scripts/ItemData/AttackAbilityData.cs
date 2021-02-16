@@ -96,24 +96,6 @@ public class AttackAbilityData : BasicAbilityData
 
    #region Custom Helper Methods
 
-   public void playCastClipAtTarget (Transform targetTransform) {
-      if (SoundEffectManager.self.isValidSoundEffect(castSoundEffectId)) {
-         SoundEffectManager.self.playSoundEffect(castSoundEffectId, targetTransform);
-      } else {
-         AudioClip castClip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultCastAudio).audioClip;
-         SoundManager.playClipAtPoint(castClip, targetTransform.position);
-      }
-   }
-
-   public void playHitClipAtTarget (Transform targetTransform) {
-      if (SoundEffectManager.self.isValidSoundEffect(hitSoundEffectId)) {
-         SoundEffectManager.self.playSoundEffect(hitSoundEffectId, targetTransform);
-      } else {
-         AudioClip hitclip = AudioClipManager.self.getAudioClipData(AudioClipManager.self.defaultHitAudio).audioClip;
-         SoundManager.playClipAtPoint(hitclip, targetTransform.position);
-      }
-   }
-
    // No damage increase or decrease by default
    public float getModifier { get { return 1.0f; } }
 
