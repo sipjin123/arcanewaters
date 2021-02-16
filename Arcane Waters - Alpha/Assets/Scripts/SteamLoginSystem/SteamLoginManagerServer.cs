@@ -49,11 +49,11 @@ namespace SteamLoginSystem
          self = this;
       }
 
-      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId) {
-         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent, steamAppId));
+      public void authenticateTicket (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId, int connectionId) {
+         StartCoroutine(CO_ProcessAuthentication(authTicketData, m_pcbTicket, newTicketEvent, steamAppId, connectionId));
       }
 
-      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId) {
+      private IEnumerator CO_ProcessAuthentication (byte[] authTicketData, uint m_pcbTicket, AuthenticateTicketEvent newTicketEvent, string steamAppId, int connectionId) {
          authenticateTicketEventActiveList.Add(newTicketEvent);
          Array.Resize(ref authTicketData, (int) m_pcbTicket);
 
@@ -81,10 +81,6 @@ namespace SteamLoginSystem
             rawData = rawData.Replace("params", "newParams");
             AuthenticateTicketResponse authTicketResponse = JsonUtility.FromJson<AuthenticateTicketResponse>(rawData);
 
-            if (string.IsNullOrEmpty(authTicketResponse.response.newParams.ownersteamid)) {
-               D.debug("Error! Steam Ticket Authentication Failed! Response:{" + rawData + "}");
-            }
-
             if (isLogActive) {
                D.editorLog("The raw data is: " + rawData, Color.magenta);
                D.editorLog(authTicketResponse.response.newParams.ownersteamid, Color.cyan);
@@ -93,20 +89,23 @@ namespace SteamLoginSystem
                D.editorLog(authTicketResponse.response.newParams.publisherbanned.ToString(), Color.cyan);
             }
 
+            if (string.IsNullOrEmpty(authTicketResponse.response.newParams.ownersteamid)) {
+               D.debug("Error! Steam Ticket Authentication Failed! Response:{" + rawData + "}");
+               ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, connectionId);
+               yield break;
+            }
+
             newTicketEvent.Invoke(authTicketResponse);
          }
       }
-
+      
       public void getOwnershipInfo (string steamId, AppOwnershipEvent newOwnershipEvent, string steamAppId) {
          StartCoroutine(CO_ProcessAppOwnership(steamId, newOwnershipEvent, steamAppId));
       }
 
       private IEnumerator CO_ProcessAppOwnership (string steamId, AppOwnershipEvent newOwnershipEvent, string steamAppId) {
          appOwnershipEventActiveList.Add(newOwnershipEvent);
-         if (string.IsNullOrEmpty(steamId)) {
-            D.debug("Error! Steam ID is Invalid! ID:{" + steamId + "}");
-         }
-
+       
          // A php web request that will fetch the ownership info using the { Steam Publisher Web API Key }
          string webRequest = OWNERSHIP_WEB_REQUEST + PARAM_KEY + STEAM_WEB_PUBLISHER_API_KEY + "&" + PARAM_STEAM_ID + steamId + "&" + PARAM_APPID + steamAppId;
          if (isLogActive) {

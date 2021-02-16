@@ -104,6 +104,9 @@ public class ClientManager : MonoBehaviour
 
          // Wait for the php request response
          SteamLoginManager.self.getAuthTicketEvent.AddListener(_ => {
+            CSteamID steamId = SteamUser.GetSteamID();
+            Global.lastSteamId = steamId.ToString();
+
             // Extract the credentials
             LogInUserMessage msg = new LogInUserMessage(Global.netId, "", "", true, 
                Global.clientGameVersion, Global.currentlySelectedUserId, Application.platform, Global.isSinglePlayer, _.m_Ticket, _.m_pcbTicket, machineIdentifier, Global.isFirstLogin, SteamUtils.GetAppID().ToString(), Global.lastSteamId);

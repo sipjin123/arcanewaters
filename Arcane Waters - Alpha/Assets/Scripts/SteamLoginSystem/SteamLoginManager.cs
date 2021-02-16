@@ -32,6 +32,12 @@ namespace SteamLoginSystem
       // Shows the fetched data logs
       public bool isLogActive;
 
+      // The minimum lenght of the steam id
+      public const int MIN_STEAM_ID_LENGTH = 5;
+
+      // The default steam password to be encrypted
+      public const string STEAM_PASSWORD = "arcane_steam!pw";
+
       #endregion
 
       private void Awake () {

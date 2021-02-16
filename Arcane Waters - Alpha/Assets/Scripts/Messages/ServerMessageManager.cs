@@ -11,10 +11,6 @@ public class ServerMessageManager : MonoBehaviour
 {
    #region Public Variables
 
-   // TODO: Remove this feature after account creation is perfected
-   // This is used for tracking logs of steam generated password
-   public static string lastEncryptedPassword;
-
    #endregion
 
    [ServerOnly]
@@ -33,11 +29,13 @@ public class ServerMessageManager : MonoBehaviour
 
       // Make sure they have the required game version
       if (logInUserMessage.clientGameVersion < minClientGameVersion) {
-         string msg = string.Format("Refusing login for {0}, client version {1}", logInUserMessage.accountName, logInUserMessage.clientGameVersion);
+         string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
          D.debug(msg);
          sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
          return;
       }
+      string newmsg = string.Format("Granting login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
+      D.debug(newmsg);
 
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -109,16 +107,18 @@ public class ServerMessageManager : MonoBehaviour
             if (logInUserMessage.isSteamLogin && !isUnauthenticatedSteamUser) {
                D.debug("Attempting to create a new steam user for: {" + logInUserMessage.accountName + "}");
 
-               try {
+               if (logInUserMessage.accountName.Length > SteamLoginManager.MIN_STEAM_ID_LENGTH) {
                   accountId = DB_Main.createAccount(logInUserMessage.accountName, logInUserMessage.accountPassword, logInUserMessage.accountName.Replace("@", "") + "@codecommode.com", 0);
-               } catch {
-                  D.debug("Failed to process account creation for user" + " : " + logInUserMessage.accountName + " : " + logInUserMessage.accountPassword + " LastEncryption is: {" + lastEncryptedPassword + "}");
+               } else {
+                  D.debug("Failed to process account creation! User does not own this app" + " : " + logInUserMessage.accountName + " : " + logInUserMessage.steamUserId);
+                  sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                }
+
                if (accountId != 0) {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     D.debug("Successfully created account for Steam User: {" + logInUserMessage.accountName + "}");
                      On_LogInUserMessage(conn, logInUserMessage);
                   });
-                  D.debug("Successfully created account for Steam User: {" + logInUserMessage.accountName + "}");
                   return;
                } else {
                   hasFailedToCreateAccount = true;
@@ -137,7 +137,7 @@ public class ServerMessageManager : MonoBehaviour
 
             // Cancel process if steam user creation fails
             if (hasFailedToCreateAccount) {
-               D.debug("Failed to create an account for user: {" + logInUserMessage.accountName + "}");
+               D.debug("Failed to create an account for user: {" + logInUserMessage.accountName + "}" + " : {" + logInUserMessage.accountPassword + "}");
                sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
                return;
             }
@@ -153,10 +153,12 @@ public class ServerMessageManager : MonoBehaviour
                      DB_Main.storeLoginInfo(logInUserMessage.selectedUserId, accountId, conn.address, logInUserMessage.machineIdentifier ?? "");
                   }
                });
-               
+
+               string loginMessage = (logInUserMessage.isFirstLogin) ? PlayerPrefs.GetString(AdminManager.MOTD_KEY, "") : "";
+
                // Now tell the client to move forward with the login process
                LogInCompleteMessage msg = new LogInCompleteMessage(Global.netId, (Direction) users[0].facingDirection,
-                  userObjects.accountEmail, userObjects.accountCreationTime);
+                  userObjects.accountEmail, userObjects.accountCreationTime, loginMessage);
                conn.Send(msg);
 
             } else if (accountId > 0 && logInUserMessage.selectedUserId == 0) {
@@ -232,13 +234,16 @@ public class ServerMessageManager : MonoBehaviour
 
    [ServerOnly]
    private static void processSteamUserAuth (NetworkConnection conn, LogInUserMessage loginUserMsg) {
+      D.debug("Authenticating Ticket");
       AuthenticateTicketEvent newTicketEvent = new AuthenticateTicketEvent();
       newTicketEvent.AddListener(_ => {
          // Fetch steam user id from the event response
          string steamUserId = _.response.newParams.ownersteamid;
 
-         if (string.IsNullOrEmpty(steamUserId)) {
-            D.debug("Error! Will fail to process steam app ownership, failed to fetch Steam ID: {" + _.response.newParams + "}");
+         if (_.response.newParams.ownersteamid.Length < SteamLoginManager.MIN_STEAM_ID_LENGTH) {
+            D.debug("Error! Will fail to process steam app ownership, failed to fetch Steam ID: {" + _.response.newParams.ownersteamid + "}");
+            sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+            return;
          }
 
          // Proceed to next process
@@ -249,23 +254,28 @@ public class ServerMessageManager : MonoBehaviour
       });
 
       // Send ticket to be processed and fetch steam user data
-      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize, newTicketEvent, loginUserMsg.steamAppId);
+      SteamLoginManagerServer.self.authenticateTicket(loginUserMsg.steamAuthTicket, loginUserMsg.steamTicketSize, newTicketEvent, loginUserMsg.steamAppId, conn.connectionId);
    }
 
    [ServerOnly]
    private static void processSteamAppOwnership (NetworkConnection conn, LogInUserMessage loginUserMsg, string steamId) {
       AppOwnershipEvent newAppOwnershipEvent = new AppOwnershipEvent();
       newAppOwnershipEvent.AddListener(_ => {
+         if (_.appownership.ownersteamid.Length < SteamLoginManager.MIN_STEAM_ID_LENGTH || !_.appownership.ownsapp) {
+            D.debug("Error! User does not own this game!" + " : " + _.appownership.ownersteamid);
+            sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+            return;
+         }
+
          // Extract user and password
          DateTime dateOfPurchase = DateTime.Parse(_.appownership.timestamp);
          string rawPassword = _.appownership.ownersteamid + "_" + dateOfPurchase.Year + "_" + dateOfPurchase.Month + "_" + dateOfPurchase.Day;
-         string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
+         string encryptedPassword = SteamLoginEncryption.Encrypt(SteamLoginManager.STEAM_PASSWORD);
          string userName = _.appownership.ownersteamid;
 
          // Override login message
          loginUserMsg.accountName = userName;
          loginUserMsg.accountPassword = encryptedPassword;
-         lastEncryptedPassword = "EncryptedPW: {" + encryptedPassword + "} RawPW: {" + rawPassword+ "}";
 
          // Call On_LogInUserMessage again, this time with the user name and password
          On_LogInUserMessage(conn, loginUserMsg);
