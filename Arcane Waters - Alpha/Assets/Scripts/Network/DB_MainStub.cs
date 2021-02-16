@@ -145,13 +145,6 @@ public class DB_MainStub : MonoBehaviour
       return new List<XMLPair>();
    }
 
-   public static void addNewCloudData (CloudBuildData cloudData) {
-   }
-
-   public static CloudBuildData getCloudData () {
-      return new CloudBuildData();
-   }
-
    public static void writeZipData (byte[] bytes, int slot) {
    }
 

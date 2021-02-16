@@ -566,67 +566,6 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   #region Cloud Changesets
-
-   public static new void addNewCloudData (CloudBuildData cloudData) {
-      try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand(
-            "INSERT INTO global.cloud_changesets (buildId, message, lastUserUpdate) " +
-            "VALUES(@buildId, @message, @lastUserUpdate) ", conn)) {
-
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@buildId", cloudData.buildId);
-            cmd.Parameters.AddWithValue("@message", cloudData.buildMessage);
-            cmd.Parameters.AddWithValue("@lastUserUpdate", DateTime.UtcNow.ToString());
-            DebugQuery(cmd);
-
-            // Execute the command
-            cmd.ExecuteNonQuery();
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-   }
-
-   public static new CloudBuildData getCloudData () {
-      try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.cloud_changesets order by buildId DESC limit 1", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            DebugQuery(cmd);
-
-            // Create a data reader and Execute the command
-            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
-               while (dataReader.Read()) {
-                  CloudBuildData newBuildData = new CloudBuildData();
-                  int buildId = dataReader.GetInt32("buildId");
-                  string message = dataReader.GetString("message");
-                  try {
-                     string lastUpdated = dataReader.GetString("lastUserUpdate");
-                     newBuildData.buildDateTime = lastUpdated;
-                  } catch {
-                     newBuildData.buildDateTime = "";
-                  }
-
-                  newBuildData.buildId = buildId;
-                  newBuildData.buildMessage = message;
-
-                  return newBuildData;
-               }
-            }
-         }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
-      }
-
-      return null;
-   }
-
-   #endregion
-
    #region XML Content Handling
 
    public static new void writeZipData (byte[] bytes, int slot) {
@@ -9307,6 +9246,7 @@ public class DB_Main : DB_MainStub
          }
       } catch (Exception e) {
          D.error("MySQL Error: " + e.ToString());
+         D.debug("Duplicate Account triggered for" + " : " + accountName + " : " + accountPassword);
       }
 
       return accountId;
