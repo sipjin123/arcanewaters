@@ -52,5 +52,4 @@ public enum BattleActionType
    Stance = 2,
    BuffDebuff = 3,
    Cancel = 4,
-   Special = 5
 }

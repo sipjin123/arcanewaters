@@ -1116,27 +1116,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       Battler sourceBattler = battle.getBattler(battleAction.sourceId);
       modifyAnimSpeed(-1);
 
-      // Process special action here
-      if (battleAction.battleActionType == BattleActionType.Special) {
-         if (battle == null) {
-            battle = BattleManager.self.getBattle(battleAction.battleId);
-         }
-
-         if (battle != null) {
-            // The player to be attacked by the boss
-            BattlerData newBattleData = MonsterManager.self.getBattlerData(sourceBattler.enemyType);
-
-            // The boss and its attack data
-            Battler targetBattler = battle.getBattler(battleAction.targetId);
-
-            targetBattler.inflictBossDamage(newBattleData.baseDamage * battle.difficultyLevel);
-         } else {
-            D.debug("Battle has not yet been initialized");
-         }
-
-         yield break;
-      }
-
       // I believe we must grab the index from this battler, since this will be the one executing the attack
       AttackAbilityData attackerAbility = null;
 

@@ -331,67 +331,10 @@ public class Battle : NetworkBehaviour {
       return Vector2.Distance(sourcePosition, targetPosition);
    }
 
-   public void executeBossAbility (int damage, bool beginBattle) {
-      StartCoroutine(CO_ExecuteBossAbility(damage, beginBattle));
-   }
-
-   private IEnumerator CO_ExecuteBossAbility (int damage, bool beginBattle) {
-      if (beginBattle) {
-         yield return new WaitForSeconds(1);
-      }
-      BattleManager.self.executeBattleAction(this, getBattler(-1), getAttackers(), 0, AbilityType.Special);
-
-      Rpc_TriggerBossAnimation(getDefenders()[0].playerNetId);
-      inflictBossDamageToTeam(damage);
-   }
-
-   private void inflictBossDamageToTeam (int damage) {
-      foreach (Battler attackerEntity in getAttackers()) {
-         attackerEntity.health -= damage;
-      }
-   }
-
-   [ClientRpc]
-   private void Rpc_TriggerBossAnimation (uint netId) {
-      StartCoroutine(CO_TriggerBossAnimation(netId));
-   }
-
-   private IEnumerator CO_TriggerBossAnimation (uint netId) {
-      yield return new WaitForSeconds(1.5f);
-      Battler battler = getDefenders().Find(_ => _.playerNetId == netId);
-
-      if (battler != null) {
-         battler.modifyAnimSpeed(.15f);
-         battler.playAnim(Anim.Type.BossAnimation);
-
-         // TODO: COMBAT: Setup a dynamic way of handling this, ideally fetching data from the web tool for special attacks
-         // This spawns a special effect at the mouth of the golem boss
-         Vector2 effectPosition = new Vector2(battler.getCorePosition().x-.35f, battler.getCorePosition().y+ .5f);
-         EffectManager.self.create(Effect.Type.Blunt_Physical, effectPosition);
-
-         yield return new WaitForSeconds(3f);
-         
-         battler.modifyAnimSpeed(-1);
-         battler.pauseAnim(false);
-         battler.playAnim(Anim.Type.Idle_East);
-      } else {
-         D.debug("Failed to get battler for anim");
-      }
-   }
-
    [ClientRpc]
    public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
-
-      if (battleActionType == BattleActionType.Special) {
-         foreach (string actionString in actionStrings) {
-            actionToSend = AttackAction.deseralize(actionString);
-            actionList.Add(actionToSend);
-         }
-         AbilityManager.self.execute(actionList.ToArray());
-         return;
-      }
 
       // TODO: Investigate instances wherein this value is blank
       if (actionStrings.Length < 1) {

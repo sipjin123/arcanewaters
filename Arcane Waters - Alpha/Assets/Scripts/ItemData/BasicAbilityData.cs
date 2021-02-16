@@ -168,7 +168,6 @@ public enum AbilityType
    Standard = 1,
    BuffDebuff = 2,
    Stance = 3,
-   Special = 4
 }
 
 [Serializable]
