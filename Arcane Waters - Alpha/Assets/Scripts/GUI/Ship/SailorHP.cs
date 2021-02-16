@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
+using DG.Tweening;
 
 public class SailorHP : MonoBehaviour
 {
@@ -12,11 +13,11 @@ public class SailorHP : MonoBehaviour
    // The sailor statuses
    public enum Status
    {
-      None,
-      Healthy,
-      Damaged,
-      KnockedOut,
-      Hidden
+      None = 0,
+      Healthy = 1,
+      Damaged = 2,
+      KnockedOut = 3,
+      Hidden = 4
    }
 
    // The image component
@@ -26,6 +27,9 @@ public class SailorHP : MonoBehaviour
    public Sprite healthySprite;
    public Sprite damagedSprite;
    public Sprite knockedOutSprite;
+
+   // The animator component
+   public Animator animator;
 
    #endregion
 
@@ -46,6 +50,7 @@ public class SailorHP : MonoBehaviour
          case Status.KnockedOut:
             activate();
             image.sprite = knockedOutSprite;
+            animator.SetBool("isBlinking", false);
             break;
          case Status.Hidden:
          default:
@@ -54,6 +59,30 @@ public class SailorHP : MonoBehaviour
       }
 
       _status = status;
+   }
+
+   public void blink (int loopCount) {
+      if (_status == Status.Hidden || _status == Status.KnockedOut) {
+         return;
+      }
+
+      transform.DORewind();
+      transform.DOShakeRotation(0.2f, Vector3.forward * 70.0f, vibrato: 40);
+
+      if (loopCount <= 0) {
+         return;
+      }
+
+      _blinkLoopsLeft = loopCount;
+      animator.SetFloat("blinkSpeedMultiplier", loopCount);
+      animator.SetBool("isBlinking", true);
+   }
+
+   public void onBlinkLoop () {
+      _blinkLoopsLeft--;
+      if (_blinkLoopsLeft <= 0) {
+         animator.SetBool("isBlinking", false);
+      }
    }
 
    public void activate() {
@@ -73,6 +102,8 @@ public class SailorHP : MonoBehaviour
    // The current sailor status
    private Status _status = Status.None;
 
-   #endregion
+   // The number of blink loops left
+   private int _blinkLoopsLeft = 0;
 
+   #endregion
 }

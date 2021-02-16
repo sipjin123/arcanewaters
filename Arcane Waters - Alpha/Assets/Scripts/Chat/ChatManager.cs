@@ -43,6 +43,20 @@ public class ChatManager : MonoBehaviour {
       _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
    }
 
+   private void Update () {
+      if (!isTyping()) {
+         return;
+      }
+
+      if (Input.GetKeyDown(KeyCode.UpArrow)) {
+         changeNumMessagesAgo(increment: true);
+      }
+
+      if (Input.GetKeyDown(KeyCode.DownArrow)) {
+         changeNumMessagesAgo(increment: false);
+      }
+   }
+
    public void removeAdminCommands () {
       for (int i = _commandData.Count - 1; i >= 0; i--) {
          CommandData data = _commandData[i];
@@ -186,17 +200,25 @@ public class ChatManager : MonoBehaviour {
          return;
       }
 
+      _sentMessageHistory.Add(textToProcess);
+
       // Check if it's a chat command
       if (textToProcess.StartsWith("/") && !textToProcess.StartsWith(ChatPanel.WHISPER_PREFIX)) {
          executeChatCommand(textToProcess);
       } else {
          sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);
       }
+
+      resetMessagesAgo();
    }
 
    public void onChatInputValuechanged (string inputString) {
       Global.player.admin.tryAutoCompleteForGetItemCommand(inputString);
       tryAutoCompleteChatCommand();
+
+      if (Util.isEmpty(inputString)) {
+         resetMessagesAgo();
+      }
    }
 
    protected void executeChatCommand (string message) {
@@ -338,8 +360,37 @@ public class ChatManager : MonoBehaviour {
       autoCompletePanel.setAutoCompletesWithParameters(autoCompleteParameters);
    }
 
+   private void tryAutofillOldMessage () {
+      if (_numMessagesAgo < 1 || _numMessagesAgo > _sentMessageHistory.Count) {
+         return;
+      }
+
+      int indexInList = _sentMessageHistory.Count - _numMessagesAgo;
+      chatPanel.inputField.text = _sentMessageHistory[indexInList];
+      chatPanel.inputField.MoveTextEnd(false);
+   }
+
+   private void changeNumMessagesAgo (bool increment) {
+      _numMessagesAgo += (increment) ? 1 : -1;
+
+      if (_numMessagesAgo < 0) {
+         _numMessagesAgo = 0;
+      }
+
+      if (_numMessagesAgo > _sentMessageHistory.Count) {
+         _numMessagesAgo = _sentMessageHistory.Count;
+      }
+
+      tryAutofillOldMessage();
+   }
+
+   private void resetMessagesAgo () {
+      _numMessagesAgo = 0;
+   }
+
    #region Private Variables
 
+   // A list of the data for all available chat commands
    protected List<CommandData> _commandData = new List<CommandData>();
 
    // A list of all of the messages we've received
@@ -350,6 +401,12 @@ public class ChatManager : MonoBehaviour {
 
    // The default number of messages to include in the log when requested
    protected const int MAX_MESSAGES_IN_LOG = 50;
+
+   // A record of all messages the user has sent this login
+   protected List<string> _sentMessageHistory = new List<string>();
+
+   // How many messages ago we should autofill
+   protected int _numMessagesAgo = 0;
 
    #endregion
 }

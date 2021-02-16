@@ -16,6 +16,9 @@ public class AdminManager : NetworkBehaviour
    // The email address we use for test accounts
    public static string TEST_EMAIL_DOMAIN = "codecommode.com";
 
+   // The key for where we store the message of the day value in PlayerPrefs
+   public static readonly string MOTD_KEY = "messageOfTheDay";
+
    #endregion
 
    void Start () {
@@ -82,7 +85,16 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ban_permanently", "Bans a player from the game indefinitely", banPlayerIndefinite, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("god", "Gives the player's ship very high health and damage", requestGod, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
-      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: AreaManager.self.getAreaKeys()));
+      cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
+      cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
+
+      List<Map> maps = MapManager.self.mapDataCache;
+      List<string> mapNames = new List<string>();
+      foreach (Map map in maps) {
+         mapNames.Add(map.name);
+      }
+
+      cm.addCommand(new CommandData("warp", "Warps you to an area", requestWarp, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "areaName" }, parameterAutocompletes: mapNames));
 
       /*    NOT IMPLEMENTED
       _commands[Type.CreateTestUsers] = "create_test_users";
@@ -142,6 +154,29 @@ public class AdminManager : NetworkBehaviour
       Cmd_KickPlayer(parameters);
    }
 
+   private void requestGetMotd () {
+      Cmd_GetMotd();
+   }
+
+   [Command]
+   private void Cmd_GetMotd () {
+      Target_GetMotd(connectionToClient, PlayerPrefs.GetString(MOTD_KEY, ""));
+   }
+
+   [TargetRpc]
+   private void Target_GetMotd (NetworkConnection connection, string message) {
+      ChatPanel.self.addChatInfo(new ChatInfo(0, message, System.DateTime.Now, ChatInfo.Type.System));
+   }
+
+   private void requestSetMotd (string parameters) {
+      Cmd_SetMotd(parameters);
+   }
+
+   [Command]
+   private void Cmd_SetMotd (string parameters) {
+      PlayerPrefs.SetString(MOTD_KEY, parameters);
+   }
+
    [Command]
    protected void Cmd_KickPlayer(string parameters) {
       if (!_player.isAdmin()) {
@@ -195,6 +230,18 @@ public class AdminManager : NetworkBehaviour
    private void requestGod () {
       Cmd_SetShipDamage("100000");
       Cmd_SetShipHealth("100000");
+      requestGodWeapon();
+      requestGodArmor();
+   }
+
+   private void requestGodWeapon () {
+      string godWeaponName = "colts totally not overpowered test weapon";
+      Cmd_CreateAndEquipItem(Item.Category.Weapon, godWeaponName, 1);
+   }
+
+   private void requestGodArmor () {
+      string godArmorName = "ward";
+      Cmd_CreateAndEquipItem(Item.Category.Armor, godArmorName, 1);
    }
 
    private void banPlayerIndefinite (string parameters) {
@@ -426,7 +473,7 @@ public class AdminManager : NetworkBehaviour
       Cmd_SetShipDamage(parameter);
    }
 
-   private  void requestSetShipHealth (string parameter) {
+   private void requestSetShipHealth (string parameter) {
       Cmd_SetShipHealth(parameter);
    }
 
@@ -1239,13 +1286,18 @@ public class AdminManager : NetworkBehaviour
       // To the database thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
          bool scheduled = DB_Main.updateDeploySchedule(ticks, build);
-         if (scheduled) {
-            string timeUnit = (delay == 1) ? "minute" : "minutes";
-            string message = $"Server will reboot in {delay} {timeUnit}!";
-            ChatInfo.Type chatType = ChatInfo.Type.Global;
-            ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
-            ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
-         }
+
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            if (scheduled) {
+               string timeUnit = (delay == 1) ? "minute" : "minutes";
+               string message = $"Server will reboot in {delay} {timeUnit}!";
+               ChatInfo.Type chatType = ChatInfo.Type.Global;
+               ChatInfo chatInfo = new ChatInfo(0, message, System.DateTime.UtcNow, chatType);
+               ServerNetworkingManager.self?.sendGlobalChatMessage(chatInfo);
+
+               RestartManager.self.onScheduledServerRestart(timePoint);
+            }
+         });
       });
    }
 
@@ -1261,6 +1313,7 @@ public class AdminManager : NetworkBehaviour
 
       DB_Main.cancelDeploySchedule();
 
+      RestartManager.self.onCanceledServerRestart();
    }
 
    [Command]
@@ -1404,6 +1457,62 @@ public class AdminManager : NetworkBehaviour
       if (area != null) {
          _player.transform.localPosition = localPosition;
       }
+   }
+
+   [Command]
+   protected void Cmd_CreateAndEquipItem (Item.Category category, string itemName, int count) {
+      // Make sure this is an admin
+      if (!_player.isAdmin()) {
+         D.warning("Received admin command from non-admin!");
+         return;
+      }
+
+      int itemTypeId = -1;
+
+      // Get the item type ID
+      switch (category) {
+         case Item.Category.Armor:
+            itemTypeId = _armorNames[itemName];
+            break;
+         case Item.Category.Weapon:
+            itemTypeId = _weaponNames[itemName];
+            break;
+         case Item.Category.Hats:
+            itemTypeId = _hatNames[itemName];
+            break;
+      }
+
+      // Go to the background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+
+         int itemId = DB_Main.getItemID(_player.userId, (int) category, itemTypeId);
+
+         // Check if the user has the item
+         if (!DB_Main.hasItem(_player.userId, itemId, (int) category)) {
+            // If not, create the item object
+            Item item = new Item(-1, category, itemTypeId, count, "", "");
+
+            // Write the item in the DB
+            DB_Main.createItemOrUpdateItemCount(_player.userId, item);
+            itemId = DB_Main.getItemID(_player.userId, (int) category, itemTypeId);
+         }
+
+         // Back to the main thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+
+            switch (category) {
+               case Item.Category.Armor:
+                  _player.rpc.requestSetArmorId(itemId);
+                  break;
+               case Item.Category.Weapon:
+                  _player.rpc.requestSetWeaponId(itemId);
+                  break;
+               case Item.Category.Hats:
+                  _player.rpc.requestSetHatId(itemId);
+                  break;
+            }
+         });
+      });
    }
 
    [Command]

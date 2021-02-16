@@ -40,6 +40,9 @@ public class Minimap : ClientMonoBehaviour {
    // The prefab we use for showing ship entity icon
    public MM_ShipEntityIcon shipIconPrefab;
 
+   // The prefab we use for showing player icons in our voyage group (only in town)
+   public MM_GroupPlayerIcon groupPlayerIconPrefab;
+
    // The sprites we use for identifying ship entity icons (enemy, friendly, neutral)
    public Sprite enemyShipSprite;
    public Sprite friendlyShipSprite;

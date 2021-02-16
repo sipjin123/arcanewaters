@@ -7,11 +7,8 @@ using Mirror;
 public class ShipBars : MonoBehaviour {
    #region Public Variables
 
-   // Our health bar image
-   public Image healthBarImage;
-
-   // Our predicted damage bar image - the amount of damage the player shot will inflict
-   public Image predictedDamageBarImage;
+   // The amount of health represented by one health unit
+   public static int HP_PER_UNIT = 100;
 
    // Our reload bar image
    public Image reloadBarImage;
@@ -31,6 +28,12 @@ public class ShipBars : MonoBehaviour {
    // An alternate sprite we use for the health bar background on non-player ships
    public Sprite barsBackgroundAlt;
 
+   // The prefab we use for creating health units
+   public ShipHealthUnit shipHealthUnitPrefab;
+
+   // The container of health units
+   public GameObject healthUnitContainer;
+
    #endregion
 
    void Awake () {
@@ -46,6 +49,13 @@ public class ShipBars : MonoBehaviour {
       if (_entity == null) {
          return;
       }
+
+      healthUnitContainer.DestroyChildren();
+      for (int i = 0; i < Mathf.Ceil((float)_entity.maxHealth / HP_PER_UNIT); i++) {
+         ShipHealthUnit unit = Instantiate(shipHealthUnitPrefab, healthUnitContainer.transform, false);
+         unit.setStatus(ShipHealthUnit.Status.Healthy);
+         _healthUnits.Add(unit);
+      }
    }
 
    protected virtual void Update () {
@@ -53,16 +63,8 @@ public class ShipBars : MonoBehaviour {
          return;
       }
 
-      // Set our health and predicted damage bar size based on our current health
-      healthBarImage.fillAmount = (float) _entity.currentHealth / _entity.maxHealth;
-      predictedDamageBarImage.fillAmount = healthBarImage.fillAmount;
-
-      // Calculate the predicted damage from the aimed player shot
-      float predictedDamage = (float) AttackManager.self.getPredictedDamage(_entity);
-      predictedDamage = Mathf.Clamp(predictedDamage / _entity.maxHealth, 0, healthBarImage.fillAmount);
-
-      // Subtract the predicted damage from the health bar - this will reveal the predictive bar below
-      healthBarImage.fillAmount -= predictedDamage;
+      // Set our health bar based on our current health
+      handleHealthBar();
 
       // Update our reload bar when we recently fired
       reloadBarImage.fillAmount = (float)(NetworkTime.time - _entity.getLastAttackTime()) / _entity.reloadDelay;
@@ -107,6 +109,26 @@ public class ShipBars : MonoBehaviour {
       }
    }
 
+   protected void handleHealthBar () {
+      if (_entity.currentHealth == _lastHealth) {
+         return;
+      }
+
+      int hpStep = 0;
+      for (int i = 0; i < _healthUnits.Count; i++) {
+         if ((hpStep + (HP_PER_UNIT/ 2)) < _entity.currentHealth) {
+            _healthUnits[i].setStatus(ShipHealthUnit.Status.Healthy);
+         } else if (hpStep < _entity.currentHealth) {
+            _healthUnits[i].setStatus(ShipHealthUnit.Status.Damaged);
+         } else {
+            _healthUnits[i].setStatus(ShipHealthUnit.Status.Hidden);
+         }
+         hpStep += HP_PER_UNIT;
+      }
+
+      _lastHealth = _entity.currentHealth;
+   }
+
    #region Private Variables
 
    // Our associated Sea Entity
@@ -114,6 +136,12 @@ public class ShipBars : MonoBehaviour {
 
    // Our Canvas Group
    protected CanvasGroup _canvasGroup;
+
+   // The list of all health unit objects
+   private List<ShipHealthUnit> _healthUnits = new List<ShipHealthUnit>();
+
+   // The last registered ship health value
+   private float _lastHealth = 0;
 
    #endregion
 }

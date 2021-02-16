@@ -333,7 +333,10 @@ public class ServerMessageManager : MonoBehaviour
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId) {
       ErrorMessage errorMessage = new ErrorMessage(Global.netId, errorType);
-      NetworkServer.connections[connectionId].Send(errorMessage);
+
+      if (NetworkServer.connections.ContainsKey(connectionId)) {
+         NetworkServer.connections[connectionId].Send(errorMessage);
+      }
    }
 
    public static void sendError (ErrorMessage.Type errorType, int connectionId, string customMessage = "") {

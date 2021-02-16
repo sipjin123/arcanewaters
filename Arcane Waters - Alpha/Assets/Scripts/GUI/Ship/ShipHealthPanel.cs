@@ -52,23 +52,52 @@ public class ShipHealthPanel : ClientMonoBehaviour
 
       show();
 
+      if (Global.player.currentHealth == _lastHealth) {
+         return;
+      }
+
       int hpStep = 0;
       for (int i = 0; i < _sailors.Count; i++) {
          if ((hpStep + (HP_PER_SAILOR / 2)) < Global.player.currentHealth) {
             _sailors[i].setStatus(SailorHP.Status.Healthy);
          } else if (hpStep < Global.player.currentHealth) {
             _sailors[i].setStatus(SailorHP.Status.Damaged);
-         } else if (hpStep <= Global.player.maxHealth) {
+         } else if (hpStep < Global.player.maxHealth) {
             _sailors[i].setStatus(SailorHP.Status.KnockedOut);
          } else {
             _sailors[i].setStatus(SailorHP.Status.Hidden);
          }
          hpStep += HP_PER_SAILOR;
       }
+
+      if (Global.player.currentHealth > 0 && Global.player.currentHealth < _lastHealth) {
+         int blinkLoopCount;
+         float sailorLeftCount = (float) Global.player.currentHealth / HP_PER_SAILOR;
+
+         // The closer the death, the more intense the red blinking
+         if (sailorLeftCount <= 1) {
+            blinkLoopCount = 4;
+         } else if (sailorLeftCount <= 2) {
+            blinkLoopCount = 3;
+         } else if (sailorLeftCount <= 3) {
+            blinkLoopCount = 2;
+         } else if (sailorLeftCount <= 4) {
+            blinkLoopCount = 1;
+         } else {
+            blinkLoopCount = 0;
+         }
+
+         for (int i = 0; i < _sailors.Count; i++) {
+            _sailors[i].blink(blinkLoopCount);
+         }
+      }
+
+      _lastHealth = Global.player.currentHealth;
    }
 
    private void hide () {
       if (canvasGroup.IsShowing()) {
+         _lastHealth = 0;
          canvasGroup.alpha = 0;
       }
    }
@@ -83,6 +112,9 @@ public class ShipHealthPanel : ClientMonoBehaviour
 
    // The list of all sailor objects
    private List<SailorHP> _sailors = new List<SailorHP>();
+
+   // The last registered ship health value
+   private float _lastHealth = 0;
 
    #endregion
 }

@@ -86,7 +86,7 @@ public class LoadingScreen : MonoBehaviour
             yield break;
          }
 
-         yield return new WaitForEndOfFrame();
+         yield return null;   
       }
 
       // Reveal loading screen elements - progress bar, etc.
@@ -104,11 +104,11 @@ public class LoadingScreen : MonoBehaviour
 
          // Check if we exceeded maximum wait time
          if (Time.time - startTime > LOADING_TIMEOUT) {
-            D.editorLog("The maximum loading time was exceeded.");
+            D.log("The maximum loading time was exceeded.");
             break;
          }
 
-         yield return new WaitForEndOfFrame();
+         yield return null;
       }
 
       // Mark loading process as finished, in case a new loading process wants to be initialized exactly at this time
@@ -159,7 +159,7 @@ public class LoadingScreen : MonoBehaviour
    private const float MIN_TIME_BEFORE_SHOWING_BAR = 1f;
 
    // A timeout in case the loading screen gets frozen
-   private const float LOADING_TIMEOUT = 15.0f;
+   private const float LOADING_TIMEOUT = 45.0f;
 
    // Some extra time to wait after a fade transition ended
    private const float ADDITIONAL_WAIT_TIME = 0.25f;

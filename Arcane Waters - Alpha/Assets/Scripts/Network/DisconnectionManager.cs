@@ -10,7 +10,7 @@ public class DisconnectionManager : MonoBehaviour
    #region Public Variables
 
    // The number of seconds a player remains active in the server after the client suddenly disconnects
-   public static float SECONDS_UNTIL_PLAYERS_DESTROYED = 10f;
+   public static float SECONDS_UNTIL_PLAYERS_DESTROYED = 20f;
 
    // Self
    public static DisconnectionManager self;
@@ -22,66 +22,67 @@ public class DisconnectionManager : MonoBehaviour
    }
 
    public void Start () {
-      InvokeRepeating("destroyDisconnectedUsers", 5.5f, 1f);
+      InvokeRepeating(nameof(destroyDisconnectedUsers), 5.5f, 1f);
    }
 
-   public void addToDisconnectedUsers (NetEntity player) {
-      _disconnectedPlayers.Add(player, DateTime.UtcNow);
-   }
-
-   public void removeFromDisconnectedUsers (NetEntity player) {
-      try {
-         _disconnectedPlayers.Remove(player);
-      } catch {
-         D.debug("Cannot disconnect user! Please fix this BUG");
+   public void addToDisconnectedUsers (ClientConnectionData data) {
+      if (data == null) {
+         return;
       }
+
+      int userId = data.userId;
+
+      if (!_disconnectedPlayers.ContainsKey(userId)) {
+         data.isReconnecting = false;
+         data.timeOfDisconnection = DateTime.UtcNow;
+         _disconnectedPlayers.Add(userId, data);
+      }
+   }
+
+   public void removeFromDisconnectedUsers (int userId) {
+      if (_disconnectedPlayers.ContainsKey(userId)) {
+         _disconnectedPlayers.Remove(userId);
+      }      
    }
 
    public void clearDisconnectedUsers () {
       _disconnectedPlayers.Clear();
    }
 
-   public void reconnectDisconnectedUser (UserInfo userInfo, ShipInfo shipInfo) {
-      // Check if the player disconnected a few seconds ago and its object is still in the server
-      NetEntity disconnectedPlayer = null;
-      foreach (NetEntity entity in _disconnectedPlayers.Keys) {
-         if (entity.userId == userInfo.userId) {
-            disconnectedPlayer = entity;
-            break;
-         }
-      }
+   public bool isUserPendingDisconnection (int userId) {
+      return _disconnectedPlayers.ContainsKey(userId);
+   }
 
-      if (disconnectedPlayer != null) {
-         // Retrieve the player attributes that are saved in DB when the player is destroyed
-         userInfo.localPos = disconnectedPlayer.transform.localPosition;
-         userInfo.facingDirection = (int) disconnectedPlayer.facing;
-         shipInfo.health = disconnectedPlayer.currentHealth;
+   public ClientConnectionData getConnectionDataForUser (int userId) {
+      _disconnectedPlayers.TryGetValue(userId, out ClientConnectionData data);
 
-         // Destroy the player object
-         MyNetworkManager.self.destroyPlayer(disconnectedPlayer);
-      }
+      return data;
    }
 
    private void destroyDisconnectedUsers () {
-      List<NetEntity> playersToDestroy = new List<NetEntity>();
+      List<int> removedPlayers = new List<int>();
 
-      foreach (KeyValuePair<NetEntity, DateTime> KV in _disconnectedPlayers) {
-         // Check if the user has been disconnected for long enough
-         if (DateTime.UtcNow.Subtract(KV.Value).TotalSeconds > SECONDS_UNTIL_PLAYERS_DESTROYED) {
-            playersToDestroy.Add(KV.Key);
+      foreach (ClientConnectionData data in _disconnectedPlayers.Values) {
+         if (!data.isReconnecting) {
+            // Check if the user has been disconnected for long enough
+            if (DateTime.UtcNow.Subtract(data.timeOfDisconnection).TotalSeconds > SECONDS_UNTIL_PLAYERS_DESTROYED) {
+               MyNetworkManager.self.finishPlayerDisconnection(data);
+               removedPlayers.Add(data.userId);
+            }
          }
       }
 
-      // Destroy the selected player objects
-      foreach (NetEntity player in playersToDestroy) {
-         MyNetworkManager.self.destroyPlayer(player);
+      foreach(int userId in removedPlayers) {
+         // Remove the player from the list of disconnected players
+         removeFromDisconnectedUsers(userId);
+         _disconnectedPlayers.Remove(userId);
       }
    }
 
    #region Private Variables
 
    // Keep players on the server for a few seconds after they disconnect
-   protected static Dictionary<NetEntity, DateTime> _disconnectedPlayers = new Dictionary<NetEntity, DateTime>();
+   protected static Dictionary<int, ClientConnectionData> _disconnectedPlayers = new Dictionary<int, ClientConnectionData>();
 
    #endregion
 }

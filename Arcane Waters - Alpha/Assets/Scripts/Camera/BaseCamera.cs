@@ -29,6 +29,7 @@ public class BaseCamera : MonoBehaviour {
       _cam = GetComponent<Camera>();
       _vcam = GetComponent<CinemachineVirtualCamera>();
       _pixelFadeEffect = GetComponent<PixelFadeEffect>();
+      _audioListener = GetComponent<AudioListener>();
    }
 
    protected virtual void Start () {
@@ -121,6 +122,10 @@ public class BaseCamera : MonoBehaviour {
       return _framingTransposer;
    }
 
+   public AudioListener getAudioListener () {
+      return _audioListener;
+   }
+
    #region Private Variables
 
    // Our associated camera
@@ -135,6 +140,9 @@ public class BaseCamera : MonoBehaviour {
 
    // The framing transposer cinemachine component
    protected CinemachineFramingTransposer _framingTransposer;
+
+   // The audio listener attached to this camera
+   private AudioListener _audioListener = null;
 
    #endregion
 }

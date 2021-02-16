@@ -6,6 +6,7 @@ using Mirror;
 using UnityEngine.Events;
 using System.Linq;
 using TMPro;
+using DG.Tweening;
 
 public class BattleUIManager : MonoBehaviour {
    #region Public Variables
@@ -65,7 +66,10 @@ public class BattleUIManager : MonoBehaviour {
    public Button[] stanceButtons;
 
    // The images that radially fill to represent the cooldown of changing stances
-   public Image[] stanceCooldownImages;   
+   public Image[] stanceCooldownImages;
+
+   // Sprites for the stance buttons, when the stances are active/inactive
+   public Sprite[] stanceActiveSprites, stanceInactiveSprites;
 
    [Header("Ability Description")]
    [Space(4)]
@@ -311,19 +315,16 @@ public class BattleUIManager : MonoBehaviour {
             image.fillAmount = fillAmount;
          }
 
-         List<Button> inactiveStanceButtons = getInactiveStanceButtons();
-
-         foreach (Button button in inactiveStanceButtons) {
-            button.interactable = false;
-         }
-
-         stanceButtons[(int) _playerLocalBattler.stance].interactable = true;
-         stanceCooldownImages[(int) _playerLocalBattler.stance].fillAmount = 0.0f;
-
       // If our stance change is not on cooldown
       } else {
          foreach (Button button in stanceButtons) {
-            button.interactable = true;
+            // Show that buttons just came off cooldown
+            if (!button.gameObject.activeSelf) {
+               button.transform.DORewind();
+               button.transform.DOPunchScale(Vector3.one * 0.2f, 0.15f, 0, 0).SetEase(Ease.OutElastic);
+            }
+
+            button.gameObject.SetActive(true);
          }
 
          foreach (Image image in stanceCooldownImages) {
@@ -385,6 +386,11 @@ public class BattleUIManager : MonoBehaviour {
 
       // Don't allow the player to change stance if it's on cooldown, or to change to the stance they're already in
       if (_playerLocalBattler.stanceCurrentCooldown > 0.0f || stance == _playerLocalBattler.stance) {
+         // Shake the sprite to show they can't use it
+         stanceButtons[newStance].transform.DORewind();
+         stanceButtons[newStance].transform.DOShakeRotation(0.2f, Vector3.forward * 70.0f, vibrato: 40);
+         stanceCooldownImages[newStance].transform.DORewind();
+         stanceCooldownImages[newStance].transform.DOShakeRotation(0.2f, Vector3.forward * 70.0f, vibrato: 40);
          return;
       }
 
@@ -556,12 +562,25 @@ public class BattleUIManager : MonoBehaviour {
    }
 
    private void onStanceChanged (Battler.Stance newStance) {
-      try {
-         stanceButtons[(int) newStance].interactable = true;
-         stanceCooldownImages[(int) newStance].fillAmount = 0.0f;
-         stanceButtons[(int) newStance].Select();
-      } catch {
-         D.debug("Error here! Stance change is bugged!");
+      int stanceInt = (int) newStance;
+
+      for (int i = 0; i < stanceButtons.Length; i++) {
+         Button button = stanceButtons[i];
+         if (i == stanceInt) {
+            button.gameObject.SetActive(true);
+            button.image.sprite = stanceActiveSprites[i];
+            stanceCooldownImages[i].fillAmount = 0.0f;
+            button.Select();
+
+            // Emphasise that a new stance was selected
+            button.transform.DORewind();
+            button.transform.DOPunchScale(Vector3.one * 0.35f, 0.2f, 0, 0).SetEase(Ease.OutElastic);
+            continue;
+         }
+
+         button.gameObject.SetActive(false);
+         button.image.sprite = stanceInactiveSprites[i];
+         stanceCooldownImages[i].fillAmount = 1.0f;
       }
    }
 

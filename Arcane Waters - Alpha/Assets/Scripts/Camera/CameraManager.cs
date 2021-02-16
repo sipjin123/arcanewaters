@@ -278,9 +278,6 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera.setDepth(-2);
       battleCamera.setDepth(-1);
 
-      // Switch the audio listener
-      AudioListenerManager.self.setActiveListener(battleCamera.GetComponent<AudioListener>());
-
       // Start the fade in effect
       //defaultCamera.getPixelFadeEffect().fadeIn();
       battleCamera.getPixelFadeEffect().fadeIn();
@@ -304,11 +301,6 @@ public class CameraManager : ClientMonoBehaviour {
       defaultCamera.setDepth(-1);
       battleCamera.setDepth(-2);
       battleCamera.getCamera().enabled = false;
-
-      // Switch the audio listener
-      if (Global.player != null) {
-         AudioListenerManager.self.setActiveListener(Global.player.GetComponent<AudioListener>());
-      }
 
       // Start the fade in effect
       defaultCamera.getPixelFadeEffect().fadeIn();

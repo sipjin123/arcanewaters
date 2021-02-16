@@ -939,8 +939,18 @@ public class RPCManager : NetworkBehaviour {
       // Pass this message along to the relevant people
       if (chatType == ChatInfo.Type.Local || chatType == ChatInfo.Type.Emote) {
          _player.Rpc_ChatWasSent(chatInfo.chatId, message, chatInfo.chatTime.ToBinary(), chatType, GuildIconData.guildIconDataToString(guildIconData));
+
+         // Store chat message in database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+         });
       } else if (chatType == ChatInfo.Type.Global) {
          ServerNetworkingManager.self.sendGlobalChatMessage(chatInfo);
+
+         // Store chat message in database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+         });
       } else if (chatType == ChatInfo.Type.Whisper) {
          string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
          if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
@@ -963,6 +973,11 @@ public class RPCManager : NetworkBehaviour {
 
                   ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
                   _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
+
+                  // Store chat message in database
+                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                     DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+                  });
                });
             });
          }
@@ -975,8 +990,22 @@ public class RPCManager : NetworkBehaviour {
          foreach (int userId in voyageGroup.members) {
             ServerNetworkingManager.self.sendSpecialChatMessage(userId, chatInfo);
          }
+
+         // Store chat message in database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+         });
       } else if (chatType == ChatInfo.Type.Guild) {
          ServerNetworkingManager.self.sendGuildChatMessage(_player.guildId, chatInfo);
+
+         if (_player.guildId == 0) {
+            return;
+         }
+
+         // Store chat message in database
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+         });
       } else if (chatType == ChatInfo.Type.Officer) {
          if (!_player.canPerformAction(GuildPermission.OfficerChat)) {
             return;
@@ -996,6 +1025,11 @@ public class RPCManager : NetworkBehaviour {
                      ServerNetworkingManager.self.sendSpecialChatMessage(userInfo.userId, chatInfo);
                   }
                }
+
+               // Store chat message in database
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
+               });
             });
          });
       }
@@ -4833,7 +4867,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   protected void requestSetArmorId (int armorId) {
+   public void requestSetArmorId (int armorId) {
       // They may be in an island scene, or at sea
       BodyEntity body = _player.GetComponent<BodyEntity>();
 
@@ -4859,7 +4893,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   protected void requestSetHatId (int hatId) {
+   public void requestSetHatId (int hatId) {
       // They may be in an island scene, or at sea
       BodyEntity body = _player.GetComponent<BodyEntity>();
 
@@ -4885,7 +4919,7 @@ public class RPCManager : NetworkBehaviour {
    }
 
    [Server]
-   protected void requestSetWeaponId (int weaponId) {
+   public void requestSetWeaponId (int weaponId) {
       // They may be in an island scene, or at sea
       BodyEntity body = _player.GetComponent<BodyEntity>();
 

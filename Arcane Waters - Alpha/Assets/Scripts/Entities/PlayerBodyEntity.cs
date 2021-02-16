@@ -168,6 +168,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
+      checkAudioListener();
+
       if (!isInBattle()) {
          handleShortcutsInput();
       }
@@ -601,6 +603,26 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       // Update drop shadow scale
       float tShadow = _activeWeb.getShadowCurve(_isDoingHalfBounce).Evaluate(timeSinceBounce);
       setDropShadowScale(tShadow);
+   }
+
+   private void checkAudioListener () {
+      // If the player is in battle
+      if (CameraManager.battleCamera.getCamera().isActiveAndEnabled) {
+         // If the listener hasn't been switched, switch it
+         if (CameraManager.battleCamera.getAudioListener() != AudioListenerManager.self.getActiveListener()) {
+            AudioListenerManager.self.setActiveListener(CameraManager.battleCamera.getAudioListener());
+         }
+      // If the player isn't in battle
+      } else if (_audioListener != null) {
+         // Make sure the game is using the player's audio listener
+         if (_audioListener != AudioListenerManager.self.getActiveListener()) {
+            AudioListenerManager.self.setActiveListener(_audioListener);
+         }
+      } else if (CameraManager.defaultCamera != null && CameraManager.defaultCamera.getAudioListener() != null) {
+         AudioListenerManager.self.setActiveListener(CameraManager.defaultCamera.getAudioListener());
+      } else {
+         D.error("Couldn't find an audio listener to assign");
+      }
    }
 
    #region Private Variables

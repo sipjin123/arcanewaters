@@ -42,14 +42,6 @@ public class AutoCompletePanel : MonoBehaviour {
          return;
       }
 
-      if (Input.GetKeyDown(KeyCode.DownArrow)) {
-         onDownPressed();
-      }
-
-      if (Input.GetKeyDown(KeyCode.UpArrow)) {
-         onUpPressed();
-      }
-
       if (Input.GetKeyDown(KeyCode.Return)) {
          onEnterPressed();
       }

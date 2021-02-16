@@ -11,10 +11,10 @@ public class ChatPanel : MonoBehaviour {
    #region Public Variables
 
    // The height of 1 chat line
-   public static int chatLineHeight = 22;
+   public static float chatLineHeight = 22.6f;
 
    // The visible number of lines in each mode, which defines the panel height
-   public static int CHAT_LINES_MINIMIZED = 3;
+   public static int CHAT_LINES_MINIMIZED = 4;
    public static int CHAT_LINES_NORMAL = 4;
    public static int CHAT_LINES_EXPANDED = 18;
 
@@ -336,14 +336,15 @@ public class ChatPanel : MonoBehaviour {
       if (Input.GetKeyDown(KeyCode.Return) && !((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail()) {
          if (!wasJustFocused()) {
 
-            PlayerShipEntity playerShip = Global.player?.GetComponent<PlayerShipEntity>();
-            if (playerShip) {
-               if (!NetworkServer.active) {
-                  playerShip.Cmd_ClearMovementInput();
-               } else {
-                  playerShip.clearMovementInput();
+            if (Global.player != null) {
+               PlayerShipEntity playerShip = Global.player.GetComponent<PlayerShipEntity>();
+               if (playerShip) {
+                  if (!NetworkServer.active) {
+                     playerShip.Cmd_ClearMovementInput();
+                  } else {
+                     playerShip.clearMovementInput();
+                  }
                }
-               
             }
 
             // Activate the input field in the next frame to avoid weird interactions
@@ -745,6 +746,7 @@ public class ChatPanel : MonoBehaviour {
    public void clearChat () {
       messagesContainer.DestroyChildren();
       nameInputField.text = "";
+      inputField.SetTextWithoutNotify("");
    }
 
    protected bool isChatLineVisibleInTab (ChatInfo chatInfo) {
@@ -835,6 +837,9 @@ public class ChatPanel : MonoBehaviour {
       // Panel show, hide and resize is handled in the update
       switch (_mode) {
          case Mode.Minimized:
+            // Allow minimizing even if the input field is focused
+            _lastFocusTime = 0;
+
             toolbarCanvas.gameObject.SetActive(false);
             scrollBarContainer.SetActive(false);
             resizeHandle.SetActive(false);

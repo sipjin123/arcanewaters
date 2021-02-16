@@ -149,6 +149,9 @@ public class MyNetworkManager : NetworkManager
    public override void OnStopClient () {
       clientStopping?.Invoke();
 
+      // We want to unregister our existing handlers for network messages
+      MessageManager.unregisterClientHandlers();
+
       base.OnStopClient();
    }
 
@@ -240,6 +243,8 @@ public class MyNetworkManager : NetworkManager
       _players.Clear();
       DisconnectionManager.self.clearDisconnectedUsers();
 
+      MessageManager.unregisterServerHandlers();
+
       // Stop any servers or clients on the Server Network
       ServerNetworkingManager.get().StopHost();
    }
@@ -250,7 +255,7 @@ public class MyNetworkManager : NetworkManager
       int authenticatedUserId = -1;
       string steamUserId = "";
 
-      if (_players.TryGetValue(conn.connectionId, out ConnectedClientData data)) {
+      if (_players.TryGetValue(conn.connectionId, out ClientConnectionData data)) {
          authenicatedAccountId = data.accountId;
          authenticatedUserId = data.userId;
          steamUserId = data.steamId;
@@ -259,13 +264,6 @@ public class MyNetworkManager : NetworkManager
       if (authenicatedAccountId <= 0 || authenticatedUserId <= 0) {
          ServerMessageManager.sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
          return;
-      }
-
-      // Make sure an entity gameobject for this user doesn't already exist (e.g. due to a player reconnecting before the timeout)
-      NetworkConnection existingConnection = getConnectionForAccount(authenicatedAccountId);
-      if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
-         ServerMessageManager.sendError(ErrorMessage.Type.AlreadyOnline, existingConnection.connectionId);
-         disconnectClient(existingConnection);
       }
 
       // Look up the info in the database
@@ -312,7 +310,14 @@ public class MyNetworkManager : NetworkManager
             }
 
             // Check if the player disconnected a few seconds ago and its object is still in the server
-            DisconnectionManager.self.reconnectDisconnectedUser(userInfo, shipInfo);
+            ClientConnectionData existingConnection = DisconnectionManager.self.getConnectionDataForUser(authenticatedUserId);
+            if (existingConnection != null && existingConnection.isReconnecting) {
+               userInfo.localPos = existingConnection.netEntity.transform.localPosition;
+               userInfo.facingDirection = (int)existingConnection.netEntity.facing;
+               shipInfo.health = existingConnection.netEntity.currentHealth;
+
+               DisconnectionManager.self.removeFromDisconnectedUsers(authenticatedUserId);              
+            }
 
             // Manage the voyage groups on user connection
             VoyageGroupManager.self.onUserConnectsToServer(userInfo.userId);
@@ -360,6 +365,7 @@ public class MyNetworkManager : NetworkManager
             player.XP = userInfo.XP;
             player.voyageGroupId = voyageGroupInfo != null ? voyageGroupInfo.groupId : -1;
             InstanceManager.self.addPlayerToInstance(player, previousAreaKey, voyageId);
+
             NetworkServer.AddPlayerForConnection(conn, player.gameObject);
 
             player.chatSuspensionEndDate = chatSuspensionEndDate;
@@ -370,6 +376,10 @@ public class MyNetworkManager : NetworkManager
             List<SoundEffect> currentSoundEffects = SoundEffectManager.self.getAllSoundEffects();
             player.rpc.Target_ReceiveSoundEffects(player.connectionToClient, Util.serialize(currentSoundEffects));
             player.steamId = steamUserId;
+
+            if (existingConnection != null && existingConnection.isReconnecting) {
+               finishPlayerDisconnection(existingConnection);
+            }
 
             _players[conn.connectionId].netEntity = player;
 
@@ -439,27 +449,33 @@ public class MyNetworkManager : NetworkManager
       });
    }
 
-   public NetworkConnection getConnectionForAccount (int accountId) {
-      return _players.Values.FirstOrDefault(x => x.accountId == accountId).connection;
+   public ClientConnectionData getConnectedClientDataForAccount (int accountId) {
+      return _players.Values.FirstOrDefault(x => x.isAuthenticated() && x.accountId == accountId);
+   }
+   
+   public ClientConnectionData getConnectedClientDataForUser (int userId) {
+      return _players.Values.FirstOrDefault(x => x.isAuthenticated() && x.userId == userId);
    }
 
-   public void destroyPlayer (NetEntity player) {
-      if (player == null) {
+   public void finishPlayerDisconnection (ClientConnectionData data) {
+      if (data == null || data.netEntity == null) {
+         D.warning("Entity has already been destroyed");
          return;
       }
 
-      destroyPlayerObjectForAccountId(player.accountId);
+      // Remove the player from the instance
+      InstanceManager.self.removeEntityFromInstance(data.netEntity);
+
+      NetworkServer.Destroy(data.netEntity.gameObject);
+
+      _players.Remove(data.connectionId);
    }
 
    public void destroyPlayerObjectForAccountId (int accountId) {
-      foreach (ConnectedClientData data in _players.Values) {
-         if (data.accountId == accountId) {
-            if (data.netEntity != null) {
-               NetworkServer.Destroy(data.netEntity.gameObject);
-            }
+      NetEntity entity = getConnectedClientDataForAccount(accountId).netEntity;
 
-            return;
-         }
+      if (entity != null) {
+         NetworkServer.Destroy(entity.gameObject);
       }
    }
 
@@ -499,7 +515,7 @@ public class MyNetworkManager : NetworkManager
    public override void OnServerConnect (NetworkConnection conn) {
       base.OnServerConnect(conn);
 
-      ConnectedClientData connectionData = new ConnectedClientData();
+      ClientConnectionData connectionData = new ClientConnectionData();
       connectionData.connection = conn;
       connectionData.connectionId = conn.connectionId;
       connectionData.address = conn.address;
@@ -513,7 +529,7 @@ public class MyNetworkManager : NetworkManager
    }
 
    public void disconnectClient (int accountId) {
-      NetworkConnection connection = getConnectionForAccount(accountId);
+      NetworkConnection connection = getConnectedClientDataForAccount(accountId).connection;
       disconnectClient(connection);
    }
 
@@ -528,38 +544,23 @@ public class MyNetworkManager : NetworkManager
          return;
       }
 
-      ConnectedClientData data = _players[conn.connectionId];
+      ClientConnectionData data = _players[conn.connectionId];
       NetEntity player = data.netEntity;
 
-      _players.Remove(conn.connectionId);
-
-      // Remove the player from the instance
-      if (InstanceManager.self != null) {
-         InstanceManager.self.removeEntityFromInstance(player);
-      } else {
-         D.error($"Cannot remove player {player.entityName} from instance because InstanceManager is null.");
-      }
-
-      // Remove the player from the list of disconnected players
-      if (DisconnectionManager.self != null) {
-         DisconnectionManager.self.removeFromDisconnectedUsers(player);
-      } else {
-         D.error($"Cannot remove player {player.entityName} from list of players to disconnect because DisconnectionManager is null.");
-      }
-
-      if (player is ShipEntity) {
-         // If the player is a ship, keep it in the server for a few seconds
-         DisconnectionManager.self.addToDisconnectedUsers(player);
-      } else {
-         NetworkServer.DestroyPlayerForConnection(conn);
-         conn.Disconnect();
+      if (player != null) {
+         if (player.getPlayerShipEntity() != null) {
+            // If the player is a ship, keep it in the server for a few seconds
+            DisconnectionManager.self.addToDisconnectedUsers(data);
+         } else {
+            finishPlayerDisconnection(data);
+         }
       }
    }
 
    #endregion
 
    public static int getAccountId (NetworkConnection conn) {
-      if (conn == null || !_players.TryGetValue(conn.connectionId, out ConnectedClientData connData)) {
+      if (conn == null || !_players.TryGetValue(conn.connectionId, out ClientConnectionData connData)) {
          return -1;
       } else {
          return connData.accountId;
@@ -568,7 +569,16 @@ public class MyNetworkManager : NetworkManager
 
    public static void noteAccountIdForConnection (int accountId, NetworkConnection conn) {
       // Keep track of the account ID that we're associating with this connection
+      ClientConnectionData existingConnection = self.getConnectedClientDataForAccount(accountId);
+      
       _players[conn.connectionId].accountId = accountId;
+
+      if (existingConnection != null && existingConnection.connectionId != conn.connectionId) {
+         if (!DisconnectionManager.self.isUserPendingDisconnection(existingConnection.userId)) {
+            ServerMessageManager.sendError(ErrorMessage.Type.AlreadyOnline, conn.connectionId);
+            conn.Disconnect();
+         }
+      }
    }
 
    public static void noteUserIdForConnection (int selectedUserId, string steamUserId, NetworkConnection conn) {
@@ -576,8 +586,15 @@ public class MyNetworkManager : NetworkManager
          return;
       }
 
+      // Make sure an entity gameobject for this user doesn't already exist (e.g. due to a player reconnecting before the timeout)
+      ClientConnectionData existingConnection = self.getConnectedClientDataForUser(selectedUserId);
+
+      if (existingConnection != null && DisconnectionManager.self.isUserPendingDisconnection(selectedUserId)) {
+         existingConnection.isReconnecting = true;
+      }
+
       // Keep track of the user ID that we're associating with this connection
-      ConnectedClientData connData = _players[conn.connectionId];
+      ClientConnectionData connData = _players[conn.connectionId];
       connData.userId = selectedUserId;
       connData.steamId = steamUserId;
    }
@@ -593,7 +610,7 @@ public class MyNetworkManager : NetworkManager
    public static HashSet<NetEntity> getPlayers () {
       HashSet<NetEntity> list = new HashSet<NetEntity>();
 
-      foreach (ConnectedClientData connData in _players.Values) {
+      foreach (ClientConnectionData connData in _players.Values) {
          if (connData.netEntity != null) {
             list.Add(connData.netEntity);
          }
@@ -626,7 +643,7 @@ public class MyNetworkManager : NetworkManager
    #region Private Variables
 
    // Keep track of players when they connect
-   protected static Dictionary<int, ConnectedClientData> _players = new Dictionary<int, ConnectedClientData>();
+   protected static Dictionary<int, ClientConnectionData> _players = new Dictionary<int, ClientConnectionData>();
 
    // An id we can use for testing
    protected static int _testId = 1;

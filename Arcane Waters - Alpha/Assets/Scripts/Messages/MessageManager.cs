@@ -21,10 +21,28 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
    }
 
+   public static void unregisterClientHandlers () {      
+      NetworkClient.UnregisterHandler<RedirectMessage>();
+      NetworkClient.UnregisterHandler<ErrorMessage>();
+      NetworkClient.UnregisterHandler<ConfirmMessage>();
+      NetworkClient.UnregisterHandler<CharacterListMessage>();
+      NetworkClient.UnregisterHandler<LogInCompleteMessage>();
+      NetworkClient.UnregisterHandler<CharacterCreationValidMessage>();
+      NetworkClient.UnregisterHandler<StoreMessage>();
+      NetworkClient.UnregisterHandler<DisconnectMessage>();
+      
+   }
+
    public static void registerServerHandlers () {
       NetworkServer.RegisterHandler<LogInUserMessage>(ServerMessageManager.On_LogInUserMessage);
       NetworkServer.RegisterHandler<CreateUserMessage>(ServerMessageManager.On_CreateUserMessage);
       NetworkServer.RegisterHandler<DeleteUserMessage>(ServerMessageManager.On_DeleteUserMessage);
+   }
+
+   public static void unregisterServerHandlers () {
+      NetworkServer.UnregisterHandler<LogInUserMessage>();
+      NetworkServer.UnregisterHandler<CreateUserMessage>();
+      NetworkServer.UnregisterHandler<DeleteUserMessage>();
    }
 
    #region Private Variables

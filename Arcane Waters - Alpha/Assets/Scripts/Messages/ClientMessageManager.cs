@@ -368,6 +368,10 @@ public class ClientMessageManager : MonoBehaviour {
       // We have already logged in successfully for the first time
       Global.isFirstLogin = false;
 
+      if (msg.loginMessage != "") {
+         ChatPanel.self.addChatInfo(new ChatInfo(0, msg.loginMessage, System.DateTime.Now, ChatInfo.Type.System));
+      }
+
       // Send the account name and password to the server
       /*StringMessage msg = new StringMessage(
          Global.lastUsedAccountName + ":" + Global.lastUserAccountPassword + ":" +

@@ -8237,7 +8237,7 @@ public class DB_Main : DB_MainStub
                try {
                   while (reader.Read()) {
                      var info = new DeployScheduleInfo(
-                        reader.GetInt32("schedule_date"),
+                        reader.GetInt64("schedule_date"),
                         reader.GetInt32("schedule_version"));
                      return info;
                   }
