@@ -693,7 +693,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
       if (basicAbilityList.Count == 0) {
-         _battlerBasicAbilities.Add(AbilityManager.self.allAttackbilities[0]);
+         foreach (AttackAbilityData attackAbility in AbilityManager.self.allAttackbilities) {
+            _battlerBasicAbilities.Add(attackAbility);
+         }
       }
 
       if (battlerAbilitiesInitialized) {
@@ -1133,7 +1135,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       // Cancel ability works differently, so before we try to get the ability from the local battler, 
       // we check if the ability we want to reference is a cancel ability
-
       if (!globalAbilityData.isCancel()) {
          attackerAbility = getAttackAbility(battleAction.abilityInventoryIndex);
       }
@@ -1200,8 +1201,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                if (enemyType == Enemy.Type.PlayerBattler) {
                   sourceBattler.playAnim(attackerAbility.getAnimation());
                } else {
-                  sourceBattler.playAnim(Anim.Type.Ready_Attack);
+                  if (abilityDataReference.useSpecialAnimation) {
+                     sourceBattler.modifyAnimSpeed(.15f);
+                     sourceBattler.playAnim(Anim.Type.SpecialAnimation);
+                  } else {
+                     sourceBattler.playAnim(Anim.Type.Ready_Attack);
+                  }
                }
+            }
+
+            if (abilityDataReference.useSpecialAnimation) {
+               // TODO: Update cast ability vfx after web tool sprite reference is fixed
+               //EffectManager.playCastAbilityVFX(sourceBattler, action, effectPosition, BattleActionType.Attack);
+
+               // Render a special attack vfx sprite upon casting
+               Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
+               EffectManager.self.create(Effect.Type.Blunt_Physical, newEffectPost);
+
+               yield return new WaitForSeconds(2);
             }
 
             // Apply the damage at the correct time in the swing animation
@@ -1210,8 +1227,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Battle_East);
             } else {
-               sourceBattler.playAnim(Anim.Type.Finish_Attack);
+               if (!abilityDataReference.useSpecialAnimation) {
+                  sourceBattler.playAnim(Anim.Type.Finish_Attack);
+               } 
             }
+
+            // Return animation speed to default
+            sourceBattler.modifyAnimSpeed(-1);
 
             #region Display Block
 

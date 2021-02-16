@@ -48,6 +48,9 @@ public class Battle : NetworkBehaviour {
    // The max number of enemies
    public const int MAX_ENEMY_COUNT = 6;
 
+   // If the first AI action has been executed
+   public bool hasExecutedInitialAction = false;
+
    #endregion
 
    public void Start () {
@@ -148,10 +151,16 @@ public class Battle : NetworkBehaviour {
             } else {
                if (battler.isBossType) {
                   int actionRandomizer = Random.Range(1, 10);
-                  
+
+                  // If this is the first AI action, execute the special ability
+                  if (!hasExecutedInitialAction) {
+                     hasExecutedInitialAction = true;
+                     actionRandomizer = 10;
+                  }
+
                   // 30% chance to use AOE ability
                   if (actionRandomizer > 7) {
-                     executeBossAbility(difficultyLevel * battlerData.baseDamage, false); 
+                     BattleManager.self.executeBattleAction(this, battler, getAttackers(), 1, AbilityType.Standard);
                   } else {
                      BattleManager.self.executeBattleAction(this, battler, battlePlan.targets, 0, AbilityType.Standard);
                   }

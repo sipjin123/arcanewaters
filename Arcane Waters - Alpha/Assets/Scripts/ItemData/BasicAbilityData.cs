@@ -47,6 +47,12 @@ public class BasicAbilityData : BattleItemData
    // The projectile id associated with this ability
    public int projectileId;
 
+   // The maximum targets
+   public int maxTargets = 1;
+
+   // Determines if a special animation needs to be used upon casting the ability
+   public bool useSpecialAnimation;
+
    public enum AbilityCastPosition
    {
       Self = 0,

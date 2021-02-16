@@ -310,7 +310,7 @@ public class AnimUtil : MonoBehaviour {
                   return new AnimInfo(animType, 15, 32);
                case Anim.Type.Hurt_East:
                   return new AnimInfo(animType, 25, 27);
-               case Anim.Type.BossAnimation:
+               case Anim.Type.SpecialAnimation:
                   return new AnimInfo(animType, 41, 60);
             }
             break;

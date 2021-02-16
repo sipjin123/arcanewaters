@@ -4320,11 +4320,6 @@ public class RPCManager : NetworkBehaviour {
       // Send Battle Bg data
       int bgXmlID = battle.battleBoard.xmlID;
       Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
-
-      // If enemy is a boss, trigger the shout/intimidate animation
-      if (enemy.isBossType && !isExistingBattle) {
-         battle.executeBossAbility(enemyData.baseDamage * instance.difficulty, true);
-      }
    }
 
    [Server]
