@@ -100,6 +100,7 @@ public class MonsterManager : MonoBehaviour {
                   xmlId = -1,
                   isEnabled = true
                };
+               validateMonsterAbilities(newContent);
                _monsterDataList.Add(newContent);
             } else {
                _monsterDataList.Find(_=>_.battler.enemyType == battlerData.enemyType).battler = battlerData;
@@ -136,6 +137,7 @@ public class MonsterManager : MonoBehaviour {
                         xmlId = xmlPair.xmlId,
                         isEnabled = true
                      };
+                     validateMonsterAbilities(newXmlContent);
                      _monsterDataList.Add(newXmlContent);
                   }
 
@@ -149,6 +151,24 @@ public class MonsterManager : MonoBehaviour {
             isInitialized = true;
          });
       });
+   }
+
+   private void validateMonsterAbilities (BattlerXMLContent battlerXml) {
+      List<int> attackList = new List<int>();
+      List<int> buffList = new List<int>();
+
+      foreach (int basicDataId in battlerXml.battler.battlerAbilities.basicAbilityDataList) {
+         BasicAbilityData abilityData = AbilityManager.self.allGameAbilities.Find(_ => _.itemID == basicDataId);
+         if (abilityData != null) {
+            if (abilityData.abilityType == AbilityType.Standard) {
+               attackList.Add(basicDataId);
+            } else if (abilityData.abilityType == AbilityType.BuffDebuff) {
+               buffList.Add(basicDataId);
+            }
+         }
+      }
+      battlerXml.battler.battlerAbilities.attackAbilityDataList = attackList.ToArray();
+      battlerXml.battler.battlerAbilities.buffAbilityDataList = buffList.ToArray();
    }
 
    public List<BattlerData> getMonsterDataList() {
