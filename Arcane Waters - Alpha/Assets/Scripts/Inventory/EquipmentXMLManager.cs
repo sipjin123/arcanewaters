@@ -452,6 +452,64 @@ public class EquipmentXMLManager : MonoBehaviour {
       return craftingItem;
    }
 
+   public List<Item> translateWeaponItemsToItems (List<Weapon> weaponList) {
+      List<Item> newWeaponList = new List<Item>();
+
+      // Assign the appropriate data for the weapons using the weapon type id
+      foreach (Weapon weapon in weaponList) {
+         if (weapon.itemTypeId > 0) {
+            WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
+            if (weaponData != null) {
+               weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
+            } else {
+               D.warning("There is no data for Weapon Type: " + weapon.itemTypeId);
+            }
+         }
+         newWeaponList.Add(weapon);
+      }
+      return newWeaponList;
+   }
+
+   public List<Item> translateHatItemsToItems (List<Hat> hatList) {
+      List<Item> newHatList = new List<Item>();
+
+      // Assign the appropriate data for the hats using the hat type id
+      foreach (Hat hat in hatList) {
+         if (hat.itemTypeId > 0) {
+            HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
+            if (hatData != null) {
+               hat.data = HatStatData.serializeHatStatData(hatData);
+            } else {
+               D.warning("There is no data for Hat Type: " + hat.itemTypeId);
+            }
+         }
+         newHatList.Add(hat);
+      }
+      return newHatList;
+   }
+
+   public List<Item> translateArmorItemsToItems (List<Armor> armorList) {
+      List<Item> newArmorList = new List<Item>();
+
+      // Assign the appropriate data for the armors using the armor type id
+      for (int i = 0; i < armorList.Count; i++) {
+         if (armorList[i].itemTypeId != 0) {
+            ArmorStatData armorStat = getArmorDataBySqlId(armorList[i].itemTypeId);
+            if (armorStat != null) {
+               if (armorList[i].data != null) {
+                  armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
+               } else {
+                  D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
+               }
+               newArmorList.Add(armorList[i]);
+            } else {
+               D.debug("Cannot process loaded armor data for armorType: {" + armorList[i].itemTypeId + "}");
+            }
+         }
+      }
+      return newArmorList;
+   }
+
    #region Private Variables
 
    // Stores the list of all weapon data

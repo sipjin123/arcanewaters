@@ -164,55 +164,18 @@ public class ServerMessageManager : MonoBehaviour
                string[] armorPalettes = new string[armorList.Count];
 
                // Must be casted to items because data transfer using inherited variables loses its data
-               List<Item> weaponItemList = new List<Item>();
-               List<Item> armorItemList = new List<Item>();
-               List<Item> hatItemList = new List<Item>();
+               List<Item> weaponItemList = EquipmentXMLManager.self.translateWeaponItemsToItems(weaponList);
+               List<Item> armorItemList = EquipmentXMLManager.self.translateArmorItemsToItems(armorList);
+               List<Item> hatItemList = EquipmentXMLManager.self.translateHatItemsToItems(hatList);
 
-               // Assign the appropriate data for the armors using the armor type id
-               for (int i = 0; i < armorList.Count; i++) {
-                  if (armorList[i].itemTypeId != 0) {
-                     ArmorStatData armorStat = EquipmentXMLManager.self.getArmorDataBySqlId(armorList[i].itemTypeId);
-                     if (armorStat != null) {
-                        if (armorList[i].data != null) {
-                           armorList[i].data = ArmorStatData.serializeArmorStatData(armorStat);
-                           armorPalettes[i] = armorStat.palettes;
-                        } else {
-                           D.warning("There is no data for Armor Type: " + armorList[i].itemTypeId);
-                        }
-                        armorItemList.Add(armorList[i]);
-                     } else {
-                        D.debug("Cannot process loaded armor data for armorType: {" + armorList[i].itemTypeId + "}");
-                     }
-                  }
+               // Set the armor palettes of the character
+               int paletteIndex = 0;
+               foreach (Item armorItem in armorItemList) {
+                  armorPalettes[paletteIndex] = EquipmentXMLManager.self.getArmorDataBySqlId(armorItem.itemTypeId).palettes;
+                  paletteIndex++;
                }
 
-               // Assign the appropriate data for the weapons using the weapon type id
-               foreach (Weapon weapon in weaponList) {
-                  if (weapon.itemTypeId > 0) {
-                     WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weapon.itemTypeId);
-                     if (weaponData != null) {
-                        weapon.data = WeaponStatData.serializeWeaponStatData(weaponData);
-                     } else {
-                        D.warning("There is no data for Weapon Type: " + weapon.itemTypeId);
-                     }
-                  }
-                  weaponItemList.Add(weapon);
-               }
-
-               // Assign the appropriate data for the hats using the hat type id
-               foreach (Hat hat in hatList) {
-                  if (hat.itemTypeId > 0) {
-                     HatStatData hatData = EquipmentXMLManager.self.getHatData(hat.itemTypeId);
-                     if (hatData != null) {
-                        hat.data = HatStatData.serializeHatStatData(hatData);
-                     } else {
-                        D.warning("There is no data for Hat Type: " + hat.itemTypeId);
-                     }
-                  }
-                  hatItemList.Add(hat);
-               }
-
-               // Get the info of the starter armors
+               // Get the info of the starter armors for character creation
                List<int> startingEquipmentIds = new List<int>();
                List<int> startingSpriteIds = new List<int>();
 
