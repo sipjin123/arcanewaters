@@ -1031,7 +1031,12 @@ public class Util : MonoBehaviour {
 
       // If this is a cloud build, then the manifest cannot be missing
       #if CLOUD_BUILD
-      gameVersion = getGameVersionFromConfig();
+      try {
+         gameVersion = int.Parse(getJenkinsBuildIdNumber());
+      } catch {
+         gameVersion = 0;
+         D.debug("Failed to get game version properly" + " : " + getJenkinsBuildId() + " : " + getJenkinsBuildIdNumber());
+      }
       #endif
 
       return gameVersion;
@@ -1039,23 +1044,6 @@ public class Util : MonoBehaviour {
 
    public static string getFormattedGameVersion () {
       return getJenkinsBuildId();
-   }
-
-   public static int getGameVersionFromConfig () {
-      int gameVersion = 0;
-
-      try {
-         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
-         Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
-
-         if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
-            gameVersion = int.Parse(deploymentConfig["deploymentId"].ToString());
-         }
-      } catch {
-         D.debug("Failed to fetch deploymentId from Config File");
-      }
-
-      return gameVersion;
    }
 
    public static int getDeploymentId () {
@@ -1125,6 +1113,35 @@ public class Util : MonoBehaviour {
       } else {
          jenkinsBuildId = buildName.Substring(index + 1);
       }
+      return jenkinsBuildId;
+   }
+   
+   public static string getJenkinsBuildIdNumber () {
+      // Declare local variables
+      string jenkinsBuildId = null;
+      string buildName;
+
+      try {
+         TextAsset deploymentConfigAsset = Resources.Load<TextAsset>("config");
+         Dictionary<string, object> deploymentConfig = MiniJSON.Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
+
+         if (deploymentConfig != null && deploymentConfig.ContainsKey("name")) {
+            buildName = getJenkinsBuildId();
+
+            // Remove leading text until the last hyphen is encountered (i.e. "ArcaneWaters-")
+            if (buildName.Contains("-")) {
+               string[] xmlSubGroup = buildName.Split(new string[] { "-" }, StringSplitOptions.None);
+
+               // The last index is the build number
+               jenkinsBuildId = xmlSubGroup[xmlSubGroup.Length - 1];
+            } else {
+               D.debug("Invalid naming convention! " + buildName);
+            }
+         }
+      } catch {
+         D.debug("Failed to get jenkins build id");
+      }
+
       return jenkinsBuildId;
    }
 
