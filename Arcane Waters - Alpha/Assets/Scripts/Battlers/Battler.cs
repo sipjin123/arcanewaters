@@ -1187,6 +1187,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                yield break;
             }
 
+            // Plays the melee cast VFX ability before jumping
+            EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
+
             if (isMovable()) {
                // Mark the source battler as jumping
                sourceBattler.isJumping = true;
@@ -1212,8 +1215,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Pause for a moment after reaching our destination
             yield return new WaitForSeconds(PAUSE_LENGTH);
 
-            // Plays the melee cast ability
-            EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
             if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
                sourceBattler.playAnim(Anim.Type.Punch);
             } else {
@@ -1223,9 +1224,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                   sourceBattler.playAnim(Anim.Type.Ready_Attack);
                }
             }
-
-            // Play any sounds that go along with the ability being cast
-            attackerAbility.playCastClipAtTarget(targetBattler.transform);
 
             // Apply the damage at the correct time in the swing animation
             yield return new WaitForSeconds(sourceBattler.getPreContactLength());
@@ -1238,12 +1236,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             #region Display Block
 
-            // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform);
-
-            // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
-
             // If the action was blocked, animate that
             if (action.wasBlocked) {
                targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
@@ -1251,10 +1243,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Play an appropriate attack animation effect
                effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
                EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-
+               
                // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
+               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
             }
+
+            // Simulate the collision effect of the attack towards the target battler
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
             // If either sprite is owned by the client, play a camera shake
             if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
@@ -1387,18 +1382,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(timeBeforeCollision);
             sourceBattler.modifyAnimSpeed(-1);
 
-            // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform);
-
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
-            // Make the target sprite display its "Hit" animation
-            targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
+            // If the action was blocked, animate that
+            if (action.wasBlocked) {
+               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+            } else {
+               // Play an appropriate attack animation effect
+               effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
+
+               // Make the target sprite display its "Hit" animation
+               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+            }
 
             // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
             
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1504,18 +1505,24 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             yield return new WaitForSeconds(timeBeforeCollision - effectOffset - POST_CAST_DELAY);
             sourceBattler.modifyAnimSpeed(-1);
 
-            // Play the sound associated for hit
-            attackerAbility.playHitClipAtTarget(targetBattler.transform);
-
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
-            // Make the target sprite display its "Hit" animation
-            targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action));
+            // If the action was blocked, animate that
+            if (action.wasBlocked) {
+               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+            } else {
+               // Play an appropriate attack animation effect
+               effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
+
+               // Make the target sprite display its "Hit" animation
+               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+            }
 
             // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action));
+            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
@@ -1586,8 +1593,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    #region Combat Effect Simulation
 
-   private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action) {
+   private IEnumerator CO_SimulateCollisionEffects (Battler targetBattler, AttackAbilityData abilityDataReference, AttackAction action, BasicAbilityData abilityData) {
       if (health > 0) {
+         // Play the sound associated for hit
+         // TODO: Play SFX here for knockup / knockback / shake
+
          if (abilityDataReference.hasKnockup && targetBattler.isMovable()) {
             // If this magic ability has knockup, then start it now
             targetBattler.StartCoroutine(targetBattler.animateKnockup());
@@ -1679,10 +1689,16 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       playAnim(Anim.Type.Battle_East);
    }
 
-   private IEnumerator animateHit (Battler attacker, AttackAction action) {
+   private IEnumerator animateHit (Battler attacker, AttackAction action, BasicAbilityData ability) {
       // Display the Hit animation frame for a short period
       playAnim(Anim.Type.Hurt_East);
+
       yield return new WaitForSeconds(POST_CONTACT_LENGTH);
+
+      // Play the ability hit SFX after the hurt animation frame
+      ability.playHitClipAtTarget(transform);
+
+      // Return to battle idle
       playAnim(Anim.Type.Battle_East);
    }
 
