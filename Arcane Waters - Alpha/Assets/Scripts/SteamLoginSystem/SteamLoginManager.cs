@@ -32,7 +32,7 @@ namespace SteamLoginSystem
       // Shows the fetched data logs
       public bool isLogActive;
 
-      // The minimum lenght of the steam id
+      // The minimum length of the steam id
       public const int MIN_STEAM_ID_LENGTH = 5;
 
       // The default steam password to be encrypted
@@ -70,7 +70,7 @@ namespace SteamLoginSystem
          });
       }
 
-      public string getSteamState () {
+      public static string getSteamState () {
          string steamState = "";
          string clientBuildState = "";
 

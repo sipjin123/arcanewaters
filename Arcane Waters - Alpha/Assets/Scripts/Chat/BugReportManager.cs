@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using MiniJSON;
+using SteamLoginSystem;
 
 public class BugReportManager : MonoBehaviour {
    #region Public Variables
@@ -113,7 +114,7 @@ public class BugReportManager : MonoBehaviour {
 
       string screenResolution = Screen.currentResolution.ToString();
       string operatingSystem = SystemInfo.operatingSystem;
-      string steamState = SteamLoginSystem.SteamLoginManager.self.getSteamState();
+      string steamState = SteamLoginManager.getSteamState();
 
       int width = Screen.width;
       int height = Screen.height;

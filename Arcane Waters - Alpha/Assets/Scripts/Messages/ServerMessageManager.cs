@@ -37,8 +37,6 @@ public class ServerMessageManager : MonoBehaviour
             return;
          }
       }
-      string newmsg = string.Format("Granting login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
-      D.debug(newmsg);
 
       // Grab the user info from the database for the relevant account ID
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -237,7 +235,6 @@ public class ServerMessageManager : MonoBehaviour
 
    [ServerOnly]
    private static void processSteamUserAuth (NetworkConnection conn, LogInUserMessage loginUserMsg) {
-      D.debug("Authenticating Ticket");
       AuthenticateTicketEvent newTicketEvent = new AuthenticateTicketEvent();
       newTicketEvent.AddListener(_ => {
          // Fetch steam user id from the event response

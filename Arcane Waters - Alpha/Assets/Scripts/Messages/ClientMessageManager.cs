@@ -380,7 +380,7 @@ public class ClientMessageManager : MonoBehaviour {
 
       if (!steamStateLogged) {
          steamStateLogged = true;
-         D.debug("BUILD_LOG :: Build Type:{" + SteamLoginManager.self.getSteamState() + "} : DeploymentId:{" + Util.getDeploymentId() + "} : BuildType:{" + Util.getBranchType() + "} : Distribution:{" + Util.getDistributionType() + "}");
+         D.debug("BUILD_LOG :: Build Type:{" + SteamLoginManager.getSteamState() + "} : DeploymentId:{" + Util.getDeploymentId() + "} : BuildType:{" + Util.getBranchType() + "} : Distribution:{" + Util.getDistributionType() + "}");
       }
 
       ClientScene.AddPlayer(conn);

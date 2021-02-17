@@ -24,10 +24,6 @@ public class ScreenLogger : MonoBehaviour {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
-
-      #if CLOUD_BUILD 
-      D.debug("==>> Launching Screen LOG Ver :: 0.0.4 as CLOUD");
-      #endif
    }
 
    public void adminActivateLogger () {
