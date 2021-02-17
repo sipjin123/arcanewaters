@@ -419,15 +419,19 @@ public class BattleUIManager : MonoBehaviour {
       BasicAbilityData abilityData = null;
 
       if (abilityType == AbilityType.Standard) {
-         abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
+         if (_playerLocalBattler.getAttackAbilities().Count > 0) { 
+            abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
+         }
       } else if (abilityType == AbilityType.BuffDebuff) {
-         abilityData = _playerLocalBattler.getBuffAbilities()[abilityTypeIndex];
+         if (_playerLocalBattler.getBuffAbilities().Count > 0) {
+            abilityData = _playerLocalBattler.getBuffAbilities()[abilityTypeIndex];
+         }
       }
 
       if (abilityData != null) {
          if (abilityData.allowedStances.Contains(stance)) {
             return true;
-         }
+         } 
       }
 
       return false;

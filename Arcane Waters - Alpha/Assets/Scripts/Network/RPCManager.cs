@@ -4386,17 +4386,22 @@ public class RPCManager : NetworkBehaviour {
                   equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
                } else {
                   if (weaponData != null) {
-                     if (weaponClass == Weapon.Class.Melee) {
-                        weaponCategory = WeaponCategory.Blade;
-                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.slashAbility());
-                     }
-                     if (weaponClass == Weapon.Class.Ranged) {
-                        weaponCategory = WeaponCategory.Gun;
-                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
-                     }
-                     if (weaponClass == Weapon.Class.Magic) {
-                        weaponCategory = WeaponCategory.Rum;
-                        equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
+                     switch (weaponClass) {
+                        case Weapon.Class.Melee:
+                           weaponCategory = WeaponCategory.Blade;
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.slashAbility());
+                           break;
+                        case Weapon.Class.Ranged:
+                           weaponCategory = WeaponCategory.Gun;
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.shootAbility());
+                           break;
+                        case Weapon.Class.Magic:
+                           weaponCategory = WeaponCategory.Rum;
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
+                           break;
+                        default:
+                           D.debug("Unsupported weapon class" + " : " + weaponClass + " : " + weaponData.equipmentName + " : " + weaponData.sqlId);
+                           break;
                      }
                   } else {
                      weaponCategory = WeaponCategory.None;
@@ -4541,8 +4546,17 @@ public class RPCManager : NetworkBehaviour {
                List<AbilitySQLData> equippedAbilityDataList = abilityDataList.FindAll(_ => _.equipSlotIndex >= 0);
                Battler battler = BattleManager.self.getBattler(entity.userId);
                if (equippedAbilityDataList.Count < 1) {
-                  // Set server data
-                  battler.setBattlerAbilities(new List<BasicAbilityData> { AbilityManager.getAttackAbility(9) }, BattlerType.PlayerControlled);
+
+                  List<BasicAbilityData> basicAbilityList = new List<BasicAbilityData>();
+                  foreach (AbilitySQLData temp in equippedAbilityList) {
+                     BasicAbilityData abilityData = AbilityManager.getAttackAbility(temp.abilityID);
+                     if (abilityData != null) {
+                        basicAbilityList.Add(abilityData);
+                     }
+                  }
+
+                  battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                  Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
                } else {
                   // Sort by equipment slot index
                   equippedAbilityDataList = equippedAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToList();
