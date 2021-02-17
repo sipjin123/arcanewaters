@@ -692,10 +692,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
+      // If there are no abilities set, assign the default abilities for all weapon types
       if (basicAbilityList.Count == 0) {
-         foreach (AttackAbilityData attackAbility in AbilityManager.self.allAttackbilities) {
-            _battlerBasicAbilities.Add(attackAbility);
-         }
+         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.SHOOT_ID));
+         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.PUNCH_ID));
+         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.SLASH_ID));
+         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.RUM_ID));
       }
 
       if (battlerAbilitiesInitialized) {
@@ -1168,7 +1170,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // Plays the melee cast VFX ability before jumping
-            EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
+            if (!abilityDataReference.useSpecialAnimation) {
+               EffectManager.playCastAbilityVFX(sourceBattler, action, sourceBattler.transform.position, BattleActionType.Attack);
+            }
 
             if (isMovable()) {
                // Mark the source battler as jumping
@@ -1211,13 +1215,12 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             if (abilityDataReference.useSpecialAnimation) {
-               // TODO: Update cast ability vfx after web tool sprite reference is fixed
-               //EffectManager.playCastAbilityVFX(sourceBattler, action, effectPosition, BattleActionType.Attack);
-
-               // Render a special attack vfx sprite upon casting
+               // Render a special attack vfx sprite upon casting special animation
                Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
-               EffectManager.self.create(Effect.Type.Blunt_Physical, newEffectPost);
+               EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
 
+               // TODO: Setup a new variable in the web tool to support dynamic animation duration
+               // Special animation duration is longer
                yield return new WaitForSeconds(2);
             }
 
