@@ -49,6 +49,9 @@ public class LogInUserMessage : NetworkMessage
    // The steam user id of the player
    public string steamUserId = "";
 
+   // Flag for client being redirected to another server
+   public bool isRedirecting;
+
    #endregion
 
    public LogInUserMessage () { }
@@ -59,7 +62,7 @@ public class LogInUserMessage : NetworkMessage
 
    public LogInUserMessage (uint netId, string accountName, string accountPassword, bool isSteamLogin,
       int clientGameVersion, int selectedUserId, RuntimePlatform clientPlatform, bool isSinglePlayer, 
-      byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId, string steamUserId) {
+      byte[] steamAuthTicket, uint steamTicketSize, string machineIdentifier, bool isFirstLogin, string steamAppId, string steamUserId, bool isRedirecting) {
       this.netId = netId;
       this.selectedUserId = selectedUserId;
       this.accountName = accountName;
@@ -74,5 +77,6 @@ public class LogInUserMessage : NetworkMessage
       this.isFirstLogin = isFirstLogin;
       this.steamAppId = steamAppId;
       this.steamUserId = steamUserId;
+      this.isRedirecting = isRedirecting;
    }
 }

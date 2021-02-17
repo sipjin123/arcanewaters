@@ -373,8 +373,8 @@ public class ChatManager : MonoBehaviour {
    private void changeNumMessagesAgo (bool increment) {
       _numMessagesAgo += (increment) ? 1 : -1;
 
-      if (_numMessagesAgo < 0) {
-         _numMessagesAgo = 0;
+      if (_numMessagesAgo < 1) {
+         _numMessagesAgo = 1;
       }
 
       if (_numMessagesAgo > _sentMessageHistory.Count) {

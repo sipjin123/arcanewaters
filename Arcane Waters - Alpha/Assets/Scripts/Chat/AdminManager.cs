@@ -87,6 +87,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ore_voyage", "Enables the players and ores within the area of the player to have valid voyage id", requestOre, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "voyage" }));
       cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
       cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
+      cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
 
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
@@ -148,6 +149,25 @@ public class AdminManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   private void requestWin (string parameter) {
+      Cmd_Win(parameter);
+   }
+
+   [Command]
+   protected void Cmd_Win (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+      Battle battle = BattleManager.self.getBattleForUser(_player.userId);
+      List<Battler> participants = battle.getParticipants();
+
+      foreach (Battler battler in participants) {
+         if ((battler != null) && battler.isMonster()) {
+            battler.health = 0;
+         }
+      }
    }
 
    private void kickPlayer (string parameters) {

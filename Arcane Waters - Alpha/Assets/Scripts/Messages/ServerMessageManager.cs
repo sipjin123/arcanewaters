@@ -27,12 +27,15 @@ public class ServerMessageManager : MonoBehaviour
          minClientGameVersion = GameVersionManager.self.minClientGameVersionWin;
       }
 
-      // Make sure they have the required game version
-      if (logInUserMessage.clientGameVersion < minClientGameVersion) {
-         string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
-         D.debug(msg);
-         sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
-         return;
+      // Make sure they are not currently being redirected to another server
+      if (!logInUserMessage.isRedirecting) {
+         // Make sure they have the required game version
+         if (logInUserMessage.clientGameVersion < minClientGameVersion) {
+            string msg = string.Format("Refusing login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
+            D.debug(msg);
+            sendError(ErrorMessage.Type.ClientOutdated, conn.connectionId);
+            return;
+         }
       }
       string newmsg = string.Format("Granting login for {0}, client version {1}, the current version in the cloud is {2}", logInUserMessage.accountName, logInUserMessage.clientGameVersion, minClientGameVersion);
       D.debug(newmsg);

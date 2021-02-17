@@ -162,7 +162,11 @@ public class TitleScreen : MonoBehaviour {
 
       switch (errorType) {
          case ErrorMessage.Type.ClientOutdated:
-            PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>");
+            if (Global.isSteamLogin) {
+               PanelManager.self.noticeScreen.show($"Please update your client to log in!");
+            } else {
+               PanelManager.self.noticeScreen.show($"Please download the new version <link=\"{ downloadNewVersionLink }\"><u>here</u></link>");
+            }
             break;
          case ErrorMessage.Type.FailedUserOrPass:
             PanelManager.self.noticeScreen.show("Invalid account/password combination.");

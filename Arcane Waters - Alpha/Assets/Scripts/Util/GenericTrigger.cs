@@ -11,6 +11,9 @@ public class GenericTrigger : MonoBehaviour {
    // The event to invoke when the trigger activates
    public UnityEvent triggerEvent;
 
+   // The event to invoke when the trigger is exited
+   public UnityEvent triggerExitEvent;
+
    // Whether this trigger should only happen on the client side
    public bool isClientSideOnly;
 
@@ -35,6 +38,18 @@ public class GenericTrigger : MonoBehaviour {
       // If this trigger is only for our own local player, then check for that
       if ((isLocalPlayerOnly && isOurPlayer) || !isLocalPlayerOnly) {
          triggerEvent.Invoke();
+      }
+   }
+
+   private void OnTriggerExit2D (Collider2D other) {
+      NetEntity entity = other.GetComponent<NetEntity>();
+
+      // Check whether it was our own player that entered the trigger
+      bool isOurPlayer = (entity != null && entity == Global.player);
+
+      // If this trigger is only for our own local player, then check for that
+      if ((isLocalPlayerOnly && isOurPlayer) || !isLocalPlayerOnly) {
+         triggerExitEvent.Invoke();
       }
    }
 

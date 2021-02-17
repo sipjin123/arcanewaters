@@ -201,6 +201,7 @@ public class AutoCompletePanel : MonoBehaviour {
 
       foreach (CommandData data in _autoCompleteCommands) {
          AutoCompleteOption option = _autoCompleteOptions[optionCount];
+         option.autocompleteParameter = "";
          option.gameObject.SetActive(true);
          option.updateOption(data);
          option.indexInList = optionCount;
@@ -294,7 +295,7 @@ public class AutoCompletePanel : MonoBehaviour {
    private List<CommandData> _autoCompleteCommands;
 
    // A copy of the auto-complete parameter command data pairs passed on to us last
-   private List<Tuple<CommandData, string>> _autoCompleteCommandsWithParameters;
+   private List<Tuple<CommandData, string>> _autoCompleteCommandsWithParameters = new List<Tuple<CommandData, string>>();
 
    // The index of the auto-complete option that is selected
    private int _selectedAutoComplete = -1;

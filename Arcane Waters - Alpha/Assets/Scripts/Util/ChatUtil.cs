@@ -17,7 +17,8 @@ public enum CommandType
    Officer = 7,
    Guild = 8,
    Complain = 9,
-   Roll = 10
+   Roll = 10,
+   Motd = 11,
 }
 
 public class ChatUtil
@@ -35,5 +36,6 @@ public class ChatUtil
       { CommandType.Guild, new List<string>(){ "/guild", "/gld", "/g" } },
       { CommandType.Complain, new List<string>(){ "/complain", "/report" } },
       { CommandType.Roll, new List<string>(){ "/roll", "/random" } },
+      { CommandType.Motd, new List<string>() { "/motd" } }
    };
 }

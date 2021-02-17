@@ -95,7 +95,21 @@ public class CommandData {
    }
 
    public bool containsWholePrefix (string input) {
-      return (input.ToLower().Contains(getPrefix().ToLower()));
+      // Account for shortened versions of prefix
+      if (_requiredPrefix != CommandType.None) {
+         List<string> possibleRequiredPrefixes = ChatUtil.commandTypePrefixes[_requiredPrefix];
+
+         foreach (string prefix in possibleRequiredPrefixes) {
+            if (input.ToLower().Contains((prefix + " " + _commandString).ToLower())) {
+               return true;
+            }
+         }
+
+      } else {
+         return (input.ToLower().Contains(getPrefix().ToLower()));
+      }
+
+      return false;
    }
 
    public string getParameters () {

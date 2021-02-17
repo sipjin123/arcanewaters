@@ -1359,7 +1359,7 @@ public class NetEntity : NetworkBehaviour
 
       _temporaryControllers.Add(controller);
       if (hasAuthority) {
-         Cmd_TemporaryControlRequested(controller.transform.localPosition);
+         Cmd_TemporaryControlRequested(controller.transform.localPosition.x, controller.transform.localPosition.y);
          D.debug("Sending command to request control of entity: " + userId);
       }
 
@@ -1387,7 +1387,8 @@ public class NetEntity : NetworkBehaviour
    }
 
    [Command]
-   public void Cmd_TemporaryControlRequested (Vector2 controllerLocalPosition) {
+   public void Cmd_TemporaryControlRequested (float controllerPosX, float controllerPosY) {
+      Vector2 controllerLocalPosition = new Vector2(controllerPosX, controllerPosY);
       TemporaryController con = AreaManager.self.getArea(areaKey).getTemporaryControllerAtPosition(controllerLocalPosition);
       D.debug("Server received command for temporary control");
       if (con != null && !hasScheduledController(con)) {

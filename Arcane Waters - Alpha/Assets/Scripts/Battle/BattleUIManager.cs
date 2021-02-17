@@ -307,12 +307,13 @@ public class BattleUIManager : MonoBehaviour {
          _playerLocalBattler.stanceCurrentCooldown -= Time.deltaTime;
 
          // Update the radial fills of cooldown bars
-         List<Image> inactiveStanceImages = getInactiveStanceImages();
          float stanceCooldown = getStanceAbilityData(_playerLocalBattler.stance).abilityCooldown;
-         float fillAmount = 1.0f - Mathf.Clamp01((float)_playerLocalBattler.stanceCurrentCooldown / stanceCooldown);
+         float fillAmount = 1.0f - Mathf.Clamp01((float) _playerLocalBattler.stanceCurrentCooldown / stanceCooldown);
 
-         foreach (Image image in inactiveStanceImages) {
-            image.fillAmount = fillAmount;
+         foreach (Image image in stanceCooldownImages) {
+            if (image.gameObject.activeSelf) {
+               image.fillAmount = fillAmount;
+            }
          }
 
       // If our stance change is not on cooldown
@@ -322,9 +323,8 @@ public class BattleUIManager : MonoBehaviour {
             if (!button.gameObject.activeSelf) {
                button.transform.DORewind();
                button.transform.DOPunchScale(Vector3.one * 0.2f, 0.15f, 0, 0).SetEase(Ease.OutElastic);
+               button.gameObject.SetActive(true);
             }
-
-            button.gameObject.SetActive(true);
          }
 
          foreach (Image image in stanceCooldownImages) {
@@ -590,34 +590,6 @@ public class BattleUIManager : MonoBehaviour {
 
    private Image getActiveStanceImage () {
       return stanceCooldownImages[(int) _playerLocalBattler.stance];
-   }
-
-   private List<Button> getInactiveStanceButtons () {
-      List<Button> buttons = new List<Button>();
-
-      // Get all buttons that aren't the active stance button
-      for (int i = 0; i < stanceButtons.Length; i++) {
-         if (i == (int)(_playerLocalBattler.stance)) {
-            continue;
-         }
-         buttons.Add(stanceButtons[i]);
-      }
-
-      return buttons;
-   }
-
-   private List<Image> getInactiveStanceImages () {
-      List<Image> images = new List<Image>();
-
-      // Get all buttons that aren't the active stance button
-      for (int i = 0; i < stanceCooldownImages.Length; i++) {
-         if (i == (int) (_playerLocalBattler.stance)) {
-            continue;
-         }
-         images.Add(stanceCooldownImages[i]);
-      }
-
-      return images;
    }
 
    private BasicAbilityData getStanceAbilityData (Battler.Stance stance) {
