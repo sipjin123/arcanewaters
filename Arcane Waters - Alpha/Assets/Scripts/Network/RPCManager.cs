@@ -4409,7 +4409,8 @@ public class RPCManager : NetworkBehaviour
                            equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.throwRum());
                            break;
                         default:
-                           D.debug("Unsupported weapon class" + " : " + weaponClass + " : " + weaponData.equipmentName + " : " + weaponData.sqlId);
+                           weaponCategory = WeaponCategory.None;
+                           equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
                            break;
                      }
                   } else {
