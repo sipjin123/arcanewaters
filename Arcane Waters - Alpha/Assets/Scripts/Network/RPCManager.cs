@@ -4436,8 +4436,16 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
-      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && VoyageManager.isTreasureSiteArea(_player.areaKey) && !canPlayerStayInVoyage()) {
-         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town");
+      if (!VoyageManager.isTreasureSiteArea(_player.areaKey) || !canPlayerStayInVoyage()) {
+         string reason = "";
+         if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
+            reason += "This is not a treasure area\n";
+         }
+         if (!canPlayerStayInVoyage()) {
+            reason += "Player cant stay in the voyage\n";
+         }
+
+         D.debug("Player {" + _player.userId + "}" + " attempted to engage in combat due invalid voyage conditions, returning to town" + " : " + reason);
          _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
          return;
       }
