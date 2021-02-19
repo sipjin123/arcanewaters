@@ -428,7 +428,7 @@ GameObject:
   - component: {fileID: 6339253001658434422}
   - component: {fileID: 3117584878057225431}
   m_Layer: 0
-  m_Name: Corners (1)
+  m_Name: Bottom-Right Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -735,7 +735,7 @@ GameObject:
   - component: {fileID: 6783207765453122255}
   - component: {fileID: 4097299867343568304}
   m_Layer: 0
-  m_Name: Corners
+  m_Name: Top-Left Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1159,7 +1159,7 @@ GameObject:
   - component: {fileID: 7960361988392172743}
   - component: {fileID: 9078383843208617611}
   m_Layer: 0
-  m_Name: Corners
+  m_Name: Top-Right Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1387,6 +1387,10 @@ MonoBehaviour:
   leftBorder: {fileID: 4448812028477406491}
   topBorder: {fileID: 5090765959398377785}
   bottomBorder: {fileID: 3750727047922293644}
+  bottomLeftCorner: {fileID: 4304485038587282866}
+  bottomRightCorner: {fileID: 6339253001658434422}
+  topLeftCorner: {fileID: 6783207765453122255}
+  topRightCorner: {fileID: 7960361988392172743}
 --- !u!114 &7307660222695324248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1402,7 +1406,6 @@ MonoBehaviour:
   areaKey: 
   baseAreaKey: 
   townAreaKey: 
-  biome: 0
   cameraBounds: {fileID: 5006032918482514862}
   vcam: {fileID: 817877264993902990}
   isSea: 0
@@ -1416,7 +1419,6 @@ MonoBehaviour:
   shipDataFields: []
   privateerShipDataFields: []
   pirateShipDataFields: []
-  secretsEntranceDataFields: []
   seaMonsterDataFields: []
   prefabParent: {fileID: 5468073751298558255}
   npcParent: {fileID: 2242570168550347574}
@@ -1429,6 +1431,7 @@ MonoBehaviour:
   userParent: {fileID: 7758793860600656536}
   cloudManager: {fileID: 5783109122311199641}
   cloudShadowManager: {fileID: 3446122932443558204}
+  _warps: []
 --- !u!1 &5890803340624794605
 GameObject:
   m_ObjectHideFlags: 0
@@ -1567,7 +1570,7 @@ GameObject:
   - component: {fileID: 4304485038587282866}
   - component: {fileID: 8166414625547159328}
   m_Layer: 0
-  m_Name: Corners (2)
+  m_Name: Bottom-Left Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
