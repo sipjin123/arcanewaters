@@ -275,10 +275,17 @@ public class ServerMessageManager : MonoBehaviour
             return;
          }
 
-         // Extract user and password
+         // Extract user and password, encrypt the password using the steam id and the current date
          DateTime dateOfPurchase = DateTime.Parse(_.appownership.timestamp);
-         string rawPassword = _.appownership.ownersteamid + "_" + dateOfPurchase.Year + "_" + dateOfPurchase.Month + "_" + dateOfPurchase.Day;
-         string encryptedPassword = SteamLoginEncryption.Encrypt(SteamLoginManager.STEAM_PASSWORD);
+
+         // Generate random password for each steam user
+         string randomCharacters = "";
+         for (int i = 0; i < SteamLoginEncryption.PASSWORD_LENGTH; i++) {
+            int randomIndex = UnityEngine.Random.Range(0, SteamLoginEncryption.ALPHA_NUMERIC.Length-1);
+            randomCharacters += SteamLoginEncryption.ALPHA_NUMERIC[randomIndex];
+         }
+         string rawPassword = _.appownership.ownersteamid + randomCharacters;
+         string encryptedPassword = SteamLoginEncryption.Encrypt(rawPassword);
          string userName = _.appownership.ownersteamid;
 
          // Override login message
