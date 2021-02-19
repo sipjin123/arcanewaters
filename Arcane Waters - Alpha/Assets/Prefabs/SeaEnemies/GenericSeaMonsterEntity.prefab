@@ -337,8 +337,9 @@ MonoBehaviour:
     spawnTransform: {fileID: 8973144502682084800}
   colliderList:
   - {fileID: 58256050713667648}
-  - {fileID: 6938392427603369774}
+  - {fileID: 5172033207913725948}
   currentImpactMagnitude: 0
+  combatCollider: {fileID: 6710469785494565506}
   seaMonsterChildrenList: []
   seaMonsterParentEntity: {fileID: 0}
   targetEntity: {fileID: 0}
@@ -1770,9 +1771,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3303167935170134755}
-  - component: {fileID: 6938392427603369774}
-  - component: {fileID: 8970447706355690644}
   - component: {fileID: 1481618208884450300}
+  - component: {fileID: 5172033207913725948}
+  - component: {fileID: 6710469785494565506}
   m_Layer: 16
   m_Name: Combat Collider
   m_TagString: Untagged
@@ -1794,47 +1795,6 @@ Transform:
   m_Father: {fileID: 4900218821786150}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &6938392427603369774
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5997201932719016179}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.17, y: 0.22}
-  m_EdgeRadius: 0
---- !u!114 &8970447706355690644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5997201932719016179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6633da4ec98858449cf92d95520d592, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 212945152816631566}
-  colliderScale: 0.75
-  dynamicCollider: 0
 --- !u!50 &1481618208884450300
 Rigidbody2D:
   serializedVersion: 4
@@ -1856,6 +1816,50 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!60 &5172033207913725948
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997201932719016179}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: 0, y: 1}
+      - {x: -0.95105654, y: 0.30901697}
+      - {x: -0.5877852, y: -0.80901706}
+      - {x: 0.58778536, y: -0.80901694}
+      - {x: 0.9510565, y: 0.30901712}
+--- !u!114 &6710469785494565506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5997201932719016179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 171405ca741514b438cbde019d8e5d5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderer: {fileID: 212945152816631566}
+  dynamicCollider: 1
 --- !u!1 &6096960523088756304
 GameObject:
   m_ObjectHideFlags: 0

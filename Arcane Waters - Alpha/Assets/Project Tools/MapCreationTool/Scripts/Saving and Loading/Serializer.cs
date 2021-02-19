@@ -341,6 +341,7 @@ namespace MapCreationTool.Serialization
 
       public const string GENERIC_ACTION_TRIGGER_INTERACTION_TYPE = "interaction type";
       public const string GENERIC_ACTION_TRIGGER_ACTION_NAME = "action name";
+      public const string GENERIC_ACTION_TRIGGER_ARROW_DIRECTION = "arrow direction";
       public const string GENERIC_ACTION_TRIGGER_WIDTH_KEY = "width";
       public const string GENERIC_ACTION_TRIGGER_HEIGHT_KEY = "height";
 

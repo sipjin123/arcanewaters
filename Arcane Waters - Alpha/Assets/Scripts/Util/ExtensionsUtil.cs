@@ -297,6 +297,22 @@ public static class ExtensionsUtil {
       rb.AddForce(Mathf.Lerp(0, force, (1 - distance)) * direction, mode);
    }
 
+   public static void Show (this GameObject[] gameObjectArray) {
+      foreach (GameObject gO in gameObjectArray) {
+         if (!gO.activeSelf) {
+            gO.SetActive(true);
+         }
+      }
+   }
+
+   public static void Hide (this GameObject[] gameObjectArray) {
+      foreach (GameObject gO in gameObjectArray) {
+         if (gO.activeSelf) {
+            gO.SetActive(false);
+         }
+      }
+   }
+
    #region Private Variables
 
    // An instance of Random for generating random numbers

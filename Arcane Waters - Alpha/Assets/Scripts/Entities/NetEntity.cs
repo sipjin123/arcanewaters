@@ -269,11 +269,16 @@ public class NetEntity : NetworkBehaviour
          // Create some name text that will follow us around
          SmoothFollow smoothFollow = Instantiate(PrefabsManager.self.nameTextPrefab);
          smoothFollow.followTarget = this.gameObject;
+         smoothFollow.zOffset = -0.01f;
          _nameText = smoothFollow.GetComponentInChildren<TextMeshProUGUI>();
          _nameText.text = this.entityName;
 
          // We need the follow text to be lower for ships
          _nameText.GetComponent<RectTransform>().offsetMin = (this is PlayerShipEntity) ? new Vector2(0, 32) : new Vector2(0, 64);
+         
+         // Replace the old nameText with the one we instantiated
+         nameText = _nameText;
+         entityNameGO = smoothFollow.gameObject;
 
          // Keep track in our Entity Manager
          EntityManager.self.storeEntity(this);
@@ -854,12 +859,9 @@ public class NetEntity : NetworkBehaviour
          return;
       }
 
-      _outline.enabled = false;
-
       if (Global.player == this) {
          _outline.setNewColor(Color.white);
-         _outline.enabled = (isMouseOver() || isAttackCursorOver()) && !isDead();
-         _outline.setVisibility(_outline.enabled);
+         _outline.setVisibility((isMouseOver() || isAttackCursorOver()) && !isDead());
          return;
       }
 
@@ -870,29 +872,24 @@ public class NetEntity : NetworkBehaviour
       if (isAttackCursorOver()) {
          // If the attack cursor is over us, draw a yellow outline
          _outline.setNewColor(Color.yellow);
-         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (isEnemyOf(Global.player)) {
          // Draw a red outline around enemies of the Player
          _outline.setNewColor(Color.red);
-         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (isAllyOf(Global.player)) {
          // Draw a green outline around allies of the Player
          _outline.setNewColor(Color.green);
-         _outline.enabled = true;
          _outline.setVisibility(true);
       } else if (hasAttackers()) {
          // If we've been attacked by someone, we get an orange outline
          _outline.setNewColor(Util.getColor(255, 187, 51));
-         _outline.enabled = true;
          _outline.setVisibility(true);
       } else {
          // Only show our outline when the mouse is over us
          Color color = this is Enemy ? Color.red : Color.white;
          _outline.setNewColor(color);
-         _outline.enabled = isMouseOver() && !isDead();
-         _outline.setVisibility(_outline.enabled);
+         _outline.setVisibility(isMouseOver() && !isDead());
       }
    }
 
@@ -1137,6 +1134,11 @@ public class NetEntity : NetworkBehaviour
 
       // If this is a bot ship and the other entity isn't (or viceversa), we're enemies
       if (isBotShip() != otherEntity.isBotShip()) {
+         return true;
+      }
+
+      // If this is a sea monster entity and the other entity isn't (or viceversa), we're enemies
+      if (isSeaMonster() != otherEntity.isSeaMonster()) {
          return true;
       }
 
@@ -1622,26 +1624,28 @@ public class NetEntity : NetworkBehaviour
       if (isAdmin()) {
          if (VoyageManager.isVoyageOrLeagueArea(newArea)) {
             // Try to warp the admin to his current voyage if the area parameter fits
-            Voyage voyage = VoyageManager.self.getVoyageForGroup(this.voyageGroupId);
-            if (voyage != null && voyage.areaKey.Equals(newArea)) {
+            if (tryGetVoyage(out Voyage voyage) && voyage.areaKey.Equals(newArea)) {
                spawnInNewMap(voyage.voyageId, newArea, Direction.South);
                return;
             }
 
             // If the destination is a league map, always create a new instance
-            if (VoyageManager.isLeagueArea(newArea)) {
-               VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(this.voyageGroupId);
-               if (voyageGroup != null) {
+            if (VoyageManager.isLeagueOrLobbyArea(newArea)) {
+               if (VoyageGroupManager.self.tryGetGroupById(this.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
                   VoyageGroupManager.self.removeUserFromGroup(voyageGroup, this);
                }
                Instance instance = InstanceManager.self.getInstance(this.instanceId);
-               VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 0, instance.biome, newArea);
+
+               if (VoyageManager.isLobbyArea(newArea)) {
+                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 0, instance.biome, newArea);
+               } else {
+                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 1, instance.biome, newArea);
+               }
                return;
             }
 
             // Find an active voyage in this area
-            voyage = VoyageManager.self.getVoyage(newArea);
-            if (voyage != null) {
+            if (VoyageManager.self.tryGetVoyage(newArea, out voyage)) {
                VoyageGroupManager.self.forceAdminJoinVoyage(this, voyage);
             } else {
                ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "No active voyage found in area " + newArea + ". Use '/admin create_voyage' first.");
@@ -1700,8 +1704,8 @@ public class NetEntity : NetworkBehaviour
       // Store the connection reference so that we don't lose it while on the background thread
       NetworkConnection connectionToClient = this.connectionToClient;
 
-      if (isPlayerShip() && VoyageManager.isLeagueArea(areaKey)) {
-         if (VoyageManager.isLeagueArea(newArea)) {
+      if (isPlayerShip() && VoyageManager.isLeagueOrLobbyArea(areaKey)) {
+         if (VoyageManager.isLeagueOrLobbyArea(newArea)) {
             // When warping between league maps, the hp is persistent
             ((PlayerShipEntity) this).storeCurrentShipHealth();
          } else {
@@ -1761,8 +1765,8 @@ public class NetEntity : NetworkBehaviour
          SoundManager.setBackgroundMusic(this.areaKey, getInstance().biome);
 
          // Show the Area name
-         if (VoyageManager.isLeagueArea(this.areaKey)) {
-            LocationBanner.self.setText("League " + (getInstance().leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE);
+         if (VoyageManager.isLeagueOrLobbyArea(this.areaKey)) {
+            LocationBanner.self.setText("League " + Voyage.getLeagueAreaName(getInstance().leagueIndex));
          } else {
             LocationBanner.self.setText(Area.getName(this.areaKey));
          }
@@ -1820,6 +1824,32 @@ public class NetEntity : NetworkBehaviour
 
    protected float getWebBounceDuration () {
       return (_isDoingHalfBounce) ? _activeWeb.getBounceDuration() / 2.0f : _activeWeb.getBounceDuration();
+   }
+
+   public bool isInGroup() {
+      return VoyageGroupManager.isInGroup(this);
+   }
+
+   [Server]
+   public bool tryGetGroup (out VoyageGroupInfo groupInfo) {
+      groupInfo = default;
+      if (VoyageGroupManager.isInGroup(this) && VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo g)) {
+         groupInfo = g;
+         return true;
+      } else {
+         return false;
+      }
+   }
+
+   [Server]
+   public bool tryGetVoyage (out Voyage voyage) {
+      voyage = default;
+      if (VoyageGroupManager.isInGroup(this) && VoyageManager.self.tryGetVoyageForGroup(this.voyageGroupId, out Voyage v)) {
+         voyage = v;
+         return true;
+      } else {
+         return false;
+      }
    }
 
    protected virtual void webBounceUpdate () { }

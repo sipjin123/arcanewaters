@@ -16,6 +16,7 @@ namespace MapCreationTool
       public Transform rugMarkerParent;
       public FlockManager flockManager;
       public Transform rightBorder, leftBorder, topBorder, bottomBorder;
+      public Transform bottomLeftCorner, bottomRightCorner, topLeftCorner, topRightCorner;
    }
 }
 

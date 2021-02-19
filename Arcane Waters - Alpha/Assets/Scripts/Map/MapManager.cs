@@ -215,12 +215,39 @@ public class MapManager : MonoBehaviour
          result.area.setTilemapLayers(tilemaps);
          result.area.setColliderChunks(mapColliderChunks);
 
-         // Setup border coordinates
+         // Setup border coordinates and size
          result.leftBorder.localPosition = new Vector3(bounds.min.x, 0, result.leftBorder.localPosition.z);
          result.rightBorder.localPosition = new Vector3(bounds.max.x, 0, result.rightBorder.localPosition.z);
          result.topBorder.localPosition = new Vector3(0, bounds.max.y, result.topBorder.localPosition.z);
          result.bottomBorder.localPosition = new Vector3(0, bounds.min.y, result.bottomBorder.localPosition.z);
+                  
+         SpriteRenderer topBorderRend = result.topBorder.GetComponent<SpriteRenderer>();
+         SpriteRenderer bottomBorderRend = result.bottomBorder.GetComponent<SpriteRenderer>();
+         SpriteRenderer leftBorderRend = result.leftBorder.GetComponent<SpriteRenderer>();
+         SpriteRenderer rightBorderRend = result.rightBorder.GetComponent<SpriteRenderer>();
 
+         Vector2 topBottomSize = topBorderRend.size;
+         Vector2 leftRightSize = leftBorderRend.size;
+         
+         // The "size" property of SpriteRenderer is absolute, so we need to divide by the scale of its transform
+         topBottomSize.x = bounds.size.x / topBorderRend.transform.localScale.x;
+         leftRightSize.y = bounds.size.y / leftBorderRend.transform.localScale.y;
+
+         topBorderRend.size = topBottomSize;
+         bottomBorderRend.size = topBottomSize;
+         leftBorderRend.size = leftRightSize;
+         rightBorderRend.size = leftRightSize;
+
+         // We need to apply an offset to the corner sprites so they cover the intersections of the borders
+         float horizontalOffset = leftBorderRend.bounds.extents.x;
+         float verticalOffset = topBorderRend.bounds.extents.y;
+
+         // Assign the four corners the right position
+         result.topLeftCorner.position = new Vector3(topBorderRend.bounds.min.x + horizontalOffset, leftBorderRend.bounds.max.y - verticalOffset, result.topLeftCorner.position.z);
+         result.topRightCorner.position = new Vector3(topBorderRend.bounds.max.x - horizontalOffset, rightBorderRend.bounds.max.y - verticalOffset, result.topRightCorner.position.z);
+         result.bottomLeftCorner.position = new Vector3(bottomBorderRend.bounds.min.x + horizontalOffset, leftBorderRend.bounds.min.y + verticalOffset, result.bottomLeftCorner.position.z);
+         result.bottomRightCorner.position = new Vector3(bottomBorderRend.bounds.max.x - verticalOffset, rightBorderRend.bounds.min.y + verticalOffset, result.bottomRightCorner.position.z);
+         
          MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
          yield return null;
 

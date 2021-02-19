@@ -16,6 +16,9 @@ public class SmoothFollow : ClientMonoBehaviour {
    // Whether we want this object to go away when the follow target does
    public bool destroyIfNoTarget = false;
 
+   // A position offset in the Z axis
+   public float zOffset = 0;
+
    #endregion
 
    void Update () {
@@ -39,7 +42,7 @@ public class SmoothFollow : ClientMonoBehaviour {
 
       // Apply the new position, keeping our Z position unchanged
       this.transform.position = new Vector3(
-         newPos.x, newPos.y, this.transform.position.z
+         newPos.x, newPos.y, followTarget.transform.position.z + zOffset
       );
    }
 

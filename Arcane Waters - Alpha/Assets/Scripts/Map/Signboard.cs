@@ -27,14 +27,13 @@ public abstract class Signboard : ToolTipSign, IBiomable
 
       _outline = GetComponent<SpriteOutline>();
       _outline.setNewColor(Color.white);
-      _outline.enabled = false;
+      _outline.setVisibility(false);
    }
 
    public override void toggleToolTip (bool isActive) {
       base.toggleToolTip(isActive);
 
       _outline.setVisibility(isActive);
-      _outline.enabled = isActive;
    }
 
    public void onClickSignboard () {

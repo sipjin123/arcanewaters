@@ -10,7 +10,7 @@ using MLAPI.Messaging;
 public class VoyageManager : MonoBehaviour {
 
    #region Public Variables
-   
+
    // Self
    public static VoyageManager self;
 
@@ -73,39 +73,52 @@ public class VoyageManager : MonoBehaviour {
       ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
    }
 
-   public Voyage getVoyage (int voyageId) {
+   [Server]
+   public bool tryGetVoyage (int voyageId, out Voyage voyage) {
+      voyage = default;
+
       // Search the voyage in all the servers we know about
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage voyage in server.voyages) {
-            if (voyage.voyageId == voyageId) {
-               return voyage;
+         foreach (Voyage v in server.voyages) {
+            if (v.voyageId == voyageId) {
+               voyage = v;
+               return true;
             }
          }
       }
-
-      return null;
+      
+      return false;
    }
 
-   public Voyage getVoyage (string areaKey) {
+   [Server]
+   public bool tryGetVoyage (string areaKey, out Voyage voyage) {
+      voyage = default;
+
       // Search the first active voyage in the given area
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (Voyage voyage in server.voyages) {
-            if (string.Equals(voyage.areaKey, areaKey, StringComparison.InvariantCultureIgnoreCase)) {
-               return voyage;
+         foreach (Voyage v in server.voyages) {
+            if (string.Equals(v.areaKey, areaKey, StringComparison.InvariantCultureIgnoreCase)) {
+               voyage = v;
+               return true;
             }
          }
       }
-
-      return null;
+      
+      return false;
    }
 
-   public Voyage getVoyageForGroup (int voyageGroupId) {
-      VoyageGroupInfo voyageGroup = VoyageGroupManager.self.getGroupById(voyageGroupId);
-      if (voyageGroup == null) {
-         return null;
-      } else {
-         return getVoyage(voyageGroup.voyageId);
+   [Server]
+   public bool tryGetVoyageForGroup (int voyageGroupId, out Voyage voyage) {
+      voyage = default;
+
+      if (VoyageGroupManager.self.tryGetGroupById(voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+         if (voyageGroup.voyageId > 0 && tryGetVoyage(voyageGroup.voyageId, out Voyage v)) {
+            voyage = v;
+            return true;
+         }
       }
+      
+      return false;
    }
 
    public List<Voyage> getAllVoyages () {
@@ -138,15 +151,19 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public bool doesVoyageExists (int voyageId) {
-      return getVoyage(voyageId) != null;
+      return tryGetVoyage(voyageId, out Voyage voyage);
    }
 
    public static bool isVoyageOrLeagueArea (string areaKey) {
-      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League;
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.Voyage || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
    }
 
-   public static bool isLeagueArea (string areaKey) {
-      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League;
+   public static bool isLeagueOrLobbyArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
+   }
+
+   public static bool isLobbyArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
    }
 
    public static bool isTreasureSiteArea (string areaKey) {
@@ -159,6 +176,10 @@ public class VoyageManager : MonoBehaviour {
 
    public List<string> getLeagueAreaKeys () {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.League).ToList();
+   }
+
+   public List<string> getLobbyAreaKeys () {
+      return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueLobby).ToList();
    }
 
    public static bool isVoyageOpenToNewGroups (Voyage voyage) {
@@ -222,7 +243,6 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
-   [Client]
    public void showVoyagePanel (NetEntity entity) {
       if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
@@ -231,13 +251,20 @@ public class VoyageManager : MonoBehaviour {
       Global.player.rpc.Cmd_RequestVoyageListFromServer();
    }
 
-   [Client]
    public void warpToLeague (NetEntity entity) {
       if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
          return;
       }
 
       Global.player.rpc.Cmd_WarpToLeague();
+   }
+
+   public void returnToTownFromLeague (NetEntity entity) {
+      if (Global.player == null || !Global.player.isClient || entity == null || !entity.isLocalPlayer) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_ReturnToTownFromLeague();
    }
 
    protected void createVoyageInstanceIfNeeded () {
@@ -310,43 +337,6 @@ public class VoyageManager : MonoBehaviour {
 
    [Server]
    private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, string areaKey = "") {
-      VoyageGroupInfo voyageGroup = null;
-      if (VoyageGroupManager.isInGroup(player)) {
-         // Get the group the player belongs to
-         voyageGroup = VoyageGroupManager.self.getGroupById(player.voyageGroupId);
-         if (voyageGroup == null) {
-            D.error("Error when retrieving the voyage group during league instance creation.");
-            yield break;
-         }
-
-         // At the creation of the league, all the group members must be nearby
-         if (leagueIndex == 0) {
-            List<string> missingMembersNames = new List<string>();
-            foreach (int memberUserId in voyageGroup.members) {
-               // Try to find the entity
-               NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
-               if (memberEntity == null) {
-                  missingMembersNames.Add("?");
-               } else {
-                  if (Vector3.Distance(memberEntity.transform.position, player.transform.position) > 3) {
-                     missingMembersNames.Add(memberEntity.entityName);
-                  }
-               }
-            }
-
-            if (missingMembersNames.Count > 0) {
-               string allNames = "";
-               foreach (string name in missingMembersNames) {
-                  allNames = allNames + name + ", ";
-               }
-               allNames = allNames.Substring(0, allNames.Length - 2);
-
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "Some group members are missing: " + allNames);
-               yield break;
-            }
-         }
-      }
-
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -356,16 +346,23 @@ public class VoyageManager : MonoBehaviour {
 
       if (string.IsNullOrEmpty(areaKey)) {
          // Randomly choose an area among league maps
-         List<string> leagueMaps = getLeagueAreaKeys();
-         if (leagueMaps.Count == 0) {
+         List<string> mapList;
+         if (leagueIndex == 0) {
+            // The first league map is always a lobby
+            mapList = getLobbyAreaKeys();
+         } else {
+            mapList = getLeagueAreaKeys();
+         }
+         
+         if (mapList.Count == 0) {
             D.error("No league maps available!");
             yield break;
          }
-         areaKey = leagueMaps[UnityEngine.Random.Range(0, leagueMaps.Count)];
+         areaKey = mapList[UnityEngine.Random.Range(0, mapList.Count)];
       }
 
       int difficulty;
-      if (voyageGroup == null) {
+      if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // Create a new group for the player
          VoyageGroupManager.self.createGroup(player, voyageId, true);
 
@@ -382,11 +379,11 @@ public class VoyageManager : MonoBehaviour {
       requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, biome, difficulty);
 
       // Wait until the voyage instance has been created
-      while (getVoyage(voyageId) == null) {
+      while (!tryGetVoyage(voyageId, out Voyage voyage)) {
          yield return null;
       }
 
-      if (leagueIndex == 0 && voyageGroup != null) {
+      if (leagueIndex == 1 && voyageGroup != null) {
          // At the creation of the league, warp all the group members to the instance together
          foreach (int memberUserId in voyageGroup.members) {
             NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);

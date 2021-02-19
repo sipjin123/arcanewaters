@@ -126,6 +126,9 @@ public class NPCPanel : Panel
    public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText, string userFlagshipName) {
       initLoadBlockers(false);
 
+      // Store the user flagship name
+      this.userFlagshipName = userFlagshipName;
+
       // Clear out the old clickable options
       clearDialogueOptions();
 
@@ -139,9 +142,6 @@ public class NPCPanel : Panel
       npcDialogueText.enabled = true;
       setCommonPanelContent(greetingText, friendshipLevel);
       isHireableNotification.SetActive(false);
-
-      // Store the user flagship name
-      this.userFlagshipName = userFlagshipName;
 
       if (questDataArray.Length > 0) {
          foreach (QuestDataNode questNode in questDataArray) {
@@ -470,7 +470,7 @@ public class NPCPanel : Panel
       headAnim.setNewTexture(_npc.getHeadIconSprite().texture);
 
       // Set the current npc text line
-      _npcDialogueLine = npcText;
+      _npcDialogueLine = getDynamicDialog(npcText);
       
       // If the panel is already showing, start writing the new text
       if (isShowing()) {

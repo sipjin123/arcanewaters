@@ -1057,6 +1057,7 @@ GameObject:
   - component: {fileID: 147622745}
   - component: {fileID: 147622746}
   - component: {fileID: 147622747}
+  - component: {fileID: 147622748}
   m_Layer: 0
   m_Name: 'Overlord '
   m_TagString: Untagged
@@ -1228,6 +1229,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adf8b93673cb36543a0604a58fc3e683, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &147622748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 147622738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a272a9c37ec3f0438749c2e996aff33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineQuadPrefab: {fileID: 6438980967428350108, guid: 06525bec17c21b546a911a65b8422a6b,
+    type: 3}
 --- !u!1 &155932961
 GameObject:
   m_ObjectHideFlags: 0

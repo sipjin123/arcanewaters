@@ -121,7 +121,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
          player.spawnInNewMap(voyageId, treasureSite.destinationArea, treasureSite.destinationSpawn, newFacingDirection);
       }
       // Any warp inside a league voyage map is considered an exit towards the next map
-      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isLeagueArea(player.areaKey)) {
+      else if (VoyageGroupManager.isInGroup(player) && VoyageManager.isLeagueOrLobbyArea(player.areaKey)) {
          Instance instance = InstanceManager.self.getInstance(player.instanceId);
 
          // If the instance is not a voyage, warp the player to the starting town
@@ -144,8 +144,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                player.spawnInNewMap(Area.STARTING_TOWN);
             }
          } else {
-            Voyage voyage = VoyageManager.self.getVoyageForGroup(player.voyageGroupId);
-            if (voyage == null) {
+            if (!player.tryGetVoyage(out Voyage voyage)) {
                D.error("Error when retrieving the voyage during warp to next league instance.");
                player.rpc.sendError("Error when warping between league maps. Could not find the voyage.");
                player.spawnInNewMap(Area.STARTING_TOWN);

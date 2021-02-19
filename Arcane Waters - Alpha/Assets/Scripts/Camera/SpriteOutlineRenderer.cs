@@ -18,7 +18,9 @@ public class SpriteOutlineRenderer : MonoBehaviour
    }
 
    private void OnEnable () {
-      CameraManager.self.resolutionChanged += updateQuadSize;
+      if (CameraManager.self != null) {
+         CameraManager.self.resolutionChanged += updateQuadSize;
+      }
 
       updateQuadSize();
       updateRenderBuffer();
@@ -49,31 +51,35 @@ public class SpriteOutlineRenderer : MonoBehaviour
       _quadRenderer.material.SetFloat(_pixelSizePropertyID, pixelSize);
    }
 
+   private Camera getCurrentCamera () {
+      if (CameraManager.self != null) {
+         return CameraManager.getCurrentCamera();
+      }
+
+      return Camera.main;
+   }
+
    private void Update () {
-      Camera cam = CameraManager.getCurrentCamera();
+      Camera cam = getCurrentCamera();
 
       // Make sure our quad always fills the entire screen
       float orthographicSize = cam.orthographicSize;
 
       Vector3 scale = transform.localScale;
 
-      scale.y = orthographicSize * 2;
-      scale.x = orthographicSize * 2 * Screen.width / Screen.height;
+      scale.y = orthographicSize * 2 * cam.rect.height;
+      scale.x = orthographicSize * 2 * cam.rect.width * Screen.width / Screen.height;
 
       transform.localScale = scale;
 
       updatePixelSize();
    }
 
-   public void setColor (Color newColor) {
-      _quadRenderer.material.SetColor(_outlineColorPropertyID, newColor);
-   }
-
    private void LateUpdate () {
       // Our quad should always be at the same Z position as the outlined object so it doesn't render in front of everything
       if (_currentOutline != null) {
          Vector3 quadPos = _quadRenderer.transform.position;
-         quadPos.z = _currentOutline.transform.position.z;
+         quadPos.z = _currentOutline.transform.position.z - OUTLINE_Z_OFFSET;
          _quadRenderer.transform.position = quadPos;
       }
    }
@@ -88,9 +94,10 @@ public class SpriteOutlineRenderer : MonoBehaviour
       _cameras.Clear();      
    }
 
-   public void onWillRenderObject (ShaderSpriteOutline outline) {
+   public void onWillRenderObject (SpriteOutline outline) {
       // Currently outlined gameobject will call this method
       if (_currentOutline != null && outline == _currentOutline) {
+         _quadRenderer.material.SetColor(_outlineColorPropertyID, _currentOutline.getColor());
          updateRenderBuffer();
       }
    }
@@ -105,7 +112,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
    }
 
    public void updateRenderBuffer () {
-      Camera cam = CameraManager.getCurrentCamera();
+      Camera cam = getCurrentCamera();
 
       // Make sure we only add the buffer to the camera once!
       if (cam == null || _cameras.ContainsKey(cam)) {
@@ -113,6 +120,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
       }
 
       _quadRenderer.transform.SetParent(cam.transform, false);
+
       Vector3 pos = _quadRenderer.transform.localPosition;
       pos.x = 0;
       pos.y = 0;
@@ -128,12 +136,14 @@ public class SpriteOutlineRenderer : MonoBehaviour
       // Make sure the texture is completely clear before we render to it
       _outlinesBuffer.ClearRenderTarget(true, true, Color.clear);
 
-      if (_currentOutline != null) {
+      if (_currentOutline != null) {         
          // Draw all the sprites of our SpriteOutline to the texture using the "silhouette only" shader
          SpriteRenderer[] renderers = _currentOutline.getRenderers();
 
          foreach (SpriteRenderer rend in renderers) {
-            _outlinesBuffer.DrawRenderer(rend, rend.material);
+            if (rend != null && rend.enabled && rend.gameObject.activeInHierarchy) {
+               _outlinesBuffer.DrawRenderer(rend, rend.material);
+            }
          }
       }
 
@@ -141,7 +151,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
       cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, _outlinesBuffer);
    }
 
-   public void setOutlinedSprite (ShaderSpriteOutline sprite) {
+   public void setOutlinedSprite (SpriteOutline sprite) {
       if (_currentOutline != sprite) {
          // Let the current outline know it's no longer visible
          if (_currentOutline != null) {
@@ -150,7 +160,6 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
          _currentOutline = sprite;
          removeCommandBuffer();
-         updateRenderBuffer();
       }
    }
 
@@ -158,7 +167,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
 
    // The sprite we're currently outlining
    [SerializeField]
-   private ShaderSpriteOutline _currentOutline;
+   private SpriteOutline _currentOutline;
 
    // The quad we use for displaying the outline
    [SerializeField]
@@ -182,5 +191,8 @@ public class SpriteOutlineRenderer : MonoBehaviour
    // The default pixel size if an invalid PPU scale is provided
    public const int DEFAULT_PIXEL_SIZE = 4;
 
+   // The distance between the object and the outline in the Z axis
+   public const float OUTLINE_Z_OFFSET = 0.0001f;
+   
    #endregion
 }

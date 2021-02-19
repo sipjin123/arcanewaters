@@ -36,6 +36,11 @@ public class RespawnScreen : MonoBehaviour
    public void onRespawnButtonPress() {
       if (Global.player != null && Global.player.isPlayerShip()) {
          ((PlayerShipEntity) Global.player).requestRespawn();
+
+         // Re enable the tutorial panel
+         if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
+            TutorialManager3.self.panel.gameObject.SetActive(true);
+         }
       }
       _deadTime = 0;
       hide();
@@ -43,6 +48,10 @@ public class RespawnScreen : MonoBehaviour
 
    public void show () {
       if (!this.canvasGroup.IsShowing()) {
+         // Hide tutorial panel so it doesn't block the respawn button
+         if (TutorialManager3.self.panel.getMode() != TutorialPanel3.Mode.Closed) {
+            TutorialManager3.self.panel.gameObject.SetActive(false);
+         }
          this.canvasGroup.Show();
       }
    }

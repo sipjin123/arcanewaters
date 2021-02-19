@@ -1058,6 +1058,17 @@ public class Util : MonoBehaviour {
       return deploymentId;
    }
 
+   public static string formatIpAddress (string ogAddress) {
+      string finalAddress = ogAddress;
+
+      if (finalAddress.StartsWith("::ffff:")) {
+         string[] finalAddressArray = ogAddress.Split(':');
+         finalAddress = finalAddressArray[finalAddressArray.Length - 1];
+      }
+
+      return finalAddress;
+   }
+
    public static string getBranchType () {
       string branchType = "";
       try {

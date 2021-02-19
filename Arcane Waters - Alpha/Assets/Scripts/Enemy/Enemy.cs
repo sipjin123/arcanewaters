@@ -143,7 +143,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Some enemies should stop blocking player movement after they die
       if (isDefeated) {
          _body.mass = 9999;
-         _outline.Hide();
+         _outline.setVisibility(false);
          displayNameText.enabled = false;
          highlightCanvas.enabled = false;
          enemyBattleCollider.gameObject.SetActive(false);

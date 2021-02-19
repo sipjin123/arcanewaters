@@ -449,26 +449,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  isShaderBased: 0
-  generatesOnValidate: 1
+  outlineRenderer: {fileID: 0}
+  _renderers: []
 --- !u!1 &16428
 GameObject:
   m_ObjectHideFlags: 0
@@ -1121,6 +1103,7 @@ MonoBehaviour:
   colliderList:
   - {fileID: 20112}
   currentImpactMagnitude: 0
+  combatCollider: {fileID: 943633091000639015}
   shipType: 100
   skinType: 0
   speed: 15
@@ -2382,7 +2365,7 @@ GameObject:
   - component: {fileID: 3952967880873986857}
   - component: {fileID: 943633091000639015}
   m_Layer: 19
-  m_Name: Projectile Detection
+  m_Name: Combat Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2441,7 +2424,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 20892}
-  colliderScale: 0.75
   dynamicCollider: 1
 --- !u!1 &1286069097927019864
 GameObject:
@@ -4000,7 +3982,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5312459882193308468}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.01}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
   - {fileID: 9049018039227709535}

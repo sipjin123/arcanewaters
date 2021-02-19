@@ -1265,14 +1265,11 @@ public class AdminManager : NetworkBehaviour
       // Handle warping to a sea voyage instance or land treasure site instance
       if (VoyageManager.isVoyageOrLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
          // Make the admin join the voyage the target user is in
-         Voyage voyage;
-         try {
-            VoyageGroupInfo targetVoyageGroup = VoyageGroupManager.self.getGroupById(targetLocation.voyageGroupId);
-            voyage = VoyageManager.self.getVoyage(targetVoyageGroup.voyageId);
+         if (VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage voyage)) {
             VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage);
-         } catch (Exception e) {
+         } else {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not join the voyage in area " + targetLocation.areaKey);
-            D.error("Inconsistency in voyage instance during '/admin goto' command: " + e.ToString());
+            D.error("Inconsistency in voyage instance during '/admin goto' command");
             return;
          }
 

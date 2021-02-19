@@ -27,6 +27,9 @@ public class Voyage
    // The total number of maps in a league (series of voyages maps)
    public static int MAPS_PER_LEAGUE = 5;
 
+   // The maximum distance apart the group members can be when starting a league
+   public static int LEAGUE_START_MEMBERS_MAX_DISTANCE = 3;
+
    // The voyage difficulty as enum, mostly used for the UI
    public enum Difficulty { None = 0, Easy = 1, Medium = 2, Hard = 3 }
 
@@ -137,7 +140,15 @@ public class Voyage
    }
 
    public static bool isLastLeagueMap (int leagueIndex) {
-      return leagueIndex >= MAPS_PER_LEAGUE - 1;
+      return leagueIndex >= MAPS_PER_LEAGUE;
+   }
+
+   public static string getLeagueAreaName (int leagueIndex) {
+      if (leagueIndex == 0) {
+         return "Lobby";
+      } else {
+         return leagueIndex + " of " + MAPS_PER_LEAGUE;
+      }
    }
 
    #region Private Variables

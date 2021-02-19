@@ -87,9 +87,6 @@ public class SecretEntrance : MonoBehaviour {
                subSpriteRenderer.gameObject.SetActive(false);
             }
             spriteRenderer.enabled = true;
-
-            _outline.Regenerate();
-            _outline.transform.GetChild(0).GetComponent<SpriteRenderer>().enabled = true;
          } catch {
             D.debug("Failed to process sprites for Secret Entrance");
          }
@@ -219,7 +216,6 @@ public class SecretEntrance : MonoBehaviour {
             _outline = GetComponentInChildren<SpriteOutline>();
          }
          _outline.setVisibility(false);
-         _outline.enabled = false;
          _outline = null;
 
          InvokeRepeating("playMainSpriteAnimation", 0, animationSpeed);
@@ -235,7 +231,6 @@ public class SecretEntrance : MonoBehaviour {
       if (!Util.isBatch()) {
          _outline = GetComponentInChildren<SpriteOutline>();
          _outline.setVisibility(true);
-         _outline.enabled = true;
 
          secretEntranceHolder.isRunningCoroutineAnimation = true;
          InvokeRepeating("playMainSpriteAnimationClose", 0, animationSpeed);

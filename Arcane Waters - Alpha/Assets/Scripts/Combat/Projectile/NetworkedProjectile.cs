@@ -197,7 +197,7 @@ public class NetworkedProjectile : MonoBehaviour {
       SeaEntity hitEntity = other.transform.GetComponentInParent<SeaEntity>();
 
       // We only care about hitting other sea entities in our instance
-      if (hitEntity == null || this._creatorNetId == hitEntity.netId || other.GetComponent<CombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
+      if (hitEntity == null || this._creatorNetId == hitEntity.netId || other.GetComponent<GenericCombatCollider>() != null || hitEntity.instanceId != this._instanceId) {
          return;
       }
 

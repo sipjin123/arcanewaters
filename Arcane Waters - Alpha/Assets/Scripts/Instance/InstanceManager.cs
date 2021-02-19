@@ -322,8 +322,7 @@ public class InstanceManager : MonoBehaviour {
    public static Biome.Type getBiomeForInstance (string areaKey, int voyageId) {
       // Voyages can have a biome different than the default for the area
       if (VoyageManager.isVoyageOrLeagueArea(areaKey) || VoyageManager.isTreasureSiteArea(areaKey)) {
-         Voyage voyage = VoyageManager.self.getVoyage(voyageId);
-         if (voyage != null) {
+         if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
             return voyage.biome;
          }
       }
@@ -332,8 +331,7 @@ public class InstanceManager : MonoBehaviour {
    }
 
    public static int getDifficultyForInstance (int voyageId) {
-      Voyage voyage = VoyageManager.self.getVoyage(voyageId);
-      if (voyage != null) {
+      if (VoyageManager.self.tryGetVoyage(voyageId, out Voyage voyage)) {
          return voyage.difficulty;
       }
 

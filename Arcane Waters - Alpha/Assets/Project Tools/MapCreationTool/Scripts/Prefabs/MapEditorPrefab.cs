@@ -29,17 +29,14 @@ namespace MapCreationTool
          if (deleting) {
             outline.setVisibility(true);
             outline.setNewColor(DELETING_HIGHLIGHT_COLOR);
-            outline.Regenerate();
          } else if (!hovered && !selected) {
             outline.setVisibility(false);
          } else if (hovered) {
             outline.setVisibility(true);
             outline.setNewColor(HOVERED_HIGHLIGHT_COLOR);
-            outline.Regenerate();
          } else if (selected) {
             outline.setVisibility(true);
             outline.setNewColor(SELECTED_HIGHLIGHT_COLOR);
-            outline.Regenerate();
          }
       }
 

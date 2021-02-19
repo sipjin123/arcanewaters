@@ -164,7 +164,7 @@ public class DB_MainStub : MonoBehaviour
       return "";
    }
 
-   public static void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string chatLog, byte[] screenshotBytes, string machineIdentifier) {
+   public static void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string chatLog, byte[] screenshotBytes, string sourceMachineIdentifier, int deploymentId) {
 
    }
 
@@ -749,7 +749,7 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
+   public static long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
       return -1;
    }
 
@@ -1229,7 +1229,7 @@ public class DB_MainStub : MonoBehaviour
       return false;
    }
 
-   public static bool setMetricUptime(string machineId, string processName, string PID, long uptime) {
+   public static bool setMetricUptime (string machineId, string processName, string PID, long uptime) {
       return false;
    }
 

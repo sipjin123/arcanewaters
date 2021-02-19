@@ -781,19 +781,12 @@ public class DB_Main : DB_MainStub
 
    #endregion
 
-   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier) {
+   public static new void saveComplaint (int sourceUsrId, int sourceAccId, string sourceUsrName, string sourceEmail, string sourceIPAddress, int targetUsrId, int targetAccId, string targetUsrName, string ticketDescription, string playerPosition, string playerArea, string ticketLog, byte[] screenshotBytes, string sourceMachineIdentifier, int deploymentId) {
       try {
-         // Getting deploymentId, before executing the query
-         int deploymentId = 0;
-         //var deploymentConfigAsset = Resources.Load<TextAsset>("config");
-         //Dictionary<string, object> deploymentConfig = Json.Deserialize(deploymentConfigAsset.text) as Dictionary<string, object>;
-
-         //if (deploymentConfig != null && deploymentConfig.ContainsKey("deploymentId")) {
-         //   deploymentId = int.Parse(deploymentConfig["deploymentId"].ToString());
-         //}
-
          // We'll save the ticket's ID
          long ticketId;
+
+         string myAddress = Util.formatIpAddress(sourceIPAddress);
 
          using (MySqlConnection conn = getConnectionToDevGlobal()) {
             using (MySqlCommand cmd = new MySqlCommand(
@@ -808,7 +801,7 @@ public class DB_Main : DB_MainStub
                cmd.Parameters.AddWithValue("@sourceAccId", sourceAccId);
                cmd.Parameters.AddWithValue("@sourceUsrName", sourceUsrName);
                cmd.Parameters.AddWithValue("@sourceEmail", sourceEmail);
-               cmd.Parameters.AddWithValue("@sourceIPAddress", sourceIPAddress);
+               cmd.Parameters.AddWithValue("@sourceIPAddress", myAddress);
                cmd.Parameters.AddWithValue("@targetUsrId", targetUsrId);
                cmd.Parameters.AddWithValue("@targetAccId", targetAccId);
                cmd.Parameters.AddWithValue("@targetUsrName", targetUsrName);
@@ -5314,16 +5307,19 @@ public class DB_Main : DB_MainStub
 
    #region Chat System Features / Bug Reporting Features
 
-   public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState) {
+   public static new long saveBugReport (NetEntity player, string subject, string bugReport, int ping, int fps, string playerPosition, byte[] screenshotBytes, string screenResolution, string operatingSystem, int deploymentId, string steamState, string ipAddress) {
       try {
+         string myAddress = Util.formatIpAddress(ipAddress);
+
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.bug_reports (usrId, usrName, accId, bugSubject, bugIpAddress, bugLog, ping, fps, playerPosition, screenResolution, operatingSystem, status, deploymentId, steamState) VALUES(@usrId, @usrName, @accId, @bugSubject, @bugIpAddress, @bugLog, @ping, @fps, @playerPosition, @screenResolution, @operatingSystem, @status, @deploymentId, @steamState)", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrId", player.userId);
             cmd.Parameters.AddWithValue("@usrName", player.entityName);
             cmd.Parameters.AddWithValue("@accId", player.accountId);
             cmd.Parameters.AddWithValue("@bugSubject", subject);
+            cmd.Parameters.AddWithValue("@bugIpAddress", myAddress);
             cmd.Parameters.AddWithValue("@bugLog", bugReport);
             cmd.Parameters.AddWithValue("@ping", ping);
             cmd.Parameters.AddWithValue("@fps", fps);
@@ -5331,7 +5327,7 @@ public class DB_Main : DB_MainStub
             cmd.Parameters.AddWithValue("@screenResolution", screenResolution);
             cmd.Parameters.AddWithValue("@operatingSystem", operatingSystem);
             cmd.Parameters.AddWithValue("@status", WebToolsUtil.UNASSIGNED);
-            cmd.Parameters.AddWithValue("@deploymentId", deploymentId); 
+            cmd.Parameters.AddWithValue("@deploymentId", deploymentId);
             cmd.Parameters.AddWithValue("@steamState", steamState);
 
             DebugQuery(cmd);
@@ -9273,16 +9269,10 @@ public class DB_Main : DB_MainStub
    public static new void storeLoginInfo (int usrId, int accId, string ipAddress, string machineIdent) {
       // Storing Login info, only when usrId > 0 and accId > 0
       if (usrId > 0 && accId > 0) {
-         // We need to split the IP Address due its format, ::ffff:0.0.0.0, for example
-         string finalAddress = ipAddress;
-
-         if (finalAddress.StartsWith("::ffff:")) {
-            string[] finalAddressArray = ipAddress.Split(':');
-            finalAddress = finalAddressArray[finalAddressArray.Length - 1];
-         }
-
          // Getting the current time, in UTC
          DateTime currTime = DateTime.UtcNow;
+
+         string myAddress = Util.formatIpAddress(ipAddress);
 
          try {
             using (MySqlConnection conn = getConnection())
@@ -9291,7 +9281,7 @@ public class DB_Main : DB_MainStub
                cmd.Prepare();
                cmd.Parameters.AddWithValue("@usrId", usrId);
                cmd.Parameters.AddWithValue("@accId", accId);
-               cmd.Parameters.AddWithValue("@ipAddress", finalAddress);
+               cmd.Parameters.AddWithValue("@ipAddress", myAddress);
                cmd.Parameters.AddWithValue("@machineIdent", machineIdent);
                cmd.Parameters.AddWithValue("@loginSource", "game");
                cmd.Parameters.AddWithValue("@loginTime", currTime);

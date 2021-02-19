@@ -370,7 +370,6 @@ namespace MapCreationTool
 
          SpriteOutline so = instance.GetComponent<SpriteOutline>();
          if (so != null) {
-            so.childLayers = LayerMask.NameToLayer(LayerUtil.EVERYTHING);
             so.setNewColor(new Color(0, 0, 0, 0));
          }
 

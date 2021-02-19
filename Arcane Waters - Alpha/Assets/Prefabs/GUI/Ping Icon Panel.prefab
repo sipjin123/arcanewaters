@@ -233,6 +233,7 @@ GameObject:
   - component: {fileID: 3702446896993168295}
   - component: {fileID: 1292587256612802170}
   - component: {fileID: 2175231455433502038}
+  - component: {fileID: 926302964}
   m_Layer: 5
   m_Name: Ping Icon Panel
   m_TagString: Untagged
@@ -352,3 +353,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 2
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
+--- !u!114 &926302964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3702446896993168289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3eb9faf1f6c29e246aaba5575da3cbdc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapRectTransform: {fileID: 0}
+  pingIconPanelRectTransform: {fileID: 3702446896993168288}

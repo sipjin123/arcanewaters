@@ -146,9 +146,6 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    protected override void Update () {
       base.Update();
 
-      // Any time out sprite changes, we need to regenerate our outline
-      _outline.recreateOutlineIfVisible();
-
       updateJumpHeight();
 
       if (!isLocalPlayer || !Util.isGeneralInputAllowed()) {
@@ -181,9 +178,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    }
 
    public void OnPointerEnter (PointerEventData pointerEventData) {
-      if (entityNameGO.GetComponent<TextMeshProUGUI>().text != null) {
-         showEntityName();
-      }
+      showEntityName();
+
       if (guildIcon != null) {
          showGuildIcon();
       }

@@ -79,7 +79,7 @@ public class OreNode : NetworkBehaviour
       // Update the sprite shown if we've already mined this node
       if (hasBeenMined() || finishedMining()) {
          spriteRenderer.sprite = oreSprites.Last();
-         _outline.enabled = false;
+         _outline.setVisibility(false);
          _clickableBox.enabled = false;
       } else {
          spriteRenderer.sprite = oreSprites.First();
@@ -92,7 +92,7 @@ public class OreNode : NetworkBehaviour
       spriteRenderer.sprite = oreSprites[spriteId];
 
       if (hasBeenMined() || finishedMining()) {
-         _outline.enabled = false;
+         _outline.setVisibility(false);
          _clickableBox.enabled = false;
       }
    }

@@ -15,14 +15,14 @@ public class Area : MonoBehaviour
    #region Public Variables
 
    // The special type of the area
-   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5 }
+   public enum SpecialType { None = 0, Voyage = 1, TreasureSite = 2, Town = 3, Private = 4, League = 5, LeagueLobby = 6 }
 
    // Hardcoded area keys
    public static string STARTING_TOWN = "Tutorial Town";
    public static string DESERT_TOWN = "Desert Town Lite";
    public static string PINE_TOWN = "Pine Biome Town";
    public static string SNOW_TOWN = "Snow Town Lite";
-   public static string LAVA_TOWN = "Tutorial Town";
+   public static string LAVA_TOWN = "Lava Town";
    public static string MUSHROOM_TOWN = "Shroom Bay";
 
    // The main towns in each biome

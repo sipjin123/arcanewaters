@@ -141,7 +141,7 @@ public class VoyageMapCell : MonoBehaviour {
       aliveEnemyCountText.text = voyage.aliveNPCEnemyCount.ToString() + "/" + (voyage.totalNPCEnemyCount).ToString();
 
       // Set the league index
-      leagueIndexText.text = (voyage.leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE;
+      leagueIndexText.text = Voyage.getLeagueAreaName(voyage.leagueIndex);
 
       // Set the plaque labels outline color
       switch (Voyage.getDifficultyEnum(voyage.difficulty)) {

@@ -44,11 +44,6 @@ namespace MapCustomization
       public void setOutline (bool ready, bool hovered, bool selected, bool valid) {
          if (_spriteOutline == null) {
             _spriteOutline = gameObject.AddComponent<SpriteOutline>();
-            _spriteOutline.includeChildren = true;
-            _spriteOutline.alphaThreshold = 0.5f;
-            _spriteOutline.isAnimated = true;
-            _spriteOutline.size = 2;
-            _spriteOutline.childLayers = LayerMask.NameToLayer("Everything");
          }
 
          _spriteOutline.setNewColor(getOutlineColor(ready, hovered, selected, valid));

@@ -51,6 +51,9 @@ public class SeaEntity : NetEntity
    // Cache the impact type of the ability
    public Attack.ImpactMagnitude currentImpactMagnitude = Attack.ImpactMagnitude.None;
 
+   // The combat collider
+   public GenericCombatCollider combatCollider;
+
    #endregion
 
    protected virtual bool isBot () { return true; }
@@ -74,6 +77,14 @@ public class SeaEntity : NetEntity
       }
    }
 
+   public GenericCombatCollider getCombatCollider () {
+      if (combatCollider == null) {
+         combatCollider = GetComponentInChildren<GenericCombatCollider>();
+      }
+
+      return combatCollider;
+   }
+
    public void reloadSprites () {
       if (!Util.isBatch()) {
          StartCoroutine(CO_UpdateAllSprites());
@@ -85,7 +96,7 @@ public class SeaEntity : NetEntity
 
       // If we've died, start slowing moving our sprites downward
       if (isDead()) {
-         _outline.Hide();
+         _outline.setVisibility(false);
          disableCollisions();
 
          if (_burningCoroutine != null) {

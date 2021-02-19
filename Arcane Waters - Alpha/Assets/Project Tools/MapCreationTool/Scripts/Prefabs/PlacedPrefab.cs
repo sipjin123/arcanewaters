@@ -47,26 +47,14 @@ namespace MapCreationTool
                if (sr != null) {
                   sr.color = MapEditorPrefab.DELETING_HIGHLIGHT_COLOR;
                }
-               outline.Regenerate();
             } else if (!hovered && !selected) {
                outline.setVisibility(false);
             } else if (hovered) {
                outline.setVisibility(true);
                outline.setNewColor(MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR);
-               SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
-               if (sr != null) {
-                  sr.color = MapEditorPrefab.HOVERED_HIGHLIGHT_COLOR;
-               }
-               outline.Regenerate();
             } else if (selected) {
                outline.setVisibility(true);
                outline.setNewColor(MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR);
-               outline.color = MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR;
-               SpriteRenderer sr = outline.transform.Find("Outline")?.GetComponent<SpriteRenderer>();
-               if (sr != null) {
-                  sr.color = MapEditorPrefab.SELECTED_HIGHLIGHT_COLOR;
-               }
-               outline.Regenerate();
             }
          }
 

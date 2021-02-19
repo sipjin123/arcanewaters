@@ -4,10 +4,11 @@
     {
         _MainTex ("Texture", 2D) = "white" {}
         _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
+        _AThreshold("Alpha Threshold", Float) = 0.35
     }
     SubShader
     {
-		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
+		Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="TransparentCutout"}
 		LOD 100
 	
 		Cull Off 
@@ -65,6 +66,8 @@
             fixed4 _OutlineColor;
             fixed _PixelSize;
 
+            fixed _AThreshold;
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -81,6 +84,7 @@
                 // We only paint white colors and only in transparent areas
                 float outlineWidth = _PixelSize;
                 fixed4 outlineColor = _OutlineColor;
+                fixed alphaThreshold = _AThreshold;
 
                 fixed left = tex2D(_MainTex, i.uv + float2(-_MainTex_TexelSize.x * outlineWidth, 0)).a;
 				fixed up = tex2D(_MainTex, i.uv + float2(0, _MainTex_TexelSize.y * outlineWidth)).a;
@@ -88,10 +92,10 @@
 				fixed down = tex2D(_MainTex, i.uv + float2(0, -_MainTex_TexelSize.y * outlineWidth)).a;
 
                 // This pixel is an outline if it's transparent and any of the pixels around (4 directions only) it isn't transparent (1 = true, 0 = false)
-                float isOutline = and(less_than(col.a, 0.15), or(greater_than(left, 0.15), or(greater_than(right, 0.15), or(greater_than(up, 0.15), greater_than(down, 0.15)))));
+                float isOutline = and(less_than(col.a, alphaThreshold), or(greater_than(left, alphaThreshold), or(greater_than(right, alphaThreshold), or(greater_than(up, alphaThreshold), greater_than(down, alphaThreshold)))));
 
-                // We should clip this pixel if it's not transparent or it's transparent and not an outline pixel (1 = true, 0 = false)
-                float shouldClip = and(less_than(col.a, 0.15), 1 - isOutline);
+                // We should clip this pixel if it's transparent and not an outline pixel (1 = true, 0 = false)
+                float shouldClip = 1 - isOutline;
 
                 clip (-shouldClip);
                 

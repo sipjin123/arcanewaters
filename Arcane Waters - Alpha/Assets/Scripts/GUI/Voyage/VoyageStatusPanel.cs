@@ -45,6 +45,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The index of the current league
    public Text leagueIndexText;
 
+   // The lobby label
+   public Text lobbyText;
+
    // The text outlines
    public Outline[] outlines;
 
@@ -60,6 +63,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The statuses that are only relevant in voyage instances or league instances (common statuses should not be set here)
    public GameObject[] voyageStatuses = new GameObject[0];
    public GameObject[] leagueStatuses = new GameObject[0];
+   public GameObject[] lobbyStatuses = new GameObject[0];
 
    // Self
    public static VoyageStatusPanel self;
@@ -103,30 +107,18 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       // Show different relevant statuses for voyage and league instances
-      if (instance.isLeague) {
-         foreach (GameObject gO in voyageStatuses) {
-            if (gO.activeSelf) {
-               gO.SetActive(false);
-            }
-         }
-
-         foreach (GameObject gO in leagueStatuses) {
-            if (!gO.activeSelf) {
-               gO.SetActive(true);
-            }
-         }
+      if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
+         voyageStatuses.Hide();
+         leagueStatuses.Hide();
+         lobbyStatuses.Show();
+      } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
+         voyageStatuses.Hide();
+         lobbyStatuses.Hide();
+         leagueStatuses.Show();
       } else {
-         foreach (GameObject gO in leagueStatuses) {
-            if (gO.activeSelf) {
-               gO.SetActive(false);
-            }
-         }
-
-         foreach (GameObject gO in voyageStatuses) {
-            if (!gO.activeSelf) {
-               gO.SetActive(true);
-            }
-         }
+         lobbyStatuses.Hide();
+         leagueStatuses.Hide();
+         voyageStatuses.Show();
       }
 
       // Set the status that are always visible
@@ -137,6 +129,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
          treasureSiteCountText.text = (instance.treasureSiteCount - instance.capturedTreasureSiteCount).ToString() + "/" + instance.treasureSiteCount;
       }
       aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.getTotalNPCEnemyCount()).ToString();
+      lobbyText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
 
       // Set the plaque labels outline color
       switch (Voyage.getDifficultyEnum(instance.difficulty)) {
@@ -175,16 +168,21 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       pvpPveModeImage.sprite = instance.isPvP ? pvpIcon : pveIcon;
       playerCountText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
       timeText.text = (DateTime.UtcNow - DateTime.FromBinary(instance.creationDate)).ToString(@"mm\:ss");
-      leagueIndexText.text = (instance.leagueIndex + 1) + " of " + Voyage.MAPS_PER_LEAGUE;
+      leagueIndexText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
    }
 
    private void setDefaultStatus () {
+      voyageStatuses.Hide();
+      lobbyStatuses.Hide();
+      leagueStatuses.Show();
+
       pvpPveText.text = "?";
       playerCountText.text = "?/?";
       treasureSiteCountText.text = "?/?";
       timeText.text = "?";
       aliveEnemiesCountText.text = "?/?";
       leagueIndexText.text = "? of ?";
+      lobbyText.text = "?";
    }
 
    public void show () {

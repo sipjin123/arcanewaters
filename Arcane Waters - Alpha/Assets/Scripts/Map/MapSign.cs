@@ -51,7 +51,6 @@ public class MapSign : ClientMonoBehaviour, IMapEditorDataReceiver, IPointerEnte
    }
 
    private void Start () {
-      _outline.Regenerate();
       _outline.setVisibility(false);
    }
 

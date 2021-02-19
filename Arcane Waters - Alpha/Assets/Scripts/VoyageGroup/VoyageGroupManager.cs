@@ -60,11 +60,10 @@ public class VoyageGroupManager : MonoBehaviour
 
    private IEnumerator CO_InviteUserToGroup (NetEntity player, UserInfo inviteeInfo) {
       // Get the voyage group info
-      VoyageGroupInfo voyageGroup = getGroupById(player.voyageGroupId);
-      if (voyageGroup == null) {
+      if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          // If the player is not in a group, create one
          yield return CO_CreateGroup(player, -1, true);
-         voyageGroup = getGroupById(player.voyageGroupId);
+         player.tryGetGroup(out voyageGroup);
       }
 
       // Check the validity of the request
@@ -73,8 +72,7 @@ public class VoyageGroupManager : MonoBehaviour
          yield break;
       }
 
-      VoyageGroupInfo inviteeGroup = getGroupByUser(inviteeInfo.userId);
-      if (inviteeGroup != null && voyageGroup.groupId == inviteeGroup.groupId) {
+      if (tryGetGroupByUser(inviteeInfo.userId, out VoyageGroupInfo inviteeGroup) && voyageGroup.groupId == inviteeGroup.groupId) {
          ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, inviteeInfo.username + " already belongs to the group!");
          yield break;
       }
@@ -144,8 +142,7 @@ public class VoyageGroupManager : MonoBehaviour
 
       // If the group is now complete, disable its quickmatch
       if (voyageGroup.isQuickmatchEnabled) {
-         Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
-         if (voyage != null && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
+         if (VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage) && voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
             voyageGroup.isQuickmatchEnabled = false;
          }
       }
@@ -172,8 +169,7 @@ public class VoyageGroupManager : MonoBehaviour
       } else {
          // Reenable the quickmatching if the conditions are met
          if (!voyageGroup.isPrivate && !voyageGroup.isQuickmatchEnabled) {
-            Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
-            if (voyage != null && voyageGroup.members.Count < Voyage.getMaxGroupSize(voyage.difficulty)) {
+            if (VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage) && voyageGroup.members.Count < Voyage.getMaxGroupSize(voyage.difficulty)) {
                voyageGroup.isQuickmatchEnabled = true;
             }
          }
@@ -206,8 +202,7 @@ public class VoyageGroupManager : MonoBehaviour
       // Wait a few frames for the changes to synchronize on other servers
       yield return new WaitForSeconds(0.1f);
 
-      VoyageGroupInfo voyageGroup = getGroupById(groupId);
-      if (voyageGroup == null) {
+      if (!tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
          yield break;
       }
 
@@ -237,8 +232,7 @@ public class VoyageGroupManager : MonoBehaviour
    public void forceAdminJoinVoyage (NetEntity admin, Voyage voyage) {
       // Check if the admin is already in a voyage group
       if (isInGroup(admin)) {
-         VoyageGroupInfo voyageGroup = getGroupById(admin.voyageGroupId);
-         if (voyageGroup == null) {
+         if (!admin.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, admin, "Error when retrieving the voyage group!");
             return;
          }
@@ -317,11 +311,14 @@ public class VoyageGroupManager : MonoBehaviour
          }
       } else {
          // If the group has joined a voyage, we enforce the limit set by its parameters
-         Voyage voyage = VoyageManager.self.getVoyage(voyageGroup.voyageId);
-         if (voyage != null) {
-            // Once a league is joined, the group cannot accept more players
+         if (VoyageManager.self.tryGetVoyage(voyageGroup.voyageId, out Voyage voyage)) {
             if (voyage.isLeague) {
-               return true;
+               // Once a league is started (after the lobby), the group cannot accept more players
+               if (voyage.leagueIndex > 0 || voyageGroup.members.Count >= Voyage.getMaxGroupSize(Voyage.getMaxDifficulty())) {
+                  return true;
+               } else {
+                  return false;
+               }
             } else if (voyageGroup.members.Count >= Voyage.getMaxGroupSize(voyage.difficulty)) {
                return true;
             }
@@ -330,24 +327,32 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
-   public VoyageGroupInfo getGroupById (int groupId) {
+   public bool tryGetGroupById (int groupId, out VoyageGroupInfo voyageGroup) {
+      voyageGroup = default;
+
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (server.voyageGroups.ContainsKey(groupId)) {
-            return server.voyageGroups[groupId];
+            voyageGroup = server.voyageGroups[groupId];
+            return true;
          }
       }
-      return null;
+      
+      return false;
    }
 
-   public VoyageGroupInfo getGroupByUser (int userId) {
+   public bool tryGetGroupByUser (int userId, out VoyageGroupInfo voyageGroup) {
+      voyageGroup = default;
+
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
-         foreach (VoyageGroupInfo voyageGroup in server.voyageGroups.Values) {
-            if (voyageGroup.members.Contains(userId)) {
-               return voyageGroup;
+         foreach (VoyageGroupInfo vGroup in server.voyageGroups.Values) {
+            if (vGroup.members.Contains(userId)) {
+               voyageGroup = vGroup;
+               return true;
             }
          }
       }
-      return null;
+      
+      return false;
    }
 
    public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {
@@ -482,8 +487,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
 
       // Send the data to the client
-      VoyageGroupInfo voyageGroup = getGroupById(player.voyageGroupId);
-      if (voyageGroup != null) {
+      if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, voyageGroup.members.ToArray());
       } else {
          player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new int[0]);
@@ -523,8 +527,7 @@ public class VoyageGroupManager : MonoBehaviour
       stopExistingGroupRemovalCoroutine(userId);
 
       // If the player is not in a group, do nothing
-      VoyageGroupInfo voyageGroup = getGroupByUser(userId);
-      if (voyageGroup == null) {
+      if (!tryGetGroupByUser(userId, out VoyageGroupInfo voyageGroup)) {
          return;
       }
 
@@ -554,8 +557,7 @@ public class VoyageGroupManager : MonoBehaviour
       yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
 
       // If the player is not in a group, do nothing
-      VoyageGroupInfo voyageGroup = getGroupByUser(userId);
-      if (voyageGroup == null) {
+      if (!tryGetGroupByUser(userId, out VoyageGroupInfo voyageGroup)) {
          yield break;
       }
 

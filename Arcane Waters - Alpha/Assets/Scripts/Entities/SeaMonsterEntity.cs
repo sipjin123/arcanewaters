@@ -160,6 +160,11 @@ public class SeaMonsterEntity : SeaEntity, IMapEditorDataReceiver
          }
       }
 
+      // Update the collider scale and offset
+      if (getCombatCollider() != null) {
+         getCombatCollider().setScale(new Vector3(seaMonsterData.battleColliderScaleX, seaMonsterData.battleColliderScaleY, 1));
+      }
+
       reloadDelay = seaMonsterData.reloadDelay;
       currentHealth = seaMonsterData.maxHealth;
       maxHealth = seaMonsterData.maxHealth;

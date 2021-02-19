@@ -22,14 +22,18 @@ public class SpriteOutlineManager : MonoBehaviour {
       _quadPool = new Pool<SpriteOutlineRenderer>(outlineQuadPrefab);
    }
 
-   public void addOutlinedSprite (ShaderSpriteOutline shaderSpriteOutline) {
+   public void addOutlinedSprite (SpriteOutline shaderSpriteOutline) {
       SpriteOutlineRenderer outlineQuad = _quadPool.get();
       shaderSpriteOutline.outlineRenderer = outlineQuad;
 
       outlineQuad.setOutlinedSprite(shaderSpriteOutline);
    }
 
-   public void removeOutlinedSprite (ShaderSpriteOutline shaderSpriteOutline) {
+   public void removeOutlinedSprite (SpriteOutline shaderSpriteOutline) {
+      if (shaderSpriteOutline == null || shaderSpriteOutline.outlineRenderer == null) {
+         return;
+      }
+
       shaderSpriteOutline.outlineRenderer.gameObject.SetActive(false);
       shaderSpriteOutline.outlineRenderer = null;
    }

@@ -22,7 +22,7 @@ public class BugReportManager : MonoBehaviour {
    }
 
    [ServerOnly]
-   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState) {
+   public void storeBugReportOnServer (NetEntity player, string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState, string ipAddress, int deploymentId) {
       // Check when they last submitted a bug report
       if (_lastBugReportTime.ContainsKey(player.userId)) {
          float timeSinceLastReport = Time.time - _lastBugReportTime[player.userId];
@@ -38,11 +38,9 @@ public class BugReportManager : MonoBehaviour {
 
       string playerPosition = AreaManager.self.getArea(player.areaKey) + ": (" + player.gameObject.transform.position.x.ToString() + "; " + player.gameObject.transform.position.y.ToString() + ")";
 
-      int deploymentId = Util.getDeploymentId();
-
       // Save the report in the database
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         long bugId = DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState);
+         long bugId = DB_Main.saveBugReport(player, subject, message, ping, fps, playerPosition, screenshotBytes, screenResolution, operatingSystem, deploymentId, steamState, ipAddress);
 
          // Send a confirmation to the client
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
@@ -121,7 +119,11 @@ public class BugReportManager : MonoBehaviour {
       int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
       addMetaDataToBugReport(ref bugReport);
-      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState);
+
+      // Getting deploymentId on client side
+      int deploymentId = Util.getDeploymentId();
+
+      Global.player.rpc.Cmd_BugReport(subjectString, bugReport, ping, fps, new byte[0], screenResolution, operatingSystem, steamState, deploymentId);
 
       // Find image quality of size small enough to send through Mirror Networking      
       Texture2D standardTex = takeScreenshot(width, height);

@@ -288,8 +288,7 @@ public class MyNetworkManager : NetworkManager
          // Back to the Unity thread
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Get the current voyage info the user is part of, if any
-            VoyageGroupInfo voyageGroupInfo = VoyageGroupManager.self.getGroupByUser(authenticatedUserId);
-            int voyageId = voyageGroupInfo != null ? voyageGroupInfo.voyageId : -1;
+            int voyageId = VoyageGroupManager.self.tryGetGroupByUser(authenticatedUserId, out VoyageGroupInfo voyageGroupInfo) ? voyageGroupInfo.voyageId : -1;
 
             // Check if we need to redirect to a different server
             NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(previousAreaKey, userInfo.username, userInfo.userId,

@@ -5,31 +5,17 @@ using UnityEngine.UI;
 using Mirror;
 
 [RequireComponent(typeof(BoxCollider2D))]
-public class CombatCollider : MonoBehaviour {
+public class CombatBoxCollider : GenericCombatCollider
+{
    #region Public Variables
-
-   // The sprite renderer that will determine the size of the collider
-   public SpriteRenderer spriteRenderer;
-
-   // The scale of the collider in relation to the sprite size
-   public float colliderScale = 0.75f;
-
-   // If the collider adjusts dynamically
-   public bool dynamicCollider = true;
 
    #endregion
 
    private void Start () {
-      _battleCollider = GetComponent<BoxCollider2D>();
+      _collider = GetComponent<BoxCollider2D>();
    }
 
-   private void Update () {
-      if (dynamicCollider) {
-         updateCollider();
-      } 
-   }
-
-   protected void updateCollider () {
+   protected override void updateCollider () {
       Sprite sprite = spriteRenderer.sprite;
       
       // Make sure our ship's sprite has a valid physics outline ("Generate Physics Shape" needs to be enabled in the import settings)
@@ -48,16 +34,16 @@ public class CombatCollider : MonoBehaviour {
          }
 
          // Find the offset (in case the sprite isn't perfectly centered)
-         Vector2 offset = (minPoint + maxPoint) * colliderScale * 0.5f;
+         Vector2 offset = (minPoint + maxPoint) * 0.5f;
          
          // Calculate the width and height of the collider
          Vector2 size = new Vector2(Mathf.Abs(minPoint.x) + Mathf.Abs(maxPoint.x), Mathf.Abs(minPoint.y) + Mathf.Abs(maxPoint.y));
 
          // Let's scale the collider (3/4 the size of the sprite by default) so it's not too big
-         _battleCollider.size = size * colliderScale;
+         _collider.size = size;
 
          // Apply the offset
-         _battleCollider.offset = offset;
+         _collider.offset = offset;
       } else {
          // If the sprite doesn't have a valid physics shape, we'll disable the script to avoid spamming the log
          D.error($"The ship {gameObject.name} doesn't have a properly defined outline. Make sure Generate Physics Shape is enabled in the sprite settings. The script will be disabled.");
@@ -71,7 +57,7 @@ public class CombatCollider : MonoBehaviour {
    protected List<Vector2> _spriteShapePoints = new List<Vector2>();
 
    // Our collider used for projectile detection
-   protected BoxCollider2D _battleCollider;
+   protected BoxCollider2D _collider;
 
    #endregion
 }

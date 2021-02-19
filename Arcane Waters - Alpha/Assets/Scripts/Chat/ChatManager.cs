@@ -8,7 +8,8 @@ using TMPro;
 using System.Text;
 using System;
 
-public class ChatManager : MonoBehaviour {
+public class ChatManager : MonoBehaviour
+{
    #region Public Variables
 
    // The Chat Panel, need to have direct reference in case something gets logged during Awake()
@@ -239,12 +240,14 @@ public class ChatManager : MonoBehaviour {
    }
 
    private void sendComplainToServer (string message) {
-      string username = extractComplainNameFromChat(message);      
+      string username = extractComplainNameFromChat(message);
       string details = extractComplainMessageFromChat(message, username);
       string machineIdentifier = SystemInfo.deviceName;
 
-      if (Global.player != null) {         
-         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()), machineIdentifier);
+      int deploymentId = Util.getDeploymentId();
+
+      if (Global.player != null) {
+         Global.player.rpc.Cmd_SubmitComplaint(username, details, getChatLog(), Util.getTextureBytesForTransport(Util.getScreenshot()), machineIdentifier, deploymentId);
       }
    }
 
@@ -341,10 +344,10 @@ public class ChatManager : MonoBehaviour {
                   if (parameters.Length > 0) {
                      parameters = parameters.Remove(parameters.Length - 1);
                   }
-            
+
                   parameterAutoCompletes = command.getParameterAutoCompletes(parameters);
 
-               // Otherwise, offer all parameter auto-completes
+                  // Otherwise, offer all parameter auto-completes
                } else {
                   parameterAutoCompletes = command.getParameterAutoCompletes();
                }
