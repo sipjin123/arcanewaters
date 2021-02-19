@@ -77,8 +77,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("ship_damage", "Sets your ship's damage", requestSetShipDamage, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "damage" }));
       cm.addCommand(new CommandData("ship_health", "Sets your ship's health", requestSetShipHealth, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "health" }));
       cm.addCommand(new CommandData("spawn_sea_enemy", "Spawns a sea enemy at your mouse position", requestSpawnSeaEnemy, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "enemyId" }));
-      cm.addCommand(new CommandData("screen_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("combat_log", "Allows user stats to show on land combat", requestCombatStats, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("debug_log", "Allows screen to log files", requestScreenLogs, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("warp_anywhere", "Allows user warp anywhere without getting returned to town", requestWarpAnywhere, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("kick", "Disconnects a player from the name", kickPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "reason" }));
       cm.addCommand(new CommandData("ban", "Ban a player from the game for [duration] minutes", banPlayerTemporary, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "playerName", "duration", "reason" }));
@@ -499,9 +498,6 @@ public class AdminManager : NetworkBehaviour
 
    private void requestScreenLogs () {
       Cmd_RequestScreenLog();
-   }
-
-   private void requestCombatStats () {
       Cmd_RequestCombatStats();
    }
 
