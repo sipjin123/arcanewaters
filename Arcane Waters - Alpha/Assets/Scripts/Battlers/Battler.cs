@@ -381,9 +381,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       if (Global.displayLandCombatStats) {
          // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
-         if (player is PlayerBodyEntity) {
-            debugLogCanvas.SetActive(true);
-         }
+         debugLogCanvas.SetActive(true);
       }
    }
 
@@ -430,18 +428,15 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // This block is only enabled upon admin command and is double checked by the server if the user is an admin
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
       if (Global.displayLandCombatStats) {
-         if (player is PlayerBodyEntity) {
-            string newMessage = "IsDead" + " : " + isDead()
-               + "\nPlayer: " + (player is PlayerBodyEntity) + " Local: " + player.isLocalPlayer
-               + "\nCurrHealth: {" + health + "} : {" + displayedHealth + "}" 
-               + "\nAnim: " + _anims[0].currentAnimation;
-            if (player.isLocalPlayer) {
-               debugTextLog.color = Color.red;
-            } else {
-               debugTextLog.color = Color.yellow;
-            }
-            debugTextLog.text = newMessage;
+         string newMessage = "Dead" + " : " + isDead()
+            + "\nCurHP: {" + health + "} DisHP: {" + displayedHealth + "}" 
+            + "\nAnim: " + _anims[0].currentAnimation;
+         if (player.isLocalPlayer) {
+            debugTextLog.color = Color.red;
+         } else {
+            debugTextLog.color = Color.yellow;
          }
+         debugTextLog.text = newMessage;
       }
 
       // Handle the drawing or hiding of our outline
