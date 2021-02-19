@@ -149,8 +149,8 @@ public class Battle : NetworkBehaviour {
                if (battler.isBossType) {
                   int actionRandomizer = Random.Range(1, 10);
 
-                  // 30% chance to use AOE ability
-                  if (actionRandomizer > 0 && battler.basicAbilityIDList.Count > 1) {
+                  // 50% chance to use AOE ability
+                  if (actionRandomizer > 5 && battler.basicAbilityIDList.Count > 1) {
                      int targetCounter = 0;
                      List<Battler> targetBattlers = new List<Battler>();
                      AttackAbilityData abilityData = AbilityManager.getAttackAbility(battler.basicAbilityIDList[1]);

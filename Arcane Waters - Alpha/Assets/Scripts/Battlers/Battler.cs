@@ -702,6 +702,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       if (battlerAbilitiesInitialized) {
+         D.debug("Warning! Battler abilities have not been initialized!");
          return;
       }
 
@@ -908,6 +909,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public IEnumerator animateDeath () {
+      if (_anims[0].currentAnimation == Anim.Type.Death_East) {
+         BattleSelectionManager.self.autoTargetNextOpponent();
+         yield break;
+      }
       playAnim(Anim.Type.Death_East);
 
       if (battlerType == BattlerType.AIEnemyControlled) {
@@ -1197,74 +1202,71 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                sourceBattler.transform.position = new Vector3(targetPosition.x, targetPosition.y, sourceBattler.transform.position.z);
             }
 
-            // Pause for a moment after reaching our destination
-            yield return new WaitForSeconds(PAUSE_LENGTH);
+            // The enemy might be marked as dead by the time the player jumps near it, check if the enemy health is greater than 0, if not then cancel attack and jump back to position
+            if (targetBattler.displayedHealth > 0) {
+               // Pause for a moment after reaching our destination
+               yield return new WaitForSeconds(PAUSE_LENGTH);
 
-            if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               sourceBattler.playAnim(Anim.Type.Punch);
-            } else {
-               if (enemyType == Enemy.Type.PlayerBattler) {
-                  sourceBattler.playAnim(attackerAbility.getAnimation());
+               if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+                  sourceBattler.playAnim(Anim.Type.Punch);
                } else {
-                  if (abilityDataReference.useSpecialAnimation) {
-                     sourceBattler.modifyAnimSpeed(.15f);
-                     sourceBattler.playAnim(Anim.Type.SpecialAnimation);
+                  if (enemyType == Enemy.Type.PlayerBattler) {
+                     sourceBattler.playAnim(attackerAbility.getAnimation());
                   } else {
-                     sourceBattler.playAnim(Anim.Type.Ready_Attack);
+                     if (abilityDataReference.useSpecialAnimation) {
+                        sourceBattler.playAnim(Anim.Type.SpecialAnimation);
+                     } else {
+                        sourceBattler.playAnim(Anim.Type.Ready_Attack);
+                     }
                   }
                }
+
+               if (abilityDataReference.useSpecialAnimation) {
+                  // Render a special attack vfx sprite upon casting special animation
+                  Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
+                  EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
+               }
+
+               // Apply the damage at the correct time in the swing animation
+               yield return new WaitForSeconds(sourceBattler.getPreContactLength());
+
+               if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
+                  sourceBattler.playAnim(Anim.Type.Battle_East);
+               } else {
+                  if (!abilityDataReference.useSpecialAnimation) {
+                     sourceBattler.playAnim(Anim.Type.Finish_Attack);
+                  }
+               }
+
+               // Return animation speed to default
+               sourceBattler.modifyAnimSpeed(-1);
+
+               #region Display Block
+               // If the action was blocked, animate that
+               if (action.wasBlocked) {
+                  targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+               } else {
+                  // Play an appropriate attack animation effect
+                  effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+                  EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
+
+                  // Make the target sprite display its "Hit" animation
+                  targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               }
+
+               // Simulate the collision effect of the attack towards the target battler
+               yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
+
+               // If either sprite is owned by the client, play a camera shake
+               if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
+                  BattleCamera.self.shakeCamera(.25f);
+               }
+
+               targetBattler.displayedHealth -= action.damage;
+               targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+
+               #endregion
             }
-
-            if (abilityDataReference.useSpecialAnimation) {
-               // Render a special attack vfx sprite upon casting special animation
-               Vector2 newEffectPost = new Vector2(sourceBattler.getCorePosition().x - .35f, sourceBattler.getCorePosition().y + .5f);
-               EffectManager.playCastAbilityVFX(sourceBattler, action, newEffectPost, BattleActionType.Attack);
-
-               // TODO: Setup a new variable in the web tool to support dynamic animation duration
-               // Special animation duration is longer
-               yield return new WaitForSeconds(2);
-            }
-
-            // Apply the damage at the correct time in the swing animation
-            yield return new WaitForSeconds(sourceBattler.getPreContactLength());
-
-            if (sourceBattler.isUnarmed() && sourceBattler.enemyType == Enemy.Type.PlayerBattler) {
-               sourceBattler.playAnim(Anim.Type.Battle_East);
-            } else {
-               if (!abilityDataReference.useSpecialAnimation) {
-                  sourceBattler.playAnim(Anim.Type.Finish_Attack);
-               } 
-            }
-
-            // Return animation speed to default
-            sourceBattler.modifyAnimSpeed(-1);
-
-            #region Display Block
-
-            // If the action was blocked, animate that
-            if (action.wasBlocked) {
-               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
-            } else {
-               // Play an appropriate attack animation effect
-               effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
-               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-               
-               // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
-            }
-
-            // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
-
-            // If either sprite is owned by the client, play a camera shake
-            if (Util.isPlayer(sourceBattler.userId) || Util.isPlayer(targetBattler.userId)) {
-               BattleCamera.self.shakeCamera(.25f);
-            }
-
-            targetBattler.displayedHealth -= action.damage;
-            targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
-
-            #endregion
 
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
 
@@ -2084,7 +2086,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public bool isDead () {
-      return (health <= 0 || displayedHealth <= 0);
+      bool isPlayingDeathAnim = false;
+      if (_anims.Count > 0) {
+         if (_anims[0].currentAnimation == Anim.Type.Death_East) {
+            isPlayingDeathAnim = true;
+         }
+      }
+      return (health <= 0 || displayedHealth <= 0 || isPlayingDeathAnim);
    }
 
    public bool isAttacker () {
@@ -2301,7 +2309,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Safe check
       if (getAttackAbilities().Count <= 0) {
          if (AbilityManager.self.allAttackbilities.Count > 0) {
-            D.error("This battler do not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
+            D.error("This battler {"+ enemyType +"} does not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
             return AbilityManager.self.allAttackbilities[0];
          } else {
             D.error("Something went wrong with ability manager!");
