@@ -3827,33 +3827,14 @@ public class RPCManager : NetworkBehaviour
             AchievementManager.registerUserAchievement(_player, ActionType.MineOre);
             AchievementManager.registerUserAchievement(_player, ActionType.OreGain, 1);
 
-            if (_player.voyageGroupId < 0) {
-               // If any player does not belong to any group, reward them directly
-               giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
+            // Grant the rewards to the user without showing reward panel
+            giveItemRewardsToPlayer(_player.userId, rewardedItems, false);
 
-               // Provide item data reward to the player
-               _player.Target_GainedItem(_player.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName, Jobs.Type.None, 0, rewardedItems[0].count);
+            // Provide item data reward to the player
+            _player.Target_GainedItem(_player.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName, Jobs.Type.Miner, xp, rewardedItems[0].count);
 
-               // Provide exp to the user
-               _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, false);
-            } else {
-               // Give reward to each member if the user is in a voyage group
-               foreach (NetworkBehaviour networkBehavior in networkBehaviorList) {
-                  if (networkBehavior is NetEntity) {
-                     NetEntity entity = (NetEntity) networkBehavior;
-                     if (entity.voyageGroupId == _player.voyageGroupId) {
-                        // Grant the rewards to the user without showing reward panel
-                        giveItemRewardsToPlayer(entity.userId, rewardedItems, false);
-
-                        // Provide item data reward to the player
-                        entity.Target_GainedItem(entity.connectionToClient, rewardedItems[0].iconPath, rewardedItems[0].itemName, Jobs.Type.Miner, xp, rewardedItems[0].count);
-
-                        // Provide exp to the user
-                        entity.Target_GainedXP(entity.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, false);
-                     }
-                  }
-               }
-            }
+            // Provide exp to the user
+            _player.Target_GainedXP(_player.connectionToClient, xp, newJobXP, Jobs.Type.Miner, 0, false);
 
             // Let them know they gained experience
             Target_CollectOre(_player.connectionToClient, nodeId, oreEffectId);
