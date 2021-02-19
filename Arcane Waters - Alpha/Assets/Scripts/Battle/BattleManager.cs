@@ -570,10 +570,6 @@ public class BattleManager : MonoBehaviour {
                decreaseMultiply *= .70f;
             }
 
-            // TODO: Temporary Remove additive for simplified computation
-            increaseAdditive = 0;
-            decreaseMultiply = 1;
-
             // Apply the adjustments to the damage
             damage *= (1f + increaseAdditive);
             damage *= decreaseMultiply;
@@ -703,21 +699,46 @@ public class BattleManager : MonoBehaviour {
    }
 
    protected IEnumerator applyActionAfterDelay (double timeToWait, BattleAction actionToApply, bool hasMultipleTargets) {
-      yield return new WaitForSecondsDouble(timeToWait);
-
       // Check if the battle has ended
       Battle battle = getBattle(actionToApply.battleId);
+      BattleAction action = (BattleAction) actionToApply;
+      Battler target = battle.getBattler(action.targetId);
+
       if (battle == null) {
          yield break;
       }
+
+      // Check if this attack action is the final blow
+      int targetHealthAfterAction = target.health;
+      if (action is AttackAction) {
+         AttackAction attackAction = (AttackAction) action;
+         targetHealthAfterAction = target.health - attackAction.damage;
+      }
+
+      if (targetHealthAfterAction < 1 && target.player is Enemy) {
+         bool isTeamDead = true;
+         foreach (Battler enemyBattler in battle.getDefenders()) {
+            if (enemyBattler.userId != target.userId) {
+               if (!enemyBattler.isDead()) {
+                  isTeamDead = false;
+               }
+            }
+         }
+
+         // If this is an enemy and is the last one alive, executing the final blow will mark the enemy as defeated so no other players can join the combat
+         if (isTeamDead) {
+            foreach (Battler battler in battle.getDefenders()) {
+               ((Enemy) battler.player).isDefeated = true;
+            }
+         }
+      }
+
+      yield return new WaitForSecondsDouble(timeToWait);
 
       // Get the Battler object
       Battler source = battle.getBattler(actionToApply.sourceId);
 
       if (actionToApply is AttackAction || actionToApply is BuffAction) {
-         BattleAction action = (BattleAction) actionToApply;
-         Battler target = battle.getBattler(action.targetId);
-
          // If the source or target is already dead, then send a Cancel Action
          if (source.isDead() || target.isDead()) {
             // Don't create Cancel Actions for multi-target abilities
