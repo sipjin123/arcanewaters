@@ -5513,6 +5513,31 @@ public class DB_Main : DB_MainStub
 
       return accountId;
    }
+   
+  public static new int getSteamAccountId (string accountName) {
+      int accountId = -1;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM global.accounts WHERE accName=@accName", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            cmd.Parameters.AddWithValue("@accName", accountName);
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  accountId = dataReader.GetInt32("accId");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return accountId;
+   }
 
    public static new BanInfo getBanInfoForAccount (int accId) {
       BanInfo banInfo = null;

@@ -58,11 +58,19 @@ public class ServerMessageManager : MonoBehaviour
                logInUserMessage.accountName = logInUserMessage.accountName + "@steam";
             }
 
+            // Get steam account id without requiring password since it is already authenticated by the server
             if (!isUnauthenticatedSteamUser) {
                // Steam user has been verified at this point, continue login using credentials
-               accountId = DB_Main.getAccountId(logInUserMessage.accountName, logInUserMessage.accountPassword);
+               accountId = DB_Main.getSteamAccountId(logInUserMessage.accountName);
             }
          } else {
+            // If this is not a steam login, users attempting to login should not have steam into their account name
+            if (logInUserMessage.accountName.ToLower().Contains("@steam")) {
+               D.debug("A non steam user is trying to access a steam account!" + " : " + logInUserMessage.accountName);
+               sendError(ErrorMessage.Type.FailedUserOrPass, conn.connectionId);
+               return;
+            }
+
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);

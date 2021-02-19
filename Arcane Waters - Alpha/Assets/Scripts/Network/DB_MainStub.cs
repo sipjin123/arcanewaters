@@ -663,7 +663,11 @@ public class DB_MainStub : MonoBehaviour
    public static int getAccountId (string accountName, string accountPassword) {
       return -1;
    }
-   
+
+   public static int getSteamAccountId (string accountName) {
+      return -1;
+   }
+
    public static int getAccountId (string username) {
       return -1;
    }
