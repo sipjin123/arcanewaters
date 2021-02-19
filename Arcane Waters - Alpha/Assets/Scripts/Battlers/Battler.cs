@@ -496,16 +496,22 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             selectedBattleBar.gameObject.SetActive(true);
 
             List<BasicAbilityData> basicAbilityDataList = new List<BasicAbilityData>();
-            foreach (int id in _alteredBattlerData.battlerAbilities.attackAbilityDataList) {
+            foreach (int id in battlerData.battlerAbilities.basicAbilityDataList) {
+               AttackAbilityData attackData = AbilityManager.getAttackAbility(id);
+               if (attackData != null) {
+                  basicAbilityDataList.Add(attackData);
+               }
+            }
+            foreach (int id in battlerData.battlerAbilities.attackAbilityDataList) {
                AttackAbilityData attackData = AbilityManager.getAttackAbility(id);
                basicAbilityDataList.Add(attackData);
             }
-            foreach (int id in _alteredBattlerData.battlerAbilities.buffAbilityDataList) {
+            foreach (int id in battlerData.battlerAbilities.buffAbilityDataList) {
                BuffAbilityData buffData = AbilityManager.getBuffAbility(id);
                basicAbilityDataList.Add(buffData);
             }
 
-            setBattlerAbilities(basicAbilityDataList, battlerType);
+            setBattlerAbilities(basicAbilityDataList, battlerType, enemyType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = NetworkTime.time + 5f;
@@ -688,11 +694,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {
       // If there are no abilities set, assign the default abilities for all weapon types
-      if (basicAbilityList.Count == 0) {
-         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.SHOOT_ID));
-         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.PUNCH_ID));
-         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.SLASH_ID));
-         _battlerBasicAbilities.Add(AbilityManager.getAttackAbility(AbilityManager.RUM_ID));
+      if (basicAbilityList.Count == 0 && battlerType == BattlerType.PlayerControlled) {
+         _battlerBasicAbilities.Add(AbilityManager.self.shootAbility());
+         _battlerBasicAbilities.Add(AbilityManager.self.punchAbility());
+         _battlerBasicAbilities.Add(AbilityManager.self.slashAbility());
+         _battlerBasicAbilities.Add(AbilityManager.self.throwRum());
       }
 
       if (battlerAbilitiesInitialized) {
