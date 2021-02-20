@@ -229,7 +229,7 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    [Server]
-   public void forceAdminJoinVoyage (NetEntity admin, Voyage voyage) {
+   public void forceAdminJoinVoyage (NetEntity admin, int voyageId) {
       // Check if the admin is already in a voyage group
       if (isInGroup(admin)) {
          if (!admin.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
@@ -238,22 +238,22 @@ public class VoyageGroupManager : MonoBehaviour
          }
 
          // If the admin group is already linked to this voyage, do nothing
-         if (voyageGroup.voyageId == voyage.voyageId) {
+         if (voyageGroup.voyageId == voyageId) {
             return;
          }
 
          if (voyageGroup.voyageId > 0) {
             // If the group is already linked to a voyage, make the admin leave and join a new one
-            removeUserFromGroup(voyageGroup, admin.userId);
-            createGroup(admin, voyage.voyageId, true);
+            removeUserFromGroup(voyageGroup, admin);
+            createGroup(admin, voyageId, true);
          } else {
             // If the group has not joined a voyage, make it join this one
-            voyageGroup.voyageId = voyage.voyageId;
+            voyageGroup.voyageId = voyageId;
             updateGroup(voyageGroup);
          }
       } else {
          // If the admin is not in a group, create a new one
-         createGroup(admin, voyage.voyageId, true);
+         createGroup(admin, voyageId, true);
       }
    }
 

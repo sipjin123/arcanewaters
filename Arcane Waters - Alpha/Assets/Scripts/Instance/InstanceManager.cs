@@ -27,24 +27,35 @@ public class InstanceManager : MonoBehaviour {
       // If the player is warping to a voyage instance, search for it
       if (voyageId != -1) {
          if (VoyageManager.isVoyageOrLeagueArea(areaKey)) {
-            instance = getVoyageInstance(voyageId);
-            if (instance == null) {
+            if (!tryGetVoyageInstance(voyageId, out instance)) {
                D.error("Could not find the voyage instance for voyage id " + voyageId + " in area " + areaKey);
             }
          } else if (VoyageManager.isTreasureSiteArea(areaKey)) {
-            // Search for the treasure site the player is registered in, in the sea voyage instance
-            Instance seaVoyageInstance = getVoyageInstance(voyageId);
-            foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
-               if (treasureSite.playerListInSite.Contains(player.userId)) {
-                  // Check if the treasure site instance has already been created
-                  if (treasureSite.destinationInstanceId > 0) {
-                     instance = getInstance(treasureSite.destinationInstanceId);
-                  } else {
-                     // If the treasure site instance doesn't exist yet, create it
-                     instance = createNewInstance(areaKey, false, voyageId);
-                     treasureSite.destinationInstanceId = instance.id;
+            // Search for the parent sea instance
+            if (tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
+               // Search for the treasure site entrance the player is registered in
+               foreach (TreasureSite treasureSite in seaVoyageInstance.treasureSites) {
+                  if (treasureSite.playerListInSite.Contains(player.userId)) {
+                     // Check if the treasure site instance has already been created
+                     if (treasureSite.destinationInstanceId > 0) {
+                        instance = getInstance(treasureSite.destinationInstanceId);
+                     } else {
+                        // If the treasure site instance doesn't exist yet, create it
+                        instance = createNewInstance(areaKey, false, voyageId);
+                        treasureSite.destinationInstanceId = instance.id;
+                     }
+                     break;
                   }
-                  break;
+               }
+
+               // If the user is not registered in a treasure site entrance, try to find an existing instance with the same voyageId
+               if (instance == null) {
+                  tryGetTreasureSiteInstance(voyageId, areaKey, out instance);
+               }
+
+               // If all else fails, create a new instance (useful for /admin warp commands)
+               if (instance == null) {
+                  instance = createNewInstance(areaKey, false, voyageId);
                }
             }
          }
@@ -299,24 +310,30 @@ public class InstanceManager : MonoBehaviour {
       return voyages;
    }
 
-   public Instance getVoyageInstance (int voyageId) {
-      foreach (Instance instance in _instances.Values) {
-         if (instance.isVoyage && instance.voyageId == voyageId) {
-            return instance;
+   public bool tryGetVoyageInstance (int voyageId, out Instance instance) {
+      instance = null;
+
+      foreach (Instance i in _instances.Values) {
+         if (i.isVoyage && i.voyageId == voyageId) {
+            instance = i;
+            return true;
          }
       }
 
-      return null;
+      return false;
    }
 
-   public Instance getTreasureSiteInstance (int voyageId) {
-      foreach (Instance instance in _instances.Values) {
-         if (VoyageManager.isTreasureSiteArea(instance.areaKey) && instance.voyageId == voyageId) {
-            return instance;
+   public bool tryGetTreasureSiteInstance (int voyageId, string areaKey, out Instance instance) {
+      instance = null;
+
+      foreach (Instance i in _instances.Values) {
+         if (VoyageManager.isTreasureSiteArea(i.areaKey) && i.voyageId == voyageId && string.Equals(i.areaKey, areaKey)) {
+            instance = i;
+            return true;
          }
       }
 
-      return null;
+      return false;
    }
 
    public static Biome.Type getBiomeForInstance (string areaKey, int voyageId) {

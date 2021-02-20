@@ -24,6 +24,7 @@ public class ScreenLogger : MonoBehaviour {
       self = this;
       isEnabled = false;
       canvasObj.SetActive(false);
+      Global.displayLandCombatStats = true;
    }
 
    public void adminActivateLogger () {

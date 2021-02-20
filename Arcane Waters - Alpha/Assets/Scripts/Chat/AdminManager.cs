@@ -445,7 +445,7 @@ public class AdminManager : NetworkBehaviour
    }
 
    private void requestInvisibility () {
-      if (_player.isAdmin()) {
+      if (!_player.isAdmin()) {
          return;
       }
 
@@ -1262,7 +1262,7 @@ public class AdminManager : NetworkBehaviour
       if (VoyageManager.isVoyageOrLeagueArea(targetLocation.areaKey) || VoyageManager.isTreasureSiteArea(targetLocation.areaKey)) {
          // Make the admin join the voyage the target user is in
          if (VoyageManager.self.tryGetVoyageForGroup(targetLocation.voyageGroupId, out Voyage voyage)) {
-            VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage);
+            VoyageGroupManager.self.forceAdminJoinVoyage(_player, voyage.voyageId);
          } else {
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Could not join the voyage in area " + targetLocation.areaKey);
             D.error("Inconsistency in voyage instance during '/admin goto' command");

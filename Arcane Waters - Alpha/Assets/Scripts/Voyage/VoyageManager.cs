@@ -162,6 +162,10 @@ public class VoyageManager : MonoBehaviour {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League || AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
    }
 
+   public static bool isLeagueArea (string areaKey) {
+      return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.League;
+   }
+
    public static bool isLobbyArea (string areaKey) {
       return AreaManager.self.getAreaSpecialType(areaKey) == Area.SpecialType.LeagueLobby;
    }
@@ -205,8 +209,7 @@ public class VoyageManager : MonoBehaviour {
    }
 
    public void registerUserInTreasureSite (int userId, int voyageId, int instanceId) {
-      Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(voyageId);
-      if (seaVoyageInstance == null) {
+      if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
          D.error(string.Format("Could not find the sea voyage instance to register a user in a treasure site. userId: {0}", userId));
          return;
       }
@@ -230,8 +233,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Try to find the treasure site entrance (spawn) where the user is registered
-      Instance seaVoyageInstance = InstanceManager.self.getVoyageInstance(instance.voyageId);
-      if (seaVoyageInstance == null) {
+      if (!InstanceManager.self.tryGetVoyageInstance(instance.voyageId, out Instance seaVoyageInstance)) {
          return;
       }
 
@@ -306,6 +308,81 @@ public class VoyageManager : MonoBehaviour {
             requestVoyageInstanceCreation(areaKey, _isNewVoyagePvP);
          }
       }
+   }
+
+   [Server]
+   public void forceAdminWarpToVoyageAreas (NetEntity admin, string newArea) {
+      if (isVoyageOrLeagueArea(newArea)) {
+         // Try to warp the admin to his current voyage if the area parameter fits
+         if (admin.tryGetVoyage(out Voyage voyage) && voyage.areaKey.Equals(newArea)) {
+            admin.spawnInNewMap(voyage.voyageId, newArea, Direction.South);
+            return;
+         }
+
+         // If the destination is a league map, always create a new instance
+         if (isLeagueOrLobbyArea(newArea)) {
+            if (VoyageGroupManager.self.tryGetGroupById(admin.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+               VoyageGroupManager.self.removeUserFromGroup(voyageGroup, admin);
+            }
+            Instance instance = InstanceManager.self.getInstance(admin.instanceId);
+
+            if (isLobbyArea(newArea)) {
+               createLeagueInstanceAndWarpPlayer(admin, 0, instance.biome, newArea);
+            } else {
+               createLeagueInstanceAndWarpPlayer(admin, 1, instance.biome, newArea);
+            }
+            return;
+         }
+
+         // Find an active voyage in this area
+         if (tryGetVoyage(newArea, out voyage)) {
+            VoyageGroupManager.self.forceAdminJoinVoyage(admin, voyage.voyageId);
+         } else {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, admin, "No active voyage found in area " + newArea + ". Use '/admin create_voyage' first.");
+            return;
+         }
+
+         // Warp the admin to the voyage instance
+         admin.spawnInNewMap(voyage.voyageId, newArea, Direction.South);
+         return;
+      } else if (isTreasureSiteArea(newArea)) {
+         if (admin.tryGetVoyage(out Voyage v)) {
+            // If the admin already belongs to a voyage, warp him directly - the treasure site instance will be created automatically
+            admin.spawnInNewMap(v.voyageId, newArea, Direction.South);
+         } else {
+            Instance instance = InstanceManager.self.getInstance(admin.instanceId);
+            StartCoroutine(CO_ForceAdminWarpToTreasureSite(admin, newArea, instance.biome));
+         }
+      }
+   }
+
+   private IEnumerator CO_ForceAdminWarpToTreasureSite (NetEntity admin, string treasureSiteAreaKey, Biome.Type biome) {
+      // Get a new voyage id from the master server
+      RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
+      while (!response.IsDone) {
+         yield return null;
+      }
+      int voyageId = response.Value;
+
+      // Make the admin and its group (if possible) join the voyage
+      VoyageGroupManager.self.forceAdminJoinVoyage(admin, voyageId);
+
+      // Set the difficulty to the number of members in the group
+      int difficulty = 1;
+      if (admin.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         difficulty = voyageGroup.members.Count;
+      }
+
+      // Launch the creation of a random sea map instance, to be the parent of the treasure site instance
+      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE, biome, difficulty);
+
+      // Wait until the voyage instance has been created
+      while (!tryGetVoyage(voyageId, out Voyage voyage)) {
+         yield return null;
+      }
+
+      // Warp the admin to the treasure site area
+      admin.spawnInNewMap(voyageId, treasureSiteAreaKey, Direction.South);
    }
 
    [Server]

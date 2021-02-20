@@ -265,21 +265,7 @@ public class NetEntity : NetworkBehaviour
       // Make the entity a child of the Area
       StartCoroutine(CO_SetAreaParent());
 
-      if (this is PlayerBodyEntity || this is PlayerShipEntity) {
-         // Create some name text that will follow us around
-         SmoothFollow smoothFollow = Instantiate(PrefabsManager.self.nameTextPrefab);
-         smoothFollow.followTarget = this.gameObject;
-         smoothFollow.zOffset = -0.01f;
-         _nameText = smoothFollow.GetComponentInChildren<TextMeshProUGUI>();
-         _nameText.text = this.entityName;
-
-         // We need the follow text to be lower for ships
-         _nameText.GetComponent<RectTransform>().offsetMin = (this is PlayerShipEntity) ? new Vector2(0, 32) : new Vector2(0, 64);
-         
-         // Replace the old nameText with the one we instantiated
-         nameText = _nameText;
-         entityNameGO = smoothFollow.gameObject;
-
+      if (isPlayerEntity()) {
          // Keep track in our Entity Manager
          EntityManager.self.storeEntity(this);
       }
@@ -312,7 +298,7 @@ public class NetEntity : NetworkBehaviour
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
 
-         if (this is PlayerBodyEntity || this is PlayerShipEntity) {
+         if (isPlayerEntity()) {
             StartCoroutine(CO_LoadWeather());
          }
       }
@@ -329,6 +315,10 @@ public class NetEntity : NetworkBehaviour
    public virtual PlayerShipEntity getPlayerShipEntity () {
       return null;
    }
+   
+   public bool isPlayerEntity () {
+      return getPlayerBodyEntity() || getPlayerShipEntity();
+   }
 
    public override void OnStartClient () {
       base.OnStartClient();
@@ -336,6 +326,10 @@ public class NetEntity : NetworkBehaviour
       updateInvisibilityAlpha(isInvisible);
       updatePlayerNameDisplay();
       updateGuildIconDisplay();
+
+      if (isPlayerEntity()) {
+         nameText.text = this.entityName;
+      }
    }
 
    private IEnumerator CO_LoadWeather () {
@@ -352,11 +346,6 @@ public class NetEntity : NetworkBehaviour
    }
 
    protected virtual void Update () {
-      // Clients in standalone don't receive the entity name until a little after instantiation
-      if (_nameText != null) {
-         _nameText.text = this.entityName;
-      }
-
       if (!interactingAnimation && !Util.isBatch()) {
          bool moving = isMoving();
          bool battling = isInBattle();
@@ -369,9 +358,10 @@ public class NetEntity : NetworkBehaviour
             animator.SetInteger("facing", (int) this.facing);
             animator.SetBool("inBattle", battling);
 
+            PlayerBodyEntity bodyEntity = getPlayerBodyEntity();
+
             // Update the direction of the dash animator
-            if (this is PlayerBodyEntity) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) this;
+            if (bodyEntity != null) {
                foreach (Animator dashAnimator in bodyEntity.dashAnimators) {
                   dashAnimator.SetInteger("direction", (int) facing);
                }
@@ -515,7 +505,12 @@ public class NetEntity : NetworkBehaviour
    [Command]
    public void Cmd_ToggleAdminInvisibility () {
       // Make sure only admin players can request invisibility
-      isInvisible = !isInvisible && isAdmin();
+      if (!isAdmin()) {
+         isInvisible = false;
+         return;
+      }
+            
+      isInvisible = !isInvisible;
 
       Rpc_OnInvisibilityUpdated(isInvisible);
    }
@@ -531,7 +526,7 @@ public class NetEntity : NetworkBehaviour
          setCanvasVisibility(!isInvisible);
       } else {
          // Admins see other invisible admins and themselves as semi-transparent         
-         Util.setAlphaInShader(gameObject, isInvisible ? 0.5f : 1.0f);
+         Util.setAlphaInShader(gameObject, isInvisible ? 0.6f : 1.0f);
          setCanvasVisibility(true);
       }
    }
@@ -1620,45 +1615,10 @@ public class NetEntity : NetworkBehaviour
       // Check which server we're likely to redirect to
       NetworkedServer bestServer = ServerNetworkingManager.self.findBestServerForConnectingPlayer(newArea, this.entityName, this.userId, this.connectionToClient.address, isSinglePlayer, -1);
 
-      // If the destination is a voyage map and the user is an admin, make sure that he joined the voyage and force it if not
-      if (isAdmin()) {
-         if (VoyageManager.isVoyageOrLeagueArea(newArea)) {
-            // Try to warp the admin to his current voyage if the area parameter fits
-            if (tryGetVoyage(out Voyage voyage) && voyage.areaKey.Equals(newArea)) {
-               spawnInNewMap(voyage.voyageId, newArea, Direction.South);
-               return;
-            }
-
-            // If the destination is a league map, always create a new instance
-            if (VoyageManager.isLeagueOrLobbyArea(newArea)) {
-               if (VoyageGroupManager.self.tryGetGroupById(this.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
-                  VoyageGroupManager.self.removeUserFromGroup(voyageGroup, this);
-               }
-               Instance instance = InstanceManager.self.getInstance(this.instanceId);
-
-               if (VoyageManager.isLobbyArea(newArea)) {
-                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 0, instance.biome, newArea);
-               } else {
-                  VoyageManager.self.createLeagueInstanceAndWarpPlayer(this, 1, instance.biome, newArea);
-               }
-               return;
-            }
-
-            // Find an active voyage in this area
-            if (VoyageManager.self.tryGetVoyage(newArea, out voyage)) {
-               VoyageGroupManager.self.forceAdminJoinVoyage(this, voyage);
-            } else {
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "No active voyage found in area " + newArea + ". Use '/admin create_voyage' first.");
-               return;
-            }
-
-            // Warp the admin to the voyage instance
-            spawnInNewMap(voyage.voyageId, newArea, Direction.South);
-            return;
-         } else if (VoyageManager.isTreasureSiteArea(newArea)) {
-            // Throw a warning if the destination is a treasure site map
-            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, this, "Warning: could not determine the instance. You might encounter bugs. Use '/admin goto' when possible with treasure site maps.");
-         }
+      // Only admins can warp to voyage areas without indicating the voyageId
+      if (isAdmin() && (VoyageManager.isVoyageOrLeagueArea(newArea) || VoyageManager.isTreasureSiteArea(newArea))) {
+         VoyageManager.self.forceAdminWarpToVoyageAreas(this, newArea);
+         return;
       }
 
       // Now that we know the target server, redirect them there
@@ -1775,7 +1735,9 @@ public class NetEntity : NetworkBehaviour
          TutorialManager3.self.onUserSpawns(this.userId);
 
          // Trigger the tutorial
-         if (VoyageManager.isVoyageOrLeagueArea(this.areaKey)) {
+         if (VoyageManager.isLeagueArea(this.areaKey)) {
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInLeagueNotLobby);
+         } else if (VoyageManager.isVoyageOrLeagueArea(this.areaKey)) {
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.SpawnInVoyage);
          }
          TutorialManager3.self.tryCompletingStepByLocation();
@@ -1903,9 +1865,6 @@ public class NetEntity : NetworkBehaviour
 
    // The time at which we last sent our aim angle to the server
    protected double _lastAimChangeTime;
-
-   // The nameText that follows us around
-   protected TextMeshProUGUI _nameText;
 
    // Entities that have attacked us and the time when they attacked
    protected Dictionary<uint, double> _attackers = new Dictionary<uint, double>();

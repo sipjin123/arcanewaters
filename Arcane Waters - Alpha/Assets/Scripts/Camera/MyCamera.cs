@@ -11,10 +11,10 @@ public class MyCamera : BaseCamera
    #region Public Variables
 
    // The height of the confiner
-   public const float CONFINER_DEFAULT_HEIGHT = 0.162f;
+   public const float CONFINER_DEFAULT_HEIGHT = 0.164f;
 
    // The width of the confiner
-   public const float CONFINER_DEFAULT_WIDTH = 0.16f;
+   public const float CONFINER_DEFAULT_WIDTH = 0.161f;
 
    #endregion
 

@@ -207,7 +207,9 @@ public class InventoryPanel : Panel {
       // Calculate the maximum page number
       // TODO: Confirm max page alteration
       _maxPage = Mathf.CeilToInt((float) totalItems / ITEMS_PER_PAGE);
-
+      if (_maxPage < 1) {
+         _maxPage = 1;
+      }
       // Update the current page text
       pageNumberText.text = "Page " + (_currentPage + 1).ToString() + " of " + _maxPage.ToString();
 

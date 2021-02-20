@@ -687,9 +687,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             selectedBattleBar.gameObject.SetActive(isMouseHovering());
          }
       }
-
-      // Any time out sprite changes, we need to regenerate our outline
-      _outline.recreateOutlineIfVisible();
    }
 
    public void setBattlerAbilities (List<BasicAbilityData> basicAbilityList, BattlerType battlerType) {

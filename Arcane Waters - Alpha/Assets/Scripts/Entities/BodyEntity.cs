@@ -90,8 +90,8 @@ public class BodyEntity : NetEntity
       // Update colors
       _eyesLayer.recolor(eyesPalettes);
 
-      if (!Util.isEmpty(this.entityName) && _nameText != null) {
-         _nameText.text = this.entityName;
+      if (nameText != null && !Util.isEmpty(this.entityName)) {
+         nameText.text = this.entityName;
       }
    }
 

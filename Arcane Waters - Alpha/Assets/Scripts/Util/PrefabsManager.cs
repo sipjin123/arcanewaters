@@ -102,7 +102,7 @@ public class PrefabsManager : MonoBehaviour {
    public AudioSource sound3dPrefab;
 
    // The prefab we use for creating name text that follows the players around
-   public SmoothFollow nameTextPrefab;
+   public TargetFollow nameTextPrefab;
 
    // A prefab we can use to create floating damage numbers from
    public GameObject damageTextPrefab;

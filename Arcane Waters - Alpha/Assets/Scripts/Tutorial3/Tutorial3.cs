@@ -24,6 +24,9 @@ public class Tutorial3
    // The order index of the tutorial
    public int order = 0;
 
+   // Gets set to true when the tutorial is active
+   public bool isActive = true;
+
    #endregion
 
    public Tutorial3 () { }

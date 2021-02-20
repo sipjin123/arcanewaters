@@ -330,7 +330,7 @@ public class TutorialManager3 : MonoBehaviour {
 
    public void receiveDataFromZip (List<Tutorial3> newTutorialDataList) {
       // Sort the tutorials by their order index
-      tutorialDataList = newTutorialDataList.OrderBy(t => t.order).ToList();
+      tutorialDataList = newTutorialDataList.Where(t => t.isActive).OrderBy(t => t.order).ToList();
 
       _currentTutorial = tutorialDataList[0];
    }
@@ -398,4 +398,5 @@ public enum TutorialTrigger
    OpenTradeConfirmScreen = 40,
    SellCrops = 41,
    CloseMerchantScreen = 42,
+   SpawnInLeagueNotLobby = 43,
 };

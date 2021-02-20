@@ -272,6 +272,9 @@ namespace NubisDataHandling {
          // Make sure the inventory panel is showing
          if (!inventoryPanel.isShowing()) {
             PanelManager.self.linkPanel(Panel.Type.Inventory);
+
+            // When inventory panel is opened, we should always start at the first page
+            pageIndex = 0;
          }
          inventoryPanel.clearPanel();
 

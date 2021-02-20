@@ -1348,6 +1348,26 @@ public class RPCManager : NetworkBehaviour
             return;
          }
 
+         // Get item about to be swapped
+         List<ItemShortcutInfo> oldShortcutList = DB_Main.getItemShortcutList(_player.userId);
+         Item swappedItem = DB_Main.getItem(_player.userId, oldShortcutList[slotNumber - 1].itemId);
+         Item equippedItem = null;
+
+         // Check if we have an equipped item of the type we are swapping with
+         UserObjects userObjects = DB_Main.getUserObjects(_player.userId);
+         switch (swappedItem.category) {
+            case Item.Category.Armor:
+               equippedItem = userObjects.armor;
+               break;
+            case Item.Category.Weapon:
+               equippedItem = userObjects.weapon;
+               break;
+            case Item.Category.Hats:
+               equippedItem = userObjects.hat;
+               break;
+         }
+
+         // Get updated list of shortcuts
          DB_Main.updateItemShortcut(_player.userId, slotNumber, itemId);
          List<ItemShortcutInfo> shortcutList = DB_Main.getItemShortcutList(_player.userId);
 
@@ -1355,6 +1375,21 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send the updated shortcuts to the client
             Target_ReceiveItemShortcuts(_player.connectionToClient, shortcutList.ToArray());
+
+            // If the previous item was equipped, equip the new item
+            if (equippedItem != null && equippedItem.id == swappedItem.id && equippedItem.category == swappedItem.category) {
+               switch (swappedItem.category) {
+                  case Item.Category.Armor:
+                     _player.rpc.requestSetArmorId(itemId);
+                     break;
+                  case Item.Category.Weapon:
+                     _player.rpc.requestSetWeaponId(itemId);
+                     break;
+                  case Item.Category.Hats:
+                     _player.rpc.requestSetHatId(itemId);
+                     break;
+               }
+            }
          });
       });
    }
