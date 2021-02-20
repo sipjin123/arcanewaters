@@ -511,7 +511,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                basicAbilityDataList.Add(buffData);
             }
 
-            setBattlerAbilities(basicAbilityDataList, battlerType, enemyType);
+            setBattlerAbilities(basicAbilityDataList, battlerType);
 
             // Extra cooldown time for AI controlled battlers, so they do not attack instantly
             this.cooldownEndTime = NetworkTime.time + 5f;
@@ -1169,7 +1169,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // The enemy might be marked as dead by the time the player jumps near it, check if the enemy health is greater than 0, if not then cancel attack and jump back to position
-            if (targetBattler.displayedHealth > 0) {
+            if (sourceBattler.displayedHealth > 0 && targetBattler.displayedHealth > 0) {
                // Pause for a moment after reaching our destination
                yield return new WaitForSeconds(PAUSE_LENGTH);
 
@@ -1358,27 +1358,30 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             // Play the magic vfx such as (Flame effect on fire element attacks)
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-
-            // If the action was blocked, animate that
-            if (action.wasBlocked) {
-               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
-            } else {
-               // Play an appropriate attack animation effect
-               effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
-               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
-
-               // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
-            }
-
-            // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
             
-            // Wait until the animation gets to the point that it deals damage
-            yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
+            // Make sure both battlers are alive before executing hit animations
+            if (sourceBattler.displayedHealth > 0 && targetBattler.displayedHealth > 0) {
+               // If the action was blocked, animate that
+               if (action.wasBlocked) {
+                  targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+               } else {
+                  // Play an appropriate attack animation effect
+                  effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+                  EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
-            targetBattler.displayedHealth -= action.damage;
-            targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+                  // Make the target sprite display its "Hit" animation
+                  targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               }
+
+               // Simulate the collision effect of the attack towards the target battler
+               yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
+
+               // Wait until the animation gets to the point that it deals damage
+               yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
+
+               targetBattler.displayedHealth -= action.damage;
+               targetBattler.displayedHealth = Util.clamp<int>(targetBattler.displayedHealth, 0, targetBattler.getStartingHealth());
+            }
 
             // Now wait the specified amount of time before switching back to our battle stance
             yield return new WaitForSeconds(POST_CONTACT_LENGTH);
@@ -1482,20 +1485,23 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             effectPosition = targetBattler.mainSpriteRenderer.bounds.center;
             EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
-            // If the action was blocked, animate that
-            if (action.wasBlocked) {
-               targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
-            } else {
-               // Play an appropriate attack animation effect
-               effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
-               EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
+            // Make sure both battlers are alive before executing hit animations
+            if (sourceBattler.displayedHealth > 0 && targetBattler.displayedHealth > 0) {
+               // If the action was blocked, animate that
+               if (action.wasBlocked) {
+                  targetBattler.StartCoroutine(targetBattler.animateBlock(sourceBattler));
+               } else {
+                  // Play an appropriate attack animation effect
+                  effectPosition = targetBattler.getMagicGroundPosition() + new Vector2(0f, .25f);
+                  EffectManager.playCombatAbilityVFX(sourceBattler, targetBattler, action, effectPosition, BattleActionType.Attack);
 
-               // Make the target sprite display its "Hit" animation
-               targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+                  // Make the target sprite display its "Hit" animation
+                  targetBattler.StartCoroutine(targetBattler.animateHit(sourceBattler, action, attackerAbility));
+               }
+
+               // Simulate the collision effect of the attack towards the target battler
+               yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
             }
-
-            // Simulate the collision effect of the attack towards the target battler
-            yield return StartCoroutine(CO_SimulateCollisionEffects(targetBattler, abilityDataReference, action, attackerAbility));
 
             // Wait until the animation gets to the point that it deals damage
             yield return new WaitForSeconds(abilityDataReference.getPreDamageLength);
