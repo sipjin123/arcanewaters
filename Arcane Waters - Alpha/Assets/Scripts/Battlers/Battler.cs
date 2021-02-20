@@ -788,40 +788,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
    #region Battle Callers
 
-   public void inflictBossDamage (int damage) {
-      StartCoroutine(CO_ProcessBossDamage(damage));
-   }
-
-   private IEnumerator CO_ProcessBossDamage (int damage) {
-      yield return new WaitForSeconds(2);
-      EffectManager.self.create(Effect.Type.Blunt_Physical, getCorePosition());
-      displayedHealth -= damage;
-
-      // Note that the contact is happening right now
-
-      // Create the Text instance from the prefab
-      GameObject damageTextObject = (GameObject) Instantiate(PrefabsManager.self.damageTextPrefab);
-      DamageText damageText = damageTextObject.GetComponent<DamageText>();
-
-      // Place the damage numbers just above where the impact occurred for the given ability
-      Vector3 damageSpawnPosition = new Vector3(transform.position.x, transform.position.y + .45f, -3f);
-
-      damageText.setDamageAmount(damage, false, false);
-      damageText.transform.position = damageSpawnPosition;
-      damageText.transform.SetParent(EffectManager.self.transform, false);
-      damageText.name = "DamageText_" + Element.Physical;
-
-      // The damage text should be on the same layer as the target's Battle Spot
-      damageText.gameObject.layer = gameObject.layer;
-
-      // Color the text color and icon based on the damage type
-      damageText.customizeForAction(Element.Physical, false, DamageMagnitude.Default);
-
-      playAnim(Anim.Type.Hurt_East);
-      yield return new WaitForSeconds(.75f);
-      playAnim(Anim.Type.Battle_East);
-   }
-
    public void playDeathSound () {
       SoundEffect deathSoundEffect = SoundEffectManager.self.getSoundEffect(getBattlerData().deathSoundEffectId);
 
