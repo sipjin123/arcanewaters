@@ -193,7 +193,7 @@ public class AbilityManager : MonoBehaviour
                actionToExecute = attackAction;
 
                // Check how long we need to wait before displaying this action
-               timeToWait = actionToExecute.actionEndTime - NetworkTime.time - animationLength ;
+               timeToWait = BattleManager.TICK_INTERVAL + actionToExecute.actionEndTime - NetworkTime.time - animationLength;
 
                sourceBattler.registerNewActionCoroutine(sourceBattler.attackDisplay(timeToWait, action, isFirst), action.battleActionType);
                break;
@@ -226,11 +226,11 @@ public class AbilityManager : MonoBehaviour
                actionToExecute = cancelAction;
                if (sourceBattler.canCancelAction) {
                   // Update the battler's action timestamps
-                  D.editorLog("Ability has been canceled!", Color.red);
                   sourceBattler.cooldownEndTime -= cancelAction.timeToSubtract;
                   sourceBattler.stopActionCoroutine();
+                  sourceBattler.setBattlerCanCastAbility(true);
                } else {
-                  D.editorLog("Ability can not be canceled!", Color.red);
+                  D.debug("Ability can not be canceled!");
                }
                break;
          }
