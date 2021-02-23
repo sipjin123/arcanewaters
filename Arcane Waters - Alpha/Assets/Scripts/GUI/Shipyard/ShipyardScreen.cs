@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using TMPro;
+using UnityEngine.EventSystems;
+using MapCreationTool;
 
 public class ShipyardScreen : Panel {
    #region Public Variables
@@ -31,6 +33,12 @@ public class ShipyardScreen : Panel {
 
    // An indicator that the data is being fetched
    public GameObject loadBlocker;
+
+   // The ability tooltip UI showing the basic info of the ability
+   public Text abilityDamageText, abilityProjectileMass, abilityStatusText, abilityNameText;
+   public Image abilityIcon;
+   public Transform abilityTooltipPivot;
+   public GameObject abilityToolTipHolder;
 
    #endregion
 
@@ -95,7 +103,13 @@ public class ShipyardScreen : Panel {
          row.skillPrefabHolder.DestroyChildren();
          foreach (int abilityId in shipInfo.shipAbilities.ShipAbilities) {
             ShipUISkillTemplate template = Instantiate(row.skillPrefab, row.skillPrefabHolder.transform).GetComponent<ShipUISkillTemplate>();
-            template.skillName.text = ShipAbilityManager.self.getAbility(abilityId).abilityName; 
+            EventTrigger eventTrigger = template.skillName.GetComponent<EventTrigger>();
+            Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => template.pointerEnter());
+            Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => template.pointerExit());
+
+            ShipAbilityData shipAbility = ShipAbilityManager.self.getAbility(abilityId);
+            template.skillName.text = shipAbility.abilityName;
+            template.shipAbilityData = shipAbility;
 
             string iconPath = ShipAbilityManager.self.getAbility(abilityId).skillIconPath;
             template.skillIcon.sprite = ImageManager.getSprite(iconPath);
@@ -113,6 +127,24 @@ public class ShipyardScreen : Panel {
       }
 
       return null;
+   }
+
+   public void triggerAbilityTooltip (Vector2 coordinates, ShipAbilityData abilityData) {
+      ProjectileStatData projectileData = ProjectileStatManager.self.getProjectileData(abilityData.projectileId);
+      abilityTooltipPivot.transform.position = coordinates;
+      abilityNameText.text = abilityData.abilityName;
+      abilityIcon.sprite = ImageManager.getSprite(abilityData.skillIconPath);
+      abilityToolTipHolder.SetActive(true);
+
+      if (projectileData != null) {
+         abilityDamageText.text = projectileData.projectileDamage.ToString();
+         abilityProjectileMass.text = projectileData.projectileMass.ToString();
+         abilityStatusText.text = projectileData.statusType.ToString();
+      } else {
+         abilityDamageText.text = "Missing Data";
+         abilityProjectileMass.text = "Missing Data";
+         abilityStatusText.text = "Missing Data";
+      }
    }
 
    #region Private Variables

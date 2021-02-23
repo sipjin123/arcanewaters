@@ -13,9 +13,20 @@ public class ShipUISkillTemplate : MonoBehaviour {
    // Icon of the skill
    public Image skillIcon;
 
+   // The ship ability data reference
+   public ShipAbilityData shipAbilityData;
+
    #endregion
 
+   public void pointerEnter () {
+      ShipyardScreen.self.triggerAbilityTooltip(transform.position, shipAbilityData);
+   }
+
+   public void pointerExit () {
+      ShipyardScreen.self.abilityToolTipHolder.SetActive(false);
+   }
+
    #region Private Variables
-      
+
    #endregion
 }

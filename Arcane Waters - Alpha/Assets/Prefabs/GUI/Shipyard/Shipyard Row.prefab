@@ -139,6 +139,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &773956329603888331
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,6 +293,7 @@ GameObject:
   - component: {fileID: 6398219882060667017}
   - component: {fileID: 3767448785788849049}
   - component: {fileID: 3209199496355202703}
+  - component: {fileID: 6635409857257426435}
   m_Layer: 5
   m_Name: Row 1
   m_TagString: Untagged
@@ -377,6 +380,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: {fileID: 2880924343010300896}
   skillIcon: {fileID: 1075412847477798991}
+  shipAbilityData:
+    abilityId: 0
+    abilityName: 
+    seaEntityAbilityType: 0
+    selectedAttackType: 0
+    abilityDescription: 
+    shipTypeVariety: 0
+    levelRequirement: 0
+    damageModifier: 0
+    abilitySpriteFXPerFrame: 0.06
+    coolDown: 0
+    projectileSpeed: 0
+    skillIconPath: 
+    projectileSpritePath: 
+    castSpritePath: 
+    collisionSpritePath: 
+    castSFXPath: 
+    collisionSFXPath: 
+    shipCastType: 0
+    shipCastCollisionType: 0
+    shipAbilityEffect: 0
+    impactMagnitude: 0
+    hasArch: 0
+    syncHeightToArch: 1
+    hasTrail: 0
+    lifeTime: 1
+    splitsAfterAttackCap: 0
+    splitAttackCap: -1
+    statusType: 0
+    statusDuration: 1
+    projectileId: 0
+--- !u!222 &6635409857257426435
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1122953756505951038}
+  m_CullTransparentMesh: 0
 --- !u!1 &1240349423619298093
 GameObject:
   m_ObjectHideFlags: 0
@@ -679,6 +721,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &1643579478963327553
 GameObject:
   m_ObjectHideFlags: 0
@@ -831,6 +875,7 @@ GameObject:
   - component: {fileID: 7239008151070316040}
   - component: {fileID: 2880924343010300896}
   - component: {fileID: 5564616480502785741}
+  - component: {fileID: 1950132350318671003}
   m_Layer: 5
   m_Name: AbilityName
   m_TagString: Untagged
@@ -854,8 +899,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 107, y: -16}
-  m_SizeDelta: {x: 130, y: 21}
+  m_AnchoredPosition: {x: 42, y: -16}
+  m_SizeDelta: {x: 0, y: 16}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7239008151070316040
 CanvasRenderer:
@@ -913,6 +958,19 @@ MonoBehaviour:
   m_EffectColor: {r: 0.13725491, g: 0.10588236, b: 0.29803923, a: 1}
   m_EffectDistance: {x: 1.5, y: -1.5}
   m_UseGraphicAlpha: 1
+--- !u!114 &1950132350318671003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791327382633974016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates: []
 --- !u!1 &1821864009755699141
 GameObject:
   m_ObjectHideFlags: 0
@@ -2125,6 +2183,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &3317702527218639958
 GameObject:
   m_ObjectHideFlags: 0
@@ -3000,6 +3060,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &6440395876433207045
 GameObject:
   m_ObjectHideFlags: 0
@@ -3342,6 +3404,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &7358368518332002927
 GameObject:
   m_ObjectHideFlags: 0
@@ -3402,7 +3466,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3801,6 +3865,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &8635869993470080747
 GameObject:
   m_ObjectHideFlags: 0
@@ -4076,6 +4142,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tooltipPlacement: 0
   message: 
+  maxWidth: 0
+  forceFitOnScreen: 0
 --- !u!1 &9006988646813744090
 GameObject:
   m_ObjectHideFlags: 0
