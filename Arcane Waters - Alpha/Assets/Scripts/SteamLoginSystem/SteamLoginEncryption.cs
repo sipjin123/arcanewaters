@@ -11,7 +11,7 @@ namespace SteamLoginSystem
       // The alpha numeric to be used for randomizing
       public const string ALPHA_NUMERIC = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
        
-      // Lenght of the password generated for steam account
+      // Length of the password generated for steam account
       public const int PASSWORD_LENGTH = 8;
 
       public static string Encrypt (string input) {

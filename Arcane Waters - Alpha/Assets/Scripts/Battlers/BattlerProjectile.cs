@@ -50,7 +50,7 @@ public class BattlerProjectile : MonoBehaviour {
    }
 
    IEnumerator CO_StopProjectile () {
-      EffectManager.show(Effect.Type.Hit, transform.position, .15f);
+      EffectManager.show(Effect.Type.Blunt_Physical, transform.position, .15f);
       yield return new WaitForSeconds(.1f);
 
       gameObject.SetActive(false);

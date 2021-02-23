@@ -429,7 +429,7 @@ MonoBehaviour:
   isBossType: 0
   receivedCancelState: 0
   shadowTransform: {fileID: 173806777416174270}
-  canCancelAction: 0
+  canCancelAction: 1
   hasAssignedNetId: 0
   debugLogCanvas: {fileID: 6777568446830974037}
   debugTextLog: {fileID: 4469971400099462491}
