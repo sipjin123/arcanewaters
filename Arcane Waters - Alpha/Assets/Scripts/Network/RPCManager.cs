@@ -4526,6 +4526,11 @@ public class RPCManager : NetworkBehaviour
       // Gather Enemy Data
       NetworkIdentity enemyIdent = NetworkIdentity.spawned[enemyNetId];
       Enemy enemy = enemyIdent.GetComponent<Enemy>();
+      if (_player.transform.position.x > enemy.transform.position.x) {
+         enemy.facing = Direction.East;
+      } else {
+         enemy.facing = Direction.West;
+      }
 
       BattlerData enemyData = MonsterManager.self.getBattlerData(enemy.enemyType);
       List<BattlerInfo> battlerInfoList = new List<BattlerInfo>();

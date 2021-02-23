@@ -222,6 +222,8 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Check if we're moving
       if (isDefeated) {
          newAnimType = Anim.Type.Death_East;
+      } else if (isInBattle() && newAnimType != Anim.Type.Idle_East) {
+         newAnimType = Anim.Type.Idle_East;
       } else if (getVelocity().magnitude > .01f) {
          // Check our facing direction
          if (this.facing == Direction.North) {
@@ -254,7 +256,7 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
       // Play the new animation
       bodyAnim.playAnimation(newAnimType);
    }
-
+   
    public void assignBattleId (int newBattleId, NetEntity aggressor) {
       // Assign the Sync Var
       this.battleId = newBattleId;
