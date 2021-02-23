@@ -206,7 +206,7 @@ public class BattleManager : MonoBehaviour {
       BattleUIManager.self.disableBattleUI();
 
       // Remove the Battle ID for any participants
-      battle.resetAllBattleIDs();
+      battle.resetAllBattleIDs(winningTeam);
 
       // Cycle over each Battler in the Battle
       foreach (Battler battler in battle.getParticipants()) {

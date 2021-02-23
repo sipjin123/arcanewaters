@@ -239,7 +239,7 @@ public class Battle : NetworkBehaviour {
       return new List<Battler>();
    }
 
-   public void resetAllBattleIDs () {
+   public void resetAllBattleIDs (Battle.TeamType winningTeam) {
       // Remove the Battle ID for any participants
       foreach (Battler participant in this.getParticipants()) {
          if (participant == null) {
@@ -247,8 +247,12 @@ public class Battle : NetworkBehaviour {
          }
 
          if (participant.player != null) {
-            participant.player.battleId = 0;
-            participant.player.resetCombatInit();
+            // If the enemy wins, reset all battle id for all participants
+            // If players win, reset battle id for only players. Enemies should not have a valid battle id anymore so that they cant be engaged in combat
+            if (winningTeam == TeamType.Defenders || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
+               participant.player.battleId = 0;
+               participant.player.resetCombatInit();
+            }
          }
       }
    }
@@ -348,7 +352,7 @@ public class Battle : NetworkBehaviour {
    public void Rpc_SendCombatAction (string[] actionStrings, BattleActionType battleActionType, bool cancelAbility) {
       List<BattleAction> actionList = new List<BattleAction>();
       BattleAction actionToSend = null;
-
+      
       // TODO: Investigate instances wherein this value is blank
       if (actionStrings.Length < 1) {
          D.debug("ERROR HERE! There are no action strings for this combat action: " + battleActionType);
