@@ -135,6 +135,10 @@ public class BattleSelectionManager : MonoBehaviour {
             enemySelection.SetActive(true);
             allySelection.SetActive(false);
          }
+
+         // Choose a random, selectable enemy to autotarget at the start of the battle
+         List<Battler> liveTargets = getLiveTargets();
+         selectedBattler = getLiveTargets().ElementAt<Battler>(Random.Range(0, liveTargets.Count));
          selectionSprite.initialYaxis = selectedBattler.transform.position.y;
          selectedBattler.selectThis();
       }
@@ -168,6 +172,27 @@ public class BattleSelectionManager : MonoBehaviour {
       // Make a new list of non dead oponents
       List<Battler> enemiesAlive = battlerList.Where<Battler>(battler => !battler.isDead()).ToList<Battler>();
       return enemiesAlive;
+   }
+   
+   public List<Battler> getSelectableTargets () {
+      List<Battler> selectableTargets = getLiveTargets().Where<Battler>(battler => !battler.isProtected(getPlayerBattle())).ToList<Battler>();
+      return selectableTargets;
+   }
+
+   public Battle getPlayerBattle () {
+      // Look up the player's Battle ID
+      PlayerBodyEntity body = (PlayerBodyEntity) Global.player;
+      int battleId = body.battleId;
+
+      // Find the player's Battle object
+      Battle playerBattle = null;
+
+      foreach (Battle battle in FindObjectsOfType<Battle>()) {
+         if (battle.battleId == battleId) {
+            playerBattle = battle;
+         }
+      }
+      return playerBattle;
    }
 
    #region Private Variables

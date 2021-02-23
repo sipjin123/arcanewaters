@@ -317,11 +317,9 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
             return false;
          }
 
-         // Check that all enemies inside treasure sites have also been defeated
-         foreach (TreasureSite treasureSite in instance.treasureSites) {
-            if (treasureSite.isActive() && !treasureSite.isClearedOfEnemies) {
-               return false;
-            }
+         // Check that all enemies inside maps accessed through treasure sites in this instance have been defeated
+         if (!instance.areAllTreasureSitesClearedOfEnemies) {
+            return false;
          }
       }
 

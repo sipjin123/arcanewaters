@@ -95,6 +95,31 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
+   public void OnKickPlayerButtonClickedOn (NetEntity playerToKick) {
+      // Check if the player is is in combat
+      if (playerToKick == null || playerToKick.hasAttackers()) {
+         return;
+      }
+
+      PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the voyage group?",
+         () => {
+            // Request the server to remove the user from the group
+            if (Global.player != null) {
+               Global.player.rpc.Cmd_KickUserFromGroup(playerToKick.userId);
+            }
+         });
+   }
+
+   public void cleanUpPanelOnKick () {
+      // Hide the countdown
+      PanelManager.self.countdownScreen.hide();
+
+      // Close the current voyage panel if it is open
+      if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
+         PanelManager.self.unlinkPanel();
+      }
+   }
+
    public void OnLeaveGroupButtonClickedOn () {
       // Check if the player is already leaving the group or if it is in combat
       if (PanelManager.self.countdownScreen.isShowing() || Global.player.hasAttackers()) {

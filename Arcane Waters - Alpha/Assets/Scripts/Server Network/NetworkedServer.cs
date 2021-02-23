@@ -184,6 +184,23 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
+   public void MasterServer_SendConfirmationMessageToGroup (ConfirmMessage.Type confirmType, int groupId, string customMessage) {
+      if (groupId != -1) {
+         InvokeClientRpcOnEveryone(Server_ReceiveConfirmationMessageForGroup, confirmType, groupId, customMessage);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_ReceiveConfirmationMessageForGroup (ConfirmMessage.Type confirmType, int groupId, string customMessage) {
+      // Send the confirmation to all group members connected to this server
+      foreach (NetEntity player in MyNetworkManager.getPlayers()) {
+         if (player.voyageGroupId == groupId) {
+            ServerMessageManager.sendConfirmation(confirmType, player, customMessage);
+         }
+      }
+   }
+
+   [ServerRPC]
    public void MasterServer_UpdateGuildMemberPermissions (int userId, int guildRankPriority, int guildPermissions) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
       if (targetServer != null) {

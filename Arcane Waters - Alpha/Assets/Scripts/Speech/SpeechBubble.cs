@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using TMPro;
 
 public class SpeechBubble : MonoBehaviour {
    #region Public Variables
@@ -11,7 +12,7 @@ public class SpeechBubble : MonoBehaviour {
    public float fadeDelay = 6f;
 
    // The various components we manage
-   public Text speechText;
+   public TextMeshProUGUI speechText;
 
    // Our Canvas Group
    public CanvasGroup canvasGroup;

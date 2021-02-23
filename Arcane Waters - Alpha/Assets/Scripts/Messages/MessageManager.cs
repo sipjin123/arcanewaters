@@ -19,6 +19,7 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.RegisterHandler<CharacterCreationValidMessage>(ClientMessageManager.On_CharacterCreationValid);
       NetworkClient.RegisterHandler<StoreMessage>(ClientMessageManager.On_Store);
       NetworkClient.ReplaceHandler<DisconnectMessage>(ClientMessageManager.On_FailedToConnectToServer);
+      Transport.activeTransport.OnClientDisconnected.AddListener(ClientMessageManager.On_ClientFailedToConnect);
    }
 
    public static void unregisterClientHandlers () {      
@@ -30,7 +31,7 @@ public class MessageManager : MonoBehaviour {
       NetworkClient.UnregisterHandler<CharacterCreationValidMessage>();
       NetworkClient.UnregisterHandler<StoreMessage>();
       NetworkClient.UnregisterHandler<DisconnectMessage>();
-      
+      Transport.activeTransport.OnClientDisconnected.RemoveListener(ClientMessageManager.On_ClientFailedToConnect);
    }
 
    public static void registerServerHandlers () {

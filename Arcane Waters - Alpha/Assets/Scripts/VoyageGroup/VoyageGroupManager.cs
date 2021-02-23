@@ -91,7 +91,9 @@ public class VoyageGroupManager : MonoBehaviour
 
       // Send the invitation
       ServerNetworkingManager.self.sendGroupInvitationNotification(voyageGroup.groupId, player.userId, player.entityName, inviteeInfo.userId);
-      ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, player, "The voyage invitation has been sent to " + inviteeInfo.username);
+
+      // Send the confirmation to all online group members
+      ServerNetworkingManager.self.sendConfirmationMessageToGroup(ConfirmMessage.Type.General, player.voyageGroupId, player.entityName + " has sent group invitation to " + inviteeInfo.username + "!");
 
       // Log the invitation to prevent spamming
       logGroupInvitation(player.userId, inviteeInfo.username);
@@ -125,6 +127,7 @@ public class VoyageGroupManager : MonoBehaviour
       // If the player is still available (not warping), set its group id
       if (player != null) {
          player.voyageGroupId = voyageGroup.groupId;
+         player.isGroupLeader = true;
       }
    }
 
@@ -150,6 +153,9 @@ public class VoyageGroupManager : MonoBehaviour
       // Update the data in the server network
       updateGroup(voyageGroup);
 
+      // Send the confirmation to all online group members
+      ServerNetworkingManager.self.sendConfirmationMessageToGroup(ConfirmMessage.Type.General, voyageGroup.groupId, player.entityName + " has joined group!");
+
       // Send the group composition update to all group members
       StartCoroutine(CO_SendGroupMembersToUser(voyageGroup.groupId));
    }
@@ -160,6 +166,9 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, int userId) {
+      // Make sure that removed user is not a leader
+      EntityManager.self.getEntity(userId).isGroupLeader = false;
+
       voyageGroup.members.Remove(userId);
 
       // Update the data in the server network
@@ -173,6 +182,9 @@ public class VoyageGroupManager : MonoBehaviour
                voyageGroup.isQuickmatchEnabled = true;
             }
          }
+
+         // Set oldest group memeber as a new leader
+         EntityManager.self.getEntity(voyageGroup.members[0]).isGroupLeader = true;
 
          updateGroup(voyageGroup);
 

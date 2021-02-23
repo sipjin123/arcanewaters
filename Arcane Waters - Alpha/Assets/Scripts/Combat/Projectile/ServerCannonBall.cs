@@ -213,6 +213,10 @@ public class ServerCannonBall : NetworkBehaviour {
       }
    }
 
+   public int getInstanceId () {
+      return _instanceId;
+   }
+
    #region Private Variables
 
    // Our rigidbody

@@ -80,6 +80,9 @@ public class GuildManager : MonoBehaviour {
       // Store the invite
       _pastInvites.Add(invite);
 
+      // Send the confirmation to all online guild members
+      ServerNetworkingManager.self.sendConfirmationMessageToGuild(ConfirmMessage.Type.GuildActionGlobal, sender.guildId, sender.entityName + " has sent guild invitation to " + recipient.entityName + "!");
+
       // Send the invite to the target
       recipient.rpc.Target_ReceiveGuildInvite(recipient.connectionToClient, invite);
    }

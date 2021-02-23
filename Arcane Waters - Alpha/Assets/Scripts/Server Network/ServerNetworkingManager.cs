@@ -233,6 +233,10 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.InvokeServerRpc(server.MasterServer_SendConfirmationMessageToGuild, confirmType, guildId, customMessage);
    }
 
+   public void sendConfirmationMessageToGroup (ConfirmMessage.Type confirmType, int groupId, string customMessage = "") {
+      server.InvokeServerRpc(server.MasterServer_SendConfirmationMessageToGroup, confirmType, groupId, customMessage);
+   }
+
    public void updateGuildMemberPermissions (int userId, int guildRankPriority, int guildPermissions) {
       server.InvokeServerRpc(server.MasterServer_UpdateGuildMemberPermissions, userId, guildRankPriority, guildPermissions);
    }

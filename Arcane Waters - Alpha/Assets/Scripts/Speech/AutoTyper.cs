@@ -29,6 +29,15 @@ public class AutoTyper : MonoBehaviour {
       textElement.StartCoroutine(SetText(textElement, text, characterDelay, usePlaceholderSpaces));
    }
 
+   public static void TypeText (TextMeshProUGUI textElement, string text, bool usePlaceholderSpaces) {
+      TypeText(textElement, text, CHAR_DELAY, usePlaceholderSpaces);
+   }
+
+   public static void TypeText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+      textElement.StopAllCoroutines();
+      textElement.StartCoroutine(SetText(textElement, text, characterDelay, usePlaceholderSpaces));
+   }
+
    public static void TypeWords (Text textElement, string text) {
       textElement.StopAllCoroutines();
       textElement.StartCoroutine(SetWords(textElement, text, WORD_DELAY));
@@ -56,6 +65,45 @@ public class AutoTyper : MonoBehaviour {
    }
 
    protected static IEnumerator SetText (Text textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
+      float lastBeepTime = 0f;
+      textElement.text = "";
+
+      // Set all of the non-space character to non-breaking spaces initially
+      if (usePlaceholderSpaces) {
+         for (int i = 0; i < text.Length; i++) {
+            if (text[i] != ' ') {
+               textElement.text += '\u00A0';
+            } else {
+               textElement.text += " ";
+            }
+         }
+      }
+
+      for (int i = 0; i < text.Length; i++) {
+         float startTime = Time.realtimeSinceStartup;
+         string initialText = textElement.text;
+         textElement.text = text.Substring(0, i + 1);
+
+         // Play some little beeps while the text is being shown
+         if (text[i] != ' ' && text[i] != '\n') {
+            if (Time.realtimeSinceStartup - lastBeepTime > BEEP_DELAY) {
+               // SoundManager.play2DClip(SoundManager.Type.Blip_2, SoundManager.BEEP_VOLUME);
+               lastBeepTime = Time.realtimeSinceStartup;
+            }
+         }
+
+         // If we haven't reached the last character, then append the non-breaking spaces
+         if (i < text.Length - 1 && usePlaceholderSpaces) {
+            textElement.text += initialText.Substring(i + 1);
+         }
+
+         while (Time.realtimeSinceStartup - startTime < characterDelay) {
+            yield return null;
+         }
+      }
+   }
+
+   protected static IEnumerator SetText (TextMeshProUGUI textElement, string text, float characterDelay, bool usePlaceholderSpaces) {
       float lastBeepTime = 0f;
       textElement.text = "";
 

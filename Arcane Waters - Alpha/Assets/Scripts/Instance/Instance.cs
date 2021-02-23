@@ -58,6 +58,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int capturedTreasureSiteCount = 0;
 
+   // Gets set to true when the land maps accessed through treasure sites have been cleared of enemies
+   [SyncVar]
+   public bool areAllTreasureSitesClearedOfEnemies = false;
+
    // The number assigned to this instance based on the area type
    [SyncVar]
    public int numberInArea;
@@ -305,6 +309,15 @@ public class Instance : NetworkBehaviour
          NetEntity entity = networkBehaviour as NetEntity;
          if (entity != null && (entity.isBotShip() || entity.isSeaMonster() || entity.isLandEnemy()) && !entity.isDead()) {
             aliveNPCEnemiesCount++;
+         }
+      }
+
+      // Check if all enemies inside treasure sites have been defeated
+      areAllTreasureSitesClearedOfEnemies = true;
+      foreach (TreasureSite treasureSite in treasureSites) {
+         if (treasureSite.isActive() && !treasureSite.isClearedOfEnemies) {
+            areAllTreasureSitesClearedOfEnemies = false;
+            break;
          }
       }
    }

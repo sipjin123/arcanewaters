@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7057684672032809782}
   - component: {fileID: 8871122193511679103}
   - component: {fileID: 3748842707968269389}
+  - component: {fileID: 7855566141631663791}
   m_Layer: 11
   m_Name: Server Cannon Ball
   m_TagString: Untagged
@@ -126,6 +127,20 @@ MonoBehaviour:
   snapPositionThreshold: 0
   clientAuthority: 0
   lastVelocityTime: 0
+--- !u!114 &7855566141631663791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319247393852024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfd9865cb016364a9eb5f95b3344c81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
 --- !u!1 &1374969627706598
 GameObject:
   m_ObjectHideFlags: 0

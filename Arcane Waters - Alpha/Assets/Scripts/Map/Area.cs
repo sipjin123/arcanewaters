@@ -25,6 +25,14 @@ public class Area : MonoBehaviour
    public static string LAVA_TOWN = "Lava Town";
    public static string MUSHROOM_TOWN = "Shroom Bay";
 
+   // Dock spawns of each home town
+   public static string STARTING_TOWN_DOCK_SPAWN = "Tutorial Town Dock";
+   public static string DESERT_TOWN_DOCK_SPAWN = "dock";
+   public static string PINE_TOWN_DOCK_SPAWN = "pine_town_dock";
+   public static string SNOW_TOWN_DOCK_SPAWN = "Starting Spawn";
+   public static string LAVA_TOWN_DOCK_SPAWN = "PortSpawn";
+   public static string MUSHROOM_TOWN_DOCK_SPAWN = "Shroom Town";
+
    // The main towns in each biome
    public static Dictionary<Biome.Type, string> homeTownForBiome = new Dictionary<Biome.Type, string>() {
       {Biome.Type.Forest, STARTING_TOWN },
@@ -33,6 +41,16 @@ public class Area : MonoBehaviour
       {Biome.Type.Snow, SNOW_TOWN },
       {Biome.Type.Lava, LAVA_TOWN },
       {Biome.Type.Mushroom, MUSHROOM_TOWN }
+   };
+
+   // The dock spawn points in each home town
+   public static Dictionary<Biome.Type, string> dockSpawnForBiome = new Dictionary<Biome.Type, string>() {
+      {Biome.Type.Forest, STARTING_TOWN_DOCK_SPAWN },
+      {Biome.Type.Desert, DESERT_TOWN_DOCK_SPAWN },
+      {Biome.Type.Pine, PINE_TOWN_DOCK_SPAWN },
+      {Biome.Type.Snow, SNOW_TOWN_DOCK_SPAWN },
+      {Biome.Type.Lava, LAVA_TOWN_DOCK_SPAWN },
+      {Biome.Type.Mushroom, MUSHROOM_TOWN_DOCK_SPAWN }
    };
 
    // The key determining the type of area this is

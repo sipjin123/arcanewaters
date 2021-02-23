@@ -2138,7 +2138,7 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (success) {
                // Let the player know that a friendship invitation has been sent
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationSent, _player, feedbackMessage);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, feedbackMessage);
             } else {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
@@ -2232,7 +2232,13 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             if (success) {
                // Let the player know that he has a new friend
-               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipInvitationAccepted, _player, feedbackMessage);
+               ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, feedbackMessage);
+
+               // Let the new friend know that he was accepted
+               NetEntity friend = EntityManager.self.getEntity(friendUserId);
+               if (friend) {
+                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, friend, "You are now friends with " + _player.entityName + "!");
+               }
             } else {
                ServerMessageManager.sendError(ErrorMessage.Type.Misc, _player, feedbackMessage);
             }
@@ -3553,7 +3559,11 @@ public class RPCManager : NetworkBehaviour
 
       // Get the home town for the current voyage biome
       if (Area.homeTownForBiome.TryGetValue(voyage.biome, out string townAreaKey)) {
-         _player.spawnInNewMap(townAreaKey);
+         if (Area.dockSpawnForBiome.TryGetValue(voyage.biome, out string dockSpawn)) {
+            _player.spawnInNewMap(townAreaKey, dockSpawn, Direction.South);
+         } else {
+            _player.spawnInNewMap(townAreaKey);
+         }
       } else {
          _player.spawnInNewMap(Area.STARTING_TOWN);
       }
@@ -3601,22 +3611,43 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_RemoveUserFromGroup () {
-      if (_player == null) {
+      // Remove user from group
+      removeUserFromGroup(_player);
+   }
+
+   [Command]
+   public void Cmd_KickUserFromGroup (int playerToKick) {
+      // Remove user from group
+      NetEntity targetPlayerToKick = EntityManager.self.getEntity(playerToKick);
+      removeUserFromGroup(targetPlayerToKick);
+
+      // Clean up panel on client
+      Target_CleanUpVoyagePanelOnKick(targetPlayerToKick.connectionToClient);
+   }
+
+   [Server]
+   private void removeUserFromGroup(NetEntity playerToRemove) {
+      if (playerToRemove == null) {
          D.warning("No player object found.");
          return;
       }
 
       // If the player is not in a group, do nothing
-      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+      if (!playerToRemove.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
          return;
       }
 
-      VoyageGroupManager.self.removeUserFromGroup(voyageGroup, _player);
+      VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToRemove);
 
       // If the player is in a voyage area, warp him to the starting town
-      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) || VoyageManager.isTreasureSiteArea(_player.areaKey)) {
-         _player.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+      if (VoyageManager.isVoyageOrLeagueArea(playerToRemove.areaKey) || VoyageManager.isTreasureSiteArea(playerToRemove.areaKey)) {
+         playerToRemove.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
       }
+   }
+
+   [TargetRpc]
+   private void Target_CleanUpVoyagePanelOnKick (NetworkConnection conn) {
+      VoyageGroupPanel.self.cleanUpPanelOnKick();
    }
 
    [Command]

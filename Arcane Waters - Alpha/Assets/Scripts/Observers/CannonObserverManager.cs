@@ -10,7 +10,7 @@ public class CannonObserverManager : NetworkVisibility
    #endregion
 
    void Awake () {
-      _ball = GetComponent<NetworkedCannonBall>();
+      _ball = GetComponent<ServerCannonBall>();
    }
 
    // Called when a new player enters
@@ -24,7 +24,11 @@ public class CannonObserverManager : NetworkVisibility
       connectionsToObserve.Clear();
 
       // Look up our instance
-      Instance instance = InstanceManager.self.getInstance(_ball.instanceId);
+      Instance instance = InstanceManager.self.getInstance(_ball.getInstanceId());
+
+      if (instance == null) {
+         return;
+      }
 
       foreach (NetworkBehaviour entity in instance.entities) {
          if (entity.connectionToClient != null) {
@@ -41,7 +45,7 @@ public class CannonObserverManager : NetworkVisibility
    #region Private Variables
 
    // Our associated Player
-   protected NetworkedCannonBall _ball;
+   protected ServerCannonBall _ball;
 
    #endregion
 }

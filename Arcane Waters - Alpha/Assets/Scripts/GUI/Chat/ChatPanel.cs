@@ -115,6 +115,7 @@ public class ChatPanel : MonoBehaviour {
    public Color enemyNameColor, playerNameColor, otherPlayerNameColor, serverNameColor, systemNameColor, globalNameLocalColor, globalNameOtherColor;
    public Color whisperNameColor, whisperMessageColor, whisperReceiverNameColor, whisperReceiverMessageColor;
    public Color groupNameLocalColor, groupMessageLocalColor, groupNameOtherColor, groupMessageOtherColor;
+   public Color guildChatLocalColor, guildChatOtherColor, officerChatLocalColor, officerChatOtherColor;
 
    #endregion
 
@@ -278,13 +279,13 @@ public class ChatPanel : MonoBehaviour {
       // Disable the elastic scroll movement while animating the height
       if (Mathf.Abs(targetHeight - messageBackgroundRect.sizeDelta.y) > 0.1f) {
          scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+         // In normal and minimized mode, move the scrollbar to the bottom
+         if (_mode == Mode.Minimized || _mode == Mode.Normal) {
+            scrollRect.verticalNormalizedPosition = 0f;
+         }
       } else {
          scrollRect.movementType = ScrollRect.MovementType.Elastic;         
-      }
-
-      // In minimized mode, move the scrollbar to the bottom
-      if (_mode == Mode.Minimized || _mode == Mode.Normal) {
-         scrollRect.verticalNormalizedPosition = 0f;
       }
 
       messageBackgroundRect.sizeDelta = new Vector2(
@@ -427,6 +428,11 @@ public class ChatPanel : MonoBehaviour {
          rowGuildIcon.gameObject.SetActive(false);
       }
 
+      bool isLocalPlayer = true;
+      if (Global.player != null) {
+         isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
+      }
+
       // We'll set the message up differently based on whether a sender was defined
       if (Util.isEmpty(chatInfo.sender)) {
          chatLine.text.text = string.Format("<color={0}>{1}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.text);
@@ -435,13 +441,8 @@ public class ChatPanel : MonoBehaviour {
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
          chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Officer || chatInfo.messageType == ChatInfo.Type.Guild) {
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, false), chatInfo.text);
+         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       } else {
-         bool isLocalPlayer = true;
-         if (Global.player != null) {
-            isLocalPlayer = chatInfo.senderId == Global.player.userId ? true : false;
-         }
-
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
             messageSource = isLocalPlayer ? ("You whispered to " + chatInfo.recipient) : (chatInfo.sender + " whispers");
@@ -793,8 +794,9 @@ public class ChatPanel : MonoBehaviour {
             var chatColor = isLocalPlayer ? whisperReceiverMessageColor : whisperMessageColor;
             return chatColor;
          case ChatInfo.Type.Guild:
+            return isLocalPlayer ? guildChatLocalColor : guildChatOtherColor;
          case ChatInfo.Type.Officer:
-            return Color.white;
+            return isLocalPlayer ? officerChatLocalColor : officerChatOtherColor;
          case ChatInfo.Type.Group:
             return isLocalPlayer ? groupMessageLocalColor : groupMessageOtherColor;
          case ChatInfo.Type.Emote:

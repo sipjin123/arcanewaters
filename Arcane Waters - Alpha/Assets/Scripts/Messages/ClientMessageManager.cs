@@ -395,12 +395,25 @@ public class ClientMessageManager : MonoBehaviour {
       PanelManager.self.hideAllPanels();
       PanelManager.self.noticeScreen.show("Could not connect to server.");
       Util.stopHostAndReturnToTitleScreen();
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
    public static void On_Store (NetworkConnection conn, StoreMessage msg) {
       // Show the Store panel after updating the gems on hand
       StoreScreen store = (StoreScreen) PanelManager.self.get(Panel.Type.Store);
       store.showPanel(msg.userObjects, msg.goldOnHand, msg.gemsOnHand);
+   }
+
+   public static void On_ClientFailedToConnect () {
+      // Ignore this message if we're in the  middle of a redirect
+      if (Global.isRedirecting) {
+         return;
+      }
+
+      PanelManager.self.hideAllPanels();
+      PanelManager.self.noticeScreen.show("Could not connect to server.");
+      Util.stopHostAndReturnToTitleScreen();
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
    #region Private Variables

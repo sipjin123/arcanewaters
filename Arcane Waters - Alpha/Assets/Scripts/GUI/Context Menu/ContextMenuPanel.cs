@@ -132,6 +132,10 @@ public class ContextMenuPanel : MonoBehaviour
             if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
                addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
             }
+            // If clicked user is already in the group and the player is group leader then allow kicking group members. Only make the button interactable if the player can be kicked from the group.
+            else if (targetEntity != null && Global.player.isGroupLeader && targetEntity.voyageGroupId == Global.player.voyageGroupId) {
+               addButton("Kick player", () => VoyageGroupPanel.self.OnKickPlayerButtonClickedOn(targetEntity), () => !targetEntity.hasAttackers());
+            }
          } else {
             // If we are not in a group, always allow to invite someone
             addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
