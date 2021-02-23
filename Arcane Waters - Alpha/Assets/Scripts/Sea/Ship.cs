@@ -176,7 +176,7 @@ public class Ship : SeaEntity {
       int sailors = rand.Next(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
       int suppliesRoom = rand.Next(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
       int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
-      int damage = rand.Next((int) fetchedShipData.baseDamageModifierMin, (int) fetchedShipData.baseDamageModifierMax);
+      float damage = Random.Range(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
       int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
       int price = getBasePrice(shipType);
       int attackRange = rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);
@@ -187,7 +187,6 @@ public class Ship : SeaEntity {
       sailors = Util.roundToPrettyNumber(sailors);
       suppliesRoom = Util.roundToPrettyNumber(suppliesRoom);
       cargoRoom = Util.roundToPrettyNumber(cargoRoom);
-      damage = Util.roundToPrettyNumber(damage);
       health = Util.roundToPrettyNumber(health);
       price = Util.roundToPrettyNumber(price);
       attackRange = Util.roundToPrettyNumber(attackRange);

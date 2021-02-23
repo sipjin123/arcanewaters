@@ -13,7 +13,7 @@ public class SeaEntity : NetEntity
 
    // The amount of damage we do
    [SyncVar]
-   public int damage = 25;
+   public float damage = 25;
    
    // How long we have to wait to reload
    [SyncVar]
@@ -709,7 +709,7 @@ public class SeaEntity : NetEntity
                         chainLightning(attacker.netId, targetEntity.transform.position, targetEntity.netId);
                      }
                   } else {
-                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, damage, Attack.Type.None);
+                     targetEntity.Rpc_ShowExplosion(attacker.netId, circleCenter, (int)damage, Attack.Type.None);
                   }
                   targetEntity.noteAttacker(attacker);
 

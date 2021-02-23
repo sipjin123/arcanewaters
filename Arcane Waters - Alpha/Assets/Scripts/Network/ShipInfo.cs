@@ -48,7 +48,7 @@ public class ShipInfo {
    public int maxHealth;
 
    // The amount of damage this ship does
-   public int damage;
+   public float damage;
 
    // The range of fire
    public int attackRange;
@@ -126,7 +126,7 @@ public class ShipInfo {
    #endif
 
    public ShipInfo (int shipId, int userId, Ship.Type shipType,Ship.SkinType skinType, Ship.MastType mastType, Ship.SailType sailType, string shipName,
-      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, int damage,
+      string palette1, string palette2, string sailPalette1, string sailPalette2, int supplies, int suppliesMax, int cargoMax, int health, int maxHealth, float damage,
       int attackRange, int speed, int sailors, Rarity.Type rarity, ShipAbilityInfo shipAbilities) {
       this.shipId = shipId;
       this.userId = userId;
