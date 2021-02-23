@@ -472,6 +472,7 @@ public class BattleManager : MonoBehaviour {
    }
 
    public void executeBattleAction (Battle battle, Battler source, List<Battler> targets, int abilityInventoryIndex, AbilityType abilityType) {
+      // This function processes on the server side only
       BattleActionType actionType = BattleActionType.UNDEFINED;
 
       // Get ability reference from the source battler, cause the source battler is the one executing the ability
@@ -742,8 +743,9 @@ public class BattleManager : MonoBehaviour {
             // Create a Cancel Action to send to the clients
             if (source.canCancelAction) {
                CancelAction cancelAction = new CancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
-               D.debug("Target or Source is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
+               D.editorLog("Target or Source is dead, Cancelling action " + (actionToApply is AttackAction ? "AttackAction" : "Non AttackAction"));
                AbilityManager.self.execute(new[] { cancelAction });
+               battle.Rpc_ReceiveCancelAction(action.battleId, action.sourceId, action.targetId, NetworkTime.time, timeToSubtract);
             } else {
                D.debug("Cannot cancel action");
             }
@@ -770,7 +772,6 @@ public class BattleManager : MonoBehaviour {
                // Apply damage
                target.health -= attackAction.damage;
                target.health = Util.clamp<int>(target.health, 0, target.getStartingHealth());
-               source.canCancelAction = false;
             } else if (action is BuffAction) {
                BuffAction buffAction = (BuffAction) action;
 

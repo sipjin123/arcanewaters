@@ -387,6 +387,12 @@ public class Battle : NetworkBehaviour {
       } 
    }
 
+   [ClientRpc]
+   public void Rpc_ReceiveCancelAction (int battleId, int sourceId, int targetId, double time, float timeToSubtract) {
+      CancelAction cancelAction = new CancelAction(battleId, sourceId, targetId, time, timeToSubtract);
+      AbilityManager.self.execute(new[] { cancelAction });
+   }
+
    private void OnDestroy () {
       onBattleEnded.Invoke();
    }

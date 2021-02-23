@@ -243,7 +243,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public Transform shadowTransform;
 
    // If action can be cancelled
-   public bool canCancelAction;
+   public bool canCancelAction = true;
 
    // If setup is completed
    public bool hasAssignedNetId = false;
@@ -261,7 +261,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (currentActionCoroutine != null) {
          StopCoroutine(currentActionCoroutine);
          receivedCancelState = true;
-      }
+         StartCoroutine(CO_ResetBattlerSpot());
+      } 
    }
 
    public void registerNewActionCoroutine (IEnumerator newEnumerator, BattleActionType battleActionType) {
@@ -861,9 +862,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    private void triggerAbilityCooldown (AbilityType abilityType, int abilityIndex, float cooldownDuration) {
-      // Remove coroutine cache, this ability can not be stopped anymore
-      currentActionCoroutine = null;
-
       // Implement ability button cooldowns
       if (enemyType == Enemy.Type.PlayerBattler && userId == Global.player.userId) {
          AttackPanel.self.clearCachedAbilityCast();
@@ -1563,8 +1561,21 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
       if (userId == Global.player.userId && enemyType == Enemy.Type.PlayerBattler) {
          setBattlerCanCastAbility(true);
-         canCancelAction = true;
       }
+   }
+
+   private IEnumerator CO_ResetBattlerSpot () {
+      playAnim(Anim.Type.Jump_East);
+      Vector2 targetPosition = battleSpot.transform.position;
+      while (Vector2.Distance(targetPosition, transform.position) > .1f) {
+         Vector2 newPos = Vector2.MoveTowards(transform.position, targetPosition, .01f);
+         transform.position = new Vector3(newPos.x, newPos.y, transform.position.z);
+         yield return 0;
+      }
+
+      // Make sure we're exactly in position now that the jump is over
+      transform.position = new Vector3(battleSpot.transform.position.x, battleSpot.transform.position.y, transform.position.z);
+      playAnim(Anim.Type.Battle_East);
    }
 
    #region Combat Effect Simulation
