@@ -4503,7 +4503,7 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_StartNewBattle (uint enemyNetId, Battle.TeamType teamType) {
-      if (!VoyageManager.isTreasureSiteArea(_player.areaKey) || !canPlayerStayInVoyage()) {
+      if (VoyageManager.isVoyageOrLeagueArea(_player.areaKey) && (!VoyageManager.isTreasureSiteArea(_player.areaKey) || !canPlayerStayInVoyage())) {
          string reason = "";
          if (VoyageManager.isTreasureSiteArea(_player.areaKey)) {
             reason += "This is not a treasure area\n";
@@ -4639,8 +4639,10 @@ public class RPCManager : NetworkBehaviour
                      }
                   }
 
-                  battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
-                  Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                  if (battler != null) {
+                     battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
+                     Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                  }
                } else {
                   // Sort by equipment slot index
                   equippedAbilityDataList = equippedAbilityDataList.OrderBy(_ => _.equipSlotIndex).ToList();
