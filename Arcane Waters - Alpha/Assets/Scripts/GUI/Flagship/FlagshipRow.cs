@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
+using UnityEngine.EventSystems;
+using MapCreationTool;
 
 public class FlagshipRow : MonoBehaviour {
    #region Public Variables
@@ -74,11 +76,18 @@ public class FlagshipRow : MonoBehaviour {
 
       foreach (int abilityId in info.ShipAbilities) {
          ShipAbilityData abilityData = ShipAbilityManager.self.getAbility(abilityId);
-         abilityTemplates[counter].gameObject.SetActive(true);
-         abilityTemplates[counter].iconImage.sprite = ImageManager.getSprite(abilityData.skillIconPath);
-         abilityTemplates[counter].abilityName = abilityData.abilityName;
-         abilityTemplates[counter].abilityInfo = abilityData.abilityDescription;
-         abilityTemplates[counter].GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
+         FlagShipAbilityRow flagShipRow = abilityTemplates[counter];
+         flagShipRow.gameObject.SetActive(true);
+         flagShipRow.iconImage.sprite = ImageManager.getSprite(abilityData.skillIconPath);
+         flagShipRow.abilityName = abilityData.abilityName;
+         flagShipRow.abilityInfo = abilityData.abilityDescription;
+         flagShipRow.shipAbilityData = abilityData;
+         flagShipRow.GetComponent<ToolTipComponent>().message = abilityData.abilityName + "\n" + abilityData.abilityDescription;
+
+         EventTrigger eventTrigger = flagShipRow.GetComponent<EventTrigger>();
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerEnter, (e) => flagShipRow.pointerEnter());
+         Utilities.addPointerListener(eventTrigger, EventTriggerType.PointerExit, (e) => flagShipRow.pointerExit());
+
          counter++;
       }
    }

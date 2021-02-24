@@ -14,9 +14,22 @@ public class FlagShipAbilityRow : MonoBehaviour {
    public string abilityName;
    public string abilityInfo;
 
+   // The ship ability data reference
+   public ShipAbilityData shipAbilityData;
+
    #endregion
 
+   public void pointerEnter () {
+      FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
+      panel.shipAbilityTooltip.triggerAbilityTooltip(transform.position, shipAbilityData);
+   }
+
+   public void pointerExit () {
+      FlagshipPanel panel = (FlagshipPanel) PanelManager.self.get(Panel.Type.Flagship);
+      panel.shipAbilityTooltip.abilityToolTipHolder.SetActive(false);
+   }
+
    #region Private Variables
-      
+
    #endregion
 }

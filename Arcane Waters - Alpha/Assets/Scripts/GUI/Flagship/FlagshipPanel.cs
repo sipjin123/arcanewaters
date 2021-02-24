@@ -17,6 +17,9 @@ public class FlagshipPanel : Panel {
    // This user's flagship ID
    public static int playerFlagshipId;
 
+   // Reference to the ship ability tooltip
+   public ShipAbilityTooltip shipAbilityTooltip;
+
    #endregion
 
    public override void show () {

@@ -19,11 +19,11 @@ public class ShipUISkillTemplate : MonoBehaviour {
    #endregion
 
    public void pointerEnter () {
-      ShipyardScreen.self.triggerAbilityTooltip(transform.position, shipAbilityData);
+      ShipyardScreen.self.shipAbilityTooltip.triggerAbilityTooltip(transform.position, shipAbilityData);
    }
 
    public void pointerExit () {
-      ShipyardScreen.self.abilityToolTipHolder.SetActive(false);
+      ShipyardScreen.self.shipAbilityTooltip.abilityToolTipHolder.SetActive(false);
    }
 
    #region Private Variables
