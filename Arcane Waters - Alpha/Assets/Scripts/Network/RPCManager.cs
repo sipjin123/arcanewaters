@@ -14,6 +14,7 @@ using MapCreationTool.Serialization;
 using MapCreationTool;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.IO;
 
 public class RPCManager : NetworkBehaviour
 {
@@ -1096,6 +1097,12 @@ public class RPCManager : NetworkBehaviour
       if (MapCache.hasMap(baseMapAreaKey, latestVersion)) {
          string mapData = MapCache.getMapData(baseMapAreaKey, latestVersion);
 
+         // Update the file access time if it exists
+         string path = MapCache.getMapPath(areaKey, latestVersion);
+         if (File.Exists(path) && !string.IsNullOrEmpty(path)) {
+            StartCoroutine(CO_ProcessFileOverride(path));
+         }
+
          if (string.IsNullOrWhiteSpace(mapData)) {
             D.error($"MapCache has an empty entry: { baseMapAreaKey }-{latestVersion}");
          } else {
@@ -1106,6 +1113,23 @@ public class RPCManager : NetworkBehaviour
 
       // If we don't have the latest version of the map, download it
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, biome);
+   }
+
+   private IEnumerator CO_ProcessFileOverride (string path) {
+      bool successfullyWritten = false;
+      while (!successfullyWritten) {
+         try {
+            // Write a white space to file to update write date so we know which files were used recently
+            File.AppendAllText(path, " ");
+            successfullyWritten = true;
+         } catch {
+            D.debug("File path currently being used, delaying write");
+         }
+
+         if (!successfullyWritten) {
+            yield return 0;
+         }
+      }
    }
 
    [Command]

@@ -42,7 +42,7 @@ public static class MapCache
       }
    }
 
-   private static string getMapPath (string areaKey, int version) {
+   public static string getMapPath (string areaKey, int version) {
       return MAP_FOLDER_PATH + "/" + areaKey + " (" + version + ").json";
    }
 
@@ -55,9 +55,6 @@ public static class MapCache
 
       string path = getMapPath(areaKey, version);
       if (File.Exists(path)) {
-         // Write a white space to file to update write date so we know which files were used recently
-         File.AppendAllText(path, " ");
-
          return File.ReadAllText(path);
       } else {
          return "";
