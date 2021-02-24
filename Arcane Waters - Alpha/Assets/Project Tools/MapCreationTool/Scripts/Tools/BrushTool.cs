@@ -10,6 +10,10 @@ namespace MapCreationTool
    {
       private BrushStroke stroke = new BrushStroke();
 
+      // If horizontal is the beginning behavior of the brush
+      public bool hasPaintStarted = false;
+      public bool isHorizontal = false;
+
       protected override ToolType toolType => ToolType.Brush;
 
       protected override void registerUIEvents () {
@@ -62,6 +66,23 @@ namespace MapCreationTool
 
       private void dragCell (Vector3Int from, Vector3Int to) {
          if (stroke.tileGroup != null) {
+            if (Input.GetKey(KeyCode.LeftShift)) {
+               if (!hasPaintStarted) {
+                  if (Mathf.Abs(from.x - to.x) > Mathf.Abs(from.y - to.y)) {
+                     isHorizontal = true;
+                  } else {
+                     isHorizontal = false;
+                  }
+
+                  hasPaintStarted = true;
+               }
+
+               if (isHorizontal) {
+                  to.y = from.y;
+               } else {
+                  to.x = from.x;
+               }
+            }
             if (stroke.type != BrushStroke.Type.Prefab) {
                stroke.paintPosition(to);
                DrawBoard.instance.setTilesModifyPreview(stroke.calculateTileChange());
@@ -96,6 +117,7 @@ namespace MapCreationTool
       }
 
       private void endDrag (Vector3 from, Vector3 to) {
+         hasPaintStarted = false;
          DrawBoard.instance.changeBoard(stroke.calculateTileChange());
          stroke.clear();
          DrawBoard.instance.setTilesModifyPreview(null);
