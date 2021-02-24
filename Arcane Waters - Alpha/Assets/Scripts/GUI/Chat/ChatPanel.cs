@@ -682,7 +682,7 @@ public class ChatPanel : MonoBehaviour {
       }
    }
 
-   private void setCurrentChatType (ChatInfo.Type chatType) {
+   public void setCurrentChatType (ChatInfo.Type chatType) {
       currentChatType = chatType;
       nameInputField.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
    }

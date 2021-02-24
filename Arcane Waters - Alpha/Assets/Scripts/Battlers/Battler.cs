@@ -2015,22 +2015,25 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    }
 
    public bool isProtected (Battle battle) {
-      // Figure out the teammate spot that's in front of us
-      int spotInFront = getSpotInFront();
-
-      // If there isn't a spot in front of us, we're never protected
-      if (spotInFront == 0) {
-         return false;
-      }
-
-      // Otherwise, we're protected if there's a living Battler on our team in that spot
-      foreach (Battler battler in getTeam()) {
-         if (battler.boardPosition == spotInFront && !battler.isDead()) {
-            return true;
-         }
-      }
-
+      // Always set to "False" until feature can be fully implemented
       return false;
+
+      //// Figure out the teammate spot that's in front of us
+      //int spotInFront = getSpotInFront();
+
+      //// If there isn't a spot in front of us, we're never protected
+      //if (spotInFront == 0) {
+      //   return false;
+      //}
+
+      //// Otherwise, we're protected if there's a living Battler on our team in that spot
+      //foreach (Battler battler in getTeam()) {
+      //   if (battler.boardPosition == spotInFront && !battler.isDead()) {
+      //      return true;
+      //   }
+      //}
+
+      //return false;
    }
 
    public bool isMonster () {

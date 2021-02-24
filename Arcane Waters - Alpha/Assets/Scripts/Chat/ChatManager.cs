@@ -101,6 +101,7 @@ public class ChatManager : MonoBehaviour
 
    public void sendGroupMessageToServer (string message) {
       sendMessageToServer(message, ChatInfo.Type.Group);
+      chatPanel.setCurrentChatType(ChatInfo.Type.Group);
    }
 
    public void sendOfficerMessageToServer (string message) {
@@ -109,6 +110,7 @@ public class ChatManager : MonoBehaviour
 
    public void sendGuildMessageToServer (string message) {
       sendMessageToServer(message, ChatInfo.Type.Guild);
+      chatPanel.setCurrentChatType(ChatInfo.Type.Guild);
    }
 
    public void sendMessageToServer (string message, ChatInfo.Type chatType) {
@@ -314,6 +316,13 @@ public class ChatManager : MonoBehaviour
 
    public void tryAutoCompleteChatCommand () {
       string inputString = chatPanel.inputField.text;
+
+      // Remove autocompletes when we are typing a bug report
+      if (inputString.StartsWith("/bug ")) {
+         autoCompletePanel.setAutoCompletes(null);
+         autoCompletePanel.setAutoCompletesWithParameters(null);
+         return;
+      }
 
       List<CommandData> autoCompleteCommands = new List<CommandData>();
       List<Tuple<CommandData, string>> autoCompleteParameters = new List<Tuple<CommandData, string>>();

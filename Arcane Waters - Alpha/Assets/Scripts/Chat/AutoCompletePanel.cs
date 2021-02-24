@@ -208,13 +208,15 @@ public class AutoCompletePanel : MonoBehaviour {
          optionCount++;
       }
 
-      foreach (Tuple<CommandData, string> parameterData in _autoCompleteCommandsWithParameters) {
-         AutoCompleteOption option = _autoCompleteOptions[optionCount];
-         option.autocompleteParameter = parameterData.Item2;
-         option.gameObject.SetActive(true);
-         option.updateOption(parameterData.Item1);
-         option.indexInList = optionCount;
-         optionCount++;
+      if (_autoCompleteCommandsWithParameters != null) {
+         foreach (Tuple<CommandData, string> parameterData in _autoCompleteCommandsWithParameters) {
+            AutoCompleteOption option = _autoCompleteOptions[optionCount];
+            option.autocompleteParameter = parameterData.Item2;
+            option.gameObject.SetActive(true);
+            option.updateOption(parameterData.Item1);
+            option.indexInList = optionCount;
+            optionCount++;
+         }
       }
 
       // Disable any auto-completes not being used

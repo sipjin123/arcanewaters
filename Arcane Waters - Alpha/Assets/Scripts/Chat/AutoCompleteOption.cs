@@ -102,7 +102,11 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
       string commandColorString = "#" + ColorUtility.ToHtmlStringRGBA(commandColor);
       string parameterColorString = "#" + ColorUtility.ToHtmlStringRGBA(parameterColor);
 
-      autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix() + " " + autocompleteParameter, parameterColorString, _commandData.getParameters());
+      if (autocompleteParameter == "") {
+         autoCompleteText.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", commandColorString, _commandData.getPrefix(), parameterColorString, _commandData.getParameters());
+      } else {
+         autoCompleteText.text = string.Format("<color={0}>{1}</color>", commandColorString, _commandData.getPrefix() + " " + autocompleteParameter);
+      }
    }
 
    public string getText () {

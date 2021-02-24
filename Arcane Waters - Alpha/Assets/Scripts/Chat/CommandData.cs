@@ -69,6 +69,7 @@ public class CommandData {
          foreach (string prefix in ChatUtil.commandTypePrefixes[_requiredPrefix]) {
             if (inputParts[0].ToUpper() == prefix.ToUpper()) {
                matchesPrefix = true;
+               break;
             }
          }
 

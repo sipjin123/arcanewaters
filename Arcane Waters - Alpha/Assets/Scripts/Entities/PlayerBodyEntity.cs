@@ -380,56 +380,118 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
       }
 
       if (InputManager.isRightClickKeyPressed()) {
-         bool isNearInteractables = false;
-         float overlapRadius = .35f;
-         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
-         List<NPC> npcsNearby = new List<NPC>();
-         List<TreasureChest> treasuresNearby = new List<TreasureChest>();
-
-         int currentCount = 0;
-         if (hits.Length > 0) {
-            foreach (Collider2D hit in hits) {
-               if (currentCount > MAX_COLLISION_COUNT) {
-                  break;
-               }
-               currentCount++;
-
-               if (hit.GetComponent<NPC>() != null) {
-                  npcsNearby.Add(hit.GetComponent<NPC>());
-               }
-
-               if (hit.GetComponent<TreasureChest>() != null) {
-                  treasuresNearby.Add(hit.GetComponent<TreasureChest>());
-               }
-            }
-
-            if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) {
-               // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
-               isNearInteractables = true;
-            }
-
-            // Loot the nearest lootbag/treasure chest
-            interactNearestLoot(treasuresNearby);
-
-            // If there are no loots nearby, interact with nearest npc
-            if (treasuresNearby.Count < 1) {
-               interactNearestNpc(npcsNearby);
-            }
+         
+         // First check under the mouse
+         bool foundInteractable = tryInteractUnderMouse();
+         
+         // If no interactables under the mouse, check in a radius
+         if (!foundInteractable) {
+            foundInteractable = tryInteractNearby();
          }
 
-         if (!isNearInteractables && !isMoving()) {
-            Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-
-            if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
-               || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
-            } else if (newDirection == Direction.North) {
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
-            } else if (newDirection == Direction.South) {
-               rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
-            }
+         if (!foundInteractable && !isMoving()) {
+            tryInteractAnimation();
          }
       }
+   }
+
+   private bool tryInteractUnderMouse () {
+      Collider2D[] hits = Physics2D.OverlapPointAll(Util.getMousePos());
+      int collisionCount = 0;
+
+      foreach (Collider2D hit in hits) {
+         if (collisionCount > MAX_COLLISION_COUNT) {
+            break;
+         }
+         collisionCount++;
+
+         // If we clicked on a chest, interact with it
+         TreasureChest chest = hit.GetComponent<TreasureChest>();
+         if (chest) {
+            chest.sendOpenRequest();
+            forceLookAt(chest.transform.position);
+            return true;
+         }
+
+         // If we clicked on an NPC, interact with them
+         NPC npc = hit.GetComponent<NPC>();
+         if (npc) {
+            npc.clientClickedMe();
+            forceLookAt(npc.sortPoint.transform.position);
+            return true;
+         }
+
+         // If we clicked on some ore, interact with it
+         OreNode oreNode = hit.GetComponent<OreNode>();
+         if (oreNode) {
+            tryInteractAnimation();
+            return true;
+         }
+
+         // If we clicked on a crop, interact with it
+         CropSpot cropSpot = hit.GetComponent<CropSpot>();
+         if (cropSpot) {
+            tryInteractAnimation();
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   private bool tryInteractNearby () {
+      bool foundInteractable = false;
+      float overlapRadius = .35f;
+      Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, overlapRadius);
+      List<NPC> npcsNearby = new List<NPC>();
+      List<TreasureChest> treasuresNearby = new List<TreasureChest>();
+
+      int currentCount = 0;
+      if (hits.Length > 0) {
+         foreach (Collider2D hit in hits) {
+            if (currentCount > MAX_COLLISION_COUNT) {
+               break;
+            }
+            currentCount++;
+
+            if (hit.GetComponent<NPC>() != null) {
+               npcsNearby.Add(hit.GetComponent<NPC>());
+            }
+
+            if (hit.GetComponent<TreasureChest>() != null) {
+               treasuresNearby.Add(hit.GetComponent<TreasureChest>());
+            }
+         }
+
+         if (treasuresNearby.Count > 0 || npcsNearby.Count > 0) {
+            // Prevent the player from playing attack animation when interacting NPC's / Enemies / Loot Bags
+            foundInteractable = true;
+         }
+
+         // Loot the nearest lootbag/treasure chest
+         interactNearestLoot(treasuresNearby);
+
+         // If there are no loots nearby, interact with nearest npc
+         if (treasuresNearby.Count < 1) {
+            interactNearestNpc(npcsNearby);
+         }
+      }
+
+      return foundInteractable;
+   }
+
+   private void tryInteractAnimation () {
+      Direction newDirection = forceLookAt(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+
+      if (newDirection == Direction.East || newDirection == Direction.SouthEast || newDirection == Direction.NorthEast
+         || newDirection == Direction.West || newDirection == Direction.SouthWest || newDirection == Direction.NorthWest) {
+         rpc.Cmd_InteractAnimation(Anim.Type.Interact_East, newDirection);
+      } else if (newDirection == Direction.North) {
+         rpc.Cmd_InteractAnimation(Anim.Type.Interact_North, newDirection);
+      } else if (newDirection == Direction.South) {
+         rpc.Cmd_InteractAnimation(Anim.Type.Interact_South, newDirection);
+      }
+
    }
 
    private Direction forceLookAt (Vector2 targetPosition) {
