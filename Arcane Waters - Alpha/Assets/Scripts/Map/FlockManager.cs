@@ -46,6 +46,10 @@ public class FlockManager : ClientMonoBehaviour
          Flock flock = Instantiate(flockPrefabs.ChooseRandom(), spawnPos, Quaternion.identity);
          flock.transform.SetParent(this.transform, true);
          flock.targetPos = targetPos;
+
+         // Make sure the spawn point is outside of the collider bounds
+         Vector3 localPost = flock.transform.localPosition;
+         flock.transform.localPosition += localPost.x < 0 ? new Vector3(localPost.x - 5, localPost.y, localPost.z) : new Vector3(localPost.x + 5, localPost.y, localPost.z);
          flock.flockManager = this;
       }
    }
