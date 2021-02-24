@@ -74,6 +74,9 @@ public class Area : MonoBehaviour
    // The z coordinate of the water layer
    public float waterZ = 0f;
 
+   // The supposed z coordinate of the building layer
+   public const float BUILDING_Z = 0;
+
    // Whether this area is a interior area
    public bool isInterior = false;
 
@@ -119,6 +122,9 @@ public class Area : MonoBehaviour
 
    // Container for checking types of cell(a stack of tiles in the same XY position)
    public CellTypesContainer cellTypes;
+
+   // The build layer TODO: (NOTE: The current layer being imported is actually a typo, not sure yet where to update the layer name to correct this)
+   public const string BUILDING_LAYER = "bulding";
 
    #endregion
 
@@ -188,6 +194,16 @@ public class Area : MonoBehaviour
          if (layer.name.ToLower().EndsWith("water")) {
             waterZ = layer.tilemap.transform.position.z;
             break;
+         }
+      }
+
+      // Make sure that building Z layer is higher than the player ship layer
+      foreach (TilemapLayer layer in getTilemapLayers()) {
+         if (layer.name.ToLower().Contains(BUILDING_LAYER)) {
+            layer.tilemap.transform.position = new Vector3(
+               layer.tilemap.transform.position.x,
+               layer.tilemap.transform.position.y,
+               BUILDING_Z);
          }
       }
 
