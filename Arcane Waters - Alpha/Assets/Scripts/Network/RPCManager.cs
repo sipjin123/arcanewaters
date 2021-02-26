@@ -4282,38 +4282,8 @@ public class RPCManager : NetworkBehaviour
       // Get the group the player belongs to
       List<int> groupMembers = _player.tryGetGroup(out VoyageGroupInfo voyageGroup) ? voyageGroup.members : new List<int>();
 
-      // Cache Attackers Info
-      foreach (BattlerInfo battlerInfo in attackers) {
-         // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-         if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-            BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
-
-            if (rawEntity != null) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-               if (bodyEntity != null) {
-                  bodyEntities.Add(bodyEntity);
-               } else {
-                  D.warning("Server cant find this ID: " + rawEntity.userId);
-               }
-            }
-         }
-      }
-
-      // Cache Defenders Info
-      foreach (BattlerInfo battlerInfo in defenders) {
-         // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
-         if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
-            BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
-
-            if (rawEntity != null) {
-               PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
-               if (bodyEntity != null) {
-                  bodyEntities.Add(bodyEntity);
-               } else {
-                  D.warning("Server cant find this ID: " + rawEntity.userId);
-               }
-            }
-         }
+      foreach (PlayerBodyEntity playerBody in getPlayerBodies(attackers, defenders)) {
+         bodyEntities.Add(playerBody);
       }
 
       Instance battleInstance = InstanceManager.self.getInstance(_player.instanceId);
@@ -4415,6 +4385,48 @@ public class RPCManager : NetworkBehaviour
       // Send Battle Bg data
       int bgXmlID = battle.battleBoard.xmlID;
       Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+   }
+
+   private List<PlayerBodyEntity> getPlayerBodies (BattlerInfo[] attackers, BattlerInfo[] defenders) {
+      List<PlayerBodyEntity> bodyEntities = new List<PlayerBodyEntity>();
+
+      // Cache Attackers Info
+      if (attackers != null) {
+         foreach (BattlerInfo battlerInfo in attackers) {
+            // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+               if (rawEntity != null) {
+                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                  if (bodyEntity != null) {
+                     bodyEntities.Add(bodyEntity);
+                  } else {
+                     D.warning("Server cant find this ID: " + rawEntity.userId);
+                  }
+               }
+            }
+         }
+      }
+
+      // Cache Defenders Info
+      if (defenders != null) {
+         foreach (BattlerInfo battlerInfo in defenders) {
+            // Since the body manager has the collection of user net entities, it will search for the body entity with the user name provided
+            if (battlerInfo.enemyType == Enemy.Type.PlayerBattler) {
+               BodyEntity rawEntity = BodyManager.self.getBodyWithName(battlerInfo.battlerName);
+               if (rawEntity != null) {
+                  PlayerBodyEntity bodyEntity = (PlayerBodyEntity) rawEntity;
+                  if (bodyEntity != null) {
+                     bodyEntities.Add(bodyEntity);
+                  } else {
+                     D.warning("Server cant find this ID: " + rawEntity.userId);
+                  }
+               }
+            }
+         }
+      }
+
+      return bodyEntities;
    }
 
    [Server]
