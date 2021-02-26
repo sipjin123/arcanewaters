@@ -307,7 +307,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             updateSprites();
          }
 
-         if (enemyType != Enemy.Type.PlayerBattler) {
+         if (enemyType != Enemy.Type.PlayerBattler || (enemyType == Enemy.Type.PlayerBattler && !isLocalPlayer)) {
             // Monster battlers are selectable
             onBattlerSelect.AddListener(() => {
                // Enable all offensive abilities
@@ -336,7 +336,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.prepareBattleUI();
       } else {
          // This will allow the Ability UI to be triggered when an ally is selected (used for ally target abilities such as Heal and other Buffs)
-         if (enemyType == Enemy.Type.PlayerBattler) {
+         if (enemyType == Enemy.Type.PlayerBattler && isLocalPlayer) {
             onBattlerSelect.AddListener(() => {
                Battler allyBattler = this;
 

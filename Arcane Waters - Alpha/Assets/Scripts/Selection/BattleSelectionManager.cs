@@ -127,7 +127,7 @@ public class BattleSelectionManager : MonoBehaviour {
          selectedBattler = battler;
          bool selectedSameTeam = currentBattler.teamType == selectedBattler.teamType;
 
-         if (selectedBattler.enemyType == Enemy.Type.PlayerBattler || (selectedBattler.enemyType != Enemy.Type.PlayerBattler && selectedSameTeam)) {
+         if (selectedSameTeam) {
             enemySelection.SetActive(false);
             allySelection.SetActive(true);
          } else {
