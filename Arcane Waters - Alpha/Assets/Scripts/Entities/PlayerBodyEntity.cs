@@ -405,9 +405,23 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          }
          collisionCount++;
 
+         Collider2D[] colliders = hit.GetComponents<Collider2D>();
+         bool hitNonTrigger = false;
+         foreach (Collider2D collider in colliders) {
+            // If a non-trigger collider contains the mouse
+            float distToMouse = ((Vector2) (collider.transform.position - Util.getMousePos())).magnitude;
+            if (!collider.isTrigger && distToMouse < collider.bounds.size.x) {
+               hitNonTrigger = true;
+            }
+         }
+
+         if (!hitNonTrigger) {
+            continue;
+         }
+
          // If we clicked on a chest, interact with it
          TreasureChest chest = hit.GetComponent<TreasureChest>();
-         if (chest) {
+         if (chest && !chest.hasBeenOpened()) {
             chest.sendOpenRequest();
             forceLookAt(chest.transform.position);
             return true;
@@ -458,7 +472,8 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
                npcsNearby.Add(hit.GetComponent<NPC>());
             }
 
-            if (hit.GetComponent<TreasureChest>() != null) {
+            TreasureChest chest = hit.GetComponent<TreasureChest>();
+            if (chest && !chest.hasBeenOpened()) {
                treasuresNearby.Add(hit.GetComponent<TreasureChest>());
             }
          }

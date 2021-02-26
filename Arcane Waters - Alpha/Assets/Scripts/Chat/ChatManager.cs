@@ -42,6 +42,8 @@ public class ChatManager : MonoBehaviour
       _commandData.Add(new CommandData("/guild", "Executes a guild command", sendGuildMessageToServer, parameterNames: new List<string>() { "guildCommand" }));
       _commandData.Add(new CommandData("/complain", "Sends a complaint about a user", sendComplainToServer, parameterNames: new List<string>() { "userName", "details" }));
       _commandData.Add(new CommandData("/roll", "Rolls a die", sendRollToServer, parameterNames: new List<string>() { "max", "min" }));
+      _commandData.Add(new CommandData("/whisper", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
+      _commandData.Add(new CommandData("/w", "Sends a private message to a user", sendWhisperMessageToServer, parameterNames: new List<string>() { "userName", "message" }));
    }
 
    private void Update () {
@@ -113,6 +115,10 @@ public class ChatManager : MonoBehaviour
       chatPanel.setCurrentChatType(ChatInfo.Type.Guild);
    }
 
+   private void sendWhisperMessageToServer (string message) {
+      sendMessageToServer(message, ChatInfo.Type.Whisper);
+   }
+
    public void sendMessageToServer (string message, ChatInfo.Type chatType) {
       // Check if they're trying to send guild chat without being in a guild
       if (chatType == ChatInfo.Type.Guild && Global.player.guildId == 0) {
@@ -145,7 +151,12 @@ public class ChatManager : MonoBehaviour
    }
 
    public static string extractWhisperNameFromChat (string message) {
-      message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
+      if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
+         message = message.Replace(ChatPanel.WHISPER_PREFIX, "");
+      } else if (message.StartsWith(ChatPanel.WHISPER_PREFIX_FULL)) {
+         message = message.Replace(ChatPanel.WHISPER_PREFIX_FULL, "");
+      }
+
       string extractedUserName = "";
       foreach (char letter in message) {
          if (letter != ' ') {
@@ -184,10 +195,6 @@ public class ChatManager : MonoBehaviour
       return message.Replace($"{username} ", "").Trim();
    }
 
-   public static string extractWhisperMessageFromChat (string extractedUserName, string message) {
-      return message.Replace(ChatPanel.WHISPER_PREFIX + extractedUserName + " ", "");
-   }
-
    public void onChatLostFocus () {
       autoCompletePanel.inputFieldFocused = false;
       autoCompletePanel.updatePanel();
@@ -206,10 +213,8 @@ public class ChatManager : MonoBehaviour
       _sentMessageHistory.Add(textToProcess);
 
       // Check if it's a chat command
-      if (textToProcess.StartsWith("/") && !textToProcess.StartsWith(ChatPanel.WHISPER_PREFIX)) {
+      if (textToProcess.StartsWith("/")) {
          executeChatCommand(textToProcess);
-      } else {
-         sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);
       }
 
       resetMessagesAgo();
@@ -307,7 +312,7 @@ public class ChatManager : MonoBehaviour
          return true;
       }
 
-      return ChatPanel.self.inputField.isFocused;
+      return ChatPanel.self.inputField.isFocused || ChatPanel.self.nameInputField.isFocused;
    }
 
    public void addCommand (CommandData newCommand) {

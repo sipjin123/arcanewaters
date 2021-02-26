@@ -955,6 +955,7 @@ public class Util : MonoBehaviour {
       return !(PanelManager.self.hasPanelInLinkedList() ||
          PanelManager.isLoading ||
          ChatPanel.self.inputField.isFocused ||
+         ChatPanel.self.nameInputField.isFocused ||
          ((MailPanel) PanelManager.self.get(Panel.Type.Mail)).isWritingMail() ||
          Global.player == null ||
          !AreaManager.self.hasArea(Global.player.areaKey));

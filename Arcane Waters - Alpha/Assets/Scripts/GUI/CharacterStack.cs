@@ -123,6 +123,22 @@ public class CharacterStack : MonoBehaviour {
       synchronizeAnimationIndexes();
    }
 
+   public void updateLayers (NetEntity entity) {
+      updateLayers(entity.gender, entity.bodyType, entity.eyesType, entity.hairType, entity.eyesPalettes, entity.hairPalettes, entity.getArmorCharacteristics(), entity.getWeaponCharacteristics(), entity.getHatCharacteristics());
+   }
+
+   public void updateLayers (Gender.Type gender, BodyLayer.Type bodyType, EyesLayer.Type eyesType, HairLayer.Type hairType, string eyesPalettes, string hairPalettes, Armor armor, Weapon weapon, Hat hat) {
+      bodyLayer.setType(bodyType);
+      eyesLayer.setType(eyesType);
+      eyesLayer.recolor(eyesPalettes);
+      updateHair(hairType, hairPalettes);
+      updateArmor(gender, armor.itemTypeId, armor.paletteNames);
+      updateWeapon(gender, weapon.itemTypeId, weapon.paletteNames);
+      updateHats(gender, hat.itemTypeId, hat.paletteNames);
+
+      synchronizeAnimationIndexes();
+   }
+
    public void synchronizeAnimationIndexes () {      
       if (bodyLayer == null || bodyLayer.getSimpleAnimation() == null) {
          return;
@@ -157,22 +173,6 @@ public class CharacterStack : MonoBehaviour {
       if (hatLayer != null && hatLayer.getSimpleAnimation() != null) {       
          hatLayer.getSimpleAnimation().setIndex(index);
       }
-   }
-
-   public void updateLayers (NetEntity entity) {
-      Armor armor = entity.getArmorCharacteristics();
-      Weapon weapon = entity.getWeaponCharacteristics();
-      Hat hat = entity.getHatCharacteristics();
-
-      bodyLayer.setType(entity.bodyType);
-      eyesLayer.setType(entity.eyesType);
-      eyesLayer.recolor(entity.eyesPalettes);
-      updateHair(entity.hairType, entity.hairPalettes);
-      updateArmor(entity.gender,  armor.itemTypeId, armor.paletteNames);
-      updateWeapon(entity.gender, weapon.itemTypeId, weapon.paletteNames);
-      updateHats(entity.gender, hat.itemTypeId, hat.paletteNames);
-      
-      synchronizeAnimationIndexes();
    }
 
    public void updateWeapon (Gender.Type gender, int weaponType, string palettes, bool updatePalettes = true) {

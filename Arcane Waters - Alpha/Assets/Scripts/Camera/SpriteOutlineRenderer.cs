@@ -73,6 +73,11 @@ public class SpriteOutlineRenderer : MonoBehaviour
       transform.localScale = scale;
 
       updatePixelSize();
+
+      if (_currentOutline != null && _currentOutline.didRendererStateChange()) {
+         removeCommandBuffer();
+         updateRenderBuffer();
+      }
    }
 
    private void LateUpdate () {
@@ -141,7 +146,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
          SpriteRenderer[] renderers = _currentOutline.getRenderers();
 
          foreach (SpriteRenderer rend in renderers) {
-            if (rend != null && rend.enabled && rend.gameObject.activeInHierarchy) {
+            if (SpriteOutline.isRendererVisible(rend)) {
                _outlinesBuffer.DrawRenderer(rend, rend.material);
             }
          }

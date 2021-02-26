@@ -116,7 +116,7 @@ public class ContextMenuPanel : MonoBehaviour
       _hasAtLeastOneButton = true;
    }
 
-   public void showDefaultMenuForUser (int userId, string userName) {
+   public void showDefaultMenuForUser (int userId, string userName, bool isInSameGroup = false) {
       if (Global.player == null) {
          return;
       }
@@ -129,7 +129,7 @@ public class ContextMenuPanel : MonoBehaviour
       if (Global.player.userId != userId) {
          if (VoyageGroupManager.isInGroup(Global.player)) {
             // If we can locally see the clicked user, only allow inviting if he is not already in the group
-            if (targetEntity == null || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
+            if ((targetEntity == null && !isInSameGroup) || (targetEntity != null && targetEntity.voyageGroupId != Global.player.voyageGroupId)) {
                addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
             }
             // If clicked user is already in the group and the player is group leader then allow kicking group members. Only make the button interactable if the player can be kicked from the group.

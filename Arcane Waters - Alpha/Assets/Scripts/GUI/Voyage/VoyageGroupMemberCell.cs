@@ -42,30 +42,51 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       tooltipBox.SetActive(false);
    }
 
-   public void setCellForGroupMember (int userId) {
-      _userId = userId;
+   public void Start () {
+      // Regularly update the portrait if the user is locally visible
+      InvokeRepeating(nameof(updatePortrait), Random.Range(0f, 2f), 3f);
+   }
 
-      // Find the NetEntity of the displayed user
-      NetEntity entity = EntityManager.self.getEntity(_userId);
+   public void setCellForGroupMember (VoyageGroupMemberCellInfo cellInfo) {
+      _userId = cellInfo.userId;
 
-      // Check if the entity is visible by this client
-      if (entity == null) {
-         _active = false;
-
-         // Initialize the portrait with a question mark
-         characterPortrait.initialize(entity);         
-      } else {
-         _active = true;
-
-         // Set the portrait when the entity is initialized
-         StartCoroutine(CO_InitializePortrait(entity));
+      Weapon weapon = WeaponStatData.translateDataToWeapon(WeaponStatData.getDefaultData());
+      WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(cellInfo.weapon.itemTypeId);
+      if (weaponData != null) {
+         weapon = WeaponStatData.translateDataToWeapon(weaponData);
+         weapon.id = cellInfo.weapon.id;
+         weapon.paletteNames = cellInfo.weapon.paletteNames;
       }
+
+      Armor armor = ArmorStatData.translateDataToArmor(ArmorStatData.getDefaultData());
+      ArmorStatData armorData = EquipmentXMLManager.self.getArmorDataBySqlId(cellInfo.armor.itemTypeId);
+      if (armorData != null) {
+         armor = ArmorStatData.translateDataToArmor(armorData);
+         armor.id = cellInfo.armor.id;
+         armor.paletteNames = cellInfo.armor.paletteNames;
+      }
+
+      Hat hat = HatStatData.translateDataToHat(HatStatData.getDefaultData());
+      HatStatData hatData = EquipmentXMLManager.self.getHatData(cellInfo.hat.itemTypeId);
+      if (hatData != null) {
+         hat = HatStatData.translateDataToHat(hatData);
+         hat.id = cellInfo.hat.id;
+         hat.paletteNames = cellInfo.hat.paletteNames;
+      }
+
+      characterPortrait.updateLayers(cellInfo.gender, cellInfo.bodyType, cellInfo.eyesType, cellInfo.hairType, cellInfo.eyesPalettes, cellInfo.hairPalettes, armor, weapon, hat);
+      playerNameText.text = cellInfo.userName;
+      playerLevelText.text = "LvL " + LevelUtil.levelForXp(cellInfo.userXP).ToString();
    }
 
    public void Update () {
-      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageGroupManager.isInGroup(Global.player) ||
-         !_active) {
+      if (Global.player == null || !Global.player.isLocalPlayer || !VoyageGroupManager.isInGroup(Global.player)) {
          return;
+      }
+
+      // Allow right clicking to bring up the context menu, only if no panel is opened
+      if (InputManager.isLeftClickKeyPressed() && _mouseOver && !PanelManager.self.hasPanelInLinkedList()) {
+         PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, playerNameText.text, true);
       }
 
       // Try to find the entity of the displayed user
@@ -77,11 +98,6 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
 
       // Update the portrait background
       characterPortrait.updateBackground(entity);
-
-      // Allow right clicking to bring up the context menu, only if no panel is opened
-      if (InputManager.isLeftClickKeyPressed() && _mouseOver && !PanelManager.self.hasPanelInLinkedList()) {
-         PanelManager.self.contextMenuPanel.showDefaultMenuForUser(_userId, entity.entityName);
-      }
 
       int currentHP = entity.currentHealth;
       int maxHP = entity.maxHealth;
@@ -101,17 +117,32 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       hpBar.color = hpBarGradient.Evaluate(hpBar.fillAmount);
    }
 
-   public void OnPointerEnter (PointerEventData eventData) {
-      if (_active) {
-         tooltipBox.SetActive(true);
+   private void updatePortrait () {
+      // Try to find the entity of the displayed user
+      NetEntity entity = EntityManager.self.getEntity(_userId);
+      if (entity == null) {
+         characterPortrait.updateBackground(null);
+         return;
       }
+
+      // Update the whole portrait
+      if (entity is PlayerBodyEntity) {
+         characterPortrait.updateLayers(entity);
+      } else {
+         characterPortrait.updateBackground(entity);
+      }
+
+      playerNameText.text = entity.entityName;
+      playerLevelText.text = "LvL " + LevelUtil.levelForXp(entity.XP).ToString();
+   }
+
+   public void OnPointerEnter (PointerEventData eventData) {
+      tooltipBox.SetActive(true);
       _mouseOver = true;
    }
 
    public void OnPointerExit (PointerEventData eventData) {
-      if (_active) {
-         tooltipBox.SetActive(false);
-      }
+      tooltipBox.SetActive(false);
       _mouseOver = false;
    }
 
@@ -123,24 +154,10 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       return _mouseOver;
    }
 
-   private IEnumerator CO_InitializePortrait (NetEntity entity) {
-      // Wait until the entity has received its initialization data
-      while (Util.isEmpty(entity.entityName)) {
-         yield return null;
-      }
-
-      characterPortrait.initialize(entity);
-      playerNameText.text = entity.entityName;
-      playerLevelText.text = "LvL " + LevelUtil.levelForXp(entity.XP).ToString();
-   }
-
    #region Private Variables
 
    // The id of the displayed user
    private int _userId = -1;
-
-   // Gets set to true when the cell is updating the group member info
-   private bool _active = true;
 
    // Gets set to true when the mouse is hovering the cell
    private bool _mouseOver = false;

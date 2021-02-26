@@ -29,11 +29,7 @@ public class VoyageGroupManager : MonoBehaviour
       self = this;
    }
 
-   public void Start () {
-      // Update the members of the voyage group, if any
-      InvokeRepeating(nameof(updateVoyageGroupMembers), 0f, 2f);
-   }
-
+   [Server]
    public void inviteUserToGroup (NetEntity player, string inviteeName) {
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
@@ -58,6 +54,7 @@ public class VoyageGroupManager : MonoBehaviour
       });
    }
 
+   [Server]
    private IEnumerator CO_InviteUserToGroup (NetEntity player, UserInfo inviteeInfo) {
       // Get the voyage group info
       if (!player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
@@ -99,10 +96,12 @@ public class VoyageGroupManager : MonoBehaviour
       logGroupInvitation(player.userId, inviteeInfo.username);
    }
 
+   [Server]
    public void createGroup (NetEntity player, int voyageId, bool isPrivate) {
       StartCoroutine(CO_CreateGroup(player, voyageId, isPrivate));
    }
 
+   [Server]
    private IEnumerator CO_CreateGroup (NetEntity player, int voyageId, bool isPrivate) {
       int userId = player.userId;
 
@@ -129,8 +128,12 @@ public class VoyageGroupManager : MonoBehaviour
          player.voyageGroupId = voyageGroup.groupId;
          player.isGroupLeader = true;
       }
+
+      // Send the group composition update to all group members
+      StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
    }
 
+   [Server]
    public void addUserToGroup (VoyageGroupInfo voyageGroup, NetEntity player) {
       if (isGroupFull(voyageGroup)) {
          return;
@@ -157,17 +160,20 @@ public class VoyageGroupManager : MonoBehaviour
       ServerNetworkingManager.self.sendConfirmationMessageToGroup(ConfirmMessage.Type.General, voyageGroup.groupId, player.entityName + " has joined group!");
 
       // Send the group composition update to all group members
-      StartCoroutine(CO_SendGroupMembersToUser(voyageGroup.groupId));
+      StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
    }
 
+   [Server]
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, NetEntity player) {
       player.voyageGroupId = -1;
       removeUserFromGroup(voyageGroup, player.userId);
+      player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new VoyageGroupMemberCellInfo[0]);
    }
 
+   [Server]
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, int userId) {
       // Make sure that removed user is not a leader
-      EntityManager.self.getEntity(userId).isGroupLeader = false;
+      ServerNetworkingManager.self.setUserGroupLeaderStatus(userId, false);
 
       voyageGroup.members.Remove(userId);
 
@@ -183,16 +189,17 @@ public class VoyageGroupManager : MonoBehaviour
             }
          }
 
-         // Set oldest group memeber as a new leader
-         EntityManager.self.getEntity(voyageGroup.members[0]).isGroupLeader = true;
+         // Set oldest group member as a new leader
+         ServerNetworkingManager.self.setUserGroupLeaderStatus(voyageGroup.members[0], true);
 
          updateGroup(voyageGroup);
 
          // Send the group composition update to all group members
-         StartCoroutine(CO_SendGroupMembersToUser(voyageGroup.groupId));
+         StartCoroutine(CO_SendGroupCompositionToAllMembers(voyageGroup.groupId));
       }
    }
 
+   [Server]
    public void updateGroup (VoyageGroupInfo voyageGroup) {
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (server.voyageGroups.ContainsKey(voyageGroup.groupId)) {
@@ -202,6 +209,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   [Server]
    public void deleteGroup (VoyageGroupInfo voyageGroup) {
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          if (server.voyageGroups.ContainsKey(voyageGroup.groupId)) {
@@ -210,20 +218,15 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
-   private IEnumerator CO_SendGroupMembersToUser(int groupId) {
+   [Server]
+   private IEnumerator CO_SendGroupCompositionToAllMembers (int groupId) {
       // Wait a few frames for the changes to synchronize on other servers
       yield return new WaitForSeconds(0.1f);
 
-      if (!tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
-         yield break;
-      }
-
-      // Send the updated group composition to each group member
-      foreach (int userId in voyageGroup.members) {
-         ServerNetworkingManager.self.sendVoyageGroupMembersToUser(userId);
-      }
+      ServerNetworkingManager.self.sendVoyageGroupCompositionToMembers(groupId);
    }
 
+   [Server]
    public VoyageGroupInfo getBestGroupForQuickmatch (int voyageId) {
       // Find the oldest incomplete quickmatch group in the given voyage instance
       DateTime bestDate = DateTime.MaxValue;
@@ -269,6 +272,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   [Server]
    public int getGroupCountInVoyage (int voyageId) {
       int count = 0;
 
@@ -283,6 +287,7 @@ public class VoyageGroupManager : MonoBehaviour
       return count;
    }
 
+   [Server]
    public bool isAtLeastOneGroupInVoyage (int voyageId) {
       foreach (NetworkedServer server in ServerNetworkingManager.self.servers) {
          foreach (VoyageGroupInfo voyageGroup in server.voyageGroups.Values) {
@@ -295,6 +300,7 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
+   [Server]
    public Dictionary<int, int> getGroupCountInAllVoyages () {
       Dictionary<int, int> groupCount = new Dictionary<int, int>();
 
@@ -315,6 +321,7 @@ public class VoyageGroupManager : MonoBehaviour
       return entity != null && entity.voyageGroupId != -1;
    }
 
+   [Server]
    public static bool isGroupFull (VoyageGroupInfo voyageGroup) {
       if (voyageGroup.voyageId <= 0) {
          // If the group has not joined a voyage, the limit is the maximum
@@ -339,6 +346,7 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
+   [Server]
    public bool tryGetGroupById (int groupId, out VoyageGroupInfo voyageGroup) {
       voyageGroup = default;
 
@@ -352,6 +360,7 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
+   [Server]
    public bool tryGetGroupByUser (int userId, out VoyageGroupInfo voyageGroup) {
       voyageGroup = default;
 
@@ -367,6 +376,7 @@ public class VoyageGroupManager : MonoBehaviour
       return false;
    }
 
+   [Server]
    public bool isGroupInvitationSpam (int inviterUserId, string inviteeName) {
       // Get the invitee log for this user
       if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
@@ -452,60 +462,36 @@ public class VoyageGroupManager : MonoBehaviour
       _invitationGroupId = -1;
    }
 
-   private void updateVoyageGroupMembers () {
-      if (Global.player == null || !Global.player.isLocalPlayer) {
+   [Server]
+   public void sendGroupCompositionToMembers (int groupId) {
+      if (!tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
          return;
       }
 
-      // Check if the player is in a group
-      if (!isInGroup(Global.player)) {
-         // If the player just left his group, request an update from the server
-         if (_visibleGroupMembers.Count > 0) {
-            _visibleGroupMembers.Clear();
-            Global.player.rpc.Cmd_RequestVoyageGroupMembersFromServer();
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Read in DB the group members info needed to display their portrait
+         List<VoyageGroupMemberCellInfo> groupMembersInfo = new List<VoyageGroupMemberCellInfo>();
+         foreach (int userId in voyageGroup.members) {
+            UserObjects userObjects = DB_Main.getUserObjects(userId);
+            VoyageGroupMemberCellInfo memberInfo = new VoyageGroupMemberCellInfo(userObjects);
+            groupMembersInfo.Add(memberInfo);
          }
-         return;
-      }
 
-      // Get the list of all entities (visible by this client)
-      List<NetEntity> allEntities = EntityManager.self.getAllEntities();
-
-      // Retrieve the group members that we can see
-      List<int> visibleGroupMembers = new List<int>();
-      foreach (NetEntity entity in allEntities) {
-         if (entity != null && entity.voyageGroupId == Global.player.voyageGroupId) {
-            visibleGroupMembers.Add(entity.userId);
-         }
-      }
-
-      // Compare this new list with the latest
-      bool hasNewGroupMembers = visibleGroupMembers.Except(_visibleGroupMembers).Any();
-      bool hasMissingGroupMembers = _visibleGroupMembers.Except(visibleGroupMembers).Any();
-
-      // If there are differences, request a full group members update from the server
-      if (hasNewGroupMembers || hasMissingGroupMembers) {
-         Global.player.rpc.Cmd_RequestVoyageGroupMembersFromServer();
-      }
-
-      // Save this list for future comparisons
-      _visibleGroupMembers = visibleGroupMembers;
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Send the updated group composition to each group member
+            foreach (int userId in voyageGroup.members) {
+               NetEntity player = EntityManager.self.getEntity(userId);
+               if (player != null) {
+                  player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, groupMembersInfo.ToArray());
+               }
+            }
+         });
+      });
    }
 
-   public void sendVoyageGroupMembersToClient (NetEntity player) {
-      // If the player is not in a group, send an empty group
-      if (!isInGroup(player)) {
-         player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new int[0]);
-         return;
-      }
-
-      // Send the data to the client
-      if (player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
-         player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, voyageGroup.members.ToArray());
-      } else {
-         player.rpc.Target_ReceiveVoyageGroupMembers(player.connectionToClient, new int[0]);
-      }
-   }
-
+   [Server]
    public void logGroupInvitation (int inviterUserId, string inviteeName) {
       // Check if the log exists for this inviter
       if (_groupInvitationsLog.TryGetValue(inviterUserId, out HashSet<string> inviteeLog)) {
@@ -526,6 +512,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   [Server]
    private IEnumerator CO_RemoveGroupInvitationLog (int inviterUserId, string inviteeName) {
       yield return new WaitForSeconds(GROUP_INVITE_MIN_INTERVAL);
 
@@ -534,6 +521,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   [Server]
    public void onUserDisconnectsFromServer (int userId) {
       // Stop any existing group removal coroutine
       stopExistingGroupRemovalCoroutine(userId);
@@ -550,11 +538,13 @@ public class VoyageGroupManager : MonoBehaviour
       _pendingRemovalFromGroups.Add(userId, removalCO);
    }
 
+   [Server]
    public void onUserConnectsToServer (int userId) {
       // Stop any existing group removal coroutine
       stopExistingGroupRemovalCoroutine(userId);
    }
 
+   [Server]
    private void stopExistingGroupRemovalCoroutine (int userId) {
       if (_pendingRemovalFromGroups.TryGetValue(userId, out Coroutine existingCO)) {
          if (existingCO != null) {
@@ -564,6 +554,7 @@ public class VoyageGroupManager : MonoBehaviour
       }
    }
 
+   [Server]
    private IEnumerator CO_RemoveDisconnectedUserFromGroup (int userId) {
       // Wait a few minutes in case the user reconnects
       yield return new WaitForSeconds(DELAY_BEFORE_GROUP_REMOVAL);
@@ -577,6 +568,7 @@ public class VoyageGroupManager : MonoBehaviour
       removeUserFromGroup(voyageGroup, userId);
    }
 
+   [Server]
    public int getNewGroupId () {
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
          D.error("New group ids can only be generated by the Master server!");
@@ -598,9 +590,6 @@ public class VoyageGroupManager : MonoBehaviour
    }
 
    #region Private Variables
-
-   // Keeps track of the group members visible by this client
-   private List<int> _visibleGroupMembers = new List<int>();
 
    // Keeps a log of the group invitations to prevent spamming
    private Dictionary<int, HashSet<string>> _groupInvitationsLog = new Dictionary<int, HashSet<string>>();

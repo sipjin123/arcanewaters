@@ -283,18 +283,43 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_SendVoyageGroupMembersToUser (int userId) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_SendVoyageGroupMembersToUser, userId);
+   public void MasterServer_SendVoyageGroupCompositionToMembers (int groupId) {
+      if (!VoyageGroupManager.self.tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
+         return;
+      }
+
+      // Find the servers the group members are connected to
+      HashSet<NetworkedServer> targetServers = new HashSet<NetworkedServer>();
+      foreach (int userId in voyageGroup.members) {
+         NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+         if (targetServer != null) {
+            targetServers.Add(targetServer);
+         }
+      }
+
+      foreach (NetworkedServer server in targetServers) {
+         server.InvokeClientRpcOnOwner(Server_SendVoyageGroupCompositionToMembers, groupId);
       }
    }
 
    [ClientRPC]
-   public void Server_SendVoyageGroupMembersToUser (int userId) {
+   public void Server_SendVoyageGroupCompositionToMembers (int groupId) {
+      VoyageGroupManager.self.sendGroupCompositionToMembers(groupId);
+   }
+
+   [ServerRPC]
+   public void MasterServer_SetUserGroupLeaderStatus (int userId, bool isLeader) {
+      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
+      if (targetServer != null) {
+         targetServer.InvokeClientRpcOnOwner(Server_SetUserGroupLeaderStatus, userId, isLeader);
+      }
+   }
+
+   [ClientRPC]
+   public void Server_SetUserGroupLeaderStatus (int userId, bool isLeader) {
       NetEntity player = EntityManager.self.getEntity(userId);
       if (player != null) {
-         VoyageGroupManager.self.sendVoyageGroupMembersToClient(player);
+         player.isGroupLeader = isLeader;
       }
    }
 

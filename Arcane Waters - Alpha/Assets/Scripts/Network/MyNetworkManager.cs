@@ -547,6 +547,9 @@ public class MyNetworkManager : NetworkManager
       NetEntity player = data.netEntity;
 
       if (player != null) {
+         // Manage the voyage groups on user disconnection
+         VoyageGroupManager.self.onUserDisconnectsFromServer(player.userId);
+
          if (player.getPlayerShipEntity() != null) {
             // If the player is a ship, keep it in the server for a few seconds
             DisconnectionManager.self.addToDisconnectedUsers(data);

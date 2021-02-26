@@ -33,6 +33,7 @@ public class ChatPanel : MonoBehaviour {
 
    // The constant whisper prefix for server message processing
    public const string WHISPER_PREFIX = "/w ";
+   public const string WHISPER_PREFIX_FULL = "/whisper ";
 
    // The panel modes
    public enum Mode {
@@ -330,6 +331,10 @@ public class ChatPanel : MonoBehaviour {
          if (currentSelection != null && Util.hasInputField(currentSelection)) {
             EventSystem.current.SetSelectedGameObject(null);
          }
+      }
+
+      if (nameInputField.isFocused && Input.GetKeyDown(KeyCode.Tab)) {
+         inputField.Select();
       }
 
       // Activate the input field when enter is pressed and the field is unfocused, except if the

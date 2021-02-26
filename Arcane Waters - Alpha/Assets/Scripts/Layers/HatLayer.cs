@@ -15,6 +15,9 @@ public class HatLayer : SpriteLayer
    #endregion
 
    public void setType (Gender.Type gender, int newType, bool immediate = true) {
+      // Temporarily hardcode disabled hats until we figure out a new way of handling them
+      newType = 0;
+
       _type = newType;
 
       // Update our Animated Sprite

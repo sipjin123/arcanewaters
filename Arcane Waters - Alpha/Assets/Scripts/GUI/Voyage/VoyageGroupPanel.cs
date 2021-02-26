@@ -66,9 +66,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       }
    }
 
-   public void updatePanelWithGroupMembers (List<int> groupMembers) {
+   public void updatePanelWithGroupMembers (VoyageGroupMemberCellInfo[] groupMembers) {
       // If the player does not belong to a group, or there are no group members, hide the panel
-      if (!VoyageGroupManager.isInGroup(Global.player) || groupMembers.Count <= 0) {
+      if (!VoyageGroupManager.isInGroup(Global.player) || groupMembers.Length <= 0) {
          // Clear out any old info
          memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
          _memberCells.Clear();
@@ -86,9 +86,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       _memberCells.Clear();
 
       // Instantiate the cells
-      foreach (int memberUserId in groupMembers) {
+      foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
          VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
-         cell.setCellForGroupMember(memberUserId);
+         cell.setCellForGroupMember(cellInfo);
          _memberCells.Add(cell);
       }
 
@@ -186,15 +186,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    }
 
    public void show () {
-      this.canvasGroup.alpha = 1f;
-      this.canvasGroup.blocksRaycasts = true;
-      this.canvasGroup.interactable = true;
+      if (!canvasGroup.IsShowing()) {
+         canvasGroup.Show();
+      }
    }
 
    public void hide () {
-      this.canvasGroup.alpha = 0f;
-      this.canvasGroup.blocksRaycasts = false;
-      this.canvasGroup.interactable = false;
+      if (canvasGroup.IsShowing()) {
+         canvasGroup.Hide();
+      }
    }
 
    public bool isShowing () {

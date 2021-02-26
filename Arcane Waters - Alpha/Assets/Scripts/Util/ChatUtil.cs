@@ -36,6 +36,6 @@ public class ChatUtil
       { CommandType.Guild, new List<string>(){ "/guild", "/gld", "/g" } },
       { CommandType.Complain, new List<string>(){ "/complain", "/report" } },
       { CommandType.Roll, new List<string>(){ "/roll", "/random" } },
-      { CommandType.Motd, new List<string>() { "/motd" } }
+      { CommandType.Motd, new List<string>() { "/motd" } },
    };
 }

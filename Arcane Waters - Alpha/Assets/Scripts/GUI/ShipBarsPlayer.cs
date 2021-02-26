@@ -61,7 +61,7 @@ public class ShipBarsPlayer : ShipBars
          yield return null;
       }
 
-      portrait.initialize(_entity);
+      portrait.updateLayers(_entity);
 
       // Set the portrait frame for local or non local entities
       if (_entity.isLocalPlayer) {

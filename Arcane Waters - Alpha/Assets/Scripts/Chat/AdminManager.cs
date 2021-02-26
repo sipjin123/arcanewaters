@@ -42,7 +42,7 @@ public class AdminManager : NetworkBehaviour
    private void addCommands () {
       ChatManager cm = ChatManager.self;
 
-      if (!isLocalPlayer) {
+      if (!isLocalPlayer || !_player.isAdmin()) {
          return;
       }
 

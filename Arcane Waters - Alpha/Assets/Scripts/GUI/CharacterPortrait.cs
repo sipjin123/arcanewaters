@@ -16,9 +16,6 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
    // The character stack
    public CharacterStack characterStack;
 
-   // The icon displayed when the portrait info is not available
-   public GameObject unknownIcon;
-
    // The background image
    public Image backgroundImage;
 
@@ -52,6 +49,9 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
       if (overlayImage != null) {
          _originalOverlayColor = overlayImage.color;
       }
+
+      // Set the default background
+      updateBackground(null);
    }
 
    public void initializeComponents () {
@@ -78,27 +78,23 @@ public class CharacterPortrait : MonoBehaviour, IPointerEnterHandler, IPointerEx
       onToggleValueChanged(isSelected);
    }
 
-   public void initialize (NetEntity entity) {
-      // If the entity is null, display a question mark
-      if (entity == null) {
-         unknownIcon.SetActive(true);
-         backgroundImage.sprite = unknownBackground;
-         return;
-      }
-      
-      // Update the character stack
-      characterStack.updateLayers(entity);
-      characterStack.setDirection(Direction.East);
+   public void updateLayers (NetEntity entity) {
+      updateLayers(entity.gender, entity.bodyType, entity.eyesType, entity.hairType, entity.eyesPalettes, entity.hairPalettes, entity.getArmorCharacteristics(), entity.getWeaponCharacteristics(), entity.getHatCharacteristics());
 
       // Set the background
       updateBackground(entity);
+   }
 
-      // Hide the question mark icon
-      unknownIcon.SetActive(false);
+   public void updateLayers (Gender.Type gender, BodyLayer.Type bodyType, EyesLayer.Type eyesType, HairLayer.Type hairType, string eyesPalettes, string hairPalettes, Armor armor, Weapon weapon, Hat hat) {
+      // Update the character stack
+      characterStack.updateLayers(gender, bodyType, eyesType, hairType, eyesPalettes, hairPalettes, armor, weapon, hat);
+      characterStack.setDirection(Direction.East);
    }
 
    public void updateBackground (NetEntity entity) {
-      if (entity.hasAnyCombat()) {
+      if (entity == null) {
+         backgroundImage.sprite = unknownBackground;
+      } else if (entity.hasAnyCombat()) {
          backgroundImage.sprite = combatBackground;
       } else if (entity is SeaEntity) {
          backgroundImage.sprite = seaBackground;

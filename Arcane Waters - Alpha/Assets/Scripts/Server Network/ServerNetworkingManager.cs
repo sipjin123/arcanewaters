@@ -261,8 +261,12 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.InvokeServerRpc(server.MasterServer_RequestVoyageInstanceCreation, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
    }
 
-   public void sendVoyageGroupMembersToUser (int userId) {
-      server.InvokeServerRpc(server.MasterServer_SendVoyageGroupMembersToUser, userId);
+   public void sendVoyageGroupCompositionToMembers (int groupId) {
+      server.InvokeServerRpc(server.MasterServer_SendVoyageGroupCompositionToMembers, groupId);
+   }
+
+   public void setUserGroupLeaderStatus (int userId, bool isLeader) {
+      server.InvokeServerRpc(server.MasterServer_SetUserGroupLeaderStatus, userId, isLeader);
    }
 
    #region Private Variables

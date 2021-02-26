@@ -839,9 +839,7 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
-   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, int[] groupMembersArray) {
-      List<int> groupMembers = new List<int>(groupMembersArray);
-
+   public void Target_ReceiveVoyageGroupMembers (NetworkConnection connection, VoyageGroupMemberCellInfo[] groupMembers) {
       // Get the panel
       VoyageGroupPanel panel = VoyageGroupPanel.self;
 
@@ -953,35 +951,43 @@ public class RPCManager : NetworkBehaviour
             DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
          });
       } else if (chatType == ChatInfo.Type.Whisper) {
-         string extractedUserName = ChatManager.extractWhisperNameFromChat(message);
-         if (message.StartsWith(ChatPanel.WHISPER_PREFIX)) {
-            message = ChatManager.extractWhisperMessageFromChat(extractedUserName, message);
-            chatInfo.text = message;
-            chatInfo.recipient = extractedUserName;
+         
+         string[] inputParts = message.Split(' ');
+         if (inputParts.Length < 2) {
+            _player.Target_ReceiveNormalChat($"Your whisper does not contain a userName and a message", ChatInfo.Type.System);
+            return;
+         }
+         
+         // Get the user name and message from the chat message
+         string extractedUserName = inputParts[0];
+         message = message.Remove(0, extractedUserName.Length + 1);
+      
+         chatInfo.text = message;
+         chatInfo.recipient = extractedUserName;
 
-            // Background thread
-            UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-               // Try to retrieve the destination user info
-               UserInfo destinationUserInfo = DB_Main.getUserInfo(extractedUserName);
+         // Background thread
+         UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+            // Try to retrieve the destination user info
+            UserInfo destinationUserInfo = DB_Main.getUserInfo(extractedUserName);
 
-               // Back to the Unity thread
-               UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-                  if (destinationUserInfo == null) {
-                     string errorMsg = "Recipient does not exist!";
-                     _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
-                     return;
-                  }
+            // Back to the Unity thread
+            UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+               if (destinationUserInfo == null) {
+                  string errorMsg = "Recipient does not exist!";
+                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, errorMsg, "", "", chatInfo.chatTime.ToBinary(), ChatInfo.Type.Error, null, 0);
+                  return;
+               }
 
-                  ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
-                  _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
+               ServerNetworkingManager.self.sendSpecialChatMessage(destinationUserInfo.userId, chatInfo);
+               _player.Target_ReceiveSpecialChat(_player.connectionToClient, chatInfo.chatId, message, chatInfo.sender, extractedUserName, chatInfo.chatTime.ToBinary(), chatInfo.messageType, chatInfo.guildIconData, chatInfo.senderId);
 
-                  // Store chat message in database
-                  UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-                     DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
-                  });
+               // Store chat message in database
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  DB_Main.storeChatLog(_player.userId, _player.entityName, message, chatInfo.chatTime, chatType, connectionToClient.address);
                });
             });
-         }
+         });
+         
       } else if (chatType == ChatInfo.Type.Group) {
          if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
             return;
@@ -3672,16 +3678,6 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    private void Target_CleanUpVoyagePanelOnKick (NetworkConnection conn) {
       VoyageGroupPanel.self.cleanUpPanelOnKick();
-   }
-
-   [Command]
-   public void Cmd_RequestVoyageGroupMembersFromServer () {
-      if (_player == null) {
-         D.warning("No player object found.");
-         return;
-      }
-
-      VoyageGroupManager.self.sendVoyageGroupMembersToClient(_player);
    }
 
    [ServerOnly]

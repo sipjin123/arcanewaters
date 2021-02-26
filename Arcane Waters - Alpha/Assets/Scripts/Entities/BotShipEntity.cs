@@ -164,14 +164,6 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
       if (!wasChasingLastFrame && _isChasingEnemy) {
          _chaseStartTime = NetworkTime.time;
       }
-
-      // Update our facing direction
-      if (_body.velocity.magnitude > 0.0f) {
-         Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(_body.velocity);
-         if (newFacingDirection != facing) {
-            facing = newFacingDirection;
-         }
-      }
    }
 
    [Server]
@@ -230,7 +222,15 @@ public class BotShipEntity : ShipEntity, IMapEditorDataReceiver
          // Only change our movement if enough time has passed
          double moveTime = NetworkTime.time - _lastMoveChangeTime;
          if (moveTime >= MOVE_CHANGE_INTERVAL) {
-            _body.AddForce(((Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position).normalized * getMoveSpeed());
+            Vector2 direction = (Vector2) _currentPath[_currentPathIndex] - (Vector2) transform.position;
+            
+            // Update our facing direction
+            Direction newFacingDirection = DirectionUtil.getDirectionForVelocity(direction);
+            if (newFacingDirection != facing) {
+               facing = newFacingDirection;
+            }
+
+            _body.AddForce(direction.normalized * getMoveSpeed());
             _lastMoveChangeTime = NetworkTime.time;
          }
 

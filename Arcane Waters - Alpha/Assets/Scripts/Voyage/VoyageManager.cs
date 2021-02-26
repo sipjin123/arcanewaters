@@ -36,6 +36,7 @@ public class VoyageManager : MonoBehaviour {
    /// <summary>
    /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
    /// </summary>
+   [Server]
    public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
@@ -121,6 +122,7 @@ public class VoyageManager : MonoBehaviour {
       return false;
    }
 
+   [Server]
    public List<Voyage> getAllVoyages () {
       List<Voyage> voyages = new List<Voyage>();
 
@@ -134,6 +136,7 @@ public class VoyageManager : MonoBehaviour {
       return voyages;
    }
 
+   [Server]
    public List<Voyage> getAllOpenVoyageInstances () {
       // Get the number of groups in all voyage instances
       Dictionary<int, int> allGroupCount = VoyageGroupManager.self.getGroupCountInAllVoyages();
@@ -150,6 +153,7 @@ public class VoyageManager : MonoBehaviour {
       return allOpenVoyages;
    }
 
+   [Server]
    public bool doesVoyageExists (int voyageId) {
       return tryGetVoyage(voyageId, out Voyage voyage);
    }
@@ -186,10 +190,12 @@ public class VoyageManager : MonoBehaviour {
       return AreaManager.self.getSeaAreaKeys().Where(k => AreaManager.self.getAreaSpecialType(k) == Area.SpecialType.LeagueLobby).ToList();
    }
 
+   [Server]
    public static bool isVoyageOpenToNewGroups (Voyage voyage) {
       return isVoyageOpenToNewGroups(voyage, VoyageGroupManager.self.getGroupCountInVoyage(voyage.voyageId));
    }
 
+   [Server]
    public static bool isVoyageOpenToNewGroups (Voyage voyage, int groupCount) {
       // Calculate the time left until the voyage closes to new groups
       DateTime voyageCreationDate = DateTime.FromBinary(voyage.creationDate);
@@ -208,6 +214,7 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   [Server]
    public void registerUserInTreasureSite (int userId, int voyageId, int instanceId) {
       if (!InstanceManager.self.tryGetVoyageInstance(voyageId, out Instance seaVoyageInstance)) {
          D.error(string.Format("Could not find the sea voyage instance to register a user in a treasure site. userId: {0}", userId));
@@ -269,6 +276,7 @@ public class VoyageManager : MonoBehaviour {
       Global.player.rpc.Cmd_ReturnToTownFromLeague();
    }
 
+   [Server]
    protected void createVoyageInstanceIfNeeded () {
       // Only the master server launches the creation of voyages instances
       NetworkedServer server = ServerNetworkingManager.self.server;
@@ -285,6 +293,7 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   [Server]
    private IEnumerator CO_CreateInitialVoyages () {
       // Wait until our server is defined
       while (ServerNetworkingManager.self == null || ServerNetworkingManager.self.server == null) {
@@ -356,6 +365,7 @@ public class VoyageManager : MonoBehaviour {
       }
    }
 
+   [Server]
    private IEnumerator CO_ForceAdminWarpToTreasureSite (NetEntity admin, string treasureSiteAreaKey, Biome.Type biome) {
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();

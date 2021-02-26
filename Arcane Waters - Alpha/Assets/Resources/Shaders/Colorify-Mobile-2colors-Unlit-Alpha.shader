@@ -39,13 +39,14 @@ Shader "Colorify/Real-time/Mobile/2 Colors/Unlit/Transparent" {
 
 		Pass 
 		{
+			/* Stencils don't play nicely with SpriteMasks, which we use during combats. Temporarily commented-out until we figure out an alternative way of handling hats.
 			Stencil 
 			{
 				Ref [_Stencil]
 				Comp [_StencilComp]
 				Pass [_StencilOp]
 				Fail [_StencilFail]
-			}
+			}*/
 
 			CGPROGRAM
 			#pragma vertex vert

@@ -113,8 +113,13 @@ public class TitleScreen : MonoBehaviour {
          if (_canvasGroup.alpha < 1) {
             _canvasGroup.alpha = 1;
          }
+
          if (!titleScreenReference.activeInHierarchy) {
             titleScreenReference.SetActive(true);
+         }
+
+         if (!virtualCamera.gameObject.activeInHierarchy) {
+            Util.activateVirtualCamera(virtualCamera);
          }
       } else {
          // Slowly fade out the canvas group if the screen isn't active
