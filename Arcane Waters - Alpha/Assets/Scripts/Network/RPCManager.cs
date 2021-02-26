@@ -4234,6 +4234,20 @@ public class RPCManager : NetworkBehaviour
    }
 
    private void processTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers, uint netId, bool createNewEnemy = false) {
+      bool isPvpBattle = true;
+
+      foreach (BattlerInfo defenderInfo in defenders) {
+         if (defenderInfo.enemyType != Enemy.Type.PlayerBattler) {
+            isPvpBattle = false;
+            break;
+         }
+      }
+
+      if (isPvpBattle) {
+         processPvp(defenders, attackers);
+         return;
+      }
+
       if (createNewEnemy) {
          // Hard code enemy type if combat is accessed in team combat panel
          Enemy.Type enemyToSpawn = Enemy.Type.Lizard;
@@ -4385,6 +4399,41 @@ public class RPCManager : NetworkBehaviour
       // Send Battle Bg data
       int bgXmlID = battle.battleBoard.xmlID;
       Target_ReceiveBackgroundInfo(_player.connectionToClient, bgXmlID);
+   }
+
+   private void processPvp (BattlerInfo[] defenders, BattlerInfo[] attackers) {
+      // Look up the player's Area
+      Area area = AreaManager.self.getArea(_player.areaKey);
+      PlayerBodyEntity localBattler = (PlayerBodyEntity) _player;
+      Instance instance = InstanceManager.self.getInstance(localBattler.instanceId);
+
+      // Get or create the Battle instance
+      Battle battle = BattleManager.self.createTeamBattle(area, instance, null, attackers, localBattler, null);
+      battle.isPvp = true;
+
+      // Handles ability related logic
+      List<PlayerBodyEntity> totalPlayerBodies = new List<PlayerBodyEntity>();
+
+      // Compile all defender players
+      foreach (PlayerBodyEntity playerBody in getPlayerBodies(null, defenders)) {
+         BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Defenders);
+         totalPlayerBodies.Add(playerBody);
+      }
+
+      // Compile all Attacker players
+      foreach (PlayerBodyEntity playerBody in getPlayerBodies(attackers, null)) {
+         BattleManager.self.addPlayerToBattle(battle, playerBody, Battle.TeamType.Attackers);
+         totalPlayerBodies.Add(playerBody);
+      }
+
+      // Adds the player to the newly created or existing battle
+      totalPlayerBodies.Add(localBattler);
+      BattleManager.self.addPlayerToBattle(battle, localBattler, Battle.TeamType.Attackers);
+
+      // Process all abilities for each player
+      foreach (PlayerBodyEntity playerBody in totalPlayerBodies) {
+         processPlayerAbilities(playerBody, new List<PlayerBodyEntity> { playerBody });
+      }
    }
 
    private List<PlayerBodyEntity> getPlayerBodies (BattlerInfo[] attackers, BattlerInfo[] defenders) {
