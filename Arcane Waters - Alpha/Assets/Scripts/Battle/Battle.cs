@@ -23,6 +23,10 @@ public class Battle : NetworkBehaviour {
    [SyncVar]
    public int difficultyLevel;
 
+   // If this is a pvp battle
+   [SyncVar]
+   public bool isPvp;
+
    // The Biome Type this Battle is in
    [SyncVar]
    public Biome.Type biomeType;
@@ -249,7 +253,7 @@ public class Battle : NetworkBehaviour {
          if (participant.player != null) {
             // If the enemy wins, reset all battle id for all participants
             // If players win, reset battle id for only players. Enemies should not have a valid battle id anymore so that they cant be engaged in combat
-            if (winningTeam == TeamType.Defenders || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
+            if (winningTeam == TeamType.Defenders || participant.player is PlayerBodyEntity || (winningTeam == TeamType.Attackers && participant.isAttacker())) {
                participant.player.battleId = 0;
                participant.player.resetCombatInit();
             }

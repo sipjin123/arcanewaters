@@ -94,19 +94,23 @@ public class BattleManager : MonoBehaviour {
       HashSet<Enemy.Type> enemyTypes = new HashSet<Enemy.Type>();
 
       // Spawn an appropriate number of enemies based on the number of players in the instance
-      foreach (BattlerInfo battlerInfo in defendersData) {
-         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
-            enemy.enemyType = battlerInfo.enemyType;
-            enemyTypes.Add(battlerInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+      if (defendersData != null && enemy != null) {
+         foreach (BattlerInfo battlerInfo in defendersData) {
+            if (battlerInfo.enemyType != Enemy.Type.PlayerBattler && battle.getTeam(Battle.TeamType.Defenders).Count < Battle.MAX_ENEMY_COUNT) {
+               enemy.enemyType = battlerInfo.enemyType;
+               enemyTypes.Add(battlerInfo.enemyType);
+               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Defenders, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+            }
          }
       }
 
-      foreach (BattlerInfo battlerInfo in attackersData) {
-         if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
-            enemy.enemyType = battlerInfo.enemyType;
-            enemyTypes.Add(battlerInfo.enemyType);
-            this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+      if (attackersData != null && enemy != null) {
+         foreach (BattlerInfo battlerInfo in attackersData) {
+            if (battlerInfo.enemyType != Enemy.Type.PlayerBattler) {
+               enemy.enemyType = battlerInfo.enemyType;
+               enemyTypes.Add(battlerInfo.enemyType);
+               this.addEnemyToBattle(battle, enemy, Battle.TeamType.Attackers, playerBody, battlerInfo.companionId, battlerInfo.battlerXp, instance.difficulty);
+            }
          }
       }
 
@@ -890,7 +894,7 @@ public class BattleManager : MonoBehaviour {
                // TODO: Add reward logic here for boss enemies
             }
          } else {
-            if (battler.player is PlayerBodyEntity) {
+            if (battler.player is PlayerBodyEntity && !battle.isPvp) {
                // Registers the death of the player in combat
                AchievementManager.registerUserAchievement(battler.player, ActionType.CombatDie);
 
