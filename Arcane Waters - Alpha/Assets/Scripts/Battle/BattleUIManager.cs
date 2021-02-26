@@ -126,11 +126,17 @@ public class BattleUIManager : MonoBehaviour {
 
    public void initializeAbilityCooldown (AbilityType abilityType, int index, float coolDown = -1) {
       deselectOtherAbilities();
-      AbilityButton selectedButton = abilityTargetButtons.ToList().FindAll(_ => _.abilityType == abilityType)[index];
-      if (coolDown > -1) {
-         selectedButton.startCooldown(coolDown);
+      List<AbilityButton> abilitTargetButtons = abilityTargetButtons.ToList().FindAll(_ => _.abilityType == abilityType);
+
+      try {
+         AbilityButton selectedButton = abilitTargetButtons[index];
+         if (coolDown > -1) {
+            selectedButton.startCooldown(coolDown);
+         }
+         selectedButton.playSelectAnim();
+      } catch {
+         D.debug("Something went wrong when trying to set cooldown, AbilityButtonCount: " + abilitTargetButtons.Count + " Index: " + index + " AbilityType: " + abilityType);
       }
-      selectedButton.playSelectAnim();
    }
 
    private void triggerAbilityByKey (int keySlot) {
@@ -419,8 +425,10 @@ public class BattleUIManager : MonoBehaviour {
       BasicAbilityData abilityData = null;
 
       if (abilityType == AbilityType.Standard) {
-         if (_playerLocalBattler.getAttackAbilities().Count > 0) { 
+         if (_playerLocalBattler.getAttackAbilities().Count > 0) {
             abilityData = _playerLocalBattler.getAttackAbilities()[abilityTypeIndex];
+         } else {
+            D.debug("The local battler {" + _playerLocalBattler.userId + "} has no attack abilities registered to it!");  
          }
       } else if (abilityType == AbilityType.BuffDebuff) {
          if (_playerLocalBattler.getBuffAbilities().Count > 0) {

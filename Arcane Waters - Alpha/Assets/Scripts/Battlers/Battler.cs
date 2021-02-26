@@ -430,7 +430,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // TODO: After observing multiplayer combat and confirmed that freezing on death anim is no longer occurring, remove this block
       if (Global.displayLandCombatStats) {
          string newMessage = "Dead" + " : " + isDead()
-            + "\nCurHP: {" + health + "} DisHP: {" + displayedHealth + "}" 
+            + "\nCurHP: {" + health + "} DisHP: {" + displayedHealth + "}"
             + "\nAnim: " + _anims[0].currentAnimation;
          if (player.isLocalPlayer) {
             debugTextLog.color = Color.red;
@@ -700,7 +700,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       }
 
       if (battlerAbilitiesInitialized) {
-         D.debug("Warning! Battler abilities have not been initialized!");
+         D.debug("Warning! Battler abilities has already been initialized!");
          return;
       }
 
@@ -2283,7 +2283,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       // Safe check
       if (getAttackAbilities().Count <= 0) {
          if (AbilityManager.self.allAttackbilities.Count > 0) {
-            D.error("This battler {"+ enemyType +"} does not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
+            D.error("This battler {" + enemyType + "} does not have any abilities, setting default ability as: " + AbilityManager.self.allAttackbilities[0].itemName);
             return AbilityManager.self.allAttackbilities[0];
          } else {
             D.error("Something went wrong with ability manager!");
