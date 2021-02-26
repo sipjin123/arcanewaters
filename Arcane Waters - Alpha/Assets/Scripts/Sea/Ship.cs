@@ -176,7 +176,7 @@ public class Ship : SeaEntity {
       int sailors = rand.Next(fetchedShipData.baseSailorsMin, fetchedShipData.baseSailorsMax);
       int suppliesRoom = rand.Next(fetchedShipData.baseSupplyRoomMin, fetchedShipData.baseSupplyRoomMax);
       int cargoRoom = rand.Next(fetchedShipData.baseCargoRoomMin, fetchedShipData.baseCargoRoomMax);
-      float damage = Random.Range(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
+      float damage = rand.NextFloat(fetchedShipData.baseDamageModifierMin, fetchedShipData.baseDamageModifierMax);
       int health = rand.Next(fetchedShipData.baseHealthMin, fetchedShipData.baseHealthMax);
       int price = getBasePrice(shipType);
       int attackRange = rand.Next(fetchedShipData.baseRangeMin, fetchedShipData.baseRangeMax);

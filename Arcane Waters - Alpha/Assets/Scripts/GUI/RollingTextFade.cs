@@ -138,6 +138,7 @@ public class RollingTextFade : ClientMonoBehaviour {
                   currentCharacter = 0;
                   startingCharacterRange = 0;
                   isRangeMax = true; // End the coroutine.
+                  yield break;
                }
             }
 
