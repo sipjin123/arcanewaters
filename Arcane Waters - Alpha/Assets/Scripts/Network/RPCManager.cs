@@ -4727,7 +4727,12 @@ public class RPCManager : NetworkBehaviour
 
                   if (battler != null) {
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
-                     Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+
+                     if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {
+                        Target_UpdateBattleAbilityUI(battler.player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                     } else {
+                        Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                     }
                   }
                } else {
                   // Sort by equipment slot index
@@ -4756,7 +4761,12 @@ public class RPCManager : NetworkBehaviour
 
                   try {
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
-                     Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+
+                     if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {
+                        Target_UpdateBattleAbilityUI(battler.player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                     } else {
+                        Target_UpdateBattleAbilityUI(_player.connectionToClient, Util.serialize(equippedAbilityList), (int) weaponClass, validAbilities > 0);
+                     }
                   } catch {
                      D.debug("Cant add battler abilities for: " + battler);
                   }
@@ -4914,13 +4924,17 @@ public class RPCManager : NetworkBehaviour
          return;
       }
 
-      // Make sure the source battler can use that ability type
-      if (!abilityData.isReadyForUseBy(sourceBattler)) {
-         D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
-         return;
-      }
+      if (abilityData != null) {
+         // Make sure the source battler can use that ability type
+         if (!abilityData.isReadyForUseBy(sourceBattler)) {
+            D.debug("Battler requested to use ability they're not allowed: " + playerBody.entityName + ", " + abilityData.itemName);
+            return;
+         }
 
-      BattleManager.self.executeStanceChangeAction(battle, sourceBattler, newStance);
+         BattleManager.self.executeStanceChangeAction(battle, sourceBattler, newStance);
+      } else {
+         D.debug("Ability data is null!");
+      }
    }
 
    [Server]
