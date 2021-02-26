@@ -265,7 +265,10 @@ public class VoyageManager : MonoBehaviour {
          return;
       }
 
-      Global.player.rpc.Cmd_WarpToLeague();
+      if (!Global.player.isAboutToWarpOnClient) {
+         Global.player.setupForWarpClient();
+         Global.player.rpc.Cmd_WarpToLeague();
+      }
    }
 
    public void returnToTownFromLeague (NetEntity entity) {
@@ -443,6 +446,7 @@ public class VoyageManager : MonoBehaviour {
          
          if (mapList.Count == 0) {
             D.error("No league maps available!");
+            player.rpc.Target_OnWarpFailed();
             yield break;
          }
          areaKey = mapList[UnityEngine.Random.Range(0, mapList.Count)];

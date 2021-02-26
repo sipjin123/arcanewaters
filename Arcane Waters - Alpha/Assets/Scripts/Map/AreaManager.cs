@@ -131,6 +131,10 @@ public class AreaManager : MonoBehaviour
       return getAreaSpecialType(areaKey) == Area.SpecialType.Private;
    }
 
+   public bool isTownArea (string areaKey) {
+      return getAreaSpecialType(areaKey) == Area.SpecialType.Town;
+   }
+
    public EditorType? getAreaEditorType (string areaKey) {
       if (_areaKeyToMapInfo.TryGetValue(areaKey, out Map map)) {
          return map.editorType;

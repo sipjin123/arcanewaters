@@ -213,7 +213,7 @@ public class GuildPanel : Panel {
       appointLeaderButton.gameObject.SetActive(Global.player.guildId != 0 && Global.player.guildRankPriority == 0);
       appointLeaderButton.interactable = isActive;
 
-      ranksButton.interactable &= Global.player.canPerformAction(GuildPermission.EditRanks);
+      ranksButton.interactable = Global.player.canPerformAction(GuildPermission.EditRanks);
    }
 
    public List<GuildMemberRow> getGuildMemeberRows () {

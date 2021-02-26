@@ -49,13 +49,6 @@ public class ShipBars : MonoBehaviour {
       if (_entity == null) {
          return;
       }
-
-      healthUnitContainer.DestroyChildren();
-      for (int i = 0; i < Mathf.Ceil((float)_entity.maxHealth / HP_PER_UNIT); i++) {
-         ShipHealthUnit unit = Instantiate(shipHealthUnitPrefab, healthUnitContainer.transform, false);
-         unit.setStatus(ShipHealthUnit.Status.Healthy);
-         _healthUnits.Add(unit);
-      }
    }
 
    protected virtual void Update () {
@@ -127,6 +120,15 @@ public class ShipBars : MonoBehaviour {
       }
 
       _lastHealth = _entity.currentHealth;
+   }
+
+   protected void initializeHealthBar () {
+      healthUnitContainer.DestroyChildren();
+      for (int i = 0; i < Mathf.Ceil((float) _entity.maxHealth / HP_PER_UNIT); i++) {
+         ShipHealthUnit unit = Instantiate(shipHealthUnitPrefab, healthUnitContainer.transform, false);
+         unit.setStatus(ShipHealthUnit.Status.Healthy);
+         _healthUnits.Add(unit);
+      }
    }
 
    #region Private Variables

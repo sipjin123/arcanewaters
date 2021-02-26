@@ -23,6 +23,8 @@ public class ShipBarsBot : ShipBars
          return;
       }
 
+      initializeHealthBar();
+
       if (_entity.guildId == BotShipEntity.PRIVATEERS_GUILD_ID) {
          guildIcon.sprite = privateersIcon;
       } else if (_entity.guildId == BotShipEntity.PIRATES_GUILD_ID) {

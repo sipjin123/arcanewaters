@@ -445,15 +445,18 @@ public class ChatPanel : MonoBehaviour {
          chatLine.text.text = string.Format("<color={0}>{1} {2}</color>", getColorString(chatInfo.messageType), chatInfo.sender, chatInfo.text);
       } else if (chatInfo.messageType == ChatInfo.Type.Group) {
          chatLine.text.text = string.Format("<color={0}>[GROUP] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType), chatInfo.sender, getColorString(chatInfo.messageType), chatInfo.text);
-      } else if (chatInfo.messageType == ChatInfo.Type.Officer || chatInfo.messageType == ChatInfo.Type.Guild) {
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
+      } else if (chatInfo.messageType == ChatInfo.Type.Guild) {
+         chatLine.text.text = string.Format("<color={0}>[GUILD] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
+      } else if (chatInfo.messageType == ChatInfo.Type.Officer) {
+         chatLine.text.text = string.Format("<color={0}>[OFFICER] {1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, false), chatInfo.sender, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       } else {
          string messageSource = chatInfo.sender;
          if (chatInfo.messageType == ChatInfo.Type.Whisper) {
             messageSource = isLocalPlayer ? ("You whispered to " + chatInfo.recipient) : (chatInfo.sender + " whispers");
          }
 
-         chatLine.text.text = string.Format("<color={0}>{1}:</color> <color={2}>{3}</color>", getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
+         string stringFormat = chatInfo.messageType == ChatInfo.Type.Global ? "<color={0}>[GLOBAL] {1}:</color> <color={2}>{3}</color>" : "<color={0}>{1}:</color> <color={2}>{3}</color>";
+         chatLine.text.text = string.Format(stringFormat, getSenderNameColor(chatInfo.messageType, isLocalPlayer), messageSource, getColorString(chatInfo.messageType, isLocalPlayer), chatInfo.text);
       }
 
       // In minimized mode, keep the scrollbar at the bottom
@@ -519,6 +522,20 @@ public class ChatPanel : MonoBehaviour {
                newColor = groupNameLocalColor;
             } else {
                newColor = groupNameOtherColor;
+            }
+            break;
+         case ChatInfo.Type.Guild:
+            if (isLocalPlayer) {
+               newColor = guildChatLocalColor;
+            } else {
+               newColor = guildChatOtherColor;
+            }
+            break;
+         case ChatInfo.Type.Officer:
+            if (isLocalPlayer) {
+               newColor = officerChatLocalColor;
+            } else {
+               newColor = officerChatOtherColor;
             }
             break;
       }

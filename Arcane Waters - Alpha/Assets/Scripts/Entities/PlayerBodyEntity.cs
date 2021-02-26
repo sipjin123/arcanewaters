@@ -51,6 +51,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
    // Reference to the wind vfx during dash
    public Transform windDashSprite;
 
+   // Reference to the canvas containing the player's health and name
+   public Transform nameAndHealthUI;
+
    // The offset of the wind vfx
    public const float windDashZOffset = 0.002f;
 
@@ -231,6 +234,7 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
       setSpritesHeight(y);
       windDashSprite.localPosition = Vector3.up * y;
+      nameAndHealthUI.localPosition = Vector3.up * y;
    }
 
    public void setSpritesHeight (float newHeight) {

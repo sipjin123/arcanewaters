@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using Mirror;
 using System;
+using TMPro;
 
 public class VoyageStatusPanel : ClientMonoBehaviour
 {
@@ -18,43 +19,32 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The section that is only visible when the mouse is over the panel
    public GameObject collapsingContainer;
 
-   // The map name
-   public Text mapNameText;
-
-   // The stats plaque image
-   public Image statsPlaqueImage;
-
    // The PvP-PvE mode image
    public Image pvpPveModeImage;
 
    // The PvP-PvE text
-   public Text pvpPveText;
+   public TextMeshProUGUI pvpPveText;
 
    // The player count text
-   public Text playerCountText;
+   public TextMeshProUGUI playerCountText;
+
+   // The player count in town text
+   public TextMeshProUGUI playerCountTownText;
 
    // The time since the voyage started
-   public Text timeText;
+   public TextMeshProUGUI timeText;
 
    // The treasure site count text
-   public Text treasureSiteCountText;
+   public TextMeshProUGUI treasureSiteCountText;
 
    // The alive enemies count
-   public Text aliveEnemiesCountText;
+   public TextMeshProUGUI aliveEnemiesCountText;
 
    // The index of the current league
-   public Text leagueIndexText;
+   public TextMeshProUGUI leagueIndexText;
 
    // The lobby label
-   public Text lobbyText;
-
-   // The text outlines
-   public Outline[] outlines;
-
-   // The colors for the outlines
-   public Color bronzeOutlineColor;
-   public Color silverOutlineColor;
-   public Color goldOutlineColor;
+   public TextMeshProUGUI lobbyText;
 
    // The icons for PvP and PvE modes
    public Sprite pvpIcon;
@@ -64,6 +54,8 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    public GameObject[] voyageStatuses = new GameObject[0];
    public GameObject[] leagueStatuses = new GameObject[0];
    public GameObject[] lobbyStatuses = new GameObject[0];
+   public GameObject[] townStatuses = new GameObject[0];
+   public GameObject[] treasureSiteStatuses = new GameObject[0];
 
    // Self
    public static VoyageStatusPanel self;
@@ -82,7 +74,7 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
    public void Update () {
       // Hide the panel in certain situations
-      if (Global.player == null || !VoyageGroupManager.isInGroup(Global.player) || Global.player.isInBattle()) {
+      if (Global.player == null || Global.player.isInBattle()) {
          hide();
          return;
       }
@@ -100,25 +92,47 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       // Get the current instance
       Instance instance = Global.player.getInstance();
 
-      // Set a default status if this is not the voyage instance
-      if (instance == null || !instance.isVoyage) {
+      // Show different relevant statuses depending on the area type
+      if (VoyageGroupManager.isInGroup(Global.player)) {
+         if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            leagueStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            lobbyStatuses.Show();
+         } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            lobbyStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            leagueStatuses.Show();
+         } else if (VoyageManager.isTreasureSiteArea(instance.areaKey)) {
+            voyageStatuses.Hide();
+            lobbyStatuses.Hide();
+            townStatuses.Hide();
+            leagueStatuses.Hide();
+            treasureSiteStatuses.Show();
+
+            // Disable the empty collapsing container (causes the panel to slightly resize when hovering it)
+            collapsingContainer.SetActive(false);
+         } else if (instance.isVoyage) {
+            lobbyStatuses.Hide();
+            leagueStatuses.Hide();
+            townStatuses.Hide();
+            treasureSiteStatuses.Hide();
+            voyageStatuses.Show();
+         } else {
+            setDefaultStatus();
+         }
+      } else {
          setDefaultStatus();
-         return;
       }
 
-      // Show different relevant statuses for voyage and league instances
-      if (instance.isLeague && VoyageManager.isLobbyArea(instance.areaKey)) {
-         voyageStatuses.Hide();
-         leagueStatuses.Hide();
-         lobbyStatuses.Show();
-      } else if (instance.isLeague && !VoyageManager.isLobbyArea(instance.areaKey)) {
-         voyageStatuses.Hide();
-         lobbyStatuses.Hide();
-         leagueStatuses.Show();
-      } else {
-         lobbyStatuses.Hide();
-         leagueStatuses.Hide();
-         voyageStatuses.Show();
+      playerCountTownText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
+
+      // If the player is not in a group, there is no need to update the rest
+      if (!VoyageGroupManager.isInGroup(Global.player)) {
+         return;
       }
 
       // Set the status that are always visible
@@ -130,32 +144,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
       aliveEnemiesCountText.text = instance.aliveNPCEnemiesCount.ToString() + "/" + (instance.getTotalNPCEnemyCount()).ToString();
       lobbyText.text = Voyage.getLeagueAreaName(instance.leagueIndex);
-
-      // Set the plaque labels outline color
-      switch (Voyage.getDifficultyEnum(instance.difficulty)) {
-         case Voyage.Difficulty.Easy:
-            foreach (Outline outline in outlines) {
-               outline.effectColor = bronzeOutlineColor;
-            }
-            break;
-         case Voyage.Difficulty.Medium:
-            foreach (Outline outline in outlines) {
-               outline.effectColor = silverOutlineColor;
-            }
-            break;
-         case Voyage.Difficulty.Hard:
-            foreach (Outline outline in outlines) {
-               outline.effectColor = goldOutlineColor;
-            }
-            break;
-         default:
-            foreach (Outline outline in outlines) {
-               outline.effectColor = Color.white;
-            }
-            break;
-      }
-
-      statsPlaqueImage.sprite = ImageManager.getSprite(VoyageMapCell.SEA_MAP_PATH + "plaque_" + VoyageMapCell.getFrameName(instance.difficulty));
 
       // If the panel is collapsed, there is no need to update the rest
       if (!collapsingContainer.activeSelf) {
@@ -172,17 +160,16 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    }
 
    private void setDefaultStatus () {
-      voyageStatuses.Hide();
       lobbyStatuses.Hide();
-      leagueStatuses.Show();
+      leagueStatuses.Hide();
+      voyageStatuses.Hide();
+      treasureSiteStatuses.Hide();
+      townStatuses.Show();
 
-      pvpPveText.text = "?";
-      playerCountText.text = "?/?";
-      treasureSiteCountText.text = "?/?";
-      timeText.text = "?";
-      aliveEnemiesCountText.text = "?/?";
-      leagueIndexText.text = "? of ?";
-      lobbyText.text = "?";
+      playerCountTownText.text = "?/?";
+
+      // Disable the empty collapsing container (causes the panel to slightly resize when hovering it)
+      collapsingContainer.SetActive(false);
    }
 
    public void show () {

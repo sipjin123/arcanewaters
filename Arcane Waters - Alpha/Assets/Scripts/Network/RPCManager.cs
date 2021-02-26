@@ -3537,11 +3537,12 @@ public class RPCManager : NetworkBehaviour
             } else {
                // When entering the first league map (from the lobby), all the group members must be nearby
                List<string> missingMembersNames = new List<string>();
+               List<int> missingMembersUserIds = new List<int>();
                foreach (int memberUserId in voyageGroup.members) {
                   // Try to find the entity
                   NetEntity memberEntity = EntityManager.self.getEntity(memberUserId);
                   if (memberEntity == null) {
-                     missingMembersNames.Add("?");
+                     missingMembersUserIds.Add(memberUserId);
                   } else {
                      if (Vector3.Distance(memberEntity.transform.position, _player.transform.position) > Voyage.LEAGUE_START_MEMBERS_MAX_DISTANCE) {
                         missingMembersNames.Add(memberEntity.entityName);
@@ -3549,19 +3550,31 @@ public class RPCManager : NetworkBehaviour
                   }
                }
 
-               if (missingMembersNames.Count > 0) {
-                  string allNames = "";
-                  foreach (string name in missingMembersNames) {
-                     allNames = allNames + name + ", ";
+               // Background thread
+               UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+                  // If some user entities are connected to another server or offline, read their names in the DB
+                  foreach (int userId in missingMembersUserIds) {
+                     missingMembersNames.Add(DB_Main.getUserName(userId));
                   }
-                  allNames = allNames.Substring(0, allNames.Length - 2);
 
-                  ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
-                  return;
-               }
+                  // Back to the Unity thread
+                  UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+                     if (missingMembersNames.Count > 0) {
+                        string allNames = "";
+                        foreach (string name in missingMembersNames) {
+                           allNames = allNames + name + ", ";
+                        }
+                        allNames = allNames.Substring(0, allNames.Length - 2);
 
-               // Create the first league map and warp the player to it
-               VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, instance.leagueIndex + 1, instance.biome);
+                        ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Some group members are missing: " + allNames);
+                        Target_OnWarpFailed();
+                        return;
+                     }
+
+                     // Create the first league map and warp the player to it
+                     VoyageManager.self.createLeagueInstanceAndWarpPlayer(_player, instance.leagueIndex + 1, instance.biome);
+                  });
+               });
             }
          } else {
             // Display a panel with the current voyage map details
@@ -3678,6 +3691,24 @@ public class RPCManager : NetworkBehaviour
    [TargetRpc]
    private void Target_CleanUpVoyagePanelOnKick (NetworkConnection conn) {
       VoyageGroupPanel.self.cleanUpPanelOnKick();
+   }
+
+   [Server]
+   public void sendVoyageGroupMembersInfo() {
+      if (!VoyageGroupManager.self.tryGetGroupById(_player.voyageGroupId, out VoyageGroupInfo voyageGroup)) {
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Read in DB the group members info needed to display their portrait
+         List<VoyageGroupMemberCellInfo> groupMembersInfo = VoyageGroupManager.self.getGroupMembersInfo(voyageGroup);
+
+         // Back to the Unity thread
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveVoyageGroupMembers(_player.connectionToClient, groupMembersInfo.ToArray());
+         });
+      });
    }
 
    [ServerOnly]

@@ -61,6 +61,7 @@ public class ShipBarsPlayer : ShipBars
          yield return null;
       }
 
+      initializeHealthBar();
       portrait.updateLayers(_entity);
 
       // Set the portrait frame for local or non local entities
