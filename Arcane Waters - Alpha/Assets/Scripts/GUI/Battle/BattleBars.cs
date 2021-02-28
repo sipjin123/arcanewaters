@@ -22,11 +22,13 @@ public class BattleBars : MonoBehaviour {
 
    #endregion
 
-   private void Start () {
+   private void Awake () {
       // Look up components
       _battler = GetComponentInParent<Battler>();
       _canvasGroup = GetComponent<CanvasGroup>();
+   }
 
+   private void Start () {
       // Only show the timer for our own player
       timerContainer.SetActive(_battler.player == Global.player);
 
@@ -67,8 +69,18 @@ public class BattleBars : MonoBehaviour {
       healthBar.fillAmount = ((float) _battler.displayedHealth / _battler.getStartingHealth());
 
       // Hide our bars while we're doing an attack
-      _canvasGroup.alpha += _battler.isJumping ? -5f * Time.deltaTime : 5f * Time.deltaTime;
-      _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
+      if (_battler != BattleSelectionManager.self.selectedBattler) {
+         _canvasGroup.alpha += _battler.isJumping ? -5f * Time.deltaTime : 5f * Time.deltaTime;
+         _canvasGroup.alpha = Mathf.Clamp(_canvasGroup.alpha, 0f, 1f);
+      } else {
+         _canvasGroup.alpha = 1;
+      }
+   }
+
+   public void toggleDisplay (bool isShown) {
+      if (_canvasGroup != null) {
+         _canvasGroup.alpha = isShown ? 1 : 0;
+      }
    }
 
    #region Private Variables

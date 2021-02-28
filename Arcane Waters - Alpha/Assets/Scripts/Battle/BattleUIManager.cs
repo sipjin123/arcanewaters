@@ -529,7 +529,7 @@ public class BattleUIManager : MonoBehaviour {
 
                playerBattler.onBattlerDeselect.AddListener(() => {
                   playerBattleCG.Hide();
-                  playerBattler.selectedBattleBar.gameObject.SetActive(false);
+                  playerBattler.selectedBattleBar.toggleDisplay(false);
                });
 
                _playerLocalBattler = playerBattler;
@@ -550,7 +550,7 @@ public class BattleUIManager : MonoBehaviour {
       Vector3 pointOffset = new Vector3(playerBattler.clickBox.bounds.size.x / 4, playerBattler.clickBox.bounds.size.y * 1.75f);
       setRectToScreenPosition(mainPlayerRect, playerBattler.battleSpot.transform.position, pointOffset);
 
-      playerBattler.selectedBattleBar.gameObject.SetActive(false);
+      playerBattler.selectedBattleBar.toggleDisplay(false);
       usernameText.text = Global.player.entityName;
       usernameText.gameObject.SetActive(true);
       if (showAbilities) {

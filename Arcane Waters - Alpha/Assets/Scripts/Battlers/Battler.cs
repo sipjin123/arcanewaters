@@ -292,6 +292,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
       initializeBattler();
+
+      selectedBattleBar.gameObject.SetActive(true);
+      selectedBattleBar.toggleDisplay(false);
    }
 
    private void initializeBattler () {
@@ -346,7 +349,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                BattleUIManager.self.playerBattleCG.Show();
                BattleUIManager.self.usernameText.gameObject.SetActive(true);
                BattleUIManager.self.usernameText.text = BodyManager.self.getBody(allyBattler.userId).nameText.text;
-               selectedBattleBar.gameObject.SetActive(false);
+               selectedBattleBar.toggleDisplay(false);
 
                // Enable all buff abilities
                BattleUIManager.self.setAbilityType(AbilityType.BuffDebuff);
@@ -354,7 +357,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             onBattlerDeselect.AddListener(() => {
                BattleUIManager.self.playerBattleCG.Hide();
-               selectedBattleBar.gameObject.SetActive(false);
+               selectedBattleBar.toggleDisplay(false);
             });
          } 
       }
@@ -494,7 +497,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                shadowTransform.localScale = new Vector2(_alteredBattlerData.shadowScale, _alteredBattlerData.shadowScale);
                shadowTransform.localPosition = new Vector3(_alteredBattlerData.shadowOffset.x, _alteredBattlerData.shadowOffset.y, shadowTransform.localPosition.z);
             }
-            selectedBattleBar.gameObject.SetActive(true);
+            selectedBattleBar.toggleDisplay(true);
 
             List<BasicAbilityData> basicAbilityDataList = new List<BasicAbilityData>();
             foreach (int id in battlerData.battlerAbilities.basicAbilityDataList) {
@@ -519,13 +522,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          } else if (battlerType == BattlerType.PlayerControlled && Global.player != null) {
             if (userId != Global.player.userId) {
                selectedBattleBar = minionBattleBar;
-               selectedBattleBar.gameObject.SetActive(false);
+               selectedBattleBar.toggleDisplay(false);
             } else {
                BattleUIManager.self.abilitiesCG.Show();
                selectedBattleBar = minionBattleBar;
                selectedBattleBar.nameText.text = Global.player.nameText.text;
                BattleUIManager.self.playerBattleCG.Hide();
-               selectedBattleBar.gameObject.SetActive(false);
+               selectedBattleBar.toggleDisplay(false);
             }
          }
 
@@ -679,13 +682,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
          if (hoverPlayerNames) {
             BattleUIManager.self.usernameText.gameObject.SetActive(false);
-            selectedBattleBar.gameObject.SetActive(isMouseHovering());
+            selectedBattleBar.toggleDisplay(isMouseHovering());
          } else {
-            selectedBattleBar.gameObject.SetActive(false);
+            selectedBattleBar.toggleDisplay(false);
          }
       } else {
          if (selectedBattleBar != null) {
-            selectedBattleBar.gameObject.SetActive(isMouseHovering());
+            selectedBattleBar.toggleDisplay(isMouseHovering());
          }
       }
    }
