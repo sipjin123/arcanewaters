@@ -141,7 +141,7 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
          }
          addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
-         addButton("Initialize Pvp", () => initializePVP(userId, userName));
+         addButton("Challenge to Duel (practice)", () => initializePVP(userId, userName));
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {
