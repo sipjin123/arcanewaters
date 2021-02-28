@@ -603,7 +603,12 @@ public class BattleManager : MonoBehaviour {
             // Make note how long the two Battler objects need in order to execute the attack/hit animations
             source.animatingUntil = timeAttackEnds;
             target.animatingUntil = timeAttackEnds;
-            
+
+            // TODO: Remove after fixing bug wherein Golem boss action is stuck for a long time
+            if (source.enemyType == Enemy.Type.Golem_Boss && Global.displayLandCombatLogs) {
+               D.debug("Golem: " + " TimeToWait: " + (timeToWait) + " Cooldown: " + cooldownDuration + " AtkEnds: " + timeAttackEnds.ToString("f1")+ " CurrTime: " +NetworkTime.time.ToString("f1"));
+            }
+
             // Wait to apply the effects of the action here on the server until the appointed time
             StartCoroutine(applyActionAfterDelay(timeToWait, action, isMultiTarget));
 
