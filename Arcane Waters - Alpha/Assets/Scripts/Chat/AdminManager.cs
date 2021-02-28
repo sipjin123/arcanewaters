@@ -422,7 +422,8 @@ public class AdminManager : NetworkBehaviour
 
    [TargetRpc]
    public void Target_ReceiveCombatStats (NetworkConnection connection) {
-      Global.displayLandCombatStats = true;
+      D.debug("This user can now see combat logs!");
+      Global.displayLandCombatLogs = true;
    }
 
    [Command]
