@@ -458,6 +458,7 @@ MonoBehaviour:
   id: 0
   instanceId: 0
   creationTime: 0
+  chestSpawnId: 0
   spriteRenderer: {fileID: 8381824578476549286}
   openButtonContainer: {fileID: 8686771682710097170}
   shineContainer: {fileID: 8263979464909163114}
@@ -472,8 +473,11 @@ MonoBehaviour:
   enemyType: 0
   autoDestroy: 1
   useCustomSprite: 0
+  isExpired: 0
   customSpritePath: 
   isWaitingForServerResponse: 0
+  isLocallyInteracted: 0
+  areaKey: 
 --- !u!114 &4298218442774226192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -592,7 +596,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e851007333b54a4190716c035b83695, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offsetZ: 0
+  offsetZ: -0.05
   inheritedOffsetZ: 0
   isActive: 1
   sortPoint: {fileID: 0}
@@ -649,25 +653,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.05
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  generatesOnValidate: 1
+  outlineRenderer: {fileID: 0}
+  _renderers: []
 --- !u!1 &4454081326584411422
 GameObject:
   m_ObjectHideFlags: 0

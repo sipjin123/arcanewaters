@@ -115,11 +115,6 @@ public class TreasureChest : NetworkBehaviour {
       if (!NetworkClient.active) {
          triggerCollider.enabled = false;
       }
-
-      // Schedule the chest disappearance, except for Site chests
-      if (chestType != ChestSpawnType.Site) {
-         StartCoroutine(CO_DisableChestAfterLifetime());
-      }
    }
 
    public void Start () {
@@ -169,7 +164,7 @@ public class TreasureChest : NetworkBehaviour {
       if (chestType == ChestSpawnType.Site) {
          // We only enable the box collider for clients in the relevant instance
          boxCollider.enabled = (Global.player != null && Global.player.instanceId == this.instanceId);
-      } else if (chestType == ChestSpawnType.Sea) {
+      } else if (chestType == ChestSpawnType.Sea || chestType == ChestSpawnType.Land) {
          boxCollider.enabled = false;
          triggerCollider.enabled = !hasBeenOpened();
       } else {
@@ -398,23 +393,6 @@ public class TreasureChest : NetworkBehaviour {
       yield return new WaitForSeconds(5);
       gameObject.SetActive(false);
       deleteTreasureChestIcon();
-   }
-
-   private IEnumerator CO_DisableChestAfterLifetime () {
-      yield return new WaitForSeconds(30);
-
-      if (NetworkServer.active) {
-         // The server will mark this loot bag as expired, if so then it should not render for the clients anymore
-         isExpired = true;
-         gameObject.SetActive(false);
-      } else {
-         // Add the player to user list so when reconnecting, this chest will no longer be shown
-         if (Global.player != null) {
-            PlayerPrefs.SetInt(PREF_CHEST_STATE + "_" + Global.userObjects.userInfo.userId + "_" + areaKey + "_" + chestSpawnId, 1);
-         }
-         gameObject.SetActive(false);
-         deleteTreasureChestIcon();
-      }
    }
 
    #region Private Variables
