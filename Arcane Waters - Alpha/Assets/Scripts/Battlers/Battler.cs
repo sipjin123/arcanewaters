@@ -1798,7 +1798,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * LevelUtil.levelForXp(XP));
+      int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
 
       return (int) health;
    }
@@ -1808,7 +1808,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
+      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level) * battle.difficultyLevel;
 
       return (int) health;
    }
