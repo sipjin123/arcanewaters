@@ -8638,6 +8638,30 @@ public class DB_Main : DB_MainStub
       return minVersion;
    }
 
+   public static new int getMinimumToolsVersionForLinux () {
+      int minVersion = 0;
+
+      try {
+         using (MySqlConnection conn = getConnection())
+         using (MySqlCommand cmd = new MySqlCommand("SELECT minToolsVersionLinux FROM game_version", conn)) {
+            conn.Open();
+            cmd.Prepare();
+            DebugQuery(cmd);
+
+            // Create a data reader and Execute the command
+            using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
+               while (dataReader.Read()) {
+                  minVersion = dataReader.GetInt32("minToolsVersionLinux");
+               }
+            }
+         }
+      } catch (Exception e) {
+         D.error("MySQL Error: " + e.ToString());
+      }
+
+      return minVersion;
+   }
+
    #endregion
 
    #region Auction Features

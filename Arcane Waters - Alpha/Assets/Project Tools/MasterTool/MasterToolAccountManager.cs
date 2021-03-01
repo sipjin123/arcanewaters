@@ -63,7 +63,11 @@ public class MasterToolAccountManager : MonoBehaviour {
       userNameField.text = PlayerPrefs.GetString(USERNAME_PREF);
 
       // Get the program version from the cloud manifest
-      _programVersion = Util.getGameVersion();
+      try {
+         _programVersion = Util.getGameVersion();
+      } catch {
+         D.debug("Failed to get linux game version");
+      }
 
       exitButton.onClick.AddListener(() => {
          Application.Quit();
@@ -81,6 +85,8 @@ public class MasterToolAccountManager : MonoBehaviour {
             int minimumToolsVersion;
             if (Application.platform == RuntimePlatform.OSXPlayer) {
                minimumToolsVersion = DB_Main.getMinimumToolsVersionForMac();
+            } else if (Application.platform == RuntimePlatform.LinuxPlayer) {
+               minimumToolsVersion = DB_Main.getMinimumToolsVersionForLinux();
             } else {
                minimumToolsVersion = DB_Main.getMinimumToolsVersionForWindows();
             }

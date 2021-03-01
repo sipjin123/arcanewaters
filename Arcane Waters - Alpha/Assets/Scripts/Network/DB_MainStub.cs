@@ -1179,6 +1179,10 @@ public class DB_MainStub : MonoBehaviour
       return 0;
    }
 
+   public static int getMinimumToolsVersionForLinux () {
+      return 0;
+   }
+
    public static void setServerFromConfig () {
 
    }
