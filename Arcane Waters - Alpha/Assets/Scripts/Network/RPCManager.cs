@@ -4281,6 +4281,46 @@ public class RPCManager : NetworkBehaviour
    #endregion
 
    [Command]
+   public void Cmd_InviteToPvp (int inviteeUserId) {
+      BodyEntity inviteeEntity = BodyManager.self.getBody(inviteeUserId);
+      if (inviteeEntity != null) {
+         inviteeEntity.rpc.Target_ReceivePvpInvite(inviteeEntity.connectionToClient, _player.userId, _player.entityName);
+      } else {
+         D.debug("Cant find Invitee user: " + inviteeUserId);
+      }
+   }
+
+   [TargetRpc]
+   public void Target_ReceivePvpInvite (NetworkConnection connection, int inviterUserId, string inviterName) {
+      PvpInviteScreen.self.activate(inviterName);
+      PvpInviteScreen.self.acceptButton.onClick.AddListener(() => {
+         Cmd_AcceptPvpInvite(inviterUserId);
+         PvpInviteScreen.self.hide();
+         PvpInviteScreen.self.acceptButton.onClick.RemoveAllListeners();
+      });
+
+      PvpInviteScreen.self.refuseButton.onClick.AddListener(() => {
+         PvpInviteScreen.self.hide();
+         PvpInviteScreen.self.refuseButton.onClick.RemoveAllListeners();
+      });
+   }
+
+   [Command]
+   public void Cmd_AcceptPvpInvite (int inviterUserId) {
+      List<BattlerInfo> rightBattlersInfo = new List<BattlerInfo>();
+      List<BattlerInfo> leftBattlersInfo = new List<BattlerInfo>();
+
+      BodyEntity inviteeEntity = BodyManager.self.getBody(inviterUserId);
+      BattlerInfo newInfo = new BattlerInfo {
+         enemyType = Enemy.Type.PlayerBattler,
+         battlerName = inviteeEntity.entityName,
+         battlerType = BattlerType.PlayerControlled
+      };
+      leftBattlersInfo.Add(newInfo);
+      processTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray(), 0, false);
+   }
+
+   [Command]
    public void Cmd_StartNewTeamBattle (BattlerInfo[] defenders, BattlerInfo[] attackers) {
       // Checks if the user is an admin  
       if (!_player.isAdmin()) {
