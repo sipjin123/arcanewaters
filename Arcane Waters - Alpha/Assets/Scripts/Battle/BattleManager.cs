@@ -359,9 +359,11 @@ public class BattleManager : MonoBehaviour {
       battler.name = data.enemyName;
       battler.companionId = companionId;
       battler.XP = battlerXp;
+      battler.difficultyLevel = difficultyLevel;
 
       // Set starting stats
-      battler.health = battler.getStartingHealth(overrideType) * difficultyLevel;
+      battler.health = battler.getStartingHealth(overrideType);
+      battler.displayedHealth = battler.getStartingHealth(overrideType);
 
       // Set up our initial data and position
       battler.playerNetId = enemy.netId;

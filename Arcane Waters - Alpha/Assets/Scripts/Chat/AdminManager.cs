@@ -96,6 +96,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("/motd", "Displays the message of the day", requestGetMotd));
       cm.addCommand(new CommandData("set_motd", "Sets the message of the day", requestSetMotd, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "message" }));
       cm.addCommand(new CommandData("win", "Kills all of the enemies in a land battle", requestWin, requiredPrefix: CommandType.Admin));
+      cm.addCommand(new CommandData("difficulty", "Enables the players to alter difficulty of current instance", requestDifficulty, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "difficultyLevel" }));
 
       List<Map> maps = MapManager.self.mapDataCache;
       List<string> mapNames = new List<string>();
@@ -199,10 +200,41 @@ public class AdminManager : NetworkBehaviour
    private void requestSetMotd (string parameters) {
       Cmd_SetMotd(parameters);
    }
-
+   
    [Command]
    private void Cmd_SetMotd (string parameters) {
       PlayerPrefs.SetString(MOTD_KEY, parameters);
+   }
+
+   private void requestDifficulty (string parameters) {
+      Cmd_SetDifficulty(parameters); 
+   }
+
+   [Command]
+   protected void Cmd_SetDifficulty (string parameters) {
+      if (!_player.isAdmin()) {
+         return;
+      }
+
+      string[] list = parameters.Split(' ');
+
+      if (list.Length > 0) {
+         int difficultyDevel = 1;
+         try {
+            difficultyDevel = int.Parse(list[0]);
+         } catch {
+            _player.Target_FloatingMessage(_player.connectionToClient, "Invalid Voyage ID" + " : " + parameters);
+         }
+
+         _player.voyageGroupId = difficultyDevel;
+         Instance playersInstance = InstanceManager.self.getInstance(_player.instanceId);
+         if (playersInstance) {
+            playersInstance.difficulty = difficultyDevel;
+            string message = "Modified Difficulty level of instance:{" + playersInstance.id + "} Difficulty to:{" + difficultyDevel + "}";
+            D.debug(message);
+            _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient ,message);
+         }
+      }
    }
 
    [Command]

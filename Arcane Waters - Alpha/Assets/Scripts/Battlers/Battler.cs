@@ -55,6 +55,10 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    [SyncVar]
    public int userId;
 
+   // The difficulty level this battler is set to
+   [SyncVar]
+   public int difficultyLevel = 1;
+
    // The companion id if is a companion of the player
    [SyncVar]
    public int companionId = -1;
@@ -1798,19 +1802,13 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       int level = LevelUtil.levelForXp(XP);
 
       // Calculate our health based on our base and gain per level
-      int health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level);
+      int health = ((int) battData.baseHealth + (int) battData.healthPerlevel * level) * difficultyLevel;
 
       return (int) health;
    }
 
    public int getStartingHealth () {
-      BattlerData battData = MonsterManager.self.getBattlerData(enemyType);
-      int level = LevelUtil.levelForXp(XP);
-
-      // Calculate our health based on our base and gain per level
-      float health = (int) battData.baseHealth + ((int) battData.healthPerlevel * level) * battle.difficultyLevel;
-
-      return (int) health;
+      return (getStartingHealth(enemyType));
    }
 
    public int getXPValue () {
