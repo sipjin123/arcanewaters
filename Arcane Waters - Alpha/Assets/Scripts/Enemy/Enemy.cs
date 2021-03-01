@@ -160,12 +160,14 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
          return;
       }
 
-      // Calculate the new facing direction based on our velocity direction vector
-      Direction newFacingDirection = DirectionUtil.getBodyDirectionForVelocity(this);
+      if (!isInBattle()) {
+         // Calculate the new facing direction based on our velocity direction vector
+         Direction newFacingDirection = DirectionUtil.getBodyDirectionForVelocity(this);
 
-      // Only touch the Sync Var if it's actually changed
-      if (this.facing != newFacingDirection) {
-         this.facing = newFacingDirection;
+         // Only touch the Sync Var if it's actually changed
+         if (this.facing != newFacingDirection) {
+            this.facing = newFacingDirection;
+         }
       }
    }
 
@@ -260,11 +262,6 @@ public class Enemy : NetEntity, IMapEditorDataReceiver {
    public void assignBattleId (int newBattleId, NetEntity aggressor) {
       // Assign the Sync Var
       this.battleId = newBattleId;
-
-      // Make us face toward the player who initiated the battle
-      Vector2 vec = aggressor.sortPoint.transform.position - this.sortPoint.transform.position;
-      Direction directionToFace = DirectionUtil.getBodyDirectionForVector(vec);
-      this.facing = directionToFace;
    }
 
    [Server]
