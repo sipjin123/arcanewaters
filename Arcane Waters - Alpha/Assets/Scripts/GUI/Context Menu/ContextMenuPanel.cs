@@ -143,7 +143,7 @@ public class ContextMenuPanel : MonoBehaviour
             addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
          }
          addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
-         addButton("Challenge to Duel (practice)", () => initializePVP(userId, userName));
+         addButton("Challenge to Duel (practice)", () => initializePVP(userId));
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {
@@ -162,16 +162,8 @@ public class ContextMenuPanel : MonoBehaviour
       show(userName);
    }
 
-   private void initializePVP (int userId, string userName) {
-      List<BattlerInfo> rightBattlersInfo = new List<BattlerInfo>();
-      List<BattlerInfo> leftBattlersInfo = new List<BattlerInfo>();
-      BattlerInfo newInfo = new BattlerInfo {
-         enemyType = Enemy.Type.PlayerBattler,
-         battlerName = userName,
-         battlerType = BattlerType.PlayerControlled
-      };
-      leftBattlersInfo.Add(newInfo);
-      Global.player.rpc.Cmd_StartNewTeamBattle(leftBattlersInfo.ToArray(), rightBattlersInfo.ToArray());
+   private void initializePVP (int userId) {
+      Global.player.rpc.Cmd_InviteToPvp(userId);
    }
 
    #region Private Variables
