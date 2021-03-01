@@ -159,6 +159,8 @@ MonoBehaviour:
   memberContainer: {fileID: 8023053867522381166}
   memberCellPrefab: {fileID: 1346745067770210518, guid: 05992fac7828a75468f886ddc6ac217c,
     type: 3}
+  groupMemberArrowPrefab: {fileID: 7325741442918750246, guid: ca56068024dec10479bbc3dd7fad32a0,
+    type: 3}
   panelHoveringZone: {fileID: 6990664522768383143}
   xButton: {fileID: 4262809497444476483}
   columnBottomPrefab: {fileID: 6117387093894972141, guid: a33716a3ed9449f4495cc73f402fd674,

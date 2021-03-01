@@ -215,6 +215,8 @@ public class ChatManager : MonoBehaviour
       // Check if it's a chat command
       if (textToProcess.StartsWith("/")) {
          executeChatCommand(textToProcess);
+      } else {
+         sendMessageToServer(textToProcess, ChatPanel.self.currentChatType);
       }
 
       resetMessagesAgo();

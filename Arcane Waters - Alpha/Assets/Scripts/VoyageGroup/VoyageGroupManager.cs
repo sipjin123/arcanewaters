@@ -20,6 +20,9 @@ public class VoyageGroupManager : MonoBehaviour
    // The white flag the ships use when they are out of PvP and cannot be attacked
    public static string WHITE_FLAG_PALETTE = "ship_flag_white";
 
+   // The container for the group member arrows
+   public GameObject groupMemberArrowContainer;
+
    // Self
    public static VoyageGroupManager self;
 
@@ -126,7 +129,6 @@ public class VoyageGroupManager : MonoBehaviour
       // If the player is still available (not warping), set its group id
       if (player != null) {
          player.voyageGroupId = voyageGroup.groupId;
-         player.isGroupLeader = true;
       }
 
       // Send the group composition update to all group members
@@ -172,9 +174,6 @@ public class VoyageGroupManager : MonoBehaviour
 
    [Server]
    public void removeUserFromGroup (VoyageGroupInfo voyageGroup, int userId) {
-      // Make sure that removed user is not a leader
-      ServerNetworkingManager.self.setUserGroupLeaderStatus(userId, false);
-
       voyageGroup.members.Remove(userId);
 
       // Update the data in the server network
@@ -188,9 +187,6 @@ public class VoyageGroupManager : MonoBehaviour
                voyageGroup.isQuickmatchEnabled = true;
             }
          }
-
-         // Set oldest group member as a new leader
-         ServerNetworkingManager.self.setUserGroupLeaderStatus(voyageGroup.members[0], true);
 
          updateGroup(voyageGroup);
 

@@ -153,10 +153,6 @@ public class NetEntity : NetworkBehaviour
    [SyncVar]
    public int voyageGroupId = -1;
 
-   // Determines whether player is current voyage group leader
-   [SyncVar]
-   public bool isGroupLeader = false;
-
    // Gets set to true when the player can be attacked by other players in PvP areas
    [SyncVar]
    public bool hasEnteredPvP = false;

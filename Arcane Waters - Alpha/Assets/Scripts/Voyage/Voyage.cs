@@ -54,6 +54,9 @@ public class Voyage
    // The index of this voyage in the league series
    public int leagueIndex = 0;
 
+   // The random seed used to create the league map series
+   public int leagueRandomSeed = -1;
+
    // The creation time of the voyage instance
    public long creationDate;
 
@@ -82,7 +85,7 @@ public class Voyage
    }
 
    public Voyage (int voyageId, string areaKey, string areaName, int difficulty, Biome.Type biome, bool isPvP,
-      bool isLeague, int leagueIndex, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
+      bool isLeague, int leagueIndex, int leagueRandomSeed, long creationDate, int treasureSiteCount, int capturedTreasureSiteCount, int aliveNPCEnemyCount, 
       int totalNPCEnemyCount, int groupCount) {
       this.voyageId = voyageId;
       this.areaKey = areaKey;
@@ -92,6 +95,7 @@ public class Voyage
       this.isPvP = isPvP;
       this.isLeague = isLeague;
       this.leagueIndex = leagueIndex;
+      this.leagueRandomSeed = leagueRandomSeed;
       this.creationDate = creationDate;
       this.treasureSiteCount = treasureSiteCount;
       this.capturedTreasureSiteCount = capturedTreasureSiteCount;

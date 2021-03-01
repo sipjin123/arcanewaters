@@ -90,6 +90,10 @@ public class Instance : NetworkBehaviour
    [SyncVar]
    public int leagueIndex = 0;
 
+   // The random seed used to create the league map series
+   [SyncVar]
+   public int leagueRandomSeed = -1;
+
    // The unique identifier of the voyage
    [SyncVar]
    public int voyageId = 0;

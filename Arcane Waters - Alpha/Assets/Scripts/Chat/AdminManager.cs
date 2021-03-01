@@ -34,9 +34,18 @@ public class AdminManager : NetworkBehaviour
          // TODO: Insert fetch blueprint data here
       }
 
-      addCommands();
+      StartCoroutine(CO_AddCommands());
 
       StartCoroutine(CO_CreateItemNamesDictionary());
+   }
+
+   private IEnumerator CO_AddCommands() {
+      // Wait until we receive data
+      while (Util.isEmpty(_player.entityName)) {
+         yield return null;
+      }
+
+      addCommands();
    }
 
    private void addCommands () {
@@ -1117,7 +1126,7 @@ public class AdminManager : NetworkBehaviour
          areaKey = getClosestAreaKey(voyageSeaMaps, areaKey);
       }
 
-      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, false, 0, biome, difficulty);
+      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, false, 0, -1, biome, difficulty);
    }
 
    [Command]

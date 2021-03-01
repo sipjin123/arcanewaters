@@ -37,7 +37,7 @@ public class VoyageManager : MonoBehaviour {
    /// Note that only the Master server can launch voyage instance creations. Use requestVoyageInstanceCreation() to ensure the Master server handles it.
    /// </summary>
    [Server]
-   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
+   public void createVoyageInstance (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, Biome.Type biome, int difficulty) {
       // Check if the area is defined
       if (string.IsNullOrEmpty(areaKey)) {
          // Get the list of sea maps area keys
@@ -68,7 +68,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Create the area instance
-      Instance instance = InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, difficulty, biome);
+      Instance instance = InstanceManager.self.createNewInstance(areaKey, false, true, voyageId, isPvP, isLeague, leagueIndex, leagueRandomSeed, difficulty, biome);
 
       // Immediately make the new voyage info accessible to other servers
       ServerNetworkingManager.self.server.addNewVoyageInstance(instance, 0);
@@ -339,9 +339,9 @@ public class VoyageManager : MonoBehaviour {
             Instance instance = InstanceManager.self.getInstance(admin.instanceId);
 
             if (isLobbyArea(newArea)) {
-               createLeagueInstanceAndWarpPlayer(admin, 0, instance.biome, newArea);
+               createLeagueInstanceAndWarpPlayer(admin, 0, instance.biome, -1, newArea);
             } else {
-               createLeagueInstanceAndWarpPlayer(admin, 1, instance.biome, newArea);
+               createLeagueInstanceAndWarpPlayer(admin, 1, instance.biome, -1, newArea);
             }
             return;
          }
@@ -387,7 +387,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Launch the creation of a random sea map instance, to be the parent of the treasure site instance
-      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE, biome, difficulty);
+      requestVoyageInstanceCreation(voyageId, "", false, true, Voyage.MAPS_PER_LEAGUE, -1, biome, difficulty);
 
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {
@@ -399,34 +399,34 @@ public class VoyageManager : MonoBehaviour {
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
+   public void requestVoyageInstanceCreation (string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, int leagueRandomSeed = -1, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
       // Only the master server can generate new voyage ids
       if (!ServerNetworkingManager.self.server.isMasterServer()) {
-         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+         ServerNetworkingManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
          return;
       }
 
       int voyageId = getNewVoyageId();
-      requestVoyageInstanceCreation(voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+      requestVoyageInstanceCreation(voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
    }
 
    [Server]
-   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
+   public void requestVoyageInstanceCreation (int voyageId, string areaKey = "", bool isPvP = false, bool isLeague = false, int leagueIndex = 0, int leagueRandomSeed = -1, Biome.Type biome = Biome.Type.None, int difficulty = 0) {
       // Find the server with the least people
       NetworkedServer bestServer = ServerNetworkingManager.self.getRandomServerWithLeastPlayers();
 
       if (bestServer != null) {
-         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+         ServerNetworkingManager.self.createVoyageInstanceInServer(bestServer.networkedPort.Value, voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
       }
    }
 
    [Server]
-   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, string areaKey = "") {
-      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome, areaKey));
+   public void createLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {
+      StartCoroutine(CO_CreateLeagueInstanceAndWarpPlayer(player, leagueIndex, biome, randomSeed, areaKey));
    }
 
    [Server]
-   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, string areaKey = "") {
+   private IEnumerator CO_CreateLeagueInstanceAndWarpPlayer (NetEntity player, int leagueIndex, Biome.Type biome, int randomSeed = -1, string areaKey = "") {
       // Get a new voyage id from the master server
       RpcResponse<int> response = ServerNetworkingManager.self.getNewVoyageId();
       while (!response.IsDone) {
@@ -435,21 +435,41 @@ public class VoyageManager : MonoBehaviour {
       int voyageId = response.Value;
 
       if (string.IsNullOrEmpty(areaKey)) {
-         // Randomly choose an area among league maps
-         List<string> mapList;
          if (leagueIndex == 0) {
             // The first league map is always a lobby
-            mapList = getLobbyAreaKeys();
+            areaKey = getLobbyAreaKeys()[UnityEngine.Random.Range(0, getLobbyAreaKeys().Count)];
          } else {
-            mapList = getLeagueAreaKeys();
+            // Generate a random list of league maps indexes to ensure there is no repetition in the same league
+            List<int> mapIndexes = new List<int>();
+            for (int i = 0; i < Voyage.MAPS_PER_LEAGUE; i++) {
+               mapIndexes.Add(i);
+            }
+
+            // The seed will be saved in the voyage to generate the same map series when warping to the next map
+            if (randomSeed < 0) {
+               randomSeed = new System.Random().Next();
+            }
+
+            System.Random r = new System.Random(randomSeed);
+            mapIndexes = mapIndexes.OrderBy(x => r.Next()).ToList();
+
+            // Get the list of league maps
+            List<string> mapList = getLeagueAreaKeys();
+
+            if (mapList.Count == 0) {
+               D.error("No league maps available!");
+               player.rpc.Target_OnWarpFailed();
+               yield break;
+            }
+
+            // Pick the index corresponding to the league index
+            if (mapIndexes[leagueIndex - 1] < mapList.Count) {
+               areaKey = mapList[mapIndexes[leagueIndex - 1]];
+            } else {
+               D.error("Not enough league maps. Some will be repeated!");
+               areaKey = mapList[UnityEngine.Random.Range(0, mapList.Count)];
+            }
          }
-         
-         if (mapList.Count == 0) {
-            D.error("No league maps available!");
-            player.rpc.Target_OnWarpFailed();
-            yield break;
-         }
-         areaKey = mapList[UnityEngine.Random.Range(0, mapList.Count)];
       }
 
       int difficulty;
@@ -467,7 +487,7 @@ public class VoyageManager : MonoBehaviour {
       }
 
       // Launch the creation of the new voyage instance
-      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, biome, difficulty);
+      requestVoyageInstanceCreation(voyageId, areaKey, false, true, leagueIndex, randomSeed, biome, difficulty);
 
       // Wait until the voyage instance has been created
       while (!tryGetVoyage(voyageId, out Voyage voyage)) {

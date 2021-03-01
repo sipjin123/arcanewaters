@@ -387,7 +387,6 @@ public class NPC : NetEntity, IMapEditorDataReceiver
          if (!panel.isShowing()) {
             NPCData npcData = NPCManager.self.getNPCData(npcId);
             panel.setNPC(npcId, npcData.name, -1);
-            panel.initLoadBlockers(true);
          }
 
          // Send a request to the server to get the npc panel info

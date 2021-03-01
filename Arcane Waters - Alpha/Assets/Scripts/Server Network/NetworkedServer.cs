@@ -82,7 +82,7 @@ public class NetworkedServer : NetworkedBehaviour
 
    public void addNewVoyageInstance (Instance instance, int groupCount) {
       Voyage voyage = new Voyage(instance.voyageId, instance.areaKey, Area.getName(instance.areaKey), instance.difficulty, instance.biome, instance.isPvP,
-            instance.isLeague, instance.leagueIndex, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
+            instance.isLeague, instance.leagueIndex, instance.leagueRandomSeed, instance.creationDate, instance.treasureSiteCount, instance.capturedTreasureSiteCount, instance.aliveNPCEnemiesCount,
             instance.getTotalNPCEnemyCount(), groupCount);
       voyages.Add(voyage);
    }
@@ -265,21 +265,21 @@ public class NetworkedServer : NetworkedBehaviour
    }
 
    [ServerRPC]
-   public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
+   public void MasterServer_CreateVoyageInstanceInServer (int serverPort, int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, Biome.Type biome, int difficulty) {
       NetworkedServer targetServer = ServerNetworkingManager.self.getServer(serverPort);
       if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_ReceiveVoyageInstanceCreation, voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+         targetServer.InvokeClientRpcOnOwner(Server_ReceiveVoyageInstanceCreation, voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
       }
    }
 
    [ClientRPC]
-   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
-      VoyageManager.self.createVoyageInstance(voyageId, areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+   public void Server_ReceiveVoyageInstanceCreation (int voyageId, string areaKey, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, Biome.Type biome, int difficulty) {
+      VoyageManager.self.createVoyageInstance(voyageId, areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
    }
 
    [ServerRPC]
-   public void MasterServer_RequestVoyageInstanceCreation (string areaKey, bool isPvP, bool isLeague, int leagueIndex, Biome.Type biome, int difficulty) {
-      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, biome, difficulty);
+   public void MasterServer_RequestVoyageInstanceCreation (string areaKey, bool isPvP, bool isLeague, int leagueIndex, int leagueRandomSeed, Biome.Type biome, int difficulty) {
+      VoyageManager.self.requestVoyageInstanceCreation(areaKey, isPvP, isLeague, leagueIndex, leagueRandomSeed, biome, difficulty);
    }
 
    [ServerRPC]
@@ -305,22 +305,6 @@ public class NetworkedServer : NetworkedBehaviour
    [ClientRPC]
    public void Server_SendVoyageGroupCompositionToMembers (int groupId) {
       VoyageGroupManager.self.sendGroupCompositionToMembers(groupId);
-   }
-
-   [ServerRPC]
-   public void MasterServer_SetUserGroupLeaderStatus (int userId, bool isLeader) {
-      NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(userId);
-      if (targetServer != null) {
-         targetServer.InvokeClientRpcOnOwner(Server_SetUserGroupLeaderStatus, userId, isLeader);
-      }
-   }
-
-   [ClientRPC]
-   public void Server_SetUserGroupLeaderStatus (int userId, bool isLeader) {
-      NetEntity player = EntityManager.self.getEntity(userId);
-      if (player != null) {
-         player.isGroupLeader = isLeader;
-      }
    }
 
    [ServerRPC]

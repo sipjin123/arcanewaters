@@ -91,6 +91,9 @@ public class VoyageStatusPanel : ClientMonoBehaviour
 
       // Get the current instance
       Instance instance = Global.player.getInstance();
+      if (instance == null) {
+         return;
+      }
 
       // Show different relevant statuses depending on the area type
       if (VoyageGroupManager.isInGroup(Global.player)) {

@@ -338,9 +338,6 @@ public class MyNetworkManager : NetworkManager
             if (AreaManager.self.hasArea(previousAreaKey)) {
                // If the area is already instantiated
                mapPosition = AreaManager.self.getArea(previousAreaKey).transform.position;
-
-               // If we have the map already, hide loading screen
-               PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
             } else if (MapManager.self.isAreaUnderCreation(previousAreaKey)) {
                // If the area is under creation
                mapPosition = MapManager.self.getAreaUnderCreationPosition(previousAreaKey);

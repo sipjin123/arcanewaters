@@ -79,6 +79,7 @@ public class SteamManager : MonoBehaviour
       Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
 #endif
 
+//#if UNITY_EDITOR 
 #if !UNITY_EDITOR && !IS_SERVER_BUILD
       Debug.Log("STEAM :: Initializing Steam");
       if (!Packsize.Test()) {

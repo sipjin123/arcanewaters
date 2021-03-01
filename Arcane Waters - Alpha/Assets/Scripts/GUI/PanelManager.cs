@@ -68,7 +68,7 @@ public class PanelManager : MonoBehaviour {
          hideToolTips();
 
          // The chat input field might remain selected
-         if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject) {
+         if (EventSystem.current.currentSelectedGameObject == ChatPanel.self.inputField.gameObject || EventSystem.current.currentSelectedGameObject == ChatPanel.self.nameInputField.gameObject) {
             EventSystem.current.SetSelectedGameObject(null);
          } else if (confirmScreen.canvasGroup.alpha > 0f) {
             confirmScreen.hide();

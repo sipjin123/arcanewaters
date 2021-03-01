@@ -85,9 +85,6 @@ public class NPCPanel : Panel
    // Self
    public static NPCPanel self;
 
-   // The load blockers before the data is received
-   public GameObject[] loadBlockers;
-
    // The cached quest data
    QuestData cachedQuestData;
 
@@ -103,29 +100,7 @@ public class NPCPanel : Panel
       self = this;
    }
 
-   public void initLoadBlockers (bool isActive) {
-      if (isActive) {
-         // Clear out the old clickable options
-         clearDialogueOptions();
-         questListSection.SetActive(false);
-         questNodeSection.SetActive(false);
-         giftOfferSection.SetActive(false);
-         npcDialogueText.enabled = false;
-      } else {
-         this.ContentCanvasGroup.alpha = 1f;
-
-         // Start typing out our intro text
-         AutoTyper.SlowlyRevealText(npcDialogueText, _npcDialogueLine);
-      }
-
-      foreach (GameObject obj in loadBlockers) {
-         obj.SetActive(isActive);
-      }
-   }
-
    public void updatePanelWithQuestSelection (int questId, QuestDataNode[] questDataArray, int npcId, string npcName, int friendshipLevel, string greetingText, string userFlagshipName) {
-      initLoadBlockers(false);
-
       // Store the user flagship name
       this.userFlagshipName = userFlagshipName;
 
@@ -164,8 +139,6 @@ public class NPCPanel : Panel
    public void updatePanelWithQuestSelection (int npcId, string npcName,
       int friendshipLevel, string greetingText, bool canOfferGift, bool hasGoodbyeDialogue,
       bool isHireable, int landMonsterId, int questId, int questNodeId, int dialogueId, int[] itemStock, Jobs newJobsXp) {
-      initLoadBlockers(false);
-
       // Show the correct section
       configurePanelForMode(Mode.QuestNode);
 
@@ -193,7 +166,6 @@ public class NPCPanel : Panel
 
    public void updatePanelWithQuestNode (int friendshipLevel, int questId, int questNodeId, int dialogueId,
       bool areObjectivesCompleted, bool isEnabled, int[] itemStock, Jobs newJobsXp) {
-      initLoadBlockers(false);
 
       if (areObjectivesCompleted && !isEnabled) {
          areObjectivesCompleted = false;
@@ -361,7 +333,6 @@ public class NPCPanel : Panel
    
    public void questSelectionTitleSelected (int questId, int questNodeId, QuestDataNode questData) {
       Global.player.rpc.Cmd_SelectQuestTitle(_npc.npcId, questId, questNodeId);
-      initLoadBlockers(true);
    }
 
    public void gossipRowClickedOn () {
@@ -551,6 +522,12 @@ public class NPCPanel : Panel
 
       // Set up the click function
       row.clickedEvent.AddListener(functionToCall);
+      row.clickedEvent.AddListener(
+         () => {
+            foreach (ClickableText dialogOptionRow in container.GetComponentsInChildren<ClickableText>()) {
+               dialogOptionRow.disablePointerEvents(disabledClickableRowColor);
+            }
+         });
       row.gameObject.SetActive(true);
 
       // Disable the row if it is not interactive

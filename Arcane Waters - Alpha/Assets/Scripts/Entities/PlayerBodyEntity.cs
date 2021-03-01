@@ -107,6 +107,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    protected override void Awake () {
       base.Awake();
+
+      ParticleSystem.MainModule dustMainModule = dustTrailParticleObj.main;
+      _dustStartSizeMultiplier = dustMainModule.startSizeMultiplier;
    }
 
    protected override void Start () {
@@ -227,14 +230,24 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
          float newShadowScale = 1.0f - (y / jumpUpMagnitude) / 2.0f;
          shadow.transform.localScale = _shadowInitialScale * newShadowScale;
+         setDashParticleVisibility(false);
       }
       else if (!isBouncingOnWeb()) {
          y = 0.0f;
+         setDashParticleVisibility(true);
+      } else {
+         setDashParticleVisibility(false);
       }
 
       setSpritesHeight(y);
-      windDashSprite.localPosition = Vector3.up * y;
-      nameAndHealthUI.localPosition = Vector3.up * y;
+      Util.setLocalY(windDashSprite, y);
+      Util.setLocalY(nameAndHealthUI, y);
+   }
+
+   private void setDashParticleVisibility (bool isVisible) {
+      windDashSprite.gameObject.SetActive(isVisible);
+      ParticleSystem.MainModule particleSystem = dustTrailParticleObj.main;
+      particleSystem.startSizeMultiplier = (isVisible) ? _dustStartSizeMultiplier : 0.0f;
    }
 
    public void setSpritesHeight (float newHeight) {
@@ -713,6 +726,9 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
 
    // A reference to the audiolistener attached to the player
    private AudioListener _audioListener;
+
+   // The 'startSizeMultiplier' of the dust trail particle
+   private float _dustStartSizeMultiplier;
 
    #endregion
 }

@@ -17,6 +17,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
    // The prefab we use for creating member cells
    public VoyageGroupMemberCell memberCellPrefab;
 
+   // The prefab we use to instantiate group member arrows
+   public VoyageGroupMemberArrow groupMemberArrowPrefab;
+
    // When the mouse is over this defined zone, we consider that it hovers the panel
    public RectTransform panelHoveringZone;
 
@@ -70,28 +73,30 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       // Clear out any old info
       memberContainer.DestroyAllChildrenExcept(panelHoveringZone.gameObject);
       _memberCells.Clear();
+      VoyageGroupManager.self.groupMemberArrowContainer.DestroyChildren();
+      _memberArrows.Clear();
 
-      // Instantiate the cells
       foreach (VoyageGroupMemberCellInfo cellInfo in groupMembers) {
+         // Instantiate the cell
          VoyageGroupMemberCell cell = Instantiate(memberCellPrefab, memberContainer.transform, false);
          cell.setCellForGroupMember(cellInfo);
          _memberCells.Add(cell);
+
+         // Instantiate the arrow
+         VoyageGroupMemberArrow arrow = Instantiate(groupMemberArrowPrefab, VoyageGroupManager.self.groupMemberArrowContainer.transform, false);
+         arrow.setTarget(cell, cellInfo.userId, cellInfo.userName);
+         _memberArrows.Add(arrow);
       }
 
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
-   public void OnKickPlayerButtonClickedOn (NetEntity playerToKick) {
-      // Check if the player is is in combat
-      if (playerToKick == null || playerToKick.hasAttackers()) {
-         return;
-      }
-
+   public void OnKickPlayerButtonClickedOn (int playerToKick) {
       PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the voyage group?",
          () => {
             // Request the server to remove the user from the group
             if (Global.player != null) {
-               Global.player.rpc.Cmd_KickUserFromGroup(playerToKick.userId);
+               Global.player.rpc.Cmd_KickUserFromGroup(playerToKick);
             }
          });
    }
@@ -104,6 +109,14 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       if (PanelManager.self.get(Panel.Type.ReturnToCurrentVoyagePanel).isShowing()) {
          PanelManager.self.unlinkPanel();
       }
+   }
+
+   public bool isGroupLeader (int userId) {
+      if (_memberCells != null && _memberCells.Count > 0) {
+         return _memberCells[0].getUserId() == userId;
+      }
+
+      return false;
    }
 
    public void OnLeaveGroupButtonClickedOn () {
@@ -175,11 +188,19 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       if (!canvasGroup.IsShowing()) {
          canvasGroup.Show();
       }
+
+      foreach (VoyageGroupMemberArrow arrow in _memberArrows) {
+         arrow.activate();
+      }
    }
 
    public void hide () {
       if (canvasGroup.IsShowing()) {
          canvasGroup.Hide();
+      }
+
+      foreach (VoyageGroupMemberArrow arrow in _memberArrows) {
+         arrow.deactivate();
       }
    }
 
@@ -197,6 +218,9 @@ public class VoyageGroupPanel : ClientMonoBehaviour
 
    // The list of member cells
    private List<VoyageGroupMemberCell> _memberCells = new List<VoyageGroupMemberCell>();
+
+   // The list of group member arrows used to indicate the members location
+   private List<VoyageGroupMemberArrow> _memberArrows = new List<VoyageGroupMemberArrow>();
 
    #endregion
 }

@@ -155,7 +155,7 @@ public class Warp : MonoBehaviour, IMapEditorDataReceiver
                player.spawnInNewMap(voyage.voyageId, voyage.areaKey, Direction.South);
             } else {
                // Create the next league map and warp the player to it
-               VoyageManager.self.createLeagueInstanceAndWarpPlayer(player, instance.leagueIndex + 1, instance.biome);
+               VoyageManager.self.createLeagueInstanceAndWarpPlayer(player, instance.leagueIndex + 1, instance.biome, instance.leagueRandomSeed);
             }
          }
       } else {

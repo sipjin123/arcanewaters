@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using DG.Tweening;
 
 public class PlayerShipEntity : ShipEntity
 {
@@ -79,6 +80,9 @@ public class PlayerShipEntity : ShipEntity
 
    // Reference to the sprite swap
    public SpriteSwap shipBoostSpriteSwapFront, shipBoostSpriteSwapBack;
+
+   // A reference to the player's lifeboat object
+   public GameObject lifeboat;
 
    // The different flags the ship can display
    public enum Flag
@@ -872,6 +876,29 @@ public class PlayerShipEntity : ShipEntity
    [Server]
    public void restoreMaxShipHealth () {
       Util.tryToRunInServerBackground(() => DB_Main.storeShipHealth(this.shipId, this.maxHealth));
+   }
+
+   [Command]
+   public void Cmd_SetLifeboatVisibility (bool shouldShow) {
+      Rpc_SetLifeboatVisibility(shouldShow);
+   }
+
+   [ClientRpc]
+   public void Rpc_SetLifeboatVisibility (bool shouldShow) {
+      if (isLocalPlayer) {
+         return;
+      }
+
+      setLifeboatVisibility(shouldShow);
+   }
+
+   public void setLifeboatVisibility (bool shouldShow) {
+      lifeboat.SetActive(shouldShow);
+
+      if (shouldShow) {
+         lifeboat.transform.localScale = new Vector3(1.0f, 0.01f, 2.0f);
+         lifeboat.transform.DOScaleY(1.0f, 0.5f).SetEase(Ease.OutElastic, 1.0f);
+      }
    }
 
    #region Private Variables

@@ -18,9 +18,6 @@ public class LeaderBoardsManager : MonoBehaviour
    #endregion
 
    public void scheduleLeaderBoardRecalculation () {
-      updateLeaderBoardsCache(Period.Day);
-      updateLeaderBoardsCache(Period.Week);
-      updateLeaderBoardsCache(Period.Month);
       StartCoroutine(CO_ScheduleLeaderBoardsRecalculation());
    }
 
@@ -34,18 +31,6 @@ public class LeaderBoardsManager : MonoBehaviour
          // Delete the rows
          DB_Main.pruneJobHistory(untilDate);
       });
-   }
-
-   public void getLeaderBoards (Period period, out List<LeaderBoardInfo> farmingEntries,
-      out List<LeaderBoardInfo> sailingEntries, out List<LeaderBoardInfo> exploringEntries, out List<LeaderBoardInfo> tradingEntries,
-      out List<LeaderBoardInfo> craftingEntries, out List<LeaderBoardInfo> miningEntries) {
-      // Get the values from the cache
-      farmingEntries = _allFarmingBoards[period];
-      sailingEntries = _allSailingBoards[period];
-      exploringEntries = _allExploringBoards[period];
-      tradingEntries = _allTradingBoards[period];
-      craftingEntries = _allCraftingBoards[period];
-      miningEntries = _allMiningBoards[period];
    }
 
    public TimeSpan getTimeLeftUntilRecalculation(Period period, DateTime lastCalculationDate) {
@@ -69,15 +54,6 @@ public class LeaderBoardsManager : MonoBehaviour
 
    private void Awake () {
       self = this;
-
-      foreach(Period period in Enum.GetValues(typeof(Period))) {
-         _allFarmingBoards[period] = new List<LeaderBoardInfo>();
-         _allSailingBoards[period] = new List<LeaderBoardInfo>();
-         _allExploringBoards[period] = new List<LeaderBoardInfo>();
-         _allTradingBoards[period] = new List<LeaderBoardInfo>();
-         _allCraftingBoards[period] = new List<LeaderBoardInfo>();
-         _allMiningBoards[period] = new List<LeaderBoardInfo>();
-      }
    }
 
    private void tryRecalculateLeaderBoards () {
@@ -161,37 +137,6 @@ public class LeaderBoardsManager : MonoBehaviour
 
          // Update the leader board dates intervals
          DB_Main.updateLeaderBoardDates(period, startDate, endDate);
-
-         // Refresh the cache
-         updateLeaderBoardsCache(period);
-      });
-   }
-
-   private void updateLeaderBoardsCache (Period period) {
-      // Background thread
-      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Get the leader boards from the database
-         List<LeaderBoardInfo> farmingBoard;
-         List<LeaderBoardInfo> sailingBoard;
-         List<LeaderBoardInfo> exploringBoard;
-         List<LeaderBoardInfo> tradingBoard;
-         List<LeaderBoardInfo> craftingBoard;
-         List<LeaderBoardInfo> miningBoard;
-         DB_Main.getLeaderBoards(period, out farmingBoard, out sailingBoard, out exploringBoard,
-            out tradingBoard, out craftingBoard, out miningBoard);
-
-         // Back to Unity
-         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-
-            // Update the cache
-            _allFarmingBoards[period] = farmingBoard;
-            _allSailingBoards[period]= sailingBoard;
-            _allExploringBoards[period] = exploringBoard;
-            _allTradingBoards[period] = tradingBoard;
-            _allCraftingBoards[period] = craftingBoard;
-            _allMiningBoards[period] = miningBoard;
-         });
       });
    }
 
@@ -216,14 +161,6 @@ public class LeaderBoardsManager : MonoBehaviour
    }
 
    #region Private Variables
-
-   // The leader board cache for each job and period
-   private Dictionary<Period, List<LeaderBoardInfo>> _allFarmingBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
-   private Dictionary<Period, List<LeaderBoardInfo>> _allSailingBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
-   private Dictionary<Period, List<LeaderBoardInfo>> _allExploringBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
-   private Dictionary<Period, List<LeaderBoardInfo>> _allTradingBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
-   private Dictionary<Period, List<LeaderBoardInfo>> _allCraftingBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
-   private Dictionary<Period, List<LeaderBoardInfo>> _allMiningBoards = new Dictionary<Period, List<LeaderBoardInfo>>();
 
    // The number of days until the job history entries are deleted
    private static int JOB_HISTORY_ENTRIES_LIFETIME = 60;

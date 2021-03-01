@@ -173,11 +173,11 @@ public class InstanceManager : MonoBehaviour {
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, int voyageId) {
       Biome.Type biome = getBiomeForInstance(areaKey, voyageId);
       int difficulty = getDifficultyForInstance(voyageId);
-      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, difficulty, biome);
+      return createNewInstance(areaKey, isSinglePlayer, false, voyageId, false, false, 0, -1, difficulty, biome);
    }
 
    public Instance createNewInstance (string areaKey, bool isSinglePlayer, bool isVoyage, int voyageId, bool isPvP,
-      bool isLeague, int leagueIndex, int difficulty, Biome.Type biome) {
+      bool isLeague, int leagueIndex, int leagueRandomSeed, int difficulty, Biome.Type biome) {
       Instance instance = Instantiate(instancePrefab, this.transform);
       instance.id = _id++;
       instance.areaKey = areaKey;
@@ -189,6 +189,7 @@ public class InstanceManager : MonoBehaviour {
       instance.isVoyage = isVoyage;
       instance.isLeague = isLeague;
       instance.leagueIndex = leagueIndex;
+      instance.leagueRandomSeed = leagueRandomSeed;
       instance.voyageId = voyageId;
       instance.biome = biome == Biome.Type.None ? AreaManager.self.getDefaultBiome(areaKey) : biome;
       instance.isPvP = isPvP;

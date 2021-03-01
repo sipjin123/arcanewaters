@@ -384,6 +384,8 @@ public class ClientMessageManager : MonoBehaviour {
       }
 
       ClientScene.AddPlayer(conn);
+
+      PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.Login);
    }
 
    public static void On_FailedToConnectToServer (NetworkConnection conn, DisconnectMessage msg) {

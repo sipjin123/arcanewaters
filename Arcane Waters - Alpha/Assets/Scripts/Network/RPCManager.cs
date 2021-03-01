@@ -1091,6 +1091,9 @@ public class RPCManager : NetworkBehaviour
          if (area.isInterior) {
             WeatherManager.self.setWeatherSimulation(WeatherEffectType.None);
          }
+
+         // If we have the map already, hide loading screen
+         PanelManager.self.loadingScreen.hide(LoadingScreen.LoadingType.MapCreation);
          return;
       }
 
@@ -1106,7 +1109,7 @@ public class RPCManager : NetworkBehaviour
          // Update the file access time if it exists
          string path = MapCache.getMapPath(areaKey, latestVersion);
          if (File.Exists(path) && !string.IsNullOrEmpty(path)) {
-            StartCoroutine(CO_ProcessFileOverride(path));
+            StartCoroutine(CO_UpdateFileTimestamp (path));
          }
 
          if (string.IsNullOrWhiteSpace(mapData)) {
@@ -1121,7 +1124,7 @@ public class RPCManager : NetworkBehaviour
       MapManager.self.downloadAndCreateMap(areaKey, baseMapAreaKey, latestVersion, mapPosition, customizations, biome);
    }
 
-   private IEnumerator CO_ProcessFileOverride (string path) {
+   private IEnumerator CO_UpdateFileTimestamp (string path) {
       bool successfullyWritten = false;
       while (!successfullyWritten) {
          try {
@@ -1232,9 +1235,8 @@ public class RPCManager : NetworkBehaviour
 
       // Background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-
-         // Get the leader boards
-         LeaderBoardsManager.self.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries,
+         // Get the leader boards from the database
+         DB_Main.getLeaderBoards(period, out farmingEntries, out sailingEntries, out exploringEntries,
             out tradingEntries, out craftingEntries, out miningEntries);
 
          // Get the last calculation date of this period
@@ -3577,6 +3579,8 @@ public class RPCManager : NetworkBehaviour
                });
             }
          } else {
+            Target_OnWarpFailed();
+
             // Display a panel with the current voyage map details
             Target_ReceiveCurrentVoyageInstance(_player.connectionToClient, voyage);
          }
@@ -3660,12 +3664,34 @@ public class RPCManager : NetworkBehaviour
 
    [Command]
    public void Cmd_KickUserFromGroup (int playerToKick) {
-      // Remove user from group
       NetEntity targetPlayerToKick = EntityManager.self.getEntity(playerToKick);
-      removeUserFromGroup(targetPlayerToKick);
 
-      // Clean up panel on client
-      Target_CleanUpVoyagePanelOnKick(targetPlayerToKick.connectionToClient);
+      // If the player performing kick operation is not in a group, do nothing
+      if (!_player.tryGetGroup(out VoyageGroupInfo voyageGroup)) {
+         return;
+      }
+
+      // Remove user from group
+      if (targetPlayerToKick) {
+         if (targetPlayerToKick.hasAttackers()) {
+            ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, _player, "Failure to kick!");
+            return;
+         }
+         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, targetPlayerToKick);
+      } else {
+         VoyageGroupManager.self.removeUserFromGroup(voyageGroup, playerToKick);
+      }
+
+      // Warp player to other area and clean up panel only if player is currently online
+      if (targetPlayerToKick) {
+         // If the player is in a voyage area, warp him to the starting town
+         if (VoyageManager.isVoyageOrLeagueArea(targetPlayerToKick.areaKey) || VoyageManager.isTreasureSiteArea(targetPlayerToKick.areaKey)) {
+            targetPlayerToKick.spawnInNewMap(Area.STARTING_TOWN, Spawn.STARTING_SPAWN, Direction.South);
+         }
+
+         // Clean up panel on client
+         Target_CleanUpVoyagePanelOnKick(targetPlayerToKick.connectionToClient);
+      }
    }
 
    [Server]
