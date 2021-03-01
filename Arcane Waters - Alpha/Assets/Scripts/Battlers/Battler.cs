@@ -296,9 +296,6 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          return;
       }
       initializeBattler();
-
-      selectedBattleBar.gameObject.SetActive(true);
-      selectedBattleBar.toggleDisplay(false);
    }
 
    private void initializeBattler () {
@@ -534,6 +531,11 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                BattleUIManager.self.playerBattleCG.Hide();
                selectedBattleBar.toggleDisplay(false);
             }
+         }
+
+         if (selectedBattleBar != null) {
+            selectedBattleBar.gameObject.SetActive(true);
+            selectedBattleBar.toggleDisplay(false);
          }
 
          updateAnimGroup(battlerData.animGroup);
@@ -1233,13 +1235,18 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             }
 
             // TODO: Remove after fixing bug wherein first damage does not reduct display health bar
-            if (Global.displayLandCombatLogs && targetBattler.enemyType != Enemy.Type.PlayerBattler) {
-               D.debug("Target: " + targetBattler.enemyType +
-                  " Difficulty: " + targetBattler.battle.difficultyLevel+
-                  " Receiving damage: " + action.damage +
-                  " DataHealth: " + targetBattler.health +
-                  " CurrHealth: " + targetBattler.displayedHealth +
-                  " ResultHealth: " + (targetBattler.displayedHealth - action.damage));
+            if (targetBattler != null) {
+               if (Global.displayLandCombatLogs && targetBattler.enemyType != Enemy.Type.PlayerBattler) {
+                  D.debug("UI"+ " : " + ((float) displayedHealth + " / " + getStartingHealth())+ " : " +(((float) displayedHealth / getStartingHealth())));
+
+                  D.debug("Target: " + targetBattler.enemyType +
+                     " Difficulty: " + targetBattler.difficultyLevel +
+                     " Lvl: " + LevelUtil.levelForXp(targetBattler.XP)+
+                     "{ CurrHealth: " + targetBattler.displayedHealth +
+                     " - Receiving damage: " + action.damage +
+                     "} DataHealth: {" + targetBattler.health +
+                     "} ResultHealth: {" + (targetBattler.displayedHealth - action.damage)+ "}");
+               }
             }
 
             targetBattler.displayedHealth -= action.damage;

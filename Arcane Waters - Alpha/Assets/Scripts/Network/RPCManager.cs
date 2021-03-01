@@ -4752,6 +4752,18 @@ public class RPCManager : NetworkBehaviour
       Debug.LogError("Server Msg is: " + message);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveNoticeFromServer (NetworkConnection connection, string message) {
+      D.debug("Server: " + message);
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveCombatLogFromServer (NetworkConnection connection, string message) {
+      if (Global.displayLandCombatLogs) {
+         D.debug("Combat: " + message);
+      }
+   }
+
    #region Abilities
 
    [Command]
