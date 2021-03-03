@@ -89,6 +89,9 @@ public class NPC : NetEntity, IMapEditorDataReceiver
    // Event triggered after animal petting action
    public UnityEvent finishedPetting = new UnityEvent();
 
+   // The game object that indicates that this npc has a quest for the player
+   public GameObject questNotice;
+
    #endregion
 
    protected override void Awake () {
@@ -122,7 +125,7 @@ public class NPC : NetEntity, IMapEditorDataReceiver
       StartCoroutine(CO_InitializeAfterDataReady());
    }
 
-   public IEnumerator CO_InitializeAfterDataReady () {
+   private IEnumerator CO_InitializeAfterDataReady () {
       while (npcId == 0 || NPCManager.self.getNPCData(npcId) == null) {
          yield return null;
       }

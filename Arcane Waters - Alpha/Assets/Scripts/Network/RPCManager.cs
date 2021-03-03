@@ -294,6 +294,12 @@ public class RPCManager : NetworkBehaviour
    #region NPC QUEST
 
    [TargetRpc]
+   public void Target_RemoveQuestNotif (NetworkConnection connection, int npcId) {
+      NPC npc = NPCManager.self.getNPC(npcId);
+      npc.questNotice.SetActive(false);
+   }
+
+   [TargetRpc]
    public void Target_ReceiveProcessRewardToggle (NetworkConnection connection) {
       NPCPanel panel = (NPCPanel) PanelManager.self.get(Panel.Type.NPC_Panel);
       if (panel.isShowing()) {
@@ -1974,8 +1980,29 @@ public class RPCManager : NetworkBehaviour
             QuestDialogueNode questDialogue = questDataNode.questDialogueNodes[dialogueId];
             DB_Main.updateNPCRelationship(npcId, _player.userId, friendshipLevel + questDialogue.friendshipRewardPts);
 
+            // Get the quest progress status of the user for this npc
+            List<QuestStatusInfo> totalQuestStatus = DB_Main.getQuestStatuses(npcId, _player.userId);
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                Target_ReceiveProcessRewardToggle(_player.connectionToClient);
+               bool hasCompletedAllQuests = true;
+
+               int totalQuestNodes = questData.questDataNodes.Length;
+               if (totalQuestStatus.Count < totalQuestNodes) {
+                  hasCompletedAllQuests = false;
+               } else {
+                  // If any of the quest is in progress (dialogue current index less than total dialogues in a Quest Node)
+                  foreach (QuestStatusInfo questStat in totalQuestStatus) {
+                     QuestDataNode questNodeReference = questData.questDataNodes.ToList().Find(_ => _.questDataNodeId == questStat.questNodeId);
+                     if (questStat.questDialogueId < questNodeReference.questDialogueNodes.Length) {
+                        hasCompletedAllQuests = false;
+                        break;
+                     } 
+                  }
+               }
+
+               if (hasCompletedAllQuests) {
+                  Target_RemoveQuestNotif(_player.connectionToClient, npcId);
+               }
 
                if (questDialogue.itemRewards != null) {
                   if (questDialogue.itemRewards.Length > 0) {
@@ -2224,6 +2251,56 @@ public class RPCManager : NetworkBehaviour
       }
 
       return true;
+   }
+
+   [Command]
+   public void Cmd_RequestNPCQuestInArea () {
+      if (_player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+      IEnumerable<NPCData> npcDataInArea = NPCManager.self.getNPCDataInArea(_player.areaKey).Where(c => c.questId > 0);
+      List<int> npcIdList = new List<int>();
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         foreach (NPCData npcData in npcDataInArea) {
+            List<QuestStatusInfo> databaseQuestStatus = DB_Main.getQuestStatuses(npcData.npcId, _player.userId);
+            QuestData questData = NPCQuestManager.self.getQuestData(npcData.questId);
+
+            if (questData != null) {
+               // If there is no registered quest in the database, and if there are quest nodes for this NPC, add to quest notice
+               if (databaseQuestStatus.Count < 1 && questData.questDataNodes.Length > 0) {
+                  if (!npcIdList.Contains(npcData.npcId)) {
+                     npcIdList.Add(npcData.npcId);
+                  }
+               } else {
+                  foreach (QuestStatusInfo questStatus in databaseQuestStatus) {
+                     if (questStatus.questDialogueId < questData.questDataNodes[questStatus.questNodeId].questDialogueNodes.Length) {
+                        if (!npcIdList.Contains(npcData.npcId)) {
+                           npcIdList.Add(npcData.npcId);
+                        }
+                     }
+                  }
+               }
+            } else {
+               D.debug("Error here! No quest data for quest" + " : " + npcData.questId);
+            }
+         }
+
+         // Back to Unity
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            Target_ReceiveQuestNotifications(_player.connectionToClient, npcIdList.ToArray());
+         });
+      });
+   }
+
+   [TargetRpc]
+   public void Target_ReceiveQuestNotifications (NetworkConnection connection, int[] npcIds) {
+      foreach (int npcId in npcIds) {
+         NPC npcEntity = NPCManager.self.getNPC(npcId);
+         npcEntity.questNotice.SetActive(true);
+      }
    }
 
    [Command]
@@ -5199,8 +5276,12 @@ public class RPCManager : NetworkBehaviour
                shopData = ShopXMLManager.self.getShopDataByArea(_player.areaKey);
             }
 
-            string greetingText = shopData.shopGreetingText;
-            _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);
+            if (shopData == null) {
+               D.debug("Problem Fetching Shop Name!"+ " : " +shopName);
+            } else {
+               string greetingText = shopData.shopGreetingText;
+               _player.rpc.Target_ReceiveShopItems(_player.connectionToClient, gold, Util.serialize(sortedList), greetingText);
+            }
          });
       });
    }
