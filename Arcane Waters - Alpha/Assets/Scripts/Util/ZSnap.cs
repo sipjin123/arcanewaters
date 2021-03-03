@@ -92,6 +92,12 @@ public class ZSnap : MonoBehaviour {
       return (newZ + _colliderY + offsetZ + inherited) / 100f;
    }
 
+   public static int getZ (Vector3Int transformReference) {
+      float newZ = transformReference.y;
+      newZ = Util.TruncateTo100ths(newZ);
+      return (int)((newZ) / 100f);
+   }
+
    #region Private Variables
 
    // Store the Y offset of our circle collider

@@ -203,7 +203,7 @@ public class Area : MonoBehaviour
             layer.tilemap.transform.position = new Vector3(
                layer.tilemap.transform.position.x,
                layer.tilemap.transform.position.y,
-               BUILDING_Z);
+               layer.tilemap.transform.position.z + BUILDING_Z);
          }
       }
 

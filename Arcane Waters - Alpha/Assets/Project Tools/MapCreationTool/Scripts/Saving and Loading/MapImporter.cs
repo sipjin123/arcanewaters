@@ -27,8 +27,15 @@ namespace MapCreationTool
          tilemap.transform.localPosition = new Vector3(0, 0, layer.z);
          tilemap.gameObject.name = layer.name + " " + layer.sublayer;
 
-         // Add all the tiles
+         // Update z axis sorting 
          Vector3Int[] positions = layer.tiles.Select(t => new Vector3Int(t.x, t.y, 0)).ToArray();
+         if (layer.name.Contains(Area.BUILDING_LAYER)) {
+            for (int i = 0; i < positions.Length;i++) {
+               Vector3Int pos = positions[i];
+               positions[i] = new Vector3Int(pos.x, pos.y, ZSnap.getZ(pos));
+            }
+         } 
+
          TileBase[] tiles = layer.tiles
             .Select(t => AssetSerializationMaps.tryGetTile(new Vector2Int(t.i, t.j), biome))
             .Where(t => t != null)
