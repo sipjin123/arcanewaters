@@ -12,6 +12,9 @@ public class FriendListManager : MonoBehaviour {
    // The number of seconds between pending friendship request checks
    public static float PENDING_REQUESTS_CHECK_INTERVAL = 5 * 60f;
 
+   // The friendship info cached data
+   public List<FriendshipInfo> cachedFriendshipInfoList = new List<FriendshipInfo>();
+
    // Self
    public static FriendListManager self;
 
@@ -25,6 +28,15 @@ public class FriendListManager : MonoBehaviour {
    public void startFriendListManagement () {
       // Regularly check pending friendship requests and send a notification if the user is connected to this server
       InvokeRepeating(nameof(sendPendingFriendshipNotifications), 30f, PENDING_REQUESTS_CHECK_INTERVAL);
+   }
+
+   // Called once after setting up Global.player to get initial data
+   public void refreshFriendsData () {
+      if (Global.player == null) {
+         return;
+      }
+
+      Global.player.rpc.Cmd_RequestFriendsListFromServer();
    }
 
    public void sendPendingFriendshipNotifications () {
@@ -71,6 +83,19 @@ public class FriendListManager : MonoBehaviour {
    public void confirmDeleteFriend (int friendUserId) {
       PanelManager.self.confirmScreen.hide();
       Global.player.rpc.Cmd_DeleteFriendship(friendUserId);
+   }
+
+   public bool isFriend (int userId) {
+      if (!Global.player) {
+         return false;
+      }
+
+      foreach (FriendshipInfo info in FriendListManager.self.cachedFriendshipInfoList) {
+         if ((info.userId == userId && info.friendUserId == Global.player.userId) || (info.friendUserId == userId && info.userId == Global.player.userId)) {
+            return true;
+         }
+      }
+      return false;
    }
 
    #region Private Variables

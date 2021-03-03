@@ -20,13 +20,14 @@ using System.Globalization;
 using UnityEngine.Events;
 using MapCustomization;
 
-public class Util : MonoBehaviour {
+public class Util : MonoBehaviour
+{
    // Build name that matches the jenkins build
    public const string PRODUCTION_BUILD = "Windows-";
    public const string STANDALONE_BUILD = "Server-Dev-Windows-Standalone";
    public const string DEVELOPMENT_BUILD = "Client-Dev-Windows-Standalone-";
-   
-   public static Sprite getRawSpriteIcon(Item.Category category, int itemType) {
+
+   public static Sprite getRawSpriteIcon (Item.Category category, int itemType) {
       if (category != Item.Category.None && itemType != 0) {
          string castItem = new Item { category = category, itemTypeId = itemType }.getCastItem().getIconPath();
          Sprite spriteCache = ImageManager.getSprite(castItem);
@@ -50,7 +51,7 @@ public class Util : MonoBehaviour {
       }
    }
 
-   public static byte[] getTextureBytesForTransport (Texture2D texture) {      
+   public static byte[] getTextureBytesForTransport (Texture2D texture) {
       byte[] screenshotBytes = texture.EncodeToPNG();
       int maxPacketSize = Transport.activeTransport.GetMaxPacketSize();
 
@@ -93,11 +94,11 @@ public class Util : MonoBehaviour {
    }
 
    public static Texture2D getScreenshot () {
-      #if UNITY_EDITOR
-         if (!Application.isPlaying) {
-            D.error("Screenshots can only be taken in playmode.");
-         }
-      #endif
+#if UNITY_EDITOR
+      if (!Application.isPlaying) {
+         D.error("Screenshots can only be taken in playmode.");
+      }
+#endif
 
       // Prepare data
       int width = Screen.width;
@@ -292,12 +293,12 @@ public class Util : MonoBehaviour {
 
    public static float lerpDouble (double start, double end, double value) {
       // This is exactly like Mathf.Lerp, but takes doubles as parameters
-      return (float)(start + (end - start) * value);
+      return (float) (start + (end - start) * value);
    }
 
    public static float inverseLerpDouble (double start, double end, double value) {
       // This is exactly like Mathf.InverseLerp, but takes doubles as parameters
-      return (float)((value - start) / (end - start));
+      return (float) ((value - start) / (end - start));
    }
 
    public static Direction getFacing (float angle) {
@@ -361,7 +362,7 @@ public class Util : MonoBehaviour {
       return Direction.East;
    }
 
-   public static Vector2 getDirectionFromFacing(Direction facing) {
+   public static Vector2 getDirectionFromFacing (Direction facing) {
       switch (facing) {
          case Direction.North:
             return Vector2.up;
@@ -403,7 +404,7 @@ public class Util : MonoBehaviour {
 
    public static void setAlphaInShader (GameObject gameObject, float alpha, string propertyName = "_Color") {
       SpriteRenderer[] renderers = gameObject.GetComponentsInChildren<SpriteRenderer>(true);
-      
+
       foreach (SpriteRenderer rend in renderers) {
          Color color = rend.material.GetColor(propertyName);
          color.a = alpha;
@@ -525,9 +526,9 @@ public class Util : MonoBehaviour {
    public static bool isServerBuild () {
       bool isServerBuild = false;
 
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
       isServerBuild = true;
-      #endif
+#endif
 
       return isServerBuild;
    }
@@ -646,7 +647,7 @@ public class Util : MonoBehaviour {
    }
 
    public static void tryToRunInServerBackground (Action action) {
-      #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
 
       // If Unity is shutting down, we can't create new background threads
       if (ClientManager.isApplicationQuitting) {
@@ -659,7 +660,7 @@ public class Util : MonoBehaviour {
          action();
       });
 
-      #endif
+#endif
    }
 
    public static string removeNumbers (string input) {
@@ -670,7 +671,7 @@ public class Util : MonoBehaviour {
       return (float) Math.Truncate(f * 100) / 100;
    }
 
-   public static float Truncate (float value, int digits=2) {
+   public static float Truncate (float value, int digits = 2) {
       string formatString = "0.";
 
       for (int i = 0; i < digits; i++) {
@@ -693,23 +694,23 @@ public class Util : MonoBehaviour {
    }
 
    public static string createSalt (string UserName) {
-      #if IS_SERVER_BUILD
-         Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
-            System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
-         return System.Convert.ToBase64String(hasher.GetBytes(25));
-      #else
+#if IS_SERVER_BUILD
+      Rfc2898DeriveBytes hasher = new Rfc2898DeriveBytes(UserName.ToLower(),
+         System.Text.Encoding.Default.GetBytes("saltmZ8HxZEL7PTsalt"), 1000);
+      return System.Convert.ToBase64String(hasher.GetBytes(25));
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string hashPassword (string Salt, string Password) {
-      #if IS_SERVER_BUILD
-         Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
-                  System.Text.Encoding.Default.GetBytes(Salt), 1000);
-         return System.Convert.ToBase64String(Hasher.GetBytes(25));
-      #else
+#if IS_SERVER_BUILD
+      Rfc2898DeriveBytes Hasher = new Rfc2898DeriveBytes(Password,
+               System.Text.Encoding.Default.GetBytes(Salt), 1000);
+      return System.Convert.ToBase64String(Hasher.GetBytes(25));
+#else
          return "";
-      #endif
+#endif
    }
 
    public static string UppercaseFirst (string s) {
@@ -858,9 +859,9 @@ public class Util : MonoBehaviour {
                   // Database server - not mandatory
                   line = reader.ReadLine();
                   if (line != null) {
-                     #if IS_SERVER_BUILD
+#if IS_SERVER_BUILD
                      DB_Main.setServer(line);
-                     #endif
+#endif
                   }
                }
 
@@ -916,7 +917,7 @@ public class Util : MonoBehaviour {
    }
 
    // Truncates the specified float value to the requested number of digits
-   public static float TruncateRounded (float value, int digits=2) {
+   public static float TruncateRounded (float value, int digits = 2) {
       double mult = Math.Pow(10.0, digits);
       double result = Math.Truncate(mult * value) / mult;
       return (float) result;
@@ -960,7 +961,7 @@ public class Util : MonoBehaviour {
          Global.player == null ||
          !AreaManager.self.hasArea(Global.player.areaKey));
    }
-   
+
    // Loads an XML text asset and deserializes it into an object
    public static T xmlLoad<T> (TextAsset textAsset) {
       StringReader reader = null;
@@ -1013,7 +1014,7 @@ public class Util : MonoBehaviour {
       }
    }
 
-   public static string[] getFileNamesInFolder(string directoryPath, string searchPattern="*.*") {
+   public static string[] getFileNamesInFolder (string directoryPath, string searchPattern = "*.*") {
       // Get the list of files in the directory
       DirectoryInfo dir = new DirectoryInfo(directoryPath);
       FileInfo[] info = dir.GetFiles(searchPattern);
@@ -1031,14 +1032,14 @@ public class Util : MonoBehaviour {
       int gameVersion = int.MaxValue;
 
       // If this is a cloud build, then the manifest cannot be missing
-      #if CLOUD_BUILD
+#if CLOUD_BUILD
       try {
          gameVersion = int.Parse(getJenkinsBuildIdNumber());
       } catch {
          gameVersion = 0;
          D.debug("Failed to get game version properly" + " : " + getJenkinsBuildId() + " : " + getJenkinsBuildIdNumber());
       }
-      #endif
+#endif
 
       return gameVersion;
    }
@@ -1083,7 +1084,7 @@ public class Util : MonoBehaviour {
          D.debug("Failed to get branch type");
       }
 
-      return branchType; 
+      return branchType;
    }
 
    public static string getDistributionType () {
@@ -1099,7 +1100,7 @@ public class Util : MonoBehaviour {
          D.debug("Failed to get distribution type");
       }
 
-      return branchType; 
+      return branchType;
    }
 
    public static string getJenkinsBuildId () {
@@ -1127,7 +1128,7 @@ public class Util : MonoBehaviour {
       }
       return jenkinsBuildId;
    }
-   
+
    public static string getJenkinsBuildIdNumber () {
       // Declare local variables
       string jenkinsBuildId = null;
@@ -1157,6 +1158,13 @@ public class Util : MonoBehaviour {
       return jenkinsBuildId;
    }
 
+   // Convert UTC time to EST
+   public static DateTime getTimeInEST (DateTime utcTime) {
+      var estZone = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+      var date = TimeZoneInfo.ConvertTimeFromUtc(utcTime, estZone);
+      return date;
+   }
+
    public static bool isSameIpAddress (string addressA, string addressB) {
       if ((addressA == "localhost" || addressA == "127.0.0.1") &&
           (addressB == "localhost" || addressB == "127.0.0.1")) {
@@ -1165,8 +1173,8 @@ public class Util : MonoBehaviour {
          return addressA == addressB;
       }
    }
-   
-   public static string toTitleCase(string s) {
+
+   public static string toTitleCase (string s) {
       // Capitalizes the first letter of each word
       return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(s.ToLower());
    }
@@ -1241,7 +1249,7 @@ public class Util : MonoBehaviour {
 
    public static float getNormalisedScrollValue (int selectedIndex, int numItems) {
       // Calculates the value required to position a scroll view, in order to have a specific item visible
-      float verticalPosition = 1.0f - Mathf.Clamp01((float)(selectedIndex) / (float) (numItems - 1));
+      float verticalPosition = 1.0f - Mathf.Clamp01((float) (selectedIndex) / (float) (numItems - 1));
       return verticalPosition;
    }
 

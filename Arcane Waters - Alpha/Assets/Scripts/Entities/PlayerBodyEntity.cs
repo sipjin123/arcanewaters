@@ -279,10 +279,14 @@ public class PlayerBodyEntity : BodyEntity, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && !this.waterChecker.inWater() && isLocalPlayer && !isBouncingOnWeb()) {
+      if (InputManager.isJumpKeyPressed() && !isJumpCoolingDown() && isLocalPlayer && !isBouncingOnWeb()) {
          // If we are in a spider web  trigger, and facing the right way, jump onto the spider web
          if (collidingSpiderWebTrigger != null && collidingSpiderWebTrigger.isFacingWeb(facing)) {
             collidingSpiderWebTrigger.onPlayerJumped(this);
+            return;
+         }
+
+         if (this.waterChecker.inWater()) {
             return;
          }
 

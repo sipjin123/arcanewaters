@@ -5513,8 +5513,8 @@ public class DB_Main : DB_MainStub
 
       return accountId;
    }
-   
-  public static new int getSteamAccountId (string accountName) {
+
+   public static new int getSteamAccountId (string accountName) {
       int accountId = -1;
 
       try {
@@ -5544,10 +5544,10 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM global.account_bans WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM account_bans_v2 WHERE targetAccId = @targetAccId ORDER BY banStart DESC LIMIT 1;", conn)) {
             conn.Open();
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@targetAccId", accId);
 
             DebugQuery(cmd);
 
@@ -5567,13 +5567,13 @@ public class DB_Main : DB_MainStub
    public static new void liftBanForAccount (int accId) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("DELETE FROM global.account_bans WHERE accId=@accId", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.account_bans_v2 SET banLift = CURRENT_TIMESTAMP WHERE targetAccId=@targetAccId AND banLift = NULL ORDER BY banStart DESC", conn)) {
             conn.Open();
+
             cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accId);
+            cmd.Parameters.AddWithValue("@targetAccId", accId);
 
             DebugQuery(cmd);
-
             cmd.ExecuteNonQuery();
          }
       } catch (Exception e) {
@@ -5581,30 +5581,47 @@ public class DB_Main : DB_MainStub
       }
    }
 
-   public static new void banAccountWithId (int accId, BanInfo banInfo) {
-      if (accId < 0) {
-         D.error("Tried to ban an account with invalid accountId " + accId);
-         return;
-      }
+   public static new BanInfo.BanStatus banAccountWithId (BanInfo banInfo) {
+      BanInfo.BanStatus status = BanInfo.BanStatus.None;
 
-      try {
-         using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans (accId, banType, banReason, banEndDate) VALUES" +
-            "(@accId, @banType, @banReason, @banEndDate)", conn)) {
-            conn.Open();
-            cmd.Prepare();
-            cmd.Parameters.AddWithValue("@accId", accId);
-            cmd.Parameters.AddWithValue("@banType", (int) banInfo.banType);
-            cmd.Parameters.AddWithValue("@banReason", banInfo.reason);
-            cmd.Parameters.AddWithValue("@banEndDate", banInfo.banEndDate);
+      if (banInfo.targetAccId < 0) {
+         D.error("Tried to ban an account with invalid accountId " + banInfo.targetAccId);
+         status = BanInfo.BanStatus.BanError;
+      } else {
+         BanInfo checkBanInfo = getBanInfoForAccount(banInfo.targetAccId);
 
-            DebugQuery(cmd);
+         // First, we check if the account is already banned
+         if (checkBanInfo != null && !checkBanInfo.hasBanExpired()) {
+            D.error("Tried to ban an account already banned, accountId " + banInfo.targetAccId);
+            status = BanInfo.BanStatus.AlreadyBanned;
+         } else {
+            // If the account doesn't have a current active ban
+            try {
+               using (MySqlConnection conn = getConnectionToDevGlobal())
+               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans_v2 (sourceAccId, targetAccId, banType, banReason, banTime, banEnd) VALUES" +
+                  "(@sourceAccId, @targetAccId, @banType, @banReason, @banTime, @banEnd)", conn)) {
+                  conn.Open();
+                  cmd.Prepare();
 
-            cmd.ExecuteNonQuery();
+                  cmd.Parameters.AddWithValue("@sourceAccId", banInfo.sourceAccId);
+                  cmd.Parameters.AddWithValue("@targetAccId", banInfo.targetAccId);
+                  cmd.Parameters.AddWithValue("@banType", (int) banInfo.banType);
+                  cmd.Parameters.AddWithValue("@banReason", banInfo.reason);
+                  cmd.Parameters.AddWithValue("@banTime", banInfo.banTime);
+                  cmd.Parameters.AddWithValue("@banEnd", banInfo.banEnd);
+
+                  DebugQuery(cmd);
+
+                  cmd.ExecuteNonQuery();
+               }
+            } catch (Exception e) {
+               D.error("MySQL Error: " + e.ToString());
+               status = BanInfo.BanStatus.BanError;
+            }
          }
-      } catch (Exception e) {
-         D.error("MySQL Error: " + e.ToString());
       }
+
+      return status;
    }
 
    public static new List<UserInfo> getUsersForAccount (int accId, int userId = 0) {

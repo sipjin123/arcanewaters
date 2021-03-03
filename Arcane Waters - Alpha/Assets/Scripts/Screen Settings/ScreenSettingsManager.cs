@@ -11,6 +11,9 @@ public class ScreenSettingsManager : MonoBehaviour {
    // The screen resolution height
    public static int height { get; private set; }
 
+   // The screen refresh rate
+   public static int refreshRate { get; private set; }
+
    // The screen fullscreen mode
    public static FullScreenMode fullScreenMode { get; private set; }
 
@@ -32,7 +35,7 @@ public class ScreenSettingsManager : MonoBehaviour {
    public static int largeScreenHeight = 1536;
 
    // The time to wait before we finish applying screen mode settings
-   public const float SCREEN_TRANSITION_TIME = 0.25f;
+   public const float SCREEN_TRANSITION_TIME = 0.05f;
 
    // Size of the windows title bar
    public static Vector2Int BORDER_SIZE { get; } = new Vector2Int(8, 40);
@@ -49,15 +52,17 @@ public class ScreenSettingsManager : MonoBehaviour {
       fullScreenResolutionWidth = Screen.currentResolution.width;
       fullScreenResolutionHeight = Screen.currentResolution.height;
 
+      refreshRate = PlayerPrefs.GetInt(REFRESH_RATE, Screen.currentResolution.refreshRate);
+
       if (PlayerPrefs.HasKey(SCREEN_RESOLUTION_H) && PlayerPrefs.HasKey(SCREEN_RESOLUTION_W)) {
          height = PlayerPrefs.GetInt(SCREEN_RESOLUTION_H);
          width = PlayerPrefs.GetInt(SCREEN_RESOLUTION_W);
          fullScreenMode = (FullScreenMode)PlayerPrefs.GetInt(FULL_SCREEN_MODE);
-         Screen.SetResolution(width, height, fullScreenMode);
+         setResolution(width, height, refreshRate);
       } else {
          width = Screen.width;
          height = Screen.height;
-         fullScreenMode = Screen.fullScreenMode;
+         fullScreenMode = Screen.fullScreenMode;         
          saveSettings();
       }
 
@@ -65,15 +70,26 @@ public class ScreenSettingsManager : MonoBehaviour {
       if (width < MIN_WIDTH || height < MIN_HEIGHT) {
          width = MIN_WIDTH;
          height = MIN_HEIGHT;
-         setResolution(width, height);
+         setResolution(width, height, refreshRate);
       }
    }
 
    public static void setFullscreenMode (FullScreenMode screenMode) {
+      if (screenMode == fullScreenMode) { 
+         return; 
+      }
+
       fullScreenMode = screenMode;
-      Screen.SetResolution(width, height, fullScreenMode);
+
+      // If the player selected the borderless windowed mode, width and height should match the native screen resolution
+      if (screenMode == FullScreenMode.FullScreenWindow) {
+         width = Screen.currentResolution.width;
+         height = Screen.currentResolution.height;
+      }
+
       self.StartCoroutine(self.CO_ProcessScreenAdjustments(screenMode));
-      self.StartCoroutine(self.CO_RefreshBorders());
+
+      Debug.Log($"Fullscreen mode changed to {screenMode}");
 
       processCursorState();
    }
@@ -88,8 +104,12 @@ public class ScreenSettingsManager : MonoBehaviour {
 #endif
    }
 
+   public static void setResolution (int width, int height, int refreshRate) {
+      if (fullScreenMode == FullScreenMode.FullScreenWindow) {
+         setFullscreenMode(fullScreenMode);
+         return;
+      }
 
-   public static void setResolution (int width, int height) {
       // If the given resolution is too low, change it to the minimum supported
       if (width < MIN_WIDTH || height < MIN_HEIGHT) {
          width = MIN_WIDTH;
@@ -98,14 +118,10 @@ public class ScreenSettingsManager : MonoBehaviour {
 
       ScreenSettingsManager.width = width;
       ScreenSettingsManager.height = height;
-      Screen.SetResolution(width, height, fullScreenMode);
+      ScreenSettingsManager.refreshRate = refreshRate;
 
-      saveSettings();
-   }
+      Screen.SetResolution(width, height, fullScreenMode, refreshRate);
 
-   private static void setFullscreen (bool fullscreen) {
-      fullScreenMode = fullscreen ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.Windowed;
-      Screen.SetResolution(width, height, fullScreenMode);
       saveSettings();
    }
 
@@ -123,66 +139,46 @@ public class ScreenSettingsManager : MonoBehaviour {
       PlayerPrefs.SetInt(SCREEN_RESOLUTION_W, width);
       PlayerPrefs.SetInt(SCREEN_RESOLUTION_H, height);
       PlayerPrefs.SetInt(FULL_SCREEN_MODE, (int) fullScreenMode);
+      PlayerPrefs.SetInt(REFRESH_RATE, refreshRate);
    }
 
-   private IEnumerator CO_RefreshBorders () {
-      if (fullScreenMode == FullScreenMode.FullScreenWindow) {
-         setBorderedWindow();
-
-         yield return new WaitForSeconds(.15f);
-
-         setBorderlessWindow();
-      }
+   private void OnApplicationQuit () {
+      saveSettings();
    }
 
    private IEnumerator CO_ProcessScreenAdjustments (FullScreenMode mode) {
-      // Make sure the full screen flag is set to false
-      if (mode != FullScreenMode.ExclusiveFullScreen) {
-         setFullscreen(false);
+      if (mode == FullScreenMode.FullScreenWindow) {
+         setBorderlessWindow();
+      } else {
+         setBorderedWindow();
       }
-
-      yield return new WaitForSeconds(SCREEN_TRANSITION_TIME);
-
-#if !UNITY_EDITOR
-      switch (mode) {
-         case FullScreenMode.Windowed:
-            setBorderedWindow();
-            break;
-         case FullScreenMode.FullScreenWindow:
-            setBorderlessWindow();
-            break;
-         case FullScreenMode.ExclusiveFullScreen:
-            setBorderedWindow();
-            break;
-      }
-#endif
 
       // Only setup full screen after resizing the window
       if (mode == FullScreenMode.ExclusiveFullScreen) {
          yield return new WaitForSeconds(SCREEN_TRANSITION_TIME);
-         setFullscreen(true);
       }
+
+      Screen.SetResolution(width, height, fullScreenMode, refreshRate);
    }
 
    public void setBorderedWindow () {
       if (BorderlessWindow.framed)
          return;
 
+#if !UNITY_EDITOR
       BorderlessWindow.setBorder();
       BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width + BORDER_SIZE.x, Screen.height + BORDER_SIZE.y); // Compensating the border offset.
+#endif
    }
 
    public void setBorderlessWindow () {
       if (!BorderlessWindow.framed)
          return;
 
-#if UNITY_EDITOR
-      BorderlessWindow.setBorder();
-#elif !UNITY_EDITOR
+#if !UNITY_EDITOR
       BorderlessWindow.setBorderless();
+      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - BORDER_SIZE.x, Screen.height - BORDER_SIZE.y);      
 #endif
-
-      BorderlessWindow.moveWindowPos(Vector2Int.zero, Screen.width - BORDER_SIZE.x, Screen.height - BORDER_SIZE.y);
    }
 
    #region Private Variables
@@ -195,6 +191,9 @@ public class ScreenSettingsManager : MonoBehaviour {
 
    // The full screen mode PlayerPrefs key
    private const string FULL_SCREEN_MODE = "FullScreenMode";
+
+   // The refresh rate PlayerPrefs key
+   private const string REFRESH_RATE = "RefreshRate";
 
    #endregion
 }

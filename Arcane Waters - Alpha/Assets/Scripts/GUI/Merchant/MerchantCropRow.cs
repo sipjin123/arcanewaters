@@ -16,6 +16,9 @@ public class MerchantCropRow : MonoBehaviour {
    // The crop text
    public Text cropName;
 
+   // The count text
+   public Text ownedCropCount;
+
    // The demand meter
    public Image demandMeterImage;
 
@@ -42,12 +45,19 @@ public class MerchantCropRow : MonoBehaviour {
    public Sprite silverStarSprite;
    public Sprite diamondStarSprite;
 
+   // The Sell button tooltip component
+   public GenericTooltipTrigger sellButtonTooltip;
+
    #endregion
 
    public void setRowForCrop (CropOffer offer) {
       offerId = offer.id;
       cropImage.sprite = ImageManager.getSprite("Cargo/" + offer.cropType);
       cropName.text = Util.UppercaseFirst(offer.cropType.ToString());
+
+      int availableCropCount = CargoBoxManager.self.getCargoCount(offer.cropType);
+
+      ownedCropCount.text = availableCropCount.ToString();
 
       // Determines the demand meter fill amount
       float demand = offer.demand / CropOffer.MAX_DEMAND;
@@ -65,9 +75,22 @@ public class MerchantCropRow : MonoBehaviour {
       star2Image.sprite = rarityStars[1];
       star3Image.sprite = rarityStars[2];
 
+      // Make sure the button can only be clicked if we have crops to sell
+      if (availableCropCount > 0) {
+         sellButton.interactable = true;
+         sellButtonTooltip.enabled = false;
+      } else {
+         sellButton.interactable = false;
+         sellButtonTooltip.enabled = true;
+         sellButtonTooltip.message = "You do not have any " + cropName.text.ToLower() + " to sell!";
+      }
+      
       // Associate a new function with the confirmation button
       sellButton.onClick.RemoveAllListeners();
-      sellButton.onClick.AddListener(() => MerchantScreen.self.sellButtonPressed(offerId));
+
+      sellButton.onClick.AddListener(() => {
+         MerchantScreen.self.sellButtonPressed(offerId);
+      });
    }
 
    #region Private Variables

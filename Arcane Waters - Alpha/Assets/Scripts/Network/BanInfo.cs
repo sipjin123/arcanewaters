@@ -21,14 +21,34 @@ public class BanInfo
       Temporary = 2
    }
 
+   // The different types of ban status
+   public enum BanStatus
+   {
+      None = 0,
+      AlreadyBanned = 1,
+      BanError = 2
+   }
+
+   // The accId who is banning
+   public int sourceAccId;
+
+   // The accId being banned
+   public int targetAccId;
+
    // The type of ban applied to this account
    public Type banType = Type.None;
 
+   // Ban time in minutes
+   public int banTime;
+
    // When this player was banned
-   public DateTime banStartDate;
+   public DateTime banStart;
 
    // When this player's ban is over
-   public DateTime banEndDate;
+   public DateTime banEnd;
+
+   // When this player's ban was lifted
+   public DateTime banLift;
 
    // The reason for the ban
    public string reason;
@@ -39,10 +59,14 @@ public class BanInfo
 
    public BanInfo (MySqlDataReader dataReader) {
       try {
-         this.banType = (Type)DataUtil.getInt(dataReader, "banType");
-         this.banStartDate = DataUtil.getDateTime(dataReader, "banDate");
-         this.banEndDate = DataUtil.getDateTime(dataReader, "banEndDate");
-         this.reason = DataUtil.getString(dataReader, "banReason");
+         sourceAccId = DataUtil.getInt(dataReader, "sourceAccId");
+         targetAccId = DataUtil.getInt(dataReader, "targetAccId");
+         banType = (Type) DataUtil.getInt(dataReader, "banType");
+         banTime = DataUtil.getInt(dataReader, "banTime");
+         banStart = DataUtil.getDateTime(dataReader, "banStart");
+         banEnd = DataUtil.getDateTime(dataReader, "banEnd");
+         banLift = DataUtil.getDateTime(dataReader, "banLift");
+         reason = DataUtil.getString(dataReader, "banReason");
       } catch (Exception e) {
          D.debug("Error in parsing MySqlData for BanInfo " + e.ToString());
       }
@@ -52,23 +76,27 @@ public class BanInfo
 
    public BanInfo () { }
 
-   public BanInfo (Type banType, DateTime banEndDate, string reason) {
+   public BanInfo (int sourceAccId, Type banType, DateTime banEndDate, int minutes, string reason) {
+      this.sourceAccId = sourceAccId;
       this.banType = banType;
-      this.banEndDate = banEndDate;
+      this.banEnd = banEndDate;
       this.reason = reason;
-   }
-
-   public bool isBanned () {
-      return banType != Type.None;
+      this.banTime = minutes;
    }
 
    public bool hasBanExpired () {
-      if (banType == Type.Indefinite) {
-         return false;
-      }
+      bool expired = false;
 
-      int isEarlier = DateTime.Compare(DateTime.Now, banEndDate);
-      return isEarlier > 0;
+      // If the ban is indefinite, we check for a liftDate
+      if (banType == Type.Indefinite) {
+         if (banLift != null) {
+            expired = true;
+         }
+         return expired;
+      } else {
+         int isEarlier = DateTime.Compare(DateTime.UtcNow, banEnd);
+         return isEarlier > 0;
+      }
    }
 
    #region Private Variables

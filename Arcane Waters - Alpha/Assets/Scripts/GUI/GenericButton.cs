@@ -25,7 +25,9 @@ public class GenericButton : Button {
       _layoutGroup = GetComponent<HorizontalLayoutGroup>();
 
       // Note our current top padding
-      _initialPadding = _layoutGroup.padding.top;
+      if (_layoutGroup != null) {
+         _initialPadding = _layoutGroup.padding.top;
+      }
    }
 
    private void Update () {
@@ -53,7 +55,7 @@ public class GenericButton : Button {
 
    protected void updatePadding () {
       // Adjust the padding top when the button gets clicked (but only when the game is running, not when we're making changes in the editor)
-      if (Application.isPlaying) {
+      if (Application.isPlaying && _layoutGroup != null) {
          _layoutGroup.padding.top = isInClickMode() ? _initialPadding * 2 : _initialPadding;
       }
    }

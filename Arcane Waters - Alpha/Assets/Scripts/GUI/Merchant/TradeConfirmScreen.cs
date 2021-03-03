@@ -64,6 +64,8 @@ public class TradeConfirmScreen : MonoBehaviour
       this.canvasGroup.blocksRaycasts = true;
       this.canvasGroup.interactable = true;
       this.gameObject.SetActive(true);
+
+      confirmButton.interactable = true;      
    }
 
    public void hide () {

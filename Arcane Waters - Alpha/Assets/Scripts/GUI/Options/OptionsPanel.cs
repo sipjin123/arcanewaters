@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using System;
 using static UnityEngine.UI.Dropdown;
 using System.Text;
+using System.Linq;
 
 public class OptionsPanel : Panel
 {
@@ -39,6 +40,9 @@ public class OptionsPanel : Panel
 
    // The vsync toggle
    public Toggle vsyncToggle;
+
+   // The button to apply changes to display settings
+   public Button applyDisplaySettingsButton;
 
    // The guild icon toggle
    public Toggle displayGuildIconsToggle;
@@ -102,18 +106,35 @@ public class OptionsPanel : Panel
 
       // Loads the saved gui scale
       float guiScaleValue = OptionsManager.GUIScale;
-      guiScaleLabel.text = (guiScaleValue).ToString("f1") + " %";
-      guiScaleSlider.SetValueWithoutNotify(guiScaleValue / 100.0f);
+      guiScaleLabel.text = Mathf.RoundToInt(guiScaleValue) + " %";
+      guiScaleSlider.SetValueWithoutNotify(guiScaleValue / 25f);      
       guiScaleSlider.onValueChanged.AddListener(_ => guiScaleSliderChanged());
       
       // Loads the saved minimap scale
       float minimapScaleValue = OptionsManager.minimapScale;
-      minimapScaleLabel.text = (minimapScaleValue).ToString("f1") + " %";      
-      minimapScaleSlider.SetValueWithoutNotify(minimapScaleValue / 100.0f);
+      minimapScaleLabel.text = Mathf.RoundToInt(minimapScaleValue) + " %";      
+      minimapScaleSlider.SetValueWithoutNotify(minimapScaleValue / 25f);
       minimapScaleSlider.onValueChanged.AddListener(_ => minimapScaleSliderChanged());
+      
+      // If any of the screen resolution settings is changed, we want to enable the button if the new setting is different from the applied one
+      vsyncToggle.onValueChanged.AddListener((isOn) => applyDisplaySettingsButton.interactable = isOn != OptionsManager.isVsyncEnabled());
+      screenModeDropdown.onValueChanged.AddListener((index) => {
+         applyDisplaySettingsButton.interactable = index != getScreenModeIndex(ScreenSettingsManager.fullScreenMode);
+      
+         // In borderless fullscreen players can only use the native screen resolution
+         bool isBorderlessWindow = index == getScreenModeIndex(FullScreenMode.FullScreenWindow);
+         resolutionsDropdown.interactable = !isBorderlessWindow;
+
+         if (isBorderlessWindow) {
+            int width = Screen.currentResolution.width;
+            int height = Screen.currentResolution.height;
+            resolutionsDropdown.SetValueWithoutNotify(getResolutionOptionIndex(width, height, getMaxRefreshRateForResolution(width, height)));
+         }
+      });
+
+      resolutionsDropdown.onValueChanged.AddListener((index) => applyDisplaySettingsButton.interactable = index != getActiveResolutionOptionIndex());
 
       // Loads vsync
-      vsyncToggle.onValueChanged.AddListener(setVSync);
       int vsyncCount = OptionsManager.vsyncCount;
       vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
       QualitySettings.vSyncCount = vsyncCount;
@@ -144,14 +165,11 @@ public class OptionsPanel : Panel
       // Build string and show version number
       versionGameObject.SetActive(true);
       versionNumberText.text = Util.getFormattedGameVersion();
-   }
 
-   public void setVSync (bool vsync) {
-      OptionsManager.setVsync(vsync);
+      applyDisplaySettingsButton.onClick.RemoveAllListeners();
+      applyDisplaySettingsButton.onClick.AddListener(() => applyDisplaySettings());
 
-      if (vsyncToggle.isOn != vsync) {
-         vsyncToggle.SetIsOnWithoutNotify(vsync);
-      }
+      refreshDisplaySettingsControls();
    }
 
    public void showAllGuildIcons (bool showGuildIcons) {
@@ -192,6 +210,14 @@ public class OptionsPanel : Panel
       }
    }
 
+   public void setVSync (bool vsync) {
+      OptionsManager.setVsync(vsync);
+
+      if (vsyncToggle.isOn != vsync) {
+         vsyncToggle.SetIsOnWithoutNotify(vsync);
+      }
+   }
+
    private void initializeFullScreenSettings () {
       List<OptionData> screenModeOptions = new List<OptionData>();
 
@@ -204,12 +230,6 @@ public class OptionsPanel : Panel
       screenModeOptions.Add(new OptionData { text = "Windowed" });
 
       screenModeDropdown.options = screenModeOptions;
-      screenModeDropdown.onValueChanged.AddListener(index => {
-         ScreenSettingsManager.setFullscreenMode(fullScreenModes[index]);
-      });
-
-      int loadedScreenModeValue = getScreenModeIndex(ScreenSettingsManager.fullScreenMode);
-      screenModeDropdown.SetValueWithoutNotify(loadedScreenModeValue);
    }
 
    public int getScreenModeIndex (FullScreenMode mode) {
@@ -227,8 +247,105 @@ public class OptionsPanel : Panel
       fullScreenModes.Add(FullScreenMode.Windowed);
    }
 
+   private void initializeResolutionsList () {
+      Resolution[] allResolutions = Screen.resolutions;
+
+      // Remove unsupported and duplicate resolutions (duplicate with different refresh rates)
+      _supportedResolutions = new List<Resolution>();
+      for (int i = 0; i < allResolutions.Length; i++) {
+         Resolution res = allResolutions[i];
+
+         if (res.width >= res.height &&
+            res.width >= ScreenSettingsManager.MIN_WIDTH &&
+            res.height >= ScreenSettingsManager.MIN_HEIGHT &&
+            !_supportedResolutions.Exists(r => r.width == res.width &&
+               r.height == res.height && r.refreshRate == res.refreshRate)) {
+            _supportedResolutions.Add(res);
+         }
+      }
+   }
+
+   private void initializeResolutionsDropdown () {
+      initializeResolutionsList();
+
+      List<OptionData> options = new List<OptionData>();
+      int currentResolution = -1;
+
+      for (int i = 0; i < _supportedResolutions.Count; i++) {
+         Resolution res = _supportedResolutions[i];
+         OptionData o = new OptionData($"{res.width} x {res.height} ({res.refreshRate})");
+         options.Add(o);
+
+         if (res.width == ScreenSettingsManager.width && res.height == ScreenSettingsManager.height) {
+            currentResolution = i;
+         }
+      }
+
+      resolutionsDropdown.options = options;
+
+      if (currentResolution >= 0) {
+         resolutionsDropdown.SetValueWithoutNotify(currentResolution);
+      }
+   }
+
+   private int getActiveResolutionOptionIndex () {
+      return getResolutionOptionIndex(ScreenSettingsManager.width, ScreenSettingsManager.height, ScreenSettingsManager.refreshRate);
+   }
+
+   private int getResolutionOptionIndex (int width, int height, int refreshRate) {
+      return _supportedResolutions.FindIndex(x => x.width == width && x.height == height && x.refreshRate == refreshRate);
+   }
+
    private void setResolution (int resolutionIndex) {
-      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height);      
+      ScreenSettingsManager.setResolution(_supportedResolutions[resolutionIndex].width, _supportedResolutions[resolutionIndex].height, _supportedResolutions[resolutionIndex].refreshRate);      
+   }
+
+   private int getMaxRefreshRateForResolution (int width, int height) {
+      if (_supportedResolutions == null || _supportedResolutions.Count < 1) {
+         initializeResolutionsList();
+      }
+
+      if (_supportedResolutions.Any(x => x.width == width && x.height == height)) {
+         return _supportedResolutions.Where(x => x.width == width && x.height == height).Max(r => r.refreshRate);
+      } else {
+         D.warning($"Could not find max refresh rate for resolution {width} x {height}. Returning default.");
+         return 59;
+      }
+   }
+
+   private void refreshDisplaySettingsControls () {
+      int vsyncCount = OptionsManager.vsyncCount;
+      vsyncToggle.SetIsOnWithoutNotify(vsyncCount != 0);
+
+      int loadedScreenModeValue = getScreenModeIndex(ScreenSettingsManager.fullScreenMode);
+      screenModeDropdown.SetValueWithoutNotify(loadedScreenModeValue);
+
+      int activeResolutionIndex = -1;
+      if (ScreenSettingsManager.fullScreenMode == FullScreenMode.FullScreenWindow) {
+         int width = Screen.currentResolution.width;
+         int height = Screen.currentResolution.height;
+
+         activeResolutionIndex = getResolutionOptionIndex(width, height, getMaxRefreshRateForResolution(width, height));
+         resolutionsDropdown.interactable = false;
+      } else {
+         activeResolutionIndex = getActiveResolutionOptionIndex();
+         resolutionsDropdown.interactable = true;
+      }
+
+      if (activeResolutionIndex >= 0) {
+         resolutionsDropdown.SetValueWithoutNotify(activeResolutionIndex);
+      }
+
+      // The controls now match the applied settings, we can disable the "Apply" button until something changes again
+      applyDisplaySettingsButton.interactable = false;
+   }
+
+   private void applyDisplaySettings () {
+      setResolution(resolutionsDropdown.value);
+      setVSync(vsyncToggle.isOn);
+      ScreenSettingsManager.setFullscreenMode(fullScreenModes[screenModeDropdown.value]);
+      
+      refreshDisplaySettingsControls();
    }
 
    public override void show () {
@@ -250,42 +367,8 @@ public class OptionsPanel : Panel
             go.SetActive(true);
          }
       }
-   }
 
-   private void initializeResolutionsDropdown () {
-      Resolution[] allResolutions = Screen.resolutions;
-
-      // Remove unsupported and duplicate resolutions (duplicate with different refresh rates)
-      _supportedResolutions = new List<Resolution>();
-      for (int i = 0; i < allResolutions.Length; i++) {
-         if (allResolutions[i].width >= ScreenSettingsManager.MIN_WIDTH &&
-            allResolutions[i].height >= ScreenSettingsManager.MIN_HEIGHT &&
-            !_supportedResolutions.Exists(r => r.width == allResolutions[i].width &&
-               r.height == allResolutions[i].height)) {
-            _supportedResolutions.Add(allResolutions[i]);
-         }
-      }
-
-      List<OptionData> options = new List<OptionData>();
-      int currentResolution = -1;
-
-      for (int i = 0; i < _supportedResolutions.Count; i++) {
-         Resolution res = _supportedResolutions[i];
-         OptionData o = new OptionData($"{res.width} x {res.height}");
-         options.Add(o);
-
-         if (res.width == ScreenSettingsManager.width && res.height == ScreenSettingsManager.height) {
-            currentResolution = i;
-         }
-      }
-
-      resolutionsDropdown.options = options;
-
-      if (currentResolution >= 0) {
-         resolutionsDropdown.SetValueWithoutNotify(currentResolution);
-      }
-
-      resolutionsDropdown.onValueChanged.AddListener(setResolution);
+      refreshDisplaySettingsControls();
    }
 
    public void receiveDataFromServer (int instanceNumber, int totalInstances) {
@@ -318,14 +401,17 @@ public class OptionsPanel : Panel
       SoundManager.effectsVolume = effectsSlider.value;
    }
 
-   public void guiScaleSliderChanged () {
-      guiScaleLabel.text = (guiScaleSlider.value * 100.0f).ToString("f1") + " %";
-      OptionsManager.setGUIScale(guiScaleSlider.value * 100.0f);
+   public void guiScaleSliderChanged () {      
+      guiScaleLabel.text = Mathf.RoundToInt(guiScaleSlider.value * 25f) + " %";
+   }
+
+   public void applyGuiScaleChanges () {
+      OptionsManager.setGUIScale(guiScaleSlider.value * 25f);
    }
 
    public void minimapScaleSliderChanged () {      
-      minimapScaleLabel.text = (minimapScaleSlider.value * 100.0f).ToString("f1") + " %";
-      OptionsManager.setMinimapScale(minimapScaleSlider.value * 100.0f);
+      minimapScaleLabel.text = Mathf.RoundToInt(minimapScaleSlider.value * 25f) + " %";
+      OptionsManager.setMinimapScale(minimapScaleSlider.value * 25f);
    }
 
    public void onOpenLogFilePressed () {

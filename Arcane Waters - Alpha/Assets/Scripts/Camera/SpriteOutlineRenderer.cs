@@ -197,7 +197,7 @@ public class SpriteOutlineRenderer : MonoBehaviour
    public const int DEFAULT_PIXEL_SIZE = 4;
 
    // The distance between the object and the outline in the Z axis
-   public const float OUTLINE_Z_OFFSET = 0.0001f;
+   public const float OUTLINE_Z_OFFSET = 0.0f;
    
    #endregion
 }

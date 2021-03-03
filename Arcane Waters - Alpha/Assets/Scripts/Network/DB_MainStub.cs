@@ -657,7 +657,8 @@ public class DB_MainStub : MonoBehaviour
 
    }
 
-   public static void banAccountWithId (int accId, BanInfo banInfo) {
+   public static BanInfo.BanStatus banAccountWithId (BanInfo banInfo) {
+      return BanInfo.BanStatus.None;
    }
 
    public static int getAccountId (string accountName, string accountPassword) {

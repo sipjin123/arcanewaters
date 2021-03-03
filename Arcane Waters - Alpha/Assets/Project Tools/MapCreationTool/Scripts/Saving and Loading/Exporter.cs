@@ -488,8 +488,6 @@ namespace MapCreationTool.Serialization
       private IEnumerable<SpecialTileChunk> handleVines () {
          for (int i = 0; i < editorSize.x; i++) {
             for (int j = 1; j < editorSize.y - 1; j++) {
-               // If there is a tile underneath blocking, don't place vines behaviour
-               if (cellMatrix[i, j - 1].shouldHaveAnyColliders()) continue;
 
                Vector2Int size = new Vector2Int(1, 0);
                // Try to find a line of vines

@@ -74,7 +74,7 @@ public class ServerMessageManager : MonoBehaviour
             // Look up the account ID corresponding to the provided account name and password
             string salt = Util.createSalt("arcane");
             string hashedPassword = Util.hashPassword(salt, logInUserMessage.accountPassword);
-            
+
             // Manual login system using input user name and password
             accountId = DB_Main.getAccountId(logInUserMessage.accountName, hashedPassword);
          }
@@ -83,15 +83,14 @@ public class ServerMessageManager : MonoBehaviour
          if (accountId > 0) {
             BanInfo banInfo = DB_Main.getBanInfoForAccount(accountId);
 
-            if (banInfo != null && banInfo.isBanned()) {
-               // If the current date is later than the end date of the ban, remove the ban from the DB and let the user in
+            if (banInfo != null) {
+               // If the ban is currently expired
                if (banInfo.hasBanExpired()) {
                   DB_Main.liftBanForAccount(accountId);
                } else {
                   UnityThreadHelper.UnityDispatcher.Dispatch(() => {
                      sendError(ErrorMessage.Type.Banned, conn.connectionId, getBannedMessage(banInfo));
                   });
-
                   return;
                }
             }
@@ -220,7 +219,7 @@ public class ServerMessageManager : MonoBehaviour
    }
 
    public static string getBannedMessage (BanInfo banInfo) {
-      if (!banInfo.isBanned()) {
+      if (banInfo.hasBanExpired()) {
          return "";
       }
 
@@ -228,7 +227,7 @@ public class ServerMessageManager : MonoBehaviour
 
       switch (banInfo.banType) {
          case BanInfo.Type.Temporary:
-            message = $"Your account has been suspended until {banInfo.banEndDate}";
+            message = $"Your account has been suspended until {Util.getTimeInEST(banInfo.banEnd)} EST";
             break;
 
          case BanInfo.Type.Indefinite:
@@ -281,7 +280,7 @@ public class ServerMessageManager : MonoBehaviour
          // Generate random password for each steam user
          string randomCharacters = "";
          for (int i = 0; i < SteamLoginEncryption.PASSWORD_LENGTH; i++) {
-            int randomIndex = UnityEngine.Random.Range(0, SteamLoginEncryption.ALPHA_NUMERIC.Length-1);
+            int randomIndex = UnityEngine.Random.Range(0, SteamLoginEncryption.ALPHA_NUMERIC.Length - 1);
             randomCharacters += SteamLoginEncryption.ALPHA_NUMERIC[randomIndex];
          }
          string rawPassword = _.appownership.ownersteamid + randomCharacters;

@@ -298,6 +298,9 @@ public class NetEntity : NetworkBehaviour
          // Fetch the perk points for this user
          Global.player.rpc.Cmd_FetchPerkPointsForUser();
 
+         // Download initial friends list
+         FriendListManager.self.refreshFriendsData();
+
          if (isPlayerEntity()) {
             StartCoroutine(CO_LoadWeather());
          }

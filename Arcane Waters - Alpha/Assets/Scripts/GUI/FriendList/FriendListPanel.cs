@@ -81,6 +81,10 @@ public class FriendListPanel : Panel
    public void updatePanelWithFriendshipInfo (List<FriendshipInfo> friendshipInfoList, Friendship.Status friendshipStatus,
       int pageNumber, int totalFriendInfoCount, int friendCount, int pendingRequestCount) {
       _friendshipStatusFilter = friendshipStatus;
+      FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
+      if (FriendListManager.self.cachedFriendshipInfoList == null) {
+         FriendListManager.self.cachedFriendshipInfoList = new List<FriendshipInfo>();
+      }
 
       // Check if the list is for friends or friendship requests
       if (friendshipStatus == Friendship.Status.Friends) {

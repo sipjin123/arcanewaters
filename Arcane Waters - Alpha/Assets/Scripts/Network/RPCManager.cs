@@ -764,6 +764,16 @@ public class RPCManager : NetworkBehaviour
    }
 
    [TargetRpc]
+   public void Target_ReceiveFriendsList (NetworkConnection connection, FriendshipInfo[] friendshipInfo) {
+      List<FriendshipInfo> friendshipInfoList = new List<FriendshipInfo>(friendshipInfo);
+      if (friendshipInfoList == null) {
+         friendshipInfoList = new List<FriendshipInfo>();
+      }
+
+      FriendListManager.self.cachedFriendshipInfoList = friendshipInfoList;
+   }
+
+   [TargetRpc]
    public void Target_ReceiveUserIdForFriendshipInvite (NetworkConnection connection, int friendUserId, string friendName) {
       // Make sure the panel is showing
       FriendListPanel panel = (FriendListPanel) PanelManager.self.get(Panel.Type.FriendList);
@@ -2376,6 +2386,31 @@ public class RPCManager : NetworkBehaviour
             Target_ReceiveFriendshipInfo(_player.connectionToClient, friendshipInfoList.ToArray(), friendshipStatus, pageNumber, totalFriendInfoCount, friendCount, pendingRequestCount);
          });
       });
+   }
+
+   [Server]
+   public void requestFriendsListFromServer (NetEntity player) {
+      if (player == null) {
+         D.warning("No player object found.");
+         return;
+      }
+
+      // Background thread
+      UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
+         // Get the items from the database
+         List<FriendshipInfo> friendshipInfoList = DB_Main.getFriendshipInfoList(player.userId, Friendship.Status.Friends, 1, 200);
+
+         // Back to the Unity thread to send the results back to the client
+         UnityThreadHelper.UnityDispatcher.Dispatch(() => {
+            // Determine if the friends are online
+            Target_ReceiveFriendsList(player.connectionToClient, friendshipInfoList.ToArray());
+         });
+      });
+   }
+
+   [Command]
+   public void Cmd_RequestFriendsListFromServer () {
+      requestFriendsListFromServer(_player);
    }
 
    [Server]

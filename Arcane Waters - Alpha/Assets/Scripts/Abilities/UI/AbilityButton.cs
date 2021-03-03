@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Mirror;
+using DG.Tweening;
 
 public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
    #region Public Variables
@@ -56,6 +57,12 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
    // If is an invalid ability based on the weapon equipped
    public bool isInvalidAbility;
 
+   // The transform that holds all the visuals for the button
+   public Transform buttonVisuals;
+
+   // The transform that holds the visuals for the button border
+   public Transform borderVisuals;
+
    #endregion
 
    public void setAbility (AbilityType abilityType) {
@@ -99,12 +106,22 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       if (buttonAnimator.isActiveAndEnabled) {
          buttonAnimator.Play(SELECT_ANIM);
       }
+
+      borderVisuals.DORewind();
+      borderVisuals.DOScale(0.9f, 0.2f);
+      buttonVisuals.DORewind();
+      buttonVisuals.DOScale(1.3f, 0.15f).SetEase(Ease.InElastic);
    }
 
    public void playIdleAnim () {
       if (buttonAnimator.isActiveAndEnabled) {
          buttonAnimator.Play(IDLE_ANIM);
       }
+
+      borderVisuals.DORewind();
+      borderVisuals.DOScale(1.0f, 0.2f);
+      buttonVisuals.DORewind();
+      buttonVisuals.DOScale(1.0f, 0.15f).SetEase(Ease.OutElastic);
    }
 
    public void OnPointerEnter (PointerEventData eventData) {
@@ -163,6 +180,7 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          cooldownImage.fillAmount = cooldownValue / cooldownTarget;
       } else {
          cooldownImage.enabled = false;
+         BattleUIManager.self.updateButtons();
          playIdleAnim();
          CancelInvoke();
       }
@@ -172,6 +190,8 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
       if (isInvalidAbility) {
          return;
       }
+
+      Debug.Log("Enabled button");
 
       Image buttonImage = GetComponent<Image>();
       if (buttonImage != null) {

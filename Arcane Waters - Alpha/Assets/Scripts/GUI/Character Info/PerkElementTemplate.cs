@@ -29,9 +29,10 @@ public class PerkElementTemplate : MonoBehaviour, IPointerEnterHandler, IPointer
       _grayscaleIntensityPropertyId = Shader.PropertyToID("_Intensity");
       _icon.material = _iconMaterial;
       _perkBorder.material = _iconMaterial;
-      gameObject.AddComponent<ToolTipComponent>();
-      gameObject.GetComponent<ToolTipComponent>().tooltipPlacement = ToolTipComponent.TooltipPlacement.LeftSideOfPanel;
-      gameObject.GetComponent<ToolTipComponent>().message = _tooltipText + _tooltipAssignedPointsText;
+
+      ToolTipComponent tooltipComponent = gameObject.AddComponent<ToolTipComponent>();
+      tooltipComponent.tooltipPlacement = ToolTipComponent.TooltipPlacement.LeftSideOfPanel;
+      tooltipComponent.message = _tooltipText + _tooltipAssignedPointsText;
    }
 
    public void initializeData (PerkData data) {

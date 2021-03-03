@@ -43,8 +43,8 @@ public class OptionsManager : MonoBehaviour {
    private void Awake () {
       self = this;
 
-      GUIScale = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 100);
-      minimapScale = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 100);
+      GUIScale = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 4);
+      minimapScale = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 4);
       vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
       Global.sprintConstantly = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
    }
@@ -72,6 +72,10 @@ public class OptionsManager : MonoBehaviour {
    private void applyMinimapScale () {
       float scale = minimapScale / 100.0f;
       minimapTransform.localScale = Vector3.one * scale;
+   }
+
+   public static bool isVsyncEnabled () {
+      return vsyncCount != 0;
    }
 
    public static void setVsync (bool isVsyncEnabled) {

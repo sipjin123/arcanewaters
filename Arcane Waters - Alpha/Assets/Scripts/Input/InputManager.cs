@@ -183,6 +183,14 @@ public class InputManager : MonoBehaviour
       return false;
    }
 
+   public static bool isFireCannonMouse () {
+      if (isActionInputEnabled()) {
+         return Input.GetMouseButton((int) MouseButton.Right);
+      }
+
+      return false;
+   }
+
    public static bool isFireCannonMouseUp () {
       if (isActionInputEnabled()) {
          return Input.GetMouseButtonUp((int) MouseButton.Right);

@@ -75,7 +75,11 @@ public class MerchantScreen : Panel {
 
       // Associate a new function with the confirmation button
       confirmScreen.confirmButton.onClick.RemoveAllListeners();
-      confirmScreen.confirmButton.onClick.AddListener(() => sellButtonConfirmed(offerId, rarityToSellAt));
+      confirmScreen.confirmButton.onClick.AddListener(() => {
+         // Disable the button so it can't be clicked while we wait for a response from the server
+         confirmScreen.confirmButton.interactable = false;
+         sellButtonConfirmed(offerId, rarityToSellAt);
+      });
 
       // Show a confirmation panel
       confirmScreen.show("How many " + cropName + " do you want to sell?");

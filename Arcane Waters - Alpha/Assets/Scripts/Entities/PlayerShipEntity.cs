@@ -84,6 +84,12 @@ public class PlayerShipEntity : ShipEntity
    // A reference to the player's lifeboat object
    public GameObject lifeboat;
 
+   // The parent of the player ship's target arrow, used to rotate the arrow
+   public Transform targetArrowParent;
+
+   // The filled target arrow image used for showing the player's charge amount
+   public Image targetArrow;
+
    // The different flags the ship can display
    public enum Flag
    {
@@ -221,7 +227,7 @@ public class PlayerShipEntity : ShipEntity
             TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
          }
 
-         if (InputManager.isFireCannonMouseDown()) {
+         if (InputManager.isFireCannonMouseDown() || (InputManager.isFireCannonMouse() && !_isChargingCannon)) {
             cannonAttackPressed();
          }
 
@@ -291,7 +297,6 @@ public class PlayerShipEntity : ShipEntity
    private void LateUpdate () {
       // Update targeting UI
       if (_isChargingCannon) {
-         _cannonChargeAmount = Mathf.Clamp01(_cannonChargeAmount + Time.deltaTime);
          updateTargeting();
       }
    }
@@ -313,24 +318,26 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      _cannonChargeStartTime = NetworkTime.time;
+      _isChargingCannon = true;
+
       switch (_cannonAttackType) {
          case CannonAttackType.Normal:
-            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), true, false, -1.0f, -1.0f, true);
-            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+            targetArrowParent.gameObject.SetActive(true);
+            updateTargeting();
             break;
          case CannonAttackType.Cone:
-            _isChargingCannon = true;
             _targetCone.gameObject.SetActive(true);
             updateTargeting();
             _targetCone.updateCone(true);
             break;
          case CannonAttackType.Circle:
-            _isChargingCannon = true;
             _targetCircle.gameObject.SetActive(true);
             updateTargeting();
             _targetCircle.updateCircle(true);
             break;
       }
+
    }
 
    private void cannonAttackReleased () {
@@ -338,14 +345,24 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      float cannonChargeAmount = Mathf.Clamp01((float)(NetworkTime.time - _cannonChargeStartTime));
+
       switch (_cannonAttackType) {
+         case CannonAttackType.Normal:
+            float normalCannonballDist = 0.5f + (cannonChargeAmount * 3.5f);
+            float normalCannonballLifetime = normalCannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
+            Cmd_FireMainCannonAtTarget(null, Util.getMousePos(), false, false, normalCannonballLifetime, -1.0f, true);
+            targetArrowParent.gameObject.SetActive(false);
+            TutorialManager3.self.tryCompletingStep(TutorialTrigger.FireShipCannon);
+            break;
          case CannonAttackType.Cone:
             Vector2 toMouse = Util.getMousePos() - transform.position;
             Vector2 pos = transform.position;
-            float rotAngle = (40.0f - (_cannonChargeAmount * 25.0f)) / 2.0f;
 
-            float cannonballDist = 1.5f + (_cannonChargeAmount * 1.5f);
+            float cannonballDist = 1.5f + (cannonChargeAmount * 1.5f);
             float cannonballLifetime = cannonballDist / Attack.getSpeedModifier(Attack.Type.Cannon);
+
+            float rotAngle = (40.0f - (cannonChargeAmount * 25.0f)) / 2.0f;
 
             // Fire cone of cannonballs
             Cmd_FireMainCannonAtTarget(null, pos + ExtensionsUtil.Rotate(toMouse, rotAngle), false, false, cannonballLifetime, -1.0f, true);
@@ -357,7 +374,7 @@ public class PlayerShipEntity : ShipEntity
 
             break;
          case CannonAttackType.Circle:
-            float circleRadius = (0.625f - (_cannonChargeAmount * 0.125f));
+            float circleRadius = (0.625f - (cannonChargeAmount * 0.125f));
             _shouldUpdateTargeting = false;
             _targetCircle.targetingConfirmed(() => {
                _shouldUpdateTargeting = true;
@@ -371,7 +388,6 @@ public class PlayerShipEntity : ShipEntity
       }
             
       _isChargingCannon = false;
-      _cannonChargeAmount = 0.0f;
    }
 
    private void updateTargeting () {
@@ -379,10 +395,17 @@ public class PlayerShipEntity : ShipEntity
          return;
       }
 
+      float cannonChargeAmount = Mathf.Clamp01((float) (NetworkTime.time - _cannonChargeStartTime));
+
       switch (_cannonAttackType) {
+         case CannonAttackType.Normal:
+            float aimAngle = -Util.angle(Util.getMousePos() - transform.position);
+            targetArrowParent.rotation = Quaternion.Euler(0.0f, 0.0f, aimAngle);
+            targetArrow.fillAmount = cannonChargeAmount;
+            break;
          case CannonAttackType.Cone:
-            _targetCone.coneHalfAngle = (40.0f - (_cannonChargeAmount * 25.0f)) / 2.0f;
-            _targetCone.coneOuterRadius = 1.5f + (_cannonChargeAmount * 1.5f);
+            _targetCone.coneHalfAngle = (40.0f - (cannonChargeAmount * 25.0f)) / 2.0f;
+            _targetCone.coneOuterRadius = 1.5f + (cannonChargeAmount * 1.5f);
             _targetCone.transform.position = transform.position;
             _targetCone.updateCone(true);
 
@@ -405,7 +428,7 @@ public class PlayerShipEntity : ShipEntity
 
             break;
          case CannonAttackType.Circle:
-            float circleRadius = (0.625f - (_cannonChargeAmount * 0.125f));
+            float circleRadius = (0.625f - (cannonChargeAmount * 0.125f));
             _targetCircle.scaleCircle(circleRadius * 2.0f);
             _targetCircle.updateCircle(true);
 
@@ -927,8 +950,8 @@ public class PlayerShipEntity : ShipEntity
    // Determines what type of attack will trigger when right-clicking
    private CannonAttackType _cannonAttackType = CannonAttackType.Normal;
 
-   // How long the player has charged up their attack for
-   private float _cannonChargeAmount = 0.0f;
+   // When the player started charging their cannon
+   private double _cannonChargeStartTime = 0.0f;
 
    // Is the player currently charging up a cannon attack
    private bool _isChargingCannon = false;

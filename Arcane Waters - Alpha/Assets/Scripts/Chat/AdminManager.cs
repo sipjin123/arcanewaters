@@ -39,7 +39,7 @@ public class AdminManager : NetworkBehaviour
       StartCoroutine(CO_CreateItemNamesDictionary());
    }
 
-   private IEnumerator CO_AddCommands() {
+   private IEnumerator CO_AddCommands () {
       // Wait until we receive data
       while (Util.isEmpty(_player.entityName)) {
          yield return null;
@@ -71,7 +71,7 @@ public class AdminManager : NetworkBehaviour
       cm.addCommand(new CommandData("summon", "Summons a user to you", requestSummonPlayer, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "username" }));
       cm.addCommand(new CommandData("bot_waypoint", "Sets a bot waypoint (Not implemented yet)", requestBotWaypoint, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("all_abilities", "Gives you access to all abilities", requestAllAbilities, requiredPrefix: CommandType.Admin));
-      cm.addCommand(new CommandData("get_item", "Gives you an amount of a specified item", requestGetItem, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "category",  "itemName",  "quantity" }));
+      cm.addCommand(new CommandData("get_item", "Gives you an amount of a specified item", requestGetItem, requiredPrefix: CommandType.Admin, parameterNames: new List<string>() { "category", "itemName", "quantity" }));
       cm.addCommand(new CommandData("ship_speedup", "Speeds up your ship", requestShipSpeedup, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("get_all_items", "Gives you all items in the game", requestGetAllItems, requiredPrefix: CommandType.Admin));
       cm.addCommand(new CommandData("interact_anvil", "Allows you to use the anvil", interactAnvil, requiredPrefix: CommandType.Admin));
@@ -200,14 +200,14 @@ public class AdminManager : NetworkBehaviour
    private void requestSetMotd (string parameters) {
       Cmd_SetMotd(parameters);
    }
-   
+
    [Command]
    private void Cmd_SetMotd (string parameters) {
       PlayerPrefs.SetString(MOTD_KEY, parameters);
    }
 
    private void requestDifficulty (string parameters) {
-      Cmd_SetDifficulty(parameters); 
+      Cmd_SetDifficulty(parameters);
    }
 
    [Command]
@@ -232,13 +232,13 @@ public class AdminManager : NetworkBehaviour
             playersInstance.difficulty = difficultyDevel;
             string message = "Modified Difficulty level of instance:{" + playersInstance.id + "} Difficulty to:{" + difficultyDevel + "}";
             D.debug(message);
-            _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient ,message);
+            _player.rpc.Target_ReceiveNoticeFromServer(_player.connectionToClient, message);
          }
       }
    }
 
    [Command]
-   protected void Cmd_KickPlayer(string parameters) {
+   protected void Cmd_KickPlayer (string parameters) {
       if (!_player.isAdmin()) {
          return;
       }
@@ -279,7 +279,7 @@ public class AdminManager : NetworkBehaviour
          _player.voyageGroupId = voyageId;
          Instance playersInstance = InstanceManager.self.getInstance(_player.instanceId);
          if (playersInstance) {
-            D.debug("Total Ores in instance is"+ " : " + playersInstance.getOreEntities().Count);
+            D.debug("Total Ores in instance is" + " : " + playersInstance.getOreEntities().Count);
             foreach (NetworkBehaviour temp in playersInstance.getOreEntities()) {
                ((OreNode) temp).voyageId = voyageId;
             }
@@ -317,14 +317,14 @@ public class AdminManager : NetworkBehaviour
       if (!_player.isAdmin()) {
          return;
       }
-            
+
       string[] list = parameters.Split(' ');
 
       if (list.Length > 0) {
          string playerName = list[0];
          string reason = parameters.Replace(list[0] + " ", "");
 
-         BanInfo banInfo = new BanInfo(BanInfo.Type.Indefinite, DateTime.Now, reason);
+         BanInfo banInfo = new BanInfo(_player.accountId, BanInfo.Type.Indefinite, DateTime.UtcNow, 0, reason);
          banPlayer(playerName, banInfo);
       }
    }
@@ -340,19 +340,29 @@ public class AdminManager : NetworkBehaviour
          int accId = DB_Main.getAccountId(playerName);
 
          if (accId > 0) {
-            DB_Main.banAccountWithId(accId, banInfo);
+            banInfo.targetAccId = accId;
+
+            BanInfo.BanStatus status = DB_Main.banAccountWithId(banInfo);
 
             UnityThreadHelper.UnityDispatcher.Dispatch(() => {
-               if (banInfo.banType == BanInfo.Type.Temporary) {
-                  _player.Target_ReceiveNormalChat($"Account for player {playerName} has been temporarily banned until {banInfo.banEndDate}", ChatInfo.Type.System);
-               } else if (banInfo.banType == BanInfo.Type.Indefinite) {
-                  _player.Target_ReceiveNormalChat($"Account for player {playerName} has been indefinitely banned", ChatInfo.Type.System);
-               }
+               // If the player is successfully banned from the game
+               if (status == BanInfo.BanStatus.None) {
+                  if (banInfo.banType == BanInfo.Type.Temporary) {
+                     _player.Target_ReceiveNormalChat($"Account for player {playerName} has been temporarily banned until {Util.getTimeInEST(banInfo.banEnd)} EST", ChatInfo.Type.System);
+                  } else if (banInfo.banType == BanInfo.Type.Indefinite) {
+                     _player.Target_ReceiveNormalChat($"Account for player {playerName} has been indefinitely banned", ChatInfo.Type.System);
+                  }
 
-               NetEntity player = EntityManager.self.getEntityWithName(playerName);
-               if (player != null) {
-                  player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
-                  player.connectionToClient.Disconnect();
+                  NetEntity player = EntityManager.self.getEntityWithName(playerName);
+                  if (player != null) {
+                     player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
+                     player.connectionToClient.Disconnect();
+                  }
+                  // If not...
+               } else if (status == BanInfo.BanStatus.AlreadyBanned) {
+                  _player.Target_ReceiveNormalChat($"Account for player {playerName} is already banned", ChatInfo.Type.System);
+               } else {
+                  _player.Target_ReceiveNormalChat($"An error ocurred while trying to ban the account for player {playerName}", ChatInfo.Type.System);
                }
             });
          } else {
@@ -370,20 +380,20 @@ public class AdminManager : NetworkBehaviour
       }
 
       string[] list = parameters.Split(' ');
-      
+
       // Make sure we have at least 2 parameters: name and duration. Reason is optional.
       if (list.Length >= 2) {
-         string playerName = list[0];         
-         
+         string playerName = list[0];
+
          if (!int.TryParse(list[1], out int minutes)) {
             D.log($"Invalid parameters for /admin ban command: cannot parse {list[1]} to int.");
             return;
          }
 
-         string reason = parameters.Replace($"{list[0]} {list[1]} ", "");         
-         DateTime banEndDate = DateTime.Now.AddMinutes(minutes);
-         BanInfo banInfo = new BanInfo(BanInfo.Type.Temporary, banEndDate, reason);
+         string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
+         DateTime banEndDate = DateTime.UtcNow.AddMinutes(minutes);
 
+         BanInfo banInfo = new BanInfo(_player.accountId, BanInfo.Type.Temporary, banEndDate, minutes, reason);
          banPlayer(playerName, banInfo);
       }
    }
@@ -422,7 +432,7 @@ public class AdminManager : NetworkBehaviour
          if (list.Length > 0) {
             int shipdamage = int.Parse(list[0]);
             GetComponent<PlayerShipEntity>().damage = shipdamage;
-         } 
+         }
       }
    }
 
@@ -451,7 +461,7 @@ public class AdminManager : NetworkBehaviour
       EntityManager.self.addBypassForUser(_player.userId);
    }
 
-  [Command]
+   [Command]
    protected void Cmd_RequestCombatStats () {
       if (!_player.isAdmin()) {
          return;
@@ -491,7 +501,7 @@ public class AdminManager : NetworkBehaviour
          return;
       }
 
-      _player.Cmd_ToggleAdminInvisibility(); 
+      _player.Cmd_ToggleAdminInvisibility();
    }
 
    private void requestAddShips () {
@@ -546,7 +556,7 @@ public class AdminManager : NetworkBehaviour
    private void requestWarpAnywhere () {
       Cmd_RequestWarpAnywhere();
    }
-   
+
    private void requestMutePlayer (string parameters) {
       if (!_player.isAdmin()) {
          return;
@@ -565,7 +575,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       NetEntity entity = EntityManager.self.getEntityWithName(username);
-      
+
       if (entity != null) {
          Global.player.rpc.Cmd_MutePlayer(entity.userId, seconds);
       }
@@ -1112,7 +1122,7 @@ public class AdminManager : NetworkBehaviour
             ChatManager.self.addChat("Invalid PvP parameter for command create_voyage: " + list[0], ChatInfo.Type.Error);
             return;
          }
-            
+
          if (list.Length > 1) {
             try {
                difficulty = int.Parse(list[1]);
@@ -1229,7 +1239,7 @@ public class AdminManager : NetworkBehaviour
             continue;
          }
          Rarity.Type rarity = Rarity.Type.Uncommon;
-         
+
          // Set up the Ship Info
          ShipInfo ship = Ship.generateNewShip(shipType, rarity);
          ship.userId = _player.userId;
@@ -1604,7 +1614,7 @@ public class AdminManager : NetworkBehaviour
          D.warning("Received admin command from non-admin!");
          return;
       }
-      
+
       // Go to the background thread
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
 
