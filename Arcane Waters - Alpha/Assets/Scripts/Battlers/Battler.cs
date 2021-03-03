@@ -311,7 +311,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
             updateSprites();
          }
 
-         if (enemyType != Enemy.Type.PlayerBattler || (enemyType == Enemy.Type.PlayerBattler && !isLocalPlayer)) {
+         if (enemyType != Enemy.Type.PlayerBattler || (enemyType == Enemy.Type.PlayerBattler && !isLocalBattler())) {
             // Monster battlers are selectable
             onBattlerSelect.AddListener(() => {
                // Enable all offensive abilities

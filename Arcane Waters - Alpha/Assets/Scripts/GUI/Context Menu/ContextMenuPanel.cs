@@ -142,10 +142,11 @@ public class ContextMenuPanel : MonoBehaviour
             // If we are not in a group, always allow to invite someone
             addButton("Group Invite", () => VoyageGroupManager.self.inviteUserToVoyageGroup(userName));
          }
-         addButton("Challenge to Duel (practice)", () => initializePVP(userId));
 
          if (!FriendListManager.self.isFriend(userId)) {
             addButton("Friend Invite", () => FriendListManager.self.sendFriendshipInvite(userId, userName));
+         }
+         addButton("Practice Duel", () => initializePVP(userId));
 
          // Only allow inviting to guild if we can locally see the invitee
          if (Global.player.canInviteGuild(targetEntity)) {
