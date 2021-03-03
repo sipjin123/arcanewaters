@@ -429,6 +429,8 @@ public class Instance : NetworkBehaviour
                npc.transform.localPosition = targetLocalPos;
                npc.setAreaParent(area, false);
 
+               NPCManager.self.storeNpcIdPerArea(npc.npcId, areaKey);
+
                // Make sure npc has correct data
                IMapEditorDataReceiver receiver = npc.GetComponent<IMapEditorDataReceiver>();
                if (receiver != null && dataField.d != null) {

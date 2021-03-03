@@ -44,16 +44,27 @@ public class NPCManager : MonoBehaviour {
                if (!_npcData.ContainsKey(npcData.npcId) && npcData.isActive) {
                   _npcData.Add(npcData.npcId, npcData);
                   npcList.Add(npcData);
-
-                  // Initializes info of the npc
-                  if (_npcs.ContainsKey(npcData.npcId)) {
-                     _npcs[npcData.npcId].finishInitialization(npcData);
-                  }
                }
             }
             serverInitialized = true;
          });
       });
+   }
+
+   public void storeNpcIdPerArea (int npcId, string areaKey) {
+#if IS_SERVER_BUILD
+      // Add data to area collection
+      if (_npcIDPerArea.ContainsKey(areaKey)) {
+         if (!_npcIDPerArea[areaKey].Contains(npcId)) {
+            _npcIDPerArea[areaKey].Add(npcId);
+         } else {
+            D.editorLog("Npc already Existing!", Color.cyan);
+         }
+      } else {
+         _npcIDPerArea[areaKey] = new List<int>();
+         _npcIDPerArea[areaKey].Add(npcId);
+      }
+#endif
    }
 
    public void storeNPC (NPC npc) {

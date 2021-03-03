@@ -424,9 +424,6 @@ public class MyNetworkManager : NetworkManager
                });
             });
 
-            // Server provides clients with info of the npc
-            List<NPCData> referenceNPCData = NPCManager.self.getNPCDataInArea(previousAreaKey);
-
             // Send any extra info as targeted RPCs
             player.cropManager.sendSiloInfo();
             player.rpc.sendItemShortcutList();

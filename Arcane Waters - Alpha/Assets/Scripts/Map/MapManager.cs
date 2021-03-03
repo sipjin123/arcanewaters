@@ -124,7 +124,7 @@ public class MapManager : MonoBehaviour
       string mapData = await NubisClient.call(nameof(DB_Main.getMapInfo), areaKey);
       D.editorLog("Done fetching Nubis data: " + mapData.Length, Color.green);
       if (string.IsNullOrWhiteSpace(mapData) && mapData.Length < 10) {
-         D.debug("Error in retrieving map data from NUBIS: (" + areaKey+ ")");
+         D.debug("Error in retrieving map data from NUBIS: (" + areaKey + ")");
       } else {
          MapInfo mapInfo = JsonUtility.FromJson<MapInfo>(mapData);
 
@@ -247,7 +247,7 @@ public class MapManager : MonoBehaviour
          result.topRightCorner.position = new Vector3(topBorderRend.bounds.max.x - horizontalOffset, rightBorderRend.bounds.max.y - verticalOffset, result.topRightCorner.position.z);
          result.bottomLeftCorner.position = new Vector3(bottomBorderRend.bounds.min.x + horizontalOffset, leftBorderRend.bounds.min.y + verticalOffset, result.bottomLeftCorner.position.z);
          result.bottomRightCorner.position = new Vector3(bottomBorderRend.bounds.max.x - verticalOffset, rightBorderRend.bounds.min.y + verticalOffset, result.bottomRightCorner.position.z);
-         
+
          MapImporter.instantiatePrefabs(mapInfo, exportedProject, result.prefabParent, result.npcParent, result.area);
          yield return null;
 
@@ -311,10 +311,40 @@ public class MapManager : MonoBehaviour
          PostSpotFader.self.recalibrateSpotPosition();
       }
 
+      // Wait for server to finish deploying entities before requesting npc quests in area from the server
+      StartCoroutine(CO_ProcessNpcQuestInArea());
+
       // On clients, if an area is scheduled to be created next, start the process now
       if (!Mirror.NetworkServer.active && _nextAreaKey != null) {
          createLiveMap(_nextAreaKey, _nextMapInfo, _nextMapPosition, _nextMapCustomizationData, _nextBiome);
          _nextAreaKey = null;
+      }
+   }
+
+   private IEnumerator CO_ProcessNpcQuestInArea () {
+      bool isCloudBuild = false;
+      #if CLOUD_BUILD
+      isCloudBuild = true;
+      #endif
+
+      // Skip this process if its a server or if its a development/nonCloud build
+      if (!(Mirror.NetworkServer.active && isCloudBuild)) {
+         while (Global.player == null) {
+            yield return 0;
+         }
+
+         // Wait for instance to generate
+         while (!InstanceManager.self.getInstance(Global.player.instanceId)) {
+            yield return 0;
+         }
+
+         // Wait for instance to finish spawning the network entities 
+         Instance instance = InstanceManager.self.getInstance(Global.player.instanceId);
+         while (!instance.isNetworkPrefabInstantiationFinished) {
+            yield return 0;
+         }
+
+         Global.player.rpc.Cmd_RequestNPCQuestInArea();
       }
    }
 
