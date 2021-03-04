@@ -574,6 +574,13 @@ public class Util : MonoBehaviour {
       return (NetworkServer.active && !MyNetworkManager.isHost);
    }
 
+   public static bool isCloudBuild () {
+      #if CLOUD_BUILD
+      return true;
+      #endif
+      return false;
+   }
+
    public static bool isHost () {
       return MyNetworkManager.isHost;
    }

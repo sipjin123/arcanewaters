@@ -322,26 +322,47 @@ public class MapManager : MonoBehaviour
    }
 
    private IEnumerator CO_ProcessNpcQuestInArea () {
-      bool isCloudBuild = false;
-      #if CLOUD_BUILD
-      isCloudBuild = true;
-      #endif
+      bool isCloudBuild = Util.isCloudBuild();
+      float timeLimit = 0;
+      const float maxTimeLimit = 10;
+      const float waitDelay = .25f;
+      double startTime = NetworkTime.time;
 
       // Skip this process if its a server or if its a development/nonCloud build
       if (!(Mirror.NetworkServer.active && isCloudBuild)) {
-         while (Global.player == null) {
+         while (Global.player == null && timeLimit < maxTimeLimit) {
+            yield return new WaitForSeconds(waitDelay);
+            timeLimit += waitDelay;
             yield return 0;
          }
+         if (timeLimit >= maxTimeLimit) {
+            startTime = NetworkTime.time - startTime;
+            yield break;
+         }
+         timeLimit = 0;
 
          // Wait for instance to generate
-         while (!InstanceManager.self.getInstance(Global.player.instanceId)) {
+         while (!InstanceManager.self.clientInstance && timeLimit < maxTimeLimit) {
+            yield return new WaitForSeconds(waitDelay);
+            timeLimit += waitDelay;
             yield return 0;
          }
+         if (timeLimit >= maxTimeLimit) {
+            startTime = NetworkTime.time - startTime;
+            yield break;
+         }
+         timeLimit = 0;
 
          // Wait for instance to finish spawning the network entities 
-         Instance instance = InstanceManager.self.getInstance(Global.player.instanceId);
-         while (!instance.isNetworkPrefabInstantiationFinished) {
+         Instance instance = InstanceManager.self.clientInstance;
+         while (!instance.isNetworkPrefabInstantiationFinished && timeLimit < maxTimeLimit) {
+            yield return new WaitForSeconds(waitDelay);
+            timeLimit += waitDelay;
             yield return 0;
+         }
+         if (timeLimit >= maxTimeLimit) {
+            startTime = NetworkTime.time - startTime;
+            yield break;
          }
 
          Global.player.rpc.Cmd_RequestNPCQuestInArea();
