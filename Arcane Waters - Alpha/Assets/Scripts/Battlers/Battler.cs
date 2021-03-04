@@ -215,7 +215,7 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
    public const float POST_SHOOT_DELAY = .15f;
 
    // Determines the delay before animation the cast clip
-   public const float PRE_CAST_DELAY = .08f;
+   public const float PRE_CAST_DELAY = .25f;
 
    // Determines the delay before ending cast Pose
    public const float POST_CAST_DELAY = .13f;
@@ -1463,7 +1463,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
                // Aim gun animation
                sourceBattler.playAnim(Anim.Type.Ready_Attack);
 
-               yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
+               // TODO: Confirm if this is still necessary after testing enemy mage abilities
+               //yield return new WaitForSeconds(sourceBattler.getPreMagicLength());
 
                // Play any sounds that go along with the ability being cast
                attackerAbility.playCastClipAtTarget(targetBattler.transform);

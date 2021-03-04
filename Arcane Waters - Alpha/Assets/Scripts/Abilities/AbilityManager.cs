@@ -17,7 +17,7 @@ public class AbilityManager : MonoBehaviour
    // Air Slash = 37
    // Earth Slash = 6
    // Water Bullet = 18
-   public static int[] STARTING_ABILITIES = { 9, 20, 37, 6, 18};
+   public static int[] STARTING_ABILITIES = { 9, 86, 37, 6, 18};
 
    // The id of the punch ability
    public static int PUNCH_ID = 66;
