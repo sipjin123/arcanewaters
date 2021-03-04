@@ -163,6 +163,10 @@ public class AttackAbilityData : BasicAbilityData
       return classRequirement == Weapon.Class.Ranged;
    }
 
+   public bool isRum () {
+      return classRequirement == Weapon.Class.Magic;
+   }
+
    public bool isCancel () {
       return abilityType.Equals(AbilityActionType.Cancel);
    }

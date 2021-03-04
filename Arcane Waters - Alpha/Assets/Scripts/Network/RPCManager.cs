@@ -4761,7 +4761,7 @@ public class RPCManager : NetworkBehaviour
                   AttackAbilityData attackAbilityData = AbilityManager.self.allAttackbilities.Find(_ => _.itemID == abilitySql.abilityID);
                   if ((weaponClass == Weapon.Class.Melee && attackAbilityData.isMelee())
                   || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
-                  || (weaponClass == Weapon.Class.Magic && attackAbilityData.isProjectile())) {
+                  || (weaponClass == Weapon.Class.Magic && attackAbilityData.isRum())) {
                      validAbilities++;
                      if (Global.displayAbilityLogs) {
                         D.debug("Valid Ability: " + basicAbilityData.itemName +
