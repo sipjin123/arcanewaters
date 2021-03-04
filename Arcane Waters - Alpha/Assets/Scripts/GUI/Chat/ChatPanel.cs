@@ -31,6 +31,9 @@ public class ChatPanel : MonoBehaviour {
    // The input field where the whisper recipient name will be input
    public InputField nameInputField;
 
+   // A reference to the gameobject that contains the whisper name input, and the auto-complete panel
+   public GameObject whisperNameInput;
+
    // The constant whisper prefix for server message processing
    public const string WHISPER_PREFIX = "/w ";
    public const string WHISPER_PREFIX_FULL = "/whisper ";
@@ -108,6 +111,9 @@ public class ChatPanel : MonoBehaviour {
    // The width resize handle
    public RectTransform resizeHandleZone;
 
+   // A reference to the whisper auto-complete panel
+   public WhisperAutoCompletePanel whisperAutoCompletePanel;
+
    // Self
    public static ChatPanel self;
 
@@ -141,6 +147,7 @@ public class ChatPanel : MonoBehaviour {
 
       // Call the autocomplete function when the user writes in chat
       inputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onChatInputValuechanged(inputString));
+      nameInputField.onValueChanged.AddListener((string inputString) => ChatManager.self.onWhisperNameInputValueChanged(inputString));
 
       // Set initial chat types
       onAllChatPressed();
@@ -165,7 +172,7 @@ public class ChatPanel : MonoBehaviour {
             inputField.text = "/";
 
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(CO_FocusAfterDelay());
+            StartCoroutine(CO_FocusAfterDelay(inputField));
          }
       }
 
@@ -305,6 +312,15 @@ public class ChatPanel : MonoBehaviour {
 
       _isInputFocused = inputField.isFocused;
 
+      // If the name input field has just gained / lost focus, call appropriate events
+      if (nameInputField.isFocused && !_isNameInputFocused) {
+         ChatManager.self.onWhisperInputGainedFocus();
+      } else if (!nameInputField.isFocused && _isNameInputFocused) {
+         ChatManager.self.onWhisperInputLostFocus();
+      }
+
+      _isNameInputFocused = nameInputField.isFocused;
+
       // Submit the field when enter is pressed and the field is focused
       if (inputField.isFocused && Input.GetKeyDown(KeyCode.Return)) {
 
@@ -354,7 +370,7 @@ public class ChatPanel : MonoBehaviour {
             }
 
             // Activate the input field in the next frame to avoid weird interactions
-            StartCoroutine(CO_FocusAfterDelay());
+            StartCoroutine(CO_FocusAfterDelay(inputField));
          }
       }
    }
@@ -706,7 +722,7 @@ public class ChatPanel : MonoBehaviour {
 
    public void setCurrentChatType (ChatInfo.Type chatType) {
       currentChatType = chatType;
-      nameInputField.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
+      whisperNameInput.gameObject.SetActive(currentChatType == ChatInfo.Type.Whisper);
    }
 
    public void sendWhisperTo (string userName) {
@@ -717,7 +733,7 @@ public class ChatPanel : MonoBehaviour {
 
       if (!wasJustFocused()) {
          // Activate the input field in the next frame to avoid weird interactions
-         StartCoroutine(CO_FocusAfterDelay());
+         StartCoroutine(CO_FocusAfterDelay(inputField));
       }
    }
 
@@ -829,26 +845,30 @@ public class ChatPanel : MonoBehaviour {
    }
 
    public void focusInputField () {
-      StartCoroutine(CO_FocusAfterDelay());
+      StartCoroutine(CO_FocusAfterDelay(inputField));
    }
 
-   protected IEnumerator CO_FocusAfterDelay () {
+   public void focusWhisperInputField () {
+      StartCoroutine(CO_FocusAfterDelay(nameInputField));
+   }
+
+   protected IEnumerator CO_FocusAfterDelay (InputField field) {
       // Wait a frame
       yield return null;
 
       // Now we can activate
-      inputField.ActivateInputField();
+      field.ActivateInputField();
 
       // Have to do this in a separate Coroutine, it's ridiculous
-      StartCoroutine(CO_MoveCaretToEnd());
+      StartCoroutine(CO_MoveCaretToEnd(field));
    }
 
-   public IEnumerator CO_MoveCaretToEnd () {
+   public IEnumerator CO_MoveCaretToEnd (InputField field) {
       // Wait a frame
       yield return null;
 
       // Don't select the text, that's annoying
-      inputField.MoveTextEnd(false);
+      field.MoveTextEnd(false);
    }
 
    private void setMode(Mode mode) {
@@ -911,6 +931,9 @@ public class ChatPanel : MonoBehaviour {
 
    // Gets set to true when the input field is focused
    protected bool _isInputFocused = false;
+
+   // Gets set to true when the name input field is focused
+   protected bool _isNameInputFocused = false;
 
    // Whether we're currently clicking on the scroll bar
    protected bool _isScrolling = false;

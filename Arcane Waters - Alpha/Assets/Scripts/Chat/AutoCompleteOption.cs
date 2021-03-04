@@ -57,8 +57,6 @@ public class AutoCompleteOption : MonoBehaviour, IPointerEnterHandler, IPointerE
 
    public void updateOption (CommandData newCommand) {
       _commandData = newCommand;
-
-      // setText(_commandData.getCommandInfo());
       updateColors();
       tooltipText.text = _commandData.getDescription();
    }

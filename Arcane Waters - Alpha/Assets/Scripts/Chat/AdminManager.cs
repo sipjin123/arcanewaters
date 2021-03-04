@@ -136,7 +136,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Move player to position on certain key combination
-      if (_player.isLocalPlayer && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetMouseButtonDown(0)) {
+      if (_player.isLocalPlayer && _player.isAdmin() && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetMouseButtonDown(0)) {
          Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
          if (!_player.isInBattle() && area != null) {
             Vector2 wPos = CameraManager.defaultCamera.getCamera().ScreenToWorldPoint(Input.mousePosition);
@@ -324,7 +324,7 @@ public class AdminManager : NetworkBehaviour
          string playerName = list[0];
          string reason = parameters.Replace(list[0] + " ", "");
 
-         BanInfo banInfo = new BanInfo(_player.accountId, BanInfo.Type.Indefinite, DateTime.UtcNow, 0, reason);
+         BanInfo banInfo = new BanInfo(_player.accountId, _player.userId, _player.entityName, BanInfo.Type.Indefinite, DateTime.UtcNow, 0, reason);
          banPlayer(playerName, banInfo);
       }
    }
@@ -337,10 +337,12 @@ public class AdminManager : NetworkBehaviour
       }
 
       UnityThreadHelper.BackgroundDispatcher.Dispatch(() => {
-         int accId = DB_Main.getAccountId(playerName);
+         var (accId, usrId, usrName) = DB_Main.getUserDataTuple(playerName);
 
          if (accId > 0) {
             banInfo.targetAccId = accId;
+            banInfo.targetUsrId = usrId;
+            banInfo.targetUsrName = usrName;
 
             BanInfo.BanStatus status = DB_Main.banAccountWithId(banInfo);
 
@@ -348,19 +350,19 @@ public class AdminManager : NetworkBehaviour
                // If the player is successfully banned from the game
                if (status == BanInfo.BanStatus.None) {
                   if (banInfo.banType == BanInfo.Type.Temporary) {
-                     _player.Target_ReceiveNormalChat($"Account for player {playerName} has been temporarily banned until {Util.getTimeInEST(banInfo.banEnd)} EST", ChatInfo.Type.System);
+                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been temporarily banned until {Util.getTimeInEST(banInfo.banEnd)} EST", ChatInfo.Type.System);
                   } else if (banInfo.banType == BanInfo.Type.Indefinite) {
-                     _player.Target_ReceiveNormalChat($"Account for player {playerName} has been indefinitely banned", ChatInfo.Type.System);
+                     _player.Target_ReceiveNormalChat($"Account for player {usrName} has been indefinitely banned", ChatInfo.Type.System);
                   }
 
-                  NetEntity player = EntityManager.self.getEntityWithName(playerName);
+                  NetEntity player = EntityManager.self.getEntityWithName(usrName);
                   if (player != null) {
                      player.connectionToClient.Send(new ErrorMessage(Global.netId, ErrorMessage.Type.Banned, ServerMessageManager.getBannedMessage(banInfo)));
                      player.connectionToClient.Disconnect();
                   }
                   // If not...
                } else if (status == BanInfo.BanStatus.AlreadyBanned) {
-                  _player.Target_ReceiveNormalChat($"Account for player {playerName} is already banned", ChatInfo.Type.System);
+                  _player.Target_ReceiveNormalChat($"Account for player {usrName} is already banned", ChatInfo.Type.System);
                } else {
                   _player.Target_ReceiveNormalChat($"An error ocurred while trying to ban the account for player {playerName}", ChatInfo.Type.System);
                }
@@ -393,7 +395,7 @@ public class AdminManager : NetworkBehaviour
          string reason = parameters.Replace($"{list[0]} {list[1]} ", "");
          DateTime banEndDate = DateTime.UtcNow.AddMinutes(minutes);
 
-         BanInfo banInfo = new BanInfo(_player.accountId, BanInfo.Type.Temporary, banEndDate, minutes, reason);
+         BanInfo banInfo = new BanInfo(_player.accountId, _player.userId, _player.entityName, BanInfo.Type.Temporary, banEndDate, minutes, reason);
          banPlayer(playerName, banInfo);
       }
    }
@@ -604,7 +606,7 @@ public class AdminManager : NetworkBehaviour
       }
 
       // Move the input caret to the end
-      StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
+      StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd(ChatPanel.self.inputField));
    }
 
    public void tryAutoCompleteForGetItemCommand (string inputString) {
@@ -1500,8 +1502,13 @@ public class AdminManager : NetworkBehaviour
    }
 
    public void warpToPosition (Vector3 localPosition) {
-      // Set position locally
-      _player.transform.localPosition = localPosition;
+      // Set position locally only if the player isn't a ShipEntity. Ships' positions are controlled by the server.
+      if (_player.getPlayerBodyEntity() != null) {
+         _player.transform.localPosition = localPosition;
+      }
+
+      // Show a smoke effect in the new position
+      EffectManager.show(Effect.Type.Cannon_Smoke, _player.transform.position);
 
       // Set it in the server
       Cmd_WarpToPosition(localPosition);
@@ -1521,6 +1528,7 @@ public class AdminManager : NetworkBehaviour
       Area area = _player.areaKey == null ? null : AreaManager.self.getArea(_player.areaKey);
       if (area != null) {
          _player.transform.localPosition = localPosition;
+         _player.rpc.Rpc_PlayWarpEffect(localPosition);
       }
    }
 

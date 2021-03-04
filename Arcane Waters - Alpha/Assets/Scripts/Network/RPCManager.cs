@@ -868,6 +868,20 @@ public class RPCManager : NetworkBehaviour
       panel.updatePanelWithGroupMembers(groupMembers);
    }
 
+   [TargetRpc]
+   public void Target_ReceiveVoyageGroupMemberPartialUpdate (NetworkConnection connection, int userId, string userName, int XP, string areaKey) {
+      // Get the panel
+      VoyageGroupPanel panel = VoyageGroupPanel.self;
+
+      // Make sure the panel is showing
+      if (!panel.isShowing()) {
+         panel.show();
+      }
+
+      // Update the panel info
+      panel.updateCellTooltip(userId, userName, XP, areaKey);
+   }
+
    [Command]
    public void Cmd_BugReport (string subject, string message, int ping, int fps, byte[] screenshotBytes, string screenResolution, string operatingSystem, string steamState, int deploymentId) {
       // We need a player object
@@ -1440,6 +1454,14 @@ public class RPCManager : NetworkBehaviour
             }
          });
       });
+   }
+
+   [ClientRpc]
+   public void Rpc_PlayWarpEffect (Vector3 position) {
+      // The local player plays this effect locally, no need to play it twice
+      if (!_player.isLocalPlayer) {
+         EffectManager.self.create(Effect.Type.Cannon_Smoke, position);
+      }
    }
 
    [Command]
@@ -2356,6 +2378,7 @@ public class RPCManager : NetworkBehaviour
                // Let the new friend know that he was accepted
                NetEntity friend = EntityManager.self.getEntity(friendUserId);
                if (friend) {
+                  requestFriendsListFromServer(friend);
                   ServerMessageManager.sendConfirmation(ConfirmMessage.Type.General, friend, "You are now friends with " + _player.entityName + "!");
                }
             } else {
@@ -2402,6 +2425,13 @@ public class RPCManager : NetworkBehaviour
          UnityThreadHelper.UnityDispatcher.Dispatch(() => {
             // Send confirmation of the deletion to the client
             ServerMessageManager.sendConfirmation(ConfirmMessage.Type.FriendshipDeleted, _player);
+
+            // If friend is logged in, update his friends list
+            NetEntity friend = EntityManager.self.getEntity(friendUserId);
+            if (friend) {
+               requestFriendsListFromServer(friend);
+            }
+
          });
       });
    }

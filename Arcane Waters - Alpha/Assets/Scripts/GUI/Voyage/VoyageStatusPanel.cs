@@ -46,9 +46,20 @@ public class VoyageStatusPanel : ClientMonoBehaviour
    // The lobby label
    public TextMeshProUGUI lobbyText;
 
+   // The ping
+   public TextMeshProUGUI pingText;
+
    // The icons for PvP and PvE modes
    public Sprite pvpIcon;
    public Sprite pveIcon;
+
+   // The textures we choose from for the ping icon
+   public Texture2D pingGreen;
+   public Texture2D pingYellow;
+   public Texture2D pingRed;
+
+   // The animation for our ping icon
+   public SimpleAnimation pingAnimation;
 
    // The statuses that are only relevant in voyage instances or league instances (common statuses should not be set here)
    public GameObject[] voyageStatuses = new GameObject[0];
@@ -115,9 +126,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
             townStatuses.Hide();
             leagueStatuses.Hide();
             treasureSiteStatuses.Show();
-
-            // Disable the empty collapsing container (causes the panel to slightly resize when hovering it)
-            collapsingContainer.SetActive(false);
          } else if (instance.isVoyage) {
             lobbyStatuses.Hide();
             leagueStatuses.Hide();
@@ -132,6 +140,17 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       }
 
       playerCountTownText.text = EntityManager.self.getEntityCount() + "/" + instance.getMaxPlayers();
+      
+      // Update the color of the ping image based on the current ping
+      int ping = Util.getPing();
+      if (ping <= 120) {
+         pingAnimation.setNewTexture(pingGreen);
+      } else if (ping <= 240) {
+         pingAnimation.setNewTexture(pingYellow);
+      } else {
+         pingAnimation.setNewTexture(pingRed);
+      }
+      pingText.text = ping.ToString();
 
       // If the player is not in a group, there is no need to update the rest
       if (!VoyageGroupManager.isInGroup(Global.player)) {
@@ -170,9 +189,6 @@ public class VoyageStatusPanel : ClientMonoBehaviour
       townStatuses.Show();
 
       playerCountTownText.text = "?/?";
-
-      // Disable the empty collapsing container (causes the panel to slightly resize when hovering it)
-      collapsingContainer.SetActive(false);
    }
 
    public void show () {

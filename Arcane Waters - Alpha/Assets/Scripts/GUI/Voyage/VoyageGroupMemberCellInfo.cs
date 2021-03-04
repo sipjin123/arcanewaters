@@ -16,6 +16,9 @@ public class VoyageGroupMemberCellInfo
    // The user XP
    public int userXP;
 
+   // The user area key
+   public string areaKey;
+
    // The user gender
    public Gender.Type gender;
 
@@ -51,6 +54,7 @@ public class VoyageGroupMemberCellInfo
       this.userId = userObjects.userInfo.userId;
       this.userName = userObjects.userInfo.username;
       this.userXP = userObjects.userInfo.XP;
+      this.areaKey = userObjects.userInfo.areaKey;
       this.gender = userObjects.userInfo.gender;
       this.bodyType = userObjects.userInfo.bodyType;
       this.eyesType = userObjects.userInfo.eyesType;

@@ -402,16 +402,17 @@ public class OptionsPanel : Panel
    }
 
    public void guiScaleSliderChanged () {      
-      guiScaleLabel.text = Mathf.RoundToInt(guiScaleSlider.value * 25f) + " %";
+      guiScaleLabel.text = Mathf.RoundToInt(guiScaleSlider.value * 25) + " %";
    }
 
    public void applyGuiScaleChanges () {
-      OptionsManager.setGUIScale(guiScaleSlider.value * 25f);
+      OptionsManager.setGUIScale(Mathf.RoundToInt(guiScaleSlider.value * 25));
    }
 
-   public void minimapScaleSliderChanged () {      
-      minimapScaleLabel.text = Mathf.RoundToInt(minimapScaleSlider.value * 25f) + " %";
-      OptionsManager.setMinimapScale(minimapScaleSlider.value * 25f);
+   public void minimapScaleSliderChanged () {
+      int scale = Mathf.RoundToInt(minimapScaleSlider.value * 25);
+      minimapScaleLabel.text = scale + " %";
+      OptionsManager.setMinimapScale(scale);
    }
 
    public void onOpenLogFilePressed () {

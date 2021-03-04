@@ -143,26 +143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0e230e81a2f3148b6986fcb2c57e81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: 1
-  blurSize: 0
-  color: {r: 0.8207547, g: 0.22841759, b: 0.22841759, a: 1}
-  blurAlphaMultiplier: 0.7
-  blurAlphaChoke: 1
-  invertBlur: 0
-  alphaThreshold: 0.01
-  buffer: 0
-  includeChildren: 0
-  childLayers:
-    serializedVersion: 2
-    m_Bits: 1
-  ignoreChildNames: []
-  sortMethod: 1
-  isAnimated: 1
-  useExportedFrame: 0
-  customFrameName: 
-  generatesOnStart: 0
-  isShaderBased: 0
-  generatesOnValidate: 1
+  outlineRenderer: {fileID: 0}
+  _renderers: []
 --- !u!1 &1307228615476472
 GameObject:
   m_ObjectHideFlags: 0
@@ -329,6 +311,7 @@ MonoBehaviour:
   - {fileID: 58256050713667648}
   - {fileID: 6938392427603369774}
   currentImpactMagnitude: 0
+  combatCollider: {fileID: 0}
   shipType: 101
   skinType: 0
   speed: 100
@@ -988,7 +971,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1044794655
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &4298963032167265655
@@ -2362,7 +2345,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 212945152816631566}
-  colliderScale: 0.75
   dynamicCollider: 1
 --- !u!1 &6266194493695692870
 GameObject:

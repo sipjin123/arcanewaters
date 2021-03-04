@@ -265,6 +265,10 @@ public class ServerNetworkingManager : MonoBehaviour {
       server.InvokeServerRpc(server.MasterServer_SendVoyageGroupCompositionToMembers, groupId);
    }
 
+   public void sendMemberPartialUpdateToGroup (int groupId, int userId, string userName, int XP, string areaKey) {
+      server.InvokeServerRpc(server.MasterServer_SendMemberPartialUpdateToGroup, groupId, userId, userName, XP, areaKey);
+   }
+
    #region Private Variables
 
    #endregion

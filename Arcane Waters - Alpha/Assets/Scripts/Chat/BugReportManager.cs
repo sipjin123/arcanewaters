@@ -71,7 +71,7 @@ public class BugReportManager : MonoBehaviour {
    private IEnumerator CO_CollectDataAndSendBugReport (string subjectString) {
       NetEntity player = Global.player;
       string bugReport = D.getLogString();
-      int ping = PingPanel.getPing();
+      int ping = Util.getPing();
 
       if (player == null) {
          D.warning("Can't submit a bug report because we have no player object.");

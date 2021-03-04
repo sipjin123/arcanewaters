@@ -43,9 +43,15 @@ public class OptionsManager : MonoBehaviour {
    private void Awake () {
       self = this;
 
-      GUIScale = PlayerPrefs.GetFloat(PREF_GUI_SCALE, 4);
-      minimapScale = PlayerPrefs.GetFloat(PREF_MINIMAP_SCALE, 4);
+      GUIScale = PlayerPrefs.GetInt(PREF_GUI_SCALE, DEFAULT_GUI_SCALE);
+      minimapScale = PlayerPrefs.GetInt(PREF_MINIMAP_SCALE, DEFAULT_MINIMAP_SCALE);
       vsyncCount = PlayerPrefs.GetInt(VSYNC_COUNT_KEY, 0);
+
+      GUIScale = Util.getInRangeOrDefault(GUIScale, MIN_GUI_SCALE, MAX_GUI_SCALE, DEFAULT_GUI_SCALE);
+      minimapScale = Util.getInRangeOrDefault(minimapScale, MIN_MINIMAP_SCALE, MAX_MINIMAP_SCALE, DEFAULT_MINIMAP_SCALE);
+      PlayerPrefs.SetInt(PREF_GUI_SCALE, Mathf.RoundToInt(GUIScale));
+      PlayerPrefs.SetInt(PREF_MINIMAP_SCALE, Mathf.RoundToInt(minimapScale));
+
       Global.sprintConstantly = PlayerPrefs.GetInt(OptionsManager.PREF_SPRINT_CONSTANTLY, 0) == 1 ? true : false;
    }
 
@@ -84,14 +90,18 @@ public class OptionsManager : MonoBehaviour {
       self.applyVsyncCount();
    }
 
-   public static void setGUIScale (float scale) {
-      PlayerPrefs.SetFloat(PREF_GUI_SCALE, scale);
+   public static void setGUIScale (int scale) {
+      scale = Mathf.RoundToInt(Util.getInRangeOrDefault(scale, MIN_GUI_SCALE, MAX_GUI_SCALE, DEFAULT_GUI_SCALE));
+
+      PlayerPrefs.SetInt(PREF_GUI_SCALE, scale);
       GUIScale = scale;
       self.applyGUIScale();
    }
 
-   public static void setMinimapScale (float scale) {
-      PlayerPrefs.SetFloat(PREF_MINIMAP_SCALE, scale);
+   public static void setMinimapScale (int scale) {
+      scale = Mathf.RoundToInt(Util.getInRangeOrDefault(scale, MIN_MINIMAP_SCALE, MAX_MINIMAP_SCALE, DEFAULT_MINIMAP_SCALE));
+
+      PlayerPrefs.SetInt(PREF_MINIMAP_SCALE, scale);
       minimapScale = scale;
       self.applyMinimapScale();
    }
@@ -105,6 +115,24 @@ public class OptionsManager : MonoBehaviour {
    }
 
    #region Private Variables
+
+   // The minimum valid GUI scale
+   private const int MIN_GUI_SCALE = 50;
+
+   // The default GUI scale
+   private const int DEFAULT_GUI_SCALE = 100;
+
+   // The maximum valid GUI scale
+   private const int MAX_GUI_SCALE = 200;
+
+   // The minimum valid minimap scale
+   private const int MIN_MINIMAP_SCALE = 50;
+
+   // The default minimap scale
+   private const int DEFAULT_MINIMAP_SCALE = 100;
+
+   // The maximum valid minimap scale
+   private const int MAX_MINIMAP_SCALE = 200;
 
    #endregion
 }

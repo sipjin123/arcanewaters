@@ -191,8 +191,6 @@ public class AbilityButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
          return;
       }
 
-      Debug.Log("Enabled button");
-
       Image buttonImage = GetComponent<Image>();
       if (buttonImage != null) {
          buttonImage.raycastTarget = true;

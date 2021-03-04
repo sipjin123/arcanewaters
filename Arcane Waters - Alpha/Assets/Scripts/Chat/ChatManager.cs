@@ -19,6 +19,9 @@ public class ChatManager : MonoBehaviour
    [HideInInspector]
    public AutoCompletePanel autoCompletePanel;
 
+   // The panel managing the display and changing of the whisper name auto-complete options
+   public WhisperAutoCompletePanel whisperAutoCompletePanel;
+
    // Self
    public static ChatManager self;
 
@@ -52,11 +55,19 @@ public class ChatManager : MonoBehaviour
       }
 
       if (Input.GetKeyDown(KeyCode.UpArrow)) {
-         changeNumMessagesAgo(increment: true);
+         if (ChatPanel.self.inputField.isFocused) {
+            changeNumMessagesAgo(increment: true);
+         } else if (ChatPanel.self.nameInputField.isFocused) {
+            changeWhisperNamesAgo(increment: true);
+         }
       }
 
       if (Input.GetKeyDown(KeyCode.DownArrow)) {
-         changeNumMessagesAgo(increment: false);
+         if (ChatPanel.self.inputField.isFocused) {
+            changeNumMessagesAgo(increment: false);
+         } else if (ChatPanel.self.nameInputField.isFocused) {
+            changeWhisperNamesAgo(increment: false);
+         }
       }
    }
 
@@ -117,6 +128,9 @@ public class ChatManager : MonoBehaviour
 
    private void sendWhisperMessageToServer (string message) {
       sendMessageToServer(message, ChatInfo.Type.Whisper);
+
+      // Add the whisper name to the history
+      _whisperNameHistory.Add(ChatPanel.self.nameInputField.text);
    }
 
    public void sendMessageToServer (string message, ChatInfo.Type chatType) {
@@ -205,6 +219,16 @@ public class ChatManager : MonoBehaviour
       autoCompletePanel.updatePanel();
    }
 
+   public void onWhisperInputLostFocus () {
+      whisperAutoCompletePanel.inputFieldFocused = false;
+      whisperAutoCompletePanel.updatePanel();
+   }
+
+   public void onWhisperInputGainedFocus () {
+      whisperAutoCompletePanel.inputFieldFocused = true;
+      whisperAutoCompletePanel.updatePanel();
+   }
+
    public void processChatInput (string textToProcess) {
       if (Util.isEmpty(textToProcess)) {
          return;
@@ -229,6 +253,10 @@ public class ChatManager : MonoBehaviour
       if (Util.isEmpty(inputString)) {
          resetMessagesAgo();
       }
+   }
+
+   public void onWhisperNameInputValueChanged (string inputString) {
+      tryAutoCompleteWhisperName();
    }
 
    protected void executeChatCommand (string message) {
@@ -389,6 +417,46 @@ public class ChatManager : MonoBehaviour
       chatPanel.inputField.MoveTextEnd(false);
    }
 
+   public void tryAutoCompleteWhisperName () {
+      string inputString = chatPanel.nameInputField.text;
+
+      List<string> autoCompletes = new List<string>();
+      List<string> possibleNames = new List<string>();
+      List<string> friends = FriendListManager.self.getFriendNames();      
+
+      // Add friends to possible names
+      foreach (string name in friends) {
+         if (!possibleNames.Contains(name)) {
+            possibleNames.Add(name);
+         }
+      }
+
+      // Add recently messaged to possible names
+      foreach (string name in _whisperNameHistory) {
+         if (!possibleNames.Contains(name)) {
+            possibleNames.Add(name);
+         }
+      }
+
+      foreach (string name in possibleNames) {
+         if (name.StartsWith(inputString)) {
+            autoCompletes.Add(name);
+         }
+      }
+
+      whisperAutoCompletePanel.setAutoCompletes(autoCompletes);
+   }
+
+   private void tryAutofillWhisperName () {
+      if (_numWhisperNamesAgo < 1 || _numWhisperNamesAgo > _whisperNameHistory.Count) {
+         return;
+      }
+
+      int indexInList = _whisperNameHistory.Count - _numWhisperNamesAgo;
+      chatPanel.nameInputField.text = _whisperNameHistory[indexInList];
+      chatPanel.nameInputField.MoveTextEnd(false);
+   }
+
    private void changeNumMessagesAgo (bool increment) {
       _numMessagesAgo += (increment) ? 1 : -1;
 
@@ -405,6 +473,24 @@ public class ChatManager : MonoBehaviour
 
    private void resetMessagesAgo () {
       _numMessagesAgo = 0;
+   }
+
+   private void changeWhisperNamesAgo (bool increment) {
+      _numWhisperNamesAgo += (increment) ? 1 : -1;
+
+      if (_numWhisperNamesAgo < 1) {
+         _numWhisperNamesAgo = 1;
+      }
+
+      if (_numWhisperNamesAgo > _whisperNameHistory.Count) {
+         _numWhisperNamesAgo = _whisperNameHistory.Count;
+      }
+
+      tryAutofillWhisperName();
+   }
+
+   private void resetWhisperNamesAgo () {
+      _numWhisperNamesAgo = 0;
    }
 
    #region Private Variables
@@ -424,8 +510,14 @@ public class ChatManager : MonoBehaviour
    // A record of all messages the user has sent this login
    protected List<string> _sentMessageHistory = new List<string>();
 
+   // A record of all names the user has sent a whisper to
+   protected List<string> _whisperNameHistory = new List<string>();
+
    // How many messages ago we should autofill
    protected int _numMessagesAgo = 0;
+
+   // How many whisper names ago we should autofill
+   protected int _numWhisperNamesAgo = 0;
 
    #endregion
 }

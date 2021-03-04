@@ -116,7 +116,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    private void OnTriggerEnter2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
 
-      if (entity != null && interactionType == InteractionType.Enter) {
+      if (entity != null && interactionType == InteractionType.Enter && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
          }
@@ -126,7 +126,7 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    private void OnTriggerExit2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
 
-      if (entity != null && interactionType == InteractionType.Exit) {
+      if (entity != null && interactionType == InteractionType.Exit && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
          }
@@ -136,17 +136,35 @@ public class GenericActionTrigger : MonoBehaviour, IMapEditorDataReceiver
    private void OnTriggerStay2D (Collider2D collision) {
       NetEntity entity = collision.GetComponent<NetEntity>();
 
-      if (entity != null && interactionType == InteractionType.Stay) {
+      if (entity != null && interactionType == InteractionType.Stay && canActivateTrigger(entity)) {
          if (actions.TryGetValue(actionName, out Action<NetEntity> action)) {
             action.Invoke(entity);
          }
       }
    }
 
+   private bool canActivateTrigger (NetEntity entity) {
+      bool hasAlreadyTriggeredThisFrame = false;
+
+      // Ignore the trigger if it has already been activated this frame
+      if (_lastTriggerTime.TryGetValue(entity, out float lastActivationTime)) {
+         if (Time.time - lastActivationTime < 0.1f) {
+            hasAlreadyTriggeredThisFrame = true;
+         }
+      }
+
+      _lastTriggerTime[entity] = Time.time;
+
+      return !hasAlreadyTriggeredThisFrame;
+   }
+
    #region Private Variables
 
    // The collider, which triggers the action
    private BoxCollider2D _collider;
+
+   // The last time an entity has activated the trigger
+   private Dictionary<NetEntity, float> _lastTriggerTime = new Dictionary<NetEntity, float>();
 
    #endregion
 }

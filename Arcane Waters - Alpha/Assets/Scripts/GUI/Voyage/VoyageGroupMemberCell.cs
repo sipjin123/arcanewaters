@@ -32,6 +32,9 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
    // The level of the player
    public Text playerLevelText;
 
+   // The area key where the user is located
+   public Text playerAreaKeyText;
+
    #endregion
 
    public void Awake () {
@@ -75,8 +78,7 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
       }
 
       characterPortrait.updateLayers(cellInfo.gender, cellInfo.bodyType, cellInfo.eyesType, cellInfo.hairType, cellInfo.eyesPalettes, cellInfo.hairPalettes, armor, weapon, hat);
-      playerNameText.text = cellInfo.userName;
-      playerLevelText.text = "LvL " + LevelUtil.levelForXp(cellInfo.userXP).ToString();
+      updateTooltip(cellInfo.userName, cellInfo.userXP, cellInfo.areaKey);
    }
 
    public void Update () {
@@ -132,8 +134,18 @@ public class VoyageGroupMemberCell : MonoBehaviour, IPointerEnterHandler, IPoint
          characterPortrait.updateBackground(entity);
       }
 
-      playerNameText.text = entity.entityName;
-      playerLevelText.text = "LvL " + LevelUtil.levelForXp(entity.XP).ToString();
+      updateTooltip(entity.entityName, entity.XP, entity.areaKey);
+   }
+
+   public void updateTooltip(string userName, int XP, string areaKey) {
+      playerNameText.text = userName;
+      playerLevelText.text = "LvL " + LevelUtil.levelForXp(XP).ToString();
+
+      if (Global.player != null && string.Equals(Global.player.areaKey, areaKey)) {
+         playerAreaKeyText.text = "Nearby";
+      } else {
+         playerAreaKeyText.text = Area.getName(areaKey);
+      }
    }
 
    public void OnPointerEnter (PointerEventData eventData) {

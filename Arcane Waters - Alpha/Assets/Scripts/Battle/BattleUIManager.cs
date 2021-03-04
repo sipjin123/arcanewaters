@@ -107,6 +107,10 @@ public class BattleUIManager : MonoBehaviour {
       self = this;
    }
 
+   public void updateButtons () {
+      updateButtons(_currentAbilityType);
+   }
+
    public void updateButtons (AbilityType abilityType, int newStance = -1) {
       Battler.Stance playerStance;
       if (newStance == -1) {
@@ -116,7 +120,7 @@ public class BattleUIManager : MonoBehaviour {
       }
 
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
-         if (abilityButton.abilityType == abilityType && doesAttackMatchStance(abilityButton, playerStance)) {
+         if (abilityButton.abilityType == abilityType && doesAttackMatchStance(abilityButton, playerStance) && !abilityButton.cooldownImage.enabled) {
             abilityButton.enableButton();
          } else {
             abilityButton.disableButton();

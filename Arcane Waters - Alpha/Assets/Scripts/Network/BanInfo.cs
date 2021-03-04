@@ -32,8 +32,20 @@ public class BanInfo
    // The accId who is banning
    public int sourceAccId;
 
+   // The usrId who is banning
+   public int sourceUsrId;
+
+   // The usrName who is banning
+   public string sourceUsrName;
+
    // The accId being banned
    public int targetAccId;
+
+   // The usrId being banned
+   public int targetUsrId;
+
+   // The usrName being banned
+   public string targetUsrName;
 
    // The type of ban applied to this account
    public Type banType = Type.None;
@@ -60,7 +72,11 @@ public class BanInfo
    public BanInfo (MySqlDataReader dataReader) {
       try {
          sourceAccId = DataUtil.getInt(dataReader, "sourceAccId");
+         sourceUsrId = DataUtil.getInt(dataReader, "sourceUsrId");
+         sourceUsrName = DataUtil.getString(dataReader, "sourceUsrName");
          targetAccId = DataUtil.getInt(dataReader, "targetAccId");
+         targetUsrId = DataUtil.getInt(dataReader, "targetUsrId");
+         targetUsrName = DataUtil.getString(dataReader, "targetUsrName");
          banType = (Type) DataUtil.getInt(dataReader, "banType");
          banTime = DataUtil.getInt(dataReader, "banTime");
          banStart = DataUtil.getDateTime(dataReader, "banStart");
@@ -76,8 +92,10 @@ public class BanInfo
 
    public BanInfo () { }
 
-   public BanInfo (int sourceAccId, Type banType, DateTime banEndDate, int minutes, string reason) {
+   public BanInfo (int sourceAccId, int sourceUsrId, string sourceUsrName, Type banType, DateTime banEndDate, int minutes, string reason) {
       this.sourceAccId = sourceAccId;
+      this.sourceUsrId = sourceUsrId;
+      this.sourceUsrName = sourceUsrName;
       this.banType = banType;
       this.banEnd = banEndDate;
       this.reason = reason;
@@ -89,7 +107,7 @@ public class BanInfo
 
       // If the ban is indefinite, we check for a liftDate
       if (banType == Type.Indefinite) {
-         if (banLift != null) {
+         if (banLift > DateTime.MinValue) {
             expired = true;
          }
          return expired;

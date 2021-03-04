@@ -97,7 +97,7 @@ public class TooltipManager : ClientMonoBehaviour {
 
    public static string getTooltip (string imageName, GameObject gameObject) {
       if (imageName.StartsWith("ping-")) {
-         return PingPanel.self.getPingText();
+         return "Ping";
       } else if (imageName.StartsWith("icon_rank")) {
          return "The <color=red>level</color> the guild has reached.  This increases as the members of the guild gain experience.";
       } else if (imageName.StartsWith("guild_emblem")) {

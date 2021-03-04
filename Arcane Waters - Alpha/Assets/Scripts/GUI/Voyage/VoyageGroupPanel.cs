@@ -91,6 +91,15 @@ public class VoyageGroupPanel : ClientMonoBehaviour
       Instantiate(columnBottomPrefab, memberContainer.transform, false);
    }
 
+   public void updateCellTooltip (int userId, string userName, int XP, string areaKey) {
+      // Search for the cell
+      foreach (VoyageGroupMemberCell cell in _memberCells) {
+         if (cell.getUserId() == userId) {
+            cell.updateTooltip(userName, XP, areaKey);
+         }
+      }
+   }
+
    public void OnKickPlayerButtonClickedOn (int playerToKick) {
       PanelManager.self.showConfirmationPanel("Are you sure you want to kick player from the voyage group?",
          () => {

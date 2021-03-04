@@ -82,38 +82,6 @@ public class AutoCompletePanel : MonoBehaviour {
       }
    }
 
-   private void onDownPressed () {
-      if (!isActive()) {
-         return;
-      }
-
-      if (!inputFieldFocused) {
-         deselectOldOption();
-         _selectedAutoComplete = (_selectedAutoComplete + 1);
-      } else if (inputFieldFocused) {
-         _selectedAutoComplete = 0;
-      }
-
-      updateSelectedButton();
-      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, getNumAutoCompletes());
-   }
-
-   private void onUpPressed () {
-      if (!isActive()) {
-         return;
-      }
-
-      if (!inputFieldFocused) {
-         deselectOldOption();
-         _selectedAutoComplete = _selectedAutoComplete - 1;
-      } else if (inputFieldFocused) {
-         _selectedAutoComplete = getNumAutoCompletes() - 1;
-      }
-
-      updateSelectedButton();
-      _scrollRect.verticalNormalizedPosition = Util.getNormalisedScrollValue(_selectedAutoComplete, getNumAutoCompletes());
-   }
-
    private void onEnterPressed () {
       if (!inputFieldFocused && _anyButtonSelected) {
          string autoComplete = _autoCompleteOptions[_selectedAutoComplete].getText();
@@ -125,11 +93,11 @@ public class AutoCompletePanel : MonoBehaviour {
    private void updateSelectedButton () {
       if (_selectedAutoComplete >= getNumAutoCompletes()) {
          ChatPanel.self.inputField.Select();
-         StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
+         StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd(ChatPanel.self.inputField));
          _anyButtonSelected = false;
       } else if (_selectedAutoComplete < 0) {
          ChatPanel.self.inputField.Select();
-         StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd());
+         StartCoroutine(ChatPanel.self.CO_MoveCaretToEnd(ChatPanel.self.inputField));
          _anyButtonSelected = false;
       } else {
          AutoCompleteOption selectedOption = getSelectedAutoComplete();
@@ -195,7 +163,7 @@ public class AutoCompletePanel : MonoBehaviour {
 
       scrollViewContainer.SetActive(true);
 
-      resizeAutocompletes();
+      resizeAutoCompletes();
 
       int optionCount = 0;
 
@@ -233,7 +201,7 @@ public class AutoCompletePanel : MonoBehaviour {
       _autoCompleteOptions.Add(newOption);
    }
 
-   public void resizeAutocompletes () {
+   private void resizeAutoCompletes () {
       // Find out how many new auto-completes we need
       int newAutoCompletesNeeded = getNumAutoCompletes() - _autoCompleteOptions.Count;
 
@@ -307,9 +275,6 @@ public class AutoCompletePanel : MonoBehaviour {
 
    // The maximum number of auto-completes to display
    private const int MAX_COMMANDS_VISIBLE = 10;
-
-   // The amount of vertical space between each auto-complete option
-   private const int AUTOCOMPLETE_VERTICAL_SPACING = 34;
 
    // The number of options to create on startup
    private const int NUM_INITIAL_OPTIONS = 10;

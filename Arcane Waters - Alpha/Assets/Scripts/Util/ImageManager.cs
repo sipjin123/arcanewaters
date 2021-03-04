@@ -186,7 +186,7 @@ public class ImageManager : ClientMonoBehaviour {
       Sprite[] fetchedSprites = self.getSpritesFromPath(path);
 
       // Returns a blank sprite if the fetched data from the path is null
-      if (fetchedSprites == null) {
+      if (fetchedSprites == null || fetchedSprites.Length == 0) {
          if (!Util.isBatch()) {
             D.debug("Could not find sprites at path(" + path + "). Returning a blank sprite array");
          }

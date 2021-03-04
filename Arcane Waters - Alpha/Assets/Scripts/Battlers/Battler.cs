@@ -917,7 +917,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
          BattleUIManager.self.initializeAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex);
       }
 
-      triggerAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+      float attackDuration = (float)(cooldownEndTime - NetworkTime.time);
+      triggerAbilityCooldown(AbilityType.BuffDebuff, battleAction.abilityInventoryIndex, attackDuration);
 
       switch (globalAbilityData.buffActionType) {
          case BuffActionType.Regeneration:
@@ -1116,6 +1117,8 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
       if (!globalAbilityData.isCancel()) {
          attackerAbility = getAttackAbility(battleAction.abilityInventoryIndex);
       }
+
+      float attackDuration = 0;
       double actionDuration = NetworkTime.time;
       switch (globalAbilityData.abilityActionType) {
          case AbilityActionType.Melee:
@@ -1142,7 +1145,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSecondsDouble(timeToWait);
-            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+
+            attackDuration = (float) (cooldownEndTime - NetworkTime.time);
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
             // Make sure the source battler is still alive at this point
             if (sourceBattler.isDead()) {
@@ -1307,7 +1312,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSecondsDouble(timeToWait);
-            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+
+            attackDuration = (float) (cooldownEndTime - NetworkTime.time);
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
             // The unused code is on the MagicAbility script
             // Make sure the battlers are still alive at this point
@@ -1436,7 +1443,9 @@ public class Battler : NetworkBehaviour, IAttackBehaviour
 
             // Don't start animating until both sprites are available
             yield return new WaitForSecondsDouble(timeToWait);
-            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, battleAction.cooldownDuration);
+
+            attackDuration = (float) (cooldownEndTime - NetworkTime.time);
+            triggerAbilityCooldown(AbilityType.Standard, battleAction.abilityInventoryIndex, attackDuration);
 
             // Make sure the battlers are still alive at this point
             if (sourceBattler.isDead()) {

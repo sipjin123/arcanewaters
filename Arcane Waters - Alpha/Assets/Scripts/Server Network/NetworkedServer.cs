@@ -306,6 +306,29 @@ public class NetworkedServer : NetworkedBehaviour
    public void Server_SendVoyageGroupCompositionToMembers (int groupId) {
       VoyageGroupManager.self.sendGroupCompositionToMembers(groupId);
    }
+    
+   [ServerRPC]
+   public void MasterServer_SendMemberPartialUpdateToGroup (int groupId, int userId, string userName, int XP, string areaKey) {
+      if (!VoyageGroupManager.self.tryGetGroupById(groupId, out VoyageGroupInfo voyageGroup)) {
+         return;
+      }
+
+      // Find the servers the group members are connected to
+      foreach (int memberUserId in voyageGroup.members) {
+         NetworkedServer targetServer = ServerNetworkingManager.self.getServerContainingUser(memberUserId);
+         if (targetServer != null) {
+            targetServer.InvokeClientRpcOnOwner(Server_SendMemberPartialUpdateToGroupMember, memberUserId, userId, userName, XP, areaKey);
+         }
+      }
+   }
+
+   [ClientRPC]
+   public void Server_SendMemberPartialUpdateToGroupMember (int targetUserId, int userId, string userName, int XP, string areaKey) {
+      NetEntity player = EntityManager.self.getEntity(targetUserId);
+      if (player != null) {
+         player.rpc.Target_ReceiveVoyageGroupMemberPartialUpdate(player.connectionToClient, userId, userName, XP, areaKey);
+      }
+   }
 
    [ServerRPC]
    public int MasterServer_GetNewVoyageGroupId () {

@@ -98,6 +98,15 @@ public class FriendListManager : MonoBehaviour {
       return false;
    }
 
+   public List<string> getFriendNames () {
+      List<string> friendNames = new List<string>();
+      foreach (FriendshipInfo friend in cachedFriendshipInfoList) {
+         friendNames.Add(friend.friendName);
+      }
+
+      return friendNames;
+   }
+
    #region Private Variables
 
    // The last time the pending friendship requests were checked

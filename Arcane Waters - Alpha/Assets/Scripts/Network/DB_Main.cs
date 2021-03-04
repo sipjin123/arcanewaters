@@ -5544,7 +5544,7 @@ public class DB_Main : DB_MainStub
 
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM account_bans_v2 WHERE targetAccId = @targetAccId ORDER BY banStart DESC LIMIT 1;", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT * FROM account_bans_v2 WHERE targetAccId = @targetAccId AND banLift IS NULL ORDER BY banStart DESC LIMIT 1;", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@targetAccId", accId);
@@ -5567,7 +5567,7 @@ public class DB_Main : DB_MainStub
    public static new void liftBanForAccount (int accId) {
       try {
          using (MySqlConnection conn = getConnectionToDevGlobal())
-         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.account_bans_v2 SET banLift = CURRENT_TIMESTAMP WHERE targetAccId=@targetAccId AND banLift = NULL ORDER BY banStart DESC", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("UPDATE global.account_bans_v2 SET banLift = CURRENT_TIMESTAMP WHERE targetAccId=@targetAccId AND banLift IS NULL ORDER BY banStart DESC", conn)) {
             conn.Open();
 
             cmd.Prepare();
@@ -5598,13 +5598,17 @@ public class DB_Main : DB_MainStub
             // If the account doesn't have a current active ban
             try {
                using (MySqlConnection conn = getConnectionToDevGlobal())
-               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans_v2 (sourceAccId, targetAccId, banType, banReason, banTime, banEnd) VALUES" +
-                  "(@sourceAccId, @targetAccId, @banType, @banReason, @banTime, @banEnd)", conn)) {
+               using (MySqlCommand cmd = new MySqlCommand("INSERT INTO global.account_bans_v2 (sourceAccId, sourceUsrId, sourceUsrName, targetAccId, targetUsrId, targetUsrName, banType, banReason, banTime, banEnd) VALUES" +
+                  "(@sourceAccId, @sourceUsrId,  @sourceUsrName, @targetAccId, @targetUsrId, @targetUsrName, @banType, @banReason, @banTime, @banEnd)", conn)) {
                   conn.Open();
                   cmd.Prepare();
 
                   cmd.Parameters.AddWithValue("@sourceAccId", banInfo.sourceAccId);
+                  cmd.Parameters.AddWithValue("@sourceUsrId", banInfo.sourceUsrId);
+                  cmd.Parameters.AddWithValue("@sourceUsrName", banInfo.sourceUsrName);
                   cmd.Parameters.AddWithValue("@targetAccId", banInfo.targetAccId);
+                  cmd.Parameters.AddWithValue("@targetUsrId", banInfo.targetUsrId);
+                  cmd.Parameters.AddWithValue("@targetUsrName", banInfo.targetUsrName);
                   cmd.Parameters.AddWithValue("@banType", (int) banInfo.banType);
                   cmd.Parameters.AddWithValue("@banReason", banInfo.reason);
                   cmd.Parameters.AddWithValue("@banTime", banInfo.banTime);
@@ -5730,12 +5734,13 @@ public class DB_Main : DB_MainStub
       return accountId;
    }
 
-   public static new int getAccountId (string username) {
-      int accountId = -1;
+   // Returns the accId, usrId and usrName, in a tuple
+   public static new Tuple<int, int, string> getUserDataTuple (string username) {
+      var userData = Tuple.Create(0, 0, "");
 
       try {
          using (MySqlConnection conn = getConnection())
-         using (MySqlCommand cmd = new MySqlCommand("SELECT accId FROM users WHERE usrName=@usrName", conn)) {
+         using (MySqlCommand cmd = new MySqlCommand("SELECT accId, usrId, usrName FROM users WHERE usrName=@usrName", conn)) {
             conn.Open();
             cmd.Prepare();
             cmd.Parameters.AddWithValue("@usrName", username);
@@ -5744,7 +5749,7 @@ public class DB_Main : DB_MainStub
             // Create a data reader and Execute the command
             using (MySqlDataReader dataReader = cmd.ExecuteReader()) {
                while (dataReader.Read()) {
-                  accountId = dataReader.GetInt32("accId");
+                  userData = Tuple.Create(dataReader.GetInt32("accId"), dataReader.GetInt32("usrId"), dataReader.GetString("usrName"));
                }
             }
          }
@@ -5752,7 +5757,7 @@ public class DB_Main : DB_MainStub
          D.error("MySQL Error: " + e.ToString());
       }
 
-      return accountId;
+      return userData;
    }
 
    public static new int getUserId (string username) {

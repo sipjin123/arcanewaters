@@ -669,8 +669,8 @@ public class DB_MainStub : MonoBehaviour
       return -1;
    }
 
-   public static int getAccountId (string username) {
-      return -1;
+   public static Tuple<int, int, string> getUserDataTuple (string username) {
+      return Tuple.Create(0, 0, "");
    }
 
    public static int getAccountPermissionLevel (int accountId) {

@@ -91,12 +91,6 @@ public class ToolTipComponent : MonoBehaviour, IPointerEnterHandler, IPointerExi
          return;
       }
 
-      if (this.GetComponent<PingPanel>() != null) {
-         maxWidth = 100;
-         TooltipHandler.self.callToolTip(_tooltipOwner, message, tooltipPlacement, this.transform.position, _panelRoot, maxWidth);
-         return;
-      }
-
       // Create the key needed to find the tooltip in the dictionary
       if ((this.GetComponent<Image>() != null) && (this.GetComponent<Image>().sprite != null)) {
          dictKeySuffix = this.GetComponent<Image>().sprite.name;
