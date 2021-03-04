@@ -15,6 +15,9 @@ public class InstanceManager : MonoBehaviour {
    // Self
    public static InstanceManager self;
 
+   // Cache only instance that is active on the client side, to be referenced to determine syncvar values such as checking if the area entites have successfully been initialized
+   public Instance clientInstance;
+
    #endregion
 
    private void Awake () {
@@ -410,7 +413,7 @@ public class InstanceManager : MonoBehaviour {
       }
 
       // Remove it from our internal mapping
-      _instances.Remove(instance.id);
+      _instances.Remove(instance.id); 
 
       // Then destroy the instance
       NetworkServer.Destroy(instance.gameObject);
