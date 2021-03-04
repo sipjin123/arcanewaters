@@ -87,6 +87,9 @@ public class Global
    // If stats should be displayed on land combat
    public static bool displayLandCombatLogs = false;
 
+   // If ability process should be logged
+   public static bool displayAbilityLogs = false;
+
    // The default settings for networked vars in the server network
    public static NetworkedVarSettings defaultNetworkedVarSettings = new NetworkedVarSettings { WritePermission = NetworkedVarPermission.OwnerOnly, SendChannel = "Fragmented" };
 

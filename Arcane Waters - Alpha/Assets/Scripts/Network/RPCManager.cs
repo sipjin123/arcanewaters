@@ -4745,6 +4745,9 @@ public class RPCManager : NetworkBehaviour
             WeaponStatData weaponData = EquipmentXMLManager.self.getWeaponData(weaponId);
             Weapon.Class weaponClass = weaponData == null ? Weapon.Class.Melee : weaponData.weaponClass;
             WeaponCategory weaponCategory = WeaponCategory.None;
+            if (Global.displayAbilityLogs) {
+               D.debug("Player {" + _player.userId + "} weapon is" + " : " + weaponClass);
+            }
 
             // Determine if the abilities match the current weapon type
             int validAbilities = 0;
@@ -4760,7 +4763,19 @@ public class RPCManager : NetworkBehaviour
                   || (weaponClass == Weapon.Class.Ranged && attackAbilityData.isProjectile())
                   || (weaponClass == Weapon.Class.Magic && attackAbilityData.isProjectile())) {
                      validAbilities++;
+                     if (Global.displayAbilityLogs) {
+                        D.debug("Valid Ability: " + basicAbilityData.itemName +
+                           " : " + basicAbilityData.itemID +
+                           " : " + basicAbilityData.abilityType +
+                           " : " + basicAbilityData.classRequirement);
+                     }
                   }
+               } 
+            }
+
+            if (validAbilities < 1) {
+               if (Global.displayAbilityLogs) {
+                  D.debug("No valid ability assigned to player" + " : " + _player.userId);
                }
             }
 
@@ -4802,6 +4817,14 @@ public class RPCManager : NetworkBehaviour
                   } else {
                      weaponCategory = WeaponCategory.None;
                      equippedAbilityList[0] = AbilitySQLData.TranslateBasicAbility(AbilityManager.self.punchAbility());
+                  }
+
+                  if (Global.displayAbilityLogs) {
+                     D.debug("New ability assigned to player: "
+                        + " Name: " + equippedAbilityList[0].name
+                        + " ID: " + equippedAbilityList[0].abilityID
+                        + " WepClass: " + weaponClass
+                        + " WepCateg: " + weaponCategory);
                   }
                }
             }
@@ -4977,6 +5000,15 @@ public class RPCManager : NetworkBehaviour
                   }
 
                   if (battler != null) {
+                     if (Global.displayAbilityLogs) {
+                        foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                           D.debug("Sending Overridden Ability Data to Player: " + battler.userId
+                              + "Name: " + basicAbility.itemName
+                              + " ID: " + basicAbility.itemID
+                              + " Type: " + basicAbility.abilityType
+                              + " Class: " + basicAbility.classRequirement);
+                        }
+                     }
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
 
                      if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {
@@ -5007,10 +5039,22 @@ public class RPCManager : NetworkBehaviour
                         case WeaponCategory.Rum:
                            basicAbilityList[0] = AbilityManager.self.throwRum();
                            break;
+                        default:
+                           D.debug("Invalid Weapon Category!");
+                           break;
                      }
                   }
 
                   try {
+                     if (Global.displayAbilityLogs) {
+                        foreach (BasicAbilityData basicAbility in basicAbilityList) {
+                           D.debug("Sending RAW Ability Data to Player: " + battler.userId
+                              + "Name: " + basicAbility.itemName
+                              + " ID: " + basicAbility.itemID
+                              + " Type: " + basicAbility.abilityType
+                              + " Class: " + basicAbility.classRequirement);
+                        }
+                     }
                      battler.setBattlerAbilities(basicAbilityList, BattlerType.PlayerControlled);
 
                      if (battler.player is PlayerBodyEntity && battler.battle.isPvp) {

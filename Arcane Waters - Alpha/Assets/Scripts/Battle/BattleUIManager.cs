@@ -168,6 +168,16 @@ public class BattleUIManager : MonoBehaviour {
       int attackAbilityIndex = 0;
       int buffAbilityIndex = 0;
 
+      if (Global.displayAbilityLogs) {
+         foreach (AbilitySQLData ability in abilitydata) {
+            D.debug("Received UI Ability"
+               + " ID: " + ability.abilityID
+               + " Name: " + ability.name
+               + " Index: " + ability.equipSlotIndex
+               + " Type: " + ability.abilityType);
+         }
+      }
+
       foreach (AbilityButton abilityButton in abilityTargetButtons) {
          if (indexCounter < abilitydata.Length) {
             AbilityType abilityType = abilitydata[indexCounter].abilityType;
