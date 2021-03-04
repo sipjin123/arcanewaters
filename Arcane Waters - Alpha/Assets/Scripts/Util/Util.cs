@@ -1046,14 +1046,14 @@ public class Util : MonoBehaviour {
       int gameVersion = int.MaxValue;
 
       // If this is a cloud build, then the manifest cannot be missing
-      #if CLOUD_BUILD
-      try {
-         gameVersion = int.Parse(getJenkinsBuildIdNumber());
-      } catch {
-         gameVersion = 0;
-         D.debug("Failed to get game version properly" + " : " + getJenkinsBuildId() + " : " + getJenkinsBuildIdNumber());
+      if (isCloudBuild()) {
+         try {
+            gameVersion = int.Parse(getJenkinsBuildIdNumber());
+         } catch {
+            gameVersion = 0;
+            D.debug("Failed to get game version properly" + " : " + getJenkinsBuildId() + " : " + getJenkinsBuildIdNumber());
+         }
       }
-      #endif
 
       return gameVersion;
    }

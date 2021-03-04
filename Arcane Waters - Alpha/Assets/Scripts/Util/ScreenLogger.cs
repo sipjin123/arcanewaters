@@ -25,6 +25,9 @@ public class ScreenLogger : MonoBehaviour {
       isEnabled = false;
       canvasObj.SetActive(false);
       Global.displayLandCombatStats = true;
+      if (!Util.isCloudBuild()) {
+         isEnabled = true;
+      }
    }
 
    public void adminActivateLogger () {

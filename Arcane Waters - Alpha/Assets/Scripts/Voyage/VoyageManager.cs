@@ -25,9 +25,9 @@ public class VoyageManager : MonoBehaviour {
 
    public void startVoyageManagement () {
       // At server startup, for dev builds, make all the sea maps accessible by creating one voyage for each
-#if !CLOUD_BUILD
-      StartCoroutine(CO_CreateInitialVoyages());
-#endif
+      if (!Util.isCloudBuild()) {
+         StartCoroutine(CO_CreateInitialVoyages());
+      }
 
       // Regularly check that there are enough voyage instances open and create more
       InvokeRepeating(nameof(createVoyageInstanceIfNeeded), 20f, 10f);

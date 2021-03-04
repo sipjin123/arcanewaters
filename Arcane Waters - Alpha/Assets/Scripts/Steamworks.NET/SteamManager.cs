@@ -72,12 +72,11 @@ public class SteamManager : MonoBehaviour
       // We want our SteamManager Instance to persist across scenes.
       DontDestroyOnLoad(gameObject);
 
-#if !CLOUD_BUILD
-      Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
-#endif
-#if CLOUD_BUILD
-      Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
-#endif
+      if (!Util.isCloudBuild()) {
+         Debug.Log("STEAM :: Build Type: NOT Cloud build, Steam should not initialize");
+      } else {
+         Debug.Log("STEAM :: Build Type: Cloud build, Steam is Initializing");
+      }
 
 //#if UNITY_EDITOR 
 #if !UNITY_EDITOR && !IS_SERVER_BUILD
